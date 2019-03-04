@@ -91,7 +91,7 @@ typedef __uint_least64_t uint_least64_t;
 /*
  * Fastest minimum-width integer types
  *
- * Assume int to be the fastest type for all types with a width 
+ * Assume int to be the fastest type for all types with a width
  * less than __INT_MAX__ rsp. INT_MAX
  */
 #ifdef __INT_FAST8_TYPE__
@@ -207,7 +207,7 @@ typedef __uintptr_t uintptr_t;
 #endif
 #else
 /*
- * Fallback to hardcoded values, 
+ * Fallback to hardcoded values,
  * should be valid on cpu's with 32bit int/32bit void*
  */
 #define INTPTR_MAX __STDINT_EXP(LONG_MAX)

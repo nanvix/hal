@@ -170,7 +170,7 @@
 
 	/**
 	 * @brief Declares something to be unused.
-	 * 
+	 *
 	 * @param x Thing.
 	 */
 	#define UNUSED(x) ((void) (x))

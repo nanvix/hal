@@ -30,7 +30,7 @@
  * of the BSD License.   This program is distributed in the hope that
  * it will be useful, but WITHOUT ANY WARRANTY expressed or implied,
  * including the implied warranties of MERCHANTABILITY or FITNESS FOR
- * A PARTICULAR PURPOSE.  A copy of this license is available at 
+ * A PARTICULAR PURPOSE.  A copy of this license is available at
  * http://www.opensource.org/licenses. Any Red Hat trademarks that are
  * incorporated in the source code or documentation are not subject to
  * the BSD License and may only be used or replicated with the express
@@ -44,13 +44,13 @@
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
  *
- *     * Redistributions of source code must retain the above copyright notice, 
+ *     * Redistributions of source code must retain the above copyright notice,
  *       this list of conditions and the following disclaimer.
  *     * Redistributions in binary form must reproduce the above copyright notice,
  *       this list of conditions and the following disclaimer in the documentation
  *       and/or other materials provided with the distribution.
- *     * Neither the name of the University nor the names of its contributors 
- *       may be used to endorse or promote products derived from this software 
+ *     * Neither the name of the University nor the names of its contributors
+ *       may be used to endorse or promote products derived from this software
  *       without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
@@ -157,10 +157,10 @@
 	
 	#define WEXITSTATUS(status) \
 		(status & 0xff)         \
-    
+
     #define WIFEXITED(status) \
 		((status >> 8) & 1)   \
-    
+
     #define WIFSIGNALED(status) \
 		((status >> 9) & 1)     \
 		

@@ -43,7 +43,7 @@ if [ -z $test ];
 then
 	echo "Missing arguments!"
 	echo "Usage: $0 <test name> [mode]"
-	exit 1 
+	exit 1
 fi
 
 #

@@ -77,7 +77,7 @@ see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
 	#define va_end(v)     __builtin_va_end(v)
 	#define va_arg(v,l)   __builtin_va_arg(v,l)
 
-	typedef __builtin_va_list va_list; 
+	typedef __builtin_va_list va_list;
 
 #endif
 

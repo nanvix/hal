@@ -78,6 +78,7 @@
 	 * @param x Boundary.
 	 */
 	#define ALIGN(x) __attribute__((aligned(x)))
+
 	/**
 	 * @name Logical Constants
 	 */
