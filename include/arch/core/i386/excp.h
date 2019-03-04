@@ -63,27 +63,27 @@
 	 * @name i386 Exception Codes
 	 */
 	/**@{*/
-	#define I386_EXCP_DIVIDE                       0 /**@< Division-by-Zero Error      */
-	#define I386_EXCP_DEBUG                        1 /**@< Debug Exception             */
-	#define I386_EXCP_NMI                          2 /**@< Non-Maskable Interrupt      */
-	#define I386_EXCP_BREAKPOINT                   3 /**@< Breakpoint Exception        */
-	#define I386_EXCP_OVERFLOW                     4 /**@< Overflow Exception          */
-	#define I386_EXCP_BOUNDS                       5 /**@< Bounds Check Exception      */
-	#define I386_EXCP_INVALID_OPCODE               6 /**@< Invalid Opcode Exception    */
-	#define I386_EXCP_COPROCESSOR_NOT_AVAILABLE    7 /**@< Coprocessor Not Available   */
-	#define I386_EXCP_DOUBLE_FAULT                 8 /**@< Double Fault                */
-	#define I386_EXCP_COPROCESSOR_SEGMENT_OVERRUN  9 /**@< Coprocessor Segment Overrun */
-	#define I386_EXCP_INVALID_TSS                 10 /**@< Invalid TSS                 */
-	#define I386_EXCP_SEGMENT_NOT_PRESENT         11 /**@< Segment Not Present         */
-	#define I386_EXCP_STACK_SEGMENT_FAULT         12 /**@< Stack Segment Fault         */
-	#define I386_EXCP_GENERAL_PROTECTION          13 /**@< General Protection Fault    */
-	#define I386_EXCP_PAGE_FAULT                  14 /**@< Page Fault                  */
-	#define I386_EXCP_FPU_ERROR                   16 /**@< Floating Point Exception    */
-	#define I386_EXCP_ALIGNMENT_CHECK             17 /**@< Alignment Check Exception   */
-	#define I386_EXCP_MACHINE_CHECK               18 /**@< Machine Check Exception     */
-	#define I386_EXCP_SIMD_ERROR                  19 /**@< SMID Unit Exception         */
-	#define I386_EXCP_VIRTUAL_EXCEPTION           20 /**@< Virtual Exception           */
-	#define I386_EXCP_SECURITY_EXCEPTION          30 /**@< Security Exception.         */
+	#define I386_EXCEPTION_DIVIDE                       0 /**@< Division-by-Zero Error      */
+	#define I386_EXCEPTION_DEBUG                        1 /**@< Debug Exception             */
+	#define I386_EXCEPTION_NMI                          2 /**@< Non-Maskable Interrupt      */
+	#define I386_EXCEPTION_BREAKPOINT                   3 /**@< Breakpoint Exception        */
+	#define I386_EXCEPTION_OVERFLOW                     4 /**@< Overflow Exception          */
+	#define I386_EXCEPTION_BOUNDS                       5 /**@< Bounds Check Exception      */
+	#define I386_EXCEPTION_INVALID_OPCODE               6 /**@< Invalid Opcode Exception    */
+	#define I386_EXCEPTION_COPROCESSOR_NOT_AVAILABLE    7 /**@< Coprocessor Not Available   */
+	#define I386_EXCEPTION_DOUBLE_FAULT                 8 /**@< Double Fault                */
+	#define I386_EXCEPTION_COPROCESSOR_SEGMENT_OVERRUN  9 /**@< Coprocessor Segment Overrun */
+	#define I386_EXCEPTION_INVALID_TSS                 10 /**@< Invalid TSS                 */
+	#define I386_EXCEPTION_SEGMENT_NOT_PRESENT         11 /**@< Segment Not Present         */
+	#define I386_EXCEPTION_STACK_SEGMENT_FAULT         12 /**@< Stack Segment Fault         */
+	#define I386_EXCEPTION_GENERAL_PROTECTION          13 /**@< General Protection Fault    */
+	#define I386_EXCEPTION_PAGE_FAULT                  14 /**@< Page Fault                  */
+	#define I386_EXCEPTION_FPU_ERROR                   16 /**@< Floating Point Exception    */
+	#define I386_EXCEPTION_ALIGNMENT_CHECK             17 /**@< Alignment Check Exception   */
+	#define I386_EXCEPTION_MACHINE_CHECK               18 /**@< Machine Check Exception     */
+	#define I386_EXCEPTION_SIMD_ERROR                  19 /**@< SMID Unit Exception         */
+	#define I386_EXCEPTION_VIRTUAL_EXCEPTION           20 /**@< Virtual Exception           */
+	#define I386_EXCEPTION_SECURITY_EXCEPTION          30 /**@< Security Exception.         */
 	/**@}*/
 
 #ifndef _ASM_FILE_
@@ -236,10 +236,10 @@
 	 * @name Exception Codes
 	 */
 	/**@*/
-	#define EXCP_INVALID_OPCODE      I386_EXCP_INVALID_OPCODE     /**< Invalid Opcode     */
-	#define EXCP_PAGE_FAULT          I386_EXCP_PAGE_FAULT         /**< Page Fault         */
-	#define EXCP_PAGE_PROTECTION     I386_EXCP_PAGE_FAULT         /**< Page Protection    */
-	#define EXCP_GENERAL_PROTECTION  I386_EXCP_GENERAL_PROTECTION /**< General Protection */
+	#define EXCEPTION_INVALID_OPCODE      I386_EXCEPTION_INVALID_OPCODE     /**< Invalid Opcode     */
+	#define EXCEPTION_PAGE_FAULT          I386_EXCEPTION_PAGE_FAULT         /**< Page Fault         */
+	#define EXCEPTION_PAGE_PROTECTION     I386_EXCEPTION_PAGE_FAULT         /**< Page Protection    */
+	#define EXCEPTION_GENERAL_PROTECTION  I386_EXCEPTION_GENERAL_PROTECTION /**< General Protection */
 	/**@}*/
 
 	/**
@@ -253,7 +253,7 @@
 	/**
 	 * @see i386_excp_get_addr().
 	 */
-	static inline int exception_get_addr(const struct exception *excp)
+	static inline vaddr_t exception_get_addr(const struct exception *excp)
 	{
 		return (i386_excp_get_addr(excp));
 	}

@@ -32,7 +32,7 @@
  * @addtogroup processor-bostan-clusters Clusters
  * @ingroup processor-bostan
  *
- * @brief Bostan Processor Cluster Interface
+ * @brief Clusters
  */
 /**@*/
 

@@ -69,13 +69,6 @@
 #define ERRNO_H_
 
 	/**
-	 * @defgroup errnolib Errno Library
-	 *
-	 * @brief System error numbers.
-	 */
-	/**@{*/
-
-	/**
 	 * @name Error Codes
 	 */
 	/**@{*/
@@ -162,22 +155,12 @@
 
 	/* Newlib extends. */
 	#define EFTYPE          75  /**< Inappropriate file type or format.              */
-
-	/**@}*/
-
 	/**@}*/
 
 #ifndef _ASM_FILE_
 
-	/**
-	 * @addtogroup errnolib
-	 */
-	/**@{*/
-
 	/* Forward definitions. */
 	extern int errno;
-
-	/**@}*/
 
 #ifndef __error_t_defined
 	typedef int error_t;

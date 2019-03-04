@@ -33,8 +33,10 @@
 	#include <arch/processor/or1k-qemu/_or1k-qemu.h>
 
 /**
- * @addtogroup processor-or1k-qemu or1k QEMU
+ * @addtogroup processor-or1k-qemu OpenRISC QEMU
  * @ingroup processors
+ *
+ * @brief OpenRISC QEMU Processor
  */
 /**@*/
 

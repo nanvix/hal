@@ -83,7 +83,7 @@
 	/**
 	 * @brief Memory size (in bytes).
 	 */
-	#define HAL_MEM_SIZE _HAL_MEM_SIZE
+	#define MEMORY_SIZE _MEMORY_SIZE
 
 /**@}*/
 

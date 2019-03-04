@@ -30,8 +30,8 @@
 	#endif
 
 /**
- * @addtogroup k1b-cluster-elf ELF
- * @ingroup k1b-cluster
+ * @addtogroup k1b-core-elf ELF
+ * @ingroup k1b-core
  *
  * @brief ELF Sections
  */

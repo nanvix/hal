@@ -1,7 +1,6 @@
-#
 # MIT License
 #
-# Copyright(c) 2018 Pedro Henrique Penna <pedrohenriquepenna@gmail.com>
+# Copyright(c) 2011-2019 The Maintainers of Nanvix
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -20,7 +19,6 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-#
 
 #===============================================================================
 # Target Configuration
@@ -55,9 +53,8 @@ export LDFLAGS  =
 #===============================================================================
 
 # Libraries
-export LIBKERNEL = libkernel-$(ARCH).a
-export LIBNANVIX = libnanvix-$(ARCH).a
-export LIBS += $(LIBDIR)/$(LIBNANVIX) $(LIBDIR)/$(LIBKERNEL)
+export LIBKERNEL = libhal-$(ARCH).a
+export LIBS = $(LIBDIR)/$(LIBKERNEL)
 
 # Binaries
 export EXECBIN = test-driver-$(TARGET)

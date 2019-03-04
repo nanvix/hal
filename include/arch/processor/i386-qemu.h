@@ -33,8 +33,10 @@
 	#include <arch/processor/i386-qemu/_i386-qemu.h>
 
 /**
- * @addtogroup processor-i386-qemu i386 QEMU
+ * @addtogroup processor-i386-qemu x86 QUEMU
  * @ingroup processors
+ *
+ * @brief x86 QEMU Processor
  */
 /**@*/
 

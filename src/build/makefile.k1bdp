@@ -39,9 +39,8 @@ export CFLAGS += -mcluster=$(CLUSTER)
 #===============================================================================
 
 # Libraries
-export LIBKERNEL    = libkernel-$(ARCH)-$(CLUSTER).a
-export LIBNANVIX    = libnanvix-$(ARCH)-$(CLUSTER).a
-export LIBS_OURS    = $(LIBDIR)/$(LIBNANVIX) $(LIBDIR)/$(LIBKERNEL)
+export LIBKERNEL    = libhal-$(ARCH)-$(CLUSTER).a
+export LIBS_OURS    = $(LIBDIR)/$(LIBKERNEL)
 export LIBS_THEIRS  = -lvbsp -lmppanoc -lmpparouting -mhypervisor
 
 # Binaries

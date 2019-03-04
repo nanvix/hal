@@ -36,31 +36,33 @@
 	#ifndef HAL_NUM_EXCEPTIONS
 	#error "HAL_NUM_EXCEPTIONS not defined"
 	#endif
-	#ifndef EXCP_INVALID_OPCODE
-	#error "EXCP_INVALID_OPCODE not defined"
+	#ifndef EXCEPTION_INVALID_OPCODE
+	#error "EXCEPTION_INVALID_OPCODE not defined"
 	#endif
-	#ifndef EXCP_PAGE_FAULT
-	#error "EXCP_PAGE_FAULT not defined"
+	#ifndef EXCEPTION_PAGE_FAULT
+	#error "EXCEPTION_PAGE_FAULT not defined"
 	#endif
-	#ifndef EXCP_PAGE_PROTECTION
-	#error "EXCP_PAGE_PROTECTION not defined"
+	#ifndef EXCEPTION_PAGE_PROTECTION
+	#error "EXCEPTION_PAGE_PROTECTION not defined"
 	#endif
 	#ifdef HAL_TLB_SOFTWARE
-		#ifndef EXCP_DTLB_FAULT
-		#error "EXCP_DTLB_FAULT not defined"
+		#ifndef EXCEPTION_DTLB_FAULT
+		#error "EXCEPTION_DTLB_FAULT not defined"
 		#endif
-		#ifndef EXCP_ITLB_FAULT
-		#error "EXCP_ITLB_FAULT not defined"
+		#ifndef EXCEPTION_ITLB_FAULT
+		#error "EXCEPTION_ITLB_FAULT not defined"
 		#endif
 	#endif
-	#ifndef EXCP_GENERAL_PROTECTION
-	#error "EXCP_GENERAL_PROTECTION not defined"
+	#ifndef EXCEPTION_GENERAL_PROTECTION
+	#error "EXCEPTION_GENERAL_PROTECTION not defined"
 	#endif
 
-	/* Functions */
+	/* Structures */
 	#ifndef __exception_struct
 	#error "struct exception not defined?"
 	#endif
+
+	/* Functions */
 	#ifndef __exception_get_addr
 	#error "exception_get_addr() not defined?"
 	#endif
@@ -97,7 +99,7 @@
 	/**
 	 * @brief Exception handler
 	 */
-	typedef void (*hal_exception_handler_t)(const struct exception *, const struct context *);
+	typedef void (*exception_handler_t)(const struct exception *, const struct context *);
 
 	/**
 	 * @brief Gets the number of an exception.
@@ -107,7 +109,7 @@
 	 * @returns The exception number stored in the exception
 	 * information structure pointed to by @p excp.
 	 */
-	EXTERN int hal_excp_get_num(const struct exception *excp);
+	EXTERN int exception_get_num(const struct exception *excp);
 
 	/**
 	 * @brief Gets the address of an exception.
@@ -121,7 +123,7 @@
 	 * @returns The exception address stored in the exception
 	 * information structure pointed to by @p excp.
 	 */
-	EXTERN vaddr_t hal_excp_get_addr(const struct exception *excp);
+	EXTERN vaddr_t exception_get_addr(const struct exception *excp);
 
 	/**
 	 * @brief Sets a handler for an exception.
@@ -132,7 +134,7 @@
 	 * @note This function does not check if a handler is already
 	 * set for the target hardware exception.
 	 */
-	EXTERN void hal_exception_set_handler(int excpnum, hal_exception_handler_t handler);
+	EXTERN void exception_set_handler(int excpnum, exception_handler_t handler);
 
 /**@}*/
 

@@ -29,8 +29,10 @@
 	#include <arch/cluster/i386/_i386.h>
 
 /**
- * @addtogroup cluster-i386-io i386 Cluster Memory
- * @ingroup cluster-i386
+ * @addtogroup i386-cluster-mem Memory
+ * @ingroup i386-cluster
+ *
+ * @brief Memory System
  */
 /**@{*/
 

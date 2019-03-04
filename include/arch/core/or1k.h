@@ -39,7 +39,6 @@
 	#include <arch/core/or1k/core.h>
 	#include <arch/core/or1k/excp.h>
 	#include <arch/core/or1k/int.h>
-	#include <arch/core/or1k/io.h>
 	#include <arch/core/or1k/mmu.h>
 	#include <arch/core/or1k/ompic.h>
 	#include <arch/core/or1k/pic.h>

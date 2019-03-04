@@ -203,9 +203,9 @@
 	 */
 	/**@{*/
 	#define __hal_intlvl_set       /**< hal_intlvl_set()       */
-	#define __hal_interrupt_mask   /**< hal_interrupt_mask()   */
-	#define __hal_interrupt_unmask /**< hal_interrupt_unmask() */
-	#define __hal_interrupt_ack    /**< hal_interrupt_ack()    */
+	#define __interrupt_mask   /**< interrupt_mask()   */
+	#define __interrupt_unmask /**< interrupt_unmask() */
+	#define __interrupt_ack    /**< interrupt_ack()    */
 	/**@}*/
 
 #ifndef _ASM_FILE_
@@ -221,7 +221,7 @@
 	/**
 	 * @see or1k_pic_ack()
 	 */
-	static inline void hal_interrupt_ack(int intnum)
+	static inline void interrupt_ack(int intnum)
 	{
 		or1k_pic_ack(intnum);
 	}
@@ -229,7 +229,7 @@
 	/**
 	 * @see or1k_pic_mask()
 	 */
-	static inline void hal_interrupt_mask(int intnum)
+	static inline void interrupt_mask(int intnum)
 	{
 		or1k_pic_mask(intnum);
 	}
@@ -237,7 +237,7 @@
 	/**
 	 * @see or1k_pic_unmask()
 	 */
-	static inline void hal_interrupt_unmask(int intnum)
+	static inline void interrupt_unmask(int intnum)
 	{
 		or1k_pic_unmask(intnum);
 	}

@@ -30,11 +30,13 @@
 
 /**
  * @defgroup target-kalray-mppa256-stdout Standard Output
- * @ingroup target-kalray-mppa256-cluster
+ * @ingroup target-kalray-mppa256
+ *
+ * @brief Standard Output System
  */
 /**@{*/
 
-	#include <driver/jtag.h>
+	#include <arch/stdout/jtag.h>
 	#include <sys/types.h>
 
 	/**
@@ -67,14 +69,14 @@
 	 * @name Provided Interface
 	 */
 	/**@{*/
-	#define __hal_stdout_init_fn  /**< hal_stdout_init()  */
-	#define __hal_stdout_write_fn /**< hal_stdout_write() */
+	#define __stdout_init_fn  /**< stdout_init()  */
+	#define __stdout_write_fn /**< stdout_write() */
 	/**@}*/
 
 	/**
 	 * @see mppa256_stdout_init().
 	 */
-	static inline void hal_stdout_init(void)
+	static inline void stdout_init(void)
 	{
 		mppa256_stdout_init();
 	}
@@ -82,7 +84,7 @@
 	/**
 	 * @see mppa256_stdout_write().
 	 */
-	static inline void hal_stdout_write(const char *buf, size_t n)
+	static inline void stdout_write(const char *buf, size_t n)
 	{
 		mppa256_stdout_write(buf, n);
 	}

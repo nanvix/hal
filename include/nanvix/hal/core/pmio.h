@@ -25,8 +25,8 @@
 #ifndef NANVIX_HAL_CORE_PMIO_H_
 #define NANVIX_HAL_CORE_PMIO_H_
 
-	/* Cluster Interface Implementation */
-	#include <nanvix/hal/cluster/_cluster.h>
+	/* Core Interface Implementation */
+	#include <nanvix/hal/core/_core.h>
 
 /*============================================================================*
  * Interface Implementation Checking                                          *

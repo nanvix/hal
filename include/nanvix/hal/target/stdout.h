@@ -29,6 +29,7 @@
 	#include <nanvix/hal/target/_target.h>
 
 	#include <nanvix/const.h>
+	#include <nanvix/klib.h>
 
 /*============================================================================*
  * Interface Implementation Checking                                          *
@@ -43,11 +44,11 @@
 	#if (TARGET_HAS_STDOUT)
 
 		/* Functions */
-		#ifndef __hal_stdout_init_fn
-		#error "hal_stdout_init() not defined?"
+		#ifndef __stdout_init_fn
+		#error "stdout_init() not defined?"
 		#endif
-		#ifndef __hal_stdout_write_fn
-		#error "hal_stdout_write() not defined?"
+		#ifndef __stdout_write_fn
+		#error "stdout_write() not defined?"
 		#endif
 
 	#endif
@@ -60,25 +61,34 @@
  * @defgroup kernel-hal-target-stdout Standard Output
  * @ingroup kernel-hal-target
  *
- * @brief Target Stadard Output HAL Interface
+ * @brief Target Standard Output HAL Interface
  */
 /**@{*/
 
+	/**
+	 * @brief Initializes the standard output device.
+	 */
 #if (TARGET_HAS_STDOUT)
-	EXTERN void hal_stdout_init(void);
+	EXTERN void stdout_init(void);
 #else
-	static inline void hal_stdout_init(void)
+	static inline void stdout_init(void)
 	{
 	}
 #endif
 
+	/**
+	 * @brief Writes to the standard output device.
+	 *
+	 * @param buf Target buffer.
+	 * @param n   Number of bytes to write.
+	 */
 #if (TARGET_HAS_STDOUT)
-	EXTERN void hal_stdout_write(const char *buf, size_t n);
+	EXTERN void stdout_write(const char *buf, size_t n);
 #else
-	static inline void hal_stdout_write(const char *buf, size_t n)
+	static inline void stdout_write(const char *buf, size_t n)
 	{
-		((void) buf);
-		((void) n);
+		UNUSED(buf);
+		UNUSED(n);
 	}
 #endif
 

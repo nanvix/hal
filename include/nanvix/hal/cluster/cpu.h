@@ -36,6 +36,9 @@
 	#ifndef HAL_NUM_CORES
 	#error "HAL_NUM_CORES not defined"
 	#endif
+	#ifndef COREID_MASTER
+	#error "COREID_MASTER not defined"
+	#endif
 
 	/* Functions */
 	#ifndef __hal_cpu_get_num_cores

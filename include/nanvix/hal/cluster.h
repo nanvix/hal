@@ -53,8 +53,6 @@
  */
 /**@{*/
 
-	#include <nanvix/hal/cluster/cpu.h>
-
 /**@}*/
 
 #endif /* NANVIX_HAL_CLUSTER_H_ */

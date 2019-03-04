@@ -38,8 +38,8 @@
 	#endif
 
 	/* Functions */
-	#ifndef __hal_dcache_invalidate
-	#error "hal_dcache_invalidate() not defined?"
+	#ifndef __dcache_invalidate_fn
+	#error "dcache_invalidate() not defined?"
 	#endif
 
 /*============================================================================*
@@ -59,7 +59,7 @@
 	/**
 	 * @brief Invalidates the data cache.
 	 */
-	EXTERN void hal_dcache_invalidate(void);
+	EXTERN void dcache_invalidate(void);
 
 /**@}*/
 

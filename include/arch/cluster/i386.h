@@ -37,8 +37,10 @@
  *============================================================================*/
 
 /**
- * @addtogroup i386-cluster i386 Cluster
+ * @addtogroup i386-cluster x86 Cluster
  * @ingroup clusters
+ *
+ * @brief x86 Cluster
  */
 /**@{*/
 

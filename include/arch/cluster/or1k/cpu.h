@@ -30,8 +30,10 @@
 	#include <arch/cluster/or1k/_or1k.h>
 
 /**
- * @addtogroup cluster-or1k-cpu OpenRISC Cluster CPU
- * @ingroup cluster-or1k
+ * @addtogroup or1k-cluster-cpu Cores
+ * @ingroup or1k-cluster
+ *
+ * @brief Cores
  */
 /**@{*/
 
@@ -39,6 +41,11 @@
 	 * @brief Number of cores in a cluster.
 	 */
 	#define OR1K_NUM_CORES 2
+
+	/**
+	 * @brief ID of the master core.
+	 */
+	#define OR1K_COREID_MASTER 0
 
 #ifndef _ASM_FILE_
 
@@ -78,6 +85,11 @@
 	 * @brief Number of cores in a cluster.
 	 */
 	#define HAL_NUM_CORES OR1K_NUM_CORES
+
+	/**
+	 * @brief ID of the master core.
+	 */
+	#define COREID_MASTER OR1K_COREID_MASTER
 
 #ifndef _ASM_FILE_
 

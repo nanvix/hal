@@ -37,7 +37,7 @@
 	 * @name Provided Interface
 	 */
 	/**@{*/
-	#define __hal_dcache_invalidate
+	#define __dcache_invalidate_fn
 	/**@}*/
 
 	/**
@@ -55,7 +55,7 @@
 	/**
 	 * @note The i386 target features cache coherency.
 	 */
-	static inline void hal_dcache_invalidate(void)
+	static inline void dcache_invalidate(void)
 	{
 	}
 

@@ -29,12 +29,14 @@
 	#include <arch/target/qemu/or1k-pc/_or1k-pc.h>
 
 /**
- * @defgroup target-or1k-pc-stdout Standard Output
- * @ingroup target-or1k-pc
+ * @defgroup target-qemu-or1k-pc-stdout Standard Output
+ * @ingroup target-qemu-or1k-pc
+ *
+ * @brief Standard Output System
  */
 /**@{*/
 
-	#include <driver/8250.h>
+	#include <arch/stdout/8250.h>
 	#include <sys/types.h>
 
 	/**
@@ -67,14 +69,14 @@
 	 * @name Provided Interface
 	 */
 	/**@{*/
-	#define __hal_stdout_init_fn  /**< hal_stdout_init()  */
-	#define __hal_stdout_write_fn /**< hal_stdout_write() */
+	#define __stdout_init_fn  /**< stdout_init()  */
+	#define __stdout_write_fn /**< stdout_write() */
 	/**@}*/
 
 	/**
 	 * @see qemu_or1kpc_stdout_init().
 	 */
-	static inline void hal_stdout_init(void)
+	static inline void stdout_init(void)
 	{
 		qemu_or1kpc_stdout_init();
 	}
@@ -82,7 +84,7 @@
 	/**
 	 * @see qemu_or1kpc_stdout_write().
 	 */
-	static inline void hal_stdout_write(const char *buf, size_t n)
+	static inline void stdout_write(const char *buf, size_t n)
 	{
 		qemu_or1kpc_stdout_write(buf, n);
 	}

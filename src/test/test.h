@@ -22,51 +22,26 @@
  * SOFTWARE.
  */
 
-#ifndef _TEST_H_
-#define _TEST_H_
+#ifndef _HAL_TEST_H_
+#define _HAL_TEST_H_
 
 	/**
-	 * @brief Number of iterations for stress tests.
+	 * @brief Unit test.
 	 */
-	#define NITERATIONS 10
-
-	#define ___STRINGIFY(x) #x
-	#define ___TOSTRING(x) ___STRINGIFY(x)
+	struct test
+	{
+		void (*test_fn)(void); /**< Test function. */
+		const char *name;      /**< Test name.     */
+	};
 
 	/**
-	 * @brief Writes a string to the standard output device.
-	 *
-	 * @param str Target string.
+	 * @brief Test driver for the clock interface.
 	 */
-	extern void puts(const char *str);
+	EXTERN void test_clock(void);
 
-	/**
-	 * @name User-Level Testing Units
+	/*
+	 * @brief Test driver for the core interface.
 	 */
-	/**@{*/
-	extern void test_api_kthread_self(void);
-	extern void test_api_kthread_create(void);
-	extern void test_fault_kthread_create(void);
-	extern void test_stress_kthread_create(void);
-	extern void test_api_sleep_wakeup(void);
-	extern void test_fault_sleep_wakeup(void);
-	extern void test_stress_sleep_wakeup(void);
-	/**@{*/
+	EXTERN void test_core(void);
 
-	/**
-	 * @brief Asserts a condition.
-	 *
-	 * @param x Condition to assert.
-	 */
-	#define test_assert(x)                            \
-	{                                                 \
-		if (!(x))                                     \
-		{                                             \
-			puts("assertation failed at "             \
-				__FILE__":" ___TOSTRING(__LINE__)"\n" \
-			);                                        \
-			while (1) /* noop */;                     \
-		}                                             \
-	}
-
-#endif
+#endif /* _HAL_TEST_H_ */

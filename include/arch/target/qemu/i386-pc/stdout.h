@@ -29,12 +29,14 @@
 	#include <arch/target/qemu/i386-pc/_i386-pc.h>
 
 /**
- * @defgroup target-i386-pc-stdout Standard Output
- * @ingroup target-i386-pc
+ * @defgroup target-qemu-i386-pc-stdout Standard Output
+ * @ingroup target-qemu-i386-pc
+ *
+ * @brief Standard Output System
  */
 /**@{*/
 
-	#include <driver/console.h>
+	#include <arch/stdout/console.h>
 	#include <sys/types.h>
 
 	/**
@@ -67,14 +69,14 @@
 	 * @name Provided Interface
 	 */
 	/**@{*/
-	#define __hal_stdout_init_fn  /**< hal_stdout_init()  */
-	#define __hal_stdout_write_fn /**< hal_stdout_write() */
+	#define __stdout_init_fn  /**< stdout_init()  */
+	#define __stdout_write_fn /**< stdout_write() */
 	/**@}*/
 
 	/**
 	 * @see qemu_i386pc_stdout_init().
 	 */
-	static inline void hal_stdout_init(void)
+	static inline void stdout_init(void)
 	{
 		qemu_i386pc_stdout_init();
 	}
@@ -82,7 +84,7 @@
 	/**
 	 * @see qemu_i386pc_stdout_write().
 	 */
-	static inline void hal_stdout_write(const char *buf, size_t n)
+	static inline void stdout_write(const char *buf, size_t n)
 	{
 		qemu_i386pc_stdout_write(buf, n);
 	}

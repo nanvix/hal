@@ -33,8 +33,10 @@
 	#include <arch/target/qemu/or1k-pc/_or1k-pc.h>
 
 /**
- * @defgroup target-qemu-or1k-pc QEMU OpenRISC PC
+ * @defgroup target-qemu-or1k-pc QEMU OpenRISC
  * @ingroup targets
+ *
+ * @brief QEMU OpenRISC Platform
  */
 /**@{*/
 

@@ -33,8 +33,10 @@
 	#include <arch/target/kalray/mppa256/_mppa256.h>
 
 /**
- * @defgroup target-kalray-mppa256 MPPA-256 
+ * @defgroup target-kalray-mppa256 MPPA-256
  * @ingroup targets
+ *
+ * @brief MPPA-256 Platform
  */
 /**@{*/
 

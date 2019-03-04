@@ -41,9 +41,9 @@
 	 */
 	/**@{*/
 	#define __hal_intlvl_set
-	#define __hal_interrupt_ack
-	#define __hal_interrupt_mask
-	#define __hal_interrupt_unmask
+	#define __interrupt_ack
+	#define __interrupt_mask
+	#define __interrupt_unmask
 	/**@}*/
 
 	/**
@@ -200,7 +200,7 @@
 	 *
 	 * @cond k1b
 	 */
-	static inline void hal_interrupt_ack(int intnum)
+	static inline void interrupt_ack(int intnum)
 	{
 		k1b_pic_ack(intnum);
 	}
@@ -225,7 +225,7 @@
 	 *
 	 * @cond k1b
 	 */
-	static inline void hal_interrupt_mask(int intnum)
+	static inline void interrupt_mask(int intnum)
 	{
 		k1b_pic_mask(intnum);
 	}
@@ -250,7 +250,7 @@
 	 *
 	 * @cond k1b
 	 */
-	static inline void hal_interrupt_unmask(int intnum)
+	static inline void interrupt_unmask(int intnum)
 	{
 		k1b_pic_unmask(intnum);
 	}

@@ -22,87 +22,40 @@
  * SOFTWARE.
  */
 
-#include <nanvix.h>
+#include <nanvix/hal/hal.h>
+#include <nanvix/const.h>
+#include <nanvix/klib.h>
+#include <nanvix/const.h>
 #include "test.h"
 
-/*============================================================================*
- * strlen()                                                                   *
- *============================================================================*/
-
 /**
- * @brief Returns the length of a string.
- *
- * @param str String to be evaluated.
- *
- * @returns The length of the string.
+ * @brief Dummy main function.
  */
-size_t strlen(const char *str)
-{
-	const char *p;
-
-	/* Count the number of characters. */
-	for (p = str; *p != '\0'; p++)
-		/* noop */;
-
-	return (p - str);
-}
-
-/*============================================================================*
- * puts()                                                                     *
- *============================================================================*/
-
-/**
- * The puts() function writes to the standard output device the string
- * pointed to by @p str.
- */
-void puts(const char *str)
-{
-	size_t len;
-
-	len = strlen(str);
-
-	nanvix_write(0, str, len);
-}
-
-/*============================================================================*
- * main()                                                                     *
- *============================================================================*/
-
-/**
- * @brief User-land testing units.
- */
-static struct
-{
-	void (*test_fn)(void); /**< Test function. */
-	const char *name;      /**< Test Name.     */
-} user_tests[] = {
-	{ test_api_kthread_self,      "[test][user][api]    thread identification       [passed]\n" },
-	{ test_api_kthread_create,    "[test][user][api]    thread creation/termination [passed]\n" },
-	{ test_fault_kthread_create,  "[test][user][fault]  thread creation/termination [passed]\n" },
-	{ test_stress_kthread_create, "[test][user][stress] thread creation/termination [passed]\n" },
-	{ test_api_sleep_wakeup,      "[test][user][api]    thread sleep/wakeup         [passed]\n" },
-	{ test_fault_sleep_wakeup,    "[test][user][fault]  thread sleep/wakeup         [passed]\n" },
-	{ test_stress_sleep_wakeup,   "[test][user][stress] thread sleep/wakeup         [passed]\n" },
-	{ NULL,                        NULL                                                         },
-};
-
-/**
- * @brief Lunches user-land testing units.
- *
- * @param argc Argument counter.
- * @param argv Argument variables.
- */
-int main(int argc, const char *argv[])
+PUBLIC int main(int argc, const char **argv)
 {
 	((void) argc);
 	((void) argv);
 
-	/* Launch tests. */
-	for (int i = 0; user_tests[i].test_fn != NULL; i++)
-	{
-		user_tests[i].test_fn();
-		puts(user_tests[i].name);
-	}
+	while (TRUE)
+		noop();
+}
 
-	return (0);
+/**
+ * @brief Initializes the kernel.
+ */
+PUBLIC void kmain(int argc, const char *argv[])
+{
+	UNUSED(argc);
+	UNUSED(argv);
+	
+	/*
+	 * Initializes the HAL. Must come
+	 * before everything else.
+	 */
+	hal_init();
+
+	test_clock();
+	test_core();
+
+	main(0, NULL);
 }

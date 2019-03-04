@@ -32,13 +32,11 @@
 	/* Cluster Interface Implementation */
 	#include <arch/cluster/or1k/_or1k.h>
 
-/*============================================================================*
- * Exported Interface                                                         *
- *============================================================================*/
-
 /**
- * @addtogroup or1k-cluster or1k Cluster
+ * @addtogroup or1k-cluster OpenRISC Cluster
  * @ingroup clusters
+ *
+ * @brief OpenRISC Cluster
  */
 /**@{*/
 

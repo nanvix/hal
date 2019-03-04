@@ -29,8 +29,10 @@
 	#include <arch/cluster/k1b/_k1b.h>
 
 /**
- * @addtogroup k1b-cluster-cpu k1b Cluster CPU
+ * @addtogroup k1b-cluster-cpu Cores
  * @ingroup k1b-cluster
+ *
+ * @brief Cores
  */
 /**@{*/
 
@@ -42,6 +44,11 @@
 	#else
 		#define K1B_NUM_CORES 16
 	#endif
+
+	/**
+	 * @brief ID of the master core.
+	 */
+	#define K1B_COREID_MASTER 0
 
 	/**
 	 * @brief Gets the number of cores.
@@ -77,6 +84,11 @@
 	 * @brief Number of cores in a cluster.
 	 */
 	#define HAL_NUM_CORES K1B_NUM_CORES
+
+	/**
+	 * @brief ID of the master core.
+	 */
+	#define COREID_MASTER K1B_COREID_MASTER
 
 	/**
 	 * @see k1b_cpu_get_num_cores().

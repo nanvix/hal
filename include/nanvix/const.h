@@ -26,12 +26,6 @@
 #define NANVIX_CONST_H_
 
 /**
- * @mainpage Nanvix Microkernel
- *
- * \image html nanvix-microkernel-detailed.png "A detailed view of Nanvix Microkernel" width = 1200
- */
-
-/**
  * @defgroup kernel Nanvix Kernel
  */
 

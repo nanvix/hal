@@ -25,22 +25,26 @@
 #ifndef NANVIX_HAL_HAL_H_
 #define NANVIX_HAL_HAL_H_
 
-	#include <nanvix/const.h>
-
 	#undef  __NEED_HAL_TARGET
 	#define __NEED_HAL_TARGET
-
-	/**
-	 * @defgroup kernel-hal HAL
-	 * @ingroup kernel
-	 *
-	 * @brief Hardware Abstraction Layer
-	 */
 	#include <nanvix/hal/target.h>
 
+/**
+ * @addtogroup kernel-hal HAL
+ * @ingroup kernel
+ *
+ * @brief Hardware Abstraction Layer
+ */
+/**@{*/
+
+	#include <nanvix/hal/log.h>
+	#include <nanvix/const.h>
+
 	/**
-	 * @brief Runs unit tests on the HAL.
+	 * @brief Initializes the HAL.
 	 */
-	EXTERN void hal_test_driver(void);
+	EXTERN void hal_init(void);
+
+/**@}*/
 
 #endif /* NANVIX_HAL_HAL_H_ */

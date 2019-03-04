@@ -29,8 +29,10 @@
 	#include <arch/cluster/or1k/_or1k.h>
 
 /**
- * @addtogroup cluster-or1k-io or1k Cluster Memory
- * @ingroup cluster-or1k
+ * @addtogroup or1k-cluster-mem Memory
+ * @ingroup or1k-cluster
+ *
+ * @brief Memory System
  */
 /**@{*/
 

@@ -43,35 +43,26 @@ export ARFLAGS = rc
 #===============================================================================
 
 # Conflicts
-.PHONY: kernel
-.PHONY: libs
+.PHONY: hal
 .PHONY: test
 
 # Builds everything.
 all: test
 
 # Cleans compilation files.
-distclean: distclean-kernel distclean-libs distclean-test
+distclean: distclean-hal distclean-test
 
 # User-level testing units.
-test: kernel libs
+test: hal
 	$(MAKE) -C test
 
-# Builds system libraries.
-libs: kernel
-	$(MAKE) -C libs all
+# Builds the hal.
+hal:
+	$(MAKE) -C hal all
 
-# Builds the kernel.
-kernel:
-	$(MAKE) -C kernel all
-
-# Cleans kernel compilation files.
-distclean-kernel:
-	$(MAKE) -C kernel clean
-
-# Cleans system librarie compilation files.
-distclean-libs:
-	$(MAKE) -C libs clean
+# Cleans hal compilation files.
+distclean-hal:
+	$(MAKE) -C hal clean
 
 # Cleans user-level testing units compilation files.
 distclean-test:

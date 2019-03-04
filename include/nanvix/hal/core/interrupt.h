@@ -43,23 +43,23 @@
 	#endif
 
 	/* Functions */
-	#ifndef __hal_disable_interrupts
-	#error "hal_disable_interrupts() not defined?"
+	#ifndef __interrupts_disable
+	#error "interrupts_disable() not defined?"
 	#endif
-	#ifndef __hal_enable_interrupts
-	#error "hal_enable_interrupts() not defined?"
+	#ifndef __interrupts_enable
+	#error "interrupts_enable() not defined?"
 	#endif
-	#ifndef __hal_interrupt_mask
-	#error "hal_interrupt_mask() not defined?"
+	#ifndef __interrupt_mask
+	#error "interrupt_mask() not defined?"
 	#endif
-	#ifndef __hal_interrupt_unmask
-	#error "hal_interrupt_unmask() not defined?"
+	#ifndef __interrupt_unmask
+	#error "interrupt_unmask() not defined?"
 	#endif
-	#ifndef __hal_interrupt_ack
-	#error "hal_interrupt_ack() not defined?"
+	#ifndef __interrupt_ack
+	#error "interrupt_ack() not defined?"
 	#endif
-	#ifndef __hal_interrupt_set_handler
-	#error "hal_interrupt_set_handler() not defined?"
+	#ifndef __interrupt_set_handler
+	#error "interrupt_set_handler() not defined?"
 	#endif
 	#ifndef __hal_intlvl_set
 	#error "hal_intlvl_set() not defined?"
@@ -87,17 +87,17 @@
 	/**
 	 * @brief Hardware interrupt handler.
 	 */
-	typedef void (*hal_interrupt_handler_t)(int);
+	typedef void (*interrupt_handler_t)(int);
 
 	/**
 	 * @brief Disables all hardware interrupts.
 	 */
-	EXTERN void hal_disable_interrupts(void);
+	EXTERN void interrupts_disable(void);
 
 	/**
 	 * @brief Enables all hardware interrupts.
 	 */
-	EXTERN void hal_enable_interrupts(void);
+	EXTERN void interrupts_enable(void);
 
 	/**
 	 * @brief Sets a handler for an interrupt.
@@ -108,7 +108,7 @@
 	 * @note This function does not check if a handler is already
 	 * set for the target hardware interrupt.
 	 */
-	EXTERN void hal_interrupt_set_handler(int num, hal_interrupt_handler_t handler);
+	EXTERN void interrupt_set_handler(int num, interrupt_handler_t handler);
 
 	/**
 	 * @brief Sets the interrupt level of the underlying core.
@@ -124,14 +124,14 @@
 	 *
 	 * @param intnum Number of the target interrupt.
 	 */
-	EXTERN void hal_interrupt_ack(int intnum);
+	EXTERN void interrupt_ack(int intnum);
 
 	/**
 	 * @brief Masks an interrupt.
 	 *
 	 * @param intnum Number of the target interrupt.
 	 */
-	EXTERN void hal_interrupt_mask(int intnum);
+	EXTERN void interrupt_mask(int intnum);
 
 	/**
 	 * @brief Unmasks an interrupt.
@@ -141,7 +141,7 @@
 	 * @returns Upon successful completion, zero is returned. Upon
 	 * failure, a negative error number is returned instead.
 	 */
-	EXTERN void hal_interrupt_unmask(int intnum);
+	EXTERN void interrupt_unmask(int intnum);
 
 	/**
 	 * @brief Registers an interrupt handler.
@@ -152,7 +152,7 @@
 	 * @returns Upon successful completion, zero is returned. Upon
 	 * failure, a negative error code is returned instead.
 	 */
-	EXTERN int interrupt_register(int num, hal_interrupt_handler_t handler);
+	EXTERN int interrupt_register(int num, interrupt_handler_t handler);
 
 	/**
 	 * @brief Setups hardware interrupts.

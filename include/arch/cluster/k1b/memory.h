@@ -29,8 +29,10 @@
 	#include <arch/cluster/k1b/_k1b.h>
 
 /**
- * @addtogroup k1b-cluster-mem k1b Cluster Memory
+ * @addtogroup k1b-cluster-mem Memory
  * @ingroup k1b-cluster
+ *
+ * @brief Memory
  */
 /**@{*/
 

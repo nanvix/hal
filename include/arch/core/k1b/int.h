@@ -132,15 +132,15 @@
 	 * @name Provided Interface
 	 */
 	/**@{*/
-	#define __hal_disable_interrupts
-	#define __hal_enable_interrupts
-	#define __hal_interrupt_set_handler
+	#define __interrupts_disable
+	#define __interrupts_enable
+	#define __interrupt_set_handler
 	/**@}*/
 
 	/**
 	 * @see k1b_hwint_enable().
 	 */
-	static inline void hal_enable_interrupts(void)
+	static inline void interrupts_enable(void)
 	{
 		k1b_hwint_enable();
 	}
@@ -148,7 +148,7 @@
 	/**
 	 * @see k1b_hwint_disable().
 	 */
-	static inline void hal_disable_interrupts(void)
+	static inline void interrupts_disable(void)
 	{
 		k1b_hwint_disable();
 	}
@@ -156,7 +156,7 @@
 	/**
 	 * @see k1b_hwint_handler_set().
 	 */
-	static inline void hal_interrupt_set_handler(int num, void (*handler)(int))
+	static inline void interrupt_set_handler(int num, void (*handler)(int))
 	{
 		k1b_hwint_handler_set(num, handler);
 	}

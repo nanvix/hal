@@ -33,8 +33,10 @@
 	#include <arch/target/qemu/i386-pc/_i386-pc.h>
 
 /**
- * @defgroup target-qemu-i386-pc QEMU i386 PC
+ * @defgroup target-qemu-i386-pc QEMU i386
  * @ingroup targets
+ *
+ * @brief QEMU i386 Platform
  */
 /**@{*/
 

@@ -73,16 +73,16 @@
 	 * @name or1k Exception Codes
 	 */
 	/**@{*/
-	#define OR1K_EXCP_RESET                 0 /**@< Reset exception          */
-	#define OR1K_EXCP_BUSERROR              1 /**@< Bus Error Exception      */
-	#define OR1K_EXCP_PAGE_FAULT            2 /**@< Page fault Exception     */
-	#define OR1K_EXCP_ALIGNMENT             3 /**@< Alignment Exception      */
-	#define OR1K_EXCP_ILLEGAL_INSTRUCTION   4 /**@< Illegal Instruction      */
-	#define OR1K_EXCP_DTLB_FAULT            5 /**@< Data TLB Fault           */
-	#define OR1K_EXCP_ITLB_FAULT            6 /**@< Instruction TLB Fault    */
-	#define OR1K_EXCP_RANGE                 7 /**@< Range Exception          */
-	#define OR1K_EXCP_FLOAT_POINT           8 /**@< Floating Point Exception */
-	#define OR1K_EXCP_TRAP                  9 /**@< Trap Exception           */
+	#define OR1K_EXCEPTION_RESET                 0 /**@< Reset exception          */
+	#define OR1K_EXCEPTION_BUSERROR              1 /**@< Bus Error Exception      */
+	#define OR1K_EXCEPTION_PAGE_FAULT            2 /**@< Page fault Exception     */
+	#define OR1K_EXCEPTION_ALIGNMENT             3 /**@< Alignment Exception      */
+	#define OR1K_EXCEPTION_ILLEGAL_INSTRUCTION   4 /**@< Illegal Instruction      */
+	#define OR1K_EXCEPTION_DTLB_FAULT            5 /**@< Data TLB Fault           */
+	#define OR1K_EXCEPTION_ITLB_FAULT            6 /**@< Instruction TLB Fault    */
+	#define OR1K_EXCEPTION_RANGE                 7 /**@< Range Exception          */
+	#define OR1K_EXCEPTION_FLOAT_POINT           8 /**@< Floating Point Exception */
+	#define OR1K_EXCEPTION_TRAP                  9 /**@< Trap Exception           */
 	/**@}*/
 
 #ifndef _ASM_FILE_
@@ -219,12 +219,12 @@
 	 * @name Exception Codes
 	 */
 	/**@*/
-	#define EXCP_INVALID_OPCODE      OR1K_EXCP_ILLEGAL_INSTRUCTION  /**< Invalid Opcode     */
-	#define EXCP_PAGE_FAULT          OR1K_EXCP_PAGE_FAULT           /**< Page Fault         */
-	#define EXCP_PAGE_PROTECTION     OR1K_EXCP_PAGE_FAULT           /**< Page Protection    */
-	#define EXCP_DTLB_FAULT          OR1K_EXCP_DTLB_FAULT           /**< DTLB Fault         */
-	#define EXCP_ITLB_FAULT          OR1K_EXCP_ITLB_FAULT           /**< ITLB Fault         */
-	#define EXCP_GENERAL_PROTECTION  OR1K_EXCP_RESET                /**< General Protection */
+	#define EXCEPTION_INVALID_OPCODE      OR1K_EXCEPTION_ILLEGAL_INSTRUCTION  /**< Invalid Opcode     */
+	#define EXCEPTION_PAGE_FAULT          OR1K_EXCEPTION_PAGE_FAULT           /**< Page Fault         */
+	#define EXCEPTION_PAGE_PROTECTION     OR1K_EXCEPTION_PAGE_FAULT           /**< Page Protection    */
+	#define EXCEPTION_DTLB_FAULT          OR1K_EXCEPTION_DTLB_FAULT           /**< DTLB Fault         */
+	#define EXCEPTION_ITLB_FAULT          OR1K_EXCEPTION_ITLB_FAULT           /**< ITLB Fault         */
+	#define EXCEPTION_GENERAL_PROTECTION  OR1K_EXCEPTION_RESET                /**< General Protection */
 	/**@}*/
 
 	/**
@@ -245,7 +245,7 @@
 	/**
 	 * @see or1k_excp_get_addr().
 	 */
-	static inline int exception_get_addr(const struct exception *excp)
+	static inline vaddr_t exception_get_addr(const struct exception *excp)
 	{
 		return (or1k_excp_get_addr(excp));
 	}

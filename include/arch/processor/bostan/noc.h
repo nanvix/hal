@@ -31,8 +31,8 @@
 /**
  * @addtogroup processor-bostan-noc NoC
  * @ingroup processor-bostan
- * 
- * @brief Bostan Processor NoC Interface
+ *
+ * @brief NoC
  */
 
 	#include <arch/processor/bostan/noc/tag.h>

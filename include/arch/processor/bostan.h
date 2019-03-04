@@ -35,6 +35,8 @@
 /**
  * @addtogroup processor-bostan Bostan Processor
  * @ingroup processors
+ *
+ * @brief Bostan Processor
  */
 /**@*/
 

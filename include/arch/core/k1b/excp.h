@@ -72,29 +72,29 @@
 	 * @name Hardware Exceptions
 	 */
 	/**@{*/
-	#define K1B_EXCP_RESET            0 /**< Reset Exception                               */
-	#define K1B_EXCP_OPCODE           1 /**< Bad Instruction Bundle                        */
-	#define K1B_EXCP_PROTECTION       2 /**< Protection Fault                              */
-	#define K1B_EXCP_ALIGNMENT        3 /**< Alignment Check                               */
-	#define K1B_EXCP_RANGE_CODE       4 /**< Instruction Out of Range                      */
-	#define K1B_EXCP_RANGE_DATA       5 /**< Data Out of Range                             */
-	#define K1B_EXCP_DOUBLE_ECC_CODE  6 /**< Double ECC Fault on Out of Range Instruction  */
-	#define K1B_EXCP_DOUBLE_ECC_DATA  7 /**< Double ECC Fault on Out of Range Data         */
-	#define K1B_EXCP_PARITY_CODE      8 /**< Parity Error on Out of Range Instruction      */
-	#define K1B_EXCP_PARITY_DATA      9 /**< Parity Error on Out of Range Data             */
-	#define K1B_EXCP_SINGLE_ECC_CODE 10 /**< Single ECC Fault on Out of Range Instruction  */
-	#define K1B_EXCP_SINGLE_ECC_DATA 11 /**< Single ECC Fault on Out of Range Data         */
-	#define K1B_EXCP_TLB_FAULT       12 /**< TLB Fault                                     */
-	#define K1B_EXCP_PAGE_PROTECTION 13 /**< Page Protection                               */
-	#define K1B_EXCP_WRITE_CLEAN     14 /**< Write to Clean Exception                      */
-	#define K1B_EXCP_ATOMIC_CLEAN    15 /**< Atomic to Clean Exception                     */
+	#define K1B_EXCEPTION_RESET            0 /**< Reset Exception                               */
+	#define K1B_EXCEPTION_OPCODE           1 /**< Bad Instruction Bundle                        */
+	#define K1B_EXCEPTION_PROTECTION       2 /**< Protection Fault                              */
+	#define K1B_EXCEPTION_ALIGNMENT        3 /**< Alignment Check                               */
+	#define K1B_EXCEPTION_RANGE_CODE       4 /**< Instruction Out of Range                      */
+	#define K1B_EXCEPTION_RANGE_DATA       5 /**< Data Out of Range                             */
+	#define K1B_EXCEPTION_DOUBLE_ECC_CODE  6 /**< Double ECC Fault on Out of Range Instruction  */
+	#define K1B_EXCEPTION_DOUBLE_ECC_DATA  7 /**< Double ECC Fault on Out of Range Data         */
+	#define K1B_EXCEPTION_PARITY_CODE      8 /**< Parity Error on Out of Range Instruction      */
+	#define K1B_EXCEPTION_PARITY_DATA      9 /**< Parity Error on Out of Range Data             */
+	#define K1B_EXCEPTION_SINGLE_ECC_CODE 10 /**< Single ECC Fault on Out of Range Instruction  */
+	#define K1B_EXCEPTION_SINGLE_ECC_DATA 11 /**< Single ECC Fault on Out of Range Data         */
+	#define K1B_EXCEPTION_TLB_FAULT       12 /**< TLB Fault                                     */
+	#define K1B_EXCEPTION_PAGE_PROTECTION 13 /**< Page Protection                               */
+	#define K1B_EXCEPTION_WRITE_CLEAN     14 /**< Write to Clean Exception                      */
+	#define K1B_EXCEPTION_ATOMIC_CLEAN    15 /**< Atomic to Clean Exception                     */
 	/**@}*/
 
 	/**
 	 * @name Virtual Exceptions
 	 */
 	/**@{*/
-	#define K1B_EXCP_VIRT_PAGE_FAULT 16 /**< Page Fault (Virtual Exception) */
+	#define K1B_EXCEPTION_VIRT_PAGE_FAULT 16 /**< Page Fault (Virtual Exception) */
 	/**@}*/
 
 #ifndef _ASM_FILE_
@@ -236,12 +236,12 @@
 	 * @name Exception Codes
 	 */
 	/**@*/
-	#define EXCP_INVALID_OPCODE      K1B_EXCP_OPCODE          /**< Invalid Opcode     */
-	#define EXCP_PAGE_FAULT          K1B_EXCP_VIRT_PAGE_FAULT /**< Page Fault         */
-	#define EXCP_PAGE_PROTECTION     K1B_EXCP_PAGE_PROTECTION /**< Page Protection    */
-	#define EXCP_ITLB_FAULT          K1B_EXCP_TLB_FAULT       /**< I-TLB Fault        */
-	#define EXCP_DTLB_FAULT          K1B_EXCP_TLB_FAULT       /**< D-TLB Fault        */
-	#define EXCP_GENERAL_PROTECTION  K1B_EXCP_PROTECTION      /**< General Protection */
+	#define EXCEPTION_INVALID_OPCODE      K1B_EXCEPTION_OPCODE          /**< Invalid Opcode     */
+	#define EXCEPTION_PAGE_FAULT          K1B_EXCEPTION_VIRT_PAGE_FAULT /**< Page Fault         */
+	#define EXCEPTION_PAGE_PROTECTION     K1B_EXCEPTION_PAGE_PROTECTION /**< Page Protection    */
+	#define EXCEPTION_ITLB_FAULT          K1B_EXCEPTION_TLB_FAULT       /**< I-TLB Fault        */
+	#define EXCEPTION_DTLB_FAULT          K1B_EXCEPTION_TLB_FAULT       /**< D-TLB Fault        */
+	#define EXCEPTION_GENERAL_PROTECTION  K1B_EXCEPTION_PROTECTION      /**< General Protection */
 	/**@}*/
 
 #ifndef _ASM_FILE_
@@ -266,7 +266,7 @@
 	/**
 	 * @see k1b_excp_get_addr().
 	 */
-	static inline int exception_get_addr(const struct exception *excp)
+	static inline vaddr_t exception_get_addr(const struct exception *excp)
 	{
 		return (k1b_excp_get_addr(excp));
 	}

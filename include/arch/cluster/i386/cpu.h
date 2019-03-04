@@ -30,17 +30,22 @@
  *============================================================================*/
 
 /**
- * @addtogroup i386-cluster-cpu CPU
+ * @addtogroup i386-cluster-cpu Cores
  * @ingroup i386-cluster
  *
- * @brief i386 Processor
+ * @brief Cores
  */
 /**@{*/
 
 	/**
-	 * @brief Number of cores in the i386 architecture.
+	 * @brief Number of cores.
 	 */
 	#define I386_NUM_CORES 1
+
+	/**
+	 * @brief ID of the master core.
+	 */
+	#define I386_COREID_MASTER 0
 
 	/**
 	 * @brief Gets the number of cores.
@@ -66,16 +71,21 @@
  */
 
 	/**
-	 * @name Provided Interface
+	 * @name Provided Functions
 	 */
 	/**@{*/
 	#define __hal_cpu_get_num_cores
 	/**@}*/
 
 	/**
-	 * @brief Number of cores in a a CPU in the the IBM PC target.
+	 * @brief Number of cores in a cluster.
 	 */
 	#define HAL_NUM_CORES I386_NUM_CORES
+
+	/**
+	 * @brief ID of the master core.
+	 */
+	#define COREID_MASTER I386_COREID_MASTER
 
 	/**
 	 * @see i386_cpu_get_num_cores()

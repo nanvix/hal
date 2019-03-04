@@ -74,7 +74,7 @@
 	 * @name Provided Interface
 	 */
 	/**@{*/
-	#define __hal_dcache_invalidate /**< hal_dcache_invalidate() */
+	#define __dcache_invalidate_fn /**< dcache_invalidate() */
 	/**@}*/
 
 	/**
@@ -85,7 +85,7 @@
 	/**
 	 * @see k1b_dcache_inval().
 	 */
-	static inline void hal_dcache_invalidate(void)
+	static inline void dcache_invalidate(void)
 	{
 		k1b_dcache_inval();
 	}

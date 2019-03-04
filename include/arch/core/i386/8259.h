@@ -38,9 +38,9 @@
 	 */
 	/**@{*/
 	#define __hal_intlvl_set
-	#define __hal_interrupt_mask
-	#define __hal_interrupt_unmask
-	#define __hal_interrupt_ack
+	#define __interrupt_mask
+	#define __interrupt_unmask
+	#define __interrupt_ack
 	/**@}*/
 
 	/**
@@ -121,7 +121,7 @@
 	 *
 	 * @cond i386
 	 */
-	static inline void hal_interrupt_mask(int intnum)
+	static inline void interrupt_mask(int intnum)
 	{
 		i386_pic_mask(intnum);
 	}
@@ -139,7 +139,7 @@
 	 *
 	 * @cond i386
 	 */
-	static inline void hal_interrupt_unmask(int intnum)
+	static inline void interrupt_unmask(int intnum)
 	{
 		i386_pic_unmask(intnum);
 	}
@@ -163,7 +163,7 @@
 	 *
 	 * @cond i386
 	 */
-	static inline void hal_interrupt_ack(int intnum)
+	static inline void interrupt_ack(int intnum)
 	{
 		i386_pic_ack(intnum);
 	}

@@ -37,8 +37,10 @@
  *============================================================================*/
 
 /**
- * @addtogroup k1b-cluster k1b Cluster
+ * @addtogroup k1b-cluster Bostan Cluster
  * @ingroup clusters
+ *
+ * @brief Bostan Cluster
  */
 /**@{*/
 
