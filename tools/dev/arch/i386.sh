@@ -25,26 +25,32 @@ export CURDIR=`pwd`
 export WORKDIR=$CURDIR/tools/dev/toolchain/i386
 export PREFIX=$WORKDIR
 export TARGET=i386-elf
-
-mkdir -p $WORKDIR
-cd $WORKDIR
+export COMMIT=a28342821bf8784fd03abbe577eae64b805cc1f9
 
 # Retrieve the number of processor cores
 NCORES=`grep -c ^processor /proc/cpuinfo`
 
-# Get binutils, GDB and GCC.
-if [ ! "$(ls -A $WORKDIR)" ];
-then
-	git submodule update --init $WORKDIR
-fi
+mkdir -p $WORKDIR
+cd $WORKDIR
+
+# Get toolchain.
+wget "https://github.com/nanvix/toolchain/archive/$COMMIT.zip"
+unzip $COMMIT.zip
+mv toolchain-$COMMIT/* .
+
+# Cleanup
+rm -rf toolchain-$COMMIT
+rm -rf $COMMIT.zip
 
 # Build binutils.
 cd binutils*/
 ./configure --target=$TARGET --prefix=$PREFIX --disable-nls
 make -j $NCORES all
 make install
-git checkout .
-git clean -f -d
+
+# Cleanup.
+cd $WORKDIR
+rm -rf binutils*
 
 # Build GCC.
 cd $WORKDIR
@@ -57,8 +63,10 @@ make -j $NCORES all-gcc
 make -j $NCORES all-target-libgcc
 make install-gcc
 make install-target-libgcc
-git checkout .
-git clean -f -d
+
+# Cleanup.
+cd $WORKDIR
+rm -rf gcc*
 
 # Build GDB.
 cd $WORKDIR
@@ -66,8 +74,10 @@ cd gdb*/
 ./configure --target=$TARGET --prefix=$PREFIX --with-auto-load-safe-path=/ --with-guile=no
 make -j $NCORES
 make install
-git checkout .
-git clean -f -d
+
+# Cleanup.
+cd $WORKDIR
+rm -rf gdb*
 
 # Back to the current folder
 cd $CURDIR
