@@ -21,7 +21,8 @@
 # SOFTWARE.
 
 # C Source Files
-C_SRC += $(wildcard stdout/jtag.c)
+C_SRC += $(wildcard stdout/jtag.c)    \
+         $(wildcard target/mppa256/*.c)
 
 # Object Files
 OBJ = $(ASM_SRC:.S=.$(CLUSTER).o) \

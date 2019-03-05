@@ -34,9 +34,101 @@
  *
  * @brief NoC
  */
+/**@{*/
 
-	#include <arch/processor/bostan/noc/tag.h>
 	#include <arch/processor/bostan/noc/node.h>
+
+	/**
+	 * @name Number of NoC nodes attached to an IO device.
+	 */
+	#define BOSTAN_NR_NOC_IONODES 8
+
+	/**
+	 * @name Number of NoC nodes not attached to an IO device.
+	 */
+	#define BOSTAN_NR_NOC_CNODES 16
+
+	/**
+	 * @name Number of NoC nodes.
+	 */
+	#define BOSTAN_NR_NOC_NODES (BOSTAN_NR_NOC_IONODES + BOSTAN_NR_NOC_CNODES)
+
+	/**
+	 * @brief IDs of NoC nodes.
+	 */
+	EXTERN const int bostan_noc_nodes[BOSTAN_NR_NOC_NODES];
+
+	/**
+	 * @brief Asserts whether a NoC node is attached to IO cluster 0.
+	 *
+	 * @param nodeid ID of the target NoC node.
+	 *
+	 * @returns One if the target NoC node is attached to IO cluster 0,
+	 * and zero otherwise.
+	 */
+	static inline int bostan_noc_is_ionode0(int nodeid)
+	{
+		return ((nodeid >= BOSTAN_IOCLUSTER0) && (nodeid < BOSTAN_IOCLUSTER0 + 4));
+	}
+
+	/**
+	 * @brief Asserts whether a NoC node is attached to IO cluster 1.
+	 *
+	 * @param nodeid ID of the target NoC node.
+	 *
+	 * @returns One if the target NoC node is attached to IO cluster 1,
+	 * and zero otherwise.
+	 */
+	static inline int bostan_noc_is_ionode1(int nodeid)
+	{
+		return ((nodeid >= BOSTAN_IOCLUSTER1) && (nodeid < BOSTAN_IOCLUSTER1 + 4));
+	}
+
+	/**
+	 * @brief Asserts whether a NoC node is attached to an IO cluster.
+	 *
+	 * @param nodeid ID of the target NoC node.
+	 *
+	 * @returns One if the target NoC node is attached to an IO cluster,
+	 * and zero otherwise.
+	 */
+	static inline int bostan_noc_is_ionode(int nodeid)
+	{
+		return (bostan_noc_is_ionode0(nodeid) || bostan_noc_is_ionode1(nodeid));
+	}
+
+	/**
+	 * @brief Asserts whether a NoC node is attached to a compute cluster.
+	 *
+	 * @param nodeid ID of the target NoC node.
+	 *
+	 * @returns One if the target NoC node is attached to a compute
+	 * cluster, and zero otherwise.
+	 */
+	static inline int bostan_noc_is_cnode(int nodeid)
+	{
+		return ((nodeid >= BOSTAN_CCLUSTER0) && (nodeid <= BOSTAN_CCLUSTER15));
+	}
+
+	/**
+	 * @brief Gets the logic number of the target NoC node.
+	 *
+	 * @param nodeid ID of the target NoC node.
+	 * @returns The logic number of the target NoC node.
+	 */
+	EXTERN int bostan_node_get_num(int nodeid);
+
+	/**
+	 * @brief Converts a nodes list.
+	 *
+	 * @param _nodes Place to store converted list.
+	 * @param nodes  Target nodes list.
+	 * @param nnodes Number of nodes in the list.
+	 *
+	 * @returns Upon successful completion, zero is returned. Upon
+	 * failure, a negative error code is returned instead.
+	 */
+	EXTERN int bostan_nodes_convert(int *_nodes, const int *nodes, int nnodes);
 
 /**@}*/
 
@@ -49,114 +141,73 @@
  */
 
 	/**
-	 * @name Provided Functions
+	 * @name Exported Constans
 	 */
 	/**@{*/
-	#define __noc_mailbox_tag  /**< noc_mailbox_tag()  */
-	#define __noc_portal_tag   /**< noc_portal_tag()   */
-	#define __noc_sync_tag     /**< noc_sync_tag()     */
-	#define __noc_tag_is_valid /**< noc_tag_is_valid() */
-	#define __hal_node
-	#define __node_get_id   /**< node_get_id()  */
-	#define __node_get_num  /**< node_get_num() */
-	#define __hal_noc
-	#define __noc_is_ionode0   /**< noc_is_ionode0()   */
-	#define __noc_is_ionode1   /**< noc_is_ionode1()   */
-	#define __noc_is_ionode    /**< noc_is_ionode()    */
-	#define __noc_is_cnode     /**< noc_is_cnode()     */
-	#define __noc_mailbox_tag  /**< noc_mailbox_tag()  */
-	#define __noc_portal_tag   /**< noc_portal_tag()   */
-	#define __noc_sync_tag     /**< noc_sync_tag()     */
-	#define __noc_tag_is_valid /**< noc_tag_is_valid() */
-	#define __nodes_convert /**< nodes_convert() */
+	#define HAL_NR_NOC_IONODES BOSTAN_NR_NOC_IONODES
+	#define HAL_NR_NOC_CNODES BOSTAN_NR_NOC_CNODES
+	#define HAL_NR_NOC_NODES BOSTAN_NR_NOC_NODES
 	/**@}*/
 
 	/**
-	 * @see k1b_node_get_id()
+	 * @name Exported Functions
 	 */
-	static inline int node_get_id(void)
-	{
-		return k1b_node_get_id();
-	}
+	/**@{*/
+	#define __hal_processor_noc
+	#define __processor_node_get_num   /**< processor_node_get_num()  */
+	#define __processor_nodes_convert  /**< processor_nodes_convert() */
+	#define __processor_noc_is_ionode0 /**< processor_noc_is_ionode0() */
+	#define __processor_noc_is_ionode1 /**< processor_noc_is_ionode1() */
+	#define __processor_noc_is_ionode  /**< processor_noc_is_ionode()  */
+	#define __processor_noc_is_cnode   /**< processor_noc_is_cnode()   */
+	/**@}*/
 
     /**
-	 * @see k1b_node_get_num()
+	 * @see bostan_node_get_num()
 	 */
-	static inline int node_get_num(int nodeid)
+	static inline int processor_node_get_num(int nodeid)
 	{
-		return k1b_node_get_num(nodeid);
+		return bostan_node_get_num(nodeid);
 	}
 
 	/**
-	 * @see k1b_nodes_convert()
+	 * @see bostan_nodes_convert()
 	 */
-	static inline int nodes_convert(int *_nodes, const int *nodes, int nnodes)
+	static inline int processor_nodes_convert(int *_nodes, const int *nodes, int nnodes)
 	{
-		return k1b_nodes_convert(_nodes, nodes, nnodes);
+		return bostan_nodes_convert(_nodes, nodes, nnodes);
 	}
 
 	/**
-	 * @name Provided Interface
+	 * @see bostan_noc_is_ionode0()
 	 */
-	/**@{*/
-	/**@}*/
-
-	/**
-	 * @name Number of NoC nodes attached to an IO device.
-	 */
-	/**@{*/
-	#define HAL_NR_NOC_IONODES K1B_NR_NOC_IONODES
-	/**@}*/
-
-	/**
-	 * @name Number of NoC nodes not attached to an IO device.
-	 */
-	/**@{*/
-	#define HAL_NR_NOC_CNODES K1B_NR_NOC_CNODES
-	/**@}*/
-
-	/**
-	 * @name Number of NoC nodes.
-	 */
-	/**@{*/
-	#define HAL_NR_NOC_NODES K1B_NR_NOC_NODES
-	/**@}*/
-
-	/**
-	 * @brief Hal NoC handler.
-	 */
-	typedef k1b_noc_handler_fn hal_noc_handler_fn;
-
-	/**
-	 * @see k1b_noc_is_ionode0()
-	 */
-	static inline int noc_is_ionode0(int nodeid)
+	static inline int processor_noc_is_ionode0(int nodeid)
 	{
-		return (k1b_noc_is_ionode0(nodeid));
+		return (bostan_noc_is_ionode0(nodeid));
 	}
 
 	/**
-	 * @see k1b_noc_is_ionode1()
+	 * @see bostan_noc_is_ionode1()
 	 */
-	static inline int noc_is_ionode1(int nodeid)
+	static inline int processor_noc_is_ionode1(int nodeid)
 	{
-		return (k1b_noc_is_ionode1(nodeid));
+		return (bostan_noc_is_ionode1(nodeid));
 	}
 
 	/**
-	 * @see k1b_noc_is_ionode()
+	 * @see bostan_noc_is_ionode()
 	 */
-	static inline int noc_is_ionode(int nodeid)
+	static inline int processor_noc_is_ionode(int nodeid)
 	{
-		return (k1b_noc_is_ionode(nodeid));
+		return (bostan_noc_is_ionode(nodeid));
 	}
 
 	/**
-	 * @see k1b_noc_is_cnode()
+	 * @see bostan_noc_is_cnode()
 	 */
-	static inline int noc_is_cnode(int nodeid)
+	static inline int processor_noc_is_cnode(int nodeid)
 	{
-		return (k1b_noc_is_cnode(nodeid));
+		return (bostan_noc_is_cnode(nodeid));
 	}
 
 /**@endcond*/
