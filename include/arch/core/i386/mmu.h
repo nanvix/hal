@@ -103,7 +103,6 @@
 	/**@}*/
 
 #ifndef _ASM_FILE_
-#define _ASM_FILE_
 
 	#include <nanvix/klib.h>
 
