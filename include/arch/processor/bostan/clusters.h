@@ -36,44 +36,88 @@
  */
 /**@*/
 
+	#include <nanvix/klib.h>
+	#include <mOS_vcore_u.h>
+
+	/**
+	 * @brief Number of IO Clusters in the platform.
+	 */
+	#define BOSTAN_IOCLUSTERS_NUM 2
+
+	/**
+	 * @brief Number of Compute Clusters in the platform.
+	 */
+	#define BOSTAN_CCLUSTERS_NUM 16
+
 	/**
 	 * @name Cluster IDs
 	 */
 	/**@{*/
-	#define BOSTAN_CCLUSTER0    0 /**< Compute cluster  0. */
-	#define BOSTAN_CCLUSTER1    1 /**< Compute cluster  1. */
-	#define BOSTAN_CCLUSTER2    2 /**< Compute cluster  2. */
-	#define BOSTAN_CCLUSTER3    3 /**< Compute cluster  3. */
-	#define BOSTAN_CCLUSTER4    4 /**< Compute cluster  4. */
-	#define BOSTAN_CCLUSTER5    5 /**< Compute cluster  5. */
-	#define BOSTAN_CCLUSTER6    6 /**< Compute cluster  6. */
-	#define BOSTAN_CCLUSTER7    7 /**< Compute cluster  7. */
-	#define BOSTAN_CCLUSTER8    8 /**< Compute cluster  8. */
-	#define BOSTAN_CCLUSTER9    9 /**< Compute cluster  9. */
-	#define BOSTAN_CCLUSTER10  10 /**< Compute cluster 10. */
-	#define BOSTAN_CCLUSTER11  11 /**< Compute cluster 11. */
-	#define BOSTAN_CCLUSTER12  12 /**< Compute cluster 12. */
-	#define BOSTAN_CCLUSTER13  13 /**< Compute cluster 13. */
-	#define BOSTAN_CCLUSTER14  14 /**< Compute cluster 14. */
-	#define BOSTAN_CCLUSTER15  15 /**< Compute cluster 15. */
-	#define BOSTAN_IOCLUSTER0 128 /**< IO cluster 0.       */
-	#define BOSTAN_IOCLUSTER1 192 /**< IO cluster 1.       */
+	#define BOSTAN_CCLUSTER0    0 /**< Compute Cluster  0 */
+	#define BOSTAN_CCLUSTER1    1 /**< Compute Cluster  1 */
+	#define BOSTAN_CCLUSTER2    2 /**< Compute Cluster  2 */
+	#define BOSTAN_CCLUSTER3    3 /**< Compute Cluster  3 */
+	#define BOSTAN_CCLUSTER4    4 /**< Compute Cluster  4 */
+	#define BOSTAN_CCLUSTER5    5 /**< Compute Cluster  5 */
+	#define BOSTAN_CCLUSTER6    6 /**< Compute Cluster  6 */
+	#define BOSTAN_CCLUSTER7    7 /**< Compute Cluster  7 */
+	#define BOSTAN_CCLUSTER8    8 /**< Compute Cluster  8 */
+	#define BOSTAN_CCLUSTER9    9 /**< Compute Cluster  9 */
+	#define BOSTAN_CCLUSTER10  10 /**< Compute Cluster 10 */
+	#define BOSTAN_CCLUSTER11  11 /**< Compute Cluster 11 */
+	#define BOSTAN_CCLUSTER12  12 /**< Compute Cluster 12 */
+	#define BOSTAN_CCLUSTER13  13 /**< Compute Cluster 13 */
+	#define BOSTAN_CCLUSTER14  14 /**< Compute Cluster 14 */
+	#define BOSTAN_CCLUSTER15  15 /**< Compute Cluster 15 */
+	#define BOSTAN_IOCLUSTER0 128 /**< IO Cluster 0       */
+	#define BOSTAN_IOCLUSTER1 192 /**< IO Cluster 1       */
 	/**@}*/
 
 	/**
-	 * @todo Comment this function.
+	 * @brief Gets the ID of the underling cluster.
+	 *
+	 * @returns The ID of the underlying cluster.
 	 */
-	extern int bostan_cluster_get_id(void);
+	static inline int bostan_cluster_get_id(void)
+	{
+		int nodeid = __k1_get_cluster_id();
+
+		/* IO Cluster 0 */
+		if (WITHIN(nodeid, BOSTAN_IOCLUSTER0, BOSTAN_IOCLUSTER0 + K1BIO_CORES_NUM))
+			return (BOSTAN_IOCLUSTER0);
+
+		/* IO Cluster 1 */
+		if (WITHIN(nodeid, BOSTAN_IOCLUSTER1, BOSTAN_IOCLUSTER1 + K1BIO_CORES_NUM))
+			return (BOSTAN_IOCLUSTER1);
+
+		return (nodeid);
+	}
 
 	/**
-	 * @todo Comment this.
+	 * @brief Asserts whether or not the target cluster is a Compute Cluster.
+	 *
+	 * @param clusterid ID of the target cluster.
+	 *
+	 * @return Non zero if the target cluster is a Compute Cluster and
+	 * zero otherwise.
 	 */
-	extern int bostan_cluster_is_ccluster(int clusterid);
+	static inline int bostan_cluster_is_ccluster(int clusterid)
+	{
+		return (WITHIN(clusterid, BOSTAN_CCLUSTER0, BOSTAN_CCLUSTER15 + 1));
+	}
 
 	/**
-	 * @todo Comment this.
+	 * @brief Asserts whether or not the target cluster is an IO cluster.
+	 *
+	 * @param clusterid ID of the target cluster.
+	 *
+	 * @return Non zero if the target cluster is an IO cluster and
+	 * zero otherwise.
 	 */
-	extern int bostan_cluster_is_iocluster(int clusterid);
+	static inline int bostan_cluster_is_iocluster(int clusterid)
+	{
+		return ((clusterid == BOSTAN_IOCLUSTER0) || (clusterid == BOSTAN_IOCLUSTER1));
+	}
 
 /**@}*/
 
@@ -84,6 +128,14 @@
 /**
  * @cond bostan
  */
+
+	/**
+	 * @name Provided Constants
+	 */
+	/**@{*/
+	#define _PROCESSOR_CCLUSTERS_NUM  BOSTAN_CCLUSTERS_NUM  /**< @see BOSTAN_CCLUSTERS_NUM  */
+	#define _PROCESSOR_IOCLUSTERS_NUM BOSTAN_IOCLUSTERS_NUM /**< @see BOSTAN_IOCLUSTERS_NUM */
+	/**@}*/
 
 	/**
 	 * @name Provided Functions

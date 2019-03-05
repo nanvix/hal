@@ -37,12 +37,22 @@
 /**@{*/
 
 	/**
-	 * @brief Number of cores in cluster.
+	 * @brief Number of cores in an I/O Cluster.
+	 */
+	#define K1BIO_CORES_NUM 4
+
+	/**
+	 * @brief Number of cores in an Compute Cluster.
+	 */
+	#define K1BDP_CORES_NUM 16
+
+	/**
+	 * @brief Number of cores in the underlying cluster.
 	 */
 	#ifdef __k1io__
-		#define K1B_NUM_CORES 4
+		#define K1B_NUM_CORES K1BIO_CORES_NUM
 	#else
-		#define K1B_NUM_CORES 16
+		#define K1B_NUM_CORES K1BDP_CORES_NUM
 	#endif
 
 	/**
