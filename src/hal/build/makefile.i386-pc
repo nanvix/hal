@@ -35,7 +35,7 @@ export LDFLAGS  += -L $(LINKERDIR)/ -T link.ld
 
 # Builds All Object Files
 all: $(OBJ)
-	$(LD) $(LDFLAGS) $(OBJ) -o $(BINDIR)/$(EXEC)
+	$(AR) $(ARFLAGS) $(LIBDIR)/$(LIBKERNEL) $(OBJ)
 
 # Cleans All Object Files
 clean:

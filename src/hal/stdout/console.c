@@ -50,11 +50,11 @@ PRIVATE uint16_t *video = (uint16_t*)VIDEO_ADDR;
 PRIVATE void cursor_move(void)
 {
 	uint16_t cursor_location = cursor.y*VIDEO_WIDTH + cursor.x;
-	
-	hal_outputb(VIDEO_CRTL_REG, VIDEO_CLH);
-	hal_outputb(VIDEO_DATA_REG, (uint8_t) ((cursor_location >> 8) & 0xFF));
-	hal_outputb(VIDEO_CRTL_REG, VIDEO_CLL);
-	hal_outputb(VIDEO_DATA_REG, (uint8_t) (cursor_location & 0xFF));
+
+	output8(VIDEO_CRTL_REG, VIDEO_CLH);
+	output8(VIDEO_DATA_REG, (uint8_t) ((cursor_location >> 8) & 0xFF));
+	output8(VIDEO_CRTL_REG, VIDEO_CLL);
+	output8(VIDEO_DATA_REG, (uint8_t) (cursor_location & 0xFF));
 }
 
 /**
@@ -65,15 +65,15 @@ PRIVATE void cursor_move(void)
 PRIVATE void console_scrolldown(void)
 {
 	uint16_t *p;
-	
+
 	/* Pull lines up. */
 	for (p = video; p < (video + (VIDEO_HIGH-1)*(VIDEO_WIDTH)); p++)
 		*p = *(p + VIDEO_WIDTH);
-	
+
 	/* Blank last line. */
 	for (; p < video + VIDEO_HIGH*VIDEO_WIDTH; p++)
 		*p = (BLACK << 8) | (' ');
-		
+
 	/* Set cursor position. */
 	cursor.x = 0; cursor.y = VIDEO_HIGH - 1;
 }
@@ -113,7 +113,7 @@ PRIVATE void console_put(uint8_t ch, uint8_t color)
                 cursor.y--;
             }
             video[cursor.y*VIDEO_WIDTH +cursor.x] = (color << 8) | (' ');
-            break;			
+            break;
 
         /* Any other. */
         default:
@@ -143,7 +143,7 @@ PRIVATE void console_clear(void)
 	/* Blank all lines. */
 	for (uint16_t *p = video; p < (video + VIDEO_HIGH*VIDEO_WIDTH); p++)
 		*p = (BLACK << 8) | (' ');
-	
+
 	/* Set console cursor position. */
 	cursor.x = cursor.y = 0;
 	cursor_move();
@@ -171,11 +171,11 @@ PUBLIC void console_write(const char *buf, size_t n)
 PUBLIC void console_init(void)
 {
 	/* Set cursor shape. */
-	hal_outputb(VIDEO_CRTL_REG, VIDEO_CS);
-	hal_outputb(VIDEO_DATA_REG, 0x00);
-	hal_outputb(VIDEO_CRTL_REG, VIDEO_CE);
-	hal_outputb(VIDEO_DATA_REG, 0x1f);
-	
+	output8(VIDEO_CRTL_REG, VIDEO_CS);
+	output8(VIDEO_DATA_REG, 0x00);
+	output8(VIDEO_CRTL_REG, VIDEO_CE);
+	output8(VIDEO_DATA_REG, 0x1f);
+
 	/* Clear the console. */
 	console_clear();
 }

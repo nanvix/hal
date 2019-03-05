@@ -34,7 +34,7 @@ SECTIONS
 	/* Bootstrap section. */
 	.bootstrap :
 	{
-		hal/arch/i386/boot.o *(.bootstrap)
+		*boot.o *(.bootstrap)
 	}
 
 	. += 0xc0000000;
