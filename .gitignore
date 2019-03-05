@@ -4,6 +4,9 @@
 *.swo
 *.output
 
+tools/dev/toolchain/or1k/
+tools/dev/toolchain/i386/
+
 doc/html
 bin/
 

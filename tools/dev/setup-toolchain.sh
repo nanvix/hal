@@ -30,11 +30,11 @@ fi
 # Parse target platform.
 case "$TARGET" in
 	# Intel 80386
-	"i386")
+	"i386-pc")
 		bash "tools/dev/arch/i386.sh"
 		;;
 	# OpenRISC
-	"or1k")
+	"or1k-pc")
 		bash "tools/dev/arch/or1k.sh"
 		;;
 	# Unknown
