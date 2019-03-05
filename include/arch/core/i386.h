@@ -42,6 +42,7 @@
 	#include <arch/core/i386/int.h>
 	#include <arch/core/i386/mmu.h>
 	#include <arch/core/i386/pmio.h>
+	#include <arch/core/i386/spinlock.h>
 	#include <arch/core/i386/tlb.h>
 
 /**
