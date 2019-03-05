@@ -27,7 +27,7 @@
 
 #include <arch/core/or1k/core.h>
 #include <arch/core/or1k/mmu.h>
-#include <arch/cluster/or1k/cpu.h>
+#include <arch/cluster/or1k/cores.h>
 
 /* Exported symbols. */
 .globl kernel_pgtab

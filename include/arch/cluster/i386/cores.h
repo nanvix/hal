@@ -22,12 +22,11 @@
  * SOFTWARE.
  */
 
-#ifndef ARCH_I386_CPU_H_
-#define ARCH_I386_CPU_H_
+#ifndef ARCH_CLUSTER_I386_CORES_H_
+#define ARCH_CLUSTER_I386_CORES_H_
 
-/*============================================================================*
- *                             Processor Interface                            *
- *============================================================================*/
+	/* Cluster Interface Implementation */
+	#include <arch/cluster/i386/_i386.h>
 
 /**
  * @addtogroup i386-cluster-cpu Cores
@@ -97,4 +96,4 @@
 
 /**@endcond*/
 
-#endif /* ARCH_I386_CPU_H_ */
+#endif /* ARCH_CLUSTER_I386_CORES_H_ */

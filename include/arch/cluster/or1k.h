@@ -40,7 +40,7 @@
  */
 /**@{*/
 
-	#include <arch/cluster/or1k/cpu.h>
+	#include <arch/cluster/or1k/cores.h>
 	#include <arch/cluster/or1k/memory.h>
 
 	/**

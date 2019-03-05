@@ -24,7 +24,7 @@
 
 #include <arch/core/or1k/core.h>
 #include <arch/core/or1k/cache.h>
-#include <arch/cluster/or1k/cpu.h>
+#include <arch/cluster/or1k/cores.h>
 #include <arch/core/or1k/ompic.h>
 #include <arch/core/or1k/pic.h>
 #include <arch/core/or1k/spinlock.h>
