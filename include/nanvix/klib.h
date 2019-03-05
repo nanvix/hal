@@ -180,6 +180,17 @@
 	 */
 	#define noop()
 
+	/**
+	 * @brief Asserts if a number is within a range.
+	 *
+	 * @param x Number.
+	 * @param a Start of range.
+	 * @param b End of range.
+	 *
+	 * @returns Non-zero if @p x is within [a, b) and zero otherwise.
+	 */
+	#define WITHIN(x, a, b) (((x) >= (a)) && ((x) < (b)))
+
 /**@}*/
 
 #endif /* NANVIX_KLIB_H_ */
