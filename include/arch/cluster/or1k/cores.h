@@ -23,8 +23,8 @@
  * SOFTWARE.
  */
 
-#ifndef CLUSTER_OR1K_CPU_H_
-#define CLUSTER_OR1K_CPU_H_
+#ifndef ARCH_CLUSTER_OR1K_CORES_H_
+#define ARCH_CLUSTER_OR1K_CORES_H_
 
 	/* Cluster Interface Implementation */
 	#include <arch/cluster/or1k/_or1k.h>
@@ -67,7 +67,7 @@
 /**@}*/
 
 /*============================================================================*
- * Provided Interface                                                         *
+ * Exported Interface                                                         *
  *============================================================================*/
 
 /**
@@ -75,7 +75,7 @@
  */
 
 	/**
-	 * @name Provided Interface
+	 * @name Provided Functions
 	 */
 	/**@{*/
 	#define __hal_cpu_get_num_cores /**< hal_cpu_get_num_cores() */
@@ -105,4 +105,4 @@
 
 /**@endcond*/
 
-#endif /* CLUSTER_OR1K_CPU_H_ */
+#endif /* ARCH_CLUSTER_OR1K_CORES_H_ */

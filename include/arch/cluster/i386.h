@@ -44,7 +44,7 @@
  */
 /**@{*/
 
-	#include <arch/cluster/i386/cpu.h>
+	#include <arch/cluster/i386/cores.h>
 	#include <arch/cluster/i386/memory.h>
 
 	/**

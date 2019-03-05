@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 
-#ifndef CLUSTER_K1B_CPU_H_
-#define CLUSTER_K1B_CPU_H_
+#ifndef ARCH_CLUSTER_K1B_CORES_H_
+#define ARCH_CLUSTER_K1B_CORES_H_
 
 	/* Cluster Interface Implementation */
 	#include <arch/cluster/k1b/_k1b.h>
@@ -66,7 +66,7 @@
 /**@}*/
 
 /*============================================================================*
- * Provided Interface                                                         *
+ * Exported Interface                                                         *
  *============================================================================*/
 
 /**
@@ -74,7 +74,7 @@
  */
 
 	/**
-	 * @name Provided Interface
+	 * @name Provided Functions
 	 */
 	/**@{*/
 	#define __hal_cpu_get_num_cores /**< hal_cpu_get_num_cores() */
@@ -100,4 +100,4 @@
 
 /**@endcond*/
 
-#endif /* CLUSTER_K1B_CPU_H_ */
+#endif /* ARCH_CLUSTER_K1B_CORES_H_ */
