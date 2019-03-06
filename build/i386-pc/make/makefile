@@ -25,13 +25,14 @@
 #===============================================================================
 
 export ARCH = i386
+export PROCESSOR = i386-qemu
 
 #===============================================================================
 # Toolchain Configuration
 #===============================================================================
 
 # Toolchain Directory
-export TOOLCHAIN_DIR=$(TOOLSDIR)/dev/toolchain/i386/bin/
+export TOOLCHAIN_DIR ?= $(TOOLSDIR)/dev/toolchain/i386/bin/
 
 # Toolchain
 export CC = $(TOOLCHAIN_DIR)/i386-elf-gcc
@@ -53,7 +54,7 @@ export LDFLAGS  =
 #===============================================================================
 
 # Libraries
-export LIBKERNEL = libhal-$(ARCH).a
+export LIBKERNEL = libhal-$(TARGET).a
 export LIBS = $(LIBDIR)/$(LIBKERNEL)
 
 # Binaries

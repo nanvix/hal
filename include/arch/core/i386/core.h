@@ -99,6 +99,10 @@
 	/**@{*/
 	#define __core_get_id   /**< core_get_id()   */
 	#define __core_shutdown /**< core_shutdown() */
+	#define __core_sleep    /**< core_sleep()    */
+	#define __core_wakeup   /**< core_wakeup()   */
+	#define __core_start    /**< core_start()    */
+	#define __core_reset    /**< core_reset()    */
 	/**@}*/
 
 	/**

@@ -22,14 +22,14 @@
  * SOFTWARE.
  */
 
-#ifndef ARCH_CORE_OR1K_SPINLOCK_H_
-#define ARCH_CORE_OR1K_SPINLOCK_H_
+#ifndef ARCH_CORE_I386_SPINLOCK_H_
+#define ARCH_CORE_I386_SPINLOCK_H_
 
 /**
- * @addtogroup or1k-core-spinlock Spinlock
- * @ingroup or1k-core
+ * @addtogroup i386-core-spinlock Spinlock
+ * @ingroup i386-core
  *
- * @brief or1k Spinlocks
+ * @brief i386 Spinlocks
  */
 /**@{*/
 
@@ -44,114 +44,69 @@
 	 * @name Spinlock State
 	 */
 	/**@{*/
-	#define OR1K_SPINLOCK_UNLOCKED 0x0 /**< Unlocked */
-	#define OR1K_SPINLOCK_LOCKED   0x1 /**< Locked   */
+	#define I386_SPINLOCK_UNLOCKED 0x0 /**< Unlocked */
+	#define I386_SPINLOCK_LOCKED   0x1 /**< Locked   */
 	/**@}*/
 
 	/**
 	 * @brief Spinlock.
 	 */
-	typedef uint32_t or1k_spinlock_t;
+	typedef uint32_t i386_spinlock_t;
 
 	/**
-	 * @brief Initializes a or1k_spinlock_t.
+	 * @brief Initializes a i386_spinlock_t.
 	 *
-	 * @param lock Target or1k_spinlock_t.
+	 * @param lock Target i386_spinlock_t.
+	 *
+	 * @todo Implement this function.
 	 */
-	static inline void or1k_spinlock_init(or1k_spinlock_t *lock)
+	static inline void i386_spinlock_init(i386_spinlock_t *lock)
 	{
-		register or1k_spinlock_t *lock_reg
-			__asm__("r5") = lock;
-
-		__asm__ __volatile__
-		(
-			"l.sw 0(r5), r0"
-			:
-			: "r" (lock_reg)
-		);
+		((void) lock);
 	}
 
 	/**
-	 * @brief Attempts to lock a or1k_spinlock_t.
+	 * @brief Attempts to lock a i386_spinlock_t.
 	 *
-	 * @param lock Target or1k_spinlock_t.
+	 * @param lock Target i386_spinlock_t.
 	 *
-	 * @returns Upon successful completion, the or1k_spinlock_t pointed to by
+	 * @returns Upon successful completion, the i386_spinlock_t pointed to by
 	 * @p lock is locked and zero is returned. Upon failure, non-zero
 	 * is returned instead, and the lock is not acquired by the
 	 * caller.
+	 *
+	 * @todo Implement this function.
 	 */
-	static inline int or1k_spinlock_trylock(or1k_spinlock_t *lock)
+	static inline int i386_spinlock_trylock(i386_spinlock_t *lock)
 	{
-		register or1k_spinlock_t *lock_reg
-			__asm__("r5") = lock;
-		register or1k_spinlock_t lock_value
-			__asm__("r7") = OR1K_SPINLOCK_UNLOCKED;
-		register unsigned locked
-			__asm__("r9") = 0;
+		((void) lock);
 
-		/* First, atomically reads the lock. */
-		__asm__ __volatile__
-		(
-			"l.lwa r7, 0(r5)"
-			: "=r" (lock_value)
-			: "r" (lock_reg)
-		);
-
-		/* Lock already locked. */
-		if (lock_value == OR1K_SPINLOCK_LOCKED)
-			return (1);
-
-		/* Tries to lock. */
-		lock_value = OR1K_SPINLOCK_LOCKED;
-		__asm__ __volatile__
-		(
-			"l.swa   0(r5),  r7\n"
-			"l.mfspr r9, r0, 0x11\n"  /* Supervisor Register. */
-			"l.andi  r9, r9, 0x200\n" /* Condition Flag.      */
-			: "=r" (locked)
-			: "r"  (lock_reg),
-			  "r"  (lock_value)
-		);
-
-		/* Check if lock was successful. */
-		if (locked)
-			return (0);
-		else
-			return (1);
+		return (0);
 	}
 
 	/**
-	 * @brief Locks a or1k_spinlock_t.
+	 * @brief Locks a i386_spinlock_t.
 	 *
-	 * @param lock Target or1k_spinlock_t.
+	 * @param lock Target i386_spinlock_t.
+	 *
+	 * @todo Implement this function.
 	 */
-	static inline void or1k_spinlock_lock(or1k_spinlock_t *lock)
+	static inline void i386_spinlock_lock(i386_spinlock_t *lock)
 	{
-		while (or1k_spinlock_trylock(lock))
+		while (i386_spinlock_trylock(lock))
 			/* noop */;
 	}
 
 	/**
-	 * @brief Unlocks a or1k_spinlock_t.
+	 * @brief Unlocks a i386_spinlock_t.
 	 *
-	 * @param lock Target or1k_spinlock_t.
+	 * @param lock Target i386_spinlock_t.
+	 *
+	 * @todo Implement this function.
 	 */
-	static inline void or1k_spinlock_unlock(or1k_spinlock_t *lock)
+	static inline void i386_spinlock_unlock(i386_spinlock_t *lock)
 	{
-		register or1k_spinlock_t *lock_reg
-			__asm__("r5") = lock;
-
-		__asm__ __volatile__
-		(
-			"1:\n"
-			"	l.lwa r7, 0(r5)\n"
-			"	l.swa 0(r5), r0\n"
-			"	l.bnf 1b\n"
-			"	l.nop\n"
-			:
-			: "r" (lock_reg)
-		);
+		((void) lock);
 	}
 
 /**@}*/
@@ -161,7 +116,7 @@
  *============================================================================*/
 
 /**
- * @cond mor1kx
+ * @cond i386
  */
 
 	/**
@@ -179,23 +134,23 @@
 	 * @name Spinlock State
 	 */
 	/**@{*/
-	#define SPINLOCK_UNLOCKED OR1K_SPINLOCK_UNLOCKED /**< @see OR1K_SPINLOCK_UNLOCKED */
-	#define SPINLOCK_LOCKED   OR1K_SPINLOCK_LOCKED   /**< @see OR1K_SPINLOCK_LOCKED   */
+	#define SPINLOCK_UNLOCKED I386_SPINLOCK_UNLOCKED /**< @see I386_SPINLOCK_UNLOCKED */
+	#define SPINLOCK_LOCKED   I386_SPINLOCK_LOCKED   /**< @see I386_SPINLOCK_LOCKED   */
 	/**@}*/
 
 #ifndef _ASM_FILE_
 
 	/**
-	 * @see or1k_spinlock_t
+	 * @see i386_spinlock_t
 	 */
-	typedef or1k_spinlock_t spinlock_t;
+	typedef i386_spinlock_t spinlock_t;
 
 	/**
 	 * @see ork1_spinlock_init().
 	 */
 	static inline void spinlock_init(spinlock_t *lock)
 	{
-		or1k_spinlock_init(lock);
+		i386_spinlock_init(lock);
 	}
 
 	/**
@@ -203,7 +158,7 @@
 	 */
 	static inline int spinlock_trylock(spinlock_t *lock)
 	{
-		return (or1k_spinlock_trylock(lock));
+		return (i386_spinlock_trylock(lock));
 	}
 
 	/**
@@ -211,7 +166,7 @@
 	 */
 	static inline void spinlock_lock(spinlock_t *lock)
 	{
-		or1k_spinlock_lock(lock);
+		i386_spinlock_lock(lock);
 	}
 
 	/**
@@ -219,11 +174,11 @@
 	 */
 	static inline void spinlock_unlock(spinlock_t *lock)
 	{
-		or1k_spinlock_unlock(lock);
+		i386_spinlock_unlock(lock);
 	}
 
 #endif /* _ASM_FILE_ */
 
 /**@endcond*/
 
-#endif /* ARCH_CORE_OR1K_SPINLOCK_H_ */
+#endif /* ARCH_CORE_I386_SPINLOCK_H_ */

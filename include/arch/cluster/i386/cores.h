@@ -22,52 +22,78 @@
  * SOFTWARE.
  */
 
-#ifndef NANVIX_HAL_CLUSTER_IO_H_
-#define NANVIX_HAL_CLUSTER_IO_H_
+#ifndef ARCH_CLUSTER_I386_CORES_H_
+#define ARCH_CLUSTER_I386_CORES_H_
 
 	/* Cluster Interface Implementation */
-	#include <nanvix/hal/cluster/_cluster.h>
-
-/*============================================================================*
- * Interface Implementation Checking                                          *
- *============================================================================*/
-
-	/* Functions */
-	#ifndef __hal_outputb
-	#error "hal_outputb() not defined?"
-	#endif
-	#ifndef __hal_iowait
-	#error "hal_iowait() not defined?"
-	#endif
-
-/*============================================================================*
- * Input/Output Interface                                                     *
- *============================================================================*/
+	#include <arch/cluster/i386/_i386.h>
 
 /**
- * @addtogroup kernel-hal-cluster-io Input/Output
- * @ingroup kernel-hal-cluster
+ * @addtogroup i386-cluster-cpu Cores
+ * @ingroup i386-cluster
  *
- * @brief Input/Output HAL Interface
+ * @brief Cores
  */
 /**@{*/
 
-	#include <nanvix/const.h>
-	#include <stdint.h>
+	/**
+	 * @brief Number of cores.
+	 */
+	#define I386_NUM_CORES 1
 
 	/**
-	 * @brief Writes a byte to an I/O port.
+	 * @brief ID of the master core.
+	 */
+	#define I386_COREID_MASTER 0
+
+	/**
+	 * @brief Gets the number of cores.
 	 *
-	 * @param port Number of the target port.
-	 * @param byte Byte to write.
+	 * The i386_cpu_get_num_cores() gets the number of cores in the
+	 * underlying i386 processor.
+	 *
+	 * @returns The the number of cores in the underlying processor.
 	 */
-	EXTERN void hal_outputb(uint16_t port, uint8_t byte);
-
-	/**
-	 * @brief Waits an operation in an I/O port to complete.
-	 */
-	EXTERN void hal_iowait(void);
+	static inline int i386_cpu_get_num_cores(void)
+	{
+		return (I386_NUM_CORES);
+	}
 
 /**@}*/
 
-#endif /* NANVIX_HAL_IO_CLUSTER_H_ */
+/*============================================================================*
+ *                              Exported Interface                            *
+ *============================================================================*/
+
+/**
+ * @cond i386
+ */
+
+	/**
+	 * @name Provided Functions
+	 */
+	/**@{*/
+	#define __hal_cpu_get_num_cores
+	/**@}*/
+
+	/**
+	 * @brief Number of cores in a cluster.
+	 */
+	#define HAL_NUM_CORES I386_NUM_CORES
+
+	/**
+	 * @brief ID of the master core.
+	 */
+	#define COREID_MASTER I386_COREID_MASTER
+
+	/**
+	 * @see i386_cpu_get_num_cores()
+	 */
+	static inline int hal_cpu_get_num_cores(void)
+	{
+		return (i386_cpu_get_num_cores());
+	}
+
+/**@endcond*/
+
+#endif /* ARCH_CLUSTER_I386_CORES_H_ */

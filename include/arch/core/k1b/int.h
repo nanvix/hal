@@ -126,6 +126,7 @@
 	 */
 	/**@{*/
 	#define HAL_INT_CLOCK K1B_INT_CLOCK0 /*< Programmable interrupt timer. */
+	#define HAL_INT_CNOC  K1B_INT_CNOC   /*< Control NoC interrupt.        */
 	/**@}*/
 
 	/**

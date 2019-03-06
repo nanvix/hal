@@ -20,4 +20,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+#===============================================================================
+# Target Configuration
+#===============================================================================
+
+export CORE      = or1k
+export CLUSTER   = or1k
+
+#===============================================================================
+
 include $(SRCDIR)/build/makefile.nanvix

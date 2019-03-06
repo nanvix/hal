@@ -26,13 +26,14 @@
 
 # Target Configuration
 export ARCH = or1k
+export PROCESSOR = or1k-qemu
 
 #===============================================================================
 # Toolchain Configuration
 #===============================================================================
 
 # Toolchain Directory
-export TOOLCHAIN_DIR=$(TOOLSDIR)/dev/toolchain/or1k/bin/
+export TOOLCHAIN_DIR ?= $(TOOLSDIR)/dev/toolchain/or1k/bin/
 
 # Toolchain
 export CC = $(TOOLCHAIN_DIR)/or1k-elf-gcc
@@ -52,7 +53,7 @@ export LDFLAGS  =
 #===============================================================================
 
 # Libraries
-export LIBKERNEL = libhal-$(ARCH).a
+export LIBKERNEL = libhal-$(TARGET).a
 export LIBS = $(LIBDIR)/$(LIBKERNEL)
 
 # Binaries

@@ -1,7 +1,7 @@
 #
 # MIT License
 #
-# Copyright(c) 2018 Pedro Henrique Penna <pedrohenriquepenna@gmail.com>
+# Copyright(c) 2011-2019 The Maintainers of Nanvix
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -26,9 +26,7 @@
 # Target Configuration
 #===============================================================================
 
-export SYSTEM = bare
-export ARCH   = k1b
-export BOARD  = developer
+export PROCESSOR = bostan
 
 #===============================================================================
 # Toolchain Configuration
@@ -44,7 +42,7 @@ export AR = $(K1_TOOLCHAIN_DIR)/bin/k1-ar
 
 # Compiler Options
 export CFLAGS   = -D __mppa256__ -D __k1b__
-export CFLAGS  += -mos=$(SYSTEM) -march=$(ARCH) -mboard=$(BOARD)
+export CFLAGS  += -mos=bare -march=k1b -mboard=developer
 
 # Linker Options
 export LDFLAGS  = -Wl,--allow-multiple-definition

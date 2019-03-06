@@ -25,7 +25,7 @@
 #include <HAL/hal/board/boot_args.h>
 #include <mOS_vcore_u.h>
 
-#include <arch/cluster/k1b/cpu.h>
+#include <arch/cluster/k1b/cores.h>
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
 

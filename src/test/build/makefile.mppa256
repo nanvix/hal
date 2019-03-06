@@ -21,14 +21,14 @@
 # SOFTWARE.
 
 # Linker Options
-ifeq ($(CLUSTER),node)
+ifeq ($(CLUSTER_VARIANT),node)
 	export LDFLAGS  += -L $(LINKERDIR)/k1bdp/ -T link.ld
 else
 	export LDFLAGS  += -L $(LINKERDIR)/k1bio/ -T link.ld
 endif
 
 # Object Files
-OBJ = $(SRC:.c=.$(CLUSTER).o)
+OBJ = $(SRC:.c=.$(CLUSTER)-$(CLUSTER_VARIANT).o)
 
 # Builds object files for MPPA-256 target.
 mppa256: $(OBJ)
@@ -39,5 +39,5 @@ clean:
 	rm -rf $(BINDIR)/$(EXECBIN) $(OBJ)
 
 # Builds a C source file.
-%.$(CLUSTER).o: %.c
+%.$(CLUSTER)-$(CLUSTER_VARIANT).o: %.c
 	$(CC) $(CFLAGS) $< -c -o $@

@@ -1,8 +1,7 @@
 /*
  * MIT License
  *
- * Copyright(c) 2011-2018 Pedro Henrique Penna <pedrohenriquepenna@gmail.com>
- *              2017-2018 Davidson Francis     <davidsondfgl@gmail.com>
+ * Copyright(c) 2011-2019 The Maintainers of Nanvix
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,8 +22,8 @@
  * SOFTWARE.
  */
 
-#ifndef CLUSTER_OR1K_CPU_H_
-#define CLUSTER_OR1K_CPU_H_
+#ifndef ARCH_CLUSTER_OR1K_CORES_H_
+#define ARCH_CLUSTER_OR1K_CORES_H_
 
 	/* Cluster Interface Implementation */
 	#include <arch/cluster/or1k/_or1k.h>
@@ -67,7 +66,7 @@
 /**@}*/
 
 /*============================================================================*
- * Provided Interface                                                         *
+ * Exported Interface                                                         *
  *============================================================================*/
 
 /**
@@ -75,7 +74,7 @@
  */
 
 	/**
-	 * @name Provided Interface
+	 * @name Provided Functions
 	 */
 	/**@{*/
 	#define __hal_cpu_get_num_cores /**< hal_cpu_get_num_cores() */
@@ -105,4 +104,4 @@
 
 /**@endcond*/
 
-#endif /* CLUSTER_OR1K_CPU_H_ */
+#endif /* ARCH_CLUSTER_OR1K_CORES_H_ */

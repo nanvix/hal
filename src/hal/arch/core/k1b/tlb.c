@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-#include <arch/cluster/k1b/cpu.h>
+#include <arch/cluster/k1b/cores.h>
 #include <nanvix/const.h>
 #include <errno.h>
 

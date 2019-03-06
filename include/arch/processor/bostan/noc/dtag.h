@@ -22,45 +22,55 @@
  * SOFTWARE.
  */
 
-#ifndef PROCESSOR_BOSTAN_H_
-#define PROCESSOR_BOSTAN_H_
+#ifndef PROCESSOR_BOSTAN_NOC_DTAG_H_
+#define PROCESSOR_BOSTAN_NOC_DTAG_H_
 
-	#ifndef __NEED_PROCESSOR_BOSTAN
-		#error "bad processor configuration?"
-	#endif
+/**
+ * @cond bostan-noc
+ */
 
 	/* Processor Interface Implementation */
 	#include <arch/processor/bostan/_bostan.h>
 
-/**
- * @addtogroup processor-bostan Bostan Processor
- * @ingroup processors
- *
- * @brief Bostan Processor
- */
-/**@*/
-
-	#include <arch/processor/bostan/clusters.h>
-	#include <arch/processor/bostan/noc.h>
-
-/**@}*/
-
-/*============================================================================*
- * Exported Interface                                                         *
- *============================================================================*/
-
-/**
- * @cond bostan
- */
+	#include <arch/processor/bostan/noc/tag.h>
 
 	/**
-	 * @name Provided Features
+	 * @name Type of D-NoC Tag
 	 */
 	/**@{*/
-	#define PROCESSOR_IS_MULTICLUSTER 1
+	#define BOSTAN_DNOC_TAG_RX 2 /**< D-NoC receive tag.  */
+	#define BOSTAN_DNOC_TAG_TX 3 /**< D-NoC transfer tag. */
+	#define BOSTAN_DNOC_TAG_UC 4 /**< D-NoC ucore tag.    */
+	/**@}*/
+
+    /**
+	 * @name Amount of the Data NoC Resources
+	 */
+	/**@{*/
+	#define BOSTAN_DNOC_RX_MAX 256 /**< Receiver amount. */
+    #define BOSTAN_DNOC_TX_MAX 8   /**< Sender amount.   */
+    #define BOSTAN_DNOC_UC_MAX 8   /**< ucore amount.    */
+	/**@}*/
+
+	/**
+	 * @name Number of D-NoC buffer
+	 */
+	/**@{*/
+	#define BOSTAN_NR_DNOC_RX BOSTAN_DNOC_RX_MAX - BOSTAN_NR_RESERVED_TAGS /**< Number of receive buffers.  */
+	#define BOSTAN_NR_DNOC_TX BOSTAN_DNOC_TX_MAX - BOSTAN_NR_RESERVED_TAGS /**< Number of transfer buffers. */
+	#define BOSTAN_NR_DNOC_UC BOSTAN_DNOC_UC_MAX - BOSTAN_NR_RESERVED_TAGS /**< Number of ucore threads.	*/
+	/**@}*/
+
+	/**
+	 * @name D-NoC tag offset
+	 */
+	/**@{*/
+	#define BOSTAN_DNOC_RX_OFFSET 0 /**< Receive tag offset.  */
+	#define BOSTAN_DNOC_TX_OFFSET 0 /**< Transfer tag offset. */
+	#define BOSTAN_DNOC_UX_OFFSET 0 /**< UCore thread offset. */
 	/**@}*/
 
 /**@endcond*/
 
-#endif /* PROCESSOR_BOSTAN_H_ */
+#endif /* PROCESSOR_BOSTAN_NOC_DTAG_H_ */
 
