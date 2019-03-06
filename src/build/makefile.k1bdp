@@ -25,25 +25,16 @@
 #===============================================================================
 
 # Target Configuration
-export CLUSTER = node
-
-#===============================================================================
-# Toolchain Configuration
-#===============================================================================
-
-# Compiler Options
-export CFLAGS += -mcluster=$(CLUSTER)
+export CORE            = k1b
+export CLUSTER         = k1b
+export CLUSTER_VARIANT = node
 
 #===============================================================================
 # Libraries and Binaries
-#===============================================================================
-
-# Libraries
-export LIBKERNEL    = libhal-$(ARCH)-$(CLUSTER).a
-export LIBS_OURS    = $(LIBDIR)/$(LIBKERNEL)
-export LIBS_THEIRS  = -lvbsp -lmppanoc -lmpparouting -mhypervisor
 
 # Binaries
 export EXECBIN = test-driver-k1bdp
 
-include $(SRCDIR)/build/makefile.nanvix
+#===============================================================================
+
+include $(SRCDIR)/build/makefile.k1b
