@@ -21,13 +21,15 @@
 # SOFTWARE.
 
 # C Source Files
-C_SRC = $(wildcard *.c)                  \
-        $(wildcard arch/$(ARCH)/*.c)     \
-        $(wildcard target/$(TARGET)/*.c) \
-        $(wildcard klib/*.c)             \
+C_SRC = $(wildcard *.c)                           \
+        $(wildcard arch/core/$(CORE)/*.c)         \
+        $(wildcard arch/cluster/$(CLUSTER)/*.c)   \
+        $(wildcard arch/processor/$(PROCESSOR)/*.c) \
+        $(wildcard arch/target/$(TARGET)/*.c)     \
+        $(wildcard klib/*.c)                      \
         $(wildcard stdout/klog.c)
 
 # Asembly Source Files
-ASM_SRC = $(wildcard arch/$(ARCH)/*.S)
+ASM_SRC = $(wildcard arch/core/$(CORE)/*.S)
 
 include build/makefile.$(TARGET)

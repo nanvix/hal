@@ -20,13 +20,21 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-#===============================================================================
-# Target Configuration
-#===============================================================================
-
-export CORE      = i386
-export CLUSTER   = i386
 
 #===============================================================================
+# Toolchain Configuration
+#===============================================================================
+
+# Compiler Options
+export CFLAGS += -mcluster=$(CLUSTER_VARIANT)
+
+#===============================================================================
+# Libraries and Binaries
+#===============================================================================
+
+# Libraries
+export LIBKERNEL    = libhal-$(CORE)-$(CLUSTER_VARIANT).a
+export LIBS_OURS    = $(LIBDIR)/$(LIBKERNEL)
+export LIBS_THEIRS  = -lvbsp -lmppanoc -lmpparouting -mhypervisor
 
 include $(SRCDIR)/build/makefile.nanvix

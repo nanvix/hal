@@ -26,6 +26,7 @@
 
 # Target Configuration
 export ARCH = or1k
+export PROCESSOR = or1k-qemu
 
 #===============================================================================
 # Toolchain Configuration
@@ -52,7 +53,7 @@ export LDFLAGS  =
 #===============================================================================
 
 # Libraries
-export LIBKERNEL = libhal-$(ARCH).a
+export LIBKERNEL = libhal-$(TARGET).a
 export LIBS = $(LIBDIR)/$(LIBKERNEL)
 
 # Binaries

@@ -27,12 +27,6 @@ C_SRC += $(wildcard stdout/console.c)
 OBJ = $(ASM_SRC:.S=.o) \
 	  $(C_SRC:.c=.o)
 
-# Executable file.
-EXEC = kernel
-
-# Linker Configuration
-export LDFLAGS  += -L $(LINKERDIR)/ -T link.ld
-
 # Builds All Object Files
 all: $(OBJ)
 	$(AR) $(ARFLAGS) $(LIBDIR)/$(LIBKERNEL) $(OBJ)
