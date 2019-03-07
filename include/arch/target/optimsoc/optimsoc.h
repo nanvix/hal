@@ -22,45 +22,43 @@
  * SOFTWARE.
  */
 
-#ifndef _NANVIX_HAL_PROCESSOR_PROCESSOR_H_
-#define _NANVIX_HAL_PROCESSOR_PROCESSOR_H_
+#ifndef TARGET_OPTIMSOC_H_
+#define TARGET_OPTIMSOC_H_
 
-	/**
-	 * @defgroup processors Processors
-	 */
-
-	#if (defined(__k1b__))
-
-		#undef  __NEED_PROCESSOR_BOSTAN
-		#define __NEED_PROCESSOR_BOSTAN
-		#include <arch/processor/bostan.h>
-
-	#elif (defined(__i386__))
-
-		#undef  __NEED_PROCESSOR_I386_QEMU
-		#define __NEED_PROCESSOR_I386_QEMU
-		#include <arch/processor/i386-qemu.h>
-
-	#elif (defined(__or1k__))
-
-		#undef  __NEED_PROCESSOR_OR1K_QEMU
-		#define __NEED_PROCESSOR_OR1K_QEMU
-		#include <arch/processor/or1k-qemu.h>
-
-	#elif (defined(__optimsoc__))
-
-		#undef  __NEED_PROCESSOR_OR1K_OPTIMSOC
-		#define __NEED_PROCESSOR_OR1K_OPTIMSOC
-		#include <arch/processor/optimsoc.h>
-
-	#else
-
-		#error "unkonwn processor"
-
+	#ifndef __NEED_TARGET_OPTIMSOC
+		#error "bad target configuration?"
 	#endif
 
-	#undef  __NEED_HAL_CLUSTER
-	#define __NEED_HAL_CLUSTER
-	#include <nanvix/hal/cluster.h>
+	/* Target Interface Implementation */
+	#include <arch/target/optimsoc/or1k/_or1k.h>
 
-#endif /* _NANVIX_HAL_PROCESSOR_PROCESSOR_H_ */
+/**
+ * @defgroup target-optimsoc OpTiMSoC
+ * @ingroup targets
+ *
+ * @brief OpTiMSoC Platform
+ */
+/**@{*/
+
+	#include <arch/target/optimsoc/or1k/stdout.h>
+
+/**@}*/
+
+/*============================================================================*
+ * Exported Interface                                                         *
+ *============================================================================*/
+
+/**
+ * @cond or1k
+ */
+
+	/**
+	 * @name Provided Features
+	 */
+	/**@{*/
+	#define TARGET_HAS_STDOUT 1
+	/**@}*/
+
+/**@endcond*/
+
+#endif /* TARGET_OPTIMSOC_H_ */

@@ -22,45 +22,58 @@
  * SOFTWARE.
  */
 
-#ifndef _NANVIX_HAL_PROCESSOR_PROCESSOR_H_
-#define _NANVIX_HAL_PROCESSOR_PROCESSOR_H_
+OUTPUT_FORMAT("elf32-or1k")
+ENTRY(_do_start)
 
-	/**
-	 * @defgroup processors Processors
-	 */
+BOOT_ADDR = 0;
 
-	#if (defined(__k1b__))
+SECTIONS
+{
+	. = BOOT_ADDR;
 
-		#undef  __NEED_PROCESSOR_BOSTAN
-		#define __NEED_PROCESSOR_BOSTAN
-		#include <arch/processor/bostan.h>
+	EXCEPTIONS = .;
 
-	#elif (defined(__i386__))
+	KSTART_CODE = .;
 
-		#undef  __NEED_PROCESSOR_I386_QEMU
-		#define __NEED_PROCESSOR_I386_QEMU
-		#include <arch/processor/i386-qemu.h>
+	/* Kernel code section. */
+	.bootstrap : AT(ADDR(.bootstrap))
+	{
+		*hooks.o
+		*boot_code.o
+	}
 
-	#elif (defined(__or1k__))
+	. = ALIGN(8192);
 
-		#undef  __NEED_PROCESSOR_OR1K_QEMU
-		#define __NEED_PROCESSOR_OR1K_QEMU
-		#include <arch/processor/or1k-qemu.h>
+	/* Kernel code section. */
+	.text : AT(ADDR(.text))
+	{
+		*(.text)
+	}
 
-	#elif (defined(__optimsoc__))
+	KSTART_DATA = ALIGN(8192);
 
-		#undef  __NEED_PROCESSOR_OR1K_OPTIMSOC
-		#define __NEED_PROCESSOR_OR1K_OPTIMSOC
-		#include <arch/processor/optimsoc.h>
+	/* Initialized kernel data section. */
+	.data ALIGN(8192) : AT(ADDR(.data))
+	{
+		*boot_data.o
+		*(.rodata)
+		*(.data)
+	}
 
-	#else
+	/* Uninitialized kernel data section. */
+	.bss : AT(ADDR(.bss))
+	{
+		*(.bss)
+	}
 
-		#error "unkonwn processor"
+	. =ALIGN(8192);
 
-	#endif
+	KDATA_END = .;
 
-	#undef  __NEED_HAL_CLUSTER
-	#define __NEED_HAL_CLUSTER
-	#include <nanvix/hal/cluster.h>
-
-#endif /* _NANVIX_HAL_PROCESSOR_PROCESSOR_H_ */
+	/* Discarded. */
+	/DISCARD/ :
+	{
+		*(.comment)
+		*(.note)
+	}
+}

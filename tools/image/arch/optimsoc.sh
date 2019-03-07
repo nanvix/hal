@@ -1,3 +1,4 @@
+#
 # MIT License
 #
 # Copyright(c) 2011-2019 The Maintainers of Nanvix
@@ -19,77 +20,13 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-
-# Command Parameters
-test=$1  # Target test.
-mode=$2  # Test mode.
-debug=$3 # Launch GDB?
-type=$4  # Target type.
-
-if [ -z $TARGET ]; then
-	echo "$0: missing target architecture"
-	exit 1
-fi
-
-if [ $TARGET == "mppa256" ]; then
-	source "tools/run/arch/mppa256.sh"
-elif [ $TARGET == "optimsoc" ]; then
-	source "tools/run/arch/optimsoc.sh"
-else
-	echo "unknown target architecture"
-	exit 1
-fi
-
-# Missing parameters.
-if [ -z $test ];
-then
-	echo "Missing arguments!"
-	echo "Usage: $0 <test name> [mode]"
-	exit 1
-fi
+#
 
 #
-# Long test mode.
+# Builds system image.
 #
-if [ -z $mode ];
-then
-	mode="--long"
-fi
-
-#
-# No debug mode.
-#
-if [ -z $debug ];
-then
-	debug="--no-debug"
-fi
-
-#
-# All Types.
-#
-if [ -z $type ];
-then
-	type="--all"
-fi
-
-#
-# Stops regression test if running running short test.
-#
-function stop_if_short_test
+function build
 {
-	if [ $mode == "--short" ];
-	then
-		exit 0
-	fi
+	# Nothing to do.
+	echo ""
 }
-
-case $test in
-	all)
-		mode="--long"
-	;&
-	kernel-core)
-		echo "=== Running Core and NoC Interface Tests"
-		run_hw "nanvix-debug.img" "bin/test-driver" "--debug --hal-core" "$debug" "$type"
-		stop_if_short_test $mode
-	;&
-esac

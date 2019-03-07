@@ -51,6 +51,10 @@ case "$TARGET" in
 		source "tools/image/arch/i386.sh"
 		BIN="$BIN-i386"
 		;;
+	"optimsoc")
+		source "tools/image/arch/optimsoc.sh"
+		BIN="$BIN-optimsoc"
+		;;
 	"or1k-pc")
 		source "tools/image/arch/or1k.sh"
 		BIN="$BIN-or1k"

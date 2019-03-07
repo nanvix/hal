@@ -35,6 +35,12 @@
 		#define __NEED_TARGET_MPPA256
 		#include <arch/target/kalray/mppa256.h>
 
+	#elif (defined(__optimsoc__))
+
+		#undef  __NEED_TARGET_OPTIMSOC
+		#define __NEED_TARGET_OPTIMSOC
+		#include <arch/target/optimsoc/optimsoc.h>
+
 	#elif (defined(__i386__) && (__pc__))
 
 		#undef  __NEED_TARGET_QEMU_I386_PC
