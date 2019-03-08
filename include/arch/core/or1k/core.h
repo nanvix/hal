@@ -27,6 +27,8 @@
 
 	#define __NEED_OR1K_REGS
 	#include <arch/core/or1k/regs.h>
+
+	#define __NEED_CORE_TYPES
 	#include <arch/core/or1k/types.h>
 
 /**
@@ -178,11 +180,35 @@
  *============================================================================*/
 
 /**
- * @cond mor1kx
+ * @cond or1k
  */
 
 	/**
-	 * @name Provided Interface
+	 * @brief Exported Constants
+	 */
+	/**@{*/
+	#define BYTE_BIT   OR1K_BYTE_BIT   /**< @see BYTE_BIT   */
+	#define HWORD_BIT  OR1K_HWORD_BIT  /**< @see HWORD_BIT  */
+	#define WORD_BIT   OR1K_WORD_BIT   /**< @see WORD_BIT   */
+	#define DWORD_BIT  OR1K_DWORD_BIT  /**< @see DWORD_BIT  */
+	#define BYTE_SIZE  OR1K_SIZE_SIZE  /**< @see BYTE_SIZE  */
+	#define HWORD_SIZE OR1K_HWORD_SIZE /**< @see HWORD_SIZE */
+	#define WORD_SIZE  OR1K_WORD_SIZE  /**< @see WORD_SIZE  */
+	#define DWORD_SIZE OR1K_DWORD_SIZE /**< @see DWORD_SIZE */
+	/**@}*/
+
+	/**
+	 * @brief Exported Types
+	 */
+	/**@{*/
+	#define __byte_t  /**< @see byte_t  */
+	#define __hword_t /**< @see hword_t */
+	#define __word_t  /**< @see word_t  */
+	#define __dword_t /**< @see dword_t */
+	/**@}*/
+
+	/**
+	 * @name Exported Functions
 	 */
 	/**@{*/
 	#define __core_get_id   /**< core_get_id()   */
@@ -194,6 +220,16 @@
 	/**@}*/
 
 #ifndef _ASM_FILE_
+
+	/**
+	 * @name Core Types
+	 */
+	/**@{*/
+	typedef or1k_byte_t  byte_t;  /**< Byte        */
+	typedef or1k_hword_t hword_t; /**< Half Word   */
+	typedef or1k_word_t  word_t;  /**< Word        */
+	typedef or1k_dword_t dword_t; /**< Double Word */
+	/**@}*/
 
 	/**
 	 * @see or1k_core_get_id().
