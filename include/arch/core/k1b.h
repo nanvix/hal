@@ -44,7 +44,6 @@
 	#include <arch/core/k1b/pic.h>
 	#include <arch/core/k1b/spinlock.h>
 	#include <arch/core/k1b/tlb.h>
-	#include <arch/core/k1b/types.h>
 
 /**
  * @cond k1b

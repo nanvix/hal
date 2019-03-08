@@ -35,8 +35,10 @@
 
 #ifndef _ASM_FILE_
 
+	#define __NEED_MEMORY_TYPES
+	#include <arch/core/k1b/types.h>
+
 	#include <arch/core/k1b/context.h>
-	#include <arch/core/k1b/mmu.h>
 
 #endif
 
