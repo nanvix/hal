@@ -38,7 +38,7 @@
 	/**
 	 * @brief Estimated CPU frequency (in Hz)
 	 */
-	#define OR1K_CPU_FREQUENCY 20000000
+	#define OR1K_CPU_FREQUENCY 1666666
 
 	/**
 	 * @brief Initializes the clock driver in the or1k architecture.
