@@ -78,16 +78,17 @@
 
 #ifndef _ASM_FILE_
 
-	#include <arch/core/i386/core.h>
+	#define __NEED_CORE_TYPES
+	#include <arch/core/i386/types.h>
 
 	/**
 	 * Saved execution context upon interrupts and exceptions.
 	 */
 	struct context
 	{
-        dword_t gs, fs, es, ds;                    /**< Segment Registers         */
-        dword_t edi, esi, ebp, edx, ecx, ebx, eax; /**< General Purpose Registers */
-        dword_t eip, cs, eflags, useresp, ss;      /**< Special Registers         */
+        i386_word_t gs, fs, es, ds;                    /**< Segment Registers         */
+        i386_word_t edi, esi, ebp, edx, ecx, ebx, eax; /**< General Purpose Registers */
+        i386_word_t eip, cs, eflags, useresp, ss;      /**< Special Registers         */
 	} __attribute__((packed));
 
 #endif /* _ASM_FILE_ */

@@ -25,10 +25,6 @@
 #ifndef ARCH_I386_CORE_H_
 #define ARCH_I386_CORE_H_
 
-/*============================================================================*
- *                               Core Interface                               *
- *============================================================================*/
-
 /**
  * @addtogroup i386-core-core Core
  * @ingroup i386-core
@@ -37,39 +33,13 @@
  */
 /**@{*/
 
-	/**
-	 * @name Size of Machine Types
-	 */
-	/**@{*/
-	#define BYTE_SIZE  1 /**< Byte.        */
-	#define WORD_SIZE  2 /**< Word.        */
-	#define DWORD_SIZE 4 /**< Double word. */
-	#define QWORD_SIZE 8 /**< Quad word.   */
-	/**@}*/
-
-	/**
-	 * @name Bit-Length of Machine Types
-	 */
-	/**@{*/
-	#define BYTE_BIT    8 /**< Byte.        */
-	#define WORD_BIT   16 /**< Word.        */
-	#define DWORD_BIT  32 /**< Double word. */
-	#define QWORD_BIT  64 /**< Quad word.   */
-	/**@}*/
+	#define __NEED_CORE_TYPES
+	#include <arch/core/i386/types.h>
 
 #ifndef _ASM_FILE_
 
 	#include <nanvix/const.h>
 	#include <stdint.h>
-
-	/**
-	 * @name Machine Types
-	 */
-	/**@{*/
-	typedef uint8_t byte_t;   /**< Byte.        */
-	typedef uint16_t word_t;  /**< Word.        */
-	typedef uint32_t dword_t; /**< Double word. */
-	/**@}*/
 
 	/**
 	 * @brief Gets the ID of the core.
@@ -83,6 +53,8 @@
 		return (0);
 	}
 
+#endif /* _ASM_FILE_ */
+
 /**@}*/
 
 /*============================================================================*
@@ -94,7 +66,31 @@
  */
 
 	/**
-	 * @name Provided Interface
+	 * @brief Exported Constants
+	 */
+	/**@{*/
+	#define BYTE_BIT   I386_BYTE_BIT   /**< @see BYTE_BIT   */
+	#define HWORD_BIT  I386_HWORD_BIT  /**< @see HWORD_BIT  */
+	#define WORD_BIT   I386_WORD_BIT   /**< @see WORD_BIT   */
+	#define DWORD_BIT  I386_DWORD_BIT  /**< @see DWORD_BIT  */
+	#define BYTE_SIZE  I386_SIZE_SIZE  /**< @see BYTE_SIZE  */
+	#define HWORD_SIZE I386_HWORD_SIZE /**< @see HWORD_SIZE */
+	#define WORD_SIZE  I386_WORD_SIZE  /**< @see WORD_SIZE  */
+	#define DWORD_SIZE I386_DWORD_SIZE /**< @see DWORD_SIZE */
+	/**@}*/
+
+	/**
+	 * @brief Exported Types
+	 */
+	/**@{*/
+	#define __byte_t  /**< @see byte_t  */
+	#define __hword_t /**< @see hword_t */
+	#define __word_t  /**< @see word_t  */
+	#define __dword_t /**< @see dword_t */
+	/**@}*/
+
+	/**
+	 * @name Exported Functions
 	 */
 	/**@{*/
 	#define __core_get_id   /**< core_get_id()   */
@@ -105,6 +101,18 @@
 	#define __core_reset    /**< core_reset()    */
 	/**@}*/
 
+#ifndef _ASM_FILE_
+
+	/**
+	 * @name Core Types
+	 */
+	/**@{*/
+	typedef i386_byte_t  byte_t;  /**< Byte        */
+	typedef i386_hword_t hword_t; /**< Half Word   */
+	typedef i386_word_t  word_t;  /**< Word        */
+	typedef i386_dword_t dword_t; /**< Double Word */
+	/**@}*/
+
 	/**
 	 * @see i386_core_get_id().
 	 */
@@ -113,8 +121,8 @@
 		return (i386_core_get_id());
 	}
 
-/**@endcond*/
-
 #endif /* _ASM_FILE_ */
+
+/**@endcond*/
 
 #endif /* ARCH_I386_CORE_H_ */
