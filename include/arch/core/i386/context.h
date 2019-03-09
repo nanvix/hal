@@ -29,15 +29,14 @@
  * @addtogroup i386-core-context Context
  * @ingroup i386-core
  *
- * @brief Execution Context
+ * @brief Execution Context Interface
  */
 
-	/**
-	 * @name Procided Interface
-	 */
-	/**@{*/
-	#define __context_struct /**< Exection Context Structure */
-	/**@}*/
+#ifndef _ASM_FILE_
+
+	#include <arch/core/i386/core.h>
+
+#endif /* _ASM_FILE_ */
 
 	/**
 	 * @brief Hardware-saved execution context size (in bytes).
@@ -78,8 +77,9 @@
 
 #ifndef _ASM_FILE_
 
-	#define __NEED_CORE_TYPES
-	#include <arch/core/i386/types.h>
+/**
+ * @cond i386
+ */
 
 	/**
 	 * Saved execution context upon interrupts and exceptions.
@@ -91,6 +91,126 @@
         i386_word_t eip, cs, eflags, useresp, ss;      /**< Special Registers         */
 	} __attribute__((packed));
 
+/**@endcond*/
+
+	/**
+	 * @brief Gets the value of the stack pointer register.
+	 *
+	 * @param ctx Target context.
+	 *
+	 * @returns The value of the stack pointer register, which is
+	 * saved in the saved execution context pointed to by @p ctx.
+	 */
+	static inline i386_word_t i386_context_get_sp(const struct context *ctx)
+	{
+		return (ctx->useresp);
+	}
+
+	/**
+	 * @brief Gets the value of the program conter register.
+	 *
+	 * @param ctx Target context.
+	 *
+	 * @returns The value of the program conter register, which is
+	 * saved in the saved execution context pointed to by @p ctx.
+	 */
+	static inline i386_word_t i386_context_get_pc(const struct context *ctx)
+	{
+		return (ctx->eip);
+	}
+
+	/**
+	 * @brief Sets the value of the stack pointer register.
+	 *
+	 * @param ctx Target context.
+	 * @para  val Value to store.
+	 */
+	static inline void i386_context_set_sp(struct context *ctx, i386_word_t val)
+	{
+		ctx->useresp = val;
+	}
+
+	/**
+	 * @brief Sets the value of the program conter register.
+	 *
+	 * @param ctx Target context.
+	 * @para  val Value to store.
+	 */
+	static inline void i386_context_set_pc(struct context *ctx, i386_word_t val)
+	{
+		ctx->eip = val;
+	}
+
 #endif /* _ASM_FILE_ */
+
+/*============================================================================*
+ * Exported Interface                                                         *
+ *============================================================================*/
+
+/**
+ * @cond i386
+ */
+
+	/*
+	 * Exported Constants
+	 */
+	/**@{*/
+	#define CONTEXT_SIZE I386_CONTEXT_SIZE /**< @see I386_CONTEXT_SIZE */
+	/**@}*/
+
+	/**
+	 * @name Exported Structures
+	 */
+	/**@{*/
+	#define __context_struct /**< @see context */
+	/**@}*/
+
+	/**
+	 * @brief Exported Functions
+	 */
+	/**@{*/
+	#define __context_get_sp_fn /**< context_get_sp() */
+	#define __context_get_pc_fn /**< context_get_pc() */
+	#define __context_set_sp_fn /**< context_set_sp() */
+	#define __context_set_pc_fn /**< context_set_pc() */
+	/**@}*/
+
+#ifndef _ASM_FILE_
+
+	/**
+	 * @see i386_context_get_sp().
+	 */
+	static inline word_t context_get_sp(const struct context *ctx)
+	{
+		return (i386_context_get_sp(ctx));
+	}
+
+	/**
+	 * @see i386_context_get_pc().
+	 */
+	static inline word_t context_get_pc(const struct context *ctx)
+	{
+		return (i386_context_get_pc(ctx));
+	}
+
+	/**
+	 * @see i386_context_set_sp().
+	 */
+	static inline void context_set_sp(struct context *ctx, word_t val)
+	{
+		i386_context_set_sp(ctx, val);
+	}
+
+	/**
+	 * @see i386_context_set_pc().
+	 */
+	static inline void context_set_pc(struct context *ctx, word_t val)
+	{
+		i386_context_set_pc(ctx, val);
+	}
+
+#endif /* _ASM_FILE_ */
+
+/**@endcond*/
 
 #endif /* ARCH_I386_CONTEXT_H_ */
