@@ -26,7 +26,7 @@
 layout split
 target remote localhost:1234
 handle SIGSEGV nostop noprint nopass
-symbol-file bin/kernel
+symbol-file bin/test-driver
 set confirm off
 define hook-stop
 	if $_isvoid ($_exitcode) != 1
