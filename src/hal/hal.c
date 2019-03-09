@@ -23,6 +23,12 @@
  */
 
 #include <nanvix/hal/hal.h>
+#include <nanvix/klib.h>
+
+/* Size checking. */
+#if (CONTEXT_SIZE % WORD_SIZE)
+#error "size of context structure should be multiple of a word"
+#endif
 
 /**
  * @brief The hal_init() function performs the initialization of the
@@ -38,5 +44,9 @@
 PUBLIC void hal_init(void)
 {
 	hal_log_setup();
+
+	/* Sanity check size of structures. */
+	KASSERT_SIZE(sizeof(struct context), CONTEXT_SIZE);
+
 	interrupt_setup();
 }
