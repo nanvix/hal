@@ -33,13 +33,9 @@
  */
 /**@{*/
 
-	#ifndef __NEED_OR1K_CONTEXT
-		#error "do not include this file"
-	#endif
-
 #ifndef _ASM_FILE_
 
-	#include <stdint.h>
+	#include <arch/core/or1k/core.h>
 
 #endif /* _ASM_FILE_ */
 
@@ -92,7 +88,7 @@
 #ifndef _ASM_FILE_
 
 /**
- * @cond mor1kx
+ * @cond or1k
  */
 
 	/**
@@ -100,16 +96,64 @@
 	 */
 	struct context
 	{
-		uint32_t  r0,  r1,  r2,  r3,  r4,  r5,  r6,  r7; /**< General Purpose Registers  0 to  7 */
-		uint32_t  r8,  r9, r10, r11, r12, r13, r14, r15; /**< General Purpose Registers  8 to 15 */
-		uint32_t r16, r17, r18, r19, r20, r21, r22, r23; /**< General Purpose Registers 16 to 23 */
-		uint32_t r24, r25, r26, r27, r28, r29, r30, r31; /**< General Purpose Registers 24 to 31 */
-		uint32_t epcr;                                   /**< Shadow Program Counter Register    */
-		uint32_t eear;                                   /**< Shadow Effective Address Register  */
-		uint32_t  esr;                                   /**< Shadow Status Register             */
+		or1k_word_t  r0,  r1,  r2,  r3,  r4,  r5,  r6,  r7; /**< General Purpose Registers  0 to  7 */
+		or1k_word_t  r8,  r9, r10, r11, r12, r13, r14, r15; /**< General Purpose Registers  8 to 15 */
+		or1k_word_t r16, r17, r18, r19, r20, r21, r22, r23; /**< General Purpose Registers 16 to 23 */
+		or1k_word_t r24, r25, r26, r27, r28, r29, r30, r31; /**< General Purpose Registers 24 to 31 */
+		or1k_word_t epcr;                                   /**< Shadow Program Counter Register    */
+		or1k_word_t eear;                                   /**< Shadow Effective Address Register  */
+		or1k_word_t  esr;                                   /**< Shadow Status Register             */
 	} __attribute__((packed));
 
 /**@endcond*/
+
+	/**
+	 * @brief Gets the value of the stack pointer register.
+	 *
+	 * @param ctx Target context.
+	 *
+	 * @returns The value of the stack pointer register, which is
+	 * saved in the saved execution context pointed to by @p ctx.
+	 */
+	static inline or1k_word_t or1k_context_get_sp(const struct context *ctx)
+	{
+		return (ctx->r1);
+	}
+
+	/**
+	 * @brief Gets the value of the program conter register.
+	 *
+	 * @param ctx Target context.
+	 *
+	 * @returns The value of the program conter register, which is
+	 * saved in the saved execution context pointed to by @p ctx.
+	 */
+	static inline or1k_word_t or1k_context_get_pc(const struct context *ctx)
+	{
+		return (ctx->epcr);
+	}
+
+	/**
+	 * @brief Sets the value of the stack pointer register.
+	 *
+	 * @param ctx Target context.
+	 * @para  val Value to store.
+	 */
+	static inline void or1k_context_set_sp(struct context *ctx, or1k_word_t val)
+	{
+		ctx->r1 = val;
+	}
+
+	/**
+	 * @brief Sets the value of the program conter register.
+	 *
+	 * @param ctx Target context.
+	 * @para  val Value to store.
+	 */
+	static inline void or1k_context_set_pc(struct context *ctx, or1k_word_t val)
+	{
+		ctx->epcr = val;
+	}
 
 #endif /* _ASM_FILE_ */
 
@@ -120,15 +164,68 @@
  *============================================================================*/
 
 /**
- * @cond mor1kx
+ * @cond or1k
  */
 
-	/**
-	 * @name Provided Interface
+	/*
+	 * Exported Constants
 	 */
 	/**@{*/
-	#define __context_struct /**< @see context*/
+	#define CONTEXT_SIZE OR1K_CONTEXT_SIZE /**< @see OR1K_CONTEXT_SIZE */
 	/**@}*/
+
+	/**
+	 * @name Exported Structures
+	 */
+	/**@{*/
+	#define __context_struct /**< @see context */
+	/**@}*/
+
+	/**
+	 * @brief Exported Functions
+	 */
+	/**@{*/
+	#define __context_get_sp_fn /**< context_get_sp() */
+	#define __context_get_pc_fn /**< context_get_pc() */
+	#define __context_set_sp_fn /**< context_set_sp() */
+	#define __context_set_pc_fn /**< context_set_pc() */
+	/**@}*/
+
+#ifndef _ASM_FILE_
+
+	/**
+	 * @see or1k_context_get_sp().
+	 */
+	static inline word_t context_get_sp(const struct context *ctx)
+	{
+		return (or1k_context_get_sp(ctx));
+	}
+
+	/**
+	 * @see or1k_context_get_pc().
+	 */
+	static inline word_t context_get_pc(const struct context *ctx)
+	{
+		return (or1k_context_get_pc(ctx));
+	}
+
+	/**
+	 * @see or1k_context_set_sp().
+	 */
+	static inline void context_set_sp(struct context *ctx, word_t val)
+	{
+		or1k_context_set_sp(ctx, val);
+	}
+
+	/**
+	 * @see or1k_context_set_pc().
+	 */
+	static inline void context_set_pc(struct context *ctx, word_t val)
+	{
+		or1k_context_set_pc(ctx, val);
+	}
+
+#endif /* _ASM_FILE_ */
 
 /**@endcond*/
 
