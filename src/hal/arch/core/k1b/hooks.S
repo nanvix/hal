@@ -30,63 +30,13 @@
 #include <arch/core/k1b/context.h>
 #include <arch/core/k1b/excp.h>
 #include <arch/core/k1b/asm.h>
+#include <arch/core/k1b/upcall.h>
 #include <mOS_common_types_s_c.h>
 
 .global _do_syscall
 .global _do_excp
 
 .section .text
-
-
-/*===========================================================================*
- * _do_syscall()                                                             *
- *===========================================================================*/
-
-/*
- * System call hook.
- */
-.align 8
-_do_syscall:
-
-	/* Save system call context. */
-	add $sp = $sp, -K1B_DWORD_SIZE
-	;;
-	get $r8 = $ra
-	;;
-	copy $bp = $r7
-	;;
-	sw 0 [$sp] = $bp
-	;;
-	sw 4 [$sp] = $r8
-	;;
-
-	/*
-	 * Invoke system call dispatcher.
-	 */
-	redzone_alloc
-	;;
-	call do_syscall
-	;;
-	redzone_free
-	;;
-
-	/* Restore system call context. */
-	lw $r8 = 4 [$sp]
-	;;
-	lw $bp = 0 [$sp]
-	;;
-	add $sp = $sp, K1B_DWORD_SIZE
-	;;
-	set $ra = $r8
-	;;
-	scall MOS_VC_RFE
-	;;
-	ret
-	;;
-
-/*===========================================================================*
- * _do_excp()                                                                *
- *===========================================================================*/
 
 /*
  * Gets the scoreboard of the underlying core.
@@ -106,6 +56,88 @@ _do_syscall:
 	add  \s0, \s0, \s1
 	;;
 .endm
+
+/*===========================================================================*
+ * _do_syscall()                                                             *
+ *===========================================================================*/
+
+/*
+ * System call hook.
+ */
+.align 8
+_do_syscall:
+
+	cb.nez $r7, _do_syscall.continue
+	;;
+
+		copy $sp, $r1
+		;;
+
+		_scoreboard_get $r2 $r3
+
+		/* Restore saved program counter. */
+		lw  $r4 = K1B_CONTEXT_SPC[$sp]
+		;;
+		sw  MOS_VC_REG_SPC[$r2], $r4
+		;;
+
+		/* Restore shadow stack pointer. */
+		lw  $r4 = K1B_CONTEXT_SSP[$sp]
+		;;
+		sw  MOS_VC_REG_SSP[$r2], $r4
+		;;
+
+		/* Restore saved execution context. */
+		k1b_context_restore
+		;;
+
+		goto _do_syscall.out
+		;;
+
+	_do_syscall.continue:
+
+		/* Save system call context. */
+		add $sp = $sp, -K1B_DWORD_SIZE
+		;;
+		get $r8 = $ra
+		;;
+		copy $bp = $r7
+		;;
+		sw 0 [$sp] = $bp
+		;;
+		sw 4 [$sp] = $r8
+		;;
+
+		/*
+		 * Invoke system call dispatcher.
+		 */
+		redzone_alloc
+		;;
+		call do_syscall
+		;;
+		redzone_free
+		;;
+
+		/* Restore system call context. */
+		lw $r8 = 4 [$sp]
+		;;
+		lw $bp = 0 [$sp]
+		;;
+		add $sp = $sp, K1B_DWORD_SIZE
+		;;
+		set $ra = $r8
+		;;
+
+	_do_syscall.out:
+
+		scall MOS_VC_RFE
+		;;
+		ret
+		;;
+
+/*===========================================================================*
+ * _do_excp()                                                                *
+ *===========================================================================*/
 
 /*
  * Exception hook.

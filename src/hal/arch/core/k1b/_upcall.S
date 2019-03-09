@@ -22,39 +22,54 @@
  * SOFTWARE.
  */
 
-#ifndef CORE_K1B_H_
-#define CORE_K1B_H_
+/* Must come first. */
+#define _ASM_FILE_
 
-	/**
-	 * @addtogroup k1b-core k1b Core
-	 * @ingroup cores
-	 */
+#include <arch/core/k1b/asm.h>
+#include <arch/core/k1b/upcall.h>
 
-	#ifndef __NEED_CORE_K1B
-		#error "k1b core not required"
-	#endif
+#define __NEED_CORE_TYPES
+#include <arch/core/k1b/types.h>
 
-	#include <arch/core/k1b/cache.h>
-	#include <arch/core/k1b/clock.h>
-	#include <arch/core/k1b/core.h>
-	#include <arch/core/k1b/excp.h>
-	#include <arch/core/k1b/int.h>
-	#include <arch/core/k1b/mmu.h>
-	#include <arch/core/k1b/pmio.h>
-	#include <arch/core/k1b/pic.h>
-	#include <arch/core/k1b/spinlock.h>
-	#include <arch/core/k1b/tlb.h>
-	#include <arch/core/k1b/trap.h>
-	#include <arch/core/k1b/upcall.h>
+.global k1b_upcall_ret
 
-/**
- * @cond k1b
+.section .text
+
+/*===========================================================================*
+ * k1b_upcall_ret()                                                          *
+ *===========================================================================*/
+
+/*
+ * Returns from an upcall.
  */
+.align 8
+k1b_upcall_ret:
 
-	/* Feature Declaration */
-	#define CORE_SUPPORTS_PMIO 1
+	/* Do upcall. */
+	lw  $r1, 0[$sp]               # Target Function
+	;;
+	add $r0, $sp, 2*K1B_WORD_SIZE # Argument
+	;;
 
-/**@}*/
+	redzone_alloc
+	;;
+	icall $r1
+	;;
+	redzone_free
+	;;
 
-#endif /* CORE_K1B_H_ */
+	/* Wipe out upcall stack frame. */
+	lw  $r0, 4[$sp]                # arg
+	;;
+	add $r0, $r0, 2*K1B_WORD_SIZE  # argsize + fn
+	;;
+	add $sp, $sp, $r0
+	;;
 
+	/* Restore old context. */
+	copy $r1, $sp
+	;;
+	make $r0, K1B_NR_upcall_ret
+	;;
+	scall $r0
+	;;

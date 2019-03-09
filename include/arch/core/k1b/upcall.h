@@ -22,39 +22,69 @@
  * SOFTWARE.
  */
 
-#ifndef CORE_K1B_H_
-#define CORE_K1B_H_
+#ifndef ARCH_CORE_K1B_UPCALL_H_
+#define ARCH_CORE_K1B_UPCALL_H_
+
+/**
+ * @addtogroup k1b-core-upcall Upcall
+ * @ingroup k1b-core
+ *
+ * @brief Upcall Interface
+ */
+/**@{*/
 
 	/**
-	 * @addtogroup k1b-core k1b Core
-	 * @ingroup cores
+	 * @brief System call number for upcall_ret().
 	 */
+	#define K1B_NR_upcall_ret 0
 
-	#ifndef __NEED_CORE_K1B
-		#error "k1b core not required"
-	#endif
+#ifndef _ASM_FILE_
 
-	#include <arch/core/k1b/cache.h>
-	#include <arch/core/k1b/clock.h>
-	#include <arch/core/k1b/core.h>
-	#include <arch/core/k1b/excp.h>
-	#include <arch/core/k1b/int.h>
-	#include <arch/core/k1b/mmu.h>
-	#include <arch/core/k1b/pmio.h>
-	#include <arch/core/k1b/pic.h>
-	#include <arch/core/k1b/spinlock.h>
-	#include <arch/core/k1b/tlb.h>
-	#include <arch/core/k1b/trap.h>
-	#include <arch/core/k1b/upcall.h>
+	/**
+	 * @brief Returns from an upcall.
+	 */
+	extern void k1b_upcall_ret(void);
+
+#endif
+
+/**@}*/
+
+/*============================================================================*
+ * Exported Interface                                                         *
+ *============================================================================*/
 
 /**
  * @cond k1b
  */
 
-	/* Feature Declaration */
-	#define CORE_SUPPORTS_PMIO 1
+	/**
+	 * @name Exported Constants
+	 */
+	/**@{*/
+	#define NR_upcall_ret K1B_NR_upcall_ret /**< @see NR_upcall_ret */
+	/**@}*/
 
-/**@}*/
+	/**
+	 * @name Exported Functions
+	 */
+	/**@{*/
+	#define __upcall_ret_fn /**< upcall_ret() */
+	/**@}*/
 
-#endif /* CORE_K1B_H_ */
+#ifndef _ASM_FILE_
 
+	/**
+	 * @brief Alias for k1b_upcall_ret()
+	 *
+	 * @see k1b_upcall_ret().
+	 *
+	 * @note This should be an alias, otherwise the compiler may mess
+	 * up with the stack that we have crafted carefully.
+	 */
+	#define upcall_ret k1b_upcall_ret
+
+#endif
+
+/**@endcond*/
+
+#endif /* ARCH_CORE_K1B_UPCALL_H_ */
