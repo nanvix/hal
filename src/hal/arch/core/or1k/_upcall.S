@@ -22,39 +22,42 @@
  * SOFTWARE.
  */
 
-#ifndef CORE_OR1K_H_
-#define CORE_OR1K_H_
+/* Must come first. */
+#define _ASM_FILE_
+#define __NEED_OR1K_REGS
+#define __NEED_CORE_TYPES
 
-	/**
-	 * @addtogroup or1k-core OpenRISC Core
-	 * @ingroup cores
-	 */
+#include <arch/core/or1k/asm.h>
+#include <arch/core/or1k/upcall.h>
 
-	#ifndef __NEED_CORE_OR1K
-		#error "or1k core not required"
-	#endif
+#include <arch/core/or1k/types.h>
 
-	#include <arch/core/or1k/cache.h>
-	#include <arch/core/or1k/clock.h>
-	#include <arch/core/or1k/core.h>
-	#include <arch/core/or1k/excp.h>
-	#include <arch/core/or1k/int.h>
-	#include <arch/core/or1k/mmu.h>
-	#include <arch/core/or1k/ompic.h>
-	#include <arch/core/or1k/pic.h>
-	#include <arch/core/or1k/spinlock.h>
-	#include <arch/core/or1k/tlb.h>
-	#include <arch/core/or1k/trap.h>
-	#include <arch/core/or1k/upcall.h>
+.global or1k_upcall_ret
 
-/**
- * @cond or1k
+.section .text
+
+/*===========================================================================*
+ * or1k_upcall_ret()                                                          *
+ *===========================================================================*/
+
+/*
+ * Returns from an upcall.
  */
+.align 8
+or1k_upcall_ret:
 
-	/* Feature Declaration */
-	#define CORE_SUPPORTS_PMIO 0
+	/* Call target function. */
+	l.lwz  r4, 0(sp)
+	l.addi r3, sp, 2*OR1K_WORD_SIZE
+	l.jalr r4
+	l.nop
 
-/**@}*/
+	/* Wipe out argument. */
+	l.lwz  r3, 4(sp)
+	l.addi r3, r3, 2*OR1K_WORD_SIZE
+	l.add  sp, sp, r3
 
-#endif /* CORE_OR1K_H_ */
-
+	/* Call special syscall. */
+	l.ori r11, r0, OR1K_NR_upcall_ret
+	l.ori r3,  sp, 0
+	l.sys 1

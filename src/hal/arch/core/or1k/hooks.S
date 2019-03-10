@@ -49,6 +49,7 @@
 #include <arch/core/or1k/regs.h>
 #include <arch/core/or1k/excp.h>
 #include <arch/core/or1k/int.h>
+#include <arch/core/or1k/upcall.h>
 
 /*===========================================================================*
  * _do_handler() macros                                                      *
@@ -116,7 +117,7 @@ _do_excp:
 	 * in the current stack.
 	 */
 	l.addi sp, sp, -OR1K_CONTEXT_SIZE
-	or1k_context_save sp
+	or1k_context_save
 
 	/*
 	 * Save a reference to execution context
@@ -166,7 +167,7 @@ _do_excp:
 	/*
 	 * Restore saved execution context.
 	 */
-	or1k_context_restore sp
+	or1k_context_restore
 
 	_do_epilogue
 
@@ -189,7 +190,7 @@ _do_hwint:
 	 * in the current stack.
 	 */
 	l.addi sp, sp, -OR1K_CONTEXT_SIZE
-	or1k_context_save sp
+	or1k_context_save
 
 	/*
 	 * Save a reference to execution context
@@ -220,7 +221,7 @@ _do_hwint:
 	/*
 	 * Restore saved execution context.
 	 */
-	or1k_context_restore sp
+	or1k_context_restore
 
 	_do_epilogue
 
@@ -235,52 +236,65 @@ _do_hwint:
  * System call hook.
  */
 _syscall:
-	_do_prologue
-	redzone_alloc
 
-	/*
-	 * Save execution context
-	 * in the current stack.
-	 */
-	l.addi sp, sp, -OR1K_CONTEXT_SIZE
-	or1k_context_save sp
-
-	/*
-	 * Syscall parameters.
-	 */
-	l.lwz r3, OR1K_CONTEXT_R13(sp) /* arg6. */
-	l.sw -8(sp), r3
-	l.lwz r3, OR1K_CONTEXT_R11(sp) /* syscall_nr */
-	l.sw -4(sp), r3
-
-	l.lwz r8, OR1K_CONTEXT_R8(sp)  /* arg5. */
-	l.lwz r7, OR1K_CONTEXT_R7(sp)  /* arg4. */
-	l.lwz r6, OR1K_CONTEXT_R6(sp)  /* arg3. */
-	l.lwz r5, OR1K_CONTEXT_R5(sp)  /* arg2. */
-	l.lwz r4, OR1K_CONTEXT_R4(sp)  /* arg1. */
-	l.lwz r3, OR1K_CONTEXT_R3(sp)  /* arg0. */
-
-	l.addi sp, sp, -8
-
-	/*
-	 * Call syscall handler.
-	 */
-	l.jal do_syscall
+	l.sfeqi r11, OR1K_NR_upcall_ret
+	l.bnf _do_syscall.continue
 	l.nop
-	l.addi sp, sp, 8
 
-	/* Copy return value to the user stack. */
-	l.sw OR1K_CONTEXT_R11(sp), r11
+		l.ori sp, r3, 0
+		l.j _do_syscall.out
+		l.nop
 
-	/*
-	 * Restore saved execution context.
-	 */
-	or1k_context_restore sp
+	_do_syscall.continue:
 
-	_do_epilogue
+		_do_prologue
+		redzone_alloc
 
-	l.rfe
-	l.nop
+		/*
+		 * Save execution context
+		 * in the current stack.
+		 */
+		l.addi sp, sp, -OR1K_CONTEXT_SIZE
+		or1k_context_save
+
+		/*
+		 * Syscall parameters.
+		 */
+		l.lwz r3, OR1K_CONTEXT_R13(sp) /* arg6. */
+		l.sw -8(sp), r3
+		l.lwz r3, OR1K_CONTEXT_R11(sp) /* syscall_nr */
+		l.sw -4(sp), r3
+
+		l.lwz r8, OR1K_CONTEXT_R8(sp)  /* arg5. */
+		l.lwz r7, OR1K_CONTEXT_R7(sp)  /* arg4. */
+		l.lwz r6, OR1K_CONTEXT_R6(sp)  /* arg3. */
+		l.lwz r5, OR1K_CONTEXT_R5(sp)  /* arg2. */
+		l.lwz r4, OR1K_CONTEXT_R4(sp)  /* arg1. */
+		l.lwz r3, OR1K_CONTEXT_R3(sp)  /* arg0. */
+
+		l.addi sp, sp, -8
+
+		/*
+		 * Call syscall handler.
+		 */
+		l.jal do_syscall
+		l.nop
+		l.addi sp, sp, 8
+
+		/* Copy return value to the user stack. */
+		l.sw OR1K_CONTEXT_R11(sp), r11
+
+	_do_syscall.out:
+
+		/*
+		 * Restore saved execution context.
+		 */
+		or1k_context_restore
+
+		_do_epilogue
+
+		l.rfe
+		l.nop
 
 /*===========================================================================*
  * _do_start()                                                               *

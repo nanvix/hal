@@ -22,39 +22,70 @@
  * SOFTWARE.
  */
 
-#ifndef CORE_OR1K_H_
-#define CORE_OR1K_H_
+#ifndef ARCH_CORE_OR1K_UPCALL_H_
+#define ARCH_CORE_OR1K_UPCALL_H_
+
+/**
+ * @addtogroup or1k-core-upcall Upcall
+ * @ingroup or1k-core
+ *
+ * @brief Upcall Interface
+ */
+/**@{*/
 
 	/**
-	 * @addtogroup or1k-core OpenRISC Core
-	 * @ingroup cores
+	 * @brief System call number for upcall_ret().
 	 */
+	#define OR1K_NR_upcall_ret 0
 
-	#ifndef __NEED_CORE_OR1K
-		#error "or1k core not required"
-	#endif
+#ifndef _ASM_FILE_
 
-	#include <arch/core/or1k/cache.h>
-	#include <arch/core/or1k/clock.h>
-	#include <arch/core/or1k/core.h>
-	#include <arch/core/or1k/excp.h>
-	#include <arch/core/or1k/int.h>
-	#include <arch/core/or1k/mmu.h>
-	#include <arch/core/or1k/ompic.h>
-	#include <arch/core/or1k/pic.h>
-	#include <arch/core/or1k/spinlock.h>
-	#include <arch/core/or1k/tlb.h>
-	#include <arch/core/or1k/trap.h>
-	#include <arch/core/or1k/upcall.h>
+	/**
+	 * @brief Returns from an upcall.
+	 */
+	extern void or1k_upcall_ret(void);
+
+#endif
+
+/**@}*/
+
+/*============================================================================*
+ * Exported Interface                                                         *
+ *============================================================================*/
 
 /**
  * @cond or1k
  */
 
-	/* Feature Declaration */
-	#define CORE_SUPPORTS_PMIO 0
+	/**
+	 * @name Exported Constants
+	 */
+	/**@{*/
+	#define NR_upcall_ret OR1K_NR_upcall_ret /**< @see NR_upcall_ret */
+	/**@}*/
 
-/**@}*/
+	/**
+	 * @name Exported Functions
+	 */
+	/**@{*/
+	#define __upcall_ret_fn /**< upcall_ret() */
+	/**@}*/
 
-#endif /* CORE_OR1K_H_ */
+#ifndef _ASM_FILE_
+
+	/**
+	 * @brief Alias for or1k_upcall_ret()
+	 *
+	 * @see or1k_upcall_ret().
+	 *
+	 * @note This should be an alias, otherwise the compiler may mess
+	 * up with the stack that we have crafted carefully.
+	 */
+	#define upcall_ret or1k_upcall_ret
+
+#endif
+
+/**@endcond*/
+
+#endif /* ARCH_CORE_OR1K_UPCALL_H_ */
 
