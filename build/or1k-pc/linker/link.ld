@@ -38,8 +38,8 @@ SECTIONS
 	/* Kernel code section. */
 	.bootstrap : AT(ADDR(.bootstrap))
 	{
-		*(hooks.o)
-		*(boot_code.o)
+		*hooks.o
+		*boot_code.o
 	}
 
 	. = ALIGN(8192);
