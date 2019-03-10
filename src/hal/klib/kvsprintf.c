@@ -25,6 +25,10 @@
 #include <nanvix/const.h>
 #include <stdarg.h>
 
+#ifndef __HAS_HW_DIVISION
+#include <nanvix/klib.h>
+#endif
+
 /**
  * @brief Converts an integer to a string.
  *
@@ -39,6 +43,8 @@ PRIVATE int itoa(char *str, unsigned num, int base)
 	char *b = str;
 	char *p, *p1, *p2;
 	unsigned divisor;
+
+#ifdef __HAS_HW_DIVISION
 
 	if (base == 'd')
 		divisor = 10;
@@ -59,6 +65,26 @@ PRIVATE int itoa(char *str, unsigned num, int base)
 		*p++ = (remainder < 10) ? remainder + '0' :
 		                          remainder + 'a' - 10;
 	} while (num /= divisor);
+
+#else
+
+	UNUSED(base);
+
+	*b++ = '0'; *b++ = 'x';
+	divisor = 16;
+
+	p = b;
+
+	/* Convert number. */
+	do
+	{
+		unsigned remainder = num  & 0xf;
+
+		*p++ = (remainder < 10) ? remainder + '0' :
+		                          remainder + 'a' - 10;
+	} while ((num  = (num >> 4)));
+
+#endif
 
 	/* Fill up with zeros. */
 	if (divisor == 16)
@@ -90,7 +116,7 @@ PUBLIC int kvsprintf(char *str, const char *fmt, va_list args)
 {
 	char *base = str;
 	char *s;
-	
+
     /* Format string. */
     while (*fmt != '\0')
     {
@@ -106,7 +132,7 @@ PUBLIC int kvsprintf(char *str, const char *fmt, va_list args)
                 case 'c':
 					*str++ = (char)va_arg(args, int);
 					break;
-				
+
 				/* Number. */
 				case 'd':
 					str += itoa(str, va_arg(args, unsigned int), 'd');
@@ -114,7 +140,7 @@ PUBLIC int kvsprintf(char *str, const char *fmt, va_list args)
 				case 'x':
 					str += itoa(str, va_arg(args, unsigned int), 'x');
 					break;
-				
+
 				/* String. */
                 case 's':
 					s = va_arg(args, char*);

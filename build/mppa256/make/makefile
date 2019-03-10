@@ -43,6 +43,7 @@ export AR = $(K1_TOOLCHAIN_DIR)/bin/k1-ar
 # Compiler Options
 export CFLAGS   = -D __mppa256__ -D __k1b__
 export CFLAGS  += -mos=bare -march=k1b -mboard=developer
+export CFLAGS  += -D __HAS_HW_DIVISION
 
 # Linker Options
 export LDFLAGS  = -Wl,--allow-multiple-definition
