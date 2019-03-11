@@ -45,6 +45,7 @@ export CFLAGS  += -pedantic-errors -fextended-identifiers
 export CFLAGS  += -nostdlib -nostdinc -fno-stack-protector
 export CFLAGS  += -ansi -pedantic-errors
 export CFLAGS  += -Wstack-usage=4096
+export CFLAGS  += -D __HAS_HW_DIVISION
 
 # Linker Options
 export LDFLAGS  =

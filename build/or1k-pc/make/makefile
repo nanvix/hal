@@ -44,6 +44,7 @@ export AR = $(TOOLCHAIN_DIR)/or1k-elf-ar
 export CFLAGS   = -D __or1k__ -D __pc__
 export CFLAGS  += -fextended-identifiers
 export CFLAGS  += -nostdlib -nostdinc -fno-stack-protector
+export CFLAGS  += -D __HAS_HW_DIVISION
 
 # Linker Options
 export LDFLAGS  =
