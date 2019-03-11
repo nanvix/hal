@@ -23,6 +23,7 @@
  */
 
 #include <nanvix/const.h>
+#include <nanvix/klib.h>
 #include <arch/core/or1k/core.h>
 #include <arch/core/or1k/clock.h>
 
@@ -36,12 +37,14 @@ PUBLIC void or1k_clock_init(unsigned freq)
 	unsigned upr;  /* Unit Present Register. */
 	unsigned rate; /* Timer rate.            */
 
+	UNUSED(freq);
+
 	upr = or1k_mfspr(OR1K_SPR_UPR);
 	if ( !(upr & OR1K_SPR_UPR_TTP) )
 		while (1);
 
 	/* Clock rate. */
-	rate = (CPU_FREQUENCY)/freq;
+	rate = OR1K_CPU_FREQUENCY;
 
 	/* Ensures that the clock is disabled. */
 	or1k_mtspr(OR1K_SPR_TTCR, 0);
