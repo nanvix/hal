@@ -35,7 +35,7 @@
 
 #ifndef _ASM_FILE_
 
-	#include <stdint.h>
+	#include <arch/core/k1b/core.h>
 
 #endif /* _ASM_FILE_ */
 
@@ -136,24 +136,72 @@
 	 */
 	struct context
 	{
-		uint32_t  r0,  r1,  r2,  r3,  r4,  r5,  r6,  r7; /**< General Purpose Registers  0 to  7 */
-		uint32_t  r8,  r9, r10, r11, r12, r13, r14, r15; /**< General Purpose Registers  8 to 15 */
-		uint32_t r16, r17, r18, r19, r20, r21, r22, r23; /**< General Purpose Registers 16 to 23 */
-		uint32_t r24, r25, r26, r27, r28, r29, r30, r31; /**< General Purpose Registers 24 to 31 */
-		uint32_t r32, r33, r34, r35, r36, r37, r38, r39; /**< General Purpose Registers 32 to 39 */
-		uint32_t r40, r41, r42, r43, r44, r45, r46, r47; /**< General Purpose Registers 40 to 47 */
-		uint32_t r48, r49, r50, r51, r52, r53, r54, r55; /**< General Purpose Registers 48 to 55 */
-		uint32_t r56, r57, r58, r59, r60, r61, r62, r63; /**< General Purpose Registers 56 to 63 */
-		uint32_t spc;                                    /**< Shadow Program Counter Register    */
-		uint32_t ra;                                     /**< Return Address Register            */
-		uint32_t cs;                                     /**< Compute Status Register            */
-		uint32_t ssp, sssp, ssssp;                       /**< Stack Pointer Registers            */
-		uint32_t lc;                                     /**< Loop Count Register                */
-		uint32_t ls;                                     /**< Loop Start Register                */
-		uint32_t le;                                     /**< Loop Exit Register                 */
-		uint64_t ps;                                     /**< Processing Status Register         */
-		uint64_t sps;                                    /**< Shadow Processing Status Register  */
+		k1b_word_t  r0,  r1,  r2,  r3,  r4,  r5,  r6,  r7; /**< General Purpose Registers  0 to  7 */
+		k1b_word_t  r8,  r9, r10, r11, r12, r13, r14, r15; /**< General Purpose Registers  8 to 15 */
+		k1b_word_t r16, r17, r18, r19, r20, r21, r22, r23; /**< General Purpose Registers 16 to 23 */
+		k1b_word_t r24, r25, r26, r27, r28, r29, r30, r31; /**< General Purpose Registers 24 to 31 */
+		k1b_word_t r32, r33, r34, r35, r36, r37, r38, r39; /**< General Purpose Registers 32 to 39 */
+		k1b_word_t r40, r41, r42, r43, r44, r45, r46, r47; /**< General Purpose Registers 40 to 47 */
+		k1b_word_t r48, r49, r50, r51, r52, r53, r54, r55; /**< General Purpose Registers 48 to 55 */
+		k1b_word_t r56, r57, r58, r59, r60, r61, r62, r63; /**< General Purpose Registers 56 to 63 */
+		k1b_word_t spc;                                    /**< Shadow Program Counter Register    */
+		k1b_word_t ra;                                     /**< Return Address Register            */
+		k1b_word_t cs;                                     /**< Compute Status Register            */
+		k1b_word_t ssp, sssp, ssssp;                       /**< Stack Pointer Registers            */
+		k1b_word_t lc;                                     /**< Loop Count Register                */
+		k1b_word_t ls;                                     /**< Loop Start Register                */
+		k1b_word_t le;                                     /**< Loop Exit Register                 */
+		k1b_dword_t ps;                                    /**< Processing Status Register         */
+		k1b_dword_t sps;                                   /**< Shadow Processing Status Register  */
 	} __attribute__((packed));
+
+	/**
+	 * @brief Gets the value of the stack pointer register.
+	 *
+	 * @param ctx Target context.
+	 *
+	 * @returns The value of the stack pointer register, which is
+	 * saved in the saved execution context pointed to by @p ctx.
+	 */
+	static inline k1b_word_t k1b_context_get_sp(const struct context *ctx)
+	{
+		return (ctx->ssp);
+	}
+
+	/**
+	 * @brief Gets the value of the program conter register.
+	 *
+	 * @param ctx Target context.
+	 *
+	 * @returns The value of the program conter register, which is
+	 * saved in the saved execution context pointed to by @p ctx.
+	 */
+	static inline k1b_word_t k1b_context_get_pc(const struct context *ctx)
+	{
+		return (ctx->spc);
+	}
+
+	/**
+	 * @brief Sets the value of the stack pointer register.
+	 *
+	 * @param ctx Target context.
+	 * @para  val Value to store.
+	 */
+	static inline void k1b_context_set_sp(struct context *ctx, k1b_word_t val)
+	{
+		ctx->ssp = val;
+	}
+
+	/**
+	 * @brief Sets the value of the program conter register.
+	 *
+	 * @param ctx Target context.
+	 * @para  val Value to store.
+	 */
+	static inline void k1b_context_set_pc(struct context *ctx, k1b_word_t val)
+	{
+		ctx->spc = val;
+	}
 
 /**@endcond*/
 
@@ -169,12 +217,65 @@
  * @cond k1b
  */
 
-	/**
-	 * @name Procided Interface
+	/*
+	 * Exported Constants
 	 */
 	/**@{*/
-	#define __context_struct /**< Exection Context Structure */
+	#define CONTEXT_SIZE K1B_CONTEXT_SIZE /**< @see K1B_CONTEXT_SIZE */
 	/**@}*/
+
+	/**
+	 * @name Exported Structures
+	 */
+	/**@{*/
+	#define __context_struct /**< @see context */
+	/**@}*/
+
+	/**
+	 * @brief Exported Functions
+	 */
+	/**@{*/
+	#define __context_get_sp_fn /**< context_get_sp() */
+	#define __context_get_pc_fn /**< context_get_pc() */
+	#define __context_set_sp_fn /**< context_set_sp() */
+	#define __context_set_pc_fn /**< context_set_pc() */
+	/**@}*/
+
+#ifndef _ASM_FILE_
+
+	/**
+	 * @see k1b_context_get_sp().
+	 */
+	static inline word_t context_get_sp(const struct context *ctx)
+	{
+		return (k1b_context_get_sp(ctx));
+	}
+
+	/**
+	 * @see k1b_context_get_pc().
+	 */
+	static inline word_t context_get_pc(const struct context *ctx)
+	{
+		return (k1b_context_get_pc(ctx));
+	}
+
+	/**
+	 * @see k1b_context_set_sp().
+	 */
+	static inline void context_set_sp(struct context *ctx, word_t val)
+	{
+		k1b_context_set_sp(ctx, val);
+	}
+
+	/**
+	 * @see k1b_context_set_pc().
+	 */
+	static inline void context_set_pc(struct context *ctx, word_t val)
+	{
+		k1b_context_set_pc(ctx, val);
+	}
+
+#endif /* _ASM_FILE_ */
 
 /**@endcond*/
 

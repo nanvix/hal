@@ -32,6 +32,30 @@
  * Interface Implementation Checking                                          *
  *============================================================================*/
 
+	/* Constants */
+	#ifndef CONTEXT_SIZE
+	#error "CONTEXT_SIZE not defined"
+	#endif
+
+	/* Structures */
+	#ifndef __context_struct
+	#error "struct context not defined?"
+	#endif
+
+	/* Functions */
+	#ifndef __context_get_sp_fn
+	#error "context_get_sp() not defined?"
+	#endif
+	#ifndef __context_get_pc_fn
+	#error "context_get_pc() not defined?"
+	#endif
+	#ifndef __context_set_sp_fn
+	#error "context_set_sp() not defined?"
+	#endif
+	#ifndef __context_set_pc_fn
+	#error "context_set_pc() not defined?"
+	#endif
+
 /*============================================================================*
  * Execution Context Interface                                                *
  *============================================================================*/
@@ -44,10 +68,48 @@
  */
 /**@{*/
 
+	#include <nanvix/const.h>
+
 	/**
 	 * @brief Execution context.
 	 */
 	struct context;
+
+	/**
+	 * @brief Gets the value of the stack pointer register.
+	 *
+	 * @param ctx Target context.
+	 *
+	 * @returns The value of the stack pointer register, which is
+	 * saved in the saved execution context pointed to by @p ctx.
+	 */
+	EXTERN word_t context_get_sp(const struct context *ctx);
+
+	/**
+	 * @brief Gets the value of the program conter register.
+	 *
+	 * @param ctx Target context.
+	 *
+	 * @returns The value of the program conter register, which is
+	 * saved in the saved execution context pointed to by @p ctx.
+	 */
+	EXTERN word_t context_get_pc(const struct context *ctx);
+
+	/**
+	 * @brief Sets the value of the stack pointer register.
+	 *
+	 * @param ctx Target context.
+	 * @para  val Value to store.
+	 */
+	EXTERN void context_set_sp(struct context *ctx, word_t val);
+
+	/**
+	 * @brief Sets the value of the program conter register.
+	 *
+	 * @param ctx Target context.
+	 * @para  val Value to store.
+	 */
+	EXTERN void context_set_pc(struct context *ctx, word_t val);
 
 /**@}*/
 
