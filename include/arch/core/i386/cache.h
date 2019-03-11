@@ -48,7 +48,7 @@
 	#define I386_CACHE_LINE_SIZE 64
 
 	/**
-	 * @see K1B_CACHE_LINE_SIZE
+	 * @see I386_CACHE_LINE_SIZE
 	 */
 	#define CACHE_LINE_SIZE I386_CACHE_LINE_SIZE
 

@@ -233,7 +233,7 @@ _do_excp:
 	pushl %eax /* Execution context. */
 	pushl %ebx /* Exception context. */
 	call  do_excp
-	addl  $(2*DWORD_SIZE), %esp
+	addl  $(2*I386_WORD_SIZE), %esp
 
     i386_context_restore
 
@@ -286,7 +286,7 @@ syscall:
 		pushl %ebx
 		pushl $(\num)
 		call i386_do_hwint
-		addl $(2*DWORD_SIZE), %esp
+		addl $(2*I386_WORD_SIZE), %esp
 		i386_context_restore
 .endm
 
@@ -300,7 +300,7 @@ syscall:
 		pushl %ebx
 		pushl $(\num)
 		call i386_do_hwint
-		addl $(2*DWORD_SIZE), %esp
+		addl $(2*I386_WORD_SIZE), %esp
 		i386_context_restore
 .endm
 

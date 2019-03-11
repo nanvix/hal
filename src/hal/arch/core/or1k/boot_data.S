@@ -70,7 +70,7 @@ kpool_pgtab:
  */
 .align OR1K_PAGE_SIZE
 dtlb_table:
-	.fill 64, DWORD_SIZE, 0
+	.fill 64, OR1K_WORD_SIZE, 0
 
 /*----------------------------------------------------------------------------*
  * itlb                                                                       *
@@ -81,7 +81,7 @@ dtlb_table:
  */
 .align OR1K_PAGE_SIZE
 itlb_table:
-	.fill 64, DWORD_SIZE, 0
+	.fill 64, OR1K_WORD_SIZE, 0
 
 /*----------------------------------------------------------------------------*
  * core.kstack                                                                *

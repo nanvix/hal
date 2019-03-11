@@ -36,9 +36,8 @@
 	#define __NEED_K1B_ELF
 	#include <arch/core/k1b/elf.h>
 
-	#define __NEED_VADDR_T
-	#define __NEED_PADDR_T
-	#include <arch/core/or1k/types.h>
+	#define __NEED_MEMORY_TYPES
+	#include <arch/core/k1b/types.h>
 
 	#include <nanvix/klib.h>
 	#include <stdint.h>

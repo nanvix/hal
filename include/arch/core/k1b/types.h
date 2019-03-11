@@ -22,60 +22,96 @@
  * SOFTWARE.
  */
 
-#ifndef ARCH_CORE_OR1K_TYPES_H_
-#define ARCH_CORE_OR1K_TYPES_H_
-
 /**
- * @cond mor1kx
+ * @cond k1b
  */
+
+#if (!defined(__NEED_CORE_TYPES) && !defined(__NEED_MEMORY_TYPES))
+	#error "do not include this file"
+#endif
 
 #ifndef _ASM_FILE_
 	#include <stdint.h>
 #endif
 
+/**
+ * @addtogroup k1b-core
+ */
+/**@{*/
+
+#ifdef __NEED_CORE_TYPES
+#ifndef __CORE_CONSTANTS
+#define __CORE_CONSTANTS
+
 	/**
-	 * @name Bit-Length of Machine Types
+	 * @name Bit-Length of Core Types
 	 */
 	/**@{*/
-	#define BYTE_BIT    8 /**< Byte.        */
-	#define WORD_BIT   16 /**< Word.        */
-	#define DWORD_BIT  32 /**< Double word. */
-	#define QWORD_BIT  64 /**< Quad word.   */
+	#define K1B_BYTE_BIT    8 /**< Byte        */
+	#define K1B_HWORD_BIT  16 /**< Half Word   */
+	#define K1B_WORD_BIT   32 /**< Word        */
+	#define K1B_DWORD_BIT  64 /**< Double Word */
 	/**@}*/
 
 	/**
-	 * @name Byte-Length of Machine Types
+	 * @name Byte-Length of Core Types
 	 */
 	/**@{*/
-	#define BYTE_SIZE  1 /**< Byte.        */
-	#define WORD_SIZE  2 /**< Word.        */
-	#define DWORD_SIZE 4 /**< Double word. */
-	#define QWORD_SIZE 8 /**< Quad word.   */
+	#define K1B_BYTE_SIZE   1 /**< Byte        */
+	#define K1B_HWORD_SIZE  2 /**< Half Word   */
+	#define K1B_WORD_SIZE   4 /**< Word        */
+	#define K1B_DWORD_SIZE  8 /**< Double Word */
 	/**@}*/
 
-#ifndef _ASM_FILE_
-
-	/**
-	 * @brief Virtual address.
-	 */
-	typedef uint32_t vaddr_t;
-
-	/**
-	 * @brief Physical address.
-	 */
-	typedef uint32_t paddr_t;
-
-	/**
-	 * @name Machine Types
-	 */
-	/**@{*/
-	typedef uint8_t byte_t;   /**< Byte.        */
-	typedef uint16_t word_t;  /**< Word.        */
-	typedef uint32_t dword_t; /**< Double word. */
-	/**@}*/
-
+#endif
 #endif
 
 /**@}*/
 
-#endif /* ARCH_CORE_OR1K_TYPES_H_ */
+#ifndef _ASM_FILE_
+
+	#ifdef __NEED_MEMORY_TYPES
+	#ifndef __MEMORY_TYPES
+	#define __MEMORY_TYPES
+
+		/**
+		 * @brief Virtual address.
+		 */
+		typedef uint32_t vaddr_t;
+
+		/**
+		 * @brief Physical address.
+		 */
+		typedef uint32_t paddr_t;
+
+	#endif
+	#endif
+
+
+	/**
+	 * @addtogroup k1b-core
+	 */
+	/**@{*/
+
+	#ifdef __NEED_CORE_TYPES
+	#ifndef __CORE_TYPES
+	#define __CORE_TYPES
+
+		/**
+		 * @name Core Types
+		 */
+		/**@{*/
+		typedef uint8_t k1b_byte_t;   /**< Byte        */
+		typedef uint16_t k1b_hword_t; /**< Half Word   */
+		typedef uint32_t k1b_word_t;  /**< Word        */
+		typedef uint64_t k1b_dword_t; /**< Double Word */
+		/**@}*/
+
+	#endif
+	#endif
+
+	/**@}*/
+
+#endif
+
+/**@endcond*/

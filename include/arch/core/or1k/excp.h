@@ -38,8 +38,7 @@
 
 #ifndef _ASM_FILE_
 
-	#define __NEED_VADDR_T
-	#define __NEED_PADDR_T
+	#define __NEED_MEMORY_TYPES
 	#include <arch/core/or1k/types.h>
 
 	#include <nanvix/const.h>

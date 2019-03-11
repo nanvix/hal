@@ -45,6 +45,46 @@
  * Interface Implementation Checking                                          *
  *============================================================================*/
 
+	/* Constants */
+	#ifndef BYTE_BIT
+	#error "BYTE_BIT not defined"
+	#endif
+	#ifndef HWORD_BIT
+	#error "HWORD_BIT not defined"
+	#endif
+	#ifndef WORD_BIT
+	#error "WORD_BIT not defined"
+	#endif
+	#ifndef DWORD_BIT
+	#error "DWORD_BIT not defined"
+	#endif
+	#ifndef BYTE_SIZE
+	#error "BYTE_SIZE not defined"
+	#endif
+	#ifndef HWORD_SIZE
+	#error "HWORD_SIZE not defined"
+	#endif
+	#ifndef WORD_SIZE
+	#error "WORD_SIZE not defined"
+	#endif
+	#ifndef DWORD_SIZE
+	#error "DWORD_SIZE not defined"
+	#endif
+
+	/* Types */
+	#ifndef __byte_t
+	#error "byte_t type not defined?"
+	#endif
+	#ifndef __hword_t
+	#error "hword_t type not defined?"
+	#endif
+	#ifndef __word_t
+	#error "word_t type not defined?"
+	#endif
+	#ifndef __dword_t
+	#error "dword_t type not defined?"
+	#endif
+
 	/* Functions */
 	#ifndef __core_get_id
 	#error "core_get_id() not defined?"

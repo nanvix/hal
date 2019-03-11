@@ -86,7 +86,7 @@ start:
 	/* Build kernel and kernel pool page tables. */
 	OR1K_LOAD_SYMBOL_2_GPR(r1, kpool_pgtab)
 	l.addi  r1, r1,  OR1K_PAGE_SIZE
-	l.addi  r1, r1, -DWORD_SIZE
+	l.addi  r1, r1, -OR1K_WORD_SIZE
 
 	OR1K_LOAD_SYMBOL_2_GPR(r3, 0x003ffc00)
 	l.ori  r3, r3, OR1K_PT_L | OR1K_PT_PRESENT | OR1K_PT_PPI_SPV_EX
@@ -147,8 +147,8 @@ start:
 		l.addi  r3, r3, 1
 		l.slli  r3, r3, OR1K_PAGE_SHIFT
 		l.add   r1, r1, r3
-		l.addi  r1, r1, -DWORD_SIZE /* Stack pointer. */
-		l.or    r2, r1, r0          /* Frame pointer. */
+		l.addi  r1, r1, -OR1K_WORD_SIZE /* Stack pointer. */
+		l.or    r2, r1, r0               /* Frame pointer. */
 
 		/* Flush TLB. */
 		l.jal _boot_tlb_flush

@@ -104,17 +104,9 @@
 
 #ifndef _ASM_FILE_
 
+	#define __NEED_MEMORY_TYPES
+	#include <arch/core/i386/types.h>
 	#include <nanvix/klib.h>
-
-	/**
-	 * @brief Virtual address.
-	 */
-	typedef uint32_t vaddr_t;
-
-	/**
-	 * @brief Physical address.
-	 */
-	typedef uint32_t paddr_t;
 
 	/**
 	 * @brief Frame number.

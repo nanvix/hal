@@ -33,8 +33,7 @@
  */
 /**@{*/
 
-	#define __NEED_VADDR_T
-	#define __NEED_PADDR_T
+	#define __NEED_MEMORY_TYPES
 	#include <arch/core/or1k/types.h>
 	#include <arch/core/or1k/mmu.h>
 

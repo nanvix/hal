@@ -23,7 +23,7 @@
  */
 
 /**
- * @cond or1k
+ * @cond i386
  */
 
 #if (!defined(__NEED_CORE_TYPES) && !defined(__NEED_MEMORY_TYPES))
@@ -35,7 +35,7 @@
 #endif
 
 /**
- * @addtogroup or1k-core
+ * @addtogroup i386-core
  */
 /**@{*/
 
@@ -47,20 +47,20 @@
 	 * @name Bit-Length of Core Types
 	 */
 	/**@{*/
-	#define OR1K_BYTE_BIT    8 /**< Byte        */
-	#define OR1K_HWORD_BIT  16 /**< Half Word   */
-	#define OR1K_WORD_BIT   32 /**< Word        */
-	#define OR1K_DWORD_BIT  64 /**< Double Word */
+	#define I386_BYTE_BIT    8 /**< Byte        */
+	#define I386_HWORD_BIT  16 /**< Half Word   */
+	#define I386_WORD_BIT   32 /**< Word        */
+	#define I386_DWORD_BIT  64 /**< Double Word */
 	/**@}*/
 
 	/**
 	 * @name Byte-Length of Core Types
 	 */
 	/**@{*/
-	#define OR1K_BYTE_SIZE   1 /**< Byte        */
-	#define OR1K_HWORD_SIZE  2 /**< Half Word   */
-	#define OR1K_WORD_SIZE   4 /**< Word        */
-	#define OR1K_DWORD_SIZE  8 /**< Double Word */
+	#define I386_BYTE_SIZE   1 /**< Byte        */
+	#define I386_HWORD_SIZE  2 /**< Half Word   */
+	#define I386_WORD_SIZE   4 /**< Word        */
+	#define I386_DWORD_SIZE  8 /**< Double Word */
 	/**@}*/
 
 #endif
@@ -89,7 +89,7 @@
 
 
 	/**
-	 * @addtogroup or1k-core
+	 * @addtogroup i386-core
 	 */
 	/**@{*/
 
@@ -101,10 +101,10 @@
 		 * @name Core Types
 		 */
 		/**@{*/
-		typedef uint8_t or1k_byte_t;   /**< Byte        */
-		typedef uint16_t or1k_hword_t; /**< Half Word   */
-		typedef uint32_t or1k_word_t;  /**< Word        */
-		typedef uint64_t or1k_dword_t; /**< Double Word */
+		typedef uint8_t i386_byte_t;   /**< Byte        */
+		typedef uint16_t i386_hword_t; /**< Half Word   */
+		typedef uint32_t i386_word_t;  /**< Word        */
+		typedef uint64_t i386_dword_t; /**< Double Word */
 		/**@}*/
 
 	#endif

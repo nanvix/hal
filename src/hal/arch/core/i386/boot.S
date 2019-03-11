@@ -108,8 +108,8 @@ start:
 
 	/* Setup stack. */
 	start.kstack.setup:
-		movl $core0.kstack + I386_PAGE_SIZE - DWORD_SIZE, %ebp
-		movl $core0.kstack + I386_PAGE_SIZE - DWORD_SIZE, %esp
+		movl $core0.kstack + I386_PAGE_SIZE - I386_WORD_SIZE, %ebp
+		movl $core0.kstack + I386_PAGE_SIZE - I386_WORD_SIZE, %esp
 
 	call i386_core_setup
 

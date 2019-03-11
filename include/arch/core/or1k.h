@@ -44,7 +44,6 @@
 	#include <arch/core/or1k/pic.h>
 	#include <arch/core/or1k/spinlock.h>
 	#include <arch/core/or1k/tlb.h>
-	#include <arch/core/or1k/types.h>
 
 /**
  * @cond or1k
