@@ -71,7 +71,7 @@ see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
     #endif
     #endif
 
-#elif (defined(__or1k__) || defined(__k1b__))
+#elif (defined(__or1k__) || defined(__optimsoc__) || defined(__k1b__))
 
 	#define va_start(v,l) __builtin_va_start(v,l)
 	#define va_end(v)     __builtin_va_end(v)

@@ -22,45 +22,32 @@
  * SOFTWARE.
  */
 
-#ifndef _NANVIX_HAL_PROCESSOR_PROCESSOR_H_
-#define _NANVIX_HAL_PROCESSOR_PROCESSOR_H_
+#ifndef DRIVER_SYSTRACE_H_
+#define DRIVER_SYSTRACE_H_
+
+/**
+ * @addtogroup dev-systrace OpTiMSoC systrace
+ * @ingroup dev
+ */
+/**@{*/
+
+	#include <nanvix/hal/cluster/memory.h>
+	#include <stddef.h>
+	#include <stdint.h>
 
 	/**
-	 * @defgroup processors Processors
+	 * @brief Initializes systrace.
 	 */
+	extern void systrace_init(void);
 
-	#if (defined(__k1b__))
+	/**
+	 * @brief Writes a buffer on the systrace.
+	 *
+	 * @param buf Target buffer.
+	 * @param n   Number of bytes to write.
+	 */
+	extern void systrace_write(const char *buf, size_t n);
 
-		#undef  __NEED_PROCESSOR_BOSTAN
-		#define __NEED_PROCESSOR_BOSTAN
-		#include <arch/processor/bostan.h>
+/**@}*/
 
-	#elif (defined(__i386__))
-
-		#undef  __NEED_PROCESSOR_I386_QEMU
-		#define __NEED_PROCESSOR_I386_QEMU
-		#include <arch/processor/i386-qemu.h>
-
-	#elif (defined(__or1k__))
-
-		#undef  __NEED_PROCESSOR_OR1K_QEMU
-		#define __NEED_PROCESSOR_OR1K_QEMU
-		#include <arch/processor/or1k-qemu.h>
-
-	#elif (defined(__optimsoc__))
-
-		#undef  __NEED_PROCESSOR_OR1K_OPTIMSOC
-		#define __NEED_PROCESSOR_OR1K_OPTIMSOC
-		#include <arch/processor/optimsoc.h>
-
-	#else
-
-		#error "unkonwn processor"
-
-	#endif
-
-	#undef  __NEED_HAL_CLUSTER
-	#define __NEED_HAL_CLUSTER
-	#include <nanvix/hal/cluster.h>
-
-#endif /* _NANVIX_HAL_PROCESSOR_PROCESSOR_H_ */
+#endif /* DRIVER_SYSTRACE_H_ */

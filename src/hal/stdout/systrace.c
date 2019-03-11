@@ -22,45 +22,51 @@
  * SOFTWARE.
  */
 
-#ifndef _NANVIX_HAL_PROCESSOR_PROCESSOR_H_
-#define _NANVIX_HAL_PROCESSOR_PROCESSOR_H_
+#include <nanvix/const.h>
 
+/**
+ * @brief Flag that indicates if the device was initialized.
+ */
+PRIVATE int systrace_initialized = 0;
+
+/**
+ * Writes one character into systrace.
+ * @param c Character to be written.
+ */
+PRIVATE inline void systrace_putchar(char c)
+{
+	__asm__ __volatile__
+	(
+		"l.addi r3, %0, 0"
+		:
+		: "r" (c) : "r3"
+	);
+	__asm__ __volatile__("l.nop 4");
+}
+
+/**
+ * Writes into the systrace.
+ * @param buf Data to be written.
+ * @param n Data size.
+ */
+PUBLIC void systrace_write(const char *buf, size_t n)
+{
 	/**
-	 * @defgroup processors Processors
+	 * It's important to only try to write if the device
+	 * was already initialized.
 	 */
+	if (!systrace_initialized)
+		return;
 
-	#if (defined(__k1b__))
+	for (size_t i = 0; i < n; i++)
+		systrace_putchar(buf[i]);
+}
 
-		#undef  __NEED_PROCESSOR_BOSTAN
-		#define __NEED_PROCESSOR_BOSTAN
-		#include <arch/processor/bostan.h>
-
-	#elif (defined(__i386__))
-
-		#undef  __NEED_PROCESSOR_I386_QEMU
-		#define __NEED_PROCESSOR_I386_QEMU
-		#include <arch/processor/i386-qemu.h>
-
-	#elif (defined(__or1k__))
-
-		#undef  __NEED_PROCESSOR_OR1K_QEMU
-		#define __NEED_PROCESSOR_OR1K_QEMU
-		#include <arch/processor/or1k-qemu.h>
-
-	#elif (defined(__optimsoc__))
-
-		#undef  __NEED_PROCESSOR_OR1K_OPTIMSOC
-		#define __NEED_PROCESSOR_OR1K_OPTIMSOC
-		#include <arch/processor/optimsoc.h>
-
-	#else
-
-		#error "unkonwn processor"
-
-	#endif
-
-	#undef  __NEED_HAL_CLUSTER
-	#define __NEED_HAL_CLUSTER
-	#include <nanvix/hal/cluster.h>
-
-#endif /* _NANVIX_HAL_PROCESSOR_PROCESSOR_H_ */
+/**
+ * Initializes the systrace device.
+ */
+PUBLIC void systrace_init(void)
+{
+	/* Device initialized. */
+	systrace_initialized = 1;
+}

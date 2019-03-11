@@ -20,76 +20,29 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# Command Parameters
-test=$1  # Target test.
-mode=$2  # Test mode.
-debug=$3 # Launch GDB?
-type=$4  # Target type.
-
-if [ -z $TARGET ]; then
-	echo "$0: missing target architecture"
-	exit 1
-fi
-
-if [ $TARGET == "mppa256" ]; then
-	source "tools/run/arch/mppa256.sh"
-elif [ $TARGET == "optimsoc" ]; then
-	source "tools/run/arch/optimsoc.sh"
-else
-	echo "unknown target architecture"
-	exit 1
-fi
-
-# Missing parameters.
-if [ -z $test ];
-then
-	echo "Missing arguments!"
-	echo "Usage: $0 <test name> [mode]"
-	exit 1
-fi
-
 #
-# Long test mode.
+# Runs a binary file in the hardware.
 #
-if [ -z $mode ];
-then
-	mode="--long"
-fi
-
-#
-# No debug mode.
-#
-if [ -z $debug ];
-then
-	debug="--no-debug"
-fi
-
-#
-# All Types.
-#
-if [ -z $type ];
-then
-	type="--all"
-fi
-
-#
-# Stops regression test if running running short test.
-#
-function stop_if_short_test
+function run_hw
 {
-	if [ $mode == "--short" ];
-	then
-		exit 0
-	fi
+	osd-target-run                             \
+		-e bin/kernel                          \
+		-b uart                                \
+		-o device=/dev/ttyUSB1,speed=12000000 \
+		--systrace                             \
+		--coretrace                            \
+		-vvv
 }
 
-case $test in
-	all)
-		mode="--long"
-	;&
-	kernel-core)
-		echo "=== Running Core and NoC Interface Tests"
-		run_hw "nanvix-debug.img" "bin/test-driver" "--debug --hal-core" "$debug" "$type"
-		stop_if_short_test $mode
-	;&
-esac
+#
+# Runs a binary file in the simulator.
+#
+function run_sim
+{
+	$OPTIMSOC/examples/sim/compute_tile/compute_tile_sim_singlecore_debug &
+	osd-target-run    \
+		-e bin/kernel \
+		--systrace    \
+		--coretrace   \
+		-vvv
+}
