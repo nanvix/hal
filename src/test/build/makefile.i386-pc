@@ -20,13 +20,20 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+# Tweak toolchain.
+export LDFLAGS  += -L $(LINKERDIR)/ -T link.ld
+
 # Object Files
 OBJ = $(SRC:.c=.o)
 
 # Builds object files for i386 PC target.
-all:
-	# Nothing to do.
+all: $(OBJ)
+	$(CC) $(CFLAGS) $(LDFLAGS) $(OBJ) -o $(BINDIR)/$(EXECBIN) -Wl,--whole-archive $(LIBS)
 
 # Cleans all object files.
 clean:
 	rm -rf $(BINDIR)/$(EXECBIN) $(OBJ)
+
+# Builds a C source file.
+%.o: %.c
+	$(CC) $(CFLAGS) $< -c -o $@

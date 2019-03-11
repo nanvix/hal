@@ -58,7 +58,7 @@ export LIBKERNEL = libhal-$(TARGET).a
 export LIBS = $(LIBDIR)/$(LIBKERNEL)
 
 # Binaries
-export EXECBIN = test-driver-$(TARGET)
+export EXECBIN = test-driver
 
 #===============================================================================
 

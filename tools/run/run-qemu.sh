@@ -29,19 +29,19 @@ export CURDIR=`pwd`
 
 case "$TARGET" in
 	"i386-pc")
-		qemu-system-i386 -s -S \
-			--display curses   \
-			-kernel bin/kernel \
-			-m 256M            \
+		qemu-system-i386 -s -S      \
+			--display curses        \
+			-kernel bin/test-driver \
+			-m 256M                 \
 			-mem-prealloc
 		;;
 	"or1k-pc")
-		qemu-system-or1k -s -S \
-			-kernel bin/kernel \
-			-serial stdio      \
-			-display none      \
-			-m 256M            \
-			-mem-prealloc      \
+		qemu-system-or1k -s -S      \
+			-kernel bin/test-driver \
+			-serial stdio           \
+			-display none           \
+			-m 256M                 \
+			-mem-prealloc           \
 			-smp 2
 		;;
 	*)
