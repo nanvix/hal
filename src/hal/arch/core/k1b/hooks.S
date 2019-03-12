@@ -24,7 +24,9 @@
 
 /* Must come first. */
 #define _ASM_FILE_
+#define __NEED_CORE_TYPES
 
+#include <arch/core/k1b/types.h>
 #include <arch/core/k1b/context.h>
 #include <arch/core/k1b/excp.h>
 #include <arch/core/k1b/asm.h>
@@ -47,7 +49,7 @@
 _do_syscall:
 
 	/* Save system call context. */
-	add $sp = $sp, -8
+	add $sp = $sp, -K1B_DWORD_SIZE
 	;;
 	get $r8 = $ra
 	;;
@@ -73,7 +75,7 @@ _do_syscall:
 	;;
 	lw $bp = 0 [$sp]
 	;;
-	add $sp = $sp, 8
+	add $sp = $sp, K1B_DWORD_SIZE
 	;;
 	set $ra = $r8
 	;;
