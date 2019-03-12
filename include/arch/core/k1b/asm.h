@@ -64,54 +64,89 @@
 	.endm
 
 /*============================================================================*
- * Prologue                                                                   *
+ * Procedure Linkage                                                          *
  *============================================================================*/
 
 	/**
 	 * @brief Size of a stack frame (in bytes).
 	 */
-	#define STACK_FRAME_SIZE 16
+	#define FAST_CALL_STACK_FRAME_SIZE 16
 
+	/**
+	* @brief Offsets to Stack Frame
+	*/
+	/**@{*/
+	#define STACK_FRAME_RA   0 /**< ra        */
+	#define STACK_FRAME_BP   4 /**< bp        */
+	/**@}*/
+
+	/*
+	 * @brief Enters a procedure.
+	 *
+	 * The _do_prologue() macro allocates a new stack frame for the
+	 * caller procedure and saves the BP and RA registers in it.
+	 *
+	 * @note Preserved registers are intentionally not saved to reduce
+	 * overhead.
+	 */
 	.macro _do_prologue
 
-		/* Allocate a new stack frame. */
-		add $sp, $sp, -STACK_FRAME_SIZE
+		/* Save r0 + r1 registers. */
+		sd 0[$sp], $p0
 		;;
 
-		/* Save r0 and r1 registers. */
-		sd 8[$sp] = $p0
+		/* Allocate a stack frame. */
+		add $sp, $sp, -FAST_CALL_STACK_FRAME_SIZE
 		;;
 
-		/* Save ra and bp registers. */
-		get $r0 = $ra
+		/*
+		 * Save RA + BP registers.
+		 * Note that temporarily we use
+		 * BP as a scratch register.
+		 */
+		sw STACK_FRAME_BP[$sp], $bp
 		;;
-		copy $r1 = $bp
+		get $bp, $ra
 		;;
-		sd 0[$sp] = $p0
+		sw STACK_FRAME_RA[$sp], $bp
 		;;
 
 		/* Update stack base pointer. */
-		copy $bp = $sp
+		copy $bp, $sp
 		;;
 
 	.endm
 
+	/*
+	 * @brief Exits a procedure.
+	 *
+	 * The _do_epilogue() macro restores previous values of the BP and
+	 * RA registers and wipes out the current stack frame of the
+	 * caller procedure.
+	 */
 	.macro _do_epilogue
 
-		/* Restore bp and ra registers. */
-		ld $p0 = 0[$sp]
-		;;
-		set $ra = $r0
-		;;
-		copy $bp = $r1
+		copy $sp, $bp
 		;;
 
-		/* Restore r0 and r1 registers. */
-		ld $p0 = 8[$sp]
+		/*
+		 * Restore BP + RA registers.
+		 * Note  that temporarily we use
+		 * BP as a scratch register.
+		 */
+		lw  $bp, STACK_FRAME_RA[$sp]
+		;;
+		set $ra, $bp
+		;;
+		lw  $bp, STACK_FRAME_BP[$sp]
 		;;
 
-		/* Wipe out frame. */
-		add $sp, $sp, STACK_FRAME_SIZE
+		/* Wipe out stack frame. */
+		add $sp, $sp, FAST_CALL_STACK_FRAME_SIZE
+		;;
+
+		/* Restore r0 + r1 registers. */
+		ld $p0, 0[$sp]
 		;;
 
 	.endm
