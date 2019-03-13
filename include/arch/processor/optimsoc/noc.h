@@ -22,55 +22,36 @@
  * SOFTWARE.
  */
 
-#ifndef PROCESSOR_BOSTAN_NOC_H_
-#define PROCESSOR_BOSTAN_NOC_H_
+#ifndef PROCESSOR_OPTIMSOC_NOC_H_
+#define PROCESSOR_OPTIMSOC_NOC_H_
 
 	/* Cluster API. */
-	#include <arch/processor/bostan/_bostan.h>
+	#include <arch/processor/optimsoc/_optimsoc.h>
 
 /**
- * @addtogroup processor-bostan-noc NoC
- * @ingroup processor-bostan
+ * @addtogroup processor-optimsoc-noc NoC
+ * @ingroup processor-optimsoc
  *
  * @brief NoC
  */
 /**@{*/
 
-	#include <arch/processor/bostan/noc/node.h>
+	#include <arch/processor/optimsoc/noc/node.h>
 
 	/**
 	 * @name Number of NoC nodes attached to an IO device.
 	 */
-	#define BOSTAN_NR_NOC_IONODES 8
+	#define OPTIMSOC_NR_NOC_IONODES 8
 
 	/**
 	 * @name Number of NoC nodes not attached to an IO device.
 	 */
-	#define BOSTAN_NR_NOC_CNODES 16
+	#define OPTIMSOC_NR_NOC_CNODES 16
 
 	/**
 	 * @name Number of NoC nodes.
 	 */
-	#define BOSTAN_NR_NOC_NODES (BOSTAN_NR_NOC_IONODES + BOSTAN_NR_NOC_CNODES)
-
-	/**
-	 * @brief NoC tags offsets.
-	 *
-	 * All NoC connectors that are listed bellow support 1:N
-	 * single-direction communication. Therefore, we need K1B_NR_NOC_NODES
-	 * NoC tags for each. The first two tags are used by the hardware and
-	 * thus are skipped.
-	 */
-	/**@{*/
-	#define BOSTAN_TAG_MAILBOX_OFF  2                                             /**< Mailbox. */
-	#define BOSTAN_TAG_PORTAL_OFF  (BOSTAN_TAG_MAILBOX_OFF + BOSTAN_NR_NOC_NODES) /**< Portal.  */
-	#define BOSTAN_TAG_SYNC_OFF    (BOSTAN_TAG_PORTAL_OFF + BOSTAN_NR_NOC_NODES)  /**< Sync.    */
-	/**@}*/
-
-	/**
-	 * @brief IDs of NoC nodes.
-	 */
-	EXTERN const int bostan_noc_nodes[BOSTAN_NR_NOC_NODES];
+	#define OPTIMSOC_NR_NOC_NODES (OPTIMSOC_NR_NOC_IONODES + OPTIMSOC_NR_NOC_CNODES)
 
 	/**
 	 * @brief Asserts whether a NoC node is attached to IO cluster 0.
@@ -80,9 +61,11 @@
 	 * @returns One if the target NoC node is attached to IO cluster 0,
 	 * and zero otherwise.
 	 */
-	static inline int bostan_noc_is_ionode0(int nodeid)
+	static inline int or1k_optimsoc_noc_is_ionode0(int nodeid)
 	{
-		return WITHIN(nodeid, BOSTAN_IOCLUSTER0, BOSTAN_IOCLUSTER0 + BOSTAN_NR_INTERFACES);
+		UNUSED(nodeid);
+
+		return (0);
 	}
 
 	/**
@@ -93,9 +76,11 @@
 	 * @returns One if the target NoC node is attached to IO cluster 1,
 	 * and zero otherwise.
 	 */
-	static inline int bostan_noc_is_ionode1(int nodeid)
+	static inline int or1k_optimsoc_noc_is_ionode1(int nodeid)
 	{
-		return WITHIN(nodeid, BOSTAN_IOCLUSTER1, BOSTAN_IOCLUSTER1 + BOSTAN_NR_INTERFACES);
+		UNUSED(nodeid);
+
+		return (0);
 	}
 
 	/**
@@ -106,9 +91,11 @@
 	 * @returns One if the target NoC node is attached to an IO cluster,
 	 * and zero otherwise.
 	 */
-	static inline int bostan_noc_is_ionode(int nodeid)
+	static inline int or1k_optimsoc_noc_is_ionode(int nodeid)
 	{
-		return (bostan_noc_is_ionode0(nodeid) || bostan_noc_is_ionode1(nodeid));
+		UNUSED(nodeid);
+
+		return (0);
 	}
 
 	/**
@@ -119,9 +106,11 @@
 	 * @returns One if the target NoC node is attached to a compute
 	 * cluster, and zero otherwise.
 	 */
-	static inline int bostan_noc_is_cnode(int nodeid)
+	static inline int or1k_optimsoc_noc_is_cnode(int nodeid)
 	{
-		return WITHIN(nodeid, BOSTAN_CCLUSTER0, BOSTAN_CCLUSTER15 + 1);
+		UNUSED(nodeid);
+
+		return (0);
 	}
 
 	/**
@@ -130,7 +119,12 @@
 	 * @param nodeid ID of the target NoC node.
 	 * @returns The logic number of the target NoC node.
 	 */
-	EXTERN int bostan_node_get_num(int nodeid);
+	static inline int or1k_optimsoc_node_get_num(int nodeid)
+	{
+		UNUSED(nodeid);
+
+		return (0);
+	}
 
 	/**
 	 * @brief Converts a nodes list.
@@ -142,7 +136,14 @@
 	 * @returns Upon successful completion, zero is returned. Upon
 	 * failure, a negative error code is returned instead.
 	 */
-	EXTERN int bostan_nodes_convert(int *_nodes, const int *nodes, int nnodes);
+	static inline int or1k_optimsoc_nodes_convert(int *_nodes, const int *nodes, int nnodes)
+	{
+		UNUSED(_nodes);
+		UNUSED(nodes);
+		UNUSED(nnodes);
+
+		return (0);
+	}
 
 	/**
 	 * @brief Returns the synchronization NoC tag for a target NoC node ID.
@@ -151,7 +152,12 @@
 	 * @returns The NoC tag attached to the underlying node ID is
 	 * returned.
 	 */
-	EXTERN int bostan_node_sync_tag(int nodeid);
+	static inline int or1k_optimsoc_node_sync_tag(int nodeid)
+	{
+		UNUSED(nodeid);
+
+		return (0);
+	}
 
     /**
 	 * @brief Returns the mailbox NoC tag for a target NoC node ID.
@@ -160,7 +166,12 @@
 	 * @returns The NoC tag attached to the underlying node ID is
 	 * returned.
 	 */
-	EXTERN int bostan_node_mailbox_tag(int nodeid);
+	static inline int or1k_optimsoc_node_mailbox_tag(int nodeid)
+	{
+		UNUSED(nodeid);
+
+		return (0);
+	}
 
     /**
 	 * @brief Returns the portal NoC tag for a target NoC node ID.
@@ -169,7 +180,12 @@
 	 * @returns The NoC tag attached to the underlying node ID is
 	 * returned.
 	 */
-	EXTERN int bostan_node_portal_tag(int nodeid);
+	static inline int or1k_optimsoc_node_portal_tag(int nodeid)
+	{
+		UNUSED(nodeid);
+
+		return (0);
+	}
 
 /**@}*/
 
@@ -178,16 +194,16 @@
  *============================================================================*/
 
 /**
- * @cond bostan
+ * @cond optimsoc
  */
 
 	/**
 	 * @name Exported Constans
 	 */
 	/**@{*/
-	#define HAL_NR_NOC_IONODES BOSTAN_NR_NOC_IONODES
-	#define HAL_NR_NOC_CNODES BOSTAN_NR_NOC_CNODES
-	#define HAL_NR_NOC_NODES BOSTAN_NR_NOC_NODES
+	#define HAL_NR_NOC_IONODES OPTIMSOC_NR_NOC_IONODES
+	#define HAL_NR_NOC_CNODES OPTIMSOC_NR_NOC_CNODES
+	#define HAL_NR_NOC_NODES OPTIMSOC_NR_NOC_NODES
 	/**@}*/
 
 	/**
@@ -204,54 +220,54 @@
 	/**@}*/
 
     /**
-	 * @see bostan_node_get_num()
+	 * @see or1k_optimsoc_node_get_num()
 	 */
 	static inline int processor_node_get_num(int nodeid)
 	{
-		return bostan_node_get_num(nodeid);
+		return or1k_optimsoc_node_get_num(nodeid);
 	}
 
 	/**
-	 * @see bostan_nodes_convert()
+	 * @see or1k_optimsoc_nodes_convert()
 	 */
 	static inline int processor_nodes_convert(int *_nodes, const int *nodes, int nnodes)
 	{
-		return bostan_nodes_convert(_nodes, nodes, nnodes);
+		return or1k_optimsoc_nodes_convert(_nodes, nodes, nnodes);
 	}
 
 	/**
-	 * @see bostan_noc_is_ionode0()
+	 * @see or1k_optimsoc_noc_is_ionode0()
 	 */
 	static inline int processor_noc_is_ionode0(int nodeid)
 	{
-		return (bostan_noc_is_ionode0(nodeid));
+		return (or1k_optimsoc_noc_is_ionode0(nodeid));
 	}
 
 	/**
-	 * @see bostan_noc_is_ionode1()
+	 * @see or1k_optimsoc_noc_is_ionode1()
 	 */
 	static inline int processor_noc_is_ionode1(int nodeid)
 	{
-		return (bostan_noc_is_ionode1(nodeid));
+		return (or1k_optimsoc_noc_is_ionode1(nodeid));
 	}
 
 	/**
-	 * @see bostan_noc_is_ionode()
+	 * @see or1k_optimsoc_noc_is_ionode()
 	 */
 	static inline int processor_noc_is_ionode(int nodeid)
 	{
-		return (bostan_noc_is_ionode(nodeid));
+		return (or1k_optimsoc_noc_is_ionode(nodeid));
 	}
 
 	/**
-	 * @see bostan_noc_is_cnode()
+	 * @see or1k_optimsoc_noc_is_cnode()
 	 */
 	static inline int processor_noc_is_cnode(int nodeid)
 	{
-		return (bostan_noc_is_cnode(nodeid));
+		return (or1k_optimsoc_noc_is_cnode(nodeid));
 	}
 
 /**@endcond*/
 
-#endif /* PROCESSOR_BOSTAN_NOC_H_ */
+#endif /* PROCESSOR_OPTIMSOC_NOC_H_ */
 

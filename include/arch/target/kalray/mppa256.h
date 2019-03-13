@@ -41,6 +41,7 @@
 /**@{*/
 
 	#include <arch/target/kalray/mppa256/stdout.h>
+	#include <arch/target/kalray/mppa256/sync.h>
 
 /**@}*/
 

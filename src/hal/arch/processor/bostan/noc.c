@@ -105,3 +105,75 @@ PUBLIC int bostan_nodes_convert(int *_nodes, const int *nodes, int nnodes)
 
 	return (0);
 }
+
+/*=======================================================================*
+ * bostan_node_mailbox_tag()                                             *
+ *=======================================================================*/
+
+/**
+ * @brief Returns the mailbox NoC tag for a target NoC node ID.
+ *
+ * @param nodeid ID of the target NoC node.
+ *
+ * @returns The NoC tag attached to the underlying node ID is
+ * returned.
+ *
+ * @note This function is non-blocking.
+ * @note This function is thread-safe.
+ */
+PUBLIC int bostan_node_mailbox_tag(int nodeid)
+{
+	if (bostan_noc_is_ionode0(nodeid))
+		return (BOSTAN_TAG_MAILBOX_OFF + (nodeid % K1BIO_CORES_NUM));
+	else if (bostan_noc_is_ionode1(nodeid))
+		return (BOSTAN_TAG_MAILBOX_OFF + K1BIO_CORES_NUM + (nodeid % K1BIO_CORES_NUM));
+
+	return (BOSTAN_TAG_MAILBOX_OFF + K1BIO_CORES_NUM + K1BIO_CORES_NUM + nodeid);
+}
+
+/*=======================================================================*
+ * bostan_node_portal_tag()                                              *
+ *=======================================================================*/
+
+/**
+ * @brief Returns the portal NoC tag for a target NoC node ID.
+ *
+ * @param nodeid     ID of the target NoC node.
+ *
+ * @returns The NoC tag attached to the underlying node ID is
+ * returned.
+ *
+ * @note This function is non-blocking.
+ * @note This function is thread-safe.
+ */
+PUBLIC int bostan_node_portal_tag(int nodeid)
+{
+	if (bostan_noc_is_ionode0(nodeid))
+		return (BOSTAN_TAG_PORTAL_OFF + (nodeid % K1BIO_CORES_NUM));
+	else if (bostan_noc_is_ionode1(nodeid))
+		return (BOSTAN_TAG_PORTAL_OFF + K1BIO_CORES_NUM + (nodeid % K1BIO_CORES_NUM));
+
+	return (BOSTAN_TAG_PORTAL_OFF + K1BIO_CORES_NUM + K1BIO_CORES_NUM + nodeid);
+}
+
+/*=======================================================================*
+ * bostan_node_sync_tag()                                                *
+ *=======================================================================*/
+
+/**
+ * @brief Returns the synchronization NoC tag for a target NoC node ID.
+ *
+ * @param nodeid ID of the target NoC node.
+ *
+ * @note This function is non-blocking.
+ * @note This function is thread-safe.
+ */
+PUBLIC int bostan_node_sync_tag(int nodeid)
+{
+	if (bostan_noc_is_ionode0(nodeid))
+		return (BOSTAN_TAG_SYNC_OFF + (nodeid % K1BIO_CORES_NUM));
+	else if (bostan_noc_is_ionode1(nodeid))
+		return (BOSTAN_TAG_SYNC_OFF + K1BIO_CORES_NUM + (nodeid % K1BIO_CORES_NUM));
+
+	return (BOSTAN_TAG_SYNC_OFF + K1BIO_CORES_NUM + K1BIO_CORES_NUM + nodeid);
+}

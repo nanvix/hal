@@ -22,43 +22,60 @@
  * SOFTWARE.
  */
 
-#ifndef PROCESSOR_OR1K_OPTIMSOC_H_
-#define PROCESSOR_OR1K_OPTIMSOC_H_
-
-	#ifndef __NEED_PROCESSOR_OPTIMSOC
-		#error "bad processor configuration?"
-	#endif
-
-	/* Processor Interface Implementation */
-	#include <arch/processor/optimsoc/_optimsoc.h>
+#ifndef PROCESSOR_I386_QEMU_NOC_NODE_H_
+#define PROCESSOR_I386_QEMU_NOC_NODE_H_
 
 /**
- * @addtogroup processor OpTiMSoC
- * @ingroup processors
- *
- * @brief OpTiMSoC Processor
+ * @cond i386-qemu-noc
  */
-/**@*/
 
-	#include <arch/processor/optimsoc/clusters.h>
-	#include <arch/processor/optimsoc/noc.h>
-
-/**@}*/
+	/* Cluster API. */
+	#include <arch/processor/i386-qemu/_i386-qemu.h>
 
 /*============================================================================*
- * Provided Interface                                                         *
+ * Node Interface                                                             *
  *============================================================================*/
-/**
- * @cond optimsoc
- */
 
 	/**
-	 * @name Provided Features
+	 * @brief Gets the ID of the NoC node attached to the underlying core.
+	 *
+	 * @returns The ID of the NoC node attached to the underlying core is
+	 * returned.
+	 *
+	 * @note This function is blocking.
+	 * @note This function is thread-safe.
 	 */
-	/**@{*/
-	#define PROCESSOR_IS_MULTICLUSTER 1
-	/**@}*/
+	static inline int i386_qemu_node_get_id(void)
+	{
+		return (0);
+	}
 
 /**@endcond*/
 
-#endif /* PROCESSOR_OR1K_OPTIMSOC_H_ */
+/*============================================================================*
+ * Exported Interface                                                         *
+ *============================================================================*/
+
+/**
+ * @cond i386-qemu
+ */
+
+	/**
+	 * @name Provided Interface
+	 */
+	/**@{*/
+	#define __hal_processor_node
+	#define __processor_node_get_id   /**< processor_node_get_id()   */
+	/**@}*/
+
+	/**
+	 * @see i386_qemu_node_get_id()
+	 */
+	static inline int processor_node_get_id(void)
+	{
+		return i386_qemu_node_get_id();
+	}
+
+/**@endcond*/
+
+#endif /* PROCESSOR_I386_QEMU_NOC_NODE_H_ */

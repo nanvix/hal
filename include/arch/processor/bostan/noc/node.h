@@ -32,7 +32,8 @@
 	/* Cluster API. */
 	#include <arch/processor/bostan/_bostan.h>
 
-	#include <arch/processor/bostan/clusters.h>
+	#include <arch/processor/bostan/noc/dma.h>
+	#include <mOS_vcore_u.h>
 
 /*============================================================================*
  * Node Interface                                                             *
@@ -49,14 +50,7 @@
 	 */
 	static inline int bostan_node_get_id(void)
 	{
-		int clusterid;
-
-		clusterid = bostan_cluster_get_id();
-
-		if (bostan_cluster_is_iocluster(clusterid))
-			return (clusterid + k1b_core_get_id());
-
-		return (clusterid);
+		return __k1_get_cluster_id();
 	}
 
 /**@endcond*/

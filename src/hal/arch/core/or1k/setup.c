@@ -22,9 +22,9 @@
  * SOFTWARE.
  */
 
-#define __NEED_TARGET_QEMU_OR1K_PC
+#define __NEED_CLUSTER_OR1K
 
-#include <arch/target/qemu/or1k-pc.h>
+#include <arch/cluster/or1k.h>
 #include <nanvix/klib.h>
 #include <nanvix/const.h>
 

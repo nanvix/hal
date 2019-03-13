@@ -41,6 +41,7 @@
 /**@{*/
 
 	#include <arch/target/qemu/i386-pc/stdout.h>
+	#include <arch/target/qemu/i386-pc/sync.h>
 
 /**@}*/
 

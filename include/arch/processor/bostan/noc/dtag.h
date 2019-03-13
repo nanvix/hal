@@ -33,44 +33,295 @@
 	#include <arch/processor/bostan/_bostan.h>
 
 	#include <arch/processor/bostan/noc/tag.h>
+	#include <mOS_vcore_u.h>
+	#include <mOS_mailbox_u.h>
+	#include <mppa_noc.h>
+	#include <mppa_routing.h>
+
+/*============================================================================*
+ * Constants                                                                  *
+ *============================================================================*/
 
 	/**
 	 * @name Type of D-NoC Tag
 	 */
 	/**@{*/
-	#define BOSTAN_DNOC_TAG_RX 2 /**< D-NoC receive tag.  */
-	#define BOSTAN_DNOC_TAG_TX 3 /**< D-NoC transfer tag. */
-	#define BOSTAN_DNOC_TAG_UC 4 /**< D-NoC ucore tag.    */
+	#define BOSTAN_DNOC_RX_TYPE (BOSTAN_NOC_RX_TYPE)     /**< D-NoC receive tag.  */
+	#define BOSTAN_DNOC_TX_TYPE (BOSTAN_NOC_TX_TYPE)     /**< D-NoC transfer tag. */
+	#define BOSTAN_DNOC_UC_TYPE (BOSTAN_NOC_TX_TYPE + 1) /**< D-NoC ucore tag.    */
 	/**@}*/
 
-    /**
+	/**
 	 * @name Amount of the Data NoC Resources
 	 */
 	/**@{*/
 	#define BOSTAN_DNOC_RX_MAX 256 /**< Receiver amount. */
-    #define BOSTAN_DNOC_TX_MAX 8   /**< Sender amount.   */
-    #define BOSTAN_DNOC_UC_MAX 8   /**< ucore amount.    */
+	#define BOSTAN_DNOC_TX_MAX 8   /**< Sender amount.   */
+	#define BOSTAN_DNOC_UC_MAX 8   /**< ucore amount.    */
+	/**@}*/
+
+	/**
+	 * @name Initial D-NoC tag
+	 */
+	/**@{*/
+	#define BOSTAN_DNOC_RX_BASE BOSTAN_NR_RESERVED_TAGS /**< Receive tag offset.  */
+	#define BOSTAN_DNOC_TX_BASE BOSTAN_NR_RESERVED_TAGS /**< Transfer tag offset. */
+	#define BOSTAN_DNOC_UC_BASE BOSTAN_NR_RESERVED_TAGS /**< UCore thread offset. */
 	/**@}*/
 
 	/**
 	 * @name Number of D-NoC buffer
 	 */
 	/**@{*/
-	#define BOSTAN_NR_DNOC_RX BOSTAN_DNOC_RX_MAX - BOSTAN_NR_RESERVED_TAGS /**< Number of receive buffers.  */
-	#define BOSTAN_NR_DNOC_TX BOSTAN_DNOC_TX_MAX - BOSTAN_NR_RESERVED_TAGS /**< Number of transfer buffers. */
-	#define BOSTAN_NR_DNOC_UC BOSTAN_DNOC_UC_MAX - BOSTAN_NR_RESERVED_TAGS /**< Number of ucore threads.	*/
+	#define BOSTAN_NR_DNOC_RX (BOSTAN_DNOC_RX_MAX - BOSTAN_DNOC_RX_BASE) /**< Number of receive buffers.  */
+	#define BOSTAN_NR_DNOC_TX (BOSTAN_DNOC_TX_MAX - BOSTAN_DNOC_TX_BASE) /**< Number of transfer buffers. */
+	#define BOSTAN_NR_DNOC_UC (BOSTAN_DNOC_UC_MAX - BOSTAN_DNOC_UC_BASE) /**< Number of ucore threads.	*/
 	/**@}*/
 
+/*============================================================================*
+ * D-Noc Receiver Interface                                                   *
+ *============================================================================*/
+
 	/**
-	 * @name D-NoC tag offset
+	 * @brief Assess reciver tag limits.
+	 *
+	 * @param tag Number of the interface.
+	 *
+	 * @return Zero if tag is valid non zero otherwise.
 	 */
-	/**@{*/
-	#define BOSTAN_DNOC_RX_OFFSET 0 /**< Receive tag offset.  */
-	#define BOSTAN_DNOC_TX_OFFSET 0 /**< Transfer tag offset. */
-	#define BOSTAN_DNOC_UX_OFFSET 0 /**< UCore thread offset. */
-	/**@}*/
+	static inline int bostan_dnoc_rx_is_valid(int interface, int tag)
+	{
+		return WITHIN(interface, 0, BOSTAN_NR_INTERFACES)
+		    && WITHIN(tag, BOSTAN_DNOC_RX_BASE, BOSTAN_NR_DNOC_RX);
+	}
+
+	/**
+	 * @brief Allocate D-NoC receiver buffer.
+	 *
+	 * @param interface Number of the interface.
+	 * @param tag       Numberof receiver buffer.
+	 *
+	 * @return Zero if allocate correctly and non zero otherwise.
+	 */
+	static inline int bostan_dnoc_rx_alloc(int interface, int tag)
+	{
+		return mppa_noc_dnoc_rx_alloc(interface, tag);
+	}
+
+	/**
+	 * @brief Free D-NoC receiver buffer.
+	 *
+	 * @param interface Number of the interface.
+	 * @param tag       Numberof receiver buffer.
+	 */
+	static inline void bostan_dnoc_rx_free(int interface, int tag)
+	{
+		mppa_noc_dnoc_rx_free(interface, tag);
+	}
+
+	/**
+	 * @brief Wait events on D-NoC receiver buffer.
+	 *
+	 * @param interface Number of the interface.
+	 * @param tag       Number tag.
+	 *
+	 * @return Zero if wait sucefully and non zero otherwise.
+	 */
+	static inline int bostan_dnoc_rx_wait(int interface, int tag)
+	{
+		return mppa_noc_wait_clear_event(interface, MPPA_NOC_INTERRUPT_LINE_DNOC_RX, tag);
+	}
+
+	/**
+	 * @brief Configure D-NoC receiver buffer.
+	 *
+	 * @param interface Number of the interface.
+	 * @param tag       Number of receiver buffer.
+	 * @param mode      Number of target buffer.
+	 * @param mask      Initial value of the buffer.
+	 *
+	 * @return Zero if configure sucefully and non zero otherwise.
+	 */
+	EXTERN int bostan_dnoc_rx_config(
+		int interface,
+		int tag,
+		void *buffer,
+		size_t size,
+		size_t offset
+	);
+
+/*============================================================================*
+ * D-Noc Transfer Interface                                                   *
+ *============================================================================*/
+
+	/**
+	 * @brief Assess reciver tag limits.
+	 *
+	 * @param tag Number of the interface.
+	 *
+	 * @return Zero if tag is valid non zero otherwise.
+	 */
+	static inline int bostan_dnoc_tx_is_valid(int interface, int tag)
+	{
+		return WITHIN(interface, 0, BOSTAN_NR_INTERFACES)
+		    && WITHIN(tag, BOSTAN_DNOC_TX_BASE, BOSTAN_NR_DNOC_TX);
+	}
+
+	/**
+	 * @brief Free D-NoC transfer buffer.
+	 *
+	 * @param interface Number of the interface.
+	 * @param tag       Numberof transfer buffer.
+	 *
+	 * @return Zero if allocate correctly and non zero otherwise.
+	 */
+	static inline int bostan_dnoc_tx_alloc(int interface, int tag)
+	{
+		return mppa_noc_dnoc_tx_alloc(interface, tag);
+	}
+
+	/**
+	 * @brief Free D-NoC transfer buffer.
+	 *
+	 * @param interface Number of the interface.
+	 * @param tag       Number of transfer buffer.
+	 */
+	static inline void bostan_dnoc_tx_free(int interface, int tag)
+	{
+		mppa_noc_dnoc_tx_free(interface, tag);
+	}
+
+	/**
+	 * @brief Configure D-NoC transfer buffer.
+	 *
+	 * @param interface   Number of the interface.
+	 * @param source_node Source interface ID.
+	 * @param source_tag  Number of source buffer.
+	 * @param target_node Target interface ID.
+	 * @param target_tag  Number of target buffer.
+	 *
+	 * @return Zero if configure sucefully and non zero otherwise.
+	 */
+	EXTERN int bostan_dnoc_tx_config(
+		int interface,
+		int source_node,
+		int source_tag,
+		int target_tag,
+		int target_node
+	);
+
+	/**
+	 * @brief Sync Writes on D-NoC transfer buffer.
+	 *
+	 * @param interface Number of the DMA channel.
+	 * @param tag       Transfer buffer ID.
+	 * @param buffer    Local data pointer.
+	 * @param size      Amount of bytes to transfer.
+	 * @param offset    Offset on local buffer data.
+	 */
+	EXTERN void bostan_dnoc_tx_write(
+		int interface,
+		int tag,
+		const void *buffer,
+		size_t size,
+		size_t offset
+	);
+
+/*============================================================================*
+ * D-Noc Ucore Interface                                                      *
+ *============================================================================*/
+
+	/**
+	 * @brief Assess ucore tag limits.
+	 *
+	 * @param tag Number of the interface.
+	 *
+	 * @return Zero if tag is valid non zero otherwise.
+	 */
+	static inline int bostan_dnoc_uc_is_valid(int interface, int tag)
+	{
+		return WITHIN(interface, 0, BOSTAN_NR_INTERFACES)
+		    && WITHIN(tag, BOSTAN_DNOC_UC_BASE, BOSTAN_NR_DNOC_UC);
+	}
+
+	/**
+	 * @brief Free D-NoC transfer buffer.
+	 *
+	 * @param interface Number of the interface.
+	 * @param tag       Numberof transfer buffer.
+	 *
+	 * @return Zero if allocate correctly and non zero otherwise.
+	 */
+	static inline int bostan_dnoc_uc_alloc(int interface, int tag)
+	{
+		return mppa_noc_dnoc_uc_alloc(interface, tag);
+	}
+
+	/**
+	 * @brief Releases D-NoC Ucore thread.
+	 *
+	 * @param interface Number of the interface.
+	 * @param tag       Number of transfer buffer.
+	 */
+	static inline int bostan_dnoc_uc_desconfig(int interface, int txtag, int uctag)
+	{
+#ifdef __node__
+		return mppa_noc_dnoc_uc_unlink(interface, uctag, txtag);
+#else
+		UNUSED(interface);
+		UNUSED(txtag);
+		UNUSED(uctag);
+		return (0);
+#endif
+	}
+
+	/**
+	 * @brief Free D-NoC transfer buffer.
+	 *
+	 * @param interface Number of the interface.
+	 * @param tag       Number of transfer buffer.
+	 */
+	static inline void bostan_dnoc_uc_free(int interface, int tag)
+	{
+		mppa_noc_dnoc_uc_free(interface, tag);
+	}
+
+	/**
+	 * @brief Wait events on D-NoC sender buffer.
+	 *
+	 * @param interface Number of the interface.
+	 * @param tag       Ucore thread ID.
+	 *
+	 * @return Zero if wait sucefully and non zero otherwise.
+	 */
+	static inline int bostan_dnoc_uc_wait(int interface, int tag)
+	{
+		return mppa_noc_wait_clear_event(interface, MPPA_NOC_INTERRUPT_LINE_DNOC_TX, tag);
+	}
+
+	/**
+	 * @brief Configure and async writes on D-NoC transfer buffer.
+	 *
+	 * @param interface   Number of the DMA channel.
+	 * @param source_node Local Node ID.
+	 * @param txtag       Transfer buffer ID.
+	 * @param uctag       Ucore thread ID.
+	 * @param target_node Target Node ID.
+	 * @param target_tag  Target receiver buffer.
+	 * @param buffer      Local data pointer.
+	 * @param size        Amount of bytes to transfer.
+	 */
+	EXTERN int bostan_dnoc_uc_config_write(
+		int interface,
+		int source_node,
+		int txtag,
+		int uctag,
+		int target_node,
+		int target_tag,
+		const void *buffer,
+		size_t size
+	);
 
 /**@endcond*/
 
 #endif /* PROCESSOR_BOSTAN_NOC_DTAG_H_ */
-

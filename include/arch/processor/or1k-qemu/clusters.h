@@ -22,11 +22,11 @@
  * SOFTWARE.
  */
 
-#ifndef PROCESSOR_BOSTAN_CLUSTERS_H_
-#define PROCESSOR_BOSTAN_CLUSTERS_H_
+#ifndef PROCESSOR_OR1K_QEMU_CLUSTERS_H_
+#define PROCESSOR_OR1K_QEMU_CLUSTERS_H_
 
 	/* Processor Interface Implementation */
-	#include <arch/processor/bostan/_bostan.h>
+	#include <arch/processor/or1k-qemu/_or1k-qemu.h>
 
 /**
  * @addtogroup processor-bostan-clusters Clusters
@@ -36,41 +36,40 @@
  */
 /**@*/
 
-	#include <arch/processor/bostan/noc/node.h>
-	#include <nanvix/klib.h>
+	#include <arch/processor/or1k-qemu/noc/node.h>
 
 	/**
 	 * @brief Number of IO Clusters in the platform.
 	 */
-	#define BOSTAN_IOCLUSTERS_NUM 2
+	#define OR1K_QEMU_IOCLUSTERS_NUM 2
 
 	/**
 	 * @brief Number of Compute Clusters in the platform.
 	 */
-	#define BOSTAN_CCLUSTERS_NUM 16
+	#define OR1K_QEMU_CCLUSTERS_NUM 16
 
 	/**
 	 * @name Cluster IDs
 	 */
 	/**@{*/
-	#define BOSTAN_CCLUSTER0    0 /**< Compute Cluster  0 */
-	#define BOSTAN_CCLUSTER1    1 /**< Compute Cluster  1 */
-	#define BOSTAN_CCLUSTER2    2 /**< Compute Cluster  2 */
-	#define BOSTAN_CCLUSTER3    3 /**< Compute Cluster  3 */
-	#define BOSTAN_CCLUSTER4    4 /**< Compute Cluster  4 */
-	#define BOSTAN_CCLUSTER5    5 /**< Compute Cluster  5 */
-	#define BOSTAN_CCLUSTER6    6 /**< Compute Cluster  6 */
-	#define BOSTAN_CCLUSTER7    7 /**< Compute Cluster  7 */
-	#define BOSTAN_CCLUSTER8    8 /**< Compute Cluster  8 */
-	#define BOSTAN_CCLUSTER9    9 /**< Compute Cluster  9 */
-	#define BOSTAN_CCLUSTER10  10 /**< Compute Cluster 10 */
-	#define BOSTAN_CCLUSTER11  11 /**< Compute Cluster 11 */
-	#define BOSTAN_CCLUSTER12  12 /**< Compute Cluster 12 */
-	#define BOSTAN_CCLUSTER13  13 /**< Compute Cluster 13 */
-	#define BOSTAN_CCLUSTER14  14 /**< Compute Cluster 14 */
-	#define BOSTAN_CCLUSTER15  15 /**< Compute Cluster 15 */
-	#define BOSTAN_IOCLUSTER0 128 /**< IO Cluster 0       */
-	#define BOSTAN_IOCLUSTER1 192 /**< IO Cluster 1       */
+	#define OR1K_QEMU_CCLUSTER0    0 /**< Compute Cluster  0 */
+	#define OR1K_QEMU_CCLUSTER1    1 /**< Compute Cluster  1 */
+	#define OR1K_QEMU_CCLUSTER2    2 /**< Compute Cluster  2 */
+	#define OR1K_QEMU_CCLUSTER3    3 /**< Compute Cluster  3 */
+	#define OR1K_QEMU_CCLUSTER4    4 /**< Compute Cluster  4 */
+	#define OR1K_QEMU_CCLUSTER5    5 /**< Compute Cluster  5 */
+	#define OR1K_QEMU_CCLUSTER6    6 /**< Compute Cluster  6 */
+	#define OR1K_QEMU_CCLUSTER7    7 /**< Compute Cluster  7 */
+	#define OR1K_QEMU_CCLUSTER8    8 /**< Compute Cluster  8 */
+	#define OR1K_QEMU_CCLUSTER9    9 /**< Compute Cluster  9 */
+	#define OR1K_QEMU_CCLUSTER10  10 /**< Compute Cluster 10 */
+	#define OR1K_QEMU_CCLUSTER11  11 /**< Compute Cluster 11 */
+	#define OR1K_QEMU_CCLUSTER12  12 /**< Compute Cluster 12 */
+	#define OR1K_QEMU_CCLUSTER13  13 /**< Compute Cluster 13 */
+	#define OR1K_QEMU_CCLUSTER14  14 /**< Compute Cluster 14 */
+	#define OR1K_QEMU_CCLUSTER15  15 /**< Compute Cluster 15 */
+	#define OR1K_QEMU_IOCLUSTER0 128 /**< IO Cluster 0       */
+	#define OR1K_QEMU_IOCLUSTER1 192 /**< IO Cluster 1       */
 	/**@}*/
 
 	/**
@@ -78,19 +77,9 @@
 	 *
 	 * @returns The ID of the underlying cluster.
 	 */
-	static inline int bostan_cluster_get_id(void)
+	static inline int or1k_qemu_cluster_get_id(void)
 	{
-		int nodeid = bostan_node_get_id();
-
-		/* IO Cluster 0 */
-		if (WITHIN(nodeid, BOSTAN_IOCLUSTER0, BOSTAN_IOCLUSTER0 + BOSTAN_NR_INTERFACES))
-			return (BOSTAN_IOCLUSTER0);
-
-		/* IO Cluster 1 */
-		if (WITHIN(nodeid, BOSTAN_IOCLUSTER1, BOSTAN_IOCLUSTER1 + BOSTAN_NR_INTERFACES))
-			return (BOSTAN_IOCLUSTER1);
-
-		return (nodeid);
+		return (0);
 	}
 
 	/**
@@ -101,9 +90,11 @@
 	 * @return Non zero if the target cluster is a Compute Cluster and
 	 * zero otherwise.
 	 */
-	static inline int bostan_cluster_is_ccluster(int clusterid)
+	static inline int or1k_qemu_cluster_is_ccluster(int clusterid)
 	{
-		return (WITHIN(clusterid, BOSTAN_CCLUSTER0, BOSTAN_CCLUSTER15 + 1));
+		UNUSED(clusterid);
+
+		return (0);
 	}
 
 	/**
@@ -114,9 +105,11 @@
 	 * @return Non zero if the target cluster is an IO cluster and
 	 * zero otherwise.
 	 */
-	static inline int bostan_cluster_is_iocluster(int clusterid)
+	static inline int or1k_qemu_cluster_is_iocluster(int clusterid)
 	{
-		return ((clusterid == BOSTAN_IOCLUSTER0) || (clusterid == BOSTAN_IOCLUSTER1));
+		UNUSED(clusterid);
+
+		return (0);
 	}
 
 /**@}*/
@@ -133,44 +126,44 @@
 	 * @name Provided Constants
 	 */
 	/**@{*/
-	#define _PROCESSOR_CCLUSTERS_NUM  BOSTAN_CCLUSTERS_NUM  /**< @see BOSTAN_CCLUSTERS_NUM  */
-	#define _PROCESSOR_IOCLUSTERS_NUM BOSTAN_IOCLUSTERS_NUM /**< @see BOSTAN_IOCLUSTERS_NUM */
+	#define _PROCESSOR_CCLUSTERS_NUM  OR1K_QEMU_CCLUSTERS_NUM  /**< @see OR1K_QEMU_CCLUSTERS_NUM  */
+	#define _PROCESSOR_IOCLUSTERS_NUM OR1K_QEMU_IOCLUSTERS_NUM /**< @see OR1K_QEMU_IOCLUSTERS_NUM */
 	/**@}*/
 
 	/**
 	 * @name Provided Functions
 	 */
 	/**@{*/
-	#define __cluster_get_id_fn       /**< bostan_cluster_get_id()       */
-	#define __cluster_is_ccluster_fn  /**< bostan_cluster_is_ccluster()  */
-	#define __cluster_is_iocluster_fn /**< bostan_cluster_is_iocluster() */
+	#define __cluster_get_id_fn       /**< or1k_qemu_cluster_get_id()       */
+	#define __cluster_is_ccluster_fn  /**< or1k_qemu_cluster_is_ccluster()  */
+	#define __cluster_is_iocluster_fn /**< or1k_qemu_cluster_is_iocluster() */
 	/**@}*/
 
 	/**
-	 * @see bostan_cluster_get_id().
+	 * @see or1k_qemu_cluster_get_id().
 	 */
 	static inline int cluster_get_id(void)
 	{
-		return (bostan_cluster_get_id());
+		return (or1k_qemu_cluster_get_id());
 	}
 
 	/**
-	 * @see bostan_cluster_is_ccluster().
+	 * @see or1k_qemu_cluster_is_ccluster().
 	 */
 	static inline int cluster_is_ccluster(int clusterid)
 	{
-		return (bostan_cluster_is_ccluster(clusterid));
+		return (or1k_qemu_cluster_is_ccluster(clusterid));
 	}
 
 	/**
-	 * @see bostan_cluster_is_iocluster().
+	 * @see or1k_qemu_cluster_is_iocluster().
 	 */
 	static inline int cluster_is_iocluster(int clusterid)
 	{
-		return (bostan_cluster_is_iocluster(clusterid));
+		return (or1k_qemu_cluster_is_iocluster(clusterid));
 	}
 
 /**@endcond*/
 
-#endif /* PROCESSOR_BOSTAN_CLUSTERS_H_ */
+#endif /* PROCESSOR_OR1K_QEMU_CLUSTERS_H_ */
 

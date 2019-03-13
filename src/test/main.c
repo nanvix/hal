@@ -57,5 +57,9 @@ PUBLIC void kmain(int argc, const char *argv[])
 	test_clock();
 	test_core();
 
+#ifndef __hal_incomplete_sync
+	test_sync();
+#endif
+
 	main(0, NULL);
 }

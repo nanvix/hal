@@ -41,17 +41,17 @@
 		#define __NEED_PROCESSOR_I386_QEMU
 		#include <arch/processor/i386-qemu.h>
 
-	#elif (defined(__or1k__))
-
-		#undef  __NEED_PROCESSOR_OR1K_QEMU
-		#define __NEED_PROCESSOR_OR1K_QEMU
-		#include <arch/processor/or1k-qemu.h>
-
 	#elif (defined(__optimsoc__))
 
 		#undef  __NEED_PROCESSOR_OR1K_OPTIMSOC
 		#define __NEED_PROCESSOR_OR1K_OPTIMSOC
 		#include <arch/processor/optimsoc.h>
+
+	#elif (defined(__or1k__))
+
+		#undef  __NEED_PROCESSOR_OR1K_QEMU
+		#define __NEED_PROCESSOR_OR1K_QEMU
+		#include <arch/processor/or1k-qemu.h>
 
 	#else
 

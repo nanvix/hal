@@ -22,43 +22,60 @@
  * SOFTWARE.
  */
 
-#ifndef PROCESSOR_OR1K_OPTIMSOC_H_
-#define PROCESSOR_OR1K_OPTIMSOC_H_
+#ifndef PROCESSOR_OR1K_OPTIMSOC_NOC_NODE_H_
+#define PROCESSOR_OR1K_OPTIMSOC_NOC_NODE_H_
 
-	#ifndef __NEED_PROCESSOR_OPTIMSOC
-		#error "bad processor configuration?"
-	#endif
+/**
+ * @cond or1k-optimsoc-noc
+ */
 
-	/* Processor Interface Implementation */
+	/* Cluster API. */
 	#include <arch/processor/optimsoc/_optimsoc.h>
 
-/**
- * @addtogroup processor OpTiMSoC
- * @ingroup processors
- *
- * @brief OpTiMSoC Processor
- */
-/**@*/
-
-	#include <arch/processor/optimsoc/clusters.h>
-	#include <arch/processor/optimsoc/noc.h>
-
-/**@}*/
-
 /*============================================================================*
- * Provided Interface                                                         *
+ * Node Interface                                                             *
  *============================================================================*/
-/**
- * @cond optimsoc
- */
 
 	/**
-	 * @name Provided Features
+	 * @brief Gets the ID of the NoC node attached to the underlying core.
+	 *
+	 * @returns The ID of the NoC node attached to the underlying core is
+	 * returned.
+	 *
+	 * @note This function is blocking.
+	 * @note This function is thread-safe.
 	 */
-	/**@{*/
-	#define PROCESSOR_IS_MULTICLUSTER 1
-	/**@}*/
+	static inline int or1k_optimsoc_node_get_id(void)
+	{
+		return (0);
+	}
 
 /**@endcond*/
 
-#endif /* PROCESSOR_OR1K_OPTIMSOC_H_ */
+/*============================================================================*
+ * Exported Interface                                                         *
+ *============================================================================*/
+
+/**
+ * @cond or1k-optimsoc
+ */
+
+	/**
+	 * @name Provided Interface
+	 */
+	/**@{*/
+	#define __hal_processor_node
+	#define __processor_node_get_id   /**< processor_node_get_id()   */
+	/**@}*/
+
+	/**
+	 * @see or1k_optimsoc_node_get_id()
+	 */
+	static inline int processor_node_get_id(void)
+	{
+		return or1k_optimsoc_node_get_id();
+	}
+
+/**@endcond*/
+
+#endif /* PROCESSOR_OR1K_OPTIMSOC_NOC_NODE_H_ */

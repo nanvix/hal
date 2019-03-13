@@ -44,4 +44,9 @@
 	 */
 	EXTERN void test_core(void);
 
+	/*
+	 * @brief Test driver for the sync interface
+	 */
+	EXTERN void test_sync(void);
+
 #endif /* _HAL_TEST_H_ */
