@@ -38,6 +38,7 @@
 /**@{*/
 
 	#include <nanvix/hal/log.h>
+	#include <nanvix/hal/resource.h>
 	#include <nanvix/const.h>
 
 	/**
