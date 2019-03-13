@@ -27,17 +27,14 @@
 #include <nanvix/klib.h>
 #include "test.h"
 
+/**
+ * @brief Launch verbose tests?
+ */
+#define TEST_CORE_VERBOSE 0
+
 /*============================================================================*
  * API Tests                                                                  *
  *============================================================================*/
-
-/**
- * @brief API Test: Query Core ID
- */
-PRIVATE void test_core_get_id(void)
-{
-	KASSERT(core_get_id() == COREID_MASTER);
-}
 
 /**
  * @brief API Test: Number of cores started.
@@ -50,13 +47,37 @@ PRIVATE int cores_started = 1;
 PRIVATE spinlock_t core_start_lock = SPINLOCK_UNLOCKED;
 
 /**
+ * @brief API Test: Query Core ID
+ */
+PRIVATE void test_core_get_id(void)
+{
+	int coreid;
+
+	coreid = core_get_id();
+
+#if (TEST_CORE_VERBOSE)
+	kprintf("coreid = %d", coreid);
+#endif
+
+	KASSERT(coreid == COREID_MASTER);
+}
+
+/**
  * @brief API Test: Slave Core Entry Point.
  */
 PRIVATE void test_core_slave_entry(void)
 {
+#if (TEST_CORE_VERBOSE)
+	kprintf("core %d running", core_get_id());
+#endif
+
 	spinlock_lock(&core_start_lock);
 		cores_started++;
 	spinlock_unlock(&core_start_lock);
+
+#if (TEST_CORE_VERBOSE)
+	kprintf("core %d stopping", core_get_id());
+#endif
 }
 
 /**
@@ -72,8 +93,10 @@ PRIVATE void test_core_start_slave(void)
 	 * Start each slave core.
 	 */
 	for (int i = 0; i < HAL_NUM_CORES; i++)
+	{
 		if (i != COREID_MASTER)
 			core_start(i, test_core_slave_entry);
+	}
 
 	/**
 	 * Wait indefinitely for all cores start.
