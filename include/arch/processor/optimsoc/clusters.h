@@ -26,7 +26,7 @@
 #define PROCESSOR_OR1K_OPTIMSOC_CLUSTERS_H_
 
 	/* Processor Interface Implementation */
-	#include <arch/processor/or1k-optimsoc/_or1k-optimsoc.h>
+	#include <arch/processor/optimsoc/_optimsoc.h>
 
 /**
  * @addtogroup processor-or1k-optimsoc-clusters Clusters
@@ -36,7 +36,7 @@
  */
 /**@*/
 
-	#include <arch/processor/or1k-optimsoc/noc/node.h>
+	#include <arch/processor/optimsoc/noc/node.h>
 	#include <nanvix/klib.h>
 
 	/**

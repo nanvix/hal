@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 
-#ifndef PROCESSOR_OR1K_OPTIMSOC_NOC_H_
-#define PROCESSOR_OR1K_OPTIMSOC_NOC_H_
+#ifndef PROCESSOR_OPTIMSOC_NOC_H_
+#define PROCESSOR_OPTIMSOC_NOC_H_
 
 	/* Cluster API. */
 	#include <arch/processor/optimsoc/_optimsoc.h>
@@ -41,17 +41,17 @@
 	/**
 	 * @name Number of NoC nodes attached to an IO device.
 	 */
-	#define OR1K_OPTIMSOC_NR_NOC_IONODES 8
+	#define OPTIMSOC_NR_NOC_IONODES 8
 
 	/**
 	 * @name Number of NoC nodes not attached to an IO device.
 	 */
-	#define OR1K_OPTIMSOC_NR_NOC_CNODES 16
+	#define OPTIMSOC_NR_NOC_CNODES 16
 
 	/**
 	 * @name Number of NoC nodes.
 	 */
-	#define OR1K_OPTIMSOC_NR_NOC_NODES (OR1K_OPTIMSOC_NR_NOC_IONODES + OR1K_OPTIMSOC_NR_NOC_CNODES)
+	#define OPTIMSOC_NR_NOC_NODES (OPTIMSOC_NR_NOC_IONODES + OPTIMSOC_NR_NOC_CNODES)
 
 	/**
 	 * @brief Asserts whether a NoC node is attached to IO cluster 0.
@@ -201,9 +201,9 @@
 	 * @name Exported Constans
 	 */
 	/**@{*/
-	#define HAL_NR_NOC_IONODES OR1K_OPTIMSOC_NR_NOC_IONODES
-	#define HAL_NR_NOC_CNODES OR1K_OPTIMSOC_NR_NOC_CNODES
-	#define HAL_NR_NOC_NODES OR1K_OPTIMSOC_NR_NOC_NODES
+	#define HAL_NR_NOC_IONODES OPTIMSOC_NR_NOC_IONODES
+	#define HAL_NR_NOC_CNODES OPTIMSOC_NR_NOC_CNODES
+	#define HAL_NR_NOC_NODES OPTIMSOC_NR_NOC_NODES
 	/**@}*/
 
 	/**
@@ -269,5 +269,5 @@
 
 /**@endcond*/
 
-#endif /* PROCESSOR_OR1K_OPTIMSOC_NOC_H_ */
+#endif /* PROCESSOR_OPTIMSOC_NOC_H_ */
 

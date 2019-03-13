@@ -41,6 +41,7 @@
 /**@{*/
 
 	#include <arch/target/optimsoc/or1k/stdout.h>
+	#include <arch/target/optimsoc/or1k/sync.h>
 
 /**@}*/
 
