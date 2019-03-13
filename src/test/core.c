@@ -27,16 +27,90 @@
 #include <nanvix/klib.h>
 #include "test.h"
 
+/**
+ * @brief Launch verbose tests?
+ */
+#define TEST_CORE_VERBOSE 0
+
 /*============================================================================*
  * API Tests                                                                  *
  *============================================================================*/
+
+/**
+ * @brief API Test: Number of cores started.
+ */
+PRIVATE int cores_started = 1;
+
+/**
+ * @brief API Test: Spinlock for number of cores.
+ */
+PRIVATE spinlock_t core_start_lock = SPINLOCK_UNLOCKED;
 
 /**
  * @brief API Test: Query Core ID
  */
 PRIVATE void test_core_get_id(void)
 {
-	KASSERT(core_get_id() == COREID_MASTER);
+	int coreid;
+
+	coreid = core_get_id();
+
+#if (TEST_CORE_VERBOSE)
+	kprintf("coreid = %d", coreid);
+#endif
+
+	KASSERT(coreid == COREID_MASTER);
+}
+
+/**
+ * @brief API Test: Slave Core Entry Point.
+ */
+PRIVATE void test_core_slave_entry(void)
+{
+#if (TEST_CORE_VERBOSE)
+	kprintf("core %d running", core_get_id());
+#endif
+
+	spinlock_lock(&core_start_lock);
+		cores_started++;
+	spinlock_unlock(&core_start_lock);
+
+#if (TEST_CORE_VERBOSE)
+	kprintf("core %d stopping", core_get_id());
+#endif
+}
+
+/**
+ * @brief API Test: Start Execution in Slave Cores
+ */
+PRIVATE void test_core_start_slave(void)
+{
+	/* Unit test not applicable. */
+	if (!CLUSTER_IS_MULTICORE)
+		return;
+
+	/**
+	 * Start each slave core.
+	 */
+	for (int i = 0; i < HAL_NUM_CORES; i++)
+	{
+		if (i != COREID_MASTER)
+			core_start(i, test_core_slave_entry);
+	}
+
+	/**
+	 * Wait indefinitely for all cores start.
+	 *
+	 * @note: If for some reason not all cores were started,
+	 * the master core will hang forever.
+	 */
+	while (TRUE)
+	{
+		dcache_invalidate();
+
+		if (cores_started == HAL_NUM_CORES)
+			break;
+	}
 }
 
 /*============================================================================*
@@ -47,8 +121,9 @@ PRIVATE void test_core_get_id(void)
  * @brief Unit tests.
  */
 PRIVATE struct test core_tests_api[] = {
-	{ test_core_get_id,   "Get Core ID" },
-	{ NULL,               NULL          },
+	{ test_core_get_id,      "Get Core ID"           },
+	{ test_core_start_slave, "Start Execution Slave" },
+	{ NULL,                  NULL                    },
 };
 
 /**
