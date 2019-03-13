@@ -47,7 +47,7 @@ PUBLIC void kmain(int argc, const char *argv[])
 {
 	UNUSED(argc);
 	UNUSED(argv);
-	
+
 	/*
 	 * Initializes the HAL. Must come
 	 * before everything else.
