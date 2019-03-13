@@ -64,54 +64,207 @@
 	.endm
 
 /*============================================================================*
- * Prologue                                                                   *
+ * Procedure Linkage                                                          *
  *============================================================================*/
 
 	/**
 	 * @brief Size of a stack frame (in bytes).
 	 */
-	#define STACK_FRAME_SIZE 16
+	#define FAST_CALL_STACK_FRAME_SIZE 16
 
+	/**
+	 * @brief Stack frame size for slow call.
+	 */
+	#define SLOW_CALL_STACK_FRAME_SIZE 80
+
+	/**
+	* @brief Offsets to Stack Frame
+	*/
+	/**@{*/
+	#define STACK_FRAME_RA   0 /**< ra        */
+	#define STACK_FRAME_BP   4 /**< bp        */
+	#define STACK_FRAME_R10  8 /**< r10       */
+	#define STACK_FRAME_R15 12 /**< r15       */
+	#define STACK_FRAME_P16 16 /**< r16 + r17 */
+	#define STACK_FRAME_P18 24 /**< r18 + r19 */
+	#define STACK_FRAME_P20 32 /**< r20 + r21 */
+	#define STACK_FRAME_P22 40 /**< r22 + r40 */
+	#define STACK_FRAME_P24 48 /**< r24 + r25 */
+	#define STACK_FRAME_P26 56 /**< r26 + r27 */
+	#define STACK_FRAME_P28 64 /**< r28 + r29 */
+	#define STACK_FRAME_P30 72 /**< r30 + r31 */
+	/**@}*/
+
+	/*
+	 * @brief Enters a procedure.
+	 *
+	 * The _do_prologue() macro allocates a new stack frame for the
+	 * caller procedure and saves the BP and RA registers in it.
+	 *
+	 * @note Preserved registers are intentionally not saved to reduce
+	 * overhead.
+	 */
 	.macro _do_prologue
 
-		/* Allocate a new stack frame. */
-		add $sp, $sp, -STACK_FRAME_SIZE
+		/* Save r0 + r1 registers. */
+		sd 0[$sp], $p0
 		;;
 
-		/* Save r0 and r1 registers. */
-		sd 8[$sp] = $p0
+		/* Allocate a stack frame. */
+		add $sp, $sp, -FAST_CALL_STACK_FRAME_SIZE
 		;;
 
-		/* Save ra and bp registers. */
-		get $r0 = $ra
+		/*
+		 * Save RA + BP registers.
+		 * Note that temporarily we use
+		 * BP as a scratch register.
+		 */
+		sw STACK_FRAME_BP[$sp], $bp
 		;;
-		copy $r1 = $bp
+		get $bp, $ra
 		;;
-		sd 0[$sp] = $p0
+		sw STACK_FRAME_RA[$sp], $bp
 		;;
 
-		/* Update stack base pointer. */
-		copy $bp = $sp
+		/* Change stack frame. */
+		copy $bp, $sp
 		;;
 
 	.endm
 
+	/*
+	 * @brief Exits a procedure.
+	 *
+	 * The _do_epilogue() macro restores previous values of the BP and
+	 * RA registers and wipes out the current stack frame of the
+	 * caller procedure.
+	 */
 	.macro _do_epilogue
 
-		/* Restore bp and ra registers. */
-		ld $p0 = 0[$sp]
-		;;
-		set $ra = $r0
-		;;
-		copy $bp = $r1
+		/* Restore stack frame. */
+		copy $sp, $bp
 		;;
 
-		/* Restore r0 and r1 registers. */
-		ld $p0 = 8[$sp]
+		/*
+		 * Restore BP + RA registers.
+		 * Note  that temporarily we use
+		 * BP as a scratch register.
+		 */
+		lw  $bp, STACK_FRAME_RA[$sp]
+		;;
+		set $ra, $bp
+		;;
+		lw  $bp, STACK_FRAME_BP[$sp]
 		;;
 
-		/* Wipe out frame. */
-		add $sp, $sp, STACK_FRAME_SIZE
+		/* Wipe out stack frame. */
+		add $sp, $sp, FAST_CALL_STACK_FRAME_SIZE
+		;;
+
+		/* Restore r0 + r1 registers. */
+		ld $p0, 0[$sp]
+		;;
+
+	.endm
+
+	/*
+	 * @brief Saves preserved registers.
+	 *
+	 * @param s0 Scratch register to use.
+	 */
+	.macro _do_prologue_slow
+
+		/* Allocate stack frame. */
+		add $sp, $sp, -SLOW_CALL_STACK_FRAME_SIZE
+		;;
+
+		/* Save registers preserved registers. */
+		sd STACK_FRAME_P30[$sp], $p30
+		;;
+		sd STACK_FRAME_P28[$sp], $p28
+		;;
+		sd STACK_FRAME_P26[$sp], $p26
+		;;
+		sd STACK_FRAME_P24[$sp], $p24
+		;;
+		sd STACK_FRAME_P22[$sp], $p22
+		;;
+		sd STACK_FRAME_P20[$sp], $p20
+		;;
+		sd STACK_FRAME_P18[$sp], $p18
+		;;
+		sd STACK_FRAME_P16[$sp], $p16
+		;;
+		sw STACK_FRAME_R15[$sp], $r15
+		;;
+		sw STACK_FRAME_R10[$sp], $r10
+		;;
+
+		/*
+		 * Save RA + BP registers.
+		 * Note that temporarily we use
+		 * BP as a scratch register.
+		 */
+		sw STACK_FRAME_BP[$sp], $bp
+		;;
+		get $bp, $ra
+		;;
+		sw STACK_FRAME_RA[$sp], $bp
+		;;
+
+		/* Change stack frame. */
+		copy $bp, $sp
+		;;
+
+	.endm
+
+	/*
+	 * @brief Restores preserved registers.
+	 *
+	 * @param s0 Scratch register to use.
+	 */
+	.macro _do_epilogue_slow
+
+		/* Restore stack frame. */
+		copy $sp, $bp
+		;;
+
+		/*
+		 * Restore BP + RA registers.
+		 * Note  that temporarily we use
+		 * BP as a scratch register.
+		 */
+		lw  $bp, STACK_FRAME_RA[$sp]
+		;;
+		set $ra, $bp
+		;;
+		lw  $bp, STACK_FRAME_BP[$sp]
+		;;
+
+		/* Restore preserved registers. */
+		lw $r10, STACK_FRAME_R10[$sp]
+		;;
+		lw $r15, STACK_FRAME_R15[$sp]
+		;;
+		ld $p16, STACK_FRAME_P16[$sp]
+		;;
+		ld $p18, STACK_FRAME_P18[$sp]
+		;;
+		ld $p20, STACK_FRAME_P20[$sp]
+		;;
+		ld $p22, STACK_FRAME_P22[$sp]
+		;;
+		ld $p24, STACK_FRAME_P24[$sp]
+		;;
+		ld $p26, STACK_FRAME_P26[$sp]
+		;;
+		ld $p28, STACK_FRAME_P28[$sp]
+		;;
+		ld $p30, STACK_FRAME_P30[$sp]
+		;;
+
+		/* Wipe out stack frame. */
+		add $sp, $sp, SLOW_CALL_STACK_FRAME_SIZE
 		;;
 
 	.endm
