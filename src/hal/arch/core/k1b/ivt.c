@@ -26,9 +26,14 @@
 #include <nanvix/const.h>
 
 /**
+ * @brief Size of exception stack (in double words).
+ */
+#define EXCEPTION_STACK_SIZE K1B_PAGE_SIZE/sizeof(uint64_t)
+
+/**
  * @brief Kernel stack.
  */
-PRIVATE uint64_t kstack[K1B_NUM_CORES][K1B_PAGE_SIZE/sizeof(uint64_t)] ALIGN(K1B_CACHE_LINE_SIZE);
+PRIVATE uint64_t excp_stacks[K1B_NUM_CORES][EXCEPTION_STACK_SIZE] ALIGN(K1B_PAGE_SIZE);
 
 /**
  * Lookup table that maps hardware interrupt IDs into numbers.
@@ -72,14 +77,18 @@ PUBLIC void k1b_ivt_setup(
 	k1b_swint_handler_fn swint_handler,
 	k1b_excp_handler_fn excp_handler)
 {
+	uint64_t *stack;
+
 	for (int i = 0; i < K1B_NUM_HWINT; i++)
 		bsp_register_it(hwint_handler, hwints[i]);
 	mOS_register_scall_handler(swint_handler);
 	mOS_register_trap_handler(excp_handler);
 
-	mOS_register_stack_handler(kstack[k1b_core_get_id()]);
+	/* Setup shadow stack for exceptions. */
+	stack = &excp_stacks[k1b_core_get_id()][EXCEPTION_STACK_SIZE];
+	mOS_register_stack_handler(stack);
 	mOS_trap_enable_shadow_stack();
-	kprintf("[hal] exception stack at %x", kstack[k1b_core_get_id()]);
+	kprintf("[hal] exception stack at %x", stack);
 
 	k1b_pic_setup();
 }
