@@ -36,8 +36,8 @@
  */
 /**@*/
 
+	#include <arch/processor/bostan/noc/node.h>
 	#include <nanvix/klib.h>
-	#include <mOS_vcore_u.h>
 
 	/**
 	 * @brief Number of IO Clusters in the platform.
@@ -80,14 +80,14 @@
 	 */
 	static inline int bostan_cluster_get_id(void)
 	{
-		int nodeid = __k1_get_cluster_id();
+		int nodeid = bostan_node_get_id();
 
 		/* IO Cluster 0 */
-		if (WITHIN(nodeid, BOSTAN_IOCLUSTER0, BOSTAN_IOCLUSTER0 + K1BIO_CORES_NUM))
+		if (WITHIN(nodeid, BOSTAN_IOCLUSTER0, BOSTAN_IOCLUSTER0 + BOSTAN_NR_INTERFACES))
 			return (BOSTAN_IOCLUSTER0);
 
 		/* IO Cluster 1 */
-		if (WITHIN(nodeid, BOSTAN_IOCLUSTER1, BOSTAN_IOCLUSTER1 + K1BIO_CORES_NUM))
+		if (WITHIN(nodeid, BOSTAN_IOCLUSTER1, BOSTAN_IOCLUSTER1 + BOSTAN_NR_INTERFACES))
 			return (BOSTAN_IOCLUSTER1);
 
 		return (nodeid);

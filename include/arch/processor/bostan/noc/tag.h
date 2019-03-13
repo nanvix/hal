@@ -42,6 +42,15 @@
 	 */
 	#define BOSTAN_NR_RESERVED_TAGS 0
 
+	/**
+	 * @brief Number of interface.
+	 */
+	#ifdef __node__
+		#define BOSTAN_NR_INTERFACES 1
+	#elif defined(__ioddr__)
+		#define BOSTAN_NR_INTERFACES 4
+	#endif
+
 /**@endcond*/
 
 #endif /* PROCESSOR_BOSTAN_NOC_TAG_H_ */

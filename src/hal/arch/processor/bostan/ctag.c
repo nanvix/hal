@@ -30,14 +30,20 @@
 #include <mOS_mailbox_u.h>
 #include <mppa_noc.h>
 #include <mppa_routing.h>
+#include <errno.h>
 
 /**
- * @todo Provide a detailed comment for this.
+ * @brief Configure C-NoC receiver buffer.
+ *
+ * @param interface Number of the DMA channel.
+ * @param tag       Number of receiver buffer.
+ * @param mode      C-NoC receiver mode.
+ * @param mask      Initial value of the buffer.
+ *
+ * @return Zero if configure successfully and non zero otherwise.
  */
 PUBLIC int bostan_cnoc_rx_config(int interface, int tag, int mode, uint64_t mask)
 {
-	int ret;
-
 	mppa_noc_cnoc_rx_configuration_t config = {0};
 	config.mode = mode;
 	config.init_value = mask;
@@ -48,20 +54,26 @@ PUBLIC int bostan_cnoc_rx_config(int interface, int tag, int mode, uint64_t mask
 #ifdef __node__
 	notif._.pe = (uint16_t) ~0;
 #else
-	notif._.rm = (uint8_t) 1 << interface;
+	notif._.rm = (uint8_t) ~0;
 #endif
 
 	__builtin_k1_wpurge();
 	__builtin_k1_fence();
 	__builtin_k1_dinval();
 
-	ret = mppa_noc_cnoc_rx_configure(interface, tag, config, &notif);
-
-	return (ret);
+	return mppa_noc_cnoc_rx_configure(interface, tag, config, &notif);
 }
 
 /**
- * @todo Provide a detailed comment for this.
+ * @brief Configure C-NoC transfer buffer.
+ *
+ * @param interface   Number of the DMA channel.
+ * @param source_node Source interface ID.
+ * @param source_tag  Number of source buffer.
+ * @param target_node Target interface ID.
+ * @param target_tag  Number of target buffer.
+ *
+ * @return Zero if configure successfully and non zero otherwise.
  */
 PUBLIC int bostan_cnoc_tx_config(
 	int interface,
@@ -75,7 +87,8 @@ PUBLIC int bostan_cnoc_tx_config(
 	mppa_cnoc_header_t header = {0};
 
 	if (mppa_routing_get_cnoc_unicast_route(source_node, target_node, &config, &header) != 0)
-		return -1;
+		return (-EINVAL);
+
 	header._.tag = target_tag;
 
 	__builtin_k1_wpurge();

@@ -38,36 +38,16 @@
 	#include <mppa_noc.h>
 	#include <mppa_routing.h>
 
-	/**
-	 * @name Type of C-NoC Tag
-	 */
-	/**@{*/
-	#define BOSTAN_CNOC_TAG_RX 0 /**< C-NoC receiver tag. */
-	#define BOSTAN_CNOC_TAG_TX 1 /**< C-NoC transfer tag. */
-	/**@}*/
+/*============================================================================*
+ * Constants                                                                  *
+ *============================================================================*/
 
 	/**
-	 * @name Amount of the Control NoC Resources
+	 * @name Type of C-NoC buffers
 	 */
 	/**@{*/
-	#define BOSTAN_CNOC_RX_MAX 128 /**< Receiver amount. */
-    #define BOSTAN_CNOC_TX_MAX 1   /**< Sender amount.   */
-	/**@}*/
-
-	/**
-	 * @name Number of C-NoC buffer
-	 */
-	/**@{*/
-	#define BOSTAN_NR_CNOC_RX BOSTAN_CNOC_RX_MAX - BOSTAN_NR_RESERVED_TAGS /**< Number of receive buffers.  */
-	#define BOSTAN_NR_CNOC_TX BOSTAN_CNOC_TX_MAX                           /**< Number of transfer buffers. */
-	/**@}*/
-
-	/**
-	 * @name C-NoC tag offset
-	 */
-	/**@{*/
-	#define BOSTAN_CNOC_RX_OFFSET 0 /**< Receiver tag offset. */
-	#define BOSTAN_CNOC_TX_OFFSET 0 /**< Transfer tag offset. */
+	#define BOSTAN_CNOC_RX_TYPE BOSTAN_NOC_RX_TYPE /**< C-NoC receiver type. */
+	#define BOSTAN_CNOC_TX_TYPE BOSTAN_NOC_TX_TYPE /**< C-NoC transfer type. */
 	/**@}*/
 
     /**
@@ -79,10 +59,54 @@
     /**@}*/
 
 	/**
+	 * @name Amount of the C-NoC Resources
+	 */
+	/**@{*/
+	#define BOSTAN_CNOC_RX_MAX 128 /**< Receiver amount. */
+    #define BOSTAN_CNOC_TX_MAX 1   /**< Sender amount.   */
+	/**@}*/
+
+	/**
+	 * @name Initial C-NoC tag.
+	 */
+	/**@{*/
+	#define BOSTAN_CNOC_RX_BASE BOSTAN_NR_RESERVED_TAGS /**< Receiver tag offset. */
+	#define BOSTAN_CNOC_TX_BASE BOSTAN_NR_RESERVED_TAGS /**< Transfer tag offset. */
+	/**@}*/
+
+	/**
+	 * @name Number of C-NoC buffer
+	 */
+	/**@{*/
+	#define BOSTAN_NR_CNOC_RX (BOSTAN_CNOC_RX_MAX - BOSTAN_CNOC_RX_BASE) /**< Number of receive buffers.  */
+	#define BOSTAN_NR_CNOC_TX (BOSTAN_CNOC_TX_MAX - BOSTAN_CNOC_TX_BASE) /**< Number of transfer buffers. */
+	/**@}*/
+
+/*============================================================================*
+ * C-Noc Receiver Interface                                                   *
+ *============================================================================*/
+
+	/**
+	 * @brief Assess reciver tag limits.
+	 *
+	 * @param interface Number of the DMA channel.
+	 * @param tag       Number of the receiver buffer.
+	 *
+	 * @return Zero if tag is valid non zero otherwise.
+	 */
+	static inline int bostan_cnoc_rx_is_valid(int interface, int tag)
+	{
+		return WITHIN(interface, 0, BOSTAN_NR_INTERFACES)
+		    && WITHIN(tag, BOSTAN_CNOC_RX_BASE, BOSTAN_NR_CNOC_RX);
+	}
+
+	/**
 	 * @brief Allocate C-NoC receiver buffer.
 	 *
-	 * @param interface Number of the interface.
-	 * @param tag       Numberof receiver buffer.
+	 * @param interface Number of the DMA channel.
+	 * @param tag       Number of receiver buffer.
+	 *
+	 * @return Zero if allocate correctly and non zero otherwise.
 	 */
 	static inline int bostan_cnoc_rx_alloc(int interface, int tag)
 	{
@@ -92,19 +116,19 @@
 	/**
 	 * @brief Free C-NoC receiver buffer.
 	 *
-	 * @param interface Number of the interface.
-	 * @param tag       Numberof receiver buffer.
+	 * @param interface Number of the DMA channel.
+	 * @param tag       Number of receiver buffer.
 	 */
 	static inline void bostan_cnoc_rx_free(int interface, int tag)
 	{
-		mppa_noc_cnoc_rx_free(interface, tag);	
+		mppa_noc_cnoc_rx_free(interface, tag);
 	}
 
 	/**
 	 * @brief Clear events of C-NoC receiver buffer.
 	 *
-	 * @param interface Number of the interface.
-	 * @param tag       Numberof receiver buffer.
+	 * @param interface Number of the DMA channel.
+	 * @param tag       Number of receiver buffer.
 	 */
 	static inline void bostan_cnoc_rx_clear(int interface, int tag)
 	{
@@ -112,10 +136,55 @@
 	}
 
 	/**
+	 * @brief Wait events on C-NoC receiver buffer.
+	 *
+	 * @param interface Number of the DMA channel.
+	 * @param tag       Number of receiver buffer.
+	 *
+	 * @return Zero if wait sucefully and non zero otherwise.
+	 */
+	static inline int bostan_cnoc_rx_wait(int interface, int tag)
+	{
+		return mppa_noc_wait_clear_event(interface, MPPA_NOC_INTERRUPT_LINE_CNOC_RX, tag);
+	}
+
+	/**
+	 * @brief Configure C-NoC receiver buffer.
+	 *
+	 * @param interface Number of the DMA channel.
+	 * @param tag       Number of receiver buffer.
+	 * @param mode      C-NoC receiver mode.
+	 * @param mask      Initial value of the buffer.
+	 *
+	 * @return Zero if configure sucefully and non zero otherwise.
+	 */
+    EXTERN int bostan_cnoc_rx_config(int interface, int tag, int mode, uint64_t mask);
+
+/*============================================================================*
+ * C-Noc Transfer Interface                                                   *
+ *============================================================================*/
+
+	/**
+	 * @brief Assess reciver tag limits.
+	 *
+	 * @param interface Number of the DMA channel.
+	 * @param tag       Number of the transfer buffer.
+	 *
+	 * @return Zero if tag is valid non zero otherwise.
+	 */
+	static inline int bostan_cnoc_tx_is_valid(int interface, int tag)
+	{
+		return WITHIN(interface, 0, BOSTAN_NR_INTERFACES)
+		    && WITHIN(tag, BOSTAN_CNOC_TX_BASE, BOSTAN_NR_CNOC_TX);
+	}
+
+	/**
 	 * @brief Free C-NoC transfer buffer.
 	 *
-	 * @param interface Number of the interface.
-	 * @param tag       Numberof transfer buffer.
+	 * @param interface Number of the DMA channel.
+	 * @param tag       Number of transfer buffer.
+
+	 * @return Zero if allocate correctly and non zero otherwise.
 	 */
 	static inline int bostan_cnoc_tx_alloc(int interface, int tag)
 	{
@@ -125,7 +194,7 @@
 	/**
 	 * @brief Free C-NoC transfer buffer.
 	 *
-	 * @param interface Number of the interface.
+	 * @param interface Number of the DMA channel.
 	 * @param tag       Number of transfer buffer.
 	 */
 	static inline void bostan_cnoc_tx_free(int interface, int tag)
@@ -136,7 +205,7 @@
 	/**
 	 * @brief Write into C-NoC transfer buffer.
 	 *
-	 * @param interface Number of the interface.
+	 * @param interface Number of the DMA channel.
 	 * @param tag       Number tag.
 	 * @param value     Data to send.
 	 */
@@ -146,22 +215,15 @@
 	}
 
 	/**
-	 * @brief Configure C-NoC receiver buffer.
-	 *
-	 * @param interface Number of the interface.
-	 * @param tag       Number of receiver buffer.
-	 * @param mode      Number of target buffer.
-	 * @param mask      Initial value of the buffer.
-	 */
-    EXTERN int bostan_cnoc_rx_config(int interface, int tag, int mode, uint64_t mask);
-
-	/**
 	 * @brief Configure C-NoC transfer buffer.
 	 *
-	 * @param interface   Number of the interface.
-	 * @param source_tag       Numberof source buffer.
-	 * @param target_tag       Numberof target buffer.
+	 * @param interface   Number of the DMA channel.
+	 * @param source_node Source interface ID.
+	 * @param source_tag  Number of source buffer.
 	 * @param target_node Target interface ID.
+	 * @param target_tag  Number of target buffer.
+	 *
+	 * @return Zero if configure sucefully and non zero otherwise.
 	 */
     EXTERN int bostan_cnoc_tx_config(
 		int interface,

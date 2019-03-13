@@ -54,6 +54,20 @@
 	#define BOSTAN_NR_NOC_NODES (BOSTAN_NR_NOC_IONODES + BOSTAN_NR_NOC_CNODES)
 
 	/**
+	 * @brief NoC tags offsets.
+	 *
+	 * All NoC connectors that are listed bellow support 1:N
+	 * single-direction communication. Therefore, we need K1B_NR_NOC_NODES
+	 * NoC tags for each. The first two tags are used by the hardware and
+	 * thus are skipped.
+	 */
+	/**@{*/
+	#define BOSTAN_TAG_MAILBOX_OFF  2                                             /**< Mailbox. */
+	#define BOSTAN_TAG_PORTAL_OFF  (BOSTAN_TAG_MAILBOX_OFF + BOSTAN_NR_NOC_NODES) /**< Portal.  */
+	#define BOSTAN_TAG_SYNC_OFF    (BOSTAN_TAG_PORTAL_OFF + BOSTAN_NR_NOC_NODES)  /**< Sync.    */
+	/**@}*/
+
+	/**
 	 * @brief IDs of NoC nodes.
 	 */
 	EXTERN const int bostan_noc_nodes[BOSTAN_NR_NOC_NODES];
@@ -68,7 +82,7 @@
 	 */
 	static inline int bostan_noc_is_ionode0(int nodeid)
 	{
-		return ((nodeid >= BOSTAN_IOCLUSTER0) && (nodeid < BOSTAN_IOCLUSTER0 + 4));
+		return WITHIN(nodeid, BOSTAN_IOCLUSTER0, BOSTAN_IOCLUSTER0 + BOSTAN_NR_INTERFACES);
 	}
 
 	/**
@@ -81,7 +95,7 @@
 	 */
 	static inline int bostan_noc_is_ionode1(int nodeid)
 	{
-		return ((nodeid >= BOSTAN_IOCLUSTER1) && (nodeid < BOSTAN_IOCLUSTER1 + 4));
+		return WITHIN(nodeid, BOSTAN_IOCLUSTER1, BOSTAN_IOCLUSTER1 + BOSTAN_NR_INTERFACES);
 	}
 
 	/**
@@ -107,7 +121,7 @@
 	 */
 	static inline int bostan_noc_is_cnode(int nodeid)
 	{
-		return ((nodeid >= BOSTAN_CCLUSTER0) && (nodeid <= BOSTAN_CCLUSTER15));
+		return WITHIN(nodeid, BOSTAN_CCLUSTER0, BOSTAN_CCLUSTER15 + 1);
 	}
 
 	/**
@@ -129,6 +143,33 @@
 	 * failure, a negative error code is returned instead.
 	 */
 	EXTERN int bostan_nodes_convert(int *_nodes, const int *nodes, int nnodes);
+
+	/**
+	 * @brief Returns the synchronization NoC tag for a target NoC node ID.
+	 *
+	 * @param nodeid ID of the target NoC node.
+	 * @returns The NoC tag attached to the underlying node ID is
+	 * returned.
+	 */
+	EXTERN int bostan_node_sync_tag(int nodeid);
+
+    /**
+	 * @brief Returns the mailbox NoC tag for a target NoC node ID.
+	 *
+	 * @param nodeid ID of the target NoC node.
+	 * @returns The NoC tag attached to the underlying node ID is
+	 * returned.
+	 */
+	EXTERN int bostan_node_mailbox_tag(int nodeid);
+
+    /**
+	 * @brief Returns the portal NoC tag for a target NoC node ID.
+	 *
+	 * @param nodeid ID of the target NoC node.
+	 * @returns The NoC tag attached to the underlying node ID is
+	 * returned.
+	 */
+	EXTERN int bostan_node_portal_tag(int nodeid);
 
 /**@}*/
 
