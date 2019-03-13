@@ -26,7 +26,7 @@
 #define PROCESSOR_OR1K_QEMU_CLUSTERS_H_
 
 	/* Processor Interface Implementation */
-	#include <arch/processor/bostan/_bostan.h>
+	#include <arch/processor/or1k-qemu/_or1k-qemu.h>
 
 /**
  * @addtogroup processor-bostan-clusters Clusters
@@ -36,7 +36,7 @@
  */
 /**@*/
 
-	#include <arch/processor/bostan/noc/node.h>
+	#include <arch/processor/or1k-qemu/noc/node.h>
 
 	/**
 	 * @brief Number of IO Clusters in the platform.

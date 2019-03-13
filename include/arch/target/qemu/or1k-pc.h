@@ -41,6 +41,7 @@
 /**@{*/
 
 	#include <arch/target/qemu/or1k-pc/stdout.h>
+	#include <arch/target/qemu/or1k-pc/sync.h>
 
 /**@}*/
 

@@ -70,7 +70,7 @@
 	/**
 	 * @brief IDs of NoC nodes.
 	 */
-	static inline const int or1k_qemu_noc_nodes[OR1K_QEMU_NR_NOC_NODES];
+	extern const int or1k_qemu_noc_nodes[OR1K_QEMU_NR_NOC_NODES];
 
 	/**
 	 * @brief Asserts whether a NoC node is attached to IO cluster 0.
@@ -161,7 +161,7 @@
 		UNUSED(nodes);
 		UNUSED(nnodes);
 
-		return 0
+		return (0);
 	}
 
 	/**

@@ -40,6 +40,9 @@
  */
 /**@*/
 
+	#include <arch/processor/or1k-qemu/clusters.h>
+	#include <arch/processor/or1k-qemu/noc.h>
+
 /**@}*/
 
 /*============================================================================*
@@ -53,7 +56,7 @@
 	 * @name Provided Features
 	 */
 	/**@{*/
-	#define PROCESSOR_IS_MULTICLUSTER 0
+	#define PROCESSOR_IS_MULTICLUSTER 1
 	/**@}*/
 
 /**@endcond*/
