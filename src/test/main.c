@@ -61,5 +61,7 @@ PUBLIC void kmain(int argc, const char *argv[])
 	test_sync();
 #endif
 
+	kprintf("[hal] halting...");
+
 	main(0, NULL);
 }
