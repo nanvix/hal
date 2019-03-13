@@ -21,7 +21,7 @@
 # SOFTWARE.
 
 # Source Files
-SRC = $(wildcard *.c) \
+C_SRC = $(wildcard *.c) \
       $(wildcard core/*.c)
 
 include build/makefile.$(TARGET)

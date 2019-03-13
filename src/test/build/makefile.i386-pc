@@ -24,7 +24,7 @@
 export LDFLAGS  += -L $(LINKERDIR)/ -T link.ld
 
 # Object Files
-OBJ = $(SRC:.c=.o)
+OBJ = $(C_SRC:.c=.o)
 
 # Builds object files for i386 PC target.
 all: $(OBJ)
