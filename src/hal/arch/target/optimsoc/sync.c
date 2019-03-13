@@ -89,9 +89,9 @@ PRIVATE int optimsoc_sync_tx_is_valid(int syncid)
  * @brief Allocates and configures the receiving side of the synchronization point.
  *
  * @param nodes  IDs of target NoC nodes.
- * @param nnodes Number of target NoC nodes. 
+ * @param nnodes Number of target NoC nodes.
  * @param type   Type of synchronization point.
- * 
+ *
  * @return The tag of underlying resource ID.
  */
 PUBLIC int optimsoc_sync_create(const int *nodes, int nnodes, int type)
@@ -122,9 +122,9 @@ error0:
  * @brief Allocates and configures the sending side of the synchronization point.
  *
  * @param nodes  IDs of target NoC nodes.
- * @param nnodes Number of target NoC nodes. 
+ * @param nnodes Number of target NoC nodes.
  * @param type   Type of synchronization point.
- * 
+ *
  * @return The tag of underlying resource ID.
  */
 PUBLIC int optimsoc_sync_open(const int *nodes, int nnodes, int type)
@@ -178,7 +178,7 @@ error0:
  * @brief Free the sender resources on a specific DMA channel.
  *
  * @param syncid Resource ID.
- * 
+ *
  * @return Zero if free the resource and non zero otherwise.
  */
 PUBLIC int optimsoc_sync_close(int syncid)
@@ -202,7 +202,7 @@ error0:
  * @brief Wait signal on a specific synchronization point.
  *
  * @param syncid Resource ID.
- * 
+ *
  * @return Zero if wait signal correctly and non zero otherwise.
  */
 PUBLIC int optimsoc_sync_wait(int syncid)
@@ -224,7 +224,7 @@ error0:
  * @brief Send signal on a specific synchronization point.
  *
  * @param syncid Resource ID.
- * 
+ *
  * @return Zero if send signal correctly and non zero otherwise.
  */
 PUBLIC int optimsoc_sync_signal(int syncid)

@@ -111,7 +111,7 @@ PRIVATE int mppa256_sync_tx_is_valid(int syncid)
  *
  * @param ranks  Target list of RX NoC nodes.
  * @param nodes  IDs of target NoC nodes.
- * @param nnodes Number of target NoC nodes. 
+ * @param nnodes Number of target NoC nodes.
  *
  * @note This function is non-blocking.
  * @note This function is thread-safe.
@@ -143,9 +143,9 @@ PRIVATE void mppa256_sync_ranks(int *ranks, const int *nodes, int nnodes)
  * @brief Associate a underliyng DMA channel.
  *
  * @param nodes  IDs of target NoC nodes.
- * @param nnodes Number of target NoC nodes. 
+ * @param nnodes Number of target NoC nodes.
  * @param class  Class of synchronization point.
- * 
+ *
  * @return Interface ID [0..(K1BIO_CORES_NUM-1)]
  */
 PRIVATE int mppa256_sync_select_interface(const int *nodes, int nnodes, int mode)
@@ -182,8 +182,8 @@ PRIVATE int mppa256_sync_select_interface(const int *nodes, int nnodes, int mode
  * @brief Sync local point validation.
  *
  * @param nodes  IDs of target NoC nodes.
- * @param nnodes Number of target NoC nodes. 
- * 
+ * @param nnodes Number of target NoC nodes.
+ *
  * @return Zero if local point is valid and non zero otherwise.
  */
 PRIVATE int mppa256_sync_local_point_check(int nodeid, const int *nodes, int nnodes)
@@ -204,8 +204,8 @@ PRIVATE int mppa256_sync_local_point_check(int nodeid, const int *nodes, int nno
  * @brief Sync remote point validation.
  *
  * @param nodes  IDs of target NoC nodes.
- * @param nnodes Number of target NoC nodes. 
- * 
+ * @param nnodes Number of target NoC nodes.
+ *
  * @return Zero if remote point is valid and non zero otherwise.
  */
 PRIVATE int mppa256_sync_remote_point_check(int nodeid, const int *nodes, int nnodes)
@@ -231,9 +231,9 @@ PRIVATE int mppa256_sync_remote_point_check(int nodeid, const int *nodes, int nn
  * @brief Allocates and configures the receiving side of the synchronization point.
  *
  * @param nodes  IDs of target NoC nodes.
- * @param nnodes Number of target NoC nodes. 
+ * @param nnodes Number of target NoC nodes.
  * @param type   Type of synchronization point.
- * 
+ *
  * @return The tag of underlying resource ID.
  */
 PUBLIC int mppa256_sync_create(const int *nodes, int nnodes, int type)
@@ -316,9 +316,9 @@ error0:
  * @brief Allocates and configures the sending side of the synchronization point.
  *
  * @param nodes  IDs of target NoC nodes.
- * @param nnodes Number of target NoC nodes. 
+ * @param nnodes Number of target NoC nodes.
  * @param type   Type of synchronization point.
- * 
+ *
  * @return The tag of underlying resource ID.
  */
 PUBLIC int mppa256_sync_open(const int *nodes, int nnodes, int type)
@@ -423,7 +423,7 @@ error0:
  * @brief Free the sender resources on a specific DMA channel.
  *
  * @param syncid Resource ID.
- * 
+ *
  * @return Zero if free the resource and non zero otherwise.
  */
 PUBLIC int mppa256_sync_close(int syncid)
@@ -447,7 +447,7 @@ error0:
  * @brief Wait signal on a specific synchronization point.
  *
  * @param syncid Resource ID.
- * 
+ *
  * @return Zero if wait signal correctly and non zero otherwise.
  */
 PUBLIC int mppa256_sync_wait(int syncid)
@@ -483,7 +483,7 @@ error0:
  * @brief Send signal on a specific synchronization point.
  *
  * @param syncid Resource ID.
- * 
+ *
  * @return Zero if send signal correctly and non zero otherwise.
  */
 PUBLIC int mppa256_sync_signal(int syncid)

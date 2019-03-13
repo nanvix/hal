@@ -56,7 +56,7 @@ PRIVATE void do_clock(int num)
 
 /**
  * @brief Stress Test: Handle Clock Interrupts
- * 
+ *
  */
 PRIVATE void test_do_clock(void)
 {

@@ -46,7 +46,7 @@
 	 * @param interface Number of the DMA channel.
 	 * @param tag       Number of the control receiver buffer.
 	 * @param mask      Initial value of the buffer.
-	 * 
+	 *
 	 * @return Zero if create sucefully and non zero otherwise.
 	 */
 	EXTERN int bostan_dma_control_create(int interface, int tag, uint64_t mask);
@@ -57,7 +57,7 @@
 	 * @param interface Number of the DMA channel.
 	 * @param tag       Number of the control receiver buffer.
 	 * @param mask      Initial value of the buffer.
-	 * 
+	 *
 	 * @return Zero if configure sucefully and non zero otherwise.
 	 */
 	EXTERN int bostan_dma_control_config(int interface, int tag, uint64_t mask);
@@ -67,7 +67,7 @@
 	 *
 	 * @param interface Number of the DMA channel.
 	 * @param tag       Number of the control transfer buffer.
-	 * 
+	 *
 	 * @return Zero if open sucefully and non zero otherwise.
 	 */
 	EXTERN int bostan_dma_control_open(int interface, int tag);
@@ -77,7 +77,7 @@
 	 *
 	 * @param interface Number of the DMA channel.
 	 * @param tag       Number of the control transfer buffer.
-	 * 
+	 *
 	 * @return Zero if unlink sucefully and non zero otherwise.
 	 */
 	static inline int bostan_dma_control_unlink(int interface, int tag)
@@ -96,7 +96,7 @@
 	 *
 	 * @param interface Number of the DMA channel.
 	 * @param tag       Number of the control transfer buffer.
-	 * 
+	 *
 	 * @return Zero if close sucefully and non zero otherwise.
 	 */
 	static inline int bostan_dma_control_close(int interface, int tag)
@@ -114,7 +114,7 @@
 	 *
 	 * @param interface Number of the DMA channel.
 	 * @param tag       Number of the control transfer buffer.
-	 * 
+	 *
 	 * @return Zero if wait sucefully and non zero otherwise.
 	 */
 	static inline int bostan_dma_control_wait(int interface, int tag)
@@ -135,7 +135,7 @@
 	 * @param ntargets     Amount of targets.
 	 * @param target_tag   Number of the target control receiver buffer.
 	 * @param mask         Signal value.
-	 * 
+	 *
 	 * @return Zero if send sucefully and non zero otherwise.
 	 */
 	EXTERN int bostan_dma_control_signal(
@@ -157,7 +157,7 @@
 	 *
 	 * @param interface Number of the DMA channel.
 	 * @param tag       Number of the data receiver buffer.
-	 * 
+	 *
 	 * @return Zero if create sucefully and non zero otherwise.
 	 */
 	static inline int bostan_dma_data_create(int interface, int tag)
@@ -173,7 +173,7 @@
 	 *
 	 * @param interface Number of the DMA channel.
 	 * @param tag       Number of the data transfer buffer.
-	 * 
+	 *
 	 * @return Zero if open sucefully and non zero otherwise.
 	 */
 	EXTERN int bostan_dma_data_open(int interface, int tag);
@@ -183,7 +183,7 @@
 	 *
 	 * @param interface Number of the DMA channel.
 	 * @param tag       Number of the data transfer buffer.
-	 * 
+	 *
 	 * @return Zero if unlink sucefully and non zero otherwise.
 	 */
 	EXTERN int bostan_dma_data_unlink(int interface, int tag);
@@ -193,7 +193,7 @@
 	 *
 	 * @param interface Number of the DMA channel.
 	 * @param tag       Number of the data transfer buffer.
-	 * 
+	 *
 	 * @return Zero if close sucefully and non zero otherwise.
 	 */
 	EXTERN int bostan_dma_data_close(int interface, int tag);
@@ -203,7 +203,7 @@
 	 *
 	 * @param interface Number of the DMA channel.
 	 * @param tag       Number of the data transfer buffer.
-	 * 
+	 *
 	 * @return Zero if wait sucefully and non zero otherwise.
 	 */
 	EXTERN int bostan_dma_data_wait(int interface, int tag);
