@@ -116,6 +116,18 @@
 	#define KASSERT_SIZE(a, b) \
 		((void) sizeof(char[(((a) == (b)) ? 1 : -1)]))
 
+	/**
+	 * @brief Asserts if a value is aligned to a boundary.
+	 *
+	 * @param x Target value.
+	 * @param a Boundary.
+	 *
+	 * @returns True if the target value is aligned on the given
+	 * boundary, and false otherwise.
+	 */
+	#define ALIGNED(x, a) \
+		(!((x) & ((a) - 1)))
+
 /**@}*/
 
 /*============================================================================*
