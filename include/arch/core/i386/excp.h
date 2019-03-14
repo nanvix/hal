@@ -98,10 +98,10 @@
 	 */
 	struct exception
 	{
-		uint32_t num;         /**< Exception number.     */
-		uint32_t code;        /**< Error code.           */
-		uint32_t addr;        /**< Faulting address.     */
-		uint32_t instruction; /**< Faulting instruction. */
+		i386_word_t num;         /**< Exception number.     */
+		i386_word_t code;        /**< Error code.           */
+		i386_word_t addr;        /**< Faulting address.     */
+		i386_word_t instruction; /**< Faulting instruction. */
 	} __attribute__((packed));
 
 	/**
