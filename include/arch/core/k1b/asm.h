@@ -54,6 +54,7 @@
 	 */
 	.macro redzone_alloc
 		add $sp = $sp, -REDZONE_SIZE
+		;;
 	.endm
 
 	/*
@@ -61,6 +62,7 @@
 	 */
 	.macro redzone_free
 		add $sp = $sp, REDZONE_SIZE
+		;;
 	.endm
 
 /*============================================================================*
