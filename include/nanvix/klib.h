@@ -128,6 +128,17 @@
 	#define ALIGNED(x, a) \
 		(!((x) & ((a) - 1)))
 
+	/**
+	 * @brief Truncate a value on a boundary.
+	 *
+	 * @param x Value to be aligned.
+	 * @param a Boundary.
+	 *
+	 * @returns Truncated value.
+	 */
+	#define TRUNCATE(x, a) \
+		(((x) + ((a) - 1)) & ~((a) - 1))
+
 /**@}*/
 
 /*============================================================================*
