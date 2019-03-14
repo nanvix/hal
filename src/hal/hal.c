@@ -47,6 +47,7 @@ PUBLIC void hal_init(void)
 
 	/* Sanity check size of structures. */
 	KASSERT_SIZE(sizeof(struct context), CONTEXT_SIZE);
+	KASSERT(ALIGNED(sizeof(struct context), DWORD_SIZE));
 
 	interrupt_setup();
 }
