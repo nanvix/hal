@@ -35,12 +35,12 @@
 	};
 
 	/**
-	 * @brief Test driver for the clock interface.
+	 * @brief Test driver for the Clock Interface.
 	 */
 	EXTERN void test_clock(void);
 
-	/*
-	 * @brief Test driver for the core interface.
+	/**
+	 * @brief Test driver for the Core Interface.
 	 */
 	EXTERN void test_core(void);
 
@@ -48,5 +48,10 @@
 	 * @brief Test driver for the sync interface
 	 */
 	EXTERN void test_sync(void);
+
+	/**
+	 * @brief Test driver for the Exception Interface.
+	 */
+	EXTERN void test_exception(void);
 
 #endif /* _HAL_TEST_H_ */
