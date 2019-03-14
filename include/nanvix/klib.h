@@ -174,7 +174,7 @@
 	 * @param x Thing.
 	 */
 	#define UNUSED(x) ((void) (x))
-	
+
 	/**
 	 * @brief No operation.
 	 */
@@ -190,6 +190,27 @@
 	 * @returns Non-zero if @p x is within [a, b) and zero otherwise.
 	 */
 	#define WITHIN(x, a, b) (((x) >= (a)) && ((x) < (b)))
+
+	/**
+	 * @brief Concatenates two macros.
+	 *
+	 * @param x First macro.
+	 * @param y Second macro.
+	 */
+	#define CONCAT2(x, y) x ## y
+
+	/**
+	 * @brief Expands a macro.
+	 *
+	 * @param x First macro.
+	 * @param x Second macro.
+	 */
+	#define EXPAND2(x, y) CONCAT2(x, y)
+
+	/**
+	 * @brief Auto-name for reserved fields in a structure.
+	 */
+	#define RESERVED EXPAND2(reserved, __LINE__)
 
 /**@}*/
 
