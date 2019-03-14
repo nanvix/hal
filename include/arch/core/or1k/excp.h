@@ -94,9 +94,9 @@
 	 */
 	struct exception
 	{
-		uint32_t num;    /**< Exception number.      */
-		uint32_t eear;   /**< Exception address.     */
-		uint32_t epcr;   /**< Saved program counter. */
+		or1k_word_t num;    /**< Exception number.      */
+		or1k_word_t eear;   /**< Exception address.     */
+		or1k_word_t epcr;   /**< Saved program counter. */
 	} __attribute__((packed));
 
 /**@endif*/
