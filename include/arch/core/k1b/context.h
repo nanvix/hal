@@ -36,13 +36,14 @@
 #ifndef _ASM_FILE_
 
 	#include <arch/core/k1b/core.h>
+	#include <nanvix/klib.h>
 
 #endif /* _ASM_FILE_ */
 
 	/**
 	 * @brief Execution context size (in bytes).
 	 */
-	#define K1B_CONTEXT_SIZE 308
+	#define K1B_CONTEXT_SIZE 304
 
 	/**
 	 * @name Offsets to the Context Structure
@@ -122,7 +123,7 @@
 	#define K1B_CONTEXT_LS    284 /**< Loop Start Register               */
 	#define K1B_CONTEXT_LE    288 /**< Loop Exit Register                */
 	#define K1B_CONTEXT_PS    292 /**< Processing Status Register        */
-	#define K1B_CONTEXT_SPS   300 /**< Shadow Processing Status Register */
+	#define K1B_CONTEXT_SPS   296 /**< Shadow Processing Status Register */
 	/**@}*/
 
 #ifndef _ASM_FILE_
@@ -151,8 +152,9 @@
 		k1b_word_t lc;                                     /**< Loop Count Register                */
 		k1b_word_t ls;                                     /**< Loop Start Register                */
 		k1b_word_t le;                                     /**< Loop Exit Register                 */
-		k1b_dword_t ps;                                    /**< Processing Status Register         */
-		k1b_dword_t sps;                                   /**< Shadow Processing Status Register  */
+		k1b_word_t ps;                                     /**< Processing Status Register         */
+		k1b_word_t sps;                                    /**< Shadow Processing Status Register  */
+		k1b_byte_t RESERVED[4];                            /**< Required padding.                  */
 	} __attribute__((packed));
 
 	/**
