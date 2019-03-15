@@ -33,6 +33,9 @@
  *============================================================================*/
 
 	/* Constants */
+	#ifndef EXCEPTION_SIZE
+	#error "EXCEPTION_SIZE not defined"
+	#endif
 	#ifndef HAL_NUM_EXCEPTIONS
 	#error "HAL_NUM_EXCEPTIONS not defined"
 	#endif

@@ -94,9 +94,9 @@
 	 */
 	struct exception
 	{
-		uint32_t num;    /**< Exception number.      */
-		uint32_t eear;   /**< Exception address.     */
-		uint32_t epcr;   /**< Saved program counter. */
+		or1k_word_t num;    /**< Exception number.      */
+		or1k_word_t eear;   /**< Exception address.     */
+		or1k_word_t epcr;   /**< Saved program counter. */
 	} __attribute__((packed));
 
 /**@endif*/
@@ -202,33 +202,37 @@
  * @cond mor1kx
  */
 
+
 	/**
-	 * @name Provided Interface
+	 * @name Exported Constants
 	 */
 	/**@{*/
-	#define __exception_struct      /**< exception               */
-	#define __exception_get_addr    /**< exception_get_addr()    */
-	#define __exception_get_instr   /**< exception_get_instr()   */
-	#define __exception_get_num     /**< exception_get_num()     */
-	#define __exception_set_handler /**< exception_set_handler() */
+	#define HAL_NUM_EXCEPTIONS            OR1K_NUM_EXCEPTIONS                /**< @ref OR1K_NUM_EXCEPTIONS                */
+	#define EXCEPTION_SIZE                OR1K_EXCEPTION_SIZE                /**< @ref OR1K_EXCEPTION_SIZE                */
+	#define EXCEPTION_INVALID_OPCODE      OR1K_EXCEPTION_ILLEGAL_INSTRUCTION /**< @ref OR1K_EXCEPTION_ILLEGAL_INSTRUCTION */
+	#define EXCEPTION_PAGE_FAULT          OR1K_EXCEPTION_PAGE_FAULT          /**< @ref OR1K_EXCEPTION_PAGE_FAULT          */
+	#define EXCEPTION_PAGE_PROTECTION     OR1K_EXCEPTION_PAGE_FAULT          /**< @ref OR1K_EXCEPTION_PAGE_FAULT          */
+	#define EXCEPTION_ITLB_FAULT          OR1K_EXCEPTION_ITLB_FAULT          /**< @ref OR1K_EXCEPTION_ITLB_FAULT          */
+	#define EXCEPTION_DTLB_FAULT          OR1K_EXCEPTION_DTLB_FAULT          /**< @ref OR1K_EXCEPTION_DTLB_FAULT          */
+	#define EXCEPTION_GENERAL_PROTECTION  OR1K_EXCEPTION_RESET               /**< @ref OR1K_EXCEPTION_RESET               */
 	/**@}*/
 
 	/**
-	 * @name Exception Codes
+	 * @name Exported Structures
 	 */
-	/**@*/
-	#define EXCEPTION_INVALID_OPCODE      OR1K_EXCEPTION_ILLEGAL_INSTRUCTION  /**< Invalid Opcode     */
-	#define EXCEPTION_PAGE_FAULT          OR1K_EXCEPTION_PAGE_FAULT           /**< Page Fault         */
-	#define EXCEPTION_PAGE_PROTECTION     OR1K_EXCEPTION_PAGE_FAULT           /**< Page Protection    */
-	#define EXCEPTION_DTLB_FAULT          OR1K_EXCEPTION_DTLB_FAULT           /**< DTLB Fault         */
-	#define EXCEPTION_ITLB_FAULT          OR1K_EXCEPTION_ITLB_FAULT           /**< ITLB Fault         */
-	#define EXCEPTION_GENERAL_PROTECTION  OR1K_EXCEPTION_RESET                /**< General Protection */
+	/**@{*/
+	#define __exception_struct      /**< @ref exception */
 	/**@}*/
 
 	/**
-	 * @brief Number of exceptions in the IBM PC target.
+	 * @name Exported Functions
 	 */
-	#define HAL_NUM_EXCEPTIONS OR1K_NUM_EXCEPTIONS
+	/**@{*/
+	#define __exception_get_addr    /**< @ref exception_get_addr()    */
+	#define __exception_get_instr   /**< @ref exception_get_instr()   */
+	#define __exception_get_num     /**< @ref exception_get_num()     */
+	#define __exception_set_handler /**< @ref exception_set_handler() */
+	/**@}*/
 
 #ifndef _ASM_FILE_
 

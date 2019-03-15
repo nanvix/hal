@@ -221,31 +221,34 @@
  */
 
 	/**
-	 * @name Provided Interface
+	 * @name Exported Constants
 	 */
 	/**@{*/
-	#define __exception_struct      /**< @ref exception               */
+	#define HAL_NUM_EXCEPTIONS            K1B_NUM_EXCEPTIONS            /**< @ref K1B_NUM_EXCEPTIONS            */
+	#define EXCEPTION_SIZE                K1B_EXCEPTION_SIZE            /**< @ref K1B_EXCEPTION_SIZE            */
+	#define EXCEPTION_INVALID_OPCODE      K1B_EXCEPTION_OPCODE          /**< @ref K1B_EXCEPTION_OPCODE          */
+	#define EXCEPTION_PAGE_FAULT          K1B_EXCEPTION_VIRT_PAGE_FAULT /**< @ref K1B_EXCEPTION_VIRT_PAGE_FAULT */
+	#define EXCEPTION_PAGE_PROTECTION     K1B_EXCEPTION_PAGE_PROTECTION /**< @ref K1B_EXCEPTION_PAGE_PROTECTION */
+	#define EXCEPTION_ITLB_FAULT          K1B_EXCEPTION_TLB_FAULT       /**< @ref K1B_EXCEPTION_TLB_FAULT       */
+	#define EXCEPTION_DTLB_FAULT          K1B_EXCEPTION_TLB_FAULT       /**< @ref K1B_EXCEPTION_TLB_FAULT       */
+	#define EXCEPTION_GENERAL_PROTECTION  K1B_EXCEPTION_PROTECTION      /**< @ref K1B_EXCEPTION_PROTECTION      */
+	/**@}*/
+
+	/**
+	 * @name Exported Structures
+	 */
+	/**@{*/
+	#define __exception_struct      /**< @ref exception */
+	/**@}*/
+
+	/**
+	 * @name Exported Functions
+	 */
+	/**@{*/
 	#define __exception_get_addr    /**< @ref exception_get_addr()    */
 	#define __exception_get_instr   /**< @ref exception_get_instr()   */
 	#define __exception_get_num     /**< @ref exception_get_num()     */
 	#define __exception_set_handler /**< @ref exception_set_handler() */
-	/**@}*/
-
-	/**
-	 * @brief Number of exceptions in the Kalray MPPA-256 target.
-	 */
-	#define HAL_NUM_EXCEPTIONS K1B_NUM_EXCEPTIONS
-
-	/**
-	 * @name Exception Codes
-	 */
-	/**@*/
-	#define EXCEPTION_INVALID_OPCODE      K1B_EXCEPTION_OPCODE          /**< Invalid Opcode     */
-	#define EXCEPTION_PAGE_FAULT          K1B_EXCEPTION_VIRT_PAGE_FAULT /**< Page Fault         */
-	#define EXCEPTION_PAGE_PROTECTION     K1B_EXCEPTION_PAGE_PROTECTION /**< Page Protection    */
-	#define EXCEPTION_ITLB_FAULT          K1B_EXCEPTION_TLB_FAULT       /**< I-TLB Fault        */
-	#define EXCEPTION_DTLB_FAULT          K1B_EXCEPTION_TLB_FAULT       /**< D-TLB Fault        */
-	#define EXCEPTION_GENERAL_PROTECTION  K1B_EXCEPTION_PROTECTION      /**< General Protection */
 	/**@}*/
 
 #ifndef _ASM_FILE_

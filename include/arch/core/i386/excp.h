@@ -98,10 +98,10 @@
 	 */
 	struct exception
 	{
-		uint32_t num;         /**< Exception number.     */
-		uint32_t code;        /**< Error code.           */
-		uint32_t addr;        /**< Faulting address.     */
-		uint32_t instruction; /**< Faulting instruction. */
+		i386_word_t num;         /**< Exception number.     */
+		i386_word_t code;        /**< Error code.           */
+		i386_word_t addr;        /**< Faulting address.     */
+		i386_word_t instruction; /**< Faulting instruction. */
 	} __attribute__((packed));
 
 	/**
@@ -217,29 +217,32 @@
  */
 
 	/**
-	 * @name Provided Interface
+	 * @name Exported Constants
 	 */
 	/**@{*/
-	#define __exception_struct      /**< @ref exception               */
+	#define HAL_NUM_EXCEPTIONS            I386_NUM_EXCEPTIONS                /**< @ref I386_NUM_EXCEPTIONS               */
+	#define EXCEPTION_SIZE                I386_EXCEPTION_SIZE                /**< @ref I386_EXCEPTION_SIZE               */
+	#define EXCEPTION_INVALID_OPCODE      I386_EXCEPTION_INVALID_OPCODE      /**< @ref I386_EXCEPTION_INVALID_OPCODE     */
+	#define EXCEPTION_PAGE_FAULT          I386_EXCEPTION_PAGE_FAULT          /**< @ref I386_EXCEPTION_PAGE_FAULT         */
+	#define EXCEPTION_PAGE_PROTECTION     I386_EXCEPTION_PAGE_FAUULT         /**< @ref I386_EXCEPTION_PAGE_FAULT         */
+	#define EXCEPTION_GENERAL_PROTECTION  I386_EXCEPTION_GENERAL_PROTECTION  /**< @ref I386_EXCEPTION_GENERAL_PROTECTION */
+	/**@}*/
+
+	/**
+	 * @name Exported Structures
+	 */
+	/**@{*/
+	#define __exception_struct      /**< @ref exception */
+	/**@}*/
+
+	/**
+	 * @name Exported Functions
+	 */
+	/**@{*/
 	#define __exception_get_addr    /**< @ref exception_get_addr()    */
 	#define __exception_get_instr   /**< @ref exception_get_instr()   */
 	#define __exception_get_num     /**< @ref exception_get_num()     */
 	#define __exception_set_handler /**< @ref exception_set_handler() */
-	/**@}*/
-
-	/**
-	 * @brief Number of exceptions in the IBM PC target.
-	 */
-	#define HAL_NUM_EXCEPTIONS I386_NUM_EXCEPTIONS
-
-	/**
-	 * @name Exception Codes
-	 */
-	/**@*/
-	#define EXCEPTION_INVALID_OPCODE      I386_EXCEPTION_INVALID_OPCODE     /**< Invalid Opcode     */
-	#define EXCEPTION_PAGE_FAULT          I386_EXCEPTION_PAGE_FAULT         /**< Page Fault         */
-	#define EXCEPTION_PAGE_PROTECTION     I386_EXCEPTION_PAGE_FAULT         /**< Page Protection    */
-	#define EXCEPTION_GENERAL_PROTECTION  I386_EXCEPTION_GENERAL_PROTECTION /**< General Protection */
 	/**@}*/
 
 	/**
