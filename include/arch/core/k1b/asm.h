@@ -106,12 +106,12 @@
 	 */
 	.macro _do_prologue
 
-		/* Save r0 + r1 registers. */
-		sd 0[$sp], $p0
-		;;
-
 		/* Allocate a stack frame. */
 		add $sp, $sp, -FAST_CALL_STACK_FRAME_SIZE
+		;;
+
+		/* Save r0 + r1 registers. */
+		sd 8[$sp], $p0
 		;;
 
 		/*
@@ -157,12 +157,12 @@
 		lw  $bp, STACK_FRAME_BP[$sp]
 		;;
 
-		/* Wipe out stack frame. */
-		add $sp, $sp, FAST_CALL_STACK_FRAME_SIZE
+		/* Restore r0 + r1 registers. */
+		ld $p0, 8[$sp]
 		;;
 
-		/* Restore r0 + r1 registers. */
-		ld $p0, 0[$sp]
+		/* Wipe out stack frame. */
+		add $sp, $sp, FAST_CALL_STACK_FRAME_SIZE
 		;;
 
 	.endm
