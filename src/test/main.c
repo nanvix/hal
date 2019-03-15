@@ -33,8 +33,8 @@
  */
 PUBLIC int main(int argc, const char **argv)
 {
-	((void) argc);
-	((void) argv);
+	UNUSED(argc);
+	UNUSED(argv);
 
 	while (TRUE)
 		noop();
@@ -59,7 +59,7 @@ PUBLIC void kmain(int argc, const char *argv[])
 	test_core();
 	test_trap();
 
-#ifndef __hal_incomplete_sync
+#if (TARGET_HAS_SYNC)
 	test_sync();
 #endif
 

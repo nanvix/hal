@@ -64,9 +64,9 @@
 	 * @name Initial D-NoC tag
 	 */
 	/**@{*/
-	#define BOSTAN_DNOC_RX_BASE BOSTAN_NR_RESERVED_TAGS /**< Receive tag offset.  */
-	#define BOSTAN_DNOC_TX_BASE BOSTAN_NR_RESERVED_TAGS /**< Transfer tag offset. */
-	#define BOSTAN_DNOC_UC_BASE BOSTAN_NR_RESERVED_TAGS /**< UCore thread offset. */
+	#define BOSTAN_DNOC_RX_BASE BOSTAN_NR_RESERVED_RX_TAGS /**< Receive tag offset.  */
+	#define BOSTAN_DNOC_TX_BASE BOSTAN_NR_RESERVED_TX_TAGS /**< Transfer tag offset. */
+	#define BOSTAN_DNOC_UC_BASE BOSTAN_NR_RESERVED_TX_TAGS /**< UCore thread offset. */
 	/**@}*/
 
 	/**
@@ -76,6 +76,19 @@
 	#define BOSTAN_NR_DNOC_RX (BOSTAN_DNOC_RX_MAX - BOSTAN_DNOC_RX_BASE) /**< Number of receive buffers.  */
 	#define BOSTAN_NR_DNOC_TX (BOSTAN_DNOC_TX_MAX - BOSTAN_DNOC_TX_BASE) /**< Number of transfer buffers. */
 	#define BOSTAN_NR_DNOC_UC (BOSTAN_DNOC_UC_MAX - BOSTAN_DNOC_UC_BASE) /**< Number of ucore threads.	*/
+	/**@}*/
+
+	/**
+	 * @brief Number of D-NoC transfer per communication service.
+	 */
+	#define BOSTAN_NR_DNOC_TX_PER_COMM_SERVICE 4
+
+	/**
+	 * @name Identifies D-NoC transfer tag reserved for Communication services.
+	 */
+	/**@{*/
+	#define BOSTAN_MAILBOX_DNOC_TX_BASE  0                                                                /**< D-NoC Transfer Tag reserved for Mailbox. */
+	#define BOSTAN_PORTAL_DNOC_TX_BASE  (BOSTAN_PORTAL_DNOC_TX_BASE + BOSTAN_NR_DNOC_TX_PER_COMM_SERVICE) /**< D-NoC Transfer Tag reserved for Portal.  */
 	/**@}*/
 
 /*============================================================================*

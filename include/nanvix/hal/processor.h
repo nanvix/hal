@@ -33,35 +33,7 @@
 	#include <nanvix/hal/processor/_processor.h>
 
 	#include <nanvix/hal/processor/clusters.h>
-
-/*============================================================================*
- * Interface Implementation Checking                                          *
- *============================================================================*/
-
-	/* Feature Checking */
-	#ifndef PROCESSOR_IS_MULTICLUSTER
-	#error "is this a multicluster processor?"
-	#endif
-
-	/* Multicluster Processor*/
-	#if (PROCESSOR_IS_MULTICLUSTER)
-
-		/* Constants */
-		#ifndef _PROCESSOR_CCLUSTERS_NUM
-		#error "_PROCESSOR_CCLUSTERS_NUM not defined"
-		#endif
-		#ifndef _PROCESSOR_IOCLUSTERS_NUM
-		#error "_PROCESSOR_IOCLUSTERS_NUM"
-		#endif
-
-	/* Single-Cluster Processor*/
-	#else
-
-		/* Constants */
-		#define _PROCESSOR_CCLUSTERS_NUM  0
-		#define _PROCESSOR_IOCLUSTERS_NUM 1
-
-	#endif
+	#include <nanvix/hal/processor/noc.h>
 
 /*============================================================================*
  * Processor Interface                                                        *

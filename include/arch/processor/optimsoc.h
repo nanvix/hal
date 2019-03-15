@@ -40,9 +40,6 @@
  */
 /**@*/
 
-	#include <arch/processor/optimsoc/clusters.h>
-	#include <arch/processor/optimsoc/noc.h>
-
 /**@}*/
 
 /*============================================================================*
@@ -56,7 +53,8 @@
 	 * @name Provided Features
 	 */
 	/**@{*/
-	#define PROCESSOR_IS_MULTICLUSTER 1
+	#define PROCESSOR_IS_MULTICLUSTER 0 /**< Multicluster feature */
+	#define PROCESSOR_HAS_NOC         0 /**< NoC feature          */
 	/**@}*/
 
 /**@endcond*/

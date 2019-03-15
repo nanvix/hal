@@ -107,6 +107,27 @@ PUBLIC int bostan_nodes_convert(int *_nodes, const int *nodes, int nnodes)
 }
 
 /*=======================================================================*
+ * bostan_node_convert_id()                                             *
+ *=======================================================================*/
+/**
+ * @brief Gets the virtual number of a NoC node.
+ *
+ * @param nodenum Logic ID of the target NoC node.
+ *
+ * @returns The virtual number of the target NoC node.
+ *
+ * @note This function is non-blocking.
+ * @note This function is thread-safe.
+ */
+PUBLIC int bostan_node_convert_id(int nodenum)
+{
+	if (!WITHIN(nodenum, 0, BOSTAN_NR_NOC_NODES))
+		return (-EINVAL);
+
+	return (bostan_noc_nodes[nodenum]);
+}
+
+/*=======================================================================*
  * bostan_node_mailbox_tag()                                             *
  *=======================================================================*/
 
@@ -124,11 +145,11 @@ PUBLIC int bostan_nodes_convert(int *_nodes, const int *nodes, int nnodes)
 PUBLIC int bostan_node_mailbox_tag(int nodeid)
 {
 	if (bostan_noc_is_ionode0(nodeid))
-		return (BOSTAN_TAG_MAILBOX_OFF + (nodeid % K1BIO_CORES_NUM));
+		return (BOSTAN_MAILBOX_RX_OFF + (nodeid % K1BIO_CORES_NUM));
 	else if (bostan_noc_is_ionode1(nodeid))
-		return (BOSTAN_TAG_MAILBOX_OFF + K1BIO_CORES_NUM + (nodeid % K1BIO_CORES_NUM));
+		return (BOSTAN_MAILBOX_RX_OFF + K1BIO_CORES_NUM + (nodeid % K1BIO_CORES_NUM));
 
-	return (BOSTAN_TAG_MAILBOX_OFF + K1BIO_CORES_NUM + K1BIO_CORES_NUM + nodeid);
+	return (BOSTAN_MAILBOX_RX_OFF + K1BIO_CORES_NUM + K1BIO_CORES_NUM + nodeid);
 }
 
 /*=======================================================================*
@@ -149,11 +170,11 @@ PUBLIC int bostan_node_mailbox_tag(int nodeid)
 PUBLIC int bostan_node_portal_tag(int nodeid)
 {
 	if (bostan_noc_is_ionode0(nodeid))
-		return (BOSTAN_TAG_PORTAL_OFF + (nodeid % K1BIO_CORES_NUM));
+		return (BOSTAN_PORTAL_RX_OFF + (nodeid % K1BIO_CORES_NUM));
 	else if (bostan_noc_is_ionode1(nodeid))
-		return (BOSTAN_TAG_PORTAL_OFF + K1BIO_CORES_NUM + (nodeid % K1BIO_CORES_NUM));
+		return (BOSTAN_PORTAL_RX_OFF + K1BIO_CORES_NUM + (nodeid % K1BIO_CORES_NUM));
 
-	return (BOSTAN_TAG_PORTAL_OFF + K1BIO_CORES_NUM + K1BIO_CORES_NUM + nodeid);
+	return (BOSTAN_PORTAL_RX_OFF + K1BIO_CORES_NUM + K1BIO_CORES_NUM + nodeid);
 }
 
 /*=======================================================================*
@@ -171,9 +192,9 @@ PUBLIC int bostan_node_portal_tag(int nodeid)
 PUBLIC int bostan_node_sync_tag(int nodeid)
 {
 	if (bostan_noc_is_ionode0(nodeid))
-		return (BOSTAN_TAG_SYNC_OFF + (nodeid % K1BIO_CORES_NUM));
+		return (BOSTAN_SYNC_RX_OFF + (nodeid % K1BIO_CORES_NUM));
 	else if (bostan_noc_is_ionode1(nodeid))
-		return (BOSTAN_TAG_SYNC_OFF + K1BIO_CORES_NUM + (nodeid % K1BIO_CORES_NUM));
+		return (BOSTAN_SYNC_RX_OFF + K1BIO_CORES_NUM + (nodeid % K1BIO_CORES_NUM));
 
-	return (BOSTAN_TAG_SYNC_OFF + K1BIO_CORES_NUM + K1BIO_CORES_NUM + nodeid);
+	return (BOSTAN_SYNC_RX_OFF + K1BIO_CORES_NUM + K1BIO_CORES_NUM + nodeid);
 }
