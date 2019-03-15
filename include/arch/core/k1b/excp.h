@@ -39,13 +39,14 @@
 	#include <arch/core/k1b/types.h>
 
 	#include <arch/core/k1b/context.h>
+	#include <nanvix/klib.h>
 
 #endif
 
 	/**
 	 * @brief Exception information size (in bytes).
 	 */
-	#define K1B_EXCEPTION_SIZE 12
+	#define K1B_EXCEPTION_SIZE 16
 
 	/**
 	 * @name Offsets to the Exception Information structure.
@@ -110,9 +111,10 @@
 	 */
 	struct exception
 	{
-		uint32_t num; /**< Exception number.      */
-		uint32_t ea;  /**< Exception address.     */
-		uint32_t spc; /**< Saved program counter. */
+		k1b_word_t num;         /**< Exception number.      */
+		k1b_word_t ea;          /**< Exception address.     */
+		k1b_word_t spc;         /**< Saved program counter. */
+		k1b_byte_t RESERVED[4]; /**< Required padding.      */
 	} __attribute__((packed));
 
 /**@endcond*/

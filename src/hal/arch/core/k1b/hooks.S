@@ -143,15 +143,15 @@ _do_excp:
 	_scoreboard_get $r2 $r3
 
 	/* Processing Status. */
-	ld  $p4 = MOS_VC_REG_PS[$r2]
+	lw  $r4 = MOS_VC_REG_PS[$r2]
 	;;
-	sd  K1B_CONTEXT_PS[$r1], $p4
+	sw  K1B_CONTEXT_PS[$r1], $r4
 	;;
 
 	/* Saved Processing Status */
-	ld  $p4 = MOS_VC_REG_SPS[$r2]
+	lw  $r4 = MOS_VC_REG_SPS[$r2]
 	;;
-	sd  K1B_CONTEXT_SPS[$r1], $p4
+	sw  K1B_CONTEXT_SPS[$r1], $r4
 	;;
 
 	/* Saved Program Counter. */
