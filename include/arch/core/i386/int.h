@@ -65,12 +65,7 @@
 	#define I386_PC_INT_ATA1    14 /*< Primary ATA hard disk.                     */
 	#define I386_PC_INT_ATA2    15 /*< Secondary ATA hard disk.                   */
 	/**@}*/
-	
-	/**
-	 * @brief System Call Hook
-	 */
-	EXTERN void syscall(void);
-	
+
 	/**
 	 * @name Hardware Interrupt Hooks
 	 */

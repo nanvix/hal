@@ -44,6 +44,7 @@
 	#include <arch/core/i386/pmio.h>
 	#include <arch/core/i386/spinlock.h>
 	#include <arch/core/i386/tlb.h>
+	#include <arch/core/i386/trap.h>
 
 /**
  * @cond i386

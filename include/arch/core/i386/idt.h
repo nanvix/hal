@@ -37,12 +37,12 @@
 	 * @brief Size of and IDT entry (in bytes).
 	 */
 	#define IDTE_SIZE 8
-	
+
 	/**
 	 * @brief Size of IDTPTR (in bytes).
 	 */
 	#define IDTPTR_SIZE 6
-	
+
 	/**
 	 * @brief Number of entries in the IDT.
 	 */
@@ -73,7 +73,7 @@
 		unsigned flags        :  4; /**< Flags.                 */
 		unsigned handler_high : 16; /**< handler high.          */
 	} __attribute__((packed));
-	
+
 	/**
 	 * @brief Interrupt descriptor table pointer.
 	 */
