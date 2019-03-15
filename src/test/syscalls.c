@@ -39,7 +39,7 @@
  * @returns Upon successful completion, zero is returned. Upon
  * failure, a negative error code is returned instead.
  */
-PUBLIC int do_syscall1(
+PUBLIC int do_syscall(
 	int arg0,
 	int arg1,
 	int arg2,
