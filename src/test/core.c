@@ -47,6 +47,16 @@ PRIVATE int cores_started = 1;
 PRIVATE spinlock_t core_start_lock = SPINLOCK_UNLOCKED;
 
 /**
+ * @brief API Test: Core suspend and wakeup flags.
+ */
+#define CORE_RUNNING 0xDEAD /**< Indicates that the core was suspended. */
+#define CORE_WAKEUP  0xC0DE /**< Indicates that the core was waked up.  */
+
+/*----------------------------------------------------------------------------*
+ * Get Core ID                                                                *
+ *----------------------------------------------------------------------------*/
+
+/**
  * @brief API Test: Query Core ID
  */
 PRIVATE void test_core_get_id(void)
@@ -61,6 +71,10 @@ PRIVATE void test_core_get_id(void)
 
 	KASSERT(coreid == COREID_MASTER);
 }
+
+/*----------------------------------------------------------------------------*
+ * Start Execution Slave                                                      *
+ *----------------------------------------------------------------------------*/
 
 /**
  * @brief API Test: Slave Core Entry Point.
@@ -113,6 +127,94 @@ PRIVATE void test_core_start_slave(void)
 	}
 }
 
+/*----------------------------------------------------------------------------*
+ * Suspend and Resume from Master                                             *
+ *----------------------------------------------------------------------------*/
+
+/**
+ * @brief API Test: Slave Core, Suspend/Resume entry point.
+ */
+PRIVATE void test_core_suspend_slave_entry(void)
+{
+#if (TEST_CORE_VERBOSE)
+	kprintf("core %d running", core_get_id());
+#endif
+
+	/* Running. */
+	dcache_invalidate();
+	cores_started = CORE_RUNNING;
+
+#if (TEST_CORE_VERBOSE)
+	kprintf("core %d suspending", core_get_id());
+#endif
+
+	/* Sleep. */
+	core_sleep();
+
+	/* Wakeup. */
+	dcache_invalidate();
+	cores_started = CORE_WAKEUP;
+
+#if (TEST_CORE_VERBOSE)
+	kprintf("core %d waking up", core_get_id());
+#endif
+}
+
+/**
+ * @brief API Test: Suspend and resume a slave core.
+ */
+PRIVATE void test_core_suspend_resume_master(void)
+{
+	int i;   /* Loop index. */
+
+	/* Unit test not applicable. */
+	if (!CLUSTER_IS_MULTICORE)
+		return;
+
+	/*
+	 * Start one slave core.
+	 */
+	for (i = 0; i < HAL_NUM_CORES; i++)
+	{
+		if (i != COREID_MASTER)
+		{
+			core_start(i, test_core_suspend_slave_entry);
+			break;
+		}
+	}
+
+	/*
+	 * Send a wakeup signal to the slave core.
+	 *
+	 * Note: It's important to note that the wakeup signal is
+	 * not atomic, i.e, the signal can arrives before the core
+	 * slept. The HAL covers this scenario using a wakeups
+	 * counter that is able to prevent a core from sleeping if
+	 * it has already received a wakeup signal.
+	 */
+	while (TRUE)
+	{
+		dcache_invalidate();
+
+		if (cores_started == CORE_RUNNING)
+		{
+			core_wakeup(i);
+			break;
+		}
+	}
+
+	/*
+	 * Wait for the slave wake up.
+	 */
+	while (TRUE)
+	{
+		dcache_invalidate();
+
+		if (cores_started == CORE_WAKEUP)
+			break;
+	}
+}
+
 /*============================================================================*
  * Test Driver                                                                *
  *============================================================================*/
@@ -121,9 +223,10 @@ PRIVATE void test_core_start_slave(void)
  * @brief Unit tests.
  */
 PRIVATE struct test core_tests_api[] = {
-	{ test_core_get_id,      "Get Core ID"           },
-	{ test_core_start_slave, "Start Execution Slave" },
-	{ NULL,                  NULL                    },
+	{ test_core_get_id,                "Get Core ID"                    },
+	{ test_core_start_slave,           "Start Execution Slave"          },
+	{ test_core_suspend_resume_master, "Suspend and Resume from Master" },
+	{ NULL,                            NULL                             },
 };
 
 /**
