@@ -51,6 +51,18 @@
 	#ifndef PDE_SIZE
 	#error "PDE_SIZE not defined"
 	#endif
+	#ifndef PADDR_BIT
+	#error "PADDR_BIT not defined"
+	#endif
+	#ifndef VADDR_BIT
+	#error "VADDR_BIT not defined"
+	#endif
+	#ifndef PADDR_BYTE
+	#error "PADDR_BYTE not defined"
+	#endif
+	#ifndef VADDR_BYTE
+	#error "VADDR_BYTE not defined"
+	#endif
 
 	/* Types & Structures */
 	#ifndef __frame_t
