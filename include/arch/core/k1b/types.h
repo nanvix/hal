@@ -68,7 +68,42 @@
 
 /**@}*/
 
+/**
+ * @addtogroup k1b-core-mmu
+ */
+/**@{*/
+
+#ifdef __NEED_MEMORY_TYPES
+#ifndef __MEMORY_CONSTANTS
+#define __MEMORY_CONSTANTS
+
+	/**
+	 * @name Bit-Length of Memory Types
+	 */
+	/**@{*/
+	#define K1B_PADDR_BIT  32 /**< Physical Address */
+	#define K1B_VADDR_BIT  32 /**< Virtual Address  */
+	/**@}*/
+
+	/**
+	 * @name Byte-Length of Memory Types
+	 */
+	/**@{*/
+	#define K1B_PADDR_BYTE 4 /**< Physical Address */
+	#define K1B_VADDR_BYTE 4 /**< Virtual Address  */
+	/**@}*/
+
+#endif
+#endif
+
+/**@}*/
+
 #ifndef _ASM_FILE_
+
+	/**
+	 * @addtogroup k1b-core-mmu
+	 */
+	/**@{*/
 
 	#ifdef __NEED_MEMORY_TYPES
 	#ifndef __MEMORY_TYPES
@@ -86,6 +121,8 @@
 
 	#endif
 	#endif
+
+	/**@}*/
 
 
 	/**

@@ -33,12 +33,12 @@
  */
 /**@{*/
 
+	/* Must comme first. */
 	#define __NEED_K1B_ELF
-	#include <arch/core/k1b/elf.h>
-
 	#define __NEED_MEMORY_TYPES
-	#include <arch/core/k1b/types.h>
 
+	#include <arch/core/k1b/elf.h>
+	#include <arch/core/k1b/types.h>
 	#include <nanvix/klib.h>
 	#include <stdint.h>
 
@@ -104,12 +104,36 @@
  */
 
 	/**
-	 * @name Provided Interface
+	 * @name Exported Constants
 	 */
 	/**@{*/
-	#define __frame_t            /**< Page Frame Number */
-	#define __paddr_t            /**< Physical Address  */
-	#define __vaddr_t            /**< Virtual Address   */
+	#define PAGE_SIZE   K1B_PAGE_SIZE   /**< @ref K1B_PAGE_SIZE   */
+	#define PGTAB_SIZE  K1B_PGTAB_SIZE  /**< @ref K1B_PGTAB_BIT   */
+	#define PTE_SIZE    K1B_PTE_SIZE    /**< @ref K1B_PTE_SIZE    */
+	#define PDE_SIZE    K1B_PDE_SIZE    /**< @ref K1B_PDE_SIZE    */
+	#define PAGE_SHIFT  K1B_PAGE_SHIFT  /**< @ref K1B_PAGE_SHIFT  */
+	#define PGTAB_SHIFT K1B_PGTAB_SHIFT /**< @ref K1B_PGTAB_SHIFT */
+	#define PAGE_MASK   K1B_PAGE_MASK   /**< @ref K1B_PAGE_MASK   */
+	#define PGTAB_MASK  K1B_PGTAB_MASK  /**< @ref K1B_PGTAB_MASK  */
+	#define PADDR_BIT   K1B_PADDR_BIT   /**< @ref K1B_PADDR_BIT   */
+	#define VADDR_BIT   K1B_VADDR_BIT   /**< @ref K1B_VADDR_BIT   */
+	#define PADDR_BYTE  K1B_PADDR_BYTE  /**< @ref K1B_PADDR_BYTE  */
+	#define VADDR_BYTE  K1B_VADDR_BYTE  /**< @ref K1B_VADDR_BYTE  */
+	/**@}*/
+
+	/**
+	 * @name Exported Types
+	 */
+	/**@{*/
+	#define __frame_t /**< @ref frame_t */
+	#define __paddr_t /**< @ref paddr_t */
+	#define __vaddr_t /**< @ref vaddr_t */
+	/**@}*/
+
+	/**
+	 * @brief Exported Functions
+	 */
+	/**@{*/
 	#define __pde_clear_fn       /**< pde_clear()       */
 	#define __pde_frame_get_fn   /**< pde_frame_get()   */
 	#define __pde_frame_set_fn   /**< pde_frame_set()   */
