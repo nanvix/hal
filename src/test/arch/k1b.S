@@ -22,36 +22,10 @@
  * SOFTWARE.
  */
 
-#ifndef _HAL_TEST_H_
-#define _HAL_TEST_H_
+/* Must come first. */
+#define _ASM_FILE_
 
-	/**
-	 * @brief Unit test.
-	 */
-	struct test
-	{
-		void (*test_fn)(void); /**< Test function. */
-		const char *name;      /**< Test name.     */
-	};
+#include <arch/core/k1b/asm.h>
 
-	/**
-	 * @brief Test driver for the Clock Interface.
-	 */
-	EXTERN void test_clock(void);
+.section .text
 
-	/**
-	 * @brief Test driver for the Core Interface.
-	 */
-	EXTERN void test_core(void);
-
-	/*
-	 * @brief Test driver for the sync interface
-	 */
-	EXTERN void test_sync(void);
-
-	/**
-	 * @brief Test driver for the Exception Interface.
-	 */
-	EXTERN void test_exception(void);
-
-#endif /* _HAL_TEST_H_ */
