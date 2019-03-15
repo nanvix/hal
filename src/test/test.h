@@ -44,7 +44,7 @@
 	 */
 	EXTERN void test_core(void);
 
-	/*
+	/**
 	 * @brief Test driver for the sync interface
 	 */
 	EXTERN void test_sync(void);
@@ -53,5 +53,10 @@
 	 * @brief Test driver for the Exception Interface.
 	 */
 	EXTERN void test_exception(void);
+
+	/**
+	 * @brief Test driver for trap interface.
+	 */
+	EXTERN void test_trap(void);
 
 #endif /* _HAL_TEST_H_ */

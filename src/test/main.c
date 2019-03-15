@@ -57,6 +57,7 @@ PUBLIC void kmain(int argc, const char *argv[])
 	test_exception();
 	test_clock();
 	test_core();
+	test_trap();
 
 #ifndef __hal_incomplete_sync
 	test_sync();
