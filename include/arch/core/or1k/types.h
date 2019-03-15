@@ -68,7 +68,42 @@
 
 /**@}*/
 
+/**
+ * @addtogroup or1k-core-mmu
+ */
+/**@{*/
+
+#ifdef __NEED_MEMORY_TYPES
+#ifndef __MEMORY_CONSTANTS
+#define __MEMORY_CONSTANTS
+
+	/**
+	 * @name Bit-Length of Memory Types
+	 */
+	/**@{*/
+	#define OR1K_PADDR_BIT  32 /**< Physical Address */
+	#define OR1K_VADDR_BIT  32 /**< Virtual Address  */
+	/**@}*/
+
+	/**
+	 * @name Byte-Length of Memory Types
+	 */
+	/**@{*/
+	#define OR1K_PADDR_BYTE 4 /**< Physical Address */
+	#define OR1K_VADDR_BYTE 4 /**< Virtual Address  */
+	/**@}*/
+
+#endif
+#endif
+
+/**@}*/
+
 #ifndef _ASM_FILE_
+
+	/**
+	 * @addtogroup or1k-core-mmu
+	 */
+	/**@{*/
 
 	#ifdef __NEED_MEMORY_TYPES
 	#ifndef __MEMORY_TYPES
@@ -87,6 +122,7 @@
 	#endif
 	#endif
 
+	/**@}*/
 
 	/**
 	 * @addtogroup or1k-core

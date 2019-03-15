@@ -123,16 +123,40 @@
  *============================================================================*/
 
 /**
- * @cond mor1kx
+ * @cond or1k
  */
 
 	/**
-	 * @name Provided Interface
+	 * @name Exported Constants
 	 */
 	/**@{*/
-	#define __frame_t            /**< Page Frame Number */
-	#define __paddr_t            /**< Physical Address  */
-	#define __vaddr_t            /**< Virtual Address   */
+	#define PAGE_SIZE   OR1K_PAGE_SIZE   /**< @ref OR1K_PAGE_SIZE   */
+	#define PGTAB_SIZE  OR1K_PGTAB_SIZE  /**< @ref OR1K_PGTAB_BIT   */
+	#define PTE_SIZE    OR1K_PTE_SIZE    /**< @ref OR1K_PTE_SIZE    */
+	#define PDE_SIZE    OR1K_PDE_SIZE    /**< @ref OR1K_PDE_SIZE    */
+	#define PAGE_SHIFT  OR1K_PAGE_SHIFT  /**< @ref OR1K_PAGE_SHIFT  */
+	#define PGTAB_SHIFT OR1K_PGTAB_SHIFT /**< @ref OR1K_PGTAB_SHIFT */
+	#define PAGE_MASK   OR1K_PAGE_MASK   /**< @ref OR1K_PAGE_MASK   */
+	#define PGTAB_MASK  OR1K_PGTAB_MASK  /**< @ref OR1K_PGTAB_MASK  */
+	#define PADDR_BIT   OR1K_PADDR_BIT   /**< @ref OR1K_PADDR_BIT   */
+	#define VADDR_BIT   OR1K_VADDR_BIT   /**< @ref OR1K_VADDR_BIT   */
+	#define PADDR_BYTE  OR1K_PADDR_BYTE  /**< @ref OR1K_PADDR_BYTE  */
+	#define VADDR_BYTE  OR1K_VADDR_BYTE  /**< @ref OR1K_VADDR_BYTE  */
+	/**@}*/
+
+	/**
+	 * @name Exported Types
+	 */
+	/**@{*/
+	#define __frame_t /**< @ref frame_t */
+	#define __paddr_t /**< @ref paddr_t */
+	#define __vaddr_t /**< @ref vaddr_t */
+	/**@}*/
+
+	/**
+	 * @brief Exported Functions
+	 */
+	/**@{*/
 	#define __pde_clear_fn       /**< pde_clear()       */
 	#define __pde_frame_get_fn   /**< pde_frame_get()   */
 	#define __pde_frame_set_fn   /**< pde_frame_set()   */
@@ -144,34 +168,15 @@
 	#define __pde_user_set_fn    /**< pde_user_set()    */
 	#define __pde_write_set_fn   /**< pde_write_set()   */
 	#define __pte_clear_fn       /**< pde_clear()       */
+	#define __pte_frame_get_fn   /**< pde_frame_get()   */
 	#define __pte_frame_set_fn   /**< pde_frame_set()   */
 	#define __pte_get_fn         /**< pde_get()         */
 	#define __pte_is_present_fn  /**< pde_is_present()  */
 	#define __pte_is_user_fn     /**< pte_is_user()     */
 	#define __pte_is_write_fn    /**< pte_is_write()    */
-	#define __pte_present_set_fn /**< pte_preset_set()  */
+	#define __pte_present_set_fn /**< pte_present_set() */
 	#define __pte_user_set_fn    /**< pte_user_set()    */
 	#define __pte_write_set_fn   /**< pte_write_set()   */
-	/**@}*/
-
-	/**
-	 * @name Page Shifts
-	 */
-	/**@{*/
-	#define PAGE_SHIFT  OR1K_PAGE_SHIFT  /**< Page Shift       */
-	#define PGTAB_SHIFT OR1K_PGTAB_SHIFT /**< Page Table Shift */
-	#define PAGE_MASK   OR1K_PAGE_MASK   /**< Page Mask        */
-	#define PGTAB_MASK  OR1K_PGTAB_MASK  /**< Page Table Mask  */
-	/**@}*/
-
-	/**
-	 * @name Size of Pages and Page Tables
-	 */
-	/**@{*/
-	#define PAGE_SIZE  OR1K_PAGE_SIZE  /**< Page Size                 */
-	#define PGTAB_SIZE OR1K_PGTAB_SIZE /**< Page Table Size           */
-	#define PTE_SIZE   OR1K_PTE_SIZE   /**< Page Table Entry Size     */
-	#define PDE_SIZE   OR1K_PDE_SIZE   /**< Page Directory Entry Size */
 	/**@}*/
 
 #ifndef _ASM_FILE_
