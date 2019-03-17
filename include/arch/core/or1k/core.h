@@ -57,50 +57,6 @@
 #ifndef _ASM_FILE_
 
 	/**
-	 * @brief Reads from an specified Special-Purpose register.
-	 *
-	 * @param reg Register to be read.
-	 *
-	 * @returns Returns the value of the specified SPR.
-	 */
-	static inline unsigned or1k_mfspr(unsigned reg)
-	{
-		register unsigned ret
-			__asm__("r3") = (unsigned) 0;
-		register unsigned r5
-			__asm__("r5") = (unsigned) reg;
-
-		__asm__ __volatile__
-		(
-			"l.mfspr r3, r5, 0"
-			: "=r" (ret)
-			: "r" (r5)
-		);
-		return (ret);
-	}
-
-	/**
-	 * @brief Writes to an specified Special-Purpose register.
-	 *
-	 * @param reg Register to be written.
-	 * @param value Value to be written.
-	 */
-	static inline void or1k_mtspr(unsigned reg, unsigned value)
-	{
-		register unsigned r3
-			__asm__("r3") = (unsigned) reg;
-		register unsigned r5
-			__asm__("r5") = (unsigned) value;
-
-		__asm__ __volatile__
-		(
-			"l.mtspr r3, r5, 0\n"
-			:
-			: "r" (r3), "r" (r5)
-		);
-	}
-
-	/**
 	 * @brief Gets the ID of the core.
 	 *
 	 * The or1k_core_get_id() returns the ID of the underlying core.
