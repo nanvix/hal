@@ -91,7 +91,7 @@
  * Saves the current execution context.
  */
 .macro or1k_context_save dest
-	
+
 	/* Save GPRs, except SP, BP and scratch registers r3 ... r6. */
 	l.sw OR1K_CONTEXT_R0(\dest),   r0
 	l.sw OR1K_CONTEXT_R7(\dest),   r7

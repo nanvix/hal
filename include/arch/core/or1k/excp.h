@@ -49,7 +49,7 @@
 	/**
 	 * @brief Exception information size (in bytes).
 	 */
-	#define OR1K_EXCEPTION_SIZE 12
+	#define OR1K_EXCEPTION_SIZE 16
 
 	/**
 	 * @name Offsets to the Exception Information structure.
@@ -94,9 +94,11 @@
 	 */
 	struct exception
 	{
-		or1k_word_t num;    /**< Exception number.      */
-		or1k_word_t eear;   /**< Exception address.     */
-		or1k_word_t epcr;   /**< Saved program counter. */
+		or1k_word_t num;         /**< Exception number.      */
+		or1k_word_t eear;        /**< Exception address.     */
+		or1k_word_t epcr;        /**< Saved program counter. */
+		or1k_byte_t RESERVED[4]; /**< Required padding.      */
+
 	} __attribute__((packed));
 
 /**@endif*/
