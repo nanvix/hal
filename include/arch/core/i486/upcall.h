@@ -22,39 +22,70 @@
  * SOFTWARE.
  */
 
-#ifndef CORE_I486_H_
-#define CORE_I486_H_
+#ifndef ARCH_CORE_I486_UPCALL_H_
+#define ARCH_CORE_I486_UPCALL_H_
+
+/**
+ * @addtogroup i486-core-upcall Upcall
+ * @ingroup i486-core
+ *
+ * @brief Upcall Interface
+ */
+/**@{*/
 
 	/**
-	 * @addtogroup i486-core i486 Core
-	 * @ingroup cores
+	 * @brief System call number for upcall_ret().
 	 */
+	#define I486_NR_upcall_ret 0
 
-	#ifndef __NEED_CORE_I486
-		#error "i486 core not required"
-	#endif
+#ifndef _ASM_FILE_
 
-	#include <arch/core/i486/8253.h>
-	#include <arch/core/i486/8259.h>
-	#include <arch/core/i486/cache.h>
-	#include <arch/core/i486/core.h>
-	#include <arch/core/i486/excp.h>
-	#include <arch/core/i486/int.h>
-	#include <arch/core/i486/mmu.h>
-	#include <arch/core/i486/pmio.h>
-	#include <arch/core/i486/spinlock.h>
-	#include <arch/core/i486/tlb.h>
-	#include <arch/core/i486/trap.h>
-	#include <arch/core/i486/upcall.h>
+	/**
+	 * @brief Returns from an upcall.
+	 */
+	extern void i486_upcall_ret(void);
+
+#endif
+
+/**@}*/
+
+/*============================================================================*
+ * Exported Interface                                                         *
+ *============================================================================*/
 
 /**
  * @cond i486
  */
 
-	/* Feature Declaration */
-	#define CORE_SUPPORTS_PMIO 1
+	/**
+	 * @name Exported Constants
+	 */
+	/**@{*/
+	#define NR_upcall_ret I486_NR_upcall_ret /**< @see NR_upcall_ret */
+	/**@}*/
 
-/**@}*/
+	/**
+	 * @name Exported Functions
+	 */
+	/**@{*/
+	#define __upcall_ret_fn /**< upcall_ret() */
+	/**@}*/
 
-#endif /* CORE_I486_H_ */
+#ifndef _ASM_FILE_
+
+	/**
+	 * @brief Alias for i486_upcall_ret()
+	 *
+	 * @see i486_upcall_ret().
+	 *
+	 * @note This should be an alias, otherwise the compiler may mess
+	 * up with the stack that we have crafted carefully.
+	 */
+	#define upcall_ret i486_upcall_ret
+
+#endif
+
+/**@endcond*/
+
+#endif /* ARCH_CORE_I486_UPCALL_H_ */
 

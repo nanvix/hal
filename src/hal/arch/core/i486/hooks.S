@@ -31,6 +31,7 @@
 #include <arch/core/i486/core.h>
 #include <arch/core/i486/excp.h>
 #include <arch/core/i486/gdt.h>
+#include <arch/core/i486/upcall.h>
 
 /* Exported symbols. */
 .globl _do_excp0
@@ -174,6 +175,7 @@ _do_excp:
  * System call hook.
  */
 i486_syscall:
+
 	cmpl $I486_NR_upcall_ret, %eax
 	jnz _do_syscall.continue
 

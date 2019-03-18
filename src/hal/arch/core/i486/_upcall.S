@@ -22,39 +22,43 @@
  * SOFTWARE.
  */
 
-#ifndef CORE_I486_H_
-#define CORE_I486_H_
+/* Must come first. */
+#define _ASM_FILE_
+#define __NEED_CORE_TYPES
 
-	/**
-	 * @addtogroup i486-core i486 Core
-	 * @ingroup cores
-	 */
+#include <arch/core/i486/asm.h>
+#include <arch/core/i486/upcall.h>
+#include <arch/core/i486/types.h>
 
-	#ifndef __NEED_CORE_I486
-		#error "i486 core not required"
-	#endif
+.global i486_upcall_ret
 
-	#include <arch/core/i486/8253.h>
-	#include <arch/core/i486/8259.h>
-	#include <arch/core/i486/cache.h>
-	#include <arch/core/i486/core.h>
-	#include <arch/core/i486/excp.h>
-	#include <arch/core/i486/int.h>
-	#include <arch/core/i486/mmu.h>
-	#include <arch/core/i486/pmio.h>
-	#include <arch/core/i486/spinlock.h>
-	#include <arch/core/i486/tlb.h>
-	#include <arch/core/i486/trap.h>
-	#include <arch/core/i486/upcall.h>
+.section .text
 
-/**
- * @cond i486
+/*===========================================================================*
+ * i486_upcall_ret()                                                         *
+ *===========================================================================*/
+
+/*
+ * Returns from an upcall.
  */
+.align 8
+i486_upcall_ret:
 
-	/* Feature Declaration */
-	#define CORE_SUPPORTS_PMIO 1
+	/* Call target function. */
+	movl (%esp), %eax
+	movl %esp, %ebx
+	addl $2*I486_WORD_SIZE, %ebx
+	pushl %ebx
+	call *%eax
+	addl $I486_WORD_SIZE, %esp
 
-/**@}*/
+	/* Wipe out argument. */
+	addl $I486_WORD_SIZE, %esp // fn
+	popl %eax                  // argsize
+	addl %eax, %esp            // arg
 
-#endif /* CORE_I486_H_ */
+	/* Call special syscall. */
+	movl $I486_NR_upcall_ret, %eax
+	movl %esp, %ebx
+	int $0x80
 
