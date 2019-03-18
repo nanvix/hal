@@ -32,6 +32,50 @@
 	#include <arch/core/i486/context.h>
 
 /*============================================================================*
+ * Procedure Linkage                                                          *
+ *============================================================================*/
+
+	/**
+	 * @brief Stack frame size for slow call.
+	 */
+	#define SLOW_CALL_STACK_FRAME_SIZE 16
+
+	/**
+	* @brief Offsets to Stack Frame
+	*/
+	/**@{*/
+	#define STACK_FRAME_EBX 0  /**< ebx */
+	#define STACK_FRAME_ESI 4  /**< esi */
+	#define STACK_FRAME_EDI 8  /**< edi */
+	#define STACK_FRAME_EBP 12 /**< ebp */
+	/**@}*/
+
+	/*
+	 * @brief Saves preserved registers.
+	 */
+	.macro _do_prologue_slow
+
+		push  %ebp
+		movl  %esp, %ebp
+		pushl %edi
+		pushl %esi
+		pushl %ebx
+
+	.endm
+
+	/*
+	 * @brief Restores preserved registers.
+	 */
+	.macro _do_epilogue_slow
+
+		popl %ebx
+		popl %esi
+		popl %edi
+		popl %ebp
+
+	.endm
+
+/*============================================================================*
  * i486_context_save()                                                        *
  *============================================================================*/
 
@@ -90,11 +134,13 @@
 		movl I486_CONTEXT_ESI(%esp), %esi
 		movl I486_CONTEXT_EDI(%esp), %edi
 
+#ifdef XXX
 		/* Restore segment registers. */
 		movw I486_CONTEXT_DS(%esp), %ds
 		movw I486_CONTEXT_ES(%esp), %es
 		movw I486_CONTEXT_FS(%esp), %fs
 		movw I486_CONTEXT_GS(%esp), %gs
+#endif
 
 		addl $I486_CONTEXT_SW_SIZE, %esp
 
