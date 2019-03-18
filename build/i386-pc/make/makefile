@@ -32,12 +32,12 @@ export PROCESSOR = i386-qemu
 #===============================================================================
 
 # Toolchain Directory
-export TOOLCHAIN_DIR ?= $(TOOLSDIR)/dev/toolchain/i386/bin/
+export TOOLCHAIN_DIR ?= $(TOOLSDIR)/dev/toolchain/i486/bin
 
 # Toolchain
-export CC = $(TOOLCHAIN_DIR)/i386-elf-gcc
-export LD = $(TOOLCHAIN_DIR)/i386-elf-ld
-export AR = $(TOOLCHAIN_DIR)/i386-elf-ar
+export CC = $(TOOLCHAIN_DIR)/i486-elf-gcc
+export LD = $(TOOLCHAIN_DIR)/i486-elf-ld
+export AR = $(TOOLCHAIN_DIR)/i486-elf-ar
 
 # Compiler Options
 export CFLAGS   = -D __i386__ -D __pc__
