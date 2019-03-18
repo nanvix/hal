@@ -26,6 +26,7 @@
 #define _ASM_FILE_
 
 #include <arch/core/i486/8259.h>
+#include <arch/core/i486/asm.h>
 #include <arch/core/i486/context.h>
 #include <arch/core/i486/core.h>
 #include <arch/core/i486/excp.h>
@@ -71,81 +72,6 @@
 .globl _do_hwint13
 .globl _do_hwint14
 .globl _do_hwint15
-
-/*============================================================================*
- * i486_context_save()                                                        *
- *============================================================================*/
-
-/*
- * The i486_context_save() macro saves the content of general purpose
- * and segment registers in the stack of the caller. A pointer to the
- * saved execution context is saved into ret.
- *
- * Note that the extended instruction pointer register (eip), code
- * segment register (cs), extended flags register (eflags), extended
- * stack pointer register (esp) and stack segment register (ss) are
- * not saved by this macro, because they are automatically saved by
- * the hardware upon an exception/interrupt.
- */
-.macro i486_context_save, ret
-
-	subl $I486_CONTEXT_SW_SIZE, %esp
-
-	/* Save general purpose registers. */
-	movl %eax, I486_CONTEXT_EAX(%esp)
-	movl %ebx, I486_CONTEXT_EBX(%esp)
-	movl %ecx, I486_CONTEXT_ECX(%esp)
-	movl %edx, I486_CONTEXT_EDX(%esp)
-	movl %ebp, I486_CONTEXT_EBP(%esp)
-	movl %esi, I486_CONTEXT_ESI(%esp)
-	movl %edi, I486_CONTEXT_EDI(%esp)
-
-	/* Save segment registers. */
-	movw %ds, I486_CONTEXT_DS(%esp)
-	movw %es, I486_CONTEXT_ES(%esp)
-	movw %fs, I486_CONTEXT_FS(%esp)
-	movw %gs, I486_CONTEXT_GS(%esp)
-
-	movl %esp, \ret
-
-.endm
-
-/*============================================================================*
- * i486_context_restore()                                                     *
- *============================================================================*/
-
-/**
- * The i486_context_restore() function restores the content of general
- * purpose and segment registers from the stack of the caller.
- *
- * @note It is up to the caller to switch the current stack to the
- * target one.
- */
-.macro i486_context_restore
-
-	/* Restore general purpose registers. */
-	movl I486_CONTEXT_EAX(%esp), %eax
-	movl I486_CONTEXT_EBX(%esp), %ebx
-	movl I486_CONTEXT_ECX(%esp), %ecx
-	movl I486_CONTEXT_EDX(%esp), %edx
-	movl I486_CONTEXT_EBP(%esp), %ebp
-	movl I486_CONTEXT_ESI(%esp), %esi
-	movl I486_CONTEXT_EDI(%esp), %edi
-
-	/* Restore segment registers. */
-	movw I486_CONTEXT_DS(%esp), %ds
-	movw I486_CONTEXT_ES(%esp), %es
-	movw I486_CONTEXT_FS(%esp), %fs
-	movw I486_CONTEXT_GS(%esp), %gs
-
-	addl $I486_CONTEXT_SW_SIZE, %esp
-
-	/*
-	 * Special registers are
-	 * restored by a further call to iret.
-	 */
-
-.endm
 
 /*============================================================================*
  * _do_excp()                                                                 *
@@ -248,36 +174,46 @@ _do_excp:
  * System call hook.
  */
 i486_syscall:
-	/* Save system call context. */
-	i486_context_save %ebx
+	cmpl $I486_NR_upcall_ret, %eax
+	jnz _do_syscall.continue
 
-	/* Push system call parameters. */
-	movl I486_CONTEXT_EAX(%ebx), %eax
-	pushl %eax
-	movl I486_CONTEXT_EDI(%ebx), %eax
-	pushl %eax
-	movl I486_CONTEXT_ESI(%ebx), %eax
-	pushl %eax
-	movl I486_CONTEXT_EDX(%ebx), %eax
-	pushl %eax
-	movl I486_CONTEXT_ECX(%ebx), %eax
-	pushl %eax
-	movl I486_CONTEXT_EBX(%ebx), %eax
-	pushl %eax
+		movl %ebx, %esp
+		jmp _do_syscall.out
 
-	/* Handle system call. */
-	call do_syscall
+	_do_syscall.continue:
 
-	/* Wipe out system call parameters. */
-	addl $6*I486_WORD_SIZE, %esp
+		/* Save system call context. */
+		i486_context_save %ebx
 
-	/* Copy return value to user stack. */
-	movl %eax, I486_CONTEXT_EAX(%esp)
+		/* Push system call parameters. */
+		movl I486_CONTEXT_EAX(%ebx), %eax
+		pushl %eax
+		movl I486_CONTEXT_EDI(%ebx), %eax
+		pushl %eax
+		movl I486_CONTEXT_ESI(%ebx), %eax
+		pushl %eax
+		movl I486_CONTEXT_EDX(%ebx), %eax
+		pushl %eax
+		movl I486_CONTEXT_ECX(%ebx), %eax
+		pushl %eax
+		movl I486_CONTEXT_EBX(%ebx), %eax
+		pushl %eax
 
-	/* restore system call context. */
-	i486_context_restore
+		/* Handle system call. */
+		call do_syscall
 
-	iret
+		/* Wipe out system call parameters. */
+		addl $6*I486_WORD_SIZE, %esp
+
+		/* Copy return value to user stack. */
+		movl %eax, I486_CONTEXT_EAX(%esp)
+
+	_do_syscall.out:
+
+		/* restore system call context. */
+		i486_context_restore
+
+		iret
 
 /*============================================================================*
  * i486_pic_master_ack()                                                      *
