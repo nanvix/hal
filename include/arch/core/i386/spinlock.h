@@ -62,7 +62,7 @@
 	 */
 	static inline void i386_spinlock_init(i386_spinlock_t *lock)
 	{
-		((void) lock);
+		*lock = I386_SPINLOCK_UNLOCKED;
 	}
 
 	/**
@@ -79,9 +79,13 @@
 	 */
 	static inline int i386_spinlock_trylock(i386_spinlock_t *lock)
 	{
-		((void) lock);
-
-		return (0);
+		return (
+			!__sync_bool_compare_and_swap(
+				lock,
+				I386_SPINLOCK_UNLOCKED,
+				I386_SPINLOCK_LOCKED
+			)
+		);
 	}
 
 	/**
@@ -95,6 +99,7 @@
 	{
 		while (i386_spinlock_trylock(lock))
 			/* noop */;
+		__sync_synchronize();
 	}
 
 	/**
@@ -106,7 +111,8 @@
 	 */
 	static inline void i386_spinlock_unlock(i386_spinlock_t *lock)
 	{
-		((void) lock);
+		__sync_synchronize();
+		*lock = I386_SPINLOCK_UNLOCKED;
 	}
 
 /**@}*/
