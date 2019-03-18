@@ -22,51 +22,51 @@
  * SOFTWARE.
  */
 
-#ifndef _HAL_TEST_H_
-#define _HAL_TEST_H_
+/* Must come first. */
+#define _ASM_FILE_
 
-	/**
-	 * @brief Unit test.
-	 */
-	struct test
-	{
-		void (*test_fn)(void); /**< Test function. */
-		const char *name;      /**< Test name.     */
-	};
+#include <arch/core/i486/asm.h>
+#include <arch/core/i486/gdt.h>
 
-	/**
-	 * @brief Test driver for the Clock Interface.
-	 */
-	EXTERN void test_clock(void);
+.globl _upcall_issue
+.globl _upcall_issue_ret
+.globl saved_sp
 
-	/**
-	 * @brief Test driver for the Core Interface.
-	 */
-	EXTERN void test_core(void);
+.section .text
 
-	/**
-	 * @brief Test driver for the sync interface
-	 */
-	EXTERN void test_sync(void);
+/*
+ * Issue an Upcall 
+ */
+.align 8
+_upcall_issue:
+	_do_prologue_slow      // Save all preserved registers since
+	                       // they may be used by the HAL.
 
-	/**
-	 * @brief Test driver for the Exception Interface.
-	 */
-	EXTERN void test_exception(void);
+bug0:
+	leal saved_sp, %eax
+	movl %esp, (%eax)
 
-	/**
-	 * @brief Test driver for trap interface.
-	 */
-	EXTERN void test_trap(void);
-	
-	/**
-	 * @brief Test driver for the upcall interface.
-	 */
-	EXTERN void test_upcall(void);
+	/* Switch to fake stack. */
+	movl 8(%ebp), %eax
+	addl %esp, (16 + I486_CONTEXT_ESP)(%eax)
+	movl $KERNEL_CS, (16 + I486_CONTEXT_CS)(%eax)
+	movl $KERNEL_DS, (16 + I486_CONTEXT_SS)(%eax)
+	pushfl
+	popl %ebx
+	movl %ebx,        (16 + I486_CONTEXT_EFLAGS)(%eax)
+	movl %eax, %esp
 
-	/**
-	 * @brief Test driver for hardware interrupt interface.
-	 */
-	EXTERN void test_interrupt(void);
+	/* Return from upcall*/
+	jmp i486_upcall_ret
 
-#endif /* _HAL_TEST_H_ */
+_upcall_issue_ret:
+bug1:
+
+	/* Switch back to real stack. */
+	leal saved_sp, %eax
+	movl (%eax), %esp
+
+	_do_epilogue_slow     // Restore all preserved
+	                      // registers.
+
+	ret

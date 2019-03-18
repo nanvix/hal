@@ -22,51 +22,47 @@
  * SOFTWARE.
  */
 
-#ifndef _HAL_TEST_H_
-#define _HAL_TEST_H_
+/* Must come first. */
+#define _ASM_FILE_
+#define __NEED_OR1K_REGS
+#include <arch/core/or1k/asm.h>
 
-	/**
-	 * @brief Unit test.
-	 */
-	struct test
-	{
-		void (*test_fn)(void); /**< Test function. */
-		const char *name;      /**< Test name.     */
-	};
+.globl _upcall_issue
+.globl _upcall_issue_ret
+.globl saved_sp
 
-	/**
-	 * @brief Test driver for the Clock Interface.
-	 */
-	EXTERN void test_clock(void);
+.section .text
 
-	/**
-	 * @brief Test driver for the Core Interface.
-	 */
-	EXTERN void test_core(void);
+/*
+ * Issues an upcall.
+ */
+.align 8
+_upcall_issue:
+	_do_prologue_slow      // Save all preserved registers since
+	                       // they may be used by the HAL.
 
-	/**
-	 * @brief Test driver for the sync interface
-	 */
-	EXTERN void test_sync(void);
+	OR1K_LOAD_SYMBOL_2_GPR(r4, saved_sp)
+	l.sw  0(r4), sp
 
-	/**
-	 * @brief Test driver for the Exception Interface.
-	 */
-	EXTERN void test_exception(void);
+	/* Switch to fake stack. */
+	l.sw 16 + OR1K_CONTEXT_R1(r3),  sp    // Stack pointer
+	l.sw 16 + OR1K_CONTEXT_R2(r3),  bp    // Base pointer
+	l.mfspr r4, r0, OR1K_SPR_SR           // Status register
+	l.sw 16 + OR1K_CONTEXT_ESR(r3), r4
+	l.or sp, r0, r3                       // Switch to fake stack
 
-	/**
-	 * @brief Test driver for trap interface.
-	 */
-	EXTERN void test_trap(void);
+	/* Return from upcall*/
+	l.j or1k_upcall_ret
+	l.nop
+
+_upcall_issue_ret:
+
+	/* Switch back to real stack. */
+	OR1K_LOAD_SYMBOL_2_GPR(r4, saved_sp)
+	l.lwz sp, 0(r4)
 	
-	/**
-	 * @brief Test driver for the upcall interface.
-	 */
-	EXTERN void test_upcall(void);
+	_do_epilogue_slow     // Restore all preserved
+	                      // registers.
 
-	/**
-	 * @brief Test driver for hardware interrupt interface.
-	 */
-	EXTERN void test_interrupt(void);
-
-#endif /* _HAL_TEST_H_ */
+	l.jr r9
+	l.nop
