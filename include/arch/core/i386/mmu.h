@@ -33,13 +33,75 @@
  */
 /**@{*/
 
+	/* Must comme first. */
+	#define __NEED_MEMORY_TYPES
+
+	#include <arch/core/i386/types.h>
+#ifndef _ASM_FILE_
+	#include <nanvix/klib.h>
+#endif
+
 	/**
-	 * @name Provided Interface
+	 * @name Page Shifts and Masks
 	 */
 	/**@{*/
-	#define __frame_t            /**< Page Frame Number */
-	#define __paddr_t            /**< Physical Address  */
-	#define __vaddr_t            /**< Virtual Address   */
+	#define I386_PAGE_SHIFT  12                       /**< Page Shift       */
+	#define I386_PGTAB_SHIFT 22                       /**< Page Table Shift */
+	#define I386_PAGE_MASK   (~(I386_PAGE_SIZE - 1))  /**< Page Mask        */
+	#define I386_PGTAB_MASK  (~(I386_PGTAB_SIZE - 1)) /**< Page Table Mask  */
+	/**@}*/
+
+	/**
+	 * @name Size of Pages and Page Tables
+	 */
+	/**@{*/
+	#define I386_PAGE_SIZE  (1 << I386_PAGE_SHIFT)  /**< Page Size                 */
+	#define I386_PGTAB_SIZE (1 << I386_PGTAB_SHIFT) /**< Page Table Size           */
+	#define I386_PTE_SIZE   4                       /**< Page Table Entry Size     */
+	#define I386_PDE_SIZE   4                       /**< Page Directory Entry Size */
+	/**@}*/
+
+/**@}*/
+
+/*============================================================================*
+ * Exported Interface                                                         *
+ *============================================================================*/
+
+/**
+ * @cond i386
+ */
+
+	/**
+	 * @name Exported Constants
+	 */
+	/**@{*/
+	#define PAGE_SIZE   I386_PAGE_SIZE   /**< @ref I386_PAGE_SIZE   */
+	#define PGTAB_SIZE  I386_PGTAB_SIZE  /**< @ref I386_PGTAB_BIT   */
+	#define PTE_SIZE    I386_PTE_SIZE    /**< @ref I386_PTE_SIZE    */
+	#define PDE_SIZE    I386_PDE_SIZE    /**< @ref I386_PDE_SIZE    */
+	#define PAGE_SHIFT  I386_PAGE_SHIFT  /**< @ref I386_PAGE_SHIFT  */
+	#define PGTAB_SHIFT I386_PGTAB_SHIFT /**< @ref I386_PGTAB_SHIFT */
+	#define PAGE_MASK   I386_PAGE_MASK   /**< @ref I386_PAGE_MASK   */
+	#define PGTAB_MASK  I386_PGTAB_MASK  /**< @ref I386_PGTAB_MASK  */
+	#define PADDR_BIT   I386_PADDR_BIT   /**< @ref I386_PADDR_BIT   */
+	#define VADDR_BIT   I386_VADDR_BIT   /**< @ref I386_VADDR_BIT   */
+	#define PADDR_BYTE  I386_PADDR_BYTE  /**< @ref I386_PADDR_BYTE  */
+	#define VADDR_BYTE  I386_VADDR_BYTE  /**< @ref I386_VADDR_BYTE  */
+	/**@}*/
+
+	/**
+	 * @name Exported Types
+	 */
+	/**@{*/
+	#define __frame_t /**< @ref frame_t */
+	#define __paddr_t /**< @ref paddr_t */
+	#define __vaddr_t /**< @ref vaddr_t */
+	/**@}*/
+
+	/**
+	 * @brief Exported Functions
+	 */
+	/**@{*/
 	#define __pde_clear_fn       /**< pde_clear()       */
 	#define __pde_frame_get_fn   /**< pde_frame_get()   */
 	#define __pde_frame_set_fn   /**< pde_frame_set()   */
@@ -62,51 +124,7 @@
 	#define __pte_write_set_fn   /**< pte_write_set()   */
 	/**@}*/
 
-	/**
-	 * @name Page Shifts and Masks
-	 */
-	/**@{*/
-	#define I386_PAGE_SHIFT  12                       /**< Page Shift       */
-	#define I386_PGTAB_SHIFT 22                       /**< Page Table Shift */
-	#define I386_PAGE_MASK   (~(I386_PAGE_SIZE - 1))  /**< Page Mask        */
-	#define I386_PGTAB_MASK  (~(I386_PGTAB_SIZE - 1)) /**< Page Table Mask  */
-	/**@}*/
-
-	/**
-	 * @name Size of Pages and Page Tables
-	 */
-	/**@{*/
-	#define I386_PAGE_SIZE  (1 << I386_PAGE_SHIFT)  /**< Page Size                 */
-	#define I386_PGTAB_SIZE (1 << I386_PGTAB_SHIFT) /**< Page Table Size           */
-	#define I386_PTE_SIZE   4                       /**< Page Table Entry Size     */
-	#define I386_PDE_SIZE   4                       /**< Page Directory Entry Size */
-	/**@}*/
-
-	/**
-	 * @name Page Shifts
-	 */
-	/**@{*/
-	#define PAGE_SHIFT  I386_PAGE_SHIFT  /**< Page Shift       */
-	#define PGTAB_SHIFT I386_PGTAB_SHIFT /**< Page Table Shift */
-	#define PAGE_MASK   I386_PAGE_MASK   /**< Page Mask        */
-	#define PGTAB_MASK  I386_PGTAB_MASK  /**< Page Table Mask  */
-	/**@}*/
-
-	/**
-	 * @name Size of Pages and Page Tables
-	 */
-	/**@{*/
-	#define PAGE_SIZE  I386_PAGE_SIZE  /**< Page Size                 */
-	#define PGTAB_SIZE I386_PGTAB_SIZE /**< Page Table Size           */
-	#define PTE_SIZE   I386_PTE_SIZE   /**< Page Table Entry Size     */
-	#define PDE_SIZE   I386_PDE_SIZE   /**< Page Directory Entry Size */
-	/**@}*/
-
 #ifndef _ASM_FILE_
-
-	#define __NEED_MEMORY_TYPES
-	#include <arch/core/i386/types.h>
-	#include <nanvix/klib.h>
 
 	/**
 	 * @brief Frame number.
@@ -409,6 +427,6 @@
 
 #endif
 
-/**@}*/
+/**@endcond*/
 
 #endif /* ARCH_I386_MMU_H_ */
