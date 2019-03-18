@@ -24,8 +24,8 @@
 # Target Configuration
 #===============================================================================
 
-export ARCH = i386
-export PROCESSOR = i386-qemu
+export ARCH = i486
+export PROCESSOR = i486-qemu
 
 #===============================================================================
 # Toolchain Configuration
@@ -40,7 +40,7 @@ export LD = $(TOOLCHAIN_DIR)/i486-elf-ld
 export AR = $(TOOLCHAIN_DIR)/i486-elf-ar
 
 # Compiler Options
-export CFLAGS   = -D __i386__ -D __pc__
+export CFLAGS   = -D __i486__ -D __pc__
 export CFLAGS  += -pedantic-errors -fextended-identifiers
 export CFLAGS  += -nostdlib -nostdinc -fno-stack-protector
 export CFLAGS  += -ansi -pedantic-errors
@@ -63,10 +63,10 @@ export EXECBIN = test-driver
 
 #===============================================================================
 
-# Builds Nanvix for the i386 PC target.
+# Builds Nanvix for the i486 PC target.
 nanvix-target:
-	$(MAKE) -C $(SRCDIR) -f build/makefile.i386 all
+	$(MAKE) -C $(SRCDIR) -f build/makefile.i486 all
 
-# Cleans everything for the i386 PC target.
+# Cleans everything for the i486 PC target.
 distclean-target:
-	$(MAKE) -C $(SRCDIR) -f build/makefile.i386 distclean
+	$(MAKE) -C $(SRCDIR) -f build/makefile.i486 distclean

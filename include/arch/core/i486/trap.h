@@ -22,24 +22,24 @@
  * SOFTWARE.
  */
 
-#ifndef ARCH_CORE_I386_TRAP_H_
-#define ARCH_CORE_I386_TRAP_H_
+#ifndef ARCH_CORE_I486_TRAP_H_
+#define ARCH_CORE_I486_TRAP_H_
 
 /**
- * @addtogroup i386-core-trap Trap
- * @ingroup i386-core
+ * @addtogroup i486-core-trap Trap
+ * @ingroup i486-core
  *
  * @brief Traps
  */
 /**@{*/
 
 	#define __NEED_CORE_TYPES
-	#include <arch/core/i386/types.h>
+	#include <arch/core/i486/types.h>
 
 	/**
 	 * @brief Trap gate.
 	 */
-	#define I386_TRAP_GATE 0x80
+	#define I486_TRAP_GATE 0x80
 
 	/**
 	 * @brief Issues a system call with no arguments.
@@ -48,7 +48,7 @@
 	 *
 	 * @returns The system call return value.
 	 */
-	static inline word_t i386_syscall0(word_t syscall_nr)
+	static inline word_t i486_syscall0(word_t syscall_nr)
 	{
 		word_t ret;
 
@@ -70,7 +70,7 @@
 	 *
 	 * @returns The system call return value.
 	 */
-	static inline word_t i386_syscall1(
+	static inline word_t i486_syscall1(
 		word_t syscall_nr,
 		word_t arg0)
 	{
@@ -96,7 +96,7 @@
 	 *
 	 * @returns The system call return value.
 	 */
-	static inline word_t i386_syscall2(
+	static inline word_t i486_syscall2(
 		word_t syscall_nr,
 		word_t arg0,
 		word_t arg1)
@@ -125,7 +125,7 @@
 	 *
 	 * @returns The system call return value.
 	 */
-	static inline word_t i386_syscall3(
+	static inline word_t i486_syscall3(
 		word_t syscall_nr,
 		word_t arg0,
 		word_t arg1,
@@ -157,7 +157,7 @@
 	 *
 	 * @returns The system call return value.
 	 */
-	static inline word_t i386_syscall4(
+	static inline word_t i486_syscall4(
 		word_t syscall_nr,
 		word_t arg0,
 		word_t arg1,
@@ -192,7 +192,7 @@
 	 *
 	 * @returns The system call return value.
 	 */
-	static inline word_t i386_syscall5(
+	static inline word_t i486_syscall5(
 		word_t syscall_nr,
 		word_t arg0,
 		word_t arg1,
@@ -220,7 +220,7 @@
 	/**
 	 * @brief System Call Hook
 	 */
-	EXTERN void i386_syscall(void);
+	EXTERN void i486_syscall(void);
 
 /**@*/
 
@@ -229,40 +229,40 @@
  *============================================================================*/
 
 /**
- * @cond i386
+ * @cond i486
  */
 
 	/**
 	 * @name Exported Functions
 	 */
 	/**@{*/
-	#define __syscall0_fn /**< i386_syscall0() */
-	#define __syscall1_fn /**< i386_syscall1() */
-	#define __syscall2_fn /**< i386_syscall2() */
-	#define __syscall3_fn /**< i386_syscall3() */
-	#define __syscall4_fn /**< i386_syscall4() */
-	#define __syscall5_fn /**< i386_syscall5() */
+	#define __syscall0_fn /**< i486_syscall0() */
+	#define __syscall1_fn /**< i486_syscall1() */
+	#define __syscall2_fn /**< i486_syscall2() */
+	#define __syscall3_fn /**< i486_syscall3() */
+	#define __syscall4_fn /**< i486_syscall4() */
+	#define __syscall5_fn /**< i486_syscall5() */
 	/**@}*/
 
 	/**
-	 * @see i386_syscall_0()
+	 * @see i486_syscall_0()
 	 */
 	static inline word_t syscall0(word_t syscall_nr)
 	{
 		return (
-			i386_syscall0(syscall_nr)
+			i486_syscall0(syscall_nr)
 		);
 	}
 
 	/**
-	 * @see i386_syscall_1()
+	 * @see i486_syscall_1()
 	 */
 	static inline word_t syscall1(
 		word_t syscall_nr,
 		word_t arg0)
 	{
 		return (
-			i386_syscall1(
+			i486_syscall1(
 				syscall_nr,
 				arg0
 			)
@@ -270,7 +270,7 @@
 	}
 
 	/**
-	 * @see i386_syscall_2()
+	 * @see i486_syscall_2()
 	 */
 	static inline word_t syscall2(
 		word_t syscall_nr,
@@ -278,7 +278,7 @@
 		word_t arg1)
 	{
 		return (
-			i386_syscall2(
+			i486_syscall2(
 				syscall_nr,
 				arg0,
 				arg1
@@ -287,7 +287,7 @@
 	}
 
 	/**
-	 * @see i386_syscall_3()
+	 * @see i486_syscall_3()
 	 */
 	static inline word_t syscall3(
 		word_t syscall_nr,
@@ -296,7 +296,7 @@
 		word_t arg2)
 	{
 		return (
-			i386_syscall3(
+			i486_syscall3(
 				syscall_nr,
 				arg0,
 				arg1,
@@ -306,7 +306,7 @@
 	}
 
 	/**
-	 * @see i386_syscall_4()
+	 * @see i486_syscall_4()
 	 */
 	static inline word_t syscall4(
 		word_t syscall_nr,
@@ -316,7 +316,7 @@
 		word_t arg3)
 	{
 		return (
-			i386_syscall4(
+			i486_syscall4(
 				syscall_nr,
 				arg0,
 				arg1,
@@ -327,7 +327,7 @@
 	}
 
 	/**
-	 * @see i386_syscall_5()
+	 * @see i486_syscall_5()
 	 */
 	static inline word_t syscall5(
 		word_t syscall_nr,
@@ -338,7 +338,7 @@
 		word_t arg4)
 	{
 		return (
-			i386_syscall5(
+			i486_syscall5(
 				syscall_nr,
 				arg0,
 				arg1,
@@ -351,4 +351,4 @@
 
 /**@endcond*/
 
-#endif /* ARCH_CORE_I386_TRAP_H_ */
+#endif /* ARCH_CORE_I486_TRAP_H_ */

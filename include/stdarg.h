@@ -48,7 +48,7 @@ see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
 #ifndef STDARG_H_
 #define STDARG_H_
 
-#if defined(__i386__)
+#if defined(__i486__)
 
     typedef char* va_list;
 

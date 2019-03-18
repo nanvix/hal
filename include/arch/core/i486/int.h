@@ -22,48 +22,48 @@
  * SOFTWARE.
  */
 
-#ifndef ARCH_I386_INT_H_
-#define ARCH_I386_INT_H_
+#ifndef ARCH_I486_INT_H_
+#define ARCH_I486_INT_H_
 
 /*============================================================================*
  *                             Interrupt Interface                            *
  *============================================================================*/
 
 /**
- * @addtogroup i386-core-int Hardware Interrupts
- * @ingroup i386-core
+ * @addtogroup i486-core-int Hardware Interrupts
+ * @ingroup i486-core
  *
  * @brief Hardware and Software Interrupts
  */
 /**@{*/
 
 	#include <nanvix/const.h>
-	#include <arch/core/i386/context.h>
+	#include <arch/core/i486/context.h>
 
 	/**
-	 * @brief Number of hardware interrupts in the i386 architecture.
+	 * @brief Number of hardware interrupts in the i486 architecture.
 	 */
-	#define I386_NUM_HWINT 16
+	#define I486_NUM_HWINT 16
 
 	/**
 	 * @name Hardware Interrupts for the IBM PC Target
 	 */
 	/**@{*/
-	#define I386_PC_INT_CLOCK    0 /*< Programmable interrupt timer.              */
-	#define I386_PC_INT_KEYBOARD 1 /*< Keyboard.                                  */
-	#define I386_PC_INT_COM2     3 /*< COM2.                                      */
-	#define I386_PC_INT_COM1     4 /*< COM1.                                      */
-	#define I386_PC_INT_LPT2     5 /*< LPT2.                                      */
-	#define I386_PC_INT_FLOPPY   6 /*< Floppy disk.                               */
-	#define I386_PC_INT_LPT1     7 /*< LPT1.                                      */
-	#define I386_PC_INT_CMOS     8 /*< CMOS real-time clock.                      */
-	#define I386_PC_INT_SCSI1    9 /*< Free for peripherals (legacy SCSI or NIC). */
-	#define I386_PC_INT_SCSI2   10 /*< Free for peripherals (legacy SCSI or NIC). */
-	#define I386_PC_INT_SCSI3   11 /*< Free for peripherals (legacy SCSI or NIC). */
-	#define I386_PC_INT_MOUSE   12 /*< PS2 mouse.                                 */
-	#define I386_PC_INT_COPROC  13 /*< FPU, coprocessor or inter-processor.       */
-	#define I386_PC_INT_ATA1    14 /*< Primary ATA hard disk.                     */
-	#define I386_PC_INT_ATA2    15 /*< Secondary ATA hard disk.                   */
+	#define I486_PC_INT_CLOCK    0 /*< Programmable interrupt timer.              */
+	#define I486_PC_INT_KEYBOARD 1 /*< Keyboard.                                  */
+	#define I486_PC_INT_COM2     3 /*< COM2.                                      */
+	#define I486_PC_INT_COM1     4 /*< COM1.                                      */
+	#define I486_PC_INT_LPT2     5 /*< LPT2.                                      */
+	#define I486_PC_INT_FLOPPY   6 /*< Floppy disk.                               */
+	#define I486_PC_INT_LPT1     7 /*< LPT1.                                      */
+	#define I486_PC_INT_CMOS     8 /*< CMOS real-time clock.                      */
+	#define I486_PC_INT_SCSI1    9 /*< Free for peripherals (legacy SCSI or NIC). */
+	#define I486_PC_INT_SCSI2   10 /*< Free for peripherals (legacy SCSI or NIC). */
+	#define I486_PC_INT_SCSI3   11 /*< Free for peripherals (legacy SCSI or NIC). */
+	#define I486_PC_INT_MOUSE   12 /*< PS2 mouse.                                 */
+	#define I486_PC_INT_COPROC  13 /*< FPU, coprocessor or inter-processor.       */
+	#define I486_PC_INT_ATA1    14 /*< Primary ATA hard disk.                     */
+	#define I486_PC_INT_ATA2    15 /*< Secondary ATA hard disk.                   */
 	/**@}*/
 
 	/**
@@ -96,15 +96,15 @@
 	 *
 	 * @note This function is called from assembly code.
 	 */
-	EXTERN void i386_do_hwint(int num, const struct context *ctx);
+	EXTERN void i486_do_hwint(int num, const struct context *ctx);
 
 	/**
 	 * @brief Enables hardware interrupts.
 	 *
-	 * The i386_hwint_enable() function enables all hardware interrupts in the
-	 * underlying i386 core.
+	 * The i486_hwint_enable() function enables all hardware interrupts in the
+	 * underlying i486 core.
 	 */
-	static inline void i386_hwint_enable(void)
+	static inline void i486_hwint_enable(void)
 	{
 		 __asm__("sti");
 	}
@@ -112,10 +112,10 @@
 	/**
 	 * @brief Disables hardware interrupts.
 	 *
-	 * The i386_hwint_disable() function disables all hardware interrupts in the
-	 * underlying i386 core.
+	 * The i486_hwint_disable() function disables all hardware interrupts in the
+	 * underlying i486 core.
 	 */
-	static inline void i386_hwint_disable(void)
+	static inline void i486_hwint_disable(void)
 	{
 		 __asm__("cli");
 	}
@@ -126,7 +126,7 @@
 	 * @param num     Number of the target hardware interrupt.
 	 * @param handler Hardware interrupt handler.
 	 */
-	EXTERN void i386_hwint_handler_set(int num, void (*handler)(int));
+	EXTERN void i486_hwint_handler_set(int num, void (*handler)(int));
 
 /**@}*/
 
@@ -135,7 +135,7 @@
  *============================================================================*/
 
 /**
- * @cond i386
+ * @cond i486
  */
 
 	/**
@@ -150,39 +150,39 @@
 	/**
 	 * @brief Number of hardware interrupts in the IBM PC target.
 	 */
-	#define _HAL_INT_NR I386_NUM_HWINT
+	#define _HAL_INT_NR I486_NUM_HWINT
 
 	/**
 	 * @name Hardware Interrupts
 	 */
 	/**@{*/
-	#define HAL_INT_CLOCK I386_PC_INT_CLOCK /*< Programmable interrupt timer. */
+	#define HAL_INT_CLOCK I486_PC_INT_CLOCK /*< Programmable interrupt timer. */
 	/**@}*/
 
 	/**
-	 * @see i386_hwint_enable()
+	 * @see i486_hwint_enable()
 	 */
 	static inline void interrupts_enable(void)
 	{
-		i386_hwint_enable();
+		i486_hwint_enable();
 	}
 
 	/**
-	 * @see i386_hwint_disable()
+	 * @see i486_hwint_disable()
 	 */
 	static inline void interrupts_disable(void)
 	{
-		i386_hwint_disable();
+		i486_hwint_disable();
 	}
 
 	/**
-	 * @see i386_hwint_handler_set().
+	 * @see i486_hwint_handler_set().
 	 */
 	static inline void interrupt_set_handler(int num, void (*handler)(int))
 	{
-		i386_hwint_handler_set(num, handler);
+		i486_hwint_handler_set(num, handler);
 	}
 
 /**@endcond*/
 
-#endif /* ARCH_I386_INT_H_ */
+#endif /* ARCH_I486_INT_H_ */

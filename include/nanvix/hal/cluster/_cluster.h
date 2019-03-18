@@ -35,11 +35,11 @@
 		#define __NEED_CLUSTER_K1B
 		#include <arch/cluster/k1b.h>
 
-	#elif (defined(__i386__))
+	#elif (defined(__i486__))
 
-		#undef  __NEED_CLUSTER_I386
-		#define __NEED_CLUSTER_I386
-		#include <arch/cluster/i386.h>
+		#undef  __NEED_CLUSTER_I486
+		#define __NEED_CLUSTER_I486
+		#include <arch/cluster/i486.h>
 
 	#elif (defined(__or1k__))
 

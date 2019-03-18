@@ -22,12 +22,12 @@
  * SOFTWARE.
  */
 
-#ifndef ARCH_I386_CACHE_H_
-#define ARCH_I386_CACHE_H_
+#ifndef ARCH_I486_CACHE_H_
+#define ARCH_I486_CACHE_H_
 
 /**
- * @addtogroup i386-core-cache Cache
- * @ingroup i386-core
+ * @addtogroup i486-core-cache Cache
+ * @ingroup i486-core
  *
  * @brief Memory Cache
  */
@@ -43,17 +43,17 @@
 	/**
 	 * @brief Cache line size (in bytes).
 	 *
-	 * @bug The cache line size of i386 may change.
+	 * @bug The cache line size of i486 may change.
 	 */
-	#define I386_CACHE_LINE_SIZE 64
+	#define I486_CACHE_LINE_SIZE 64
 
 	/**
-	 * @see I386_CACHE_LINE_SIZE
+	 * @see I486_CACHE_LINE_SIZE
 	 */
-	#define CACHE_LINE_SIZE I386_CACHE_LINE_SIZE
+	#define CACHE_LINE_SIZE I486_CACHE_LINE_SIZE
 
 	/**
-	 * @note The i386 target features cache coherency.
+	 * @note The i486 target features cache coherency.
 	 */
 	static inline void dcache_invalidate(void)
 	{
@@ -61,4 +61,4 @@
 
 /**@}*/
 
-#endif /* ARCH_I386_CACHE_H_ */
+#endif /* ARCH_I486_CACHE_H_ */

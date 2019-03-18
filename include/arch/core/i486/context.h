@@ -22,63 +22,63 @@
  * SOFTWARE.
  */
 
-#ifndef ARCH_I386_CONTEXT_H_
-#define ARCH_I386_CONTEXT_H_
+#ifndef ARCH_I486_CONTEXT_H_
+#define ARCH_I486_CONTEXT_H_
 
 /**
- * @addtogroup i386-core-context Context
- * @ingroup i386-core
+ * @addtogroup i486-core-context Context
+ * @ingroup i486-core
  *
  * @brief Execution Context Interface
  */
 
 #ifndef _ASM_FILE_
 
-	#include <arch/core/i386/core.h>
+	#include <arch/core/i486/core.h>
 
 #endif /* _ASM_FILE_ */
 
 	/**
 	 * @brief Hardware-saved execution context size (in bytes).
 	 */
-	#define I386_CONTEXT_HW_SIZE 20
+	#define I486_CONTEXT_HW_SIZE 20
 
 	/**
 	 * @brief Software-saved execution context size (in bytes).
 	 */
-	#define I386_CONTEXT_SW_SIZE 44
+	#define I486_CONTEXT_SW_SIZE 44
 
 	/**
 	 * @brief Execution context size (in bytes).
 	 */
-	#define I386_CONTEXT_SIZE (I386_CONTEXT_HW_SIZE + I386_CONTEXT_SW_SIZE)
+	#define I486_CONTEXT_SIZE (I486_CONTEXT_HW_SIZE + I486_CONTEXT_SW_SIZE)
 
 	/**
 	 * @name Offsets to the Context Structure
 	 */
 	/**@{*/
-	#define I386_CONTEXT_GS       0 /**< Extra Data Segment #3 Register        */
-	#define I386_CONTEXT_FS       4 /**< Extra Data Segment #2 Register        */
-	#define I386_CONTEXT_ES       8 /**< Extra Data Segment #1 Register        */
-	#define I386_CONTEXT_DS      12 /**< Data Segment Register                 */
-	#define I386_CONTEXT_EDI     16 /**< Extended Destination Index Register   */
-	#define I386_CONTEXT_ESI     20 /**< Extended Source Index Register        */
-	#define I386_CONTEXT_EBP     24 /**< Extended Stack base Pointer Register  */
-	#define I386_CONTEXT_EDX     28 /**< Extended Accumulator #2 Register      */
-	#define I386_CONTEXT_ECX     32 /**< Extended Counter Register             */
-	#define I386_CONTEXT_EBX     36 /**< Extended Base Index Register          */
-	#define I386_CONTEXT_EAX     40 /**< Exntended Accumulator #1 Register     */
-	#define I386_CONTEXT_EIP     44 /**< Extended Instruction Pointer Register */
-	#define I386_CONTEXT_CS      48 /**< Code Segment Register                 */
-	#define I386_CONTEXT_EFLAGS  52 /**< Exended Flags Register                */
-	#define I386_CONTEXT_ESP     56 /**< Extended Stack Pointer Register       */
-	#define I386_CONTEXT_SS      60 /**< Stack Segment Register                */
+	#define I486_CONTEXT_GS       0 /**< Extra Data Segment #3 Register        */
+	#define I486_CONTEXT_FS       4 /**< Extra Data Segment #2 Register        */
+	#define I486_CONTEXT_ES       8 /**< Extra Data Segment #1 Register        */
+	#define I486_CONTEXT_DS      12 /**< Data Segment Register                 */
+	#define I486_CONTEXT_EDI     16 /**< Extended Destination Index Register   */
+	#define I486_CONTEXT_ESI     20 /**< Extended Source Index Register        */
+	#define I486_CONTEXT_EBP     24 /**< Extended Stack base Pointer Register  */
+	#define I486_CONTEXT_EDX     28 /**< Extended Accumulator #2 Register      */
+	#define I486_CONTEXT_ECX     32 /**< Extended Counter Register             */
+	#define I486_CONTEXT_EBX     36 /**< Extended Base Index Register          */
+	#define I486_CONTEXT_EAX     40 /**< Exntended Accumulator #1 Register     */
+	#define I486_CONTEXT_EIP     44 /**< Extended Instruction Pointer Register */
+	#define I486_CONTEXT_CS      48 /**< Code Segment Register                 */
+	#define I486_CONTEXT_EFLAGS  52 /**< Exended Flags Register                */
+	#define I486_CONTEXT_ESP     56 /**< Extended Stack Pointer Register       */
+	#define I486_CONTEXT_SS      60 /**< Stack Segment Register                */
 	/**@}*/
 
 #ifndef _ASM_FILE_
 
 /**
- * @cond i386
+ * @cond i486
  */
 
 	/**
@@ -86,9 +86,9 @@
 	 */
 	struct context
 	{
-        i386_word_t gs, fs, es, ds;                    /**< Segment Registers         */
-        i386_word_t edi, esi, ebp, edx, ecx, ebx, eax; /**< General Purpose Registers */
-        i386_word_t eip, cs, eflags, useresp, ss;      /**< Special Registers         */
+        i486_word_t gs, fs, es, ds;                    /**< Segment Registers         */
+        i486_word_t edi, esi, ebp, edx, ecx, ebx, eax; /**< General Purpose Registers */
+        i486_word_t eip, cs, eflags, useresp, ss;      /**< Special Registers         */
 	} __attribute__((packed));
 
 /**@endcond*/
@@ -101,7 +101,7 @@
 	 * @returns The value of the stack pointer register, which is
 	 * saved in the saved execution context pointed to by @p ctx.
 	 */
-	static inline i386_word_t i386_context_get_sp(const struct context *ctx)
+	static inline i486_word_t i486_context_get_sp(const struct context *ctx)
 	{
 		return (ctx->useresp);
 	}
@@ -114,7 +114,7 @@
 	 * @returns The value of the program conter register, which is
 	 * saved in the saved execution context pointed to by @p ctx.
 	 */
-	static inline i386_word_t i386_context_get_pc(const struct context *ctx)
+	static inline i486_word_t i486_context_get_pc(const struct context *ctx)
 	{
 		return (ctx->eip);
 	}
@@ -125,7 +125,7 @@
 	 * @param ctx Target context.
 	 * @para  val Value to store.
 	 */
-	static inline void i386_context_set_sp(struct context *ctx, i386_word_t val)
+	static inline void i486_context_set_sp(struct context *ctx, i486_word_t val)
 	{
 		ctx->useresp = val;
 	}
@@ -136,7 +136,7 @@
 	 * @param ctx Target context.
 	 * @para  val Value to store.
 	 */
-	static inline void i386_context_set_pc(struct context *ctx, i386_word_t val)
+	static inline void i486_context_set_pc(struct context *ctx, i486_word_t val)
 	{
 		ctx->eip = val;
 	}
@@ -148,14 +148,14 @@
  *============================================================================*/
 
 /**
- * @cond i386
+ * @cond i486
  */
 
 	/*
 	 * Exported Constants
 	 */
 	/**@{*/
-	#define CONTEXT_SIZE I386_CONTEXT_SIZE /**< @see I386_CONTEXT_SIZE */
+	#define CONTEXT_SIZE I486_CONTEXT_SIZE /**< @see I486_CONTEXT_SIZE */
 	/**@}*/
 
 	/**
@@ -178,39 +178,39 @@
 #ifndef _ASM_FILE_
 
 	/**
-	 * @see i386_context_get_sp().
+	 * @see i486_context_get_sp().
 	 */
 	static inline word_t context_get_sp(const struct context *ctx)
 	{
-		return (i386_context_get_sp(ctx));
+		return (i486_context_get_sp(ctx));
 	}
 
 	/**
-	 * @see i386_context_get_pc().
+	 * @see i486_context_get_pc().
 	 */
 	static inline word_t context_get_pc(const struct context *ctx)
 	{
-		return (i386_context_get_pc(ctx));
+		return (i486_context_get_pc(ctx));
 	}
 
 	/**
-	 * @see i386_context_set_sp().
+	 * @see i486_context_set_sp().
 	 */
 	static inline void context_set_sp(struct context *ctx, word_t val)
 	{
-		i386_context_set_sp(ctx, val);
+		i486_context_set_sp(ctx, val);
 	}
 
 	/**
-	 * @see i386_context_set_pc().
+	 * @see i486_context_set_pc().
 	 */
 	static inline void context_set_pc(struct context *ctx, word_t val)
 	{
-		i386_context_set_pc(ctx, val);
+		i486_context_set_pc(ctx, val);
 	}
 
 #endif /* _ASM_FILE_ */
 
 /**@endcond*/
 
-#endif /* ARCH_I386_CONTEXT_H_ */
+#endif /* ARCH_I486_CONTEXT_H_ */

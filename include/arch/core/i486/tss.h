@@ -22,12 +22,12 @@
  * SOFTWARE.
  */
 
-#ifndef ARCH_I386_TSS_H_
-#define ARCH_I386_TSS_H_
+#ifndef ARCH_I486_TSS_H_
+#define ARCH_I486_TSS_H_
 
 /**
- * @addtogroup i386-core-tss TSS
- * @ingroup i386-core
+ * @addtogroup i486-core-tss TSS
+ * @ingroup i486-core
  *
  * @brief Task State Segment
  */
@@ -70,7 +70,7 @@
 	/**@}*/
 
 	#include <nanvix/const.h>
-	#include <arch/core/i386/gdt.h>
+	#include <arch/core/i486/gdt.h>
 
 	/**
 	 * @brief Task state segment.
@@ -131,4 +131,4 @@
 
 /**@}*/
 
-#endif /* ARCH_I386_TSS_H_ */
+#endif /* ARCH_I486_TSS_H_ */

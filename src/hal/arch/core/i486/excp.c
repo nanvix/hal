@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 
-#include <arch/core/i386/context.h>
-#include <arch/core/i386/excp.h>
+#include <arch/core/i486/context.h>
+#include <arch/core/i486/excp.h>
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
 
@@ -36,28 +36,28 @@ PRIVATE const struct
 {
 	int num;            /**< Number.        */
 	const char *errmsg; /**< Error message. */
-} exceptions[I386_NUM_EXCEPTIONS] = {
-	{ I386_EXCEPTION_DIVIDE,                      "division-by-zero error"        },
-	{ I386_EXCEPTION_DEBUG,                       "debug exception"               },
-	{ I386_EXCEPTION_NMI,                         "non-maskable interrupt"        },
-	{ I386_EXCEPTION_BREAKPOINT,                  "breakpoint exception"          },
-	{ I386_EXCEPTION_OVERFLOW,                    "overflow exception"            },
-	{ I386_EXCEPTION_BOUNDS,                      "bounds check exception"        },
-	{ I386_EXCEPTION_INVALID_OPCODE,              "invalid opcode exception"      },
-	{ I386_EXCEPTION_COPROCESSOR_NOT_AVAILABLE,   "coprocessor not available"     },
-	{ I386_EXCEPTION_DOUBLE_FAULT,                "double fault"                  },
-	{ I386_EXCEPTION_COPROCESSOR_SEGMENT_OVERRUN, "coprocessor segment overrun"   },
-	{ I386_EXCEPTION_INVALID_TSS,                 "invalid task state segment"    },
-	{ I386_EXCEPTION_SEGMENT_NOT_PRESENT,         "segment not present"           },
-	{ I386_EXCEPTION_STACK_SEGMENT_FAULT,         "static segment fault"          },
-	{ I386_EXCEPTION_GENERAL_PROTECTION,          "general protection fault"      },
-	{ I386_EXCEPTION_PAGE_FAULT,                  "page fault"                    },
-	{ I386_EXCEPTION_FPU_ERROR,                   "floating point unit exception" },
-	{ I386_EXCEPTION_ALIGNMENT_CHECK,             "alignment check"               },
-	{ I386_EXCEPTION_MACHINE_CHECK,               "machine exception"             },
-	{ I386_EXCEPTION_SIMD_ERROR,                  "smid unit exception"           },
-	{ I386_EXCEPTION_VIRTUAL_EXCEPTION,           "virtual exception"             },
-	{ I386_EXCEPTION_SECURITY_EXCEPTION,          "security exception"            }
+} exceptions[I486_NUM_EXCEPTIONS] = {
+	{ I486_EXCEPTION_DIVIDE,                      "division-by-zero error"        },
+	{ I486_EXCEPTION_DEBUG,                       "debug exception"               },
+	{ I486_EXCEPTION_NMI,                         "non-maskable interrupt"        },
+	{ I486_EXCEPTION_BREAKPOINT,                  "breakpoint exception"          },
+	{ I486_EXCEPTION_OVERFLOW,                    "overflow exception"            },
+	{ I486_EXCEPTION_BOUNDS,                      "bounds check exception"        },
+	{ I486_EXCEPTION_INVALID_OPCODE,              "invalid opcode exception"      },
+	{ I486_EXCEPTION_COPROCESSOR_NOT_AVAILABLE,   "coprocessor not available"     },
+	{ I486_EXCEPTION_DOUBLE_FAULT,                "double fault"                  },
+	{ I486_EXCEPTION_COPROCESSOR_SEGMENT_OVERRUN, "coprocessor segment overrun"   },
+	{ I486_EXCEPTION_INVALID_TSS,                 "invalid task state segment"    },
+	{ I486_EXCEPTION_SEGMENT_NOT_PRESENT,         "segment not present"           },
+	{ I486_EXCEPTION_STACK_SEGMENT_FAULT,         "static segment fault"          },
+	{ I486_EXCEPTION_GENERAL_PROTECTION,          "general protection fault"      },
+	{ I486_EXCEPTION_PAGE_FAULT,                  "page fault"                    },
+	{ I486_EXCEPTION_FPU_ERROR,                   "floating point unit exception" },
+	{ I486_EXCEPTION_ALIGNMENT_CHECK,             "alignment check"               },
+	{ I486_EXCEPTION_MACHINE_CHECK,               "machine exception"             },
+	{ I486_EXCEPTION_SIMD_ERROR,                  "smid unit exception"           },
+	{ I486_EXCEPTION_VIRTUAL_EXCEPTION,           "virtual exception"             },
+	{ I486_EXCEPTION_SECURITY_EXCEPTION,          "security exception"            }
 };
 
 /**
@@ -65,7 +65,7 @@ PRIVATE const struct
  *
  * Lookup table with registered exception handlers.
  */
-PRIVATE i386_exception_handler_fn i386_excp_handlers[I386_NUM_EXCEPTIONS] = {
+PRIVATE i486_exception_handler_fn i486_excp_handlers[I486_NUM_EXCEPTIONS] = {
 	NULL, NULL, NULL, NULL, NULL, NULL, NULL,
 	NULL, NULL, NULL, NULL, NULL, NULL, NULL,
 	NULL, NULL, NULL, NULL, NULL, NULL, NULL
@@ -80,11 +80,11 @@ PRIVATE i386_exception_handler_fn i386_excp_handlers[I386_NUM_EXCEPTIONS] = {
 PRIVATE void generic_excp_handler(const struct exception *excp, const struct context *ctx)
 {
 	/* Dump execution context. */
-	kprintf("[i386] eax=%x ebx=%x ecx=%x edx=%x", ctx->eax, ctx->ebx, ctx->ecx, ctx->edx);
-	kprintf("[i386] esi=%x edi=%x ebp=%x esp=%x", ctx->esi, ctx->edi, ctx->ebp, ctx->useresp);
-	kprintf("[i386]  cs=%x  ds=%x  ss=%x", 0xff & ctx->cs, 0xff & ctx->ds, 0xff & ctx->ss);
-	kprintf("[i386]  es=%x  fs=%x  gs=%x", 0xff & ctx->es, 0xff & ctx->fs, 0xff & ctx->gs);
-	kprintf("[i386] eip=%x eflags=%x", ctx->eip, ctx->eflags);
+	kprintf("[i486] eax=%x ebx=%x ecx=%x edx=%x", ctx->eax, ctx->ebx, ctx->ecx, ctx->edx);
+	kprintf("[i486] esi=%x edi=%x ebp=%x esp=%x", ctx->esi, ctx->edi, ctx->ebp, ctx->useresp);
+	kprintf("[i486]  cs=%x  ds=%x  ss=%x", 0xff & ctx->cs, 0xff & ctx->ds, 0xff & ctx->ss);
+	kprintf("[i486]  es=%x  fs=%x  gs=%x", 0xff & ctx->es, 0xff & ctx->fs, 0xff & ctx->gs);
+	kprintf("[i486] eip=%x eflags=%x", ctx->eip, ctx->eflags);
 
 	/* Dump exception information. */
 	kpanic("%s", exceptions[excp->num].errmsg);
@@ -101,22 +101,22 @@ PRIVATE void generic_excp_handler(const struct exception *excp, const struct con
 PUBLIC void do_excp(const struct exception *excp, const struct context *ctx)
 {
 	/* Nothing to do. */
-	if (i386_excp_handlers[excp->num] == NULL)
+	if (i486_excp_handlers[excp->num] == NULL)
 		generic_excp_handler(excp, ctx);
 
 	kprintf("forwarding exception");
 
-	i386_excp_handlers[excp->num](excp, ctx);
+	i486_excp_handlers[excp->num](excp, ctx);
 }
 
 /**
- * The i386_excp_set_handler() function sets a handler function for
+ * The i486_excp_set_handler() function sets a handler function for
  * the exception @p num.
  *
  * @note This function does not check if a handler is already set for
  * the target hardware exception.
  */
-PUBLIC void i386_excp_set_handler(int num, i386_exception_handler_fn handler)
+PUBLIC void i486_excp_set_handler(int num, i486_exception_handler_fn handler)
 {
-	i386_excp_handlers[num] = handler;
+	i486_excp_handlers[num] = handler;
 }

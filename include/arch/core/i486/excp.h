@@ -22,16 +22,16 @@
  * SOFTWARE.
  */
 
-#ifndef ARCH_I386_EXCEPTION_H_
-#define ARCH_I386_EXCEPTION_H_
+#ifndef ARCH_I486_EXCEPTION_H_
+#define ARCH_I486_EXCEPTION_H_
 
 /*============================================================================*
  *                              Exception Interface                           *
  *============================================================================*/
 
 /**
- * @addtogroup i386-core-exception Exception
- * @ingroup i386-core
+ * @addtogroup i486-core-exception Exception
+ * @ingroup i486-core
  *
  * @brief Exceptions
  */
@@ -40,7 +40,7 @@
 	/**
 	 * @brief Exception information size (in bytes).
 	 */
-	#define I386_EXCEPTION_SIZE 16
+	#define I486_EXCEPTION_SIZE 16
 
 	/**
 	 * @name Offsets to the Exception Information Structure
@@ -48,49 +48,49 @@
 	 * @see exception
 	 */
 	/**@{*/
-	#define I386_EXCEPTION_NUM   0 /**< Offset to Exception Number      */
-	#define I386_EXCEPTION_ERR   4 /**< Offset to Error COde            */
-	#define I386_EXCEPTION_DATA  8 /**< Offset to Faulting Address      */
-	#define I386_EXCEPTION_CODE 12 /**< Offset to Faulting Instructtion */
+	#define I486_EXCEPTION_NUM   0 /**< Offset to Exception Number      */
+	#define I486_EXCEPTION_ERR   4 /**< Offset to Error COde            */
+	#define I486_EXCEPTION_DATA  8 /**< Offset to Faulting Address      */
+	#define I486_EXCEPTION_CODE 12 /**< Offset to Faulting Instructtion */
 	/**@}*/
 
 	/**
-	 * @brief Number of exceptions in the i386 core.
+	 * @brief Number of exceptions in the i486 core.
 	 */
-	#define I386_NUM_EXCEPTIONS 21
+	#define I486_NUM_EXCEPTIONS 21
 
 	/**
-	 * @name i386 Exception Codes
+	 * @name i486 Exception Codes
 	 */
 	/**@{*/
-	#define I386_EXCEPTION_DIVIDE                       0 /**@< Division-by-Zero Error      */
-	#define I386_EXCEPTION_DEBUG                        1 /**@< Debug Exception             */
-	#define I386_EXCEPTION_NMI                          2 /**@< Non-Maskable Interrupt      */
-	#define I386_EXCEPTION_BREAKPOINT                   3 /**@< Breakpoint Exception        */
-	#define I386_EXCEPTION_OVERFLOW                     4 /**@< Overflow Exception          */
-	#define I386_EXCEPTION_BOUNDS                       5 /**@< Bounds Check Exception      */
-	#define I386_EXCEPTION_INVALID_OPCODE               6 /**@< Invalid Opcode Exception    */
-	#define I386_EXCEPTION_COPROCESSOR_NOT_AVAILABLE    7 /**@< Coprocessor Not Available   */
-	#define I386_EXCEPTION_DOUBLE_FAULT                 8 /**@< Double Fault                */
-	#define I386_EXCEPTION_COPROCESSOR_SEGMENT_OVERRUN  9 /**@< Coprocessor Segment Overrun */
-	#define I386_EXCEPTION_INVALID_TSS                 10 /**@< Invalid TSS                 */
-	#define I386_EXCEPTION_SEGMENT_NOT_PRESENT         11 /**@< Segment Not Present         */
-	#define I386_EXCEPTION_STACK_SEGMENT_FAULT         12 /**@< Stack Segment Fault         */
-	#define I386_EXCEPTION_GENERAL_PROTECTION          13 /**@< General Protection Fault    */
-	#define I386_EXCEPTION_PAGE_FAULT                  14 /**@< Page Fault                  */
-	#define I386_EXCEPTION_FPU_ERROR                   16 /**@< Floating Point Exception    */
-	#define I386_EXCEPTION_ALIGNMENT_CHECK             17 /**@< Alignment Check Exception   */
-	#define I386_EXCEPTION_MACHINE_CHECK               18 /**@< Machine Check Exception     */
-	#define I386_EXCEPTION_SIMD_ERROR                  19 /**@< SMID Unit Exception         */
-	#define I386_EXCEPTION_VIRTUAL_EXCEPTION           20 /**@< Virtual Exception           */
-	#define I386_EXCEPTION_SECURITY_EXCEPTION          30 /**@< Security Exception.         */
+	#define I486_EXCEPTION_DIVIDE                       0 /**@< Division-by-Zero Error      */
+	#define I486_EXCEPTION_DEBUG                        1 /**@< Debug Exception             */
+	#define I486_EXCEPTION_NMI                          2 /**@< Non-Maskable Interrupt      */
+	#define I486_EXCEPTION_BREAKPOINT                   3 /**@< Breakpoint Exception        */
+	#define I486_EXCEPTION_OVERFLOW                     4 /**@< Overflow Exception          */
+	#define I486_EXCEPTION_BOUNDS                       5 /**@< Bounds Check Exception      */
+	#define I486_EXCEPTION_INVALID_OPCODE               6 /**@< Invalid Opcode Exception    */
+	#define I486_EXCEPTION_COPROCESSOR_NOT_AVAILABLE    7 /**@< Coprocessor Not Available   */
+	#define I486_EXCEPTION_DOUBLE_FAULT                 8 /**@< Double Fault                */
+	#define I486_EXCEPTION_COPROCESSOR_SEGMENT_OVERRUN  9 /**@< Coprocessor Segment Overrun */
+	#define I486_EXCEPTION_INVALID_TSS                 10 /**@< Invalid TSS                 */
+	#define I486_EXCEPTION_SEGMENT_NOT_PRESENT         11 /**@< Segment Not Present         */
+	#define I486_EXCEPTION_STACK_SEGMENT_FAULT         12 /**@< Stack Segment Fault         */
+	#define I486_EXCEPTION_GENERAL_PROTECTION          13 /**@< General Protection Fault    */
+	#define I486_EXCEPTION_PAGE_FAULT                  14 /**@< Page Fault                  */
+	#define I486_EXCEPTION_FPU_ERROR                   16 /**@< Floating Point Exception    */
+	#define I486_EXCEPTION_ALIGNMENT_CHECK             17 /**@< Alignment Check Exception   */
+	#define I486_EXCEPTION_MACHINE_CHECK               18 /**@< Machine Check Exception     */
+	#define I486_EXCEPTION_SIMD_ERROR                  19 /**@< SMID Unit Exception         */
+	#define I486_EXCEPTION_VIRTUAL_EXCEPTION           20 /**@< Virtual Exception           */
+	#define I486_EXCEPTION_SECURITY_EXCEPTION          30 /**@< Security Exception.         */
 	/**@}*/
 
 #ifndef _ASM_FILE_
 
 	#include <nanvix/const.h>
-	#include <arch/core/i386/context.h>
-	#include <arch/core/i386/mmu.h>
+	#include <arch/core/i486/context.h>
+	#include <arch/core/i486/mmu.h>
 	#include <stdint.h>
 
 	/**
@@ -98,16 +98,16 @@
 	 */
 	struct exception
 	{
-		i386_word_t num;         /**< Exception number.     */
-		i386_word_t code;        /**< Error code.           */
-		i386_word_t addr;        /**< Faulting address.     */
-		i386_word_t instruction; /**< Faulting instruction. */
+		i486_word_t num;         /**< Exception number.     */
+		i486_word_t code;        /**< Error code.           */
+		i486_word_t addr;        /**< Faulting address.     */
+		i486_word_t instruction; /**< Faulting instruction. */
 	} __attribute__((packed));
 
 	/**
 	 * @brief Exception handler.
 	 */
-	typedef void (*i386_exception_handler_fn)(const struct exception *, const struct context *);
+	typedef void (*i486_exception_handler_fn)(const struct exception *, const struct context *);
 
 	/**
 	 * @name Software Interrupt Hooks
@@ -140,7 +140,7 @@
 	/**
 	 * @brief Gets the number of an exception.
 	 *
-	 * The i386_excp_get_num() function gets the exception number
+	 * The i486_excp_get_num() function gets the exception number
 	 * stored in the exception information structure pointed to by @p
 	 * excp.
 	 *
@@ -151,7 +151,7 @@
 	 *
 	 * @author Pedro Henrique Penna
 	 */
-	static inline int i386_excp_get_num(const struct exception *excp)
+	static inline int i486_excp_get_num(const struct exception *excp)
 	{
 		return (excp->num);
 	}
@@ -159,7 +159,7 @@
 	/**
 	 * @brief Gets the address of an exception.
 	 *
-	 * The i386_excp_get_addr() function gets the exception address
+	 * The i486_excp_get_addr() function gets the exception address
 	 * stored in the exception information structure pointed to by @p
 	 * excp.
 	 *
@@ -170,7 +170,7 @@
 	 *
 	 * @author Pedro Henrique Penna
 	 */
-	static inline vaddr_t i386_excp_get_addr(const struct exception *excp)
+	static inline vaddr_t i486_excp_get_addr(const struct exception *excp)
 	{
 		return (excp->addr);
 	}
@@ -178,7 +178,7 @@
 	/**
 	 * @brief Gets the program counter at an exception.
 	 *
-	 * The i386_excp_get_num() function gets the program counter
+	 * The i486_excp_get_num() function gets the program counter
 	 * stored in the exception information structure pointed to by @p
 	 * excp.
 	 *
@@ -189,7 +189,7 @@
 	 *
 	 * @author Pedro Henrique Penna
 	 */
-	static inline vaddr_t i386_excp_get_instr(const struct exception *excp)
+	static inline vaddr_t i486_excp_get_instr(const struct exception *excp)
 	{
 		return (excp->instruction);
 	}
@@ -204,7 +204,7 @@
 	 * set for the target hardware exception.
 	 *
 	 */
-	EXTERN void i386_excp_set_handler(int num, i386_exception_handler_fn handler);
+	EXTERN void i486_excp_set_handler(int num, i486_exception_handler_fn handler);
 
 /**@}*/
 
@@ -213,19 +213,19 @@
  *============================================================================*/
 
 /**
- * @cond i386
+ * @cond i486
  */
 
 	/**
 	 * @name Exported Constants
 	 */
 	/**@{*/
-	#define HAL_NUM_EXCEPTIONS            I386_NUM_EXCEPTIONS                /**< @ref I386_NUM_EXCEPTIONS               */
-	#define EXCEPTION_SIZE                I386_EXCEPTION_SIZE                /**< @ref I386_EXCEPTION_SIZE               */
-	#define EXCEPTION_INVALID_OPCODE      I386_EXCEPTION_INVALID_OPCODE      /**< @ref I386_EXCEPTION_INVALID_OPCODE     */
-	#define EXCEPTION_PAGE_FAULT          I386_EXCEPTION_PAGE_FAULT          /**< @ref I386_EXCEPTION_PAGE_FAULT         */
-	#define EXCEPTION_PAGE_PROTECTION     I386_EXCEPTION_PAGE_FAUULT         /**< @ref I386_EXCEPTION_PAGE_FAULT         */
-	#define EXCEPTION_GENERAL_PROTECTION  I386_EXCEPTION_GENERAL_PROTECTION  /**< @ref I386_EXCEPTION_GENERAL_PROTECTION */
+	#define HAL_NUM_EXCEPTIONS            I486_NUM_EXCEPTIONS                /**< @ref I486_NUM_EXCEPTIONS               */
+	#define EXCEPTION_SIZE                I486_EXCEPTION_SIZE                /**< @ref I486_EXCEPTION_SIZE               */
+	#define EXCEPTION_INVALID_OPCODE      I486_EXCEPTION_INVALID_OPCODE      /**< @ref I486_EXCEPTION_INVALID_OPCODE     */
+	#define EXCEPTION_PAGE_FAULT          I486_EXCEPTION_PAGE_FAULT          /**< @ref I486_EXCEPTION_PAGE_FAULT         */
+	#define EXCEPTION_PAGE_PROTECTION     I486_EXCEPTION_PAGE_FAUULT         /**< @ref I486_EXCEPTION_PAGE_FAULT         */
+	#define EXCEPTION_GENERAL_PROTECTION  I486_EXCEPTION_GENERAL_PROTECTION  /**< @ref I486_EXCEPTION_GENERAL_PROTECTION */
 	/**@}*/
 
 	/**
@@ -246,39 +246,39 @@
 	/**@}*/
 
 	/**
-	 * @see i386_excp_get_num().
+	 * @see i486_excp_get_num().
 	 */
 	static inline int exception_get_num(const struct exception *excp)
 	{
-		return (i386_excp_get_num(excp));
+		return (i486_excp_get_num(excp));
 	}
 
 	/**
-	 * @see i386_excp_get_addr().
+	 * @see i486_excp_get_addr().
 	 */
 	static inline vaddr_t exception_get_addr(const struct exception *excp)
 	{
-		return (i386_excp_get_addr(excp));
+		return (i486_excp_get_addr(excp));
 	}
 
 	/**
-	 * @see i386_excp_get_code().
+	 * @see i486_excp_get_code().
 	 */
 	static inline int exception_get_instr(const struct exception *excp)
 	{
-		return (i386_excp_get_instr(excp));
+		return (i486_excp_get_instr(excp));
 	}
 
 	/**
-	 * @see i386_excp_set_handler()
+	 * @see i486_excp_set_handler()
 	 */
-	static inline void exception_set_handler(int num, i386_exception_handler_fn handler)
+	static inline void exception_set_handler(int num, i486_exception_handler_fn handler)
 	{
-		i386_excp_set_handler(num, handler);
+		i486_excp_set_handler(num, handler);
 	}
 
 /**@endcond*/
 
 #endif /* _ASM_FILE_ */
 
-#endif /* ARCH_I386_EXCEPTION_H_ */
+#endif /* ARCH_I486_EXCEPTION_H_ */

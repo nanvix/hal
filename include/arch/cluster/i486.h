@@ -22,30 +22,30 @@
  * SOFTWARE.
  */
 
-#ifndef CLUSTER_I386_H_
-#define CLUSTER_I386_H_
+#ifndef CLUSTER_I486_H_
+#define CLUSTER_I486_H_
 
-	#ifndef __NEED_CLUSTER_I386
+	#ifndef __NEED_CLUSTER_I486
 		#error "bad cluster configuration?"
 	#endif
 
 	/* Cluster Interface Implementation */
-	#include <arch/cluster/i386/_i386.h>
+	#include <arch/cluster/i486/_i486.h>
 
 /*============================================================================*
  * Exported Interface                                                         *
  *============================================================================*/
 
 /**
- * @addtogroup i386-cluster x86 Cluster
+ * @addtogroup i486-cluster x86 Cluster
  * @ingroup clusters
  *
  * @brief x86 Cluster
  */
 /**@{*/
 
-	#include <arch/cluster/i386/cores.h>
-	#include <arch/cluster/i386/memory.h>
+	#include <arch/cluster/i486/cores.h>
+	#include <arch/cluster/i486/memory.h>
 
 	/**
 	 * @name Provided Features
@@ -56,4 +56,4 @@
 
 /**@}*/
 
-#endif /* CLUSTER_I386_H_ */
+#endif /* CLUSTER_I486_H_ */

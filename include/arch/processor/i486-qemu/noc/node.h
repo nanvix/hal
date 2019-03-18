@@ -22,15 +22,15 @@
  * SOFTWARE.
  */
 
-#ifndef PROCESSOR_I386_QEMU_NOC_NODE_H_
-#define PROCESSOR_I386_QEMU_NOC_NODE_H_
+#ifndef PROCESSOR_I486_QEMU_NOC_NODE_H_
+#define PROCESSOR_I486_QEMU_NOC_NODE_H_
 
 /**
- * @cond i386-qemu-noc
+ * @cond i486-qemu-noc
  */
 
 	/* Cluster API. */
-	#include <arch/processor/i386-qemu/_i386-qemu.h>
+	#include <arch/processor/i486-qemu/_i486-qemu.h>
 
 /*============================================================================*
  * Node Interface                                                             *
@@ -45,7 +45,7 @@
 	 * @note This function is blocking.
 	 * @note This function is thread-safe.
 	 */
-	static inline int i386_qemu_node_get_id(void)
+	static inline int i486_qemu_node_get_id(void)
 	{
 		return (0);
 	}
@@ -57,7 +57,7 @@
  *============================================================================*/
 
 /**
- * @cond i386-qemu
+ * @cond i486-qemu
  */
 
 	/**
@@ -69,13 +69,13 @@
 	/**@}*/
 
 	/**
-	 * @see i386_qemu_node_get_id()
+	 * @see i486_qemu_node_get_id()
 	 */
 	static inline int processor_node_get_id(void)
 	{
-		return i386_qemu_node_get_id();
+		return i486_qemu_node_get_id();
 	}
 
 /**@endcond*/
 
-#endif /* PROCESSOR_I386_QEMU_NOC_NODE_H_ */
+#endif /* PROCESSOR_I486_QEMU_NOC_NODE_H_ */

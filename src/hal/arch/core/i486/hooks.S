@@ -25,11 +25,11 @@
 /* Must come first. */
 #define _ASM_FILE_
 
-#include <arch/core/i386/8259.h>
-#include <arch/core/i386/context.h>
-#include <arch/core/i386/core.h>
-#include <arch/core/i386/excp.h>
-#include <arch/core/i386/gdt.h>
+#include <arch/core/i486/8259.h>
+#include <arch/core/i486/context.h>
+#include <arch/core/i486/core.h>
+#include <arch/core/i486/excp.h>
+#include <arch/core/i486/gdt.h>
 
 /* Exported symbols. */
 .globl _do_excp0
@@ -54,7 +54,7 @@
 .globl _do_excp19
 .globl _do_excp20
 .globl _do_excp30
-.globl i386_syscall
+.globl i486_syscall
 .globl _do_hwint0
 .globl _do_hwint1
 .globl _do_hwint2
@@ -73,11 +73,11 @@
 .globl _do_hwint15
 
 /*============================================================================*
- * i386_context_save()                                                        *
+ * i486_context_save()                                                        *
  *============================================================================*/
 
 /*
- * The i386_context_save() macro saves the content of general purpose
+ * The i486_context_save() macro saves the content of general purpose
  * and segment registers in the stack of the caller. A pointer to the
  * saved execution context is saved into ret.
  *
@@ -87,58 +87,58 @@
  * not saved by this macro, because they are automatically saved by
  * the hardware upon an exception/interrupt.
  */
-.macro i386_context_save, ret
+.macro i486_context_save, ret
 
-	subl $I386_CONTEXT_SW_SIZE, %esp
+	subl $I486_CONTEXT_SW_SIZE, %esp
 
 	/* Save general purpose registers. */
-	movl %eax, I386_CONTEXT_EAX(%esp)
-	movl %ebx, I386_CONTEXT_EBX(%esp)
-	movl %ecx, I386_CONTEXT_ECX(%esp)
-	movl %edx, I386_CONTEXT_EDX(%esp)
-	movl %ebp, I386_CONTEXT_EBP(%esp)
-	movl %esi, I386_CONTEXT_ESI(%esp)
-	movl %edi, I386_CONTEXT_EDI(%esp)
+	movl %eax, I486_CONTEXT_EAX(%esp)
+	movl %ebx, I486_CONTEXT_EBX(%esp)
+	movl %ecx, I486_CONTEXT_ECX(%esp)
+	movl %edx, I486_CONTEXT_EDX(%esp)
+	movl %ebp, I486_CONTEXT_EBP(%esp)
+	movl %esi, I486_CONTEXT_ESI(%esp)
+	movl %edi, I486_CONTEXT_EDI(%esp)
 
 	/* Save segment registers. */
-	movw %ds, I386_CONTEXT_DS(%esp)
-	movw %es, I386_CONTEXT_ES(%esp)
-	movw %fs, I386_CONTEXT_FS(%esp)
-	movw %gs, I386_CONTEXT_GS(%esp)
+	movw %ds, I486_CONTEXT_DS(%esp)
+	movw %es, I486_CONTEXT_ES(%esp)
+	movw %fs, I486_CONTEXT_FS(%esp)
+	movw %gs, I486_CONTEXT_GS(%esp)
 
 	movl %esp, \ret
 
 .endm
 
 /*============================================================================*
- * i386_context_restore()                                                     *
+ * i486_context_restore()                                                     *
  *============================================================================*/
 
 /**
- * The i386_context_restore() function restores the content of general
+ * The i486_context_restore() function restores the content of general
  * purpose and segment registers from the stack of the caller.
  *
  * @note It is up to the caller to switch the current stack to the
  * target one.
  */
-.macro i386_context_restore
+.macro i486_context_restore
 
 	/* Restore general purpose registers. */
-	movl I386_CONTEXT_EAX(%esp), %eax
-	movl I386_CONTEXT_EBX(%esp), %ebx
-	movl I386_CONTEXT_ECX(%esp), %ecx
-	movl I386_CONTEXT_EDX(%esp), %edx
-	movl I386_CONTEXT_EBP(%esp), %ebp
-	movl I386_CONTEXT_ESI(%esp), %esi
-	movl I386_CONTEXT_EDI(%esp), %edi
+	movl I486_CONTEXT_EAX(%esp), %eax
+	movl I486_CONTEXT_EBX(%esp), %ebx
+	movl I486_CONTEXT_ECX(%esp), %ecx
+	movl I486_CONTEXT_EDX(%esp), %edx
+	movl I486_CONTEXT_EBP(%esp), %ebp
+	movl I486_CONTEXT_ESI(%esp), %esi
+	movl I486_CONTEXT_EDI(%esp), %edi
 
 	/* Restore segment registers. */
-	movw I386_CONTEXT_DS(%esp), %ds
-	movw I386_CONTEXT_ES(%esp), %es
-	movw I386_CONTEXT_FS(%esp), %fs
-	movw I386_CONTEXT_GS(%esp), %gs
+	movw I486_CONTEXT_DS(%esp), %ds
+	movw I486_CONTEXT_ES(%esp), %es
+	movw I486_CONTEXT_FS(%esp), %fs
+	movw I486_CONTEXT_GS(%esp), %gs
 
-	addl $I386_CONTEXT_SW_SIZE, %esp
+	addl $I486_CONTEXT_SW_SIZE, %esp
 
 	/*
 	 * Special registers are
@@ -154,14 +154,14 @@
 /*
  * Offset to exception structure.
  */
-#define I386_EXCEPTION_SKIP -I386_CONTEXT_SW_SIZE - I386_EXCEPTION_SIZE + I386_EXCEPTION_ERR
+#define I486_EXCEPTION_SKIP -I486_CONTEXT_SW_SIZE - I486_EXCEPTION_SIZE + I486_EXCEPTION_ERR
 
 /*
  * Exception without error code.
  */
 .macro _do_excp_noerr_code, number
 	_do_excp\()\number:
-		i386_context_save %eax
+		i486_context_save %eax
 		movl $(\number), %ebx
 		movl $0, %ecx
 		jmp _do_excp
@@ -173,9 +173,9 @@
 .macro _do_excp_err_code, number
 	_do_excp\()\number:
 		xchg %eax, (%esp)
-		xchg %eax, I386_EXCEPTION_SKIP(%esp)
+		xchg %eax, I486_EXCEPTION_SKIP(%esp)
 		xchg %eax, (%esp)
-		i386_context_save %eax
+		i486_context_save %eax
 		movl $(\number), %ebx
 		movl $0, %ecx
 		jmp _do_excp
@@ -187,9 +187,9 @@
 .macro _do_excp_err2_code, number
 	_do_excp\()\number:
 		xchg %eax, (%esp)
-		xchg %eax, I386_EXCEPTION_SKIP(%esp)
+		xchg %eax, I486_EXCEPTION_SKIP(%esp)
 		xchg %eax, (%esp)
-		i386_context_save %eax
+		i486_context_save %eax
 		movl $(\number), %ebx
 		movl %cr2, %ecx
 		jmp _do_excp
@@ -224,20 +224,20 @@ _do_excp_err_code   30 /* Security Exception.         */
  */
 _do_excp:
 	/* Save exception information. */
-	movl I386_CONTEXT_EIP(%eax), %edx
-	subl $I386_EXCEPTION_SIZE, %esp
-	movl %ebx, I386_EXCEPTION_NUM(%esp)
-	movl %ecx, I386_EXCEPTION_DATA(%esp)
-	movl %edx, I386_EXCEPTION_CODE(%esp)
+	movl I486_CONTEXT_EIP(%eax), %edx
+	subl $I486_EXCEPTION_SIZE, %esp
+	movl %ebx, I486_EXCEPTION_NUM(%esp)
+	movl %ecx, I486_EXCEPTION_DATA(%esp)
+	movl %edx, I486_EXCEPTION_CODE(%esp)
 	movl %esp, %ebx
 
 	/* Call high-level exception dispatcher. */
 	pushl %eax /* Execution context. */
 	pushl %ebx /* Exception context. */
 	call  do_excp
-	addl  $(2*I386_WORD_SIZE), %esp
+	addl  $(2*I486_WORD_SIZE), %esp
 
-    i386_context_restore
+    i486_context_restore
 	iret
 
 /*============================================================================*
@@ -247,58 +247,58 @@ _do_excp:
 /*
  * System call hook.
  */
-i386_syscall:
+i486_syscall:
 	/* Save system call context. */
-	i386_context_save %ebx
+	i486_context_save %ebx
 
 	/* Push system call parameters. */
-	movl I386_CONTEXT_EAX(%ebx), %eax
+	movl I486_CONTEXT_EAX(%ebx), %eax
 	pushl %eax
-	movl I386_CONTEXT_EDI(%ebx), %eax
+	movl I486_CONTEXT_EDI(%ebx), %eax
 	pushl %eax
-	movl I386_CONTEXT_ESI(%ebx), %eax
+	movl I486_CONTEXT_ESI(%ebx), %eax
 	pushl %eax
-	movl I386_CONTEXT_EDX(%ebx), %eax
+	movl I486_CONTEXT_EDX(%ebx), %eax
 	pushl %eax
-	movl I386_CONTEXT_ECX(%ebx), %eax
+	movl I486_CONTEXT_ECX(%ebx), %eax
 	pushl %eax
-	movl I386_CONTEXT_EBX(%ebx), %eax
+	movl I486_CONTEXT_EBX(%ebx), %eax
 	pushl %eax
 
 	/* Handle system call. */
 	call do_syscall
 
 	/* Wipe out system call parameters. */
-	addl $6*I386_WORD_SIZE, %esp
+	addl $6*I486_WORD_SIZE, %esp
 
 	/* Copy return value to user stack. */
-	movl %eax, I386_CONTEXT_EAX(%esp)
+	movl %eax, I486_CONTEXT_EAX(%esp)
 
 	/* restore system call context. */
-	i386_context_restore
+	i486_context_restore
 
 	iret
 
 /*============================================================================*
- * i386_pic_master_ack()                                                      *
+ * i486_pic_master_ack()                                                      *
  *============================================================================*/
 
 /*
  * Acknowledges an interrupt to the master PIC.
  */
-.macro i386_pic_master_ack
+.macro i486_pic_master_ack
 	movb $0x20, %al
 	outb %al, $PIC_CTRL_MASTER
 .endm
 
 /*============================================================================*
- * i386_pic_slave_ack()                                                       *
+ * i486_pic_slave_ack()                                                       *
  *============================================================================*/
 
 /*
  * Acknowledges an interrupt to the slave PIC.
  */
-.macro i386_pic_slave_ack
+.macro i486_pic_slave_ack
 	movb $0x20, %al
 	outb %al, $PIC_CTRL_MASTER
 	outb %al, $PIC_CTRL_SLAVE
@@ -313,13 +313,13 @@ i386_syscall:
  */
 .macro _do_hwint_master, num
 	_do_hwint\()\num:
-		i386_context_save %ebx
-		i386_pic_master_ack
+		i486_context_save %ebx
+		i486_pic_master_ack
 		pushl %ebx
 		pushl $(\num)
-		call i386_do_hwint
-		addl $(2*I386_WORD_SIZE), %esp
-		i386_context_restore
+		call i486_do_hwint
+		addl $(2*I486_WORD_SIZE), %esp
+		i486_context_restore
 		iret
 .endm
 
@@ -328,13 +328,13 @@ i386_syscall:
  */
 .macro _do_hwint_slave, num
 	_do_hwint\()\num:
-		i386_context_save %ebx
-		i386_pic_slave_ack
+		i486_context_save %ebx
+		i486_pic_slave_ack
 		pushl %ebx
 		pushl $(\num)
-		call i386_do_hwint
-		addl $(2*I386_WORD_SIZE), %esp
-		i386_context_restore
+		call i486_do_hwint
+		addl $(2*I486_WORD_SIZE), %esp
+		i486_context_restore
 		iret
 .endm
 

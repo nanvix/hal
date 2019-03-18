@@ -22,15 +22,15 @@
  * SOFTWARE.
  */
 
-#include <arch/core/i386/context.h>
-#include <arch/core/i386/int.h>
+#include <arch/core/i486/context.h>
+#include <arch/core/i486/int.h>
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
 
 /**
  * @brief Interrupt handlers.
  */
-PRIVATE void (*i386_handlers[I386_NUM_HWINT])(int) = {
+PRIVATE void (*i486_handlers[I486_NUM_HWINT])(int) = {
 	NULL, NULL, NULL, NULL,
 	NULL, NULL, NULL, NULL,
 	NULL, NULL, NULL, NULL,
@@ -50,23 +50,23 @@ PRIVATE void (*i386_handlers[I386_NUM_HWINT])(int) = {
  *
  * @note This function is called from assembly code.
  */
-PUBLIC void i386_do_hwint(int num, const struct context *ctx)
+PUBLIC void i486_do_hwint(int num, const struct context *ctx)
 {
 	UNUSED(ctx);
 	
 	/* Nothing to do. */
-	if (i386_handlers[num] == NULL)
+	if (i486_handlers[num] == NULL)
 		return;
 
-	i386_handlers[num](num);
+	i486_handlers[num](num);
 }
 
 /**
- * The i386_hwint_handler_set() function sets the function pointed to
+ * The i486_hwint_handler_set() function sets the function pointed to
  * by @p handler as the handler for the hardware interrupt whose
  * number is @p num.
  */
-PUBLIC void i386_hwint_handler_set(int num, void (*handler)(int))
+PUBLIC void i486_hwint_handler_set(int num, void (*handler)(int))
 {
-	i386_handlers[num] = handler;
+	i486_handlers[num] = handler;
 }

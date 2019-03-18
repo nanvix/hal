@@ -22,15 +22,15 @@
  * SOFTWARE.
  */
 
-#ifndef ARCH_CLUSTER_I386_CORES_H_
-#define ARCH_CLUSTER_I386_CORES_H_
+#ifndef ARCH_CLUSTER_I486_CORES_H_
+#define ARCH_CLUSTER_I486_CORES_H_
 
 	/* Cluster Interface Implementation */
-	#include <arch/cluster/i386/_i386.h>
+	#include <arch/cluster/i486/_i486.h>
 
 /**
- * @addtogroup i386-cluster-cpu Cores
- * @ingroup i386-cluster
+ * @addtogroup i486-cluster-cpu Cores
+ * @ingroup i486-cluster
  *
  * @brief Cores
  */
@@ -39,24 +39,24 @@
 	/**
 	 * @brief Number of cores.
 	 */
-	#define I386_NUM_CORES 1
+	#define I486_NUM_CORES 1
 
 	/**
 	 * @brief ID of the master core.
 	 */
-	#define I386_COREID_MASTER 0
+	#define I486_COREID_MASTER 0
 
 	/**
 	 * @brief Gets the number of cores.
 	 *
-	 * The i386_cpu_get_num_cores() gets the number of cores in the
-	 * underlying i386 processor.
+	 * The i486_cpu_get_num_cores() gets the number of cores in the
+	 * underlying i486 processor.
 	 *
 	 * @returns The the number of cores in the underlying processor.
 	 */
-	static inline int i386_cpu_get_num_cores(void)
+	static inline int i486_cpu_get_num_cores(void)
 	{
-		return (I386_NUM_CORES);
+		return (I486_NUM_CORES);
 	}
 
 /**@}*/
@@ -66,7 +66,7 @@
  *============================================================================*/
 
 /**
- * @cond i386
+ * @cond i486
  */
 
 	/**
@@ -79,21 +79,21 @@
 	/**
 	 * @brief Number of cores in a cluster.
 	 */
-	#define HAL_NUM_CORES I386_NUM_CORES
+	#define HAL_NUM_CORES I486_NUM_CORES
 
 	/**
 	 * @brief ID of the master core.
 	 */
-	#define COREID_MASTER I386_COREID_MASTER
+	#define COREID_MASTER I486_COREID_MASTER
 
 	/**
-	 * @see i386_cpu_get_num_cores()
+	 * @see i486_cpu_get_num_cores()
 	 */
 	static inline int hal_cpu_get_num_cores(void)
 	{
-		return (i386_cpu_get_num_cores());
+		return (i486_cpu_get_num_cores());
 	}
 
 /**@endcond*/
 
-#endif /* ARCH_CLUSTER_I386_CORES_H_ */
+#endif /* ARCH_CLUSTER_I486_CORES_H_ */

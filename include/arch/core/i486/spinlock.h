@@ -22,14 +22,14 @@
  * SOFTWARE.
  */
 
-#ifndef ARCH_CORE_I386_SPINLOCK_H_
-#define ARCH_CORE_I386_SPINLOCK_H_
+#ifndef ARCH_CORE_I486_SPINLOCK_H_
+#define ARCH_CORE_I486_SPINLOCK_H_
 
 /**
- * @addtogroup i386-core-spinlock Spinlock
- * @ingroup i386-core
+ * @addtogroup i486-core-spinlock Spinlock
+ * @ingroup i486-core
  *
- * @brief i386 Spinlocks
+ * @brief i486 Spinlocks
  */
 /**@{*/
 
@@ -44,75 +44,75 @@
 	 * @name Spinlock State
 	 */
 	/**@{*/
-	#define I386_SPINLOCK_UNLOCKED 0x0 /**< Unlocked */
-	#define I386_SPINLOCK_LOCKED   0x1 /**< Locked   */
+	#define I486_SPINLOCK_UNLOCKED 0x0 /**< Unlocked */
+	#define I486_SPINLOCK_LOCKED   0x1 /**< Locked   */
 	/**@}*/
 
 	/**
 	 * @brief Spinlock.
 	 */
-	typedef uint32_t i386_spinlock_t;
+	typedef uint32_t i486_spinlock_t;
 
 	/**
-	 * @brief Initializes a i386_spinlock_t.
+	 * @brief Initializes a i486_spinlock_t.
 	 *
-	 * @param lock Target i386_spinlock_t.
+	 * @param lock Target i486_spinlock_t.
 	 *
 	 * @todo Implement this function.
 	 */
-	static inline void i386_spinlock_init(i386_spinlock_t *lock)
+	static inline void i486_spinlock_init(i486_spinlock_t *lock)
 	{
-		*lock = I386_SPINLOCK_UNLOCKED;
+		*lock = I486_SPINLOCK_UNLOCKED;
 	}
 
 	/**
-	 * @brief Attempts to lock a i386_spinlock_t.
+	 * @brief Attempts to lock a i486_spinlock_t.
 	 *
-	 * @param lock Target i386_spinlock_t.
+	 * @param lock Target i486_spinlock_t.
 	 *
-	 * @returns Upon successful completion, the i386_spinlock_t pointed to by
+	 * @returns Upon successful completion, the i486_spinlock_t pointed to by
 	 * @p lock is locked and zero is returned. Upon failure, non-zero
 	 * is returned instead, and the lock is not acquired by the
 	 * caller.
 	 *
 	 * @todo Implement this function.
 	 */
-	static inline int i386_spinlock_trylock(i386_spinlock_t *lock)
+	static inline int i486_spinlock_trylock(i486_spinlock_t *lock)
 	{
 		return (
 			!__sync_bool_compare_and_swap(
 				lock,
-				I386_SPINLOCK_UNLOCKED,
-				I386_SPINLOCK_LOCKED
+				I486_SPINLOCK_UNLOCKED,
+				I486_SPINLOCK_LOCKED
 			)
 		);
 	}
 
 	/**
-	 * @brief Locks a i386_spinlock_t.
+	 * @brief Locks a i486_spinlock_t.
 	 *
-	 * @param lock Target i386_spinlock_t.
+	 * @param lock Target i486_spinlock_t.
 	 *
 	 * @todo Implement this function.
 	 */
-	static inline void i386_spinlock_lock(i386_spinlock_t *lock)
+	static inline void i486_spinlock_lock(i486_spinlock_t *lock)
 	{
-		while (i386_spinlock_trylock(lock))
+		while (i486_spinlock_trylock(lock))
 			/* noop */;
 		__sync_synchronize();
 	}
 
 	/**
-	 * @brief Unlocks a i386_spinlock_t.
+	 * @brief Unlocks a i486_spinlock_t.
 	 *
-	 * @param lock Target i386_spinlock_t.
+	 * @param lock Target i486_spinlock_t.
 	 *
 	 * @todo Implement this function.
 	 */
-	static inline void i386_spinlock_unlock(i386_spinlock_t *lock)
+	static inline void i486_spinlock_unlock(i486_spinlock_t *lock)
 	{
 		__sync_synchronize();
-		*lock = I386_SPINLOCK_UNLOCKED;
+		*lock = I486_SPINLOCK_UNLOCKED;
 	}
 
 /**@}*/
@@ -122,7 +122,7 @@
  *============================================================================*/
 
 /**
- * @cond i386
+ * @cond i486
  */
 
 	/**
@@ -140,23 +140,23 @@
 	 * @name Spinlock State
 	 */
 	/**@{*/
-	#define SPINLOCK_UNLOCKED I386_SPINLOCK_UNLOCKED /**< @see I386_SPINLOCK_UNLOCKED */
-	#define SPINLOCK_LOCKED   I386_SPINLOCK_LOCKED   /**< @see I386_SPINLOCK_LOCKED   */
+	#define SPINLOCK_UNLOCKED I486_SPINLOCK_UNLOCKED /**< @see I486_SPINLOCK_UNLOCKED */
+	#define SPINLOCK_LOCKED   I486_SPINLOCK_LOCKED   /**< @see I486_SPINLOCK_LOCKED   */
 	/**@}*/
 
 #ifndef _ASM_FILE_
 
 	/**
-	 * @see i386_spinlock_t
+	 * @see i486_spinlock_t
 	 */
-	typedef i386_spinlock_t spinlock_t;
+	typedef i486_spinlock_t spinlock_t;
 
 	/**
 	 * @see ork1_spinlock_init().
 	 */
 	static inline void spinlock_init(spinlock_t *lock)
 	{
-		i386_spinlock_init(lock);
+		i486_spinlock_init(lock);
 	}
 
 	/**
@@ -164,7 +164,7 @@
 	 */
 	static inline int spinlock_trylock(spinlock_t *lock)
 	{
-		return (i386_spinlock_trylock(lock));
+		return (i486_spinlock_trylock(lock));
 	}
 
 	/**
@@ -172,7 +172,7 @@
 	 */
 	static inline void spinlock_lock(spinlock_t *lock)
 	{
-		i386_spinlock_lock(lock);
+		i486_spinlock_lock(lock);
 	}
 
 	/**
@@ -180,11 +180,11 @@
 	 */
 	static inline void spinlock_unlock(spinlock_t *lock)
 	{
-		i386_spinlock_unlock(lock);
+		i486_spinlock_unlock(lock);
 	}
 
 #endif /* _ASM_FILE_ */
 
 /**@endcond*/
 
-#endif /* ARCH_CORE_I386_SPINLOCK_H_ */
+#endif /* ARCH_CORE_I486_SPINLOCK_H_ */

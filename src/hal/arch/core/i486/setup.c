@@ -23,14 +23,14 @@
  */
 
 #include <nanvix/const.h>
-#include <arch/core/i386/gdt.h>
-#include <arch/core/i386/idt.h>
-#include <arch/core/i386/tss.h>
+#include <arch/core/i486/gdt.h>
+#include <arch/core/i486/idt.h>
+#include <arch/core/i486/tss.h>
 
 /**
  * Initializes the GDT, TSS and IDT.
  */
-PUBLIC void i386_core_setup(void)
+PUBLIC void i486_core_setup(void)
 {
 	gdt_setup();
 	tss_setup();

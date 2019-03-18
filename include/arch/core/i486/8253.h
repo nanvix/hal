@@ -22,12 +22,12 @@
  * SOFTWARE.
  */
 
-#ifndef ARCH_I386_8253_H_
-#define ARCH_I386_8253_H_
+#ifndef ARCH_I486_8253_H_
+#define ARCH_I486_8253_H_
 
 /**
- * @addtogroup i386-core-8253 8253 Chip
- * @ingroup i386-core
+ * @addtogroup i486-core-8253 8253 Chip
+ * @ingroup i486-core
  *
  * @brief Programmable Interval Timer
  */
@@ -56,21 +56,21 @@
 	/**@}*/
 
 	/**
-	 * @brief Initializes the clock driver in the i386 architecture.
+	 * @brief Initializes the clock driver in the i486 architecture.
 	 *
 	 * @param freq Target frequency for the clock device.
 	 */
-	EXTERN void i386_clock_init(unsigned freq);
+	EXTERN void i486_clock_init(unsigned freq);
 
 	/**
-	 * @see i386_clock_init()
+	 * @see i486_clock_init()
 	 */
 	static inline void hal_clock_init(unsigned freq)
 	{
-		i386_clock_init(freq);
+		i486_clock_init(freq);
 	}
 
 /**@}*/
 
-#endif /* ARCH_I386_8253_H_ */
+#endif /* ARCH_I486_8253_H_ */
 

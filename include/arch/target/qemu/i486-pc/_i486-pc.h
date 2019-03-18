@@ -25,9 +25,9 @@
 #ifndef _TARGET_QEMU_OR1K_PC_H_
 #define _TARGET_QEMU_OR1K_PC_H_
 
-	#undef  __NEED_PROCESSOR_I386_QEMU
-	#define __NEED_PROCESSOR_I386_QEMU
-	#include <arch/processor/i386-qemu.h>
+	#undef  __NEED_PROCESSOR_I486_QEMU
+	#define __NEED_PROCESSOR_I486_QEMU
+	#include <arch/processor/i486-qemu.h>
 
 #endif /* _TARGET_QEMU_OR1K_PC_H_ */
 

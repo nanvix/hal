@@ -22,36 +22,36 @@
  * SOFTWARE.
  */
 
-#ifndef PROCESSOR_I386_QEMU_NOC_H_
-#define PROCESSOR_I386_QEMU_NOC_H_
+#ifndef PROCESSOR_I486_QEMU_NOC_H_
+#define PROCESSOR_I486_QEMU_NOC_H_
 
 	/* Cluster API. */
-	#include <arch/processor/i386-qemu/_i386-qemu.h>
+	#include <arch/processor/i486-qemu/_i486-qemu.h>
 
 /**
- * @addtogroup processor-i386-qemu-noc NoC
- * @ingroup processor-i386-qemu
+ * @addtogroup processor-i486-qemu-noc NoC
+ * @ingroup processor-i486-qemu
  *
  * @brief NoC
  */
 /**@{*/
 
-	#include <arch/processor/i386-qemu/noc/node.h>
+	#include <arch/processor/i486-qemu/noc/node.h>
 
 	/**
 	 * @name Number of NoC nodes attached to an IO device.
 	 */
-	#define I386_QEMU_NR_NOC_IONODES 1
+	#define I486_QEMU_NR_NOC_IONODES 1
 
 	/**
 	 * @name Number of NoC nodes not attached to an IO device.
 	 */
-	#define I386_QEMU_NR_NOC_CNODES 1
+	#define I486_QEMU_NR_NOC_CNODES 1
 
 	/**
 	 * @name Number of NoC nodes.
 	 */
-	#define I386_QEMU_NR_NOC_NODES (I386_QEMU_NR_NOC_IONODES + I386_QEMU_NR_NOC_CNODES)
+	#define I486_QEMU_NR_NOC_NODES (I486_QEMU_NR_NOC_IONODES + I486_QEMU_NR_NOC_CNODES)
 
 	/**
 	 * @brief Asserts whether a NoC node is attached to IO cluster 0.
@@ -61,7 +61,7 @@
 	 * @returns One if the target NoC node is attached to IO cluster 0,
 	 * and zero otherwise.
 	 */
-	static inline int i386_qemu_noc_is_ionode0(int nodeid)
+	static inline int i486_qemu_noc_is_ionode0(int nodeid)
 	{
 		return WITHIN(nodeid, 0, 1);
 	}
@@ -74,7 +74,7 @@
 	 * @returns One if the target NoC node is attached to IO cluster 1,
 	 * and zero otherwise.
 	 */
-	static inline int i386_qemu_noc_is_ionode1(int nodeid)
+	static inline int i486_qemu_noc_is_ionode1(int nodeid)
 	{
 		return WITHIN(nodeid, 0, 1);
 	}
@@ -87,9 +87,9 @@
 	 * @returns One if the target NoC node is attached to an IO cluster,
 	 * and zero otherwise.
 	 */
-	static inline int i386_qemu_noc_is_ionode(int nodeid)
+	static inline int i486_qemu_noc_is_ionode(int nodeid)
 	{
-		return (i386_qemu_noc_is_ionode0(nodeid) || i386_qemu_noc_is_ionode1(nodeid));
+		return (i486_qemu_noc_is_ionode0(nodeid) || i486_qemu_noc_is_ionode1(nodeid));
 	}
 
 	/**
@@ -100,7 +100,7 @@
 	 * @returns One if the target NoC node is attached to a compute
 	 * cluster, and zero otherwise.
 	 */
-	static inline int i386_qemu_noc_is_cnode(int nodeid)
+	static inline int i486_qemu_noc_is_cnode(int nodeid)
 	{
 		return WITHIN(nodeid, 0, 1);
 	}
@@ -111,7 +111,7 @@
 	 * @param nodeid ID of the target NoC node.
 	 * @returns The logic number of the target NoC node.
 	 */
-	static inline int i386_qemu_node_get_num(int nodeid)
+	static inline int i486_qemu_node_get_num(int nodeid)
 	{
 		UNUSED(nodeid);
 
@@ -128,7 +128,7 @@
 	 * @returns Upon successful completion, zero is returned. Upon
 	 * failure, a negative error code is returned instead.
 	 */
-	static inline int i386_qemu_nodes_convert(int *_nodes, const int *nodes, int nnodes)
+	static inline int i486_qemu_nodes_convert(int *_nodes, const int *nodes, int nnodes)
 	{
 		UNUSED(_nodes);
 		UNUSED(nodes);
@@ -144,7 +144,7 @@
 	 * @returns The NoC tag attached to the underlying node ID is
 	 * returned.
 	 */
-	static inline int i386_qemu_node_sync_tag(int nodeid)
+	static inline int i486_qemu_node_sync_tag(int nodeid)
 	{
 		UNUSED(nodeid);
 
@@ -158,7 +158,7 @@
 	 * @returns The NoC tag attached to the underlying node ID is
 	 * returned.
 	 */
-	static inline int i386_qemu_node_mailbox_tag(int nodeid)
+	static inline int i486_qemu_node_mailbox_tag(int nodeid)
 	{
 		UNUSED(nodeid);
 
@@ -172,7 +172,7 @@
 	 * @returns The NoC tag attached to the underlying node ID is
 	 * returned.
 	 */
-	static inline int i386_qemu_node_portal_tag(int nodeid)
+	static inline int i486_qemu_node_portal_tag(int nodeid)
 	{
 		UNUSED(nodeid);
 
@@ -186,16 +186,16 @@
  *============================================================================*/
 
 /**
- * @cond i386-qemu
+ * @cond i486-qemu
  */
 
 	/**
 	 * @name Exported Constans
 	 */
 	/**@{*/
-	#define HAL_NR_NOC_IONODES I386_QEMU_NR_NOC_IONODES
-	#define HAL_NR_NOC_CNODES I386_QEMU_NR_NOC_CNODES
-	#define HAL_NR_NOC_NODES I386_QEMU_NR_NOC_NODES
+	#define HAL_NR_NOC_IONODES I486_QEMU_NR_NOC_IONODES
+	#define HAL_NR_NOC_CNODES I486_QEMU_NR_NOC_CNODES
+	#define HAL_NR_NOC_NODES I486_QEMU_NR_NOC_NODES
 	/**@}*/
 
 	/**
@@ -212,54 +212,54 @@
 	/**@}*/
 
     /**
-	 * @see i386_qemu_node_get_num()
+	 * @see i486_qemu_node_get_num()
 	 */
 	static inline int processor_node_get_num(int nodeid)
 	{
-		return i386_qemu_node_get_num(nodeid);
+		return i486_qemu_node_get_num(nodeid);
 	}
 
 	/**
-	 * @see i386_qemu_nodes_convert()
+	 * @see i486_qemu_nodes_convert()
 	 */
 	static inline int processor_nodes_convert(int *_nodes, const int *nodes, int nnodes)
 	{
-		return i386_qemu_nodes_convert(_nodes, nodes, nnodes);
+		return i486_qemu_nodes_convert(_nodes, nodes, nnodes);
 	}
 
 	/**
-	 * @see i386_qemu_noc_is_ionode0()
+	 * @see i486_qemu_noc_is_ionode0()
 	 */
 	static inline int processor_noc_is_ionode0(int nodeid)
 	{
-		return (i386_qemu_noc_is_ionode0(nodeid));
+		return (i486_qemu_noc_is_ionode0(nodeid));
 	}
 
 	/**
-	 * @see i386_qemu_noc_is_ionode1()
+	 * @see i486_qemu_noc_is_ionode1()
 	 */
 	static inline int processor_noc_is_ionode1(int nodeid)
 	{
-		return (i386_qemu_noc_is_ionode1(nodeid));
+		return (i486_qemu_noc_is_ionode1(nodeid));
 	}
 
 	/**
-	 * @see i386_qemu_noc_is_ionode()
+	 * @see i486_qemu_noc_is_ionode()
 	 */
 	static inline int processor_noc_is_ionode(int nodeid)
 	{
-		return (i386_qemu_noc_is_ionode(nodeid));
+		return (i486_qemu_noc_is_ionode(nodeid));
 	}
 
 	/**
-	 * @see i386_qemu_noc_is_cnode()
+	 * @see i486_qemu_noc_is_cnode()
 	 */
 	static inline int processor_noc_is_cnode(int nodeid)
 	{
-		return (i386_qemu_noc_is_cnode(nodeid));
+		return (i486_qemu_noc_is_cnode(nodeid));
 	}
 
 /**@endcond*/
 
-#endif /* PROCESSOR_I386_QEMU_NOC_H_ */
+#endif /* PROCESSOR_I486_QEMU_NOC_H_ */
 

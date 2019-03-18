@@ -22,26 +22,26 @@
  * SOFTWARE.
  */
 
-#ifndef PROCESSOR_I386_QEMU_H_
-#define PROCESSOR_I386_QEMU_H_
+#ifndef PROCESSOR_I486_QEMU_H_
+#define PROCESSOR_I486_QEMU_H_
 
-	#ifndef __NEED_PROCESSOR_I386_QEMU
+	#ifndef __NEED_PROCESSOR_I486_QEMU
 		#error "bad processor configuration?"
 	#endif
 
 	/* Processor Interface Implementation */
-	#include <arch/processor/i386-qemu/_i386-qemu.h>
+	#include <arch/processor/i486-qemu/_i486-qemu.h>
 
 /**
- * @addtogroup processor-i386-qemu x86 QUEMU
+ * @addtogroup processor-i486-qemu x86 QUEMU
  * @ingroup processors
  *
  * @brief x86 QEMU Processor
  */
 /**@*/
 
-	#include <arch/processor/i386-qemu/clusters.h>
-	#include <arch/processor/i386-qemu/noc.h>
+	#include <arch/processor/i486-qemu/clusters.h>
+	#include <arch/processor/i486-qemu/noc.h>
 
 /**@}*/
 
@@ -49,7 +49,7 @@
  * Provided Interface                                                         *
  *============================================================================*/
 /**
- * @cond i386qemu
+ * @cond i486qemu
  */
 
 	/**
@@ -61,6 +61,6 @@
 
 /**@endcond*/
 
-#endif /* PROCESSOR_I386_QEMU_H_ */
+#endif /* PROCESSOR_I486_QEMU_H_ */
 
 

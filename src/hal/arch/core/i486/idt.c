@@ -24,12 +24,12 @@
 
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
-#include <arch/core/i386/8259.h>
-#include <arch/core/i386/excp.h>
-#include <arch/core/i386/gdt.h>
-#include <arch/core/i386/idt.h>
-#include <arch/core/i386/int.h>
-#include <arch/core/i386/trap.h>
+#include <arch/core/i486/8259.h>
+#include <arch/core/i486/excp.h>
+#include <arch/core/i486/gdt.h>
+#include <arch/core/i486/idt.h>
+#include <arch/core/i486/int.h>
+#include <arch/core/i486/trap.h>
 
 /**
  * @brief Interrupt Descriptor Table (IDT).
@@ -79,7 +79,7 @@ PUBLIC void idt_setup(void)
 	kmemset(&idtptr, 0, IDTPTR_SIZE);
 
 	/* Re-initialize PIC. */
-	i386_pic_setup(0x20, 0x28);
+	i486_pic_setup(0x20, 0x28);
 
 	/* Set software interrupts (exceptions). */
 	set_idte(0, (unsigned)_do_excp0, KERNEL_CS, 0x8, IDT_INT32);
@@ -123,7 +123,7 @@ PUBLIC void idt_setup(void)
 	set_idte(47, (unsigned)_do_hwint15, KERNEL_CS, 0x8, IDT_INT32);
 
 	/* Set system call interrupt. */
-	set_idte(I386_TRAP_GATE, (unsigned)i386_syscall, KERNEL_CS, 0xe, IDT_INT32);
+	set_idte(I486_TRAP_GATE, (unsigned)i486_syscall, KERNEL_CS, 0xe, IDT_INT32);
 
 	/* Set IDT pointer. */
 	idtptr.size = sizeof(idt) - 1;

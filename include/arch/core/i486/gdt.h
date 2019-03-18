@@ -22,12 +22,12 @@
  * SOFTWARE.
  */
 
-#ifndef ARCH_I386_GDT_H_
-#define ARCH_I386_GDT_H_
+#ifndef ARCH_I486_GDT_H_
+#define ARCH_I486_GDT_H_
 
 /**
- * @addtogroup i386-core-gdt GDT
- * @ingroup i386-core
+ * @addtogroup i486-core-gdt GDT
+ * @ingroup i486-core
  *
  * @brief Global Descriptor Table
  */
@@ -129,4 +129,4 @@
 
 /**@}*/
 
-#endif /* ARCH_I386_GDT_H_ */
+#endif /* ARCH_I486_GDT_H_ */

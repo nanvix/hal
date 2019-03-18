@@ -22,12 +22,12 @@
  * SOFTWARE.
  */
 
-#ifndef ARCH_I386_IDT_H_
-#define ARCH_I386_IDT_H_
+#ifndef ARCH_I486_IDT_H_
+#define ARCH_I486_IDT_H_
 
 /**
- * @addtogroup i386-core-idt IDT
- * @ingroup i386-core
+ * @addtogroup i486-core-idt IDT
+ * @ingroup i486-core
  *
  * @brief Interrupt Descritor Table
  */
@@ -108,4 +108,4 @@
 
 /**@}*/
 
-#endif /* ARCH_I386_IDT_H_ */
+#endif /* ARCH_I486_IDT_H_ */

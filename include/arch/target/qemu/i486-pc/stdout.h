@@ -22,15 +22,15 @@
  * SOFTWARE.
  */
 
-#ifndef TARGET_QEMU_I386_PC_STDOUT_H_
-#define TARGET_QEMU_I386_PC_STDOUT_H_
+#ifndef TARGET_QEMU_I486_PC_STDOUT_H_
+#define TARGET_QEMU_I486_PC_STDOUT_H_
 
 	/* Target Interface Implementation */
-	#include <arch/target/qemu/i386-pc/_i386-pc.h>
+	#include <arch/target/qemu/i486-pc/_i486-pc.h>
 
 /**
- * @defgroup target-qemu-i386-pc-stdout Standard Output
- * @ingroup target-qemu-i386-pc
+ * @defgroup target-qemu-i486-pc-stdout Standard Output
+ * @ingroup target-qemu-i486-pc
  *
  * @brief Standard Output System
  */
@@ -42,7 +42,7 @@
 	/**
 	 * @see console_init()
 	 */
-	static inline void qemu_i386pc_stdout_init(void)
+	static inline void qemu_i486pc_stdout_init(void)
 	{
 		console_init();
 	}
@@ -50,7 +50,7 @@
 	/**
 	 * @see console_write()
 	 */
-	static inline void qemu_i386pc_stdout_write(const char *buf, size_t n)
+	static inline void qemu_i486pc_stdout_write(const char *buf, size_t n)
 	{
 		console_write(buf, n);
 	}
@@ -62,7 +62,7 @@
  *============================================================================*/
 
 /**
- * @cond i386
+ * @cond i486
  */
 
 	/**
@@ -74,21 +74,21 @@
 	/**@}*/
 
 	/**
-	 * @see qemu_i386pc_stdout_init().
+	 * @see qemu_i486pc_stdout_init().
 	 */
 	static inline void stdout_init(void)
 	{
-		qemu_i386pc_stdout_init();
+		qemu_i486pc_stdout_init();
 	}
 
 	/**
-	 * @see qemu_i386pc_stdout_write().
+	 * @see qemu_i486pc_stdout_write().
 	 */
 	static inline void stdout_write(const char *buf, size_t n)
 	{
-		qemu_i386pc_stdout_write(buf, n);
+		qemu_i486pc_stdout_write(buf, n);
 	}
 
 /**@endcond*/
 
-#endif /* TARGET_QEMU_I386_PC_STDOUT_H_ */
+#endif /* TARGET_QEMU_I486_PC_STDOUT_H_ */

@@ -22,12 +22,12 @@
  * SOFTWARE.
  */
 
-#ifndef ARCH_I386_TLB_H_
-#define ARCH_I386_TLB_H_
+#ifndef ARCH_I486_TLB_H_
+#define ARCH_I486_TLB_H_
 
 /**
- * @addtogroup i386-core-tlb TLB
- * @ingroup i386-core
+ * @addtogroup i486-core-tlb TLB
+ * @ingroup i486-core
  *
  * @brief Translation Lookaside Buffer
  */
@@ -48,14 +48,14 @@
 	/**
 	 * @brief Flushes changes in the TLB.
 	 *
-	 * The i386_tlb_flush() function flushes the changes made to the
-	 * TLB of the underlying i386 core.
+	 * The i486_tlb_flush() function flushes the changes made to the
+	 * TLB of the underlying i486 core.
 	 *
 	 * @returns This function always returns zero.
 	 *
 	 * @todo We can improve this by using the invlpg instruction.
 	 */
-	static inline int i386_tlb_flush(void)
+	static inline int i486_tlb_flush(void)
 	{
 		__asm__ __volatile__ (
 			"movl %%cr3, %%eax;\
@@ -69,13 +69,13 @@
 	}
 
 	/**
-	 * @see i386_tlb_flush().
+	 * @see i486_tlb_flush().
 	 */
 	static inline int tlb_flush(void)
 	{
-		return (i386_tlb_flush());
+		return (i486_tlb_flush());
 	}
 
 /**@}*/
 	
-#endif /* ARCH_I386_TLB_H_ */
+#endif /* ARCH_I486_TLB_H_ */

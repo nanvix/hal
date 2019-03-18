@@ -35,11 +35,11 @@
 		#define __NEED_PROCESSOR_BOSTAN
 		#include <arch/processor/bostan.h>
 
-	#elif (defined(__i386__))
+	#elif (defined(__i486__))
 
-		#undef  __NEED_PROCESSOR_I386_QEMU
-		#define __NEED_PROCESSOR_I386_QEMU
-		#include <arch/processor/i386-qemu.h>
+		#undef  __NEED_PROCESSOR_I486_QEMU
+		#define __NEED_PROCESSOR_I486_QEMU
+		#include <arch/processor/i486-qemu.h>
 
 	#elif (defined(__optimsoc__))
 

@@ -22,15 +22,15 @@
  * SOFTWARE.
  */
 
-#ifndef TARGET_QEMU_I386_PC_SYNC_H_
-#define TARGET_QEMU_I386_PC_SYNC_H_
+#ifndef TARGET_QEMU_I486_PC_SYNC_H_
+#define TARGET_QEMU_I486_PC_SYNC_H_
 
 /*============================================================================*
  *                              Sync Interface                                *
  *============================================================================*/
 
 	/* Processor API. */
-	#include <arch/target/qemu/i386-pc/_i386-pc.h>
+	#include <arch/target/qemu/i486-pc/_i486-pc.h>
 
 	#include <nanvix/const.h>
 
@@ -38,24 +38,24 @@
 	 * @brief Type of synchronization points.
 	 */
 	/**@{*/
-	#define QEMU_I386_PC_SYNC_ONE_TO_ALL 0 /**< One to all. */
-	#define QEMU_I386_PC_SYNC_ALL_TO_ONE 1 /**< All to one. */
+	#define QEMU_I486_PC_SYNC_ONE_TO_ALL 0 /**< One to all. */
+	#define QEMU_I486_PC_SYNC_ALL_TO_ONE 1 /**< All to one. */
 	/**@}*/
 
 	/**
 	 * @brief Mode of synchronization points.
 	 */
 	/**@{*/
-	#define QEMU_I386_PC_SYNC_RX 0 /**< Reciever type. */
-	#define QEMU_I386_PC_SYNC_TX 1 /**< Sender type.   */
+	#define QEMU_I486_PC_SYNC_RX 0 /**< Reciever type. */
+	#define QEMU_I486_PC_SYNC_TX 1 /**< Sender type.   */
 	/**@}*/
 
 	/**
 	 * @name Maximum number of syncs.
 	 */
 	/**@{*/
-	#define QEMU_I386_PC_NR_SYNC_RX_MAX (1) /**< Amount of receiver sync points. */
-	#define QEMU_I386_PC_NR_SYNC_TX_MAX (1) /**< Amount of sender sync points.   */
+	#define QEMU_I486_PC_NR_SYNC_RX_MAX (1) /**< Amount of receiver sync points. */
+	#define QEMU_I486_PC_NR_SYNC_TX_MAX (1) /**< Amount of sender sync points.   */
 	/**@}*/
 
 	/**
@@ -67,7 +67,7 @@
 	 *
 	 * @return The tag of underlying resource ID.
 	 */
-	EXTERN int qemu_i386pc_sync_create(const int *nodes, int nnodes, int type);
+	EXTERN int qemu_i486pc_sync_create(const int *nodes, int nnodes, int type);
 
 	/**
 	 * @brief Allocates and configures the sending side of the synchronization point.
@@ -78,7 +78,7 @@
 	 *
 	 * @return The tag of underlying resource ID.
 	 */
-	EXTERN int qemu_i386pc_sync_open(const int *nodes, int nnodes, int type);
+	EXTERN int qemu_i486pc_sync_open(const int *nodes, int nnodes, int type);
 
 	/**
 	 * @brief Releases and cleans receiver buffer.
@@ -87,7 +87,7 @@
 	 *
 	 * @return Zero if free the resource and non zero otherwise.
 	 */
-	EXTERN int qemu_i386pc_sync_unlink(int syncid);
+	EXTERN int qemu_i486pc_sync_unlink(int syncid);
 
 	/**
 	 * @brief Releases the sender resources on a specific DMA channel.
@@ -96,7 +96,7 @@
 	 *
 	 * @return Zero if free the resource and non zero otherwise.
 	 */
-	EXTERN int qemu_i386pc_sync_close(int syncid);
+	EXTERN int qemu_i486pc_sync_close(int syncid);
 
 	/**
 	 * @brief Wait signal on a specific synchronization point.
@@ -105,7 +105,7 @@
 	 *
 	 * @return Zero if wait signal correctly and non zero otherwise.
 	 */
-	EXTERN int qemu_i386pc_sync_wait(int syncid);
+	EXTERN int qemu_i486pc_sync_wait(int syncid);
 
 	/**
 	 * @brief Send signal on a specific synchronization point.
@@ -114,7 +114,7 @@
 	 *
 	 * @return Zero if send signal correctly and non zero otherwise.
 	 */
-	EXTERN int qemu_i386pc_sync_signal(int syncid);
+	EXTERN int qemu_i486pc_sync_signal(int syncid);
 
 /*============================================================================*
  *                              Exported Interface                            *
@@ -141,65 +141,65 @@
 	/**@}*/
 
 	/**
-	 * @see QEMU_I386_PC_SYNC_ONE_TO_ALL
-	 * @see QEMU_I386_PC_SYNC_ALL_TO_ONE
+	 * @see QEMU_I486_PC_SYNC_ONE_TO_ALL
+	 * @see QEMU_I486_PC_SYNC_ALL_TO_ONE
 	 */
 	/**@{*/
-	#define HAL_SYNC_ONE_TO_ALL QEMU_I386_PC_SYNC_ONE_TO_ALL
-	#define HAL_SYNC_ALL_TO_ONE QEMU_I386_PC_SYNC_ALL_TO_ONE
+	#define HAL_SYNC_ONE_TO_ALL QEMU_I486_PC_SYNC_ONE_TO_ALL
+	#define HAL_SYNC_ALL_TO_ONE QEMU_I486_PC_SYNC_ALL_TO_ONE
 	/**@}*/
 
 	/**
-	 * @see QEMU_I386_PC_NR_SYNC
+	 * @see QEMU_I486_PC_NR_SYNC
 	 */
-	#define HAL_NR_SYNC (QEMU_I386_PC_NR_SYNC_RX_MAX+QEMU_I386_PC_NR_SYNC_TX_MAX)
+	#define HAL_NR_SYNC (QEMU_I486_PC_NR_SYNC_RX_MAX+QEMU_I486_PC_NR_SYNC_TX_MAX)
 
 	/**
-	 * @see qemu_i386pc_sync_create()
+	 * @see qemu_i486pc_sync_create()
 	 */
 	static inline int hal_sync_create(const int *nodes, int nnodes, int type)
 	{
-		return qemu_i386pc_sync_create(nodes, nnodes, type);
+		return qemu_i486pc_sync_create(nodes, nnodes, type);
 	}
 
 	/**
-	 * @see qemu_i386pc_sync_open()
+	 * @see qemu_i486pc_sync_open()
 	 */
 	static inline int hal_sync_open(const int *nodes, int nnodes, int type)
 	{
-		return qemu_i386pc_sync_open(nodes, nnodes, type);
+		return qemu_i486pc_sync_open(nodes, nnodes, type);
 	}
 
 	/**
-	 * @see qemu_i386pc_sync_unlink()
+	 * @see qemu_i486pc_sync_unlink()
 	 */
 	static inline int hal_sync_unlink(int syncid)
 	{
-		return qemu_i386pc_sync_unlink(syncid);
+		return qemu_i486pc_sync_unlink(syncid);
 	}
 
 	/**
-	 * @see qemu_i386pc_sync_close()
+	 * @see qemu_i486pc_sync_close()
 	 */
 	static inline int hal_sync_close(int syncid)
 	{
-		return qemu_i386pc_sync_close(syncid);
+		return qemu_i486pc_sync_close(syncid);
 	}
 
 	/**
-	 * @see qemu_i386pc_sync_wait()
+	 * @see qemu_i486pc_sync_wait()
 	 */
 	static inline int hal_sync_wait(int syncid)
 	{
-		return qemu_i386pc_sync_wait(syncid);
+		return qemu_i486pc_sync_wait(syncid);
 	}
 
 	/**
-	 * @see qemu_i386pc_sync_signal()
+	 * @see qemu_i486pc_sync_signal()
 	 */
 	static inline int hal_sync_signal(int syncid)
 	{
-		return qemu_i386pc_sync_signal(syncid);
+		return qemu_i486pc_sync_signal(syncid);
 	}
 
-#endif /* ARCH_QEMU_I386_PC_SYNC_H_ */
+#endif /* ARCH_QEMU_I486_PC_SYNC_H_ */

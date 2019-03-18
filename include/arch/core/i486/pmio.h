@@ -22,12 +22,12 @@
  * SOFTWARE.
  */
 
-#ifndef ARCH_CORE_I386_PMIO_H_
-#define ARCH_CORE_I386_PMIO_H_
+#ifndef ARCH_CORE_I486_PMIO_H_
+#define ARCH_CORE_I486_PMIO_H_
 
 /**
- * @addtogroup i386-core-io Port-Mapped I/O
- * @ingroup i386-core
+ * @addtogroup i486-core-io Port-Mapped I/O
+ * @ingroup i486-core
  *
  * @brief Port-Mapped I/O
  */
@@ -42,7 +42,7 @@
 	 * @param port Number of the target port.
 	 * @param bits Bits to write.
 	 */
-	static inline void i386_output8(uint16_t port, uint8_t bits)
+	static inline void i486_output8(uint16_t port, uint8_t bits)
 	{
 		__asm__ __volatile__ ("outb %0, %1" : : "a"(bits), "Nd"(port));
 	}
@@ -50,7 +50,7 @@
 	/**
 	 * @brief Waits for an operation in an I/O port to complete.
 	 */
-	static inline void i386_iowait(void)
+	static inline void i486_iowait(void)
 	{
 		__asm__ __volatile__("outb %%al, $0x80" : : "a"(0));
 	}
@@ -64,12 +64,12 @@
 	 *
 	 * @todo This can be platform-independent.
 	 */
-	static inline void i386_output8s(uint16_t port, const uint8_t *str, size_t len)
+	static inline void i486_output8s(uint16_t port, const uint8_t *str, size_t len)
 	{
 		for (size_t i = 0; i < len; i++)
 		{
-			i386_output8(port, str[i]);
-			i386_iowait();
+			i486_output8(port, str[i]);
+			i486_iowait();
 		}
 	}
 
@@ -80,45 +80,45 @@
  *============================================================================*/
 
 /**
- * @cond i386
+ * @cond i486
  */
 
 	/**
 	 * @name Provided Functions
 	 */
 	/**@{*/
-	#define __output8_fn  /**< i386_output8()  */
-	#define __output8s_fn /**< i386_output8s() */
+	#define __output8_fn  /**< i486_output8()  */
+	#define __output8s_fn /**< i486_output8s() */
 	#define __iowait_fn   /**< iowait()        */
 	/**@}*/
 
 	/**
-	 * @see i386_output8().
+	 * @see i486_output8().
 	 */
 	static inline void output8(uint16_t port, uint8_t bits)
 	{
-		i386_output8(port, bits);
+		i486_output8(port, bits);
 	}
 
 	/**
-	 * @see i386_output8s().
+	 * @see i486_output8s().
 	 */
 	static inline void output8s(uint16_t port, const uint8_t *str, size_t len)
 	{
-		i386_output8s(port, str, len);
+		i486_output8s(port, str, len);
 	}
 
 	/**
-	 * @see i386_iowait().
+	 * @see i486_iowait().
 	 */
 	static inline void iowait(uint16_t port)
 	{
 		((void) port);
 
-		i386_iowait();
+		i486_iowait();
 	}
 
 /**@endcond*/
 
-#endif /* ARCH_CORE_I386_PMIO_H_ */
+#endif /* ARCH_CORE_I486_PMIO_H_ */
 

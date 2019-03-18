@@ -22,26 +22,26 @@
  * SOFTWARE.
  */
 
-#ifndef TARGET_QEMU_I386_PC_H_
-#define TARGET_QEMU_I386_PC_H_
+#ifndef TARGET_QEMU_I486_PC_H_
+#define TARGET_QEMU_I486_PC_H_
 
-	#ifndef __NEED_TARGET_QEMU_I386_PC
+	#ifndef __NEED_TARGET_QEMU_I486_PC
 		#error "bad target configuration?"
 	#endif
 
 	/* Target Interface Implementation */
-	#include <arch/target/qemu/i386-pc/_i386-pc.h>
+	#include <arch/target/qemu/i486-pc/_i486-pc.h>
 
 /**
- * @defgroup target-qemu-i386-pc QEMU i386
+ * @defgroup target-qemu-i486-pc QEMU i486
  * @ingroup targets
  *
- * @brief QEMU i386 Platform
+ * @brief QEMU i486 Platform
  */
 /**@{*/
 
-	#include <arch/target/qemu/i386-pc/stdout.h>
-	#include <arch/target/qemu/i386-pc/sync.h>
+	#include <arch/target/qemu/i486-pc/stdout.h>
+	#include <arch/target/qemu/i486-pc/sync.h>
 
 /**@}*/
 
@@ -50,7 +50,7 @@
  *============================================================================*/
 
 /**
- * @cond i386
+ * @cond i486
  */
 
 	/**
@@ -62,4 +62,4 @@
 
 /**@endcond*/
 
-#endif /* TARGET_QEMU_I386_PC_H_ */
+#endif /* TARGET_QEMU_I486_PC_H_ */

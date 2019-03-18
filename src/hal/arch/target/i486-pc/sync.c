@@ -23,7 +23,7 @@
  */
 
 
-#include <arch/target/qemu/i386-pc/sync.h>
+#include <arch/target/qemu/i486-pc/sync.h>
 #include <nanvix/hal/resource.h>
 #include <nanvix/klib.h>
 #include <errno.h>
@@ -39,7 +39,7 @@ PRIVATE struct sync
 	struct rx
 	{
 		struct resource resource; /**< Control flags. */
-	} rxs[QEMU_I386_PC_NR_SYNC_RX_MAX];
+	} rxs[QEMU_I486_PC_NR_SYNC_RX_MAX];
 
 	/**
 	 * @brief Sender Synchronization Points
@@ -47,7 +47,7 @@ PRIVATE struct sync
 	struct tx
 	{
 		struct resource resource; /**< Control flags. */
-	} txs[QEMU_I386_PC_NR_SYNC_TX_MAX];
+	} txs[QEMU_I486_PC_NR_SYNC_TX_MAX];
 } synctab;
 
 /**
@@ -58,8 +58,8 @@ PRIVATE struct syncpools
 	const struct resource_pool rx_pool;
 	const struct resource_pool tx_pool;
 } syncpools = {
-	.rx_pool = {synctab.rxs, QEMU_I386_PC_NR_SYNC_RX_MAX, sizeof(struct rx)},
-	.tx_pool = {synctab.txs, QEMU_I386_PC_NR_SYNC_TX_MAX, sizeof(struct tx)},
+	.rx_pool = {synctab.rxs, QEMU_I486_PC_NR_SYNC_RX_MAX, sizeof(struct rx)},
+	.tx_pool = {synctab.txs, QEMU_I486_PC_NR_SYNC_TX_MAX, sizeof(struct tx)},
 };
 
 
@@ -69,9 +69,9 @@ PRIVATE struct syncpools
  * @param syncid Resource ID.
  * @return No zero if ID is valid and zero otherwise.
  */
-PRIVATE int qemu_i386pc_sync_rx_is_valid(int syncid)
+PRIVATE int qemu_i486pc_sync_rx_is_valid(int syncid)
 {
-	return WITHIN(syncid, 0, QEMU_I386_PC_NR_SYNC_RX_MAX);
+	return WITHIN(syncid, 0, QEMU_I486_PC_NR_SYNC_RX_MAX);
 }
 
 /**
@@ -80,9 +80,9 @@ PRIVATE int qemu_i386pc_sync_rx_is_valid(int syncid)
  * @param syncid Resource ID.
  * @return No zero if ID is valid and zero otherwise.
  */
-PRIVATE int qemu_i386pc_sync_tx_is_valid(int syncid)
+PRIVATE int qemu_i486pc_sync_tx_is_valid(int syncid)
 {
-	return WITHIN(syncid, 0, QEMU_I386_PC_NR_SYNC_TX_MAX);
+	return WITHIN(syncid, 0, QEMU_I486_PC_NR_SYNC_TX_MAX);
 }
 
 /**
@@ -94,14 +94,14 @@ PRIVATE int qemu_i386pc_sync_tx_is_valid(int syncid)
  *
  * @return The tag of underlying resource ID.
  */
-PUBLIC int qemu_i386pc_sync_create(const int *nodes, int nnodes, int type)
+PUBLIC int qemu_i486pc_sync_create(const int *nodes, int nnodes, int type)
 {
 	int resourceid;
 
-	if (nodes == NULL || !WITHIN(nnodes, 2, I386_QEMU_NR_NOC_NODES))
+	if (nodes == NULL || !WITHIN(nnodes, 2, I486_QEMU_NR_NOC_NODES))
 		goto error0;
 
-	if (type != QEMU_I386_PC_SYNC_ALL_TO_ONE && type != QEMU_I386_PC_SYNC_ONE_TO_ALL)
+	if (type != QEMU_I486_PC_SYNC_ALL_TO_ONE && type != QEMU_I486_PC_SYNC_ONE_TO_ALL)
 		goto error0;
 	
 		/* Allocate a synchronization point. */
@@ -127,14 +127,14 @@ error0:
  *
  * @return The tag of underlying resource ID.
  */
-PUBLIC int qemu_i386pc_sync_open(const int *nodes, int nnodes, int type)
+PUBLIC int qemu_i486pc_sync_open(const int *nodes, int nnodes, int type)
 {
 	int resourceid;
 
-	if (nodes == NULL || !WITHIN(nnodes, 2, I386_QEMU_NR_NOC_NODES))
+	if (nodes == NULL || !WITHIN(nnodes, 2, I486_QEMU_NR_NOC_NODES))
 		goto error0;
 	
-	if (type != QEMU_I386_PC_SYNC_ALL_TO_ONE && type != QEMU_I386_PC_SYNC_ONE_TO_ALL)
+	if (type != QEMU_I486_PC_SYNC_ALL_TO_ONE && type != QEMU_I486_PC_SYNC_ONE_TO_ALL)
 		goto error0;
 
 	/* Allocate a synchronization point. */
@@ -157,9 +157,9 @@ error0:
  * @param  tag Resource ID.
  * @return Zero if free the resource and non zero otherwise.
  */
-PUBLIC int qemu_i386pc_sync_unlink(int syncid)
+PUBLIC int qemu_i486pc_sync_unlink(int syncid)
 {
-	if (!qemu_i386pc_sync_rx_is_valid(syncid))
+	if (!qemu_i486pc_sync_rx_is_valid(syncid))
 		goto error0;
 	
 	/* Bad sync. */
@@ -181,9 +181,9 @@ error0:
  *
  * @return Zero if free the resource and non zero otherwise.
  */
-PUBLIC int qemu_i386pc_sync_close(int syncid)
+PUBLIC int qemu_i486pc_sync_close(int syncid)
 {
-	if (!qemu_i386pc_sync_tx_is_valid(syncid))
+	if (!qemu_i486pc_sync_tx_is_valid(syncid))
 		goto error0;
 
 	/* Bad sync. */
@@ -205,9 +205,9 @@ error0:
  *
  * @return Zero if wait signal correctly and non zero otherwise.
  */
-PUBLIC int qemu_i386pc_sync_wait(int syncid)
+PUBLIC int qemu_i486pc_sync_wait(int syncid)
 {
-	if (!qemu_i386pc_sync_rx_is_valid(syncid))
+	if (!qemu_i486pc_sync_rx_is_valid(syncid))
 		goto error0;
 	
 	/* Bad sync. */
@@ -227,9 +227,9 @@ error0:
  *
  * @return Zero if send signal correctly and non zero otherwise.
  */
-PUBLIC int qemu_i386pc_sync_signal(int syncid)
+PUBLIC int qemu_i486pc_sync_signal(int syncid)
 {
-	if (!qemu_i386pc_sync_tx_is_valid(syncid))
+	if (!qemu_i486pc_sync_tx_is_valid(syncid))
 		goto error0;
 	
 	/* Bad sync. */

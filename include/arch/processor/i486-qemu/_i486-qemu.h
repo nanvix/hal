@@ -22,13 +22,13 @@
  * SOFTWARE.
  */
 
-#ifndef _PROCESSOR_I386_QEMU_H_
-#define _PROCESSOR_I386_QEMU_H_
+#ifndef _PROCESSOR_I486_QEMU_H_
+#define _PROCESSOR_I486_QEMU_H_
 
-	#undef  __NEED_CLUSTER_I386
-	#define __NEED_CLUSTER_I386
-	#include <arch/cluster/i386.h>
+	#undef  __NEED_CLUSTER_I486
+	#define __NEED_CLUSTER_I486
+	#include <arch/cluster/i486.h>
 
-#endif /* _PROCESSOR_I386_QEMU_H_ */
+#endif /* _PROCESSOR_I486_QEMU_H_ */
 
 

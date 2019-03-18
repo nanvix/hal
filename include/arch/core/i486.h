@@ -22,32 +22,32 @@
  * SOFTWARE.
  */
 
-#ifndef CORE_I386_H_
-#define CORE_I386_H_
+#ifndef CORE_I486_H_
+#define CORE_I486_H_
 
 	/**
-	 * @addtogroup i386-core i386 Core
+	 * @addtogroup i486-core i486 Core
 	 * @ingroup cores
 	 */
 
-	#ifndef __NEED_CORE_I386
-		#error "i386 core not required"
+	#ifndef __NEED_CORE_I486
+		#error "i486 core not required"
 	#endif
 
-	#include <arch/core/i386/8253.h>
-	#include <arch/core/i386/8259.h>
-	#include <arch/core/i386/cache.h>
-	#include <arch/core/i386/core.h>
-	#include <arch/core/i386/excp.h>
-	#include <arch/core/i386/int.h>
-	#include <arch/core/i386/mmu.h>
-	#include <arch/core/i386/pmio.h>
-	#include <arch/core/i386/spinlock.h>
-	#include <arch/core/i386/tlb.h>
-	#include <arch/core/i386/trap.h>
+	#include <arch/core/i486/8253.h>
+	#include <arch/core/i486/8259.h>
+	#include <arch/core/i486/cache.h>
+	#include <arch/core/i486/core.h>
+	#include <arch/core/i486/excp.h>
+	#include <arch/core/i486/int.h>
+	#include <arch/core/i486/mmu.h>
+	#include <arch/core/i486/pmio.h>
+	#include <arch/core/i486/spinlock.h>
+	#include <arch/core/i486/tlb.h>
+	#include <arch/core/i486/trap.h>
 
 /**
- * @cond i386
+ * @cond i486
  */
 
 	/* Feature Declaration */
@@ -55,5 +55,5 @@
 
 /**@}*/
 
-#endif /* CORE_I386_H_ */
+#endif /* CORE_I486_H_ */
 

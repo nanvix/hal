@@ -23,7 +23,7 @@
  */
 
 /**
- * @cond i386
+ * @cond i486
  */
 
 #if (!defined(__NEED_CORE_TYPES) && !defined(__NEED_MEMORY_TYPES))
@@ -35,7 +35,7 @@
 #endif
 
 /**
- * @addtogroup i386-core
+ * @addtogroup i486-core
  */
 /**@{*/
 
@@ -47,20 +47,20 @@
 	 * @name Bit-Length of Core Types
 	 */
 	/**@{*/
-	#define I386_BYTE_BIT    8 /**< Byte        */
-	#define I386_HWORD_BIT  16 /**< Half Word   */
-	#define I386_WORD_BIT   32 /**< Word        */
-	#define I386_DWORD_BIT  64 /**< Double Word */
+	#define I486_BYTE_BIT    8 /**< Byte        */
+	#define I486_HWORD_BIT  16 /**< Half Word   */
+	#define I486_WORD_BIT   32 /**< Word        */
+	#define I486_DWORD_BIT  64 /**< Double Word */
 	/**@}*/
 
 	/**
 	 * @name Byte-Length of Core Types
 	 */
 	/**@{*/
-	#define I386_BYTE_SIZE   1 /**< Byte        */
-	#define I386_HWORD_SIZE  2 /**< Half Word   */
-	#define I386_WORD_SIZE   4 /**< Word        */
-	#define I386_DWORD_SIZE  8 /**< Double Word */
+	#define I486_BYTE_SIZE   1 /**< Byte        */
+	#define I486_HWORD_SIZE  2 /**< Half Word   */
+	#define I486_WORD_SIZE   4 /**< Word        */
+	#define I486_DWORD_SIZE  8 /**< Double Word */
 	/**@}*/
 
 #endif
@@ -69,7 +69,7 @@
 /**@}*/
 
 /**
- * @addtogroup i386-core-mmu
+ * @addtogroup i486-core-mmu
  */
 /**@{*/
 
@@ -81,16 +81,16 @@
 	 * @name Bit-Length of Memory Types
 	 */
 	/**@{*/
-	#define I386_PADDR_BIT  32 /**< Physical Address */
-	#define I386_VADDR_BIT  32 /**< Virtual Address  */
+	#define I486_PADDR_BIT  32 /**< Physical Address */
+	#define I486_VADDR_BIT  32 /**< Virtual Address  */
 	/**@}*/
 
 	/**
 	 * @name Byte-Length of Memory Types
 	 */
 	/**@{*/
-	#define I386_PADDR_BYTE 4 /**< Physical Address */
-	#define I386_VADDR_BYTE 4 /**< Virtual Address  */
+	#define I486_PADDR_BYTE 4 /**< Physical Address */
+	#define I486_VADDR_BYTE 4 /**< Virtual Address  */
 	/**@}*/
 
 #endif
@@ -101,7 +101,7 @@
 #ifndef _ASM_FILE_
 
 	/**
-	 * @addtogroup i386-core-mmu
+	 * @addtogroup i486-core-mmu
 	 */
 	/**@{*/
 
@@ -125,7 +125,7 @@
 	/**@}*/
 
 	/**
-	 * @addtogroup i386-core
+	 * @addtogroup i486-core
 	 */
 	/**@{*/
 
@@ -137,10 +137,10 @@
 		 * @name Core Types
 		 */
 		/**@{*/
-		typedef uint8_t i386_byte_t;   /**< Byte        */
-		typedef uint16_t i386_hword_t; /**< Half Word   */
-		typedef uint32_t i386_word_t;  /**< Word        */
-		typedef uint64_t i386_dword_t; /**< Double Word */
+		typedef uint8_t i486_byte_t;   /**< Byte        */
+		typedef uint16_t i486_hword_t; /**< Half Word   */
+		typedef uint32_t i486_word_t;  /**< Word        */
+		typedef uint64_t i486_dword_t; /**< Double Word */
 		/**@}*/
 
 	#endif

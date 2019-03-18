@@ -22,19 +22,19 @@
  * SOFTWARE.
  */
 
-#ifndef ARCH_I386_CORE_H_
-#define ARCH_I386_CORE_H_
+#ifndef ARCH_I486_CORE_H_
+#define ARCH_I486_CORE_H_
 
 /**
- * @addtogroup i386-core-core Core
- * @ingroup i386-core
+ * @addtogroup i486-core-core Core
+ * @ingroup i486-core
  *
- * @brief i386 Core
+ * @brief i486 Core
  */
 /**@{*/
 
 	#define __NEED_CORE_TYPES
-	#include <arch/core/i386/types.h>
+	#include <arch/core/i486/types.h>
 
 #ifndef _ASM_FILE_
 
@@ -44,11 +44,11 @@
 	/**
 	 * @brief Gets the ID of the core.
 	 *
-	 * The i386_core_get_id() returns the ID of the underlying core.
+	 * The i486_core_get_id() returns the ID of the underlying core.
 	 *
 	 * @returns The ID of the underlying core.
 	 */
-	static inline int i386_core_get_id(void)
+	static inline int i486_core_get_id(void)
 	{
 		return (0);
 	}
@@ -62,21 +62,21 @@
  *============================================================================*/
 
 /**
- * @cond i386
+ * @cond i486
  */
 
 	/**
 	 * @brief Exported Constants
 	 */
 	/**@{*/
-	#define BYTE_BIT   I386_BYTE_BIT   /**< @see BYTE_BIT   */
-	#define HWORD_BIT  I386_HWORD_BIT  /**< @see HWORD_BIT  */
-	#define WORD_BIT   I386_WORD_BIT   /**< @see WORD_BIT   */
-	#define DWORD_BIT  I386_DWORD_BIT  /**< @see DWORD_BIT  */
-	#define BYTE_SIZE  I386_SIZE_SIZE  /**< @see BYTE_SIZE  */
-	#define HWORD_SIZE I386_HWORD_SIZE /**< @see HWORD_SIZE */
-	#define WORD_SIZE  I386_WORD_SIZE  /**< @see WORD_SIZE  */
-	#define DWORD_SIZE I386_DWORD_SIZE /**< @see DWORD_SIZE */
+	#define BYTE_BIT   I486_BYTE_BIT   /**< @see BYTE_BIT   */
+	#define HWORD_BIT  I486_HWORD_BIT  /**< @see HWORD_BIT  */
+	#define WORD_BIT   I486_WORD_BIT   /**< @see WORD_BIT   */
+	#define DWORD_BIT  I486_DWORD_BIT  /**< @see DWORD_BIT  */
+	#define BYTE_SIZE  I486_SIZE_SIZE  /**< @see BYTE_SIZE  */
+	#define HWORD_SIZE I486_HWORD_SIZE /**< @see HWORD_SIZE */
+	#define WORD_SIZE  I486_WORD_SIZE  /**< @see WORD_SIZE  */
+	#define DWORD_SIZE I486_DWORD_SIZE /**< @see DWORD_SIZE */
 	/**@}*/
 
 	/**
@@ -107,22 +107,22 @@
 	 * @name Core Types
 	 */
 	/**@{*/
-	typedef i386_byte_t  byte_t;  /**< Byte        */
-	typedef i386_hword_t hword_t; /**< Half Word   */
-	typedef i386_word_t  word_t;  /**< Word        */
-	typedef i386_dword_t dword_t; /**< Double Word */
+	typedef i486_byte_t  byte_t;  /**< Byte        */
+	typedef i486_hword_t hword_t; /**< Half Word   */
+	typedef i486_word_t  word_t;  /**< Word        */
+	typedef i486_dword_t dword_t; /**< Double Word */
 	/**@}*/
 
 	/**
-	 * @see i386_core_get_id().
+	 * @see i486_core_get_id().
 	 */
 	static inline int core_get_id(void)
 	{
-		return (i386_core_get_id());
+		return (i486_core_get_id());
 	}
 
 #endif /* _ASM_FILE_ */
 
 /**@endcond*/
 
-#endif /* ARCH_I386_CORE_H_ */
+#endif /* ARCH_I486_CORE_H_ */

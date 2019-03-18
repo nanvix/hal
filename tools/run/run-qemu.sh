@@ -28,7 +28,7 @@
 export CURDIR=`pwd`
 
 case "$TARGET" in
-	"i386-pc")
+	"i486-pc")
 		qemu-system-i386 -s -S      \
 			--display curses        \
 			-kernel bin/test-driver \

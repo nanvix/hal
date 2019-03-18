@@ -22,12 +22,12 @@
  * SOFTWARE.
  */
 
-#ifndef ARCH_I386_MMU_H_
-#define ARCH_I386_MMU_H_
+#ifndef ARCH_I486_MMU_H_
+#define ARCH_I486_MMU_H_
 
 /**
- * @addtogroup i386-core-mmu MMU
- * @ingroup i386-core
+ * @addtogroup i486-core-mmu MMU
+ * @ingroup i486-core
  *
  * @brief Memory Management Unit
  */
@@ -36,7 +36,7 @@
 	/* Must comme first. */
 	#define __NEED_MEMORY_TYPES
 
-	#include <arch/core/i386/types.h>
+	#include <arch/core/i486/types.h>
 #ifndef _ASM_FILE_
 	#include <nanvix/klib.h>
 #endif
@@ -45,20 +45,20 @@
 	 * @name Page Shifts and Masks
 	 */
 	/**@{*/
-	#define I386_PAGE_SHIFT  12                       /**< Page Shift       */
-	#define I386_PGTAB_SHIFT 22                       /**< Page Table Shift */
-	#define I386_PAGE_MASK   (~(I386_PAGE_SIZE - 1))  /**< Page Mask        */
-	#define I386_PGTAB_MASK  (~(I386_PGTAB_SIZE - 1)) /**< Page Table Mask  */
+	#define I486_PAGE_SHIFT  12                       /**< Page Shift       */
+	#define I486_PGTAB_SHIFT 22                       /**< Page Table Shift */
+	#define I486_PAGE_MASK   (~(I486_PAGE_SIZE - 1))  /**< Page Mask        */
+	#define I486_PGTAB_MASK  (~(I486_PGTAB_SIZE - 1)) /**< Page Table Mask  */
 	/**@}*/
 
 	/**
 	 * @name Size of Pages and Page Tables
 	 */
 	/**@{*/
-	#define I386_PAGE_SIZE  (1 << I386_PAGE_SHIFT)  /**< Page Size                 */
-	#define I386_PGTAB_SIZE (1 << I386_PGTAB_SHIFT) /**< Page Table Size           */
-	#define I386_PTE_SIZE   4                       /**< Page Table Entry Size     */
-	#define I386_PDE_SIZE   4                       /**< Page Directory Entry Size */
+	#define I486_PAGE_SIZE  (1 << I486_PAGE_SHIFT)  /**< Page Size                 */
+	#define I486_PGTAB_SIZE (1 << I486_PGTAB_SHIFT) /**< Page Table Size           */
+	#define I486_PTE_SIZE   4                       /**< Page Table Entry Size     */
+	#define I486_PDE_SIZE   4                       /**< Page Directory Entry Size */
 	/**@}*/
 
 /**@}*/
@@ -68,25 +68,25 @@
  *============================================================================*/
 
 /**
- * @cond i386
+ * @cond i486
  */
 
 	/**
 	 * @name Exported Constants
 	 */
 	/**@{*/
-	#define PAGE_SIZE   I386_PAGE_SIZE   /**< @ref I386_PAGE_SIZE   */
-	#define PGTAB_SIZE  I386_PGTAB_SIZE  /**< @ref I386_PGTAB_BIT   */
-	#define PTE_SIZE    I386_PTE_SIZE    /**< @ref I386_PTE_SIZE    */
-	#define PDE_SIZE    I386_PDE_SIZE    /**< @ref I386_PDE_SIZE    */
-	#define PAGE_SHIFT  I386_PAGE_SHIFT  /**< @ref I386_PAGE_SHIFT  */
-	#define PGTAB_SHIFT I386_PGTAB_SHIFT /**< @ref I386_PGTAB_SHIFT */
-	#define PAGE_MASK   I386_PAGE_MASK   /**< @ref I386_PAGE_MASK   */
-	#define PGTAB_MASK  I386_PGTAB_MASK  /**< @ref I386_PGTAB_MASK  */
-	#define PADDR_BIT   I386_PADDR_BIT   /**< @ref I386_PADDR_BIT   */
-	#define VADDR_BIT   I386_VADDR_BIT   /**< @ref I386_VADDR_BIT   */
-	#define PADDR_BYTE  I386_PADDR_BYTE  /**< @ref I386_PADDR_BYTE  */
-	#define VADDR_BYTE  I386_VADDR_BYTE  /**< @ref I386_VADDR_BYTE  */
+	#define PAGE_SIZE   I486_PAGE_SIZE   /**< @ref I486_PAGE_SIZE   */
+	#define PGTAB_SIZE  I486_PGTAB_SIZE  /**< @ref I486_PGTAB_BIT   */
+	#define PTE_SIZE    I486_PTE_SIZE    /**< @ref I486_PTE_SIZE    */
+	#define PDE_SIZE    I486_PDE_SIZE    /**< @ref I486_PDE_SIZE    */
+	#define PAGE_SHIFT  I486_PAGE_SHIFT  /**< @ref I486_PAGE_SHIFT  */
+	#define PGTAB_SHIFT I486_PGTAB_SHIFT /**< @ref I486_PGTAB_SHIFT */
+	#define PAGE_MASK   I486_PAGE_MASK   /**< @ref I486_PAGE_MASK   */
+	#define PGTAB_MASK  I486_PGTAB_MASK  /**< @ref I486_PGTAB_MASK  */
+	#define PADDR_BIT   I486_PADDR_BIT   /**< @ref I486_PADDR_BIT   */
+	#define VADDR_BIT   I486_VADDR_BIT   /**< @ref I486_VADDR_BIT   */
+	#define PADDR_BYTE  I486_PADDR_BYTE  /**< @ref I486_PADDR_BYTE  */
+	#define VADDR_BYTE  I486_VADDR_BYTE  /**< @ref I486_VADDR_BYTE  */
 	/**@}*/
 
 	/**
@@ -383,7 +383,7 @@
 	 */
 	static inline unsigned pte_idx_get(vaddr_t vaddr)
 	{
-		return (((unsigned)(vaddr) & (I386_PGTAB_MASK^I386_PAGE_MASK)) >> I386_PAGE_SHIFT);
+		return (((unsigned)(vaddr) & (I486_PGTAB_MASK^I486_PAGE_MASK)) >> I486_PAGE_SHIFT);
 	}
 
 	/**
@@ -396,7 +396,7 @@
 	 */
 	static inline unsigned pde_idx_get(vaddr_t vaddr)
 	{
-		return ((unsigned)(vaddr) >> I386_PGTAB_SHIFT);
+		return ((unsigned)(vaddr) >> I486_PGTAB_SHIFT);
 	}
 
 	/**
@@ -429,4 +429,4 @@
 
 /**@endcond*/
 
-#endif /* ARCH_I386_MMU_H_ */
+#endif /* ARCH_I486_MMU_H_ */

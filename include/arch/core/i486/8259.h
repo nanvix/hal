@@ -23,15 +23,15 @@
  */
 
 /**
- * @addtogroup i386-core-8259 8259 Chip
- * @ingroup i386-core
+ * @addtogroup i486-core-8259 8259 Chip
+ * @ingroup i486-core
  *
  * @brief Programmable Interrupt Controller
  */
 /**@{*/
 
-#ifndef ARCH_I386_8259_H_
-#define ARCH_I386_8259_H_
+#ifndef ARCH_I486_8259_H_
+#define ARCH_I486_8259_H_
 
 	/**
 	 * @name Provided Interface
@@ -69,35 +69,35 @@
 	/**
 	 * @brief Number of interrupt levels.
 	 */
-	#define I386_NUM_INTLVL 6
+	#define I486_NUM_INTLVL 6
 
 	/**
 	 * @name Interrupt Levels
 	 */
 	/**@{*/
-	#define I386_INTLVL_5 5 /**< Level 0: all hardware interrupts disabled. */
-	#define I386_INTLVL_4 4 /**< Level 1: clock interrupts enabled.         */
-	#define I386_INTLVL_3 3 /**< Level 2: disk interrupts enabled.          */
-	#define I386_INTLVL_2 2 /**< Level 3: network interrupts enabled        */
-	#define I386_INTLVL_1 1 /**< Level 4: terminal interrupts enabled.      */
-	#define I386_INTLVL_0 0 /**< Level 5: all hardware interrupts enabled.  */
+	#define I486_INTLVL_5 5 /**< Level 0: all hardware interrupts disabled. */
+	#define I486_INTLVL_4 4 /**< Level 1: clock interrupts enabled.         */
+	#define I486_INTLVL_3 3 /**< Level 2: disk interrupts enabled.          */
+	#define I486_INTLVL_2 2 /**< Level 3: network interrupts enabled        */
+	#define I486_INTLVL_1 1 /**< Level 4: terminal interrupts enabled.      */
+	#define I486_INTLVL_0 0 /**< Level 5: all hardware interrupts enabled.  */
 	/**@}*/
 
 	/**
 	 * @name Interrupt Levels Masks
 	 */
 	/**@{*/
-	#define I386_INTLVL_MASK_5 0xfffb /**< Mask for interrupt level 5.  */
-	#define I386_INTLVL_MASK_4 0xfefa /**< Mask for interrupt level 4.  */
-	#define I386_INTLVL_MASK_3 0x3eba /**< Mask for interrupt level 3.  */
-	#define I386_INTLVL_MASK_2 0x30ba /**< Mask for interrupt level 2.  */
-	#define I386_INTLVL_MASK_1 0x2000 /**< Mask for interrupt level 1.  */
-	#define I386_INTLVL_MASK_0 0x0000 /**< Mask for interrupt level 0.  */
+	#define I486_INTLVL_MASK_5 0xfffb /**< Mask for interrupt level 5.  */
+	#define I486_INTLVL_MASK_4 0xfefa /**< Mask for interrupt level 4.  */
+	#define I486_INTLVL_MASK_3 0x3eba /**< Mask for interrupt level 3.  */
+	#define I486_INTLVL_MASK_2 0x30ba /**< Mask for interrupt level 2.  */
+	#define I486_INTLVL_MASK_1 0x2000 /**< Mask for interrupt level 1.  */
+	#define I486_INTLVL_MASK_0 0x0000 /**< Mask for interrupt level 0.  */
 	/**@}*/
 
 #ifndef _ASM_FILE_
 
-	#include <arch/core/i386/pmio.h>
+	#include <arch/core/i486/pmio.h>
 	#include <nanvix/const.h>
 	#include <stdint.h>
 	
@@ -107,23 +107,23 @@
 	 * @param offset1 Vector offset for master PIC.
 	 * @param offset2 Vector offset for slave PIC.
 	 */
-	EXTERN void i386_pic_setup(uint8_t offset1, uint8_t offset2);
+	EXTERN void i486_pic_setup(uint8_t offset1, uint8_t offset2);
 	
 	/**
 	 * @brief Masks an interrupt.
 	 *
 	 * @param intnum Number of the target interrupt.
 	 */
-	EXTERN void i386_pic_mask(int intnum);
+	EXTERN void i486_pic_mask(int intnum);
 
 	/**
-	 * @see i386_pic_mask()
+	 * @see i486_pic_mask()
 	 *
-	 * @cond i386
+	 * @cond i486
 	 */
 	static inline void interrupt_mask(int intnum)
 	{
-		i386_pic_mask(intnum);
+		i486_pic_mask(intnum);
 	}
 	/**@endcond*/
 
@@ -132,16 +132,16 @@
 	 *
 	 * @param intnum Number of the target interrupt.
 	 */
-	EXTERN void i386_pic_unmask(int intnum);
+	EXTERN void i486_pic_unmask(int intnum);
 
 	/**
-	 * @see i386_pic_unmask()
+	 * @see i486_pic_unmask()
 	 *
-	 * @cond i386
+	 * @cond i486
 	 */
 	static inline void interrupt_unmask(int intnum)
 	{
-		i386_pic_unmask(intnum);
+		i486_pic_unmask(intnum);
 	}
 	/**@endcond*/
 
@@ -150,22 +150,22 @@
 	 *
 	 * @param intnum Number of the target interrupt.
 	 */
-	static inline void i386_pic_ack(int intnum)
+	static inline void i486_pic_ack(int intnum)
 	{
 		if (intnum >= 8)
-			i386_output8(PIC_CTRL_SLAVE, PIC_EOI);
+			i486_output8(PIC_CTRL_SLAVE, PIC_EOI);
 
-		i386_output8(PIC_CTRL_MASTER,PIC_EOI);
+		i486_output8(PIC_CTRL_MASTER,PIC_EOI);
 	}
 
 	/**
-	 * @see i386_pic_ack()
+	 * @see i486_pic_ack()
 	 *
-	 * @cond i386
+	 * @cond i486
 	 */
 	static inline void interrupt_ack(int intnum)
 	{
-		i386_pic_ack(intnum);
+		i486_pic_ack(intnum);
 	}
 	/**@endcond*/
 
@@ -176,16 +176,16 @@
 	 *
 	 * @returns The old interrupt level.
 	 */
-	EXTERN int i386_pic_lvl_set(int newlevel);
+	EXTERN int i486_pic_lvl_set(int newlevel);
 
 	/**
-	 * @see i386_pic_lvl_set()
+	 * @see i486_pic_lvl_set()
 	 *
-	 * @cond i386
+	 * @cond i486
 	 */
 	static inline int hal_intlvl_set(int newlevel)
 	{
-		return (i386_pic_lvl_set(newlevel));
+		return (i486_pic_lvl_set(newlevel));
 	}
 	/**@endcond*/
 
@@ -193,5 +193,5 @@
 
 /**@}*/
 
-#endif /* ARCH_I386_8259_H_ */
+#endif /* ARCH_I486_8259_H_ */
 
