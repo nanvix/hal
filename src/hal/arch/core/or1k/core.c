@@ -47,8 +47,8 @@ PRIVATE struct
 	void (*start)(void);    /**< Starting routine. */
 	spinlock_t lock;        /**< Lock.             */
 } __attribute__((aligned(OR1K_CACHE_LINE_SIZE))) cores[OR1K_NUM_CORES] = {
-	{ TRUE,  OR1K_CORE_RUNNING,   0, NULL, OR1K_SPINLOCK_UNLOCKED }, /* Master Core   */
-	{ FALSE, OR1K_CORE_RESETTING, 0, NULL, OR1K_SPINLOCK_UNLOCKED }, /* Slave Core 1  */
+	{ TRUE,  OR1K_CORE_RUNNING,   0, NULL, OR1K_SPINLOCK_LOCKED }, /* Master Core   */
+	{ FALSE, OR1K_CORE_RESETTING, 0, NULL, OR1K_SPINLOCK_LOCKED }, /* Slave Core 1  */
 };
 
 /*============================================================================*
@@ -151,12 +151,15 @@ PRIVATE inline void or1k_core_notify(int coreid)
  */
 PUBLIC void or1k_core_idle(void)
 {
-	int coreid = or1k_core_get_id();
-
-	or1k_spinlock_lock(&cores[coreid].lock);
-	or1k_dcache_inval();
+		int coreid = or1k_core_get_id();
 
 		cores[coreid].state = OR1K_CORE_IDLE;
+
+		/*
+		 * The lock of this core was
+		 * acquired when resetting, in
+		 * or1k_core_reset().
+		 */
 
 	or1k_dcache_inval();
 	or1k_spinlock_unlock(&cores[coreid].lock);
