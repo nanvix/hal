@@ -54,7 +54,7 @@
 .globl _do_excp19
 .globl _do_excp20
 .globl _do_excp30
-.globl syscall
+.globl i386_syscall
 .globl _do_hwint0
 .globl _do_hwint1
 .globl _do_hwint2
@@ -140,8 +140,10 @@
 
 	addl $I386_CONTEXT_SW_SIZE, %esp
 
-	/* Restore special registers. */
-	iret
+	/*
+	 * Special registers are
+	 * restored by a further call to iret.
+	 */
 
 .endm
 
@@ -236,6 +238,7 @@ _do_excp:
 	addl  $(2*I386_WORD_SIZE), %esp
 
     i386_context_restore
+	iret
 
 /*============================================================================*
  * syscall()                                                                  *
@@ -244,7 +247,36 @@ _do_excp:
 /*
  * System call hook.
  */
-syscall:
+i386_syscall:
+	/* Save system call context. */
+	i386_context_save %ebx
+
+	/* Push system call parameters. */
+	movl I386_CONTEXT_EAX(%ebx), %eax
+	pushl %eax
+	movl I386_CONTEXT_EDI(%ebx), %eax
+	pushl %eax
+	movl I386_CONTEXT_ESI(%ebx), %eax
+	pushl %eax
+	movl I386_CONTEXT_EDX(%ebx), %eax
+	pushl %eax
+	movl I386_CONTEXT_ECX(%ebx), %eax
+	pushl %eax
+	movl I386_CONTEXT_EBX(%ebx), %eax
+	pushl %eax
+
+	/* Handle system call. */
+	call do_syscall
+
+	/* Wipe out system call parameters. */
+	addl $6*I386_WORD_SIZE, %esp
+
+	/* Copy return value to user stack. */
+	movl %eax, I386_CONTEXT_EAX(%esp)
+
+	/* restore system call context. */
+	i386_context_restore
+
 	iret
 
 /*============================================================================*
@@ -288,6 +320,7 @@ syscall:
 		call i386_do_hwint
 		addl $(2*I386_WORD_SIZE), %esp
 		i386_context_restore
+		iret
 .endm
 
 /*
@@ -302,6 +335,7 @@ syscall:
 		call i386_do_hwint
 		addl $(2*I386_WORD_SIZE), %esp
 		i386_context_restore
+		iret
 .endm
 
 /* Hardware interrupt hooks. */

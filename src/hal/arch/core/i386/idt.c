@@ -29,6 +29,7 @@
 #include <arch/core/i386/gdt.h>
 #include <arch/core/i386/idt.h>
 #include <arch/core/i386/int.h>
+#include <arch/core/i386/trap.h>
 
 /**
  * @brief Interrupt Descriptor Table (IDT).
@@ -122,7 +123,7 @@ PUBLIC void idt_setup(void)
 	set_idte(47, (unsigned)_do_hwint15, KERNEL_CS, 0x8, IDT_INT32);
 
 	/* Set system call interrupt. */
-	set_idte(128, (unsigned)syscall, KERNEL_CS, 0xe, IDT_INT32);
+	set_idte(I386_TRAP_GATE, (unsigned)i386_syscall, KERNEL_CS, 0xe, IDT_INT32);
 
 	/* Set IDT pointer. */
 	idtptr.size = sizeof(idt) - 1;

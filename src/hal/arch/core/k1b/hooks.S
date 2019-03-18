@@ -65,7 +65,7 @@ _do_syscall:
 	 */
 	redzone_alloc
 	;;
-	call do_syscall1
+	call do_syscall
 	;;
 	redzone_free
 	;;
@@ -114,6 +114,7 @@ _do_syscall:
 _do_excp:
 
 	_do_prologue
+	;;
 
 	/*
 	 * Save execution context
@@ -141,6 +142,7 @@ _do_excp:
 	;;
 
 	_scoreboard_get $r2 $r3
+	;;
 
 	/* Processing Status. */
 	lw  $r4 = MOS_VC_REG_PS[$r2]
@@ -225,6 +227,7 @@ _do_excp:
 	;;
 
 	_scoreboard_get $r2 $r3
+	;;
 
 	/* Restore saved program counter. */
 	lw  $r4 = K1B_CONTEXT_SPC[$sp]
