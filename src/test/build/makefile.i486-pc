@@ -20,31 +20,20 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# NOTES:
-#   - This script should work in any Linux distribution.
-#   - You should run this script with superuser privileges.
-#
+# Tweak toolchain.
+export LDFLAGS  += -L $(LINKERDIR)/ -T link.ld
 
-export CURDIR=`pwd`
+# Object Files
+OBJ = $(C_SRC:.c=.o)
 
-case "$TARGET" in
-	"i486-pc")
-		qemu-system-i386 -s -S      \
-			--display curses        \
-			-kernel bin/test-driver \
-			-m 256M                 \
-			-mem-prealloc
-		;;
-	"or1k-pc")
-		qemu-system-or1k -s -S      \
-			-kernel bin/test-driver \
-			-serial stdio           \
-			-display none           \
-			-m 256M                 \
-			-mem-prealloc           \
-			-smp 2
-		;;
-	*)
-        echo "error: unsupported target"
-		;;
-esac
+# Builds object files for i486 PC target.
+all: $(OBJ)
+	$(CC) $(CFLAGS) $(LDFLAGS) $(OBJ) -o $(BINDIR)/$(EXECBIN) -Wl,--whole-archive $(LIBS)
+
+# Cleans all object files.
+clean:
+	rm -rf $(BINDIR)/$(EXECBIN) $(OBJ)
+
+# Builds a C source file.
+%.o: %.c
+	$(CC) $(CFLAGS) $< -c -o $@

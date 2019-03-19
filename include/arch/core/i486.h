@@ -22,45 +22,38 @@
  * SOFTWARE.
  */
 
-#ifndef _NANVIX_HAL_PROCESSOR_PROCESSOR_H_
-#define _NANVIX_HAL_PROCESSOR_PROCESSOR_H_
+#ifndef CORE_I486_H_
+#define CORE_I486_H_
 
 	/**
-	 * @defgroup processors Processors
+	 * @addtogroup i486-core i486 Core
+	 * @ingroup cores
 	 */
 
-	#if (defined(__k1b__))
-
-		#undef  __NEED_PROCESSOR_BOSTAN
-		#define __NEED_PROCESSOR_BOSTAN
-		#include <arch/processor/bostan.h>
-
-	#elif (defined(__i486__))
-
-		#undef  __NEED_PROCESSOR_I486_QEMU
-		#define __NEED_PROCESSOR_I486_QEMU
-		#include <arch/processor/i486-qemu.h>
-
-	#elif (defined(__optimsoc__))
-
-		#undef  __NEED_PROCESSOR_OR1K_OPTIMSOC
-		#define __NEED_PROCESSOR_OR1K_OPTIMSOC
-		#include <arch/processor/optimsoc.h>
-
-	#elif (defined(__or1k__))
-
-		#undef  __NEED_PROCESSOR_OR1K_QEMU
-		#define __NEED_PROCESSOR_OR1K_QEMU
-		#include <arch/processor/or1k-qemu.h>
-
-	#else
-
-		#error "unkonwn processor"
-
+	#ifndef __NEED_CORE_I486
+		#error "i486 core not required"
 	#endif
 
-	#undef  __NEED_HAL_CLUSTER
-	#define __NEED_HAL_CLUSTER
-	#include <nanvix/hal/cluster.h>
+	#include <arch/core/i486/8253.h>
+	#include <arch/core/i486/8259.h>
+	#include <arch/core/i486/cache.h>
+	#include <arch/core/i486/core.h>
+	#include <arch/core/i486/excp.h>
+	#include <arch/core/i486/int.h>
+	#include <arch/core/i486/mmu.h>
+	#include <arch/core/i486/pmio.h>
+	#include <arch/core/i486/spinlock.h>
+	#include <arch/core/i486/tlb.h>
+	#include <arch/core/i486/trap.h>
 
-#endif /* _NANVIX_HAL_PROCESSOR_PROCESSOR_H_ */
+/**
+ * @cond i486
+ */
+
+	/* Feature Declaration */
+	#define CORE_SUPPORTS_PMIO 1
+
+/**@}*/
+
+#endif /* CORE_I486_H_ */
+

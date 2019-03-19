@@ -1,0 +1,72 @@
+# MIT License
+#
+# Copyright(c) 2011-2019 The Maintainers of Nanvix
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+#===============================================================================
+# Target Configuration
+#===============================================================================
+
+export ARCH = i486
+export PROCESSOR = i486-qemu
+
+#===============================================================================
+# Toolchain Configuration
+#===============================================================================
+
+# Toolchain Directory
+export TOOLCHAIN_DIR ?= $(TOOLSDIR)/dev/toolchain/i486/bin
+
+# Toolchain
+export CC = $(TOOLCHAIN_DIR)/i486-elf-gcc
+export LD = $(TOOLCHAIN_DIR)/i486-elf-ld
+export AR = $(TOOLCHAIN_DIR)/i486-elf-ar
+
+# Compiler Options
+export CFLAGS   = -D __i486__ -D __pc__
+export CFLAGS  += -pedantic-errors -fextended-identifiers
+export CFLAGS  += -nostdlib -nostdinc -fno-stack-protector
+export CFLAGS  += -ansi -pedantic-errors
+export CFLAGS  += -Wstack-usage=4096
+export CFLAGS  += -D __HAS_HW_DIVISION
+
+# Linker Options
+export LDFLAGS  =
+
+#===============================================================================
+# Libraries and Binaries
+#===============================================================================
+
+# Libraries
+export LIBKERNEL = libhal-$(TARGET).a
+export LIBS = $(LIBDIR)/$(LIBKERNEL)
+
+# Binaries
+export EXECBIN = test-driver
+
+#===============================================================================
+
+# Builds Nanvix for the i486 PC target.
+nanvix-target:
+	$(MAKE) -C $(SRCDIR) -f build/makefile.i486 all
+
+# Cleans everything for the i486 PC target.
+distclean-target:
+	$(MAKE) -C $(SRCDIR) -f build/makefile.i486 distclean

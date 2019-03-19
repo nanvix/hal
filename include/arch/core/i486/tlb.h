@@ -22,45 +22,60 @@
  * SOFTWARE.
  */
 
-#ifndef _NANVIX_HAL_PROCESSOR_PROCESSOR_H_
-#define _NANVIX_HAL_PROCESSOR_PROCESSOR_H_
+#ifndef ARCH_I486_TLB_H_
+#define ARCH_I486_TLB_H_
+
+/**
+ * @addtogroup i486-core-tlb TLB
+ * @ingroup i486-core
+ *
+ * @brief Translation Lookaside Buffer
+ */
+/**@{*/
 
 	/**
-	 * @defgroup processors Processors
+	 * @brief Hardware-managed TLB.
 	 */
+	#define HAL_TLB_HARDWARE
 
-	#if (defined(__k1b__))
+	/**
+	 * @name Provided Interface
+	 */
+	/**@{*/
+	#define __tlb_flush_fn /**< tlb_flush() */
+	/**@}*/
 
-		#undef  __NEED_PROCESSOR_BOSTAN
-		#define __NEED_PROCESSOR_BOSTAN
-		#include <arch/processor/bostan.h>
+	/**
+	 * @brief Flushes changes in the TLB.
+	 *
+	 * The i486_tlb_flush() function flushes the changes made to the
+	 * TLB of the underlying i486 core.
+	 *
+	 * @returns This function always returns zero.
+	 *
+	 * @todo We can improve this by using the invlpg instruction.
+	 */
+	static inline int i486_tlb_flush(void)
+	{
+		__asm__ __volatile__ (
+			"movl %%cr3, %%eax;\
+			movl %%eax, %%cr3;"
+			:
+			:
+			:
+		);
 
-	#elif (defined(__i486__))
+		return (0);
+	}
 
-		#undef  __NEED_PROCESSOR_I486_QEMU
-		#define __NEED_PROCESSOR_I486_QEMU
-		#include <arch/processor/i486-qemu.h>
+	/**
+	 * @see i486_tlb_flush().
+	 */
+	static inline int tlb_flush(void)
+	{
+		return (i486_tlb_flush());
+	}
 
-	#elif (defined(__optimsoc__))
-
-		#undef  __NEED_PROCESSOR_OR1K_OPTIMSOC
-		#define __NEED_PROCESSOR_OR1K_OPTIMSOC
-		#include <arch/processor/optimsoc.h>
-
-	#elif (defined(__or1k__))
-
-		#undef  __NEED_PROCESSOR_OR1K_QEMU
-		#define __NEED_PROCESSOR_OR1K_QEMU
-		#include <arch/processor/or1k-qemu.h>
-
-	#else
-
-		#error "unkonwn processor"
-
-	#endif
-
-	#undef  __NEED_HAL_CLUSTER
-	#define __NEED_HAL_CLUSTER
-	#include <nanvix/hal/cluster.h>
-
-#endif /* _NANVIX_HAL_PROCESSOR_PROCESSOR_H_ */
+/**@}*/
+	
+#endif /* ARCH_I486_TLB_H_ */

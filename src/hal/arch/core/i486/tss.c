@@ -22,45 +22,31 @@
  * SOFTWARE.
  */
 
-#ifndef _NANVIX_HAL_PROCESSOR_PROCESSOR_H_
-#define _NANVIX_HAL_PROCESSOR_PROCESSOR_H_
+#include <nanvix/const.h>
+#include <nanvix/klib.h>
+#include <arch/core/i486/gdt.h>
+#include <arch/core/i486/tss.h>
 
-	/**
-	 * @defgroup processors Processors
-	 */
+/**
+ * @brief Task state segment.
+ */
+PUBLIC struct tss tss;
 
-	#if (defined(__k1b__))
-
-		#undef  __NEED_PROCESSOR_BOSTAN
-		#define __NEED_PROCESSOR_BOSTAN
-		#include <arch/processor/bostan.h>
-
-	#elif (defined(__i486__))
-
-		#undef  __NEED_PROCESSOR_I486_QEMU
-		#define __NEED_PROCESSOR_I486_QEMU
-		#include <arch/processor/i486-qemu.h>
-
-	#elif (defined(__optimsoc__))
-
-		#undef  __NEED_PROCESSOR_OR1K_OPTIMSOC
-		#define __NEED_PROCESSOR_OR1K_OPTIMSOC
-		#include <arch/processor/optimsoc.h>
-
-	#elif (defined(__or1k__))
-
-		#undef  __NEED_PROCESSOR_OR1K_QEMU
-		#define __NEED_PROCESSOR_OR1K_QEMU
-		#include <arch/processor/or1k-qemu.h>
-
-	#else
-
-		#error "unkonwn processor"
-
-	#endif
-
-	#undef  __NEED_HAL_CLUSTER
-	#define __NEED_HAL_CLUSTER
-	#include <nanvix/hal/cluster.h>
-
-#endif /* _NANVIX_HAL_PROCESSOR_PROCESSOR_H_ */
+/**
+ * @brief Setups the TSS.
+ */
+PUBLIC void tss_setup(void)
+{
+	/* Size-error checking. */
+	KASSERT_SIZE(sizeof(struct tss), TSS_SIZE);
+	
+	/* Blank TSS. */
+	kmemset(&tss, 0, TSS_SIZE);
+	
+	/* Fill up TSS. */
+	tss.ss0 = KERNEL_DS;
+	tss.iomap = (TSS_SIZE - 1) << 16;
+	
+	/* Flush TSS. */
+	tss_flush();
+}

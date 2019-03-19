@@ -22,45 +22,43 @@
  * SOFTWARE.
  */
 
-#ifndef _NANVIX_HAL_PROCESSOR_PROCESSOR_H_
-#define _NANVIX_HAL_PROCESSOR_PROCESSOR_H_
+#ifndef ARCH_I486_CACHE_H_
+#define ARCH_I486_CACHE_H_
+
+/**
+ * @addtogroup i486-core-cache Cache
+ * @ingroup i486-core
+ *
+ * @brief Memory Cache
+ */
+/**@{*/
 
 	/**
-	 * @defgroup processors Processors
+	 * @name Provided Interface
 	 */
+	/**@{*/
+	#define __dcache_invalidate_fn
+	/**@}*/
 
-	#if (defined(__k1b__))
+	/**
+	 * @brief Cache line size (in bytes).
+	 *
+	 * @bug The cache line size of i486 may change.
+	 */
+	#define I486_CACHE_LINE_SIZE 64
 
-		#undef  __NEED_PROCESSOR_BOSTAN
-		#define __NEED_PROCESSOR_BOSTAN
-		#include <arch/processor/bostan.h>
+	/**
+	 * @see I486_CACHE_LINE_SIZE
+	 */
+	#define CACHE_LINE_SIZE I486_CACHE_LINE_SIZE
 
-	#elif (defined(__i486__))
+	/**
+	 * @note The i486 target features cache coherency.
+	 */
+	static inline void dcache_invalidate(void)
+	{
+	}
 
-		#undef  __NEED_PROCESSOR_I486_QEMU
-		#define __NEED_PROCESSOR_I486_QEMU
-		#include <arch/processor/i486-qemu.h>
+/**@}*/
 
-	#elif (defined(__optimsoc__))
-
-		#undef  __NEED_PROCESSOR_OR1K_OPTIMSOC
-		#define __NEED_PROCESSOR_OR1K_OPTIMSOC
-		#include <arch/processor/optimsoc.h>
-
-	#elif (defined(__or1k__))
-
-		#undef  __NEED_PROCESSOR_OR1K_QEMU
-		#define __NEED_PROCESSOR_OR1K_QEMU
-		#include <arch/processor/or1k-qemu.h>
-
-	#else
-
-		#error "unkonwn processor"
-
-	#endif
-
-	#undef  __NEED_HAL_CLUSTER
-	#define __NEED_HAL_CLUSTER
-	#include <nanvix/hal/cluster.h>
-
-#endif /* _NANVIX_HAL_PROCESSOR_PROCESSOR_H_ */
+#endif /* ARCH_I486_CACHE_H_ */

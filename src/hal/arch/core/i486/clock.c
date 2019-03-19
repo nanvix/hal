@@ -22,45 +22,26 @@
  * SOFTWARE.
  */
 
-#ifndef _NANVIX_HAL_PROCESSOR_PROCESSOR_H_
-#define _NANVIX_HAL_PROCESSOR_PROCESSOR_H_
+#include <nanvix/const.h>
+#include <arch/core/i486/8253.h>
+#include <arch/core/i486/pmio.h>
 
-	/**
-	 * @defgroup processors Processors
-	 */
+/**
+ * The i486_clock_init() function initializes the clock driver in the
+ * i486 architecture. The frequency of the device is set to @p freq
+ * Hz.
+ */
+PUBLIC void i486_clock_init(unsigned freq)
+{
+	uint16_t freq_divisor;
+	
+	freq_divisor = PIT_FREQUENCY/freq;
+	
+	/* Send control byte: adjust frequency divisor. */
+	i486_output8(PIT_CTRL, 0x36);
+	
+	/* Send data byte: divisor_low and divisor_high. */
+	i486_output8(PIT_DATA, (uint8_t)(freq_divisor & 0xff));
+	i486_output8(PIT_DATA, (uint8_t)((freq_divisor >> 8)));
+}
 
-	#if (defined(__k1b__))
-
-		#undef  __NEED_PROCESSOR_BOSTAN
-		#define __NEED_PROCESSOR_BOSTAN
-		#include <arch/processor/bostan.h>
-
-	#elif (defined(__i486__))
-
-		#undef  __NEED_PROCESSOR_I486_QEMU
-		#define __NEED_PROCESSOR_I486_QEMU
-		#include <arch/processor/i486-qemu.h>
-
-	#elif (defined(__optimsoc__))
-
-		#undef  __NEED_PROCESSOR_OR1K_OPTIMSOC
-		#define __NEED_PROCESSOR_OR1K_OPTIMSOC
-		#include <arch/processor/optimsoc.h>
-
-	#elif (defined(__or1k__))
-
-		#undef  __NEED_PROCESSOR_OR1K_QEMU
-		#define __NEED_PROCESSOR_OR1K_QEMU
-		#include <arch/processor/or1k-qemu.h>
-
-	#else
-
-		#error "unkonwn processor"
-
-	#endif
-
-	#undef  __NEED_HAL_CLUSTER
-	#define __NEED_HAL_CLUSTER
-	#include <nanvix/hal/cluster.h>
-
-#endif /* _NANVIX_HAL_PROCESSOR_PROCESSOR_H_ */

@@ -22,45 +22,55 @@
  * SOFTWARE.
  */
 
-#ifndef _NANVIX_HAL_PROCESSOR_PROCESSOR_H_
-#define _NANVIX_HAL_PROCESSOR_PROCESSOR_H_
+#ifndef ARCH_I486_8253_H_
+#define ARCH_I486_8253_H_
+
+/**
+ * @addtogroup i486-core-8253 8253 Chip
+ * @ingroup i486-core
+ *
+ * @brief Programmable Interval Timer
+ */
+/**@{*/
+
+	#include <nanvix/const.h>
 
 	/**
-	 * @defgroup processors Processors
+	 * @name Provided Interface
 	 */
+	/**@{*/
+	#define __hal_clock_init
+	/**@}*/
 
-	#if (defined(__k1b__))
+	/**
+	 * @brief Oscillator frequency (in Hz)
+	 */
+	#define PIT_FREQUENCY 1193182
+	
+	/**
+	 * @name Registers
+	 */
+	/**@{*/
+	#define PIT_CTRL 0x43 /**< Control */
+	#define PIT_DATA 0x40 /**< Data    */
+	/**@}*/
 
-		#undef  __NEED_PROCESSOR_BOSTAN
-		#define __NEED_PROCESSOR_BOSTAN
-		#include <arch/processor/bostan.h>
+	/**
+	 * @brief Initializes the clock driver in the i486 architecture.
+	 *
+	 * @param freq Target frequency for the clock device.
+	 */
+	EXTERN void i486_clock_init(unsigned freq);
 
-	#elif (defined(__i486__))
+	/**
+	 * @see i486_clock_init()
+	 */
+	static inline void hal_clock_init(unsigned freq)
+	{
+		i486_clock_init(freq);
+	}
 
-		#undef  __NEED_PROCESSOR_I486_QEMU
-		#define __NEED_PROCESSOR_I486_QEMU
-		#include <arch/processor/i486-qemu.h>
+/**@}*/
 
-	#elif (defined(__optimsoc__))
+#endif /* ARCH_I486_8253_H_ */
 
-		#undef  __NEED_PROCESSOR_OR1K_OPTIMSOC
-		#define __NEED_PROCESSOR_OR1K_OPTIMSOC
-		#include <arch/processor/optimsoc.h>
-
-	#elif (defined(__or1k__))
-
-		#undef  __NEED_PROCESSOR_OR1K_QEMU
-		#define __NEED_PROCESSOR_OR1K_QEMU
-		#include <arch/processor/or1k-qemu.h>
-
-	#else
-
-		#error "unkonwn processor"
-
-	#endif
-
-	#undef  __NEED_HAL_CLUSTER
-	#define __NEED_HAL_CLUSTER
-	#include <nanvix/hal/cluster.h>
-
-#endif /* _NANVIX_HAL_PROCESSOR_PROCESSOR_H_ */

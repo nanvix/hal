@@ -41,11 +41,11 @@
 		#define __NEED_TARGET_OPTIMSOC
 		#include <arch/target/optimsoc/optimsoc.h>
 
-	#elif (defined(__i386__) && (__pc__))
+	#elif (defined(__i486__) && (__pc__))
 
-		#undef  __NEED_TARGET_QEMU_I386_PC
-		#define __NEED_TARGET_QEMU_I386_PC
-		#include <arch/target/qemu/i386-pc.h>
+		#undef  __NEED_TARGET_QEMU_I486_PC
+		#define __NEED_TARGET_QEMU_I486_PC
+		#include <arch/target/qemu/i486-pc.h>
 
 	#elif (defined(__or1k__) && (__pc__))
 

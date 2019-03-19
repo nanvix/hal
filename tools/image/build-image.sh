@@ -47,9 +47,9 @@ case "$TARGET" in
 		source "tools/image/arch/mppa256.sh"
 		BIN="$BIN-k1bio $BIN-k1bdp"
 		;;
-	"i386-pc")
-		source "tools/image/arch/i386.sh"
-		BIN="$BIN-i386"
+	"i486-pc")
+		source "tools/image/arch/i486.sh"
+		BIN="$BIN-i486"
 		;;
 	"optimsoc")
 		source "tools/image/arch/optimsoc.sh"

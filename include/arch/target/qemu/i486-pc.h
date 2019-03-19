@@ -22,45 +22,44 @@
  * SOFTWARE.
  */
 
-#ifndef _NANVIX_HAL_PROCESSOR_PROCESSOR_H_
-#define _NANVIX_HAL_PROCESSOR_PROCESSOR_H_
+#ifndef TARGET_QEMU_I486_PC_H_
+#define TARGET_QEMU_I486_PC_H_
 
-	/**
-	 * @defgroup processors Processors
-	 */
-
-	#if (defined(__k1b__))
-
-		#undef  __NEED_PROCESSOR_BOSTAN
-		#define __NEED_PROCESSOR_BOSTAN
-		#include <arch/processor/bostan.h>
-
-	#elif (defined(__i486__))
-
-		#undef  __NEED_PROCESSOR_I486_QEMU
-		#define __NEED_PROCESSOR_I486_QEMU
-		#include <arch/processor/i486-qemu.h>
-
-	#elif (defined(__optimsoc__))
-
-		#undef  __NEED_PROCESSOR_OR1K_OPTIMSOC
-		#define __NEED_PROCESSOR_OR1K_OPTIMSOC
-		#include <arch/processor/optimsoc.h>
-
-	#elif (defined(__or1k__))
-
-		#undef  __NEED_PROCESSOR_OR1K_QEMU
-		#define __NEED_PROCESSOR_OR1K_QEMU
-		#include <arch/processor/or1k-qemu.h>
-
-	#else
-
-		#error "unkonwn processor"
-
+	#ifndef __NEED_TARGET_QEMU_I486_PC
+		#error "bad target configuration?"
 	#endif
 
-	#undef  __NEED_HAL_CLUSTER
-	#define __NEED_HAL_CLUSTER
-	#include <nanvix/hal/cluster.h>
+	/* Target Interface Implementation */
+	#include <arch/target/qemu/i486-pc/_i486-pc.h>
 
-#endif /* _NANVIX_HAL_PROCESSOR_PROCESSOR_H_ */
+/**
+ * @defgroup target-qemu-i486-pc QEMU i486
+ * @ingroup targets
+ *
+ * @brief QEMU i486 Platform
+ */
+/**@{*/
+
+	#include <arch/target/qemu/i486-pc/stdout.h>
+	#include <arch/target/qemu/i486-pc/sync.h>
+
+/**@}*/
+
+/*============================================================================*
+ * Exported Interface                                                         *
+ *============================================================================*/
+
+/**
+ * @cond i486
+ */
+
+	/**
+	 * @name Provided Features
+	 */
+	/**@{*/
+	#define TARGET_HAS_STDOUT 1
+	/**@}*/
+
+/**@endcond*/
+
+#endif /* TARGET_QEMU_I486_PC_H_ */

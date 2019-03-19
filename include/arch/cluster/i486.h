@@ -22,45 +22,38 @@
  * SOFTWARE.
  */
 
-#ifndef _NANVIX_HAL_PROCESSOR_PROCESSOR_H_
-#define _NANVIX_HAL_PROCESSOR_PROCESSOR_H_
+#ifndef CLUSTER_I486_H_
+#define CLUSTER_I486_H_
 
-	/**
-	 * @defgroup processors Processors
-	 */
-
-	#if (defined(__k1b__))
-
-		#undef  __NEED_PROCESSOR_BOSTAN
-		#define __NEED_PROCESSOR_BOSTAN
-		#include <arch/processor/bostan.h>
-
-	#elif (defined(__i486__))
-
-		#undef  __NEED_PROCESSOR_I486_QEMU
-		#define __NEED_PROCESSOR_I486_QEMU
-		#include <arch/processor/i486-qemu.h>
-
-	#elif (defined(__optimsoc__))
-
-		#undef  __NEED_PROCESSOR_OR1K_OPTIMSOC
-		#define __NEED_PROCESSOR_OR1K_OPTIMSOC
-		#include <arch/processor/optimsoc.h>
-
-	#elif (defined(__or1k__))
-
-		#undef  __NEED_PROCESSOR_OR1K_QEMU
-		#define __NEED_PROCESSOR_OR1K_QEMU
-		#include <arch/processor/or1k-qemu.h>
-
-	#else
-
-		#error "unkonwn processor"
-
+	#ifndef __NEED_CLUSTER_I486
+		#error "bad cluster configuration?"
 	#endif
 
-	#undef  __NEED_HAL_CLUSTER
-	#define __NEED_HAL_CLUSTER
-	#include <nanvix/hal/cluster.h>
+	/* Cluster Interface Implementation */
+	#include <arch/cluster/i486/_i486.h>
 
-#endif /* _NANVIX_HAL_PROCESSOR_PROCESSOR_H_ */
+/*============================================================================*
+ * Exported Interface                                                         *
+ *============================================================================*/
+
+/**
+ * @addtogroup i486-cluster x86 Cluster
+ * @ingroup clusters
+ *
+ * @brief x86 Cluster
+ */
+/**@{*/
+
+	#include <arch/cluster/i486/cores.h>
+	#include <arch/cluster/i486/memory.h>
+
+	/**
+	 * @name Provided Features
+	 */
+	/**@{*/
+	#define CLUSTER_IS_MULTICORE 0
+	/**@}*/
+
+/**@}*/
+
+#endif /* CLUSTER_I486_H_ */
