@@ -38,20 +38,18 @@
 PUBLIC int bostan_dma_control_create(int interface, int tag, uint64_t mask)
 {
 	if (!bostan_cnoc_rx_is_valid(interface, tag))
-		goto error0;
+		return (-EINVAL);
 
 	if (bostan_cnoc_rx_alloc(interface, tag) != 0)
-		goto error0;
+		return (-EBUSY);
 
 	if (bostan_cnoc_rx_config(interface, tag, BOSTAN_CNOC_BARRIER_MODE, mask) != 0)
-		goto error1;
+	{
+		bostan_cnoc_rx_free(interface, tag);
+		return (-ECONNABORTED);
+	}
 
 	return (0);
-
-error1:
-	bostan_cnoc_rx_free(interface, tag);
-error0:
-	return (-EINVAL);
 }
 
 /**
@@ -69,7 +67,7 @@ PUBLIC int bostan_dma_control_config(int interface, int tag, uint64_t mask)
 		return (-EINVAL);
 
 	if (bostan_cnoc_rx_config(interface, tag, BOSTAN_CNOC_BARRIER_MODE, mask) != 0)
-		return (-EINVAL);
+		return (-ECONNABORTED);
 
 	return (0);
 }
@@ -88,7 +86,7 @@ PUBLIC int bostan_dma_control_open(int interface, int tag)
 		return (-EINVAL);
 
 	if (bostan_cnoc_tx_alloc(interface, tag) != 0)
-		return (-EINVAL);
+		return (-EBUSY);
 
 	return (0);
 }
@@ -122,7 +120,7 @@ PUBLIC int bostan_dma_control_signal(
 	for (int i = (0); i < ntargets; i++)
 	{
 		if (bostan_cnoc_tx_config(interface, source_node, source_tag, target_nodes[i], target_tag))
-			return (-EINVAL);
+			return (-ECONNABORTED);
 
 		bostan_cnoc_tx_write(interface, source_tag, mask);
 	}

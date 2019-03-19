@@ -67,8 +67,7 @@
 	 * @name Provided Interface
 	 */
 	/**@{*/
-	#define __hal_processor_node
-	#define __processor_node_get_id   /**< processor_node_get_id()   */
+	#define __processor_node_get_id_fn /**< processor_node_get_id() */
 	/**@}*/
 
 	/**

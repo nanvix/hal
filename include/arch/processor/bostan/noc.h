@@ -54,7 +54,19 @@
 	#define BOSTAN_NR_NOC_NODES (BOSTAN_NR_NOC_IONODES + BOSTAN_NR_NOC_CNODES)
 
 	/**
-	 * @brief NoC tags offsets.
+	 * @name Number of NoC nodes per DMA Channel.
+	 */
+	/**@{*/
+	#define BOSTAN_MAILBOX_CREATE_PER_DMA 1                   /**< 1 D-NoC RX and 1 C-NoC TX */
+	#define BOSTAN_MAILBOX_OPEN_PER_DMA   4                   /**< 1 D-NoC TX and 1 C-NoC RX */
+	#define BOSTAN_PORTAL_CREATE_PER_DMA  2                   /**< 1 D-NoC RX and 1 C-NoC TX */
+	#define BOSTAN_PORTAL_OPEN_PER_DMA    4                   /**< 1 D-NoC TX and 1 C-NoC RX */
+	#define BOSTAN_SYNC_CREATE_PER_DMA    BOSTAN_NR_NOC_NODES /**< 1 C-NoC RX */
+	#define BOSTAN_SYNC_OPEN_PER_DMA      1                   /**< 1 C-NoC TX */
+	/**@}*/
+
+	/**
+	 * @brief Receiver NoC tags offsets.
 	 *
 	 * All NoC connectors that are listed bellow support 1:N
 	 * single-direction communication. Therefore, we need K1B_NR_NOC_NODES
@@ -62,9 +74,26 @@
 	 * thus are skipped.
 	 */
 	/**@{*/
-	#define BOSTAN_TAG_MAILBOX_OFF  2                                             /**< Mailbox. */
-	#define BOSTAN_TAG_PORTAL_OFF  (BOSTAN_TAG_MAILBOX_OFF + BOSTAN_NR_NOC_NODES) /**< Portal.  */
-	#define BOSTAN_TAG_SYNC_OFF    (BOSTAN_TAG_PORTAL_OFF + BOSTAN_NR_NOC_NODES)  /**< Sync.    */
+	#define BOSTAN_MAILBOX_RX_OFF  BOSTAN_NR_RESERVED_RX_TAGS                   /**< Mailbox. */
+	#define BOSTAN_PORTAL_RX_OFF  (BOSTAN_MAILBOX_RX_OFF + BOSTAN_NR_NOC_NODES) /**< Portal.  */
+	#define BOSTAN_SYNC_RX_OFF    (BOSTAN_PORTAL_RX_OFF + BOSTAN_NR_NOC_NODES)  /**< Sync.    */
+	/**@}*/
+
+	/**
+	 * @brief Transfer C-NoC tags offsets.
+	 */
+	/**@{*/
+	#define BOSTAN_MAILBOX_CNOC_TX_OFF  BOSTAN_NR_RESERVED_TX_TAGS                              /**< Mailbox. */
+	#define BOSTAN_PORTAL_CNOC_TX_OFF  (BOSTAN_MAILBOX_CNOC_TX_OFF + BOSTAN_MAILBOX_CREATE_MAX) /**< Portal.  */
+	#define BOSTAN_SYNC_CNOC_TX_OFF    (BOSTAN_PORTAL_CNOC_TX_OFF + BOSTAN_PORTAL_CREATE_MAX)   /**< Sync.    */
+	/**@}*/
+
+	/**
+	 * @brief Transfer D-NoC tags offsets.
+	 */
+	/**@{*/
+	#define BOSTAN_MAILBOX_DNOC_TX_OFF  BOSTAN_NR_RESERVED_TX_TAGS                            /**< Mailbox. */
+	#define BOSTAN_PORTAL_DNOC_TX_OFF  (BOSTAN_MAILBOX_DNOC_TX_OFF + BOSTAN_MAILBOX_OPEN_MAX) /**< Portal.  */
 	/**@}*/
 
 	/**
@@ -82,7 +111,7 @@
 	 */
 	static inline int bostan_noc_is_ionode0(int nodeid)
 	{
-		return WITHIN(nodeid, BOSTAN_IOCLUSTER0, BOSTAN_IOCLUSTER0 + BOSTAN_NR_INTERFACES);
+		return WITHIN(nodeid, BOSTAN_IOCLUSTER0, BOSTAN_IOCLUSTER0 + K1BIO_CORES_NUM);
 	}
 
 	/**
@@ -95,7 +124,7 @@
 	 */
 	static inline int bostan_noc_is_ionode1(int nodeid)
 	{
-		return WITHIN(nodeid, BOSTAN_IOCLUSTER1, BOSTAN_IOCLUSTER1 + BOSTAN_NR_INTERFACES);
+		return WITHIN(nodeid, BOSTAN_IOCLUSTER1, BOSTAN_IOCLUSTER1 + K1BIO_CORES_NUM);
 	}
 
 	/**
@@ -143,6 +172,14 @@
 	 * failure, a negative error code is returned instead.
 	 */
 	EXTERN int bostan_nodes_convert(int *_nodes, const int *nodes, int nnodes);
+
+	/**
+	 * @brief Gets the virtual number of the target NoC node.
+	 *
+	 * @param nodenum Logic ID of the target NoC node.
+	 * @returns The virtual number of the target NoC node.
+	 */
+	EXTERN int bostan_node_convert_id(int nodenum);
 
 	/**
 	 * @brief Returns the synchronization NoC tag for a target NoC node ID.
@@ -194,30 +231,13 @@
 	 * @name Exported Functions
 	 */
 	/**@{*/
-	#define __hal_processor_noc
-	#define __processor_node_get_num   /**< processor_node_get_num()  */
-	#define __processor_nodes_convert  /**< processor_nodes_convert() */
-	#define __processor_noc_is_ionode0 /**< processor_noc_is_ionode0() */
-	#define __processor_noc_is_ionode1 /**< processor_noc_is_ionode1() */
-	#define __processor_noc_is_ionode  /**< processor_noc_is_ionode()  */
-	#define __processor_noc_is_cnode   /**< processor_noc_is_cnode()   */
+	#define __processor_noc_is_ionode0_fn /**< processor_noc_is_ionode0() */
+	#define __processor_noc_is_ionode1_fn /**< processor_noc_is_ionode1() */
+	#define __processor_noc_is_ionode_fn  /**< processor_noc_is_ionode()  */
+	#define __processor_noc_is_cnode_fn   /**< processor_noc_is_cnode()   */
+	#define __processor_node_get_num_fn   /**< processor_node_get_num()   */
+	#define __processor_nodes_convert_fn  /**< processor_nodes_convert()  */
 	/**@}*/
-
-    /**
-	 * @see bostan_node_get_num()
-	 */
-	static inline int processor_node_get_num(int nodeid)
-	{
-		return bostan_node_get_num(nodeid);
-	}
-
-	/**
-	 * @see bostan_nodes_convert()
-	 */
-	static inline int processor_nodes_convert(int *_nodes, const int *nodes, int nnodes)
-	{
-		return bostan_nodes_convert(_nodes, nodes, nnodes);
-	}
 
 	/**
 	 * @see bostan_noc_is_ionode0()
@@ -249,6 +269,22 @@
 	static inline int processor_noc_is_cnode(int nodeid)
 	{
 		return (bostan_noc_is_cnode(nodeid));
+	}
+
+	/**
+	 * @see bostan_node_get_num()
+	 */
+	static inline int processor_node_get_num(int nodeid)
+	{
+		return bostan_node_get_num(nodeid);
+	}
+
+	/**
+	 * @see bostan_nodes_convert()
+	 */
+	static inline int processor_nodes_convert(int *_nodes, const int *nodes, int nnodes)
+	{
+		return bostan_nodes_convert(_nodes, nodes, nnodes);
 	}
 
 /**@endcond*/

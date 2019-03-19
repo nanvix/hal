@@ -70,23 +70,9 @@ static void hal_test_sync_create_unlink(void)
  */
 static void hal_test_sync_open_close(void)
 {
-	int tmp;
-	int nodenum;
 	int syncid;
-	int nodes[NODES_AMOUNT];
 
-	nodenum = processor_node_get_num(processor_node_get_id());
-	nodes[0] = nodenum;
-	nodes[1] = nodenum == NODENUM_MASTER ? NODENUM_SLAVE : NODENUM_MASTER;
-
-	KASSERT((syncid = hal_sync_open(nodes, NODES_AMOUNT, HAL_SYNC_ONE_TO_ALL)) >= 0);
-	KASSERT(hal_sync_close(syncid) == 0);
-
-	tmp = nodes[0];
-	nodes[0] = nodes[1];
-	nodes[1] = tmp;
-
-	KASSERT((syncid = hal_sync_open(nodes, NODES_AMOUNT, HAL_SYNC_ALL_TO_ONE)) >= 0);
+	KASSERT((syncid = hal_sync_open()) >= 0);
 	KASSERT(hal_sync_close(syncid) == 0);
 }
 
@@ -112,6 +98,7 @@ struct test sync_tests_api[] = {
 static void test_hal_sync_invalid_create(void)
 {
 	int tmp;
+	int syncid;
 	int nodenum;
 	int nodes[NODES_AMOUNT];
 
@@ -144,6 +131,11 @@ static void test_hal_sync_invalid_create(void)
 	KASSERT(hal_sync_create(nodes, NODES_AMOUNT, HAL_SYNC_ONE_TO_ALL) < 0);
 	KASSERT(hal_sync_create(nodes, NODES_AMOUNT, -1) < 0);
 	KASSERT(hal_sync_create(nodes, NODES_AMOUNT, 1000) < 0);
+
+	KASSERT((syncid = hal_sync_create(nodes, NODES_AMOUNT, HAL_SYNC_ALL_TO_ONE)) >= 0);
+	KASSERT(hal_sync_create(nodes, NODES_AMOUNT, HAL_SYNC_ALL_TO_ONE) < 0);
+	KASSERT(hal_sync_unlink(syncid) == 0);
+	KASSERT(hal_sync_unlink(syncid) < 0);
 }
 
 /**
@@ -151,35 +143,17 @@ static void test_hal_sync_invalid_create(void)
  */
 static void test_hal_sync_invalid_open(void)
 {
-	int tmp;
-	int nodenum;
-	int nodes[NODES_AMOUNT];
+	int syncids[HAL_SYNC_OPEN_MAX];
 
-	nodenum = processor_node_get_num(processor_node_get_id());
-	nodes[0] = nodenum;
-	nodes[1] = nodenum == NODENUM_MASTER ? NODENUM_SLAVE : NODENUM_MASTER;
+	for (int i = 0; i < HAL_SYNC_OPEN_MAX; i++)
+		KASSERT((syncids[i] = hal_sync_open()) >= 0);
+	KASSERT(hal_sync_open() < 0);
 
-	KASSERT(hal_sync_open(NULL, NODES_AMOUNT, HAL_SYNC_ALL_TO_ONE) < 0);
-	KASSERT(hal_sync_open(nodes, -1, HAL_SYNC_ALL_TO_ONE) < 0);
-	KASSERT(hal_sync_open(nodes, 0, HAL_SYNC_ALL_TO_ONE) < 0);
-	KASSERT(hal_sync_open(nodes, 1, HAL_SYNC_ALL_TO_ONE) < 0);
-	KASSERT(hal_sync_open(nodes, 1000, HAL_SYNC_ALL_TO_ONE) < 0);
-	KASSERT(hal_sync_open(nodes, NODES_AMOUNT, HAL_SYNC_ALL_TO_ONE) < 0);
-	KASSERT(hal_sync_open(nodes, NODES_AMOUNT, -1) < 0);
-	KASSERT(hal_sync_open(nodes, NODES_AMOUNT, 1000) < 0);
-
-	tmp = nodes[0];
-	nodes[0] = nodes[1];
-	nodes[1] = tmp;
-
-	KASSERT(hal_sync_open(NULL, NODES_AMOUNT, HAL_SYNC_ONE_TO_ALL) < 0);
-	KASSERT(hal_sync_open(nodes, -1, HAL_SYNC_ONE_TO_ALL) < 0);
-	KASSERT(hal_sync_open(nodes, 0, HAL_SYNC_ONE_TO_ALL) < 0);
-	KASSERT(hal_sync_open(nodes, 1, HAL_SYNC_ONE_TO_ALL) < 0);
-	KASSERT(hal_sync_open(nodes, 1000, HAL_SYNC_ONE_TO_ALL) < 0);
-	KASSERT(hal_sync_open(nodes, NODES_AMOUNT, HAL_SYNC_ONE_TO_ALL) < 0);
-	KASSERT(hal_sync_open(nodes, NODES_AMOUNT, -1) < 0);
-	KASSERT(hal_sync_open(nodes, NODES_AMOUNT, 1000) < 0);
+	for (int i = 0; i < HAL_SYNC_OPEN_MAX; i++)
+	{
+		KASSERT(hal_sync_close(syncids[i]) == 0);
+		KASSERT(hal_sync_close(syncids[i]) < 0);
+	}
 }
 
 /**
@@ -197,15 +171,9 @@ static void test_hal_sync_invalid_unlink(void)
  */
 static void test_hal_sync_bad_unlink(void)
 {
-	int nodenum;
 	int syncid;
-	int nodes[NODES_AMOUNT];
 
-	nodenum = processor_node_get_num(processor_node_get_id());
-	nodes[0] = nodenum;
-	nodes[1] = nodenum == NODENUM_MASTER ? NODENUM_SLAVE : NODENUM_MASTER;
-
-	KASSERT((syncid = hal_sync_open(nodes, NODES_AMOUNT, HAL_SYNC_ONE_TO_ALL)) >= 0);
+	KASSERT((syncid = hal_sync_open()) >= 0);
 	KASSERT(hal_sync_unlink(syncid) < 0);
 	KASSERT(hal_sync_close(syncid) == 0);
 }
@@ -261,15 +229,9 @@ static void test_hal_sync_bad_close(void)
  */
 static void test_hal_sync_double_close(void)
 {
-	int nodenum;
 	int syncid;
-	int nodes[NODES_AMOUNT];
 
-	nodenum = processor_node_get_num(processor_node_get_id());
-	nodes[0] = nodenum;
-	nodes[1] = nodenum == NODENUM_MASTER ? NODENUM_SLAVE : NODENUM_MASTER;
-
-	KASSERT((syncid = hal_sync_open(nodes, NODES_AMOUNT, HAL_SYNC_ONE_TO_ALL)) >= 0);
+	KASSERT((syncid = hal_sync_open()) >= 0);
 	KASSERT(hal_sync_close(syncid) == 0);
 	KASSERT(hal_sync_close(syncid) < 0);
 }
@@ -279,9 +241,48 @@ static void test_hal_sync_double_close(void)
  */
 static void test_hal_sync_invalid_signal(void)
 {
-	KASSERT(hal_sync_signal(-1) < 0);
-	KASSERT(hal_sync_signal(1) < 0);
-	KASSERT(hal_sync_signal(1000000) < 0);
+	int tmp;
+	int nodenum;
+	int syncid;
+	int nodes[NODES_AMOUNT];
+
+	nodenum = processor_node_get_num(processor_node_get_id());
+	nodes[0] = nodenum;
+	nodes[1] = nodenum == NODENUM_MASTER ? NODENUM_SLAVE : NODENUM_MASTER;
+
+	KASSERT(hal_sync_signal(-1, nodes, NODES_AMOUNT, HAL_SYNC_ONE_TO_ALL) < 0);
+	KASSERT(hal_sync_signal(1, nodes, NODES_AMOUNT, HAL_SYNC_ONE_TO_ALL) < 0);
+	KASSERT(hal_sync_signal(1000000, nodes, NODES_AMOUNT, HAL_SYNC_ONE_TO_ALL) < 0);
+
+	KASSERT((syncid = hal_sync_open()) >= 0);
+
+	nodenum = processor_node_get_num(processor_node_get_id());
+	nodes[0] = nodenum;
+	nodes[1] = nodenum == NODENUM_MASTER ? NODENUM_SLAVE : NODENUM_MASTER;
+
+	KASSERT(hal_sync_signal(syncid, NULL, NODES_AMOUNT, HAL_SYNC_ALL_TO_ONE) < 0);
+	KASSERT(hal_sync_signal(syncid, nodes, -1, HAL_SYNC_ALL_TO_ONE) < 0);
+	KASSERT(hal_sync_signal(syncid, nodes, 0, HAL_SYNC_ALL_TO_ONE) < 0);
+	KASSERT(hal_sync_signal(syncid, nodes, 1, HAL_SYNC_ALL_TO_ONE) < 0);
+	KASSERT(hal_sync_signal(syncid, nodes, 1000, HAL_SYNC_ALL_TO_ONE) < 0);
+	KASSERT(hal_sync_signal(syncid, nodes, NODES_AMOUNT, HAL_SYNC_ALL_TO_ONE) < 0);
+	KASSERT(hal_sync_signal(syncid, nodes, NODES_AMOUNT, -1) < 0);
+	KASSERT(hal_sync_signal(syncid, nodes, NODES_AMOUNT, 1000) < 0);
+
+	tmp = nodes[0];
+	nodes[0] = nodes[1];
+	nodes[1] = tmp;
+
+	KASSERT(hal_sync_signal(syncid, NULL, NODES_AMOUNT, HAL_SYNC_ONE_TO_ALL) < 0);
+	KASSERT(hal_sync_signal(syncid, nodes, -1, HAL_SYNC_ONE_TO_ALL) < 0);
+	KASSERT(hal_sync_signal(syncid, nodes, 0, HAL_SYNC_ONE_TO_ALL) < 0);
+	KASSERT(hal_sync_signal(syncid, nodes, 1, HAL_SYNC_ONE_TO_ALL) < 0);
+	KASSERT(hal_sync_signal(syncid, nodes, 1000, HAL_SYNC_ONE_TO_ALL) < 0);
+	KASSERT(hal_sync_signal(syncid, nodes, NODES_AMOUNT, HAL_SYNC_ONE_TO_ALL) < 0);
+	KASSERT(hal_sync_signal(syncid, nodes, NODES_AMOUNT, -1) < 0);
+	KASSERT(hal_sync_signal(syncid, nodes, NODES_AMOUNT, 1000) < 0);
+
+	KASSERT(hal_sync_close(syncid) == 0);
 }
 
 /**
@@ -298,7 +299,7 @@ static void test_hal_sync_bad_signal(void)
 	nodes[1] = nodenum == NODENUM_MASTER ? NODENUM_SLAVE : NODENUM_MASTER;
 
 	KASSERT((syncid = hal_sync_create(nodes, NODES_AMOUNT, HAL_SYNC_ALL_TO_ONE)) >= 0);
-	KASSERT(hal_sync_signal(syncid) < 0);
+	KASSERT(hal_sync_signal(syncid, nodes, NODES_AMOUNT, HAL_SYNC_ALL_TO_ONE) < 0);
 	KASSERT(hal_sync_unlink(syncid) == 0);
 }
 
@@ -317,15 +318,9 @@ static void test_hal_sync_invalid_wait(void)
  */
 static void test_hal_sync_bad_wait(void)
 {
-	int nodenum;
 	int syncid;
-	int nodes[NODES_AMOUNT];
 
-	nodenum = processor_node_get_num(processor_node_get_id());
-	nodes[0] = nodenum;
-	nodes[1] = nodenum == NODENUM_MASTER ? NODENUM_SLAVE : NODENUM_MASTER;
-
-	KASSERT((syncid = hal_sync_open(nodes, NODES_AMOUNT, HAL_SYNC_ONE_TO_ALL)) >= 0);
+	KASSERT((syncid = hal_sync_open()) >= 0);
 	KASSERT(hal_sync_wait(syncid) < 0);
 	KASSERT(hal_sync_close(syncid) == 0);
 }

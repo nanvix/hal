@@ -38,9 +38,12 @@
 	/**@}*/
 
 	/**
-	 * @brief Number of reserved tags.
+	 * @name Number of reserved tags.
 	 */
-	#define BOSTAN_NR_RESERVED_TAGS 0
+	/**@{*/
+	#define BOSTAN_NR_RESERVED_RX_TAGS 2 /**< Reserved receiver tag. */
+	#define BOSTAN_NR_RESERVED_TX_TAGS 0 /**< Reserved transfer tag. */
+	/**@}*/
 
 	/**
 	 * @brief Number of interface.

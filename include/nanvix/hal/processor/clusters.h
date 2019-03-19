@@ -28,12 +28,27 @@
 	/* Processor Interface Implementation */
 	#include <nanvix/hal/processor/_processor.h>
 
+	#include <nanvix/klib.h>
+
 /*============================================================================*
  * Interface Implementation Checking                                          *
  *============================================================================*/
 
+	/* Feature Checking */
+	#ifndef PROCESSOR_IS_MULTICLUSTER
+	#error "Is this processor multicluster?"
+	#endif
+
 	/* Multicluster Processor*/
 	#if (PROCESSOR_IS_MULTICLUSTER)
+
+		/* Constants */
+		#ifndef _PROCESSOR_CCLUSTERS_NUM
+		#error "_PROCESSOR_CCLUSTERS_NUM not defined"
+		#endif
+		#ifndef _PROCESSOR_IOCLUSTERS_NUM
+		#error "_PROCESSOR_IOCLUSTERS_NUM not defined"
+		#endif
 
 		/* Functions */
 		#ifndef __cluster_get_id_fn
@@ -46,10 +61,16 @@
 		#error "cluster_is_iocluster() not defined?"
 		#endif
 
+	#else
+
+		/* Constants */
+		#define _PROCESSOR_CCLUSTERS_NUM  0
+		#define _PROCESSOR_IOCLUSTERS_NUM 1
+
 	#endif
 
 /*============================================================================*
- * Cache Interface                                                             *
+ * Cluster Interface                                                          *
  *============================================================================*/
 
 /**
@@ -87,7 +108,7 @@
 #else
 	static inline int cluster_is_ccluster(int clusterid)
 	{
-		((void) clusterid);
+		UNUSED(clusterid);
 
 		return (0);
 	}
@@ -106,9 +127,9 @@
 #else
 	static inline int cluster_is_iocluster(int clusterid)
 	{
-		((void) clusterid);
+		UNUSED(clusterid);
 
-		return (0);
+		return (1);
 	}
 #endif
 

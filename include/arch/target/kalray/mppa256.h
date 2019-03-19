@@ -57,13 +57,20 @@
 	 * @name Provided Features
 	 */
 	/**@{*/
-	#define TARGET_HAS_STDOUT 1
+	#define TARGET_HAS_STDOUT 1 /**< Standard Output feature */
+	#define TARGET_HAS_SYNC   1 /**< Synchronization feature */
 	/**@}*/
 
 	/**
 	 * @brief Port-Mapped I/O for stdout.
 	 */
 	#define TARGET_STDOUT_PMIO 4094
+
+	/**
+	 * @name Provided Features
+	 */
+	/**@{*/
+	/**@}*/
 
 /**@endcond*/
 

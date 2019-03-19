@@ -57,7 +57,8 @@
 	 * @name Provided Features
 	 */
 	/**@{*/
-	#define PROCESSOR_IS_MULTICLUSTER 1
+	#define PROCESSOR_IS_MULTICLUSTER 1 /**< Multicluster feature */
+	#define PROCESSOR_HAS_NOC         1 /**< NoC feature          */
 	/**@}*/
 
 /**@endcond*/

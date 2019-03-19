@@ -63,15 +63,15 @@
 	 */
 	/**@{*/
 	#define BOSTAN_CNOC_RX_MAX 128 /**< Receiver amount. */
-    #define BOSTAN_CNOC_TX_MAX 1   /**< Sender amount.   */
+    #define BOSTAN_CNOC_TX_MAX 4   /**< Sender amount.   */
 	/**@}*/
 
 	/**
 	 * @name Initial C-NoC tag.
 	 */
 	/**@{*/
-	#define BOSTAN_CNOC_RX_BASE BOSTAN_NR_RESERVED_TAGS /**< Receiver tag offset. */
-	#define BOSTAN_CNOC_TX_BASE BOSTAN_NR_RESERVED_TAGS /**< Transfer tag offset. */
+	#define BOSTAN_CNOC_RX_BASE BOSTAN_NR_RESERVED_RX_TAGS /**< Receiver tag offset. */
+	#define BOSTAN_CNOC_TX_BASE BOSTAN_NR_RESERVED_TX_TAGS /**< Transfer tag offset. */
 	/**@}*/
 
 	/**
@@ -80,6 +80,16 @@
 	/**@{*/
 	#define BOSTAN_NR_CNOC_RX (BOSTAN_CNOC_RX_MAX - BOSTAN_CNOC_RX_BASE) /**< Number of receive buffers.  */
 	#define BOSTAN_NR_CNOC_TX (BOSTAN_CNOC_TX_MAX - BOSTAN_CNOC_TX_BASE) /**< Number of transfer buffers. */
+	/**@}*/
+
+	/**
+	 * @name Identifies C-NoC transfer tag reserved for Communication services.
+	 */
+	/**@{*/
+	#define BOSTAN_MAILBOX_CNOC_TX_TAG 0 /**< C-NoC Transfer Tag reserved for Mailbox. */
+	#define BOSTAN_PORTAL_CNOC_TX_TAG  1 /**< C-NoC Transfer Tag reserved for Portal.  */
+	#define BOSTAN_SYNC_CNOC_TX_TAG    2 /**< C-NoC Transfer Tag reserved for Sync.    */
+	#define BOSTAN_UNUSED_CNOC_TX_TAG  3 /**< C-NoC Transfer Tag unused.               */
 	/**@}*/
 
 /*============================================================================*

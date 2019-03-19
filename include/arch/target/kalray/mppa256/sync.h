@@ -46,29 +46,16 @@
 	 * @brief Mode of synchronization points.
 	 */
 	/**@{*/
-	#define MPPA256_SYNC_RX 0 /**< Reciever type. */
-	#define MPPA256_SYNC_TX 1 /**< Sender type.   */
+	#define MPPA256_SYNC_RX BOSTAN_NOC_RX_TYPE /**< Reciever type. */
+	#define MPPA256_SYNC_TX BOSTAN_NOC_TX_TYPE /**< Sender type.   */
 	/**@}*/
 
 	/**
-	 * @name Number of syncs per DMA channel.
+	 * @name Maximum number of syncs points.
 	 */
 	/**@{*/
-	#define MPPA256_NR_SYNC_RX_DMA (BOSTAN_NR_CNOC_RX)   /**< Amount of receiver sync points per DMA channel. */
-	#define MPPA256_NR_SYNC_TX_DMA (BOSTAN_NR_NOC_NODES) /**< Amount of sender sync points per DMA channel.   */
-	/**@}*/
-
-	/**
-	 * @name Maximum number of syncs.
-	 */
-	/**@{*/
-	#if defined(__node__)
-		#define MPPA256_NR_SYNC_RX_MAX (MPPA256_NR_SYNC_RX_DMA) /**< Amount of receiver sync points. */
-		#define MPPA256_NR_SYNC_TX_MAX (MPPA256_NR_SYNC_TX_DMA) /**< Amount of sender sync points.   */
-	#elif defined(__ioddr__) || defined(__ioeth__)
-		#define MPPA256_NR_SYNC_RX_MAX (K1BIO_CORES_NUM * MPPA256_NR_SYNC_RX_DMA) /**< Amount of receiver sync points. */
-		#define MPPA256_NR_SYNC_TX_MAX (K1BIO_CORES_NUM * MPPA256_NR_SYNC_TX_DMA) /**< Amount of sender sync points.   */
-	#endif
+	#define MPPA256_SYNC_CREATE_MAX (BOSTAN_SYNC_CREATE_PER_DMA * BOSTAN_NR_INTERFACES) /**< Maximum amount of create syncs. */
+	#define MPPA256_SYNC_OPEN_MAX   (BOSTAN_SYNC_OPEN_PER_DMA * BOSTAN_NR_INTERFACES)   /**< Maximum amount of open syncs.   */
 	/**@}*/
 
 	/**
@@ -85,13 +72,9 @@
 	/**
 	 * @brief Allocates and configures the sending side of the synchronization point.
 	 *
-	 * @param nodes  IDs of target NoC nodes.
-	 * @param nnodes Number of target NoC nodes.
-	 * @param type   Type of synchronization point.
-	 *
 	 * @return The tag of underlying resource ID.
 	 */
-	EXTERN int mppa256_sync_open(const int *nodes, int nnodes, int type);
+	EXTERN int mppa256_sync_open(void);
 
 	/**
 	 * @brief Releases and cleans receiver buffer.
@@ -124,10 +107,13 @@
 	 * @brief Send signal on a specific synchronization point.
 	 *
 	 * @param syncid Resource ID.
-	 *
+	 * @param nodes  IDs of target NoC nodes.
+	 * @param nnodes Number of target NoC nodes.
+	 * @param type   Type of synchronization point.
+	 * 
 	 * @return Zero if send signal correctly and non zero otherwise.
 	 */
-	EXTERN int mppa256_sync_signal(int syncid);
+	EXTERN int mppa256_sync_signal(int syncid, const int *nodes, int nnodes, int type);
 
 /*============================================================================*
  *                              Exported Interface                            *
@@ -137,13 +123,12 @@
 	 * @name Provided Interface
 	 */
 	/**@{*/
-	#define __hal_sync
-	#define __hal_sync_create /**< hal_sync_create()    */
-	#define __hal_sync_open   /**< hal_sync_open()      */
-	#define __hal_sync_unlink /**< hal_sync_unlink()    */
-	#define __hal_sync_close  /**< hal_sync_close()     */
-	#define __hal_sync_wait   /**< hal_sync_wait()      */
-	#define __hal_sync_signal /**< hal_sync_signal()    */
+	#define __hal_sync_create_fn /**< hal_sync_create()    */
+	#define __hal_sync_open_fn   /**< hal_sync_open()      */
+	#define __hal_sync_unlink_fn /**< hal_sync_unlink()    */
+	#define __hal_sync_close_fn  /**< hal_sync_close()     */
+	#define __hal_sync_wait_fn   /**< hal_sync_wait()      */
+	#define __hal_sync_signal_fn /**< hal_sync_signal()    */
 	/**@}*/
 
 	/**
@@ -156,9 +141,13 @@
 	/**@}*/
 
 	/**
-	 * @see MPPA256_NR_SYNC
+	 * @see BOSTAN_SYNC_CREATE_MAX
+	 * @see BOSTAN_SYNC_OPEN_MAX
 	 */
-	#define HAL_NR_SYNC (MPPA256_NR_SYNC_RX_MAX+MPPA256_NR_SYNC_TX_MAX)
+	/**@{*/
+	#define HAL_SYNC_CREATE_MAX MPPA256_SYNC_CREATE_MAX
+	#define HAL_SYNC_OPEN_MAX   MPPA256_SYNC_OPEN_MAX
+	/**@}*/
 
 	/**
 	 * @see mppa256_sync_create()
@@ -171,9 +160,9 @@
 	/**
 	 * @see mppa256_sync_open()
 	 */
-	static inline int hal_sync_open(const int *nodes, int nnodes, int type)
+	static inline int hal_sync_open(void)
 	{
-		return mppa256_sync_open(nodes, nnodes, type);
+		return mppa256_sync_open();
 	}
 
 	/**
@@ -203,9 +192,9 @@
 	/**
 	 * @see mppa256_sync_signal()
 	 */
-	static inline int hal_sync_signal(int syncid)
+	static inline int hal_sync_signal(int syncid, const int *nodes, int nnodes, int type)
 	{
-		return mppa256_sync_signal(syncid);
+		return mppa256_sync_signal(syncid, nodes, nnodes, type);
 	}
 
 #endif /* ARCH_MPPA256_SYNC_H_ */
