@@ -42,7 +42,7 @@
 	/**
 	 * @brief Execution context size (in bytes).
 	 */
-	#define OR1K_CONTEXT_SIZE 140
+	#define OR1K_CONTEXT_SIZE 144
 
 	/**
 	 * @name Offsets to the Context Structure
@@ -103,6 +103,7 @@
 		or1k_word_t epcr;                                   /**< Shadow Program Counter Register    */
 		or1k_word_t eear;                                   /**< Shadow Effective Address Register  */
 		or1k_word_t  esr;                                   /**< Shadow Status Register             */
+		or1k_byte_t RESERVED[4];                            /**< Required padding                   */
 	} __attribute__((packed));
 
 /**@endcond*/
