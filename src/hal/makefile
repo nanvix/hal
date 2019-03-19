@@ -21,12 +21,13 @@
 # SOFTWARE.
 
 # C Source Files
-C_SRC = $(wildcard *.c)                           \
-        $(wildcard arch/core/$(CORE)/*.c)         \
-        $(wildcard arch/cluster/$(CLUSTER)/*.c)   \
+C_SRC = $(wildcard *.c)                             \
+        $(wildcard arch/core/$(CORE)/*.c)           \
+        $(wildcard arch/cluster/$(CLUSTER)/*.c)     \
         $(wildcard arch/processor/$(PROCESSOR)/*.c) \
-        $(wildcard arch/target/$(TARGET)/*.c)     \
-        $(wildcard klib/*.c)                      \
+        $(wildcard arch/target/$(TARGET)/*.c)       \
+        $(wildcard core/*.c)                        \
+        $(wildcard klib/*.c)                        \
         $(wildcard stdout/klog.c)
 
 # Asembly Source Files

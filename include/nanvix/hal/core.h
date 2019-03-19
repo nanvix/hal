@@ -87,23 +87,26 @@
 	#endif
 
 	/* Functions */
-	#ifndef __core_get_id
+	#ifndef ___core_reset_fn
+	#error "_core_reset() not defined?"
+	#endif
+	#ifndef __core_clear_fn
+	#error "core_clear() not defined?"
+	#endif
+	#ifndef __core_get_id_fn
 	#error "core_get_id() not defined?"
 	#endif
-	#ifndef __core_shutdown
-	#error "core_shutdown() not defined?"
+	#ifndef __core_notify_fn
+	#error "core_notify() not defined?"
 	#endif
-	#ifndef __core_sleep
-	#error "core_sleep() not defined?"
+	#ifndef __core_poweroff_fn
+	#error "core_poweroff() not defined?"
 	#endif
-	#ifndef __core_start
-	#error "core_start() not defined?"
+	#ifndef __core_setup_fn
+	#error "core_setup() not defined?"
 	#endif
-	#ifndef __core_wakeup
-	#error "core_wakeup() not defined?"
-	#endif
-	#ifndef __core_reset
-	#error "core_reset() not defined?"
+	#ifndef __core_waitclear_fn
+	#error "core_waitclear() not defined?"
 	#endif
 
 /*============================================================================*
@@ -119,11 +122,78 @@
 /**@{*/
 
 	/**
+	 * @name States of a Core
+	 */
+	/**@{*/
+	#define CORE_IDLE      0 /**< Idle        */
+	#define CORE_SLEEPING  1 /**< Sleeping    */
+	#define CORE_RUNNING   2 /**< Running     */
+	#define CORE_RESETTING 3 /**< Resetting   */
+	#define CORE_OFFLINE   4 /**< Powered Off */
+	/**@}*/
+
+	/**
+	 * @brief Core information.
+	 */
+	struct coreinfo
+	{
+		int initialized;     /**< Initialized?      */
+		int state;           /**< State.            */
+		int wakeups;         /**< Wakeup signals.   */
+		void (*start)(void); /**< Starting routine. */
+		spinlock_t lock;     /**< Lock.             */
+	};
+
+	/**
+	 * @brief Cores table.
+	 */
+	EXTERN struct coreinfo cores[];
+
+	/**
+	 * @brief Resets the state of the underlying core.
+	 */
+	EXTERN void core_reset(void);
+
+	/**
+	 * @brief Clears the current IPIs pending of the underlying core.
+	 *
+	 * @author Davidson Francis
+	 */
+	EXTERN void core_clear(void);
+
+	/**
 	 * @brief Gets the ID of the underlying core.
 	 *
 	 * @returns The ID of the underlying core.
 	 */
 	EXTERN int core_get_id(void);
+
+	/**
+	 * @brief Suspends execution until a start signal is received.
+	 */
+	EXTERN void core_idle(void);
+
+	/**
+	 * @brief Sends a signal.
+	 *
+	 * @param coreid ID of the target core.
+	 */
+	EXTERN void core_notify(int coreid);
+
+	/**
+	 * @brief Powers off the underlying core.
+	 */
+	EXTERN void core_poweroff(void);
+
+	/**
+	 * @brief Reset the underlying core.
+	 */
+	EXTERN void core_reset(void);
+
+	/**
+	 * @brief Resumes instruction execution in the underlying core.
+	 */
+	EXTERN void core_run(void);
 
 	/**
 	 * @brief Shutdowns the underlying core.
@@ -138,13 +208,6 @@
 	EXTERN void core_sleep(void);
 
 	/**
-	 * @brief Wakes up a core.
-	 *
-	 * @param coreid ID of the target core.
-	 */
-	EXTERN void core_wakeup(int coreid);
-
-	/**
 	 * @brief Starts a core.
 	 *
 	 * @param coreid ID of the target core.
@@ -153,9 +216,16 @@
 	EXTERN void core_start(int coreid, void (*start)(void));
 
 	/**
-	 * @brief Reset the underlying core.
+	 * @brief Wait and clears the current IPIs pending of the underlying core.
 	 */
-	EXTERN void core_reset(void);
+	EXTERN void core_waitclear(void);
+
+	/**
+	 * @brief Wakes up a core.
+	 *
+	 * @param coreid ID of the target core.
+	 */
+	EXTERN void core_wakeup(int coreid);
 
 /**@}*/
 

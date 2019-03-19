@@ -39,7 +39,9 @@
 
 #ifndef _ASM_FILE_
 
-	#include <arch/core/or1k/core.h>
+
+	#define __NEED_OR1K_REGS
+	#include <arch/core/or1k/regs.h>
 	#include <nanvix/const.h>
 	#include <stdint.h>
 

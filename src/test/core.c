@@ -49,8 +49,8 @@ PRIVATE spinlock_t core_start_lock = SPINLOCK_UNLOCKED;
 /**
  * @brief API Test: Core suspend and wakeup flags.
  */
-#define CORE_RUNNING 0xDEAD /**< Indicates that the core was suspended. */
-#define CORE_WAKEUP  0xC0DE /**< Indicates that the core was waked up.  */
+#define TEST_CORE_RUNNING 0xDEAD /**< Indicates that the core was suspended. */
+#define TEST_CORE_AWAKEN  0xC0DE /**< Indicates that the core is awaken.     */
 
 /*----------------------------------------------------------------------------*
  * Get Core ID                                                                *
@@ -142,7 +142,7 @@ PRIVATE void test_core_suspend_slave_entry(void)
 
 	/* Running. */
 	dcache_invalidate();
-	cores_started = CORE_RUNNING;
+	cores_started = TEST_CORE_RUNNING;
 
 #if (TEST_CORE_VERBOSE)
 	kprintf("core %d suspending", core_get_id());
@@ -153,7 +153,7 @@ PRIVATE void test_core_suspend_slave_entry(void)
 
 	/* Wakeup. */
 	dcache_invalidate();
-	cores_started = CORE_WAKEUP;
+	cores_started = TEST_CORE_AWAKEN;
 
 #if (TEST_CORE_VERBOSE)
 	kprintf("core %d waking up", core_get_id());
@@ -196,7 +196,7 @@ PRIVATE void test_core_suspend_resume_master(void)
 	{
 		dcache_invalidate();
 
-		if (cores_started == CORE_RUNNING)
+		if (cores_started == TEST_CORE_RUNNING)
 		{
 			core_wakeup(i);
 			break;
@@ -210,7 +210,7 @@ PRIVATE void test_core_suspend_resume_master(void)
 	{
 		dcache_invalidate();
 
-		if (cores_started == CORE_WAKEUP)
+		if (cores_started == TEST_CORE_AWAKEN)
 			break;
 	}
 }

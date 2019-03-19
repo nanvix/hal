@@ -22,9 +22,7 @@
  * SOFTWARE.
  */
 
-#define __NEED_CLUSTER_OR1K
-
-#include <arch/cluster/or1k.h>
+#include <nanvix/hal/cluster/cpu.h>
 #include <nanvix/klib.h>
 #include <nanvix/const.h>
 
@@ -79,8 +77,8 @@ PUBLIC NORETURN void or1k_slave_setup(void)
 
 	while (TRUE)
 	{
-		or1k_core_idle();
-		or1k_core_run();
+		core_idle();
+		core_run();
 	}
 }
 
