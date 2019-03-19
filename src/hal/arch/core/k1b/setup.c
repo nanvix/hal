@@ -22,14 +22,12 @@
  * SOFTWARE.
  */
 
-#include <HAL/hal/board/boot_args.h>
-#include <HAL/hal/core/legacy.h>
-#include <mOS_common_types_c.h>
 
-#include <arch/cluster/k1b/cores.h>
-
+#include <nanvix/hal/cluster/cpu.h>
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
+#include <HAL/hal/core/legacy.h>
+#include <mOS_common_types_c.h>
 
 /* Import definitions. */
 EXTERN NORETURN void kmain(int, const char *[]);
@@ -112,8 +110,8 @@ PUBLIC NORETURN void k1b_slave_setup(void)
 
 	while (TRUE)
 	{
-		k1b_core_idle();
-		k1b_core_run();
+		core_idle();
+		core_run();
 	}
 }
 

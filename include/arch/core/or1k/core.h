@@ -38,72 +38,23 @@
 
 #ifndef _ASM_FILE_
 
+	#include <arch/core/or1k/spinlock.h>
 	#include <nanvix/const.h>
 	#include <stdint.h>
 
 #endif /* _ASM_FILE_ */
 
-	/**
-	 * @name States of a Core
-	 */
-	/**@{*/
-	#define OR1K_CORE_IDLE      0 /**< Idle        */
-	#define OR1K_CORE_SLEEPING  1 /**< Sleeping    */
-	#define OR1K_CORE_RUNNING   2 /**< Running     */
-	#define OR1K_CORE_RESETTING 3 /**< Resetting   */
-	#define OR1K_CORE_OFFLINE   4 /**< Powered Off */
-	/**@}*/
-
 #ifndef _ASM_FILE_
 
 	/**
-	 * @brief Gets the ID of the core.
-	 *
-	 * The or1k_core_get_id() returns the ID of the underlying core.
-	 *
-	 * @returns The ID of the underlying core.
+	 * @brief Pending IPIs.
 	 */
-	static inline int or1k_core_get_id(void)
-	{
-		return (or1k_mfspr(OR1K_SPR_COREID));
-	}
+	EXTERN int pending_ipis[];
 
 	/**
-	 * @brief Suspends instruction execution in the underlying core.
+	 * @brief Powers off the underlying core.
 	 */
-	EXTERN void or1k_core_sleep(void);
-
-	/**
-	 * @brief Suspends instruction execution in the underlying core.
-	 */
-	EXTERN void or1k_core_idle(void);
-
-	/**
-	 * @brief Wakes up a core.
-	 *
-	 * @param coreid ID of the target core.
-	 */
-	EXTERN void or1k_core_wakeup(int coreid);
-
-	/**
-	 * @brief Starts a core.
-	 *
-	 * @param coreid ID of the target core.
-	 * @param start  Starting routine to execute.
-	 */
-	EXTERN void or1k_core_start(int coreid, void (*start)(void));
-
-	/**
-	 * @brief Shutdowns the underlying core.
-	 *
-	 * @param status Shutdown status.
-	 */
-	EXTERN void or1k_core_shutdown(int status);	
-
-	/**
-	 * @brief Initializes the underlying core.
-	 */
-	EXTERN void or1k_core_setup(void);
+	EXTERN void or1k_core_poweroff(void);
 
 	/**
 	 * @brief Resets the underlying core.
@@ -120,12 +71,71 @@
 	 *
 	 * @author Davidson Francis
 	 */
-	EXTERN void or1k_core_reset(void);
+	EXTERN void _or1k_core_reset(void);
 
 	/**
-	 * @brief Resumes instruction execution in the underlying core.
+	 * @brief Initializes the underlying core.
 	 */
-	EXTERN void or1k_core_run(void);
+	EXTERN void or1k_core_setup(void);
+
+	/**
+	 * @brief Wait and clears the current IPIs pending of the underlying core.
+	 *
+	 * @author Davidson Francis
+	 */
+	EXTERN void or1k_core_waitclear(void);
+
+	/**
+	 * @brief Gets the ID of the core.
+	 *
+	 * The or1k_core_get_id() returns the ID of the underlying core.
+	 *
+	 * @returns The ID of the underlying core.
+	 */
+	static inline int or1k_core_get_id(void)
+	{
+		return (or1k_mfspr(OR1K_SPR_COREID));
+	}
+
+	/**
+	 * @brief Clears the current IPIs pending of the underlying core.
+	 *
+	 * @author Davidson Francis
+	 */
+	static inline void or1k_core_clear(void)
+	{
+		int mycoreid = or1k_core_get_id();
+
+		/*
+		 * Although pending_ipis should only be used
+		 * within a critical section, this is already
+		 * done by the caller function, hence, there's
+		 * no need to do locks here.
+		 */
+
+		/* Clear pending IPIs in the current core. */
+		pending_ipis[mycoreid] = 0;
+	}
+
+	/**
+	 * @brief Sends a signal.
+	 *
+	 * The or1k_core_notify() function sends a signal to the core whose ID
+	 * equals to @p coreid.
+	 *
+	 * @param coreid ID of the target core.
+	 *
+	 * @bug No sanity check is performed in @p coreid.
+	 *
+	 * @author Davidson Francis
+	 */
+	static inline inline void or1k_core_notify(int coreid)
+	{
+		int mycoreid = or1k_core_get_id();
+
+		/* Set the pending IPI flag. */
+		pending_ipis[coreid] |= (1 << mycoreid);
+	}
 
 #endif /* _ASM_FILE_ */
 
@@ -167,12 +177,13 @@
 	 * @name Exported Functions
 	 */
 	/**@{*/
-	#define __core_get_id   /**< core_get_id()   */
-	#define __core_shutdown /**< core_shutdown() */
-	#define __core_sleep    /**< core_sleep()    */
-	#define __core_wakeup   /**< core_wakeup()   */
-	#define __core_start    /**< core_start()    */
-	#define __core_reset    /**< core_reset()    */
+	#define ___core_reset_fn    /**< _core_reset()    */
+	#define __core_clear_fn     /**< core_clear()     */
+	#define __core_get_id_fn    /**< core_get_id()    */
+	#define __core_notify_fn    /**< core_notify()    */
+	#define __core_poweroff_fn  /**< core_poweroff()  */
+	#define __core_setup_fn     /**< core_setup()     */
+	#define __core_waitclear_fn /**< core_waitclear() */
 	/**@}*/
 
 #ifndef _ASM_FILE_
@@ -188,52 +199,60 @@
 	/**@}*/
 
 	/**
+	 * @see _or1k_core_reset().
+	 */
+	static inline void _core_reset(void)
+	{
+		_or1k_core_reset();
+	}
+
+	/**
+	 * @see or1k_core_clear().
+	 */
+	static inline void core_clear(void)
+	{
+		or1k_core_clear();
+	}
+
+	/**
 	 * @see or1k_core_get_id().
 	 */
 	static inline int core_get_id(void)
 	{
 		return (or1k_core_get_id());
 	}
-	
+
 	/**
-	 * @see or1k_core_sleep().
+	 * @see or1k_core_notify().
 	 */
-	static inline void core_sleep(void)
+	static inline void core_notify(int coreid)
 	{
-		or1k_core_sleep();
+		or1k_core_notify(coreid);
 	}
 
 	/**
-	 * @see or1k_core_wakeup().
+	 * @see or1k_core_poweroff().
 	 */
-	static inline void core_wakeup(int coreid)
+	static inline void core_poweroff(void)
 	{
-		or1k_core_wakeup(coreid);
+		or1k_core_poweroff();
 	}
 
 	/**
-	 * @see or1k_core_start().
+	 * @see or1k_core_setup().
 	 */
-	static inline void core_start(int coreid, void (*start)(void))
+	static inline void core_setup(void)
 	{
-		or1k_core_start(coreid, start);
+		or1k_core_setup();
 	}
 
 	/**
-	 * @see or1k_core_shutdown().
+	 * @see or1k_core_waitclear().
 	 */
-	static inline void core_shutdown(int status)
+	static inline void core_waitclear(void)
 	{
-		or1k_core_shutdown(status);
+		or1k_core_waitclear();
 	}
-
-	/**
-	 * @see or1k_core_reset().
-	 */
-	static inline void core_reset(void)
-	{
-		or1k_core_reset();
-	}	
 
 #endif /* _ASM_FILE_ */
 

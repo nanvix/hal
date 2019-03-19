@@ -38,6 +38,7 @@
 
 #ifndef _ASM_FILE_
 
+	#include <arch/core/i486/spinlock.h>
 	#include <nanvix/const.h>
 	#include <stdint.h>
 
@@ -93,12 +94,13 @@
 	 * @name Exported Functions
 	 */
 	/**@{*/
-	#define __core_get_id   /**< core_get_id()   */
-	#define __core_shutdown /**< core_shutdown() */
-	#define __core_sleep    /**< core_sleep()    */
-	#define __core_wakeup   /**< core_wakeup()   */
-	#define __core_start    /**< core_start()    */
-	#define __core_reset    /**< core_reset()    */
+	#define ___core_reset_fn    /**< _core_reset()    */
+	#define __core_clear_fn     /**< core_clear()     */
+	#define __core_get_id_fn    /**< core_get_id()    */
+	#define __core_notify_fn    /**< core_notify()    */
+	#define __core_poweroff_fn  /**< core_poweroff()  */
+	#define __core_setup_fn     /**< core_setup()     */
+	#define __core_waitclear_fn /**< core_waitclear() */
 	/**@}*/
 
 #ifndef _ASM_FILE_
@@ -114,11 +116,54 @@
 	/**@}*/
 
 	/**
+	 * @todo Implement this function.
+	 */
+	static inline void _core_reset(void)
+	{
+	}
+
+	/**
+	 * @todo Implement this function.
+	 */
+	static inline void core_clear(void)
+	{
+	}
+
+	/**
 	 * @see i486_core_get_id().
 	 */
 	static inline int core_get_id(void)
 	{
 		return (i486_core_get_id());
+	}
+
+	/**
+	 * @todo Implement this function.
+	 */
+	static inline void core_notify(int coreid)
+	{
+		((void) coreid);
+	}
+
+	/**
+	 * @todo Implement this function.
+	 */
+	static inline void core_poweroff(void)
+	{
+	}
+
+	/**
+	 * @todo Implement this function.
+	 */
+	static inline void core_setup()
+	{
+	}
+
+	/**
+	 * @todo Implement this function.
+	 */
+	static inline void core_waitclear(void)
+	{
 	}
 
 #endif /* _ASM_FILE_ */

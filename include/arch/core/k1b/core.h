@@ -30,74 +30,19 @@
  */
 /**@{*/
 
+	/* Must comme first. */
 	#define __NEED_CORE_TYPES
+
 	#include <arch/core/k1b/types.h>
+	#include <arch/core/k1b/spinlock.h>
+	#include <HAL/hal/board/boot_args.h>
 	#include <mOS_vcore_u.h>
+	#include <nanvix/const.h>
 
 	/**
-	 * @name States of a Core
+	 * @brief Event line used for signals.
 	 */
-	/**@{*/
-	#define K1B_CORE_IDLE      0 /**< Idle        */
-	#define K1B_CORE_SLEEPING  1 /**< Sleeping    */
-	#define K1B_CORE_RUNNING   2 /**< Running     */
-	#define K1B_CORE_RESETTING 3 /**< Resetting   */
-	#define K1B_CORE_OFFLINE   4 /**< Powered Off */
-	/**@}*/
-
-	/**
-	 * @brief Gets the ID of the core.
-	 *
-	 * The k1b_core_get_id() returns the ID of the underlying core.
-	 *
-	 * @returns The ID of the underlying core.
-	 */
-	static inline int k1b_core_get_id(void)
-	{
-		return (__k1_get_cpu_id());
-	}
-
-	/**
-	 * @brief Initializes the underlying core.
-	 */
-	extern void k1b_core_setup(void);
-
-	/**
-	 * @brief Resumes instruction execution in the underlying core.
-	 */
-	extern void k1b_core_run(void);
-
-	/**
-	 * @brief Starts a core.
-	 *
-	 * @param coreid ID of the target core.
-	 * @param start  Starting routine to execute.
-	 */
-	extern void k1b_core_start(int coreid, void (*start)(void));
-
-	/**
-	 * @brief Wakes up a core.
-	 *
-	 * @param coreid ID of the target core.
-	 */
-	extern void k1b_core_wakeup(int coreid);
-
-	/**
-	 * @brief Suspends instruction execution in the underlying core.
-	 */
-	extern void k1b_core_sleep(void);
-
-	/**
-	 * @brief Suspends instruction execution in the underlying core.
-	 */
-	extern void k1b_core_idle(void);
-
-	/**
-	 * @brief Shutdowns the underlying core.
-	 *
-	 * @param status Shutdown status.
-	 */
-	extern void k1b_core_shutdown(int status);
+	#define K1B_EVENT_LINE 0
 
 	/**
 	 * @brief Resets the underlying core.
@@ -114,7 +59,70 @@
 	 *
 	 * @author Pedro Henrique Penna
 	 */
-	extern void k1b_core_reset(void);
+	EXTERN NORETURN void _k1b_core_reset(void);
+
+	/**
+	 * @brief Initializes the underlying core.
+	 */
+	EXTERN void k1b_core_setup(void);
+
+	/**
+	 * @brief Gets the ID of the core.
+	 *
+	 * The k1b_core_get_id() returns the ID of the underlying core.
+	 *
+	 * @returns The ID of the underlying core.
+	 */
+	static inline int k1b_core_get_id(void)
+	{
+		return (__k1_get_cpu_id());
+	}
+
+	/**
+	 * @brief Clears IPIs in the underlying core.
+	 */
+	static inline void k1b_core_clear(void)
+	{
+		mOS_pe_event_clear(K1B_EVENT_LINE);
+	}
+
+	/**
+	 * @brief Waits and clears IPIs in the underlying core.
+	 */
+	static inline void k1b_core_waitclear(void)
+	{
+		mOS_pe_event_waitclear(K1B_EVENT_LINE);
+	}
+
+	/**
+	 * @brief Sends a signal.
+	 *
+	 * The k1b_core_notify() function sends a signal to the core whose ID
+	 * equals to @p coreid.
+	 *
+	 * @param coreid ID of the target core.
+	 *
+	 * @bug No sanity check is performed in @p coreid.
+	 *
+	 * @author Pedro Henrique Penna
+	 */
+	static inline void k1b_core_notify(int coreid)
+	{
+		mOS_pe_notify(
+			1 << coreid,    /* Target cores.                            */
+			K1B_EVENT_LINE, /* Event line.                              */
+			1,              /* Notify an event? (I/O clusters only)     */
+			0               /* Notify an interrupt? (I/O clusters only) */
+		);
+	}
+
+	/**
+	 * @brief Powers off the underlying core.
+	 */
+	static inline void k1b_core_poweroff(void)
+	{
+		mOS_exit(__k1_spawn_type() != __MPPA_MPPA_SPAWN, 0);
+	}
 
 /**@}*/
 
@@ -130,14 +138,14 @@
 	 * @brief Exported Constants
 	 */
 	/**@{*/
-	#define BYTE_BIT   K1B_BYTE_BIT   /**< @see BYTE_BIT   */
-	#define HWORD_BIT  K1B_HWORD_BIT  /**< @see HWORD_BIT  */
-	#define WORD_BIT   K1B_WORD_BIT   /**< @see WORD_BIT   */
-	#define DWORD_BIT  K1B_DWORD_BIT  /**< @see DWORD_BIT  */
-	#define BYTE_SIZE  K1B_SIZE_SIZE  /**< @see BYTE_SIZE  */
-	#define HWORD_SIZE K1B_HWORD_SIZE /**< @see HWORD_SIZE */
-	#define WORD_SIZE  K1B_WORD_SIZE  /**< @see WORD_SIZE  */
-	#define DWORD_SIZE K1B_DWORD_SIZE /**< @see DWORD_SIZE */
+	#define BYTE_BIT       K1B_BYTE_BIT       /**< @see BYTE_BIT       */
+	#define HWORD_BIT      K1B_HWORD_BIT      /**< @see HWORD_BIT      */
+	#define WORD_BIT       K1B_WORD_BIT       /**< @see WORD_BIT       */
+	#define DWORD_BIT      K1B_DWORD_BIT      /**< @see DWORD_BIT      */
+	#define BYTE_SIZE      K1B_SIZE_SIZE      /**< @see BYTE_SIZE      */
+	#define HWORD_SIZE     K1B_HWORD_SIZE     /**< @see HWORD_SIZE     */
+	#define WORD_SIZE      K1B_WORD_SIZE      /**< @see WORD_SIZE      */
+	#define DWORD_SIZE     K1B_DWORD_SIZE     /**< @see DWORD_SIZE     */
 	/**@}*/
 
 	/**
@@ -154,12 +162,13 @@
 	 * @name Exported Functions
 	 */
 	/**@{*/
-	#define __core_get_id   /**< core_get_id()   */
-	#define __core_shutdown /**< core_shutdown() */
-	#define __core_sleep    /**< core_sleep()    */
-	#define __core_wakeup   /**< core_wakeup()   */
-	#define __core_start    /**< core_start()    */
-	#define __core_reset    /**< core_reset()    */
+	#define ___core_reset_fn    /**< _core_reset()    */
+	#define __core_clear_fn     /**< core_clear()     */
+	#define __core_get_id_fn    /**< core_get_id()    */
+	#define __core_notify_fn    /**< core_notify()    */
+	#define __core_poweroff_fn  /**< core_poweroff()  */
+	#define __core_setup_fn     /**< core_setup()     */
+	#define __core_waitclear_fn /**< core_waitclear() */
 	/**@}*/
 
 	/**
@@ -173,6 +182,22 @@
 	/**@}*/
 
 	/**
+	 * @see _k1b_core_reset().
+	 */
+	static inline void _core_reset(void)
+	{
+		_k1b_core_reset();
+	}
+
+	/**
+	 * @see k1b_core_clear().
+	 */
+	static inline void core_clear(void)
+	{
+		k1b_core_clear();
+	}
+
+	/**
 	 * @see k1b_core_get_id().
 	 */
 	static inline int core_get_id(void)
@@ -181,43 +206,35 @@
 	}
 
 	/**
-	 * @see k1b_core_sleep().
+	 * @see k1b_core_notify()
 	 */
-	static inline void core_sleep(void)
+	static inline void core_notify(int coreid)
 	{
-		k1b_core_sleep();
+		k1b_core_notify(coreid);
 	}
 
 	/**
-	 * @see k1b_core_wakeup().
+	 * @see k1b_core_poweroff().
 	 */
-	static inline void core_wakeup(int coreid)
+	static inline void core_poweroff(void)
 	{
-		k1b_core_wakeup(coreid);
+		k1b_core_poweroff();
 	}
 
 	/**
-	 * @see k1b_core_start().
+	 * @see k1b_core_setup()
 	 */
-	static inline void core_start(int coreid, void (*start)(void))
+	static inline void core_setup()
 	{
-		k1b_core_start(coreid, start);
+		k1b_core_setup();
 	}
 
 	/**
-	 * @see k1b_core_shutdown().
+	 * @see k1b_core_waitclear().
 	 */
-	static inline void core_shutdown(int status)
+	static inline void core_waitclear(void)
 	{
-		k1b_core_shutdown(status);
-	}
-
-	/**
-	 * @see k1b_core_reset().
-	 */
-	static inline void core_reset(void)
-	{
-		k1b_core_reset();
+		k1b_core_waitclear();
 	}
 
 /**@endcond*/
