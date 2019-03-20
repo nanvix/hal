@@ -55,7 +55,9 @@ PRIVATE void default_handler(int num)
  */
 PUBLIC int interrupt_register(int num, interrupt_handler_t handler)
 {
-	KASSERT(num >= 0);
+	/* Invalid interrupt number. */
+	if ((num < 0) || (num >= HAL_INT_NR))
+		return (-EINVAL);
 
 	/* Handler function already registered. */
 	if (interrupts[num].handled)
@@ -78,7 +80,9 @@ PUBLIC int interrupt_register(int num, interrupt_handler_t handler)
  */
 PUBLIC int interrupt_unregister(int num)
 {
-	KASSERT(num >= 0);
+	/* Invalid interrupt number. */
+	if ((num < 0) || (num >= HAL_INT_NR))
+		return (-EINVAL);
 
 	/* No handler function is registered. */
 	if (!interrupts[num].handled)

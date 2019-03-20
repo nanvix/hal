@@ -67,6 +67,11 @@
 	/**@}*/
 
 	/**
+	 * @brief Number of hardware interrupts in the i486 architecture.
+	 */
+	#define I486_NUM_HWINT 16
+
+	/**
 	 * @brief Number of interrupt levels.
 	 */
 	#define I486_NUM_INTLVL 6
@@ -113,17 +118,20 @@
 	 * @brief Masks an interrupt.
 	 *
 	 * @param intnum Number of the target interrupt.
+	 *
+	 * @returns Upon successful completion, zero is returned. Upon
+	 * failure, a negative error code is returned instead.
 	 */
-	EXTERN void i486_pic_mask(int intnum);
+	EXTERN int i486_pic_mask(int intnum);
 
 	/**
 	 * @see i486_pic_mask()
 	 *
 	 * @cond i486
 	 */
-	static inline void interrupt_mask(int intnum)
+	static inline int interrupt_mask(int intnum)
 	{
-		i486_pic_mask(intnum);
+		return (i486_pic_mask(intnum));
 	}
 	/**@endcond*/
 
@@ -131,17 +139,20 @@
 	 * @brief Unmasks an interrupt.
 	 *
 	 * @param intnum Number of the target interrupt.
+	 *
+	 * @returns Upon successful completion, zero is returned. Upon
+	 * failure, a negative error code is returned instead.
 	 */
-	EXTERN void i486_pic_unmask(int intnum);
+	EXTERN int i486_pic_unmask(int intnum);
 
 	/**
 	 * @see i486_pic_unmask()
 	 *
 	 * @cond i486
 	 */
-	static inline void interrupt_unmask(int intnum)
+	static inline int interrupt_unmask(int intnum)
 	{
-		i486_pic_unmask(intnum);
+		return (i486_pic_unmask(intnum));
 	}
 	/**@endcond*/
 

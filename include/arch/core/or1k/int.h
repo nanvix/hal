@@ -46,11 +46,6 @@
 
 #endif /* _ASM_FILE_ */
 
-	/**
-	 * @brief Number of hardware interrupts in the or1k architecture.
-	 */
-	#define OR1K_NUM_HWINT 3
-
 #ifndef _ASM_FILE_
 
 	/**

@@ -38,12 +38,8 @@
 /**@{*/
 
 	#include <nanvix/const.h>
+	#include <arch/core/i486/8259.h>
 	#include <arch/core/i486/context.h>
-
-	/**
-	 * @brief Number of hardware interrupts in the i486 architecture.
-	 */
-	#define I486_NUM_HWINT 16
 
 	/**
 	 * @name Hardware Interrupts for the IBM PC Target

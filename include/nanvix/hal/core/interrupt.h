@@ -133,8 +133,11 @@
 	 * @brief Masks an interrupt.
 	 *
 	 * @param intnum Number of the target interrupt.
+	 *
+	 * @returns Upon successful completion, zero is returned. Upon
+	 * failure, a negative error code is returned instead.
 	 */
-	EXTERN void interrupt_mask(int intnum);
+	EXTERN int interrupt_mask(int intnum);
 
 	/**
 	 * @brief Unmasks an interrupt.
@@ -144,7 +147,7 @@
 	 * @returns Upon successful completion, zero is returned. Upon
 	 * failure, a negative error number is returned instead.
 	 */
-	EXTERN void interrupt_unmask(int intnum);
+	EXTERN int interrupt_unmask(int intnum);
 
 	/**
 	 * @brief Registers an interrupt handler.

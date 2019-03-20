@@ -33,7 +33,12 @@
  */
 /**@{*/
 
+	/* Must come first. */
+	#define __NEED_K1B_IVT
+
+	#include <arch/core/k1b/ivt.h>
 	#include <mOS_vcore_u.h>
+	#include <errno.h>
 	#include <stdint.h>
 
 	/**
@@ -213,11 +218,20 @@
 	 * the interrupt @p intnum is hooked up in the underlying k1b
 	 * core.
 	 *
+	 * @returns Upon successful completion, zero is returned. Upon
+	 * failure, a negative error code is returned instead.
+	 *
 	 * @param intnum Number of the target interrupt.
 	 */
-	static inline void k1b_pic_mask(int intnum)
+	static inline int k1b_pic_mask(int intnum)
 	{
+		/* Invalid interrupt number. */
+		if ((intnum < 0) || (intnum >= K1B_NUM_HWINT))
+			return (-EINVAL);
+
 		mOS_it_disable_num(k1b_irqs[intnum]);
+
+		return (0);
 	}
 
 	/**
@@ -225,9 +239,9 @@
 	 *
 	 * @cond k1b
 	 */
-	static inline void interrupt_mask(int intnum)
+	static inline int interrupt_mask(int intnum)
 	{
-		k1b_pic_mask(intnum);
+		return (k1b_pic_mask(intnum));
 	}
 	/**@endcond*/
 
@@ -238,11 +252,20 @@
 	 * the interrupt @p intnum is hooked up in the underlying k1b
 	 * core.
 	 *
+	 * @returns Upon successful completion, zero is returned. Upon
+	 * failure, a negative error code is returned instead.
+	 *
 	 * @param intnum Number of the target interrupt.
 	 */
-	static inline void k1b_pic_unmask(int intnum)
+	static inline int k1b_pic_unmask(int intnum)
 	{
+		/* Invalid interrupt number. */
+		if ((intnum < 0) || (intnum >= K1B_NUM_HWINT))
+			return (-EINVAL);
+
 		mOS_it_enable_num(k1b_irqs[intnum]);
+
+		return (0);
 	}
 
 	/**
@@ -250,9 +273,9 @@
 	 *
 	 * @cond k1b
 	 */
-	static inline void interrupt_unmask(int intnum)
+	static inline int interrupt_unmask(int intnum)
 	{
-		k1b_pic_unmask(intnum);
+		return (k1b_pic_unmask(intnum));
 	}
 	/**@endcond*/
 

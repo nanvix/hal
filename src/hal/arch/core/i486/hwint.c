@@ -26,6 +26,7 @@
 #include <arch/core/i486/int.h>
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
+#include <errno.h>
 
 /**
  * @brief Interrupt handlers.
@@ -68,6 +69,10 @@ PUBLIC void i486_do_hwint(int num, const struct context *ctx)
  */
 PUBLIC int i486_hwint_handler_set(int num, void (*handler)(int))
 {
+	/* Invalid interrupt number. */
+	if ((num < 0) || (num >= I486_NUM_HWINT))
+		return (-EINVAL);
+
 	i486_handlers[num] = handler;
 
 	return (0);

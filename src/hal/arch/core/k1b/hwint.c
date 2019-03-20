@@ -79,6 +79,10 @@ found:
  */
 PUBLIC int k1b_hwint_handler_set(int num, void (*handler)(int))
 {
+	/* Invalid interrupt number. */
+	if ((num < 0) || (num >= K1B_NUM_HWINT))
+		return (-EINVAL);
+
 	k1b_handlers[num] = handler;
 	k1b_dcache_inval();
 

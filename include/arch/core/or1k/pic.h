@@ -43,9 +43,15 @@
 	#define __NEED_OR1K_REGS
 	#include <arch/core/or1k/regs.h>
 	#include <nanvix/const.h>
+	#include <errno.h>
 	#include <stdint.h>
 
 #endif /* _ASM_FILE_ */
+
+	/**
+	 * @brief Number of hardware interrupts in the or1k architecture.
+	 */
+	#define OR1K_NUM_HWINT 3
 
 	/**
 	 * @brief Number of interrupt levels.
@@ -154,26 +160,44 @@
 	 * @brief Masks an interrupt.
 	 *
 	 * @param intnum Number of the target interrupt.
+	 *
+	 * @returns Upon successful completion, zero is returned. Upon
+	 * failure, a negative error code is returned instead.
 	 */
-	static inline void or1k_pic_mask(int intnum)
+	static inline int or1k_pic_mask(int intnum)
 	{
+		/* Invalid interrupt number. */
+		if ((intnum < 0) || (intnum >= OR1K_NUM_HWINT))
+			return (-EINVAL);
+
 		if (intnum == OR1K_INT_CLOCK)
 			or1k_mtspr(OR1K_SPR_SR, or1k_mfspr(OR1K_SPR_SR) & ~OR1K_SPR_SR_TEE);
 		else
 			or1k_mtspr(OR1K_SPR_PICMR, or1k_mfspr(OR1K_SPR_PICMR) & ~(1 << intnum));
+
+		return (0);
 	}
 
 	/**
 	 * @brief Unmasks an interrupt.
 	 *
 	 * @param intnum Number of the target interrupt.
+	 *
+	 * @returns Upon successful completion, zero is returned. Upon
+	 * failure, a negative error code is returned instead.
 	 */
-	static inline void or1k_pic_unmask(int intnum)
+	static inline int or1k_pic_unmask(int intnum)
 	{
+		/* Invalid interrupt number. */
+		if ((intnum < 0) || (intnum >= OR1K_NUM_HWINT))
+			return (-EINVAL);
+
 		if (intnum == OR1K_INT_CLOCK)
 			or1k_mtspr(OR1K_SPR_SR, or1k_mfspr(OR1K_SPR_SR) | OR1K_SPR_SR_TEE);
 		else
 			or1k_mtspr(OR1K_SPR_PICMR, or1k_mfspr(OR1K_SPR_PICMR) | (1 << intnum));
+
+		return (0);
 	}
 
 	/**
@@ -233,17 +257,17 @@
 	/**
 	 * @see or1k_pic_mask()
 	 */
-	static inline void interrupt_mask(int intnum)
+	static inline int interrupt_mask(int intnum)
 	{
-		or1k_pic_mask(intnum);
+		return (or1k_pic_mask(intnum));
 	}
 
 	/**
 	 * @see or1k_pic_unmask()
 	 */
-	static inline void interrupt_unmask(int intnum)
+	static inline int interrupt_unmask(int intnum)
 	{
-		or1k_pic_unmask(intnum);
+		return (or1k_pic_unmask(intnum));
 	}
 
 #endif /* _ASM_FILE_ */

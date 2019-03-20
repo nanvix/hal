@@ -25,6 +25,7 @@
 #include <arch/core/or1k/int.h>
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
+#include <errno.h>
 
 /**
  * @brief Interrupt handlers.
@@ -118,6 +119,10 @@ PUBLIC void or1k_do_hwint(int num, const struct context *ctx)
  */
 PUBLIC int or1k_hwint_handler_set(int num, void (*handler)(int))
 {
+	/* Invalid interrupt number. */
+	if ((num < 0) || (num >= OR1K_NUM_HWINT))
+		return (-EINVAL);
+
 	or1k_handlers[num] = handler;
 
 	return (0);

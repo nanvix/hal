@@ -25,6 +25,7 @@
 #include <nanvix/const.h>
 #include <arch/core/i486/8259.h>
 #include <arch/core/i486/pmio.h>
+#include <errno.h>
 #include <stdint.h>
 
 /**
@@ -63,11 +64,15 @@ PRIVATE uint16_t currmask = I486_INTLVL_MASK_5;
  * The i486_pic_mask() function masks the interrupt request line in
  * which the interrupt @p intnum is hooked up.
  */
-PUBLIC void i486_pic_mask(int intnum)
+PUBLIC int i486_pic_mask(int intnum)
 {
 	uint16_t port;
 	uint8_t value;
 	uint16_t newmask;
+
+	/* Invalid interrupt number. */
+	if ((intnum < 0) || (intnum >= I486_NUM_HWINT))
+		return (-EINVAL);
 
 	if (intnum < 8)
 	{
@@ -85,6 +90,8 @@ PUBLIC void i486_pic_mask(int intnum)
 	currmask = newmask;
 
 	i486_output8(port, value);
+
+	return (0);
 }
 
 /*============================================================================*
@@ -95,11 +102,15 @@ PUBLIC void i486_pic_mask(int intnum)
  * The i486_pic_unmask() function unmasks the interrupt request line
  * in which the interrupt @p intnum is hooked up.
  */
-PUBLIC void i486_pic_unmask(int intnum)
+PUBLIC int i486_pic_unmask(int intnum)
 {
 	uint16_t port;
 	uint8_t value;
 	uint16_t newmask;
+
+	/* Invalid interrupt number. */
+	if ((intnum < 0) || (intnum >= I486_NUM_HWINT))
+		return (-EINVAL);
 
 	if (intnum < 8)
 	{
@@ -117,6 +128,8 @@ PUBLIC void i486_pic_unmask(int intnum)
 	currmask = newmask;
 
 	i486_output8(port, value);
+
+	return (0);
 }
 
 /*============================================================================*
