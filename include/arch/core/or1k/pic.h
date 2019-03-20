@@ -170,7 +170,10 @@
 	 */
 	static inline void or1k_pic_unmask(int intnum)
 	{
-		or1k_mtspr(OR1K_SPR_PICMR, or1k_mfspr(OR1K_SPR_PICMR) | (1 << intnum));
+		if (intnum == OR1K_INT_CLOCK)
+			or1k_mtspr(OR1K_SPR_SR, or1k_mfspr(OR1K_SPR_SR) | OR1K_SPR_SR_TEE);
+		else
+			or1k_mtspr(OR1K_SPR_PICMR, or1k_mfspr(OR1K_SPR_PICMR) | (1 << intnum));
 	}
 
 	/**
