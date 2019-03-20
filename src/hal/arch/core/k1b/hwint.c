@@ -77,8 +77,10 @@ found:
  * by @p handler as the handler for the hardware interrupt whose
  * number is @p num.
  */
-PUBLIC void k1b_hwint_handler_set(int num, void (*handler)(int))
+PUBLIC int k1b_hwint_handler_set(int num, void (*handler)(int))
 {
 	k1b_handlers[num] = handler;
 	k1b_dcache_inval();
+
+	return (0);
 }

@@ -105,10 +105,13 @@
 	 * @param num     Number of the target interrupt.
 	 * @param handler Handler.
 	 *
+	 * @returns Upon successful completion, zero is returned. Upon
+	 * failure, a negative error code is returned instead.
+	 *
 	 * @note This function does not check if a handler is already
 	 * set for the target hardware interrupt.
 	 */
-	EXTERN void interrupt_set_handler(int num, interrupt_handler_t handler);
+	EXTERN int interrupt_set_handler(int num, interrupt_handler_t handler);
 
 	/**
 	 * @brief Sets the interrupt level of the underlying core.

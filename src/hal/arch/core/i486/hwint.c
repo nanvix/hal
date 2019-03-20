@@ -66,7 +66,9 @@ PUBLIC void i486_do_hwint(int num, const struct context *ctx)
  * by @p handler as the handler for the hardware interrupt whose
  * number is @p num.
  */
-PUBLIC void i486_hwint_handler_set(int num, void (*handler)(int))
+PUBLIC int i486_hwint_handler_set(int num, void (*handler)(int))
 {
 	i486_handlers[num] = handler;
+
+	return (0);
 }

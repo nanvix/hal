@@ -116,7 +116,9 @@ PUBLIC void or1k_do_hwint(int num, const struct context *ctx)
  * by @p handler as the handler for the hardware interrupt whose
  * number is @p num.
  */
-PUBLIC void or1k_hwint_handler_set(int num, void (*handler)(int))
+PUBLIC int or1k_hwint_handler_set(int num, void (*handler)(int))
 {
 	or1k_handlers[num] = handler;
+
+	return (0);
 }
