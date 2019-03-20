@@ -37,11 +37,19 @@
  *============================================================================*/
 
 /**
+ * @brief Counter of handler calls.
+ */
+PRIVATE int ncalls = 0;
+
+/**
  * @brief Dummy interrupt handler.
  */
 PRIVATE void dummy_handler(int num)
 {
 	UNUSED(num);
+
+	ncalls++;
+	dcache_invalidate();
 }
 
 /*----------------------------------------------------------------------------*
@@ -74,6 +82,47 @@ PRIVATE void test_interrupt_register_unregister(void)
 	KASSERT(interrupt_unregister(HAL_INT_CLOCK) == 0);
 }
 
+/*----------------------------------------------------------------------------*
+ * Enable and Disable Interrupts                                              *
+ *----------------------------------------------------------------------------*/
+
+/**
+ * @brief API Test: Enable and Disable Interrupts
+ *
+ * @author Pedro Henrique Penna
+ */
+PRIVATE void test_interrupt_enable_disable(void)
+{
+	const int ntrials = 1000000;
+
+	ncalls = 0;
+	dcache_invalidate();
+
+	KASSERT(interrupt_register(HAL_INT_CLOCK, dummy_handler) == 0);
+
+	interrupts_enable();
+
+		do
+			dcache_invalidate();
+		while (ncalls > 0);
+
+	interrupts_disable();
+
+	KASSERT(interrupt_unregister(HAL_INT_CLOCK) == 0);
+
+	/*
+	 * Ensure that the handler is not
+	 * longer called.
+	 */
+	ncalls = 0;
+	dcache_invalidate();
+	for (int i = 0; i < ntrials; i++)
+	{
+		noop();
+		KASSERT(ncalls == 0);
+	}
+}
+
 /*============================================================================*
  * Test Driver                                                                *
  *============================================================================*/
@@ -84,6 +133,7 @@ PRIVATE void test_interrupt_register_unregister(void)
 PRIVATE struct test interrupt_tests_api[] = {
 	{ test_interrupt_set_clear_handler,   "Set and Clear a Handler"           },
 	{ test_interrupt_register_unregister, "Register and Unregister a Handler" },
+	{ test_interrupt_enable_disable,      "Enable and Disable Interrupts"     },
 	{ NULL,                                NULL                               },
 };
 
