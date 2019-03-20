@@ -22,46 +22,40 @@
  * SOFTWARE.
  */
 
-#ifndef _HAL_TEST_H_
-#define _HAL_TEST_H_
+#include <nanvix/hal/hal.h>
+#include <nanvix/const.h>
+#include <nanvix/klib.h>
+#include "test.h"
 
-	/**
-	 * @brief Unit test.
-	 */
-	struct test
+/**
+ * @brief Verbose interrupt test?
+ */
+#define TEST_INTERRUPT_VERBOSE 0
+
+/*============================================================================*
+ * Test Driver                                                                *
+ *============================================================================*/
+
+/**
+ * @brief Unit tests.
+ */
+PRIVATE struct test interrupt_tests_api[] = {
+	{ NULL,                             NULL                                 },
+};
+
+/**
+ * The test_interrupt() function launches testing units on the
+ * Interrupt Interface of the HAL.
+ *
+ * @author Pedro Henrique Penna
+ */
+PUBLIC void test_interrupt(void)
+{
+	/* API Tests */
+	for (int i = 0; interrupt_tests_api[i].test_fn != NULL; i++)
 	{
-		void (*test_fn)(void); /**< Test function. */
-		const char *name;      /**< Test name.     */
-	};
+		interrupt_tests_api[i].test_fn();
+		kprintf("[test][api][interrupt] %s [passed]", interrupt_tests_api[i].name);
+	}
+}
 
-	/**
-	 * @brief Test driver for the Clock Interface.
-	 */
-	EXTERN void test_clock(void);
-
-	/**
-	 * @brief Test driver for the Core Interface.
-	 */
-	EXTERN void test_core(void);
-
-	/**
-	 * @brief Test driver for the sync interface
-	 */
-	EXTERN void test_sync(void);
-
-	/**
-	 * @brief Test driver for the Exception Interface.
-	 */
-	EXTERN void test_exception(void);
-
-	/**
-	 * @brief Test driver for trap interface.
-	 */
-	EXTERN void test_trap(void);
-
-	/**
-	 * @brief Test driver for hardware interrupt interface.
-	 */
-	EXTERN void test_interrupt(void);
-
-#endif /* _HAL_TEST_H_ */

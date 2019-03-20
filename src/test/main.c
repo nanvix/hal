@@ -54,6 +54,7 @@ PUBLIC void kmain(int argc, const char *argv[])
 	 */
 	hal_init();
 
+	test_interrupt();
 	test_exception();
 	test_clock();
 	test_core();
