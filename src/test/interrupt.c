@@ -59,6 +59,21 @@ PRIVATE void test_interrupt_set_clear_handler(void)
 	KASSERT(interrupt_set_handler(HAL_INT_CLOCK, NULL) == 0);
 }
 
+/*----------------------------------------------------------------------------*
+ * Register and Unregister an Interrupt Handler                               *
+ *----------------------------------------------------------------------------*/
+
+/**
+ * @brief API Test: Register and Unregister an Interrupt Handler
+ *
+ * @author Pedro Henrique Penna
+ */
+PRIVATE void test_interrupt_register_unregister(void)
+{
+	KASSERT(interrupt_register(HAL_INT_CLOCK, dummy_handler) == 0);
+	KASSERT(interrupt_unregister(HAL_INT_CLOCK) == 0);
+}
+
 /*============================================================================*
  * Test Driver                                                                *
  *============================================================================*/
@@ -67,8 +82,9 @@ PRIVATE void test_interrupt_set_clear_handler(void)
  * @brief Unit tests.
  */
 PRIVATE struct test interrupt_tests_api[] = {
-	{ test_interrupt_set_clear_handler, "Set and Clear an Interrupt Handler" },
-	{ NULL,                             NULL                                 },
+	{ test_interrupt_set_clear_handler,   "Set and Clear a Handler"           },
+	{ test_interrupt_register_unregister, "Register and Unregister a Handler" },
+	{ NULL,                                NULL                               },
 };
 
 /**
