@@ -158,6 +158,16 @@
 	EXTERN int interrupt_register(int num, interrupt_handler_t handler);
 
 	/**
+	 * @brief Unregisters an interrupt handler.
+	 *
+	 * @param num Number of the interrupt.
+	 *
+	 * @returns Upon successful completion, zero is returned. Upon
+	 * failure, a negative error code is returned instead.
+	 */
+	EXTERN int interrupt_unregister(int num);
+
+	/**
 	 * @brief Setups hardware interrupts.
 	 */
 	EXTERN void interrupt_setup(void);

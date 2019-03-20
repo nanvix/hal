@@ -70,6 +70,28 @@ PUBLIC int interrupt_register(int num, interrupt_handler_t handler)
 	return (0);
 }
 
+/**
+ * The interrupt_unregister() function unregisters a handler function
+ * for the interrupt whose number is @p num. If no handler function
+ * was previously registered with this number, the
+ * interrupt_unregister() function fails.
+ */
+PUBLIC int interrupt_unregister(int num)
+{
+	KASSERT(num >= 0);
+
+	/* No handler function is registered. */
+	if (!interrupts[num].handled)
+		return (-EINVAL);
+
+	interrupts[num].handled = FALSE;
+	dcache_invalidate();
+	interrupt_set_handler(num, default_handler);
+
+	kprintf("[hal] interrupt handler unregistered for irq %d", num);
+
+	return (0);
+}
 
 /**
  * Initializes hardware interrupts by registering a default handler to
