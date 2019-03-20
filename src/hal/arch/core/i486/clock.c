@@ -34,12 +34,12 @@
 PUBLIC void i486_clock_init(unsigned freq)
 {
 	uint16_t freq_divisor;
-	
+
 	freq_divisor = PIT_FREQUENCY/freq;
-	
+
 	/* Send control byte: adjust frequency divisor. */
 	i486_output8(PIT_CTRL, 0x36);
-	
+
 	/* Send data byte: divisor_low and divisor_high. */
 	i486_output8(PIT_DATA, (uint8_t)(freq_divisor & 0xff));
 	i486_output8(PIT_DATA, (uint8_t)((freq_divisor >> 8)));

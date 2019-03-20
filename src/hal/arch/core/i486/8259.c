@@ -164,13 +164,13 @@ PUBLIC void i486_pic_setup(uint8_t offset1, uint8_t offset2)
 	i486_iowait();
 	i486_output8(PIC_CTRL_SLAVE, 0x11);
 	i486_iowait();
-	
+
 	/* Send new vector offset. */
 	i486_output8(PIC_DATA_MASTER, offset1);
 	i486_iowait();
 	i486_output8(PIC_DATA_SLAVE, offset2);
 	i486_iowait();
-	
+
 	/*
 	 * Tell the master that there is a slave
 	 * PIC hired up at IRQ line 2 and tell
@@ -180,13 +180,13 @@ PUBLIC void i486_pic_setup(uint8_t offset1, uint8_t offset2)
 	i486_iowait();
 	i486_output8(PIC_DATA_SLAVE, 0x02);
 	i486_iowait();
-	
+
 	/* Set 8086 mode. */
 	i486_output8(PIC_DATA_MASTER, 0x01);
 	i486_iowait();
 	i486_output8(PIC_DATA_SLAVE, 0x01);
 	i486_iowait();
-	
+
 	/* Clears interrupt mask. */
 	i486_pic_lvl_set(I486_INTLVL_0);
 }

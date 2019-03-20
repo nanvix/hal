@@ -49,7 +49,7 @@ PRIVATE int or1k_next_irq()
 
 	while (!(picsr & 1) && bit < 32)
 	{
-		picsr >>= 1;	
+		picsr >>= 1;
 		bit++;
 	}
 
@@ -74,7 +74,7 @@ PUBLIC void or1k_do_hwint(int num, const struct context *ctx)
 {
 	int interrupt;
 	UNUSED(ctx);
-	
+
 	/*
 	 * If clock, lets handle immediately.
 	 *
@@ -93,7 +93,7 @@ PUBLIC void or1k_do_hwint(int num, const struct context *ctx)
 
 		or1k_handlers[num](num);
 	}
-	
+
 	/*
 	 * Lets also check for external interrupt, if
 	 * there's any pending, handle.
@@ -102,7 +102,7 @@ PUBLIC void or1k_do_hwint(int num, const struct context *ctx)
 	{
 		/* ack. */
 		or1k_pic_ack(interrupt);
-		
+
 		/* Nothing to do. */
 		if (or1k_handlers[interrupt] == NULL)
 			return;

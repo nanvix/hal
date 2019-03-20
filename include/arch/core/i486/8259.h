@@ -50,7 +50,7 @@
 	#define PIC_CTRL_MASTER 0x20 /**< Control */
 	#define PIC_DATA_MASTER 0x21 /**< Data    */
 	/**@}*/
-	
+
 	/**
 	 * @name Slave PIC Registers
 	 */
@@ -100,7 +100,7 @@
 	#include <arch/core/i486/pmio.h>
 	#include <nanvix/const.h>
 	#include <stdint.h>
-	
+
 	/**
 	 * @brief Initializes the PIC.
 	 *
@@ -108,7 +108,7 @@
 	 * @param offset2 Vector offset for slave PIC.
 	 */
 	EXTERN void i486_pic_setup(uint8_t offset1, uint8_t offset2);
-	
+
 	/**
 	 * @brief Masks an interrupt.
 	 *

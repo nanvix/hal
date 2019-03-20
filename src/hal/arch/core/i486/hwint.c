@@ -53,7 +53,7 @@ PRIVATE void (*i486_handlers[I486_NUM_HWINT])(int) = {
 PUBLIC void i486_do_hwint(int num, const struct context *ctx)
 {
 	UNUSED(ctx);
-	
+
 	/* Nothing to do. */
 	if (i486_handlers[num] == NULL)
 		return;
