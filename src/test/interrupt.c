@@ -25,16 +25,13 @@
 #include <nanvix/hal/hal.h>
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
+#include <errno.h>
 #include "test.h"
 
 /**
  * @brief Verbose interrupt test?
  */
 #define TEST_INTERRUPT_VERBOSE 0
-
-/*============================================================================*
- * API Tests                                                                  *
- *============================================================================*/
 
 /**
  * @brief Counter of handler calls.
@@ -51,6 +48,10 @@ PRIVATE void dummy_handler(int num)
 	ncalls++;
 	dcache_invalidate();
 }
+
+/*============================================================================*
+ * API Tests                                                                  *
+ *============================================================================*/
 
 /*----------------------------------------------------------------------------*
  * Set and Clear an Interrupt Handler                                         *
@@ -164,9 +165,9 @@ PRIVATE void test_interrupt_mask_unmask(void)
 	}
 }
 
-/*============================================================================*
- * Test Driver                                                                *
- *============================================================================*/
+/*----------------------------------------------------------------------------*
+ * Test Driver Table                                                          *
+ *----------------------------------------------------------------------------*/
 
 /**
  * @brief Unit tests.
@@ -178,6 +179,153 @@ PRIVATE struct test interrupt_tests_api[] = {
 	{ test_interrupt_mask_unmask,         "Mask and Unmask an Interrupt"      },
 	{ NULL,                                NULL                               },
 };
+
+/*============================================================================*
+ * Fault Injection Tests                                                      *
+ *============================================================================*/
+
+/*----------------------------------------------------------------------------*
+ * Set a Handler for an Invalid Interrupt                                     *
+ *----------------------------------------------------------------------------*/
+
+/**
+ * @brief API Test: Set a Handler for an Invalid Interrupt
+ *
+ * @author Pedro Henrique Penna
+ */
+PRIVATE void test_interrupt_set_handler_inval(void)
+{
+	KASSERT(interrupt_set_handler(-1, dummy_handler) == -EINVAL);
+	KASSERT(interrupt_set_handler(HAL_INT_NR + 1, dummy_handler) == -EINVAL);
+}
+
+/*----------------------------------------------------------------------------*
+ * Clear a Handler for an Invalid Interrupt                                   *
+ *----------------------------------------------------------------------------*/
+
+/**
+ * @brief API Test: Clear a Handler for an Invalid Interrupt
+ *
+ * @author Pedro Henrique Penna
+ */
+PRIVATE void test_interrupt_clear_handler_inval(void)
+{
+	KASSERT(interrupt_set_handler(-1, NULL) == -EINVAL);
+	KASSERT(interrupt_set_handler(HAL_INT_NR + 1, NULL) == -EINVAL);
+}
+
+/*----------------------------------------------------------------------------*
+ * Register a Handler for an Invalid Interrupt                                *
+ *----------------------------------------------------------------------------*/
+
+/**
+ * @brief API Test: Register a Handler for an Invalid Interrupt
+ *
+ * @author Pedro Henrique Penna
+ */
+PRIVATE void test_interrupt_register_handler_inval(void)
+{
+	KASSERT(interrupt_register(-1, dummy_handler) == -EINVAL);
+	KASSERT(interrupt_register(HAL_INT_NR + 1, dummy_handler) == -EINVAL);
+}
+
+/*----------------------------------------------------------------------------*
+ * Unregister a Handler for an Invalid Interrupt                              *
+ *----------------------------------------------------------------------------*/
+
+/**
+ * @brief API Test: Unregister a Handler for an Invalid Interrupt
+ *
+ * @author Pedro Henrique Penna
+ */
+PRIVATE void test_interrupt_unregister_handler_inval(void)
+{
+	KASSERT(interrupt_unregister(-1) == -EINVAL);
+	KASSERT(interrupt_unregister(HAL_INT_NR + 1) == -EINVAL);
+}
+
+/*----------------------------------------------------------------------------*
+ * Register a Handler for an Bad Interrupt                                    *
+ *----------------------------------------------------------------------------*/
+
+/**
+ * @brief API Test: Register a Handler for an Bad Interrupt
+ *
+ * @author Pedro Henrique Penna
+ */
+PRIVATE void test_interrupt_register_handler_bad(void)
+{
+	KASSERT(interrupt_register(HAL_INT_CLOCK, dummy_handler) == 0);
+	KASSERT(interrupt_register(HAL_INT_CLOCK, dummy_handler) == -EBUSY);
+	KASSERT(interrupt_unregister(HAL_INT_CLOCK) == 0);
+}
+
+/*----------------------------------------------------------------------------*
+ * Unregister a Handler for an Bad Interrupt                                  *
+ *----------------------------------------------------------------------------*/
+
+/**
+ * @brief API Test: Unregister a Handler for an Bad Interrupt
+ *
+ * @author Pedro Henrique Penna
+ */
+PRIVATE void test_interrupt_unregister_handler_bad(void)
+{
+	KASSERT(interrupt_unregister(HAL_INT_CLOCK) == -EINVAL);
+}
+
+/*----------------------------------------------------------------------------*
+ * Mask an Invalid Interrupt                                *
+ *----------------------------------------------------------------------------*/
+
+/**
+ * @brief API Test: Mask an Invalid Interrupt
+ *
+ * @author Pedro Henrique Penna
+ */
+PRIVATE void test_interrupt_mask_handler_inval(void)
+{
+	KASSERT(interrupt_mask(-1) == -EINVAL);
+	KASSERT(interrupt_mask(HAL_INT_NR + 1) == -EINVAL);
+}
+
+/*----------------------------------------------------------------------------*
+ * Unmak an Invalid Interrupt                              *
+ *----------------------------------------------------------------------------*/
+
+/**
+ * @brief API Test: Unmak an Invalid Interrupt
+ *
+ * @author Pedro Henrique Penna
+ */
+PRIVATE void test_interrupt_unmask_handler_inval(void)
+{
+	KASSERT(interrupt_unmask(-1) == -EINVAL);
+	KASSERT(interrupt_unmask(HAL_INT_NR + 1) == -EINVAL);
+}
+
+/*----------------------------------------------------------------------------*
+ * Test Driver Table                                                          *
+ *----------------------------------------------------------------------------*/
+
+/**
+ * @brief Unit tests.
+ */
+PRIVATE struct test interrupt_tests_fault_injection[] = {
+	{ test_interrupt_set_handler_inval,        "Set Handler for Invalid Interrupt"        },
+	{ test_interrupt_clear_handler_inval,      "Clear Handler for Invalid Interrupt"      },
+	{ test_interrupt_register_handler_inval,   "Register Handler for Invalid Interrupt"   },
+	{ test_interrupt_unregister_handler_inval, "Unregister Handler for Invalid Interrupt" },
+	{ test_interrupt_register_handler_bad,     "Register Handler for Bad Interrupt"       },
+	{ test_interrupt_unregister_handler_bad,   "Unregister Handler for Bad Interrupt"     },
+	{ test_interrupt_mask_handler_inval,       "Mask Invalid Interrupt"                   },
+	{ test_interrupt_unmask_handler_inval,     "Unmask Invalid Interrupt"                 },
+	{ NULL,                                    NULL                                       },
+};
+
+/*============================================================================*
+ * Test Driver                                                                *
+ *============================================================================*/
 
 /**
  * The test_interrupt() function launches testing units on the
@@ -192,6 +340,13 @@ PUBLIC void test_interrupt(void)
 	{
 		interrupt_tests_api[i].test_fn();
 		kprintf("[test][api][interrupt] %s [passed]", interrupt_tests_api[i].name);
+	}
+
+	/* Fault Tests */
+	for (int i = 0; interrupt_tests_fault_injection[i].test_fn != NULL; i++)
+	{
+		interrupt_tests_fault_injection[i].test_fn();
+		kprintf("[test][fault][interrupt] %s [passed]", interrupt_tests_fault_injection[i].name);
 	}
 }
 
