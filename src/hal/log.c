@@ -57,7 +57,7 @@ PRIVATE void hal_log_flush(void)
 		return;
 
 	/* Copy data from ring buffer. */
-	for (i = 0; i < KBUFFER_SIZE; noop())
+	for (i = 0; i < KBUFFER_SIZE; /* noop */ )
 	{
 		buf[i] = log.buf[log.head];
 
