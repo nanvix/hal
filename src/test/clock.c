@@ -70,8 +70,11 @@ PRIVATE void test_do_clock(void)
 	interrupt_unmask(HAL_INT_CLOCK);
 
 		/* Wait for enough clock interrupts. */
-		while (ticks < nticks)
+		do
+		{
 			noop();
+			dcache_invalidate();
+		} while (ticks < nticks);
 
 	interrupts_disable();
 }
