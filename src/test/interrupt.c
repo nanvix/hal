@@ -33,6 +33,33 @@
 #define TEST_INTERRUPT_VERBOSE 0
 
 /*============================================================================*
+ * API Tests                                                                  *
+ *============================================================================*/
+
+/**
+ * @brief Dummy interrupt handler.
+ */
+PRIVATE void dummy_handler(int num)
+{
+	UNUSED(num);
+}
+
+/*----------------------------------------------------------------------------*
+ * Set and Clear an Interrupt Handler                                         *
+ *----------------------------------------------------------------------------*/
+
+/**
+ * @brief API Test: Set and Clear an Interrupt Handler
+ *
+ * @author Pedro Henrique Penna
+ */
+PRIVATE void test_interrupt_set_clear_handler(void)
+{
+	KASSERT(interrupt_set_handler(HAL_INT_CLOCK, dummy_handler) == 0);
+	KASSERT(interrupt_set_handler(HAL_INT_CLOCK, NULL) == 0);
+}
+
+/*============================================================================*
  * Test Driver                                                                *
  *============================================================================*/
 
@@ -40,6 +67,7 @@
  * @brief Unit tests.
  */
 PRIVATE struct test interrupt_tests_api[] = {
+	{ test_interrupt_set_clear_handler, "Set and Clear an Interrupt Handler" },
 	{ NULL,                             NULL                                 },
 };
 
