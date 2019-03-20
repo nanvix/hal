@@ -217,7 +217,7 @@
 	 */
 	static inline void k1b_pic_mask(int intnum)
 	{
-		mOS_it_enable_num(k1b_irqs[intnum]);
+		mOS_it_disable_num(k1b_irqs[intnum]);
 	}
 
 	/**
@@ -242,7 +242,7 @@
 	 */
 	static inline void k1b_pic_unmask(int intnum)
 	{
-		mOS_it_disable_num(k1b_irqs[intnum]);
+		mOS_it_enable_num(k1b_irqs[intnum]);
 	}
 
 	/**
