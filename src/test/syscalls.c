@@ -36,7 +36,7 @@
  * @brief Magic Numbers.
  */
 /**@{*/
-#define SYSCALL_NR         0
+#define SYSCALL_NR         1
 #define MAGIC0    0xBEEFCACE
 #define MAGIC1    0xC00010FF
 #define MAGIC2    0xCAFEBABE
