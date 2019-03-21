@@ -48,7 +48,7 @@
 	 *
 	 * @note Hopefully not kernel string is longer than this.
 	 */
-	#define KBUFFER_SIZE 64
+	#define KBUFFER_SIZE 128
 
 	/**
 	 * @brief Prints a string on the standard output device.
