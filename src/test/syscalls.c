@@ -36,13 +36,18 @@
  * @brief Magic Numbers.
  */
 /**@{*/
-#define SYSCALL_NR         1
-#define MAGIC0    0xBEEFCACE
-#define MAGIC1    0xC00010FF
-#define MAGIC2    0xCAFEBABE
-#define MAGIC3    0xCAFED00D
-#define MAGIC4    0x0D15EA5E
-#define MAGIC5    0xDEAD10CC
+#define SYSCALL0_NR          1
+#define SYSCALL1_NR          2
+#define SYSCALL2_NR          3
+#define SYSCALL3_NR          4
+#define SYSCALL4_NR          5
+#define SYSCALL5_NR          6
+#define MAGIC0       0xbeefcace
+#define MAGIC1       0xC00010FF
+#define MAGIC2       0xcafebabe
+#define MAGIC3       0xcafed00d
+#define MAGIC4       0x0d15ea5e
+#define MAGIC5       0xdead10cc
 /**@}*/
 
 /**
@@ -60,28 +65,31 @@
  * failure, a negative error code is returned instead.
  */
 PUBLIC int do_syscall(
-	int arg0,
-	int arg1,
-	int arg2,
-	int arg3,
-	int arg4,
-	int arg5,
-	int syscall_nr)
+	unsigned arg0,
+	unsigned arg1,
+	unsigned arg2,
+	unsigned arg3,
+	unsigned arg4,
+	unsigned syscall_nr)
 {
-	((void) arg0);
-	((void) arg1);
-	((void) arg2);
-	((void) arg3);
-	((void) arg4);
-	((void) arg5);
-	((void) syscall_nr);
 
 #if (TEST_TRAP_VERBOSE)
 	kprintf("syscall() nr=%x");
 	kprintf("syscall() arg0=%x arg1=%x", arg0, arg1);
 	kprintf("syscall() arg2=%x arg3=%x", arg2, arg3);
-	kprintf("syscall() arg4=%x arg5=%x", arg4, arg5);
+	kprintf("syscall() arg4=%x", arg4);
 #endif
+
+	if (syscall_nr >= SYSCALL1_NR)
+		KASSERT(arg0 == MAGIC0);
+	if (syscall_nr >= SYSCALL2_NR)
+		KASSERT(arg1 == MAGIC1);
+	if (syscall_nr >= SYSCALL3_NR)
+		KASSERT(arg2 == MAGIC2);
+	if (syscall_nr >= SYSCALL4_NR)
+		KASSERT(arg3 == MAGIC3);
+	if (syscall_nr >= SYSCALL5_NR)
+		KASSERT(arg4 == MAGIC4);
 
 	return (MAGIC5);
 }
@@ -90,13 +98,102 @@ PUBLIC int do_syscall(
  * API Tests                                                                  *
  *============================================================================*/
 
+/*----------------------------------------------------------------------------*
+ * Issue a Trap with No Arguments                                             *
+ *----------------------------------------------------------------------------*/
+
 /**
- * @brief API Test: Issue a Trap
+ * @brief API Test: Issue a Trap with No Arguments
  */
-PRIVATE void test_trap_issue(void)
+PRIVATE void test_trap_issue0(void)
+{
+	KASSERT(syscall0(
+		SYSCALL0_NR
+	  ) == MAGIC5
+	);
+}
+
+/*----------------------------------------------------------------------------*
+ * Issue a Trap with One Argument                                             *
+ *----------------------------------------------------------------------------*/
+
+/**
+ * @brief API Test: Issue a Trap with One Argument
+ */
+PRIVATE void test_trap_issue1(void)
+{
+	KASSERT(syscall1(
+		SYSCALL1_NR,
+		MAGIC0
+	  ) == MAGIC5
+	);
+}
+
+/*----------------------------------------------------------------------------*
+ * Issue a Trap with Two Arguments                                            *
+ *----------------------------------------------------------------------------*/
+
+/**
+ * @brief API Test: Issue a Trap with Two Arguments
+ */
+PRIVATE void test_trap_issue2(void)
+{
+	KASSERT(syscall2(
+		SYSCALL2_NR,
+		MAGIC0,
+		MAGIC1
+	  ) == MAGIC5
+	);
+}
+
+/*----------------------------------------------------------------------------*
+ * Issue a Trap with Three Arguments                                          *
+ *----------------------------------------------------------------------------*/
+
+/**
+ * @brief API Test: Issue a Trap with Three Arguments
+ */
+PRIVATE void test_trap_issue3(void)
+{
+	KASSERT(syscall3(
+		SYSCALL3_NR,
+		MAGIC0,
+		MAGIC1,
+		MAGIC2
+	  ) == MAGIC5
+	);
+}
+
+/*----------------------------------------------------------------------------*
+ * Issue a Trap with Four Arguments                                           *
+ *----------------------------------------------------------------------------*/
+
+/**
+ * @brief API Test: Issue a Trap with Four Arguments
+ */
+PRIVATE void test_trap_issue4(void)
+{
+	KASSERT(syscall4(
+		SYSCALL4_NR,
+		MAGIC0,
+		MAGIC1,
+		MAGIC2,
+		MAGIC3
+	  ) == MAGIC5
+	);
+}
+
+/*----------------------------------------------------------------------------*
+ * Issue a Trap with Five Arguments                                           *
+ *----------------------------------------------------------------------------*/
+
+/**
+ * @brief API Test: Issue a Trap with Five Arguments
+ */
+PRIVATE void test_trap_issue5(void)
 {
 	KASSERT(syscall5(
-		SYSCALL_NR,
+		SYSCALL5_NR,
 		MAGIC0,
 		MAGIC1,
 		MAGIC2,
@@ -106,17 +203,26 @@ PRIVATE void test_trap_issue(void)
 	);
 }
 
-/*============================================================================*
- * Test Driver                                                                *
- *============================================================================*/
+/*----------------------------------------------------------------------------*
+ * Test Driver Table                                                          *
+ *----------------------------------------------------------------------------*/
 
 /**
  * @brief Unit tests.
  */
 PRIVATE struct test trap_tests_api[] = {
-	{ test_trap_issue, "Issue a Trap" },
-	{ NULL,             NULL          },
+	{ test_trap_issue0, "issue a trap no arguments"    },
+	{ test_trap_issue1, "issue a trap one argument"    },
+	{ test_trap_issue2, "issue a trap two arguments"   },
+	{ test_trap_issue3, "issue a trap three arguments" },
+	{ test_trap_issue4, "issue a trap four arguments"  },
+	{ test_trap_issue5, "issue a trap five arguments"  },
+	{ NULL,             NULL                           },
 };
+
+/*============================================================================*
+ * Test Driver                                                                *
+ *============================================================================*/
 
 /**
  * The test_trap() function launches testing units on the trap
