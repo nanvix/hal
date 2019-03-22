@@ -134,10 +134,10 @@
 	 * @param excpnum Number of the target exception.
 	 * @param handler Exception handler.
 	 *
-	 * @note This function does not check if a handler is already
-	 * set for the target hardware exception.
+	 * @returns Upon successful completion zero is returned. Upon
+	 * failure a negative error code is returned instead.
 	 */
-	EXTERN void exception_set_handler(int excpnum, exception_handler_t handler);
+	EXTERN int exception_set_handler(int excpnum, exception_handler_t handler);
 
 /**@}*/
 

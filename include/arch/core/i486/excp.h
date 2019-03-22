@@ -200,11 +200,10 @@
 	 * @param num     Number of the target exception.
 	 * @param handler Exception handler.
 	 *
-	 * @note This function does not check if a handler is already
-	 * set for the target hardware exception.
-	 *
+	 * @returns Upon successful completion zero is returned. Upon
+	 * failure a negative error code is returned instead.
 	 */
-	EXTERN void i486_excp_set_handler(int num, i486_exception_handler_fn handler);
+	EXTERN int i486_excp_set_handler(int num, i486_exception_handler_fn handler);
 
 /**@}*/
 
@@ -272,9 +271,9 @@
 	/**
 	 * @see i486_excp_set_handler()
 	 */
-	static inline void exception_set_handler(int num, i486_exception_handler_fn handler)
+	static inline int exception_set_handler(int num, i486_exception_handler_fn handler)
 	{
-		i486_excp_set_handler(num, handler);
+		return (i486_excp_set_handler(num, handler));
 	}
 
 /**@endcond*/

@@ -28,6 +28,7 @@
 #include <arch/core/or1k/tlb.h>
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
+#include <errno.h>
 
 /**
  * @brief Information about exceptions.
@@ -127,16 +128,29 @@ PUBLIC void forward_excp(int num, const struct exception *excp, const struct con
  * The or1k_excp_set_handler() function sets a handler function for
  * the exception @p num.
  *
- * @note This function does not check if a handler is already
- * set for the target hardware exception.
- *
  * @author Davidson Francis
  */
-PUBLIC void or1k_excp_set_handler(int num, or1k_exception_handler_fn handler)
+PUBLIC int or1k_excp_set_handler(int num, or1k_exception_handler_fn handler)
 {
-	/* Invalid exception. */
+	/* Invalid exception number. */
 	if ((num < 0) || (num > OR1K_NUM_EXCEPTIONS))
-		kpanic("[or1k] invalid exception number");
+	{
+		kprintf("[hal] invalid exception number");
+		return (-EINVAL);
+	}
+
+	/* Invalid handler. */
+	if (handler == NULL)
+	{
+		kprintf("[hal] invalid exception handler");
+		return (-EINVAL);
+	}
+
+	/* Bad exception number. */
+	if (or1k_excp_handlers[num] != NULL)
+		return (-EBUSY);
 
 	or1k_excp_handlers[num] = handler;
+
+	return (0);
 }

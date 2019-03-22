@@ -28,6 +28,7 @@
 #include <arch/core/k1b/tlb.h>
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
+#include <errno.h>
 
 /**
  * @brief Information about exceptions.
@@ -145,17 +146,30 @@ PUBLIC void forward_excp(int num, const struct exception *excp, const struct con
  * The k1b_excp_set_handler() function sets a handler function for
  * the exception @p num.
  *
- * @note This function does not check if a handler is already
- * set for the target hardware exception.
- *
  * @author Pedro Henrique Penna
  */
-PUBLIC void k1b_excp_set_handler(int num, k1b_exception_handler_fn handler)
+PUBLIC int k1b_excp_set_handler(int num, k1b_exception_handler_fn handler)
 {
-	/* Invalid exception. */
+	/* Invalid exception number. */
 	if ((num < 0) || (num >= (K1B_NUM_EXCEPTIONS + K1B_NUM_EXCEPTIONS_VIRT)))
-		kpanic("[k1b] invalid exception number");
+	{
+		kprintf("[hal] invalid exception number");
+		return (-EINVAL);
+	}
+
+	/* Invalid handler. */
+	if (handler == NULL)
+	{
+		kprintf("[hal] invalid exception handler");
+		return (-EINVAL);
+	}
+
+	/* Bad exception number. */
+	if (k1b_excp_handlers[num] != NULL)
+		return (-EBUSY);
 
 	k1b_excp_handlers[num] = handler;
 	k1b_dcache_inval();
+
+	return (0);
 }
