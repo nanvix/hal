@@ -260,26 +260,18 @@ _syscall:
 		/*
 		 * Syscall parameters.
 		 */
-		l.lwz r3, OR1K_CONTEXT_R13(sp) /* arg6. */
-		l.sw -8(sp), r3
-		l.lwz r3, OR1K_CONTEXT_R11(sp) /* syscall_nr */
-		l.sw -4(sp), r3
-
-		l.lwz r8, OR1K_CONTEXT_R8(sp)  /* arg5. */
-		l.lwz r7, OR1K_CONTEXT_R7(sp)  /* arg4. */
-		l.lwz r6, OR1K_CONTEXT_R6(sp)  /* arg3. */
-		l.lwz r5, OR1K_CONTEXT_R5(sp)  /* arg2. */
-		l.lwz r4, OR1K_CONTEXT_R4(sp)  /* arg1. */
-		l.lwz r3, OR1K_CONTEXT_R3(sp)  /* arg0. */
-
-		l.addi sp, sp, -8
+		l.lwz r8, OR1K_CONTEXT_R11(sp) /* syscall_nr. */
+		l.lwz r7, OR1K_CONTEXT_R7(sp)  /* arg4.       */
+		l.lwz r6, OR1K_CONTEXT_R6(sp)  /* arg3.       */
+		l.lwz r5, OR1K_CONTEXT_R5(sp)  /* arg2.       */
+		l.lwz r4, OR1K_CONTEXT_R4(sp)  /* arg1.       */
+		l.lwz r3, OR1K_CONTEXT_R3(sp)  /* arg0.       */
 
 		/*
 		 * Call syscall handler.
 		 */
 		l.jal do_syscall
 		l.nop
-		l.addi sp, sp, 8
 
 		/* Copy return value to the user stack. */
 		l.sw OR1K_CONTEXT_R11(sp), r11
