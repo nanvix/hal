@@ -25,6 +25,7 @@
 #include <arch/core/or1k/int.h>
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
+#include <errno.h>
 
 /**
  * @brief Interrupt handlers.
@@ -49,7 +50,7 @@ PRIVATE int or1k_next_irq()
 
 	while (!(picsr & 1) && bit < 32)
 	{
-		picsr >>= 1;	
+		picsr >>= 1;
 		bit++;
 	}
 
@@ -74,7 +75,7 @@ PUBLIC void or1k_do_hwint(int num, const struct context *ctx)
 {
 	int interrupt;
 	UNUSED(ctx);
-	
+
 	/*
 	 * If clock, lets handle immediately.
 	 *
@@ -93,7 +94,7 @@ PUBLIC void or1k_do_hwint(int num, const struct context *ctx)
 
 		or1k_handlers[num](num);
 	}
-	
+
 	/*
 	 * Lets also check for external interrupt, if
 	 * there's any pending, handle.
@@ -102,7 +103,7 @@ PUBLIC void or1k_do_hwint(int num, const struct context *ctx)
 	{
 		/* ack. */
 		or1k_pic_ack(interrupt);
-		
+
 		/* Nothing to do. */
 		if (or1k_handlers[interrupt] == NULL)
 			return;
@@ -116,7 +117,13 @@ PUBLIC void or1k_do_hwint(int num, const struct context *ctx)
  * by @p handler as the handler for the hardware interrupt whose
  * number is @p num.
  */
-PUBLIC void or1k_hwint_handler_set(int num, void (*handler)(int))
+PUBLIC int or1k_hwint_handler_set(int num, void (*handler)(int))
 {
+	/* Invalid interrupt number. */
+	if ((num < 0) || (num >= OR1K_NUM_HWINT))
+		return (-EINVAL);
+
 	or1k_handlers[num] = handler;
+
+	return (0);
 }

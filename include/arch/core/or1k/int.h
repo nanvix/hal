@@ -46,11 +46,6 @@
 
 #endif /* _ASM_FILE_ */
 
-	/**
-	 * @brief Number of hardware interrupts in the or1k architecture.
-	 */
-	#define OR1K_NUM_HWINT 3
-
 #ifndef _ASM_FILE_
 
 	/**
@@ -108,8 +103,11 @@
 	 *
 	 * @param num     Number of the target hardware interrupt.
 	 * @param handler Hardware interrupt handler.
+	 *
+	 * @returns Upon successful completion, zero is returned. Upon
+	 * failure, a negative error code is returned instead.
 	 */
-	EXTERN void or1k_hwint_handler_set(int num, void (*handler)(int));
+	EXTERN int or1k_hwint_handler_set(int num, void (*handler)(int));
 
 #endif
 
@@ -165,9 +163,9 @@
 	/**
 	 * @see or1k_hwint_handler_set()
 	 */
-	static inline void interrupt_set_handler(int num, void (*handler)(int))
+	static inline int interrupt_set_handler(int num, void (*handler)(int))
 	{
-		or1k_hwint_handler_set(num, handler);
+		return (or1k_hwint_handler_set(num, handler));
 	}
 
 #endif /* _ASM_FILE_ */

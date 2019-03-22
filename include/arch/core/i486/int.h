@@ -38,12 +38,8 @@
 /**@{*/
 
 	#include <nanvix/const.h>
+	#include <arch/core/i486/8259.h>
 	#include <arch/core/i486/context.h>
-
-	/**
-	 * @brief Number of hardware interrupts in the i486 architecture.
-	 */
-	#define I486_NUM_HWINT 16
 
 	/**
 	 * @name Hardware Interrupts for the IBM PC Target
@@ -125,8 +121,11 @@
 	 *
 	 * @param num     Number of the target hardware interrupt.
 	 * @param handler Hardware interrupt handler.
+	 *
+	 * @returns Upon successful completion, zero is returned. Upon
+	 * failure, a negative error code is returned instead.
 	 */
-	EXTERN void i486_hwint_handler_set(int num, void (*handler)(int));
+	EXTERN int i486_hwint_handler_set(int num, void (*handler)(int));
 
 /**@}*/
 
@@ -178,9 +177,9 @@
 	/**
 	 * @see i486_hwint_handler_set().
 	 */
-	static inline void interrupt_set_handler(int num, void (*handler)(int))
+	static inline int interrupt_set_handler(int num, void (*handler)(int))
 	{
-		i486_hwint_handler_set(num, handler);
+		return (i486_hwint_handler_set(num, handler));
 	}
 
 /**@endcond*/

@@ -105,10 +105,13 @@
 	 * @param num     Number of the target interrupt.
 	 * @param handler Handler.
 	 *
+	 * @returns Upon successful completion, zero is returned. Upon
+	 * failure, a negative error code is returned instead.
+	 *
 	 * @note This function does not check if a handler is already
 	 * set for the target hardware interrupt.
 	 */
-	EXTERN void interrupt_set_handler(int num, interrupt_handler_t handler);
+	EXTERN int interrupt_set_handler(int num, interrupt_handler_t handler);
 
 	/**
 	 * @brief Sets the interrupt level of the underlying core.
@@ -130,8 +133,11 @@
 	 * @brief Masks an interrupt.
 	 *
 	 * @param intnum Number of the target interrupt.
+	 *
+	 * @returns Upon successful completion, zero is returned. Upon
+	 * failure, a negative error code is returned instead.
 	 */
-	EXTERN void interrupt_mask(int intnum);
+	EXTERN int interrupt_mask(int intnum);
 
 	/**
 	 * @brief Unmasks an interrupt.
@@ -141,7 +147,7 @@
 	 * @returns Upon successful completion, zero is returned. Upon
 	 * failure, a negative error number is returned instead.
 	 */
-	EXTERN void interrupt_unmask(int intnum);
+	EXTERN int interrupt_unmask(int intnum);
 
 	/**
 	 * @brief Registers an interrupt handler.
@@ -153,6 +159,16 @@
 	 * failure, a negative error code is returned instead.
 	 */
 	EXTERN int interrupt_register(int num, interrupt_handler_t handler);
+
+	/**
+	 * @brief Unregisters an interrupt handler.
+	 *
+	 * @param num Number of the interrupt.
+	 *
+	 * @returns Upon successful completion, zero is returned. Upon
+	 * failure, a negative error code is returned instead.
+	 */
+	EXTERN int interrupt_unregister(int num);
 
 	/**
 	 * @brief Setups hardware interrupts.

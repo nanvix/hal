@@ -50,7 +50,7 @@
 	#define PIC_CTRL_MASTER 0x20 /**< Control */
 	#define PIC_DATA_MASTER 0x21 /**< Data    */
 	/**@}*/
-	
+
 	/**
 	 * @name Slave PIC Registers
 	 */
@@ -65,6 +65,11 @@
 	/**@{*/
 	#define PIC_EOI	0x20 /**< End of Interrupt */
 	/**@}*/
+
+	/**
+	 * @brief Number of hardware interrupts in the i486 architecture.
+	 */
+	#define I486_NUM_HWINT 16
 
 	/**
 	 * @brief Number of interrupt levels.
@@ -100,7 +105,7 @@
 	#include <arch/core/i486/pmio.h>
 	#include <nanvix/const.h>
 	#include <stdint.h>
-	
+
 	/**
 	 * @brief Initializes the PIC.
 	 *
@@ -108,22 +113,25 @@
 	 * @param offset2 Vector offset for slave PIC.
 	 */
 	EXTERN void i486_pic_setup(uint8_t offset1, uint8_t offset2);
-	
+
 	/**
 	 * @brief Masks an interrupt.
 	 *
 	 * @param intnum Number of the target interrupt.
+	 *
+	 * @returns Upon successful completion, zero is returned. Upon
+	 * failure, a negative error code is returned instead.
 	 */
-	EXTERN void i486_pic_mask(int intnum);
+	EXTERN int i486_pic_mask(int intnum);
 
 	/**
 	 * @see i486_pic_mask()
 	 *
 	 * @cond i486
 	 */
-	static inline void interrupt_mask(int intnum)
+	static inline int interrupt_mask(int intnum)
 	{
-		i486_pic_mask(intnum);
+		return (i486_pic_mask(intnum));
 	}
 	/**@endcond*/
 
@@ -131,17 +139,20 @@
 	 * @brief Unmasks an interrupt.
 	 *
 	 * @param intnum Number of the target interrupt.
+	 *
+	 * @returns Upon successful completion, zero is returned. Upon
+	 * failure, a negative error code is returned instead.
 	 */
-	EXTERN void i486_pic_unmask(int intnum);
+	EXTERN int i486_pic_unmask(int intnum);
 
 	/**
 	 * @see i486_pic_unmask()
 	 *
 	 * @cond i486
 	 */
-	static inline void interrupt_unmask(int intnum)
+	static inline int interrupt_unmask(int intnum)
 	{
-		i486_pic_unmask(intnum);
+		return (i486_pic_unmask(intnum));
 	}
 	/**@endcond*/
 

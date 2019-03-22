@@ -103,8 +103,11 @@
 	 *
 	 * @param num     Number of the target hardware interrupt.
 	 * @param handler Hardware interrupt handler.
+	 *
+	 * @returns Upon successful completion, zero is returned. Upon
+	 * failure, a negative error code is returned instead.
 	 */
-	extern void k1b_hwint_handler_set(int num, void (*handler)(int));
+	extern int k1b_hwint_handler_set(int num, void (*handler)(int));
 
 /**@}*/
 
@@ -157,9 +160,9 @@
 	/**
 	 * @see k1b_hwint_handler_set().
 	 */
-	static inline void interrupt_set_handler(int num, void (*handler)(int))
+	static inline int interrupt_set_handler(int num, void (*handler)(int))
 	{
-		k1b_hwint_handler_set(num, handler);
+		return (k1b_hwint_handler_set(num, handler));
 	}
 
 /**@endcond*/
