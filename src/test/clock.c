@@ -87,8 +87,13 @@ PRIVATE void test_do_clock(void)
  * @brief Unit tests.
  */
 PRIVATE struct test clock_stress_tests[] = {
+#ifndef __or1k__
 	{ test_do_clock, "Handle Clock Interrupts" },
 	{ NULL,          NULL                      },
+#else
+	{ NULL,          NULL                      },
+	{ test_do_clock, "Handle Clock Interrupts" },
+#endif
 };
 
 /**

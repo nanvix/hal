@@ -59,4 +59,9 @@
 	 */
 	EXTERN void test_trap(void);
 
+	/**
+	 * @brief Test driver for hardware interrupt interface.
+	 */
+	EXTERN void test_interrupt(void);
+
 #endif /* _HAL_TEST_H_ */
