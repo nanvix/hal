@@ -193,6 +193,16 @@
 	extern int k1b_excp_set_handler(int num, k1b_exception_handler_fn handler);
 
 	/**
+	 * @brief Unsets a handler for an exception.
+	 *
+	 * @param excpnum Number of the target exception.
+	 *
+	 * @returns Upon successful completion zero is returned. Upon
+	 * failure a negative error code is returned instead.
+	 */
+	extern int k1b_excp_unset_handler(int excpnum);
+
+	/**
 	 * @brief Low-level exception dispatcher.
 	 */
 	extern void _do_excp(void);
@@ -244,10 +254,11 @@
 	 * @name Exported Functions
 	 */
 	/**@{*/
-	#define __exception_get_addr    /**< @ref exception_get_addr()    */
-	#define __exception_get_instr   /**< @ref exception_get_instr()   */
-	#define __exception_get_num     /**< @ref exception_get_num()     */
-	#define __exception_set_handler /**< @ref exception_set_handler() */
+	#define __exception_get_addr      /**< @ref exception_get_addr()      */
+	#define __exception_get_instr     /**< @ref exception_get_instr()     */
+	#define __exception_get_num       /**< @ref exception_get_num()       */
+	#define __exception_set_handler   /**< @ref exception_set_handler()   */
+	#define __exception_unset_handler /**< @ref exception_unset_handler() */
 	/**@}*/
 
 #ifndef _ASM_FILE_
@@ -291,6 +302,14 @@
 	static inline int exception_set_handler(int num, k1b_exception_handler_fn handler)
 	{
 		return (k1b_excp_set_handler(num, handler));
+	}
+
+	/**
+	 * @see k1b_excp_unset_handler()
+	 */
+	static inline int exception_unset_handler(int num)
+	{
+		return (k1b_excp_unset_handler(num));
 	}
 
 /**@endcond*/

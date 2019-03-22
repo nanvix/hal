@@ -154,3 +154,27 @@ PUBLIC int or1k_excp_set_handler(int num, or1k_exception_handler_fn handler)
 
 	return (0);
 }
+
+/**
+ * The or1k_excp_iunset_handler() function unsets a handler function
+ * for the exception @p num.
+ *
+ * @author Pedro Henrique Penna
+ */
+PUBLIC int or1k_excp_unset_handler(int num)
+{
+	/* Invalid exception number. */
+	if ((num < 0) || (num > OR1K_NUM_EXCEPTIONS))
+	{
+		kprintf("[hal] invalid exception number");
+		return (-EINVAL);
+	}
+
+	/* Bad exception number. */
+	if (or1k_excp_handlers[num] == NULL)
+		return (-EINVAL);
+
+	or1k_excp_handlers[num] = NULL;
+
+	return (0);
+}

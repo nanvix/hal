@@ -140,3 +140,27 @@ PUBLIC int i486_excp_set_handler(int num, i486_exception_handler_fn handler)
 
 	return (0);
 }
+
+/**
+ * The i486_excp_unset_handler() function unsets a handler function
+ * for the exception @p num.
+ *
+ * @author Pedro Henrique Penna
+ */
+PUBLIC int i486_excp_unset_handler(int num)
+{
+	/* Invalid exception number. */
+	if ((num < 0) || (num >= I486_NUM_EXCEPTIONS))
+	{
+		kprintf("[hal] invalid exception number");
+		return (-EINVAL);
+	}
+
+	/* Bad exception number. */
+	if (i486_excp_handlers[num] == NULL)
+		return (-EINVAL);
+
+	i486_excp_handlers[num] = NULL;
+
+	return (0);
+}

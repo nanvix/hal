@@ -173,3 +173,28 @@ PUBLIC int k1b_excp_set_handler(int num, k1b_exception_handler_fn handler)
 
 	return (0);
 }
+
+/**
+ * The k1b_excp_unset_handler() function unsets a handler function for
+ * the exception @p num.
+ *
+ * @author Pedro Henrique Penna
+ */
+PUBLIC int k1b_excp_unset_handler(int num)
+{
+	/* Invalid exception number. */
+	if ((num < 0) || (num >= (K1B_NUM_EXCEPTIONS + K1B_NUM_EXCEPTIONS_VIRT)))
+	{
+		kprintf("[hal] invalid exception number");
+		return (-EINVAL);
+	}
+
+	/* Bad exception number. */
+	if (k1b_excp_handlers[num] == NULL)
+		return (-EINVAL);
+
+	k1b_excp_handlers[num] = NULL;
+	k1b_dcache_inval();
+
+	return (0);
+}
