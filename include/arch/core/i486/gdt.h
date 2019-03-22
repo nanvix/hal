@@ -37,12 +37,12 @@
 	 * @brief Size of a GDT entry (in bytes).
 	 */
 	#define GDTE_SIZE 8
-	
+
 	/**
 	 * @brief Size of GDTPTR (in bytes).
 	 */
 	#define GDTPTR_SIZE 6
-	
+
 	/**
 	 * @brief Number of entries in the GDT.
 	 */
@@ -59,7 +59,7 @@
 	#define GDT_DATA_DPL3  4 /**< Data DPL 3. */
 	#define GDT_TSS        5 /**< TSS.        */
 	/**@}*/
-	
+
 	/**
 	 * @name GDT Segment Selectors
 	 */
@@ -87,7 +87,7 @@
 		unsigned granularity :  4; /**< Granularity. */
 		unsigned base_high   :  8; /**< Base high.   */
 	} __attribute__((packed));
-	
+
 	/**
 	 * @brief Global descriptor table pointer.
 	 */

@@ -45,6 +45,7 @@
 	#include <arch/core/k1b/spinlock.h>
 	#include <arch/core/k1b/tlb.h>
 	#include <arch/core/k1b/trap.h>
+	#include <arch/core/k1b/upcall.h>
 
 /**
  * @cond k1b

@@ -27,5 +27,45 @@
 
 #include <arch/core/k1b/asm.h>
 
+.globl _upcall_issue
+.globl _upcall_issue_ret
+.globl saved_sp
+
 .section .text
 
+/*
+ * Issues an upcall.
+ */
+.align 8
+_upcall_issue:
+	_do_prologue_slow      # Save all preserved registers since
+	;;                     # they may be used by the HAL.
+
+	make $r1, saved_sp
+	;;
+	sw  0[$r1], $sp
+	;;
+
+	/* Switch to fake stack. */
+	sw 16 + K1B_CONTEXT_SSP[$r0], $sp
+	;;
+	copy $sp, $r0
+	;;
+
+	/* Return from upcall*/
+	goto k1b_upcall_ret
+	;;
+
+_upcall_issue_ret:
+
+	/* Switch back to real stack. */
+	make $r1, saved_sp
+	;;
+	lw  $bp, 0[$r1]
+	;;
+
+	_do_epilogue_slow     # Restore all preserved
+	;;                    # registers.
+
+	ret
+	;;

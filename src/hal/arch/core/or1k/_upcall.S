@@ -22,51 +22,42 @@
  * SOFTWARE.
  */
 
-#ifndef _HAL_TEST_H_
-#define _HAL_TEST_H_
+/* Must come first. */
+#define _ASM_FILE_
+#define __NEED_OR1K_REGS
+#define __NEED_CORE_TYPES
 
-	/**
-	 * @brief Unit test.
-	 */
-	struct test
-	{
-		void (*test_fn)(void); /**< Test function. */
-		const char *name;      /**< Test name.     */
-	};
+#include <arch/core/or1k/asm.h>
+#include <arch/core/or1k/upcall.h>
 
-	/**
-	 * @brief Test driver for the Clock Interface.
-	 */
-	EXTERN void test_clock(void);
+#include <arch/core/or1k/types.h>
 
-	/**
-	 * @brief Test driver for the Core Interface.
-	 */
-	EXTERN void test_core(void);
+.global or1k_upcall_ret
 
-	/**
-	 * @brief Test driver for the sync interface
-	 */
-	EXTERN void test_sync(void);
+.section .text
 
-	/**
-	 * @brief Test driver for the Exception Interface.
-	 */
-	EXTERN void test_exception(void);
+/*===========================================================================*
+ * or1k_upcall_ret()                                                          *
+ *===========================================================================*/
 
-	/**
-	 * @brief Test driver for trap interface.
-	 */
-	EXTERN void test_trap(void);
-	
-	/**
-	 * @brief Test driver for the upcall interface.
-	 */
-	EXTERN void test_upcall(void);
+/*
+ * Returns from an upcall.
+ */
+.align 8
+or1k_upcall_ret:
 
-	/**
-	 * @brief Test driver for hardware interrupt interface.
-	 */
-	EXTERN void test_interrupt(void);
+	/* Call target function. */
+	l.lwz  r4, 0(sp)
+	l.addi r3, sp, 2*OR1K_WORD_SIZE
+	l.jalr r4
+	l.nop
 
-#endif /* _HAL_TEST_H_ */
+	/* Wipe out argument. */
+	l.lwz  r3, 4(sp)
+	l.addi r3, r3, 2*OR1K_WORD_SIZE
+	l.add  sp, sp, r3
+
+	/* Call special syscall. */
+	l.ori r11, r0, OR1K_NR_upcall_ret
+	l.ori r3,  sp, 0
+	l.sys 1

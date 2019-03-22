@@ -59,6 +59,7 @@ PUBLIC void kmain(int argc, const char *argv[])
 	test_clock();
 	test_core();
 	test_trap();
+	test_upcall();
 
 #if (TARGET_HAS_SYNC)
 	test_sync();

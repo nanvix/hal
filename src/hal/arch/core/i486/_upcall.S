@@ -22,51 +22,43 @@
  * SOFTWARE.
  */
 
-#ifndef _HAL_TEST_H_
-#define _HAL_TEST_H_
+/* Must come first. */
+#define _ASM_FILE_
+#define __NEED_CORE_TYPES
 
-	/**
-	 * @brief Unit test.
-	 */
-	struct test
-	{
-		void (*test_fn)(void); /**< Test function. */
-		const char *name;      /**< Test name.     */
-	};
+#include <arch/core/i486/asm.h>
+#include <arch/core/i486/upcall.h>
+#include <arch/core/i486/types.h>
 
-	/**
-	 * @brief Test driver for the Clock Interface.
-	 */
-	EXTERN void test_clock(void);
+.global i486_upcall_ret
 
-	/**
-	 * @brief Test driver for the Core Interface.
-	 */
-	EXTERN void test_core(void);
+.section .text
 
-	/**
-	 * @brief Test driver for the sync interface
-	 */
-	EXTERN void test_sync(void);
+/*===========================================================================*
+ * i486_upcall_ret()                                                         *
+ *===========================================================================*/
 
-	/**
-	 * @brief Test driver for the Exception Interface.
-	 */
-	EXTERN void test_exception(void);
+/*
+ * Returns from an upcall.
+ */
+.align 8
+i486_upcall_ret:
 
-	/**
-	 * @brief Test driver for trap interface.
-	 */
-	EXTERN void test_trap(void);
-	
-	/**
-	 * @brief Test driver for the upcall interface.
-	 */
-	EXTERN void test_upcall(void);
+	/* Call target function. */
+	movl (%esp), %eax
+	movl %esp, %ebx
+	addl $2*I486_WORD_SIZE, %ebx
+	pushl %ebx
+	call *%eax
+	addl $I486_WORD_SIZE, %esp
 
-	/**
-	 * @brief Test driver for hardware interrupt interface.
-	 */
-	EXTERN void test_interrupt(void);
+	/* Wipe out argument. */
+	addl $I486_WORD_SIZE, %esp // fn
+	popl %eax                  // argsize
+	addl %eax, %esp            // arg
 
-#endif /* _HAL_TEST_H_ */
+	/* Call special syscall. */
+	movl $I486_NR_upcall_ret, %eax
+	movl %esp, %ebx
+	int $0x80
+

@@ -22,51 +22,69 @@
  * SOFTWARE.
  */
 
-#ifndef _HAL_TEST_H_
-#define _HAL_TEST_H_
+#ifndef ARCH_CORE_K1B_UPCALL_H_
+#define ARCH_CORE_K1B_UPCALL_H_
+
+/**
+ * @addtogroup k1b-core-upcall Upcall
+ * @ingroup k1b-core
+ *
+ * @brief Upcall Interface
+ */
+/**@{*/
 
 	/**
-	 * @brief Unit test.
+	 * @brief System call number for upcall_ret().
 	 */
-	struct test
-	{
-		void (*test_fn)(void); /**< Test function. */
-		const char *name;      /**< Test name.     */
-	};
+	#define K1B_NR_upcall_ret 0
+
+#ifndef _ASM_FILE_
 
 	/**
-	 * @brief Test driver for the Clock Interface.
+	 * @brief Returns from an upcall.
 	 */
-	EXTERN void test_clock(void);
+	extern void k1b_upcall_ret(void);
+
+#endif
+
+/**@}*/
+
+/*============================================================================*
+ * Exported Interface                                                         *
+ *============================================================================*/
+
+/**
+ * @cond k1b
+ */
 
 	/**
-	 * @brief Test driver for the Core Interface.
+	 * @name Exported Constants
 	 */
-	EXTERN void test_core(void);
+	/**@{*/
+	#define NR_upcall_ret K1B_NR_upcall_ret /**< @see NR_upcall_ret */
+	/**@}*/
 
 	/**
-	 * @brief Test driver for the sync interface
+	 * @name Exported Functions
 	 */
-	EXTERN void test_sync(void);
+	/**@{*/
+	#define __upcall_ret_fn /**< upcall_ret() */
+	/**@}*/
+
+#ifndef _ASM_FILE_
 
 	/**
-	 * @brief Test driver for the Exception Interface.
+	 * @brief Alias for k1b_upcall_ret()
+	 *
+	 * @see k1b_upcall_ret().
+	 *
+	 * @note This should be an alias, otherwise the compiler may mess
+	 * up with the stack that we have crafted carefully.
 	 */
-	EXTERN void test_exception(void);
+	#define upcall_ret k1b_upcall_ret
 
-	/**
-	 * @brief Test driver for trap interface.
-	 */
-	EXTERN void test_trap(void);
-	
-	/**
-	 * @brief Test driver for the upcall interface.
-	 */
-	EXTERN void test_upcall(void);
+#endif
 
-	/**
-	 * @brief Test driver for hardware interrupt interface.
-	 */
-	EXTERN void test_interrupt(void);
+/**@endcond*/
 
-#endif /* _HAL_TEST_H_ */
+#endif /* ARCH_CORE_K1B_UPCALL_H_ */

@@ -45,6 +45,7 @@
 	#include <arch/core/i486/spinlock.h>
 	#include <arch/core/i486/tlb.h>
 	#include <arch/core/i486/trap.h>
+	#include <arch/core/i486/upcall.h>
 
 /**
  * @cond i486

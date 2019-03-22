@@ -22,51 +22,54 @@
  * SOFTWARE.
  */
 
-#ifndef _HAL_TEST_H_
-#define _HAL_TEST_H_
+/* Must come first. */
+#define _ASM_FILE_
 
-	/**
-	 * @brief Unit test.
-	 */
-	struct test
-	{
-		void (*test_fn)(void); /**< Test function. */
-		const char *name;      /**< Test name.     */
-	};
+#include <arch/core/k1b/asm.h>
+#include <arch/core/k1b/upcall.h>
 
-	/**
-	 * @brief Test driver for the Clock Interface.
-	 */
-	EXTERN void test_clock(void);
+#define __NEED_CORE_TYPES
+#include <arch/core/k1b/types.h>
 
-	/**
-	 * @brief Test driver for the Core Interface.
-	 */
-	EXTERN void test_core(void);
+.global k1b_upcall_ret
 
-	/**
-	 * @brief Test driver for the sync interface
-	 */
-	EXTERN void test_sync(void);
+.section .text
 
-	/**
-	 * @brief Test driver for the Exception Interface.
-	 */
-	EXTERN void test_exception(void);
+/*===========================================================================*
+ * k1b_upcall_ret()                                                          *
+ *===========================================================================*/
 
-	/**
-	 * @brief Test driver for trap interface.
-	 */
-	EXTERN void test_trap(void);
-	
-	/**
-	 * @brief Test driver for the upcall interface.
-	 */
-	EXTERN void test_upcall(void);
+/*
+ * Returns from an upcall.
+ */
+.align 8
+k1b_upcall_ret:
 
-	/**
-	 * @brief Test driver for hardware interrupt interface.
-	 */
-	EXTERN void test_interrupt(void);
+	/* Do upcall. */
+	lw  $r1, 0[$sp]               # Target Function
+	;;
+	add $r0, $sp, 2*K1B_WORD_SIZE # Argument
+	;;
 
-#endif /* _HAL_TEST_H_ */
+	redzone_alloc
+	;;
+	icall $r1
+	;;
+	redzone_free
+	;;
+
+	/* Wipe out upcall stack frame. */
+	lw  $r0, 4[$sp]                # arg
+	;;
+	add $r0, $r0, 2*K1B_WORD_SIZE  # argsize + fn
+	;;
+	add $sp, $sp, $r0
+	;;
+
+	/* Restore old context. */
+	copy $r1, $sp
+	;;
+	make $r0, K1B_NR_upcall_ret
+	;;
+	scall $r0
+	;;
