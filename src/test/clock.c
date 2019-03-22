@@ -67,10 +67,14 @@ PRIVATE void test_do_clock(void)
 	KASSERT(interrupt_register(HAL_INT_CLOCK, do_clock) == 0);
 
 	interrupts_enable();
+	interrupt_unmask(HAL_INT_CLOCK);
 
 		/* Wait for enough clock interrupts. */
-		while (ticks < nticks)
+		do
+		{
 			noop();
+			dcache_invalidate();
+		} while (ticks < nticks);
 
 	interrupts_disable();
 }
