@@ -78,6 +78,9 @@
 	#ifndef __exception_set_handler
 	#error "exception_set_handler() not defined?"
 	#endif
+	#ifndef __exception_unset_handler
+	#error "exception_unset_handler() not defined?"
+	#endif
 
 /*============================================================================*
  * Exception Interface                                                        *
@@ -134,10 +137,20 @@
 	 * @param excpnum Number of the target exception.
 	 * @param handler Exception handler.
 	 *
-	 * @note This function does not check if a handler is already
-	 * set for the target hardware exception.
+	 * @returns Upon successful completion zero is returned. Upon
+	 * failure a negative error code is returned instead.
 	 */
-	EXTERN void exception_set_handler(int excpnum, exception_handler_t handler);
+	EXTERN int exception_set_handler(int excpnum, exception_handler_t handler);
+
+	/**
+	 * @brief Unsets a handler for an exception.
+	 *
+	 * @param excpnum Number of the target exception.
+	 *
+	 * @returns Upon successful completion zero is returned. Upon
+	 * failure a negative error code is returned instead.
+	 */
+	EXTERN int exception_unset_handler(int excpnum);
 
 /**@}*/
 

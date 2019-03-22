@@ -26,6 +26,7 @@
 #include <arch/core/i486/excp.h>
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
+#include <errno.h>
 
 /**
  * @brief Information about exceptions.
@@ -113,10 +114,53 @@ PUBLIC void do_excp(const struct exception *excp, const struct context *ctx)
  * The i486_excp_set_handler() function sets a handler function for
  * the exception @p num.
  *
- * @note This function does not check if a handler is already set for
- * the target hardware exception.
+ * @author Pedro Henrique Penna
  */
-PUBLIC void i486_excp_set_handler(int num, i486_exception_handler_fn handler)
+PUBLIC int i486_excp_set_handler(int num, i486_exception_handler_fn handler)
 {
+	/* Invalid exception number. */
+	if ((num < 0) || (num >= I486_NUM_EXCEPTIONS))
+	{
+		kprintf("[hal] invalid exception number");
+		return (-EINVAL);
+	}
+
+	/* Invalid handler. */
+	if (handler == NULL)
+	{
+		kprintf("[hal] invalid exception handler");
+		return (-EINVAL);
+	}
+
+	/* Bad exception number. */
+	if (i486_excp_handlers[num] != NULL)
+		return (-EBUSY);
+
 	i486_excp_handlers[num] = handler;
+
+	return (0);
+}
+
+/**
+ * The i486_excp_unset_handler() function unsets a handler function
+ * for the exception @p num.
+ *
+ * @author Pedro Henrique Penna
+ */
+PUBLIC int i486_excp_unset_handler(int num)
+{
+	/* Invalid exception number. */
+	if ((num < 0) || (num >= I486_NUM_EXCEPTIONS))
+	{
+		kprintf("[hal] invalid exception number");
+		return (-EINVAL);
+	}
+
+	/* Bad exception number. */
+	if (i486_excp_handlers[num] == NULL)
+		return (-EINVAL);
+
+	i486_excp_handlers[num] = NULL;
+
+	return (0);
 }

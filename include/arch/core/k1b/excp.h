@@ -187,11 +187,20 @@
 	 * @param num     Number of the target exception.
 	 * @param handler Exception handler.
 	 *
-	 * @note This function does not check if a handler is already
-	 * set for the target hardware exception.
-	 *
+	 * @returns Upon successful completion zero is returned. Upon
+	 * failure a negative error code is returned instead.
 	 */
-	extern void k1b_excp_set_handler(int num, k1b_exception_handler_fn handler);
+	extern int k1b_excp_set_handler(int num, k1b_exception_handler_fn handler);
+
+	/**
+	 * @brief Unsets a handler for an exception.
+	 *
+	 * @param excpnum Number of the target exception.
+	 *
+	 * @returns Upon successful completion zero is returned. Upon
+	 * failure a negative error code is returned instead.
+	 */
+	extern int k1b_excp_unset_handler(int excpnum);
 
 	/**
 	 * @brief Low-level exception dispatcher.
@@ -245,10 +254,11 @@
 	 * @name Exported Functions
 	 */
 	/**@{*/
-	#define __exception_get_addr    /**< @ref exception_get_addr()    */
-	#define __exception_get_instr   /**< @ref exception_get_instr()   */
-	#define __exception_get_num     /**< @ref exception_get_num()     */
-	#define __exception_set_handler /**< @ref exception_set_handler() */
+	#define __exception_get_addr      /**< @ref exception_get_addr()      */
+	#define __exception_get_instr     /**< @ref exception_get_instr()     */
+	#define __exception_get_num       /**< @ref exception_get_num()       */
+	#define __exception_set_handler   /**< @ref exception_set_handler()   */
+	#define __exception_unset_handler /**< @ref exception_unset_handler() */
 	/**@}*/
 
 #ifndef _ASM_FILE_
@@ -289,9 +299,17 @@
 	/**
 	 * @see k1b_excp_set_handler()
 	 */
-	static inline void exception_set_handler(int num, k1b_exception_handler_fn handler)
+	static inline int exception_set_handler(int num, k1b_exception_handler_fn handler)
 	{
-		k1b_excp_set_handler(num, handler);
+		return (k1b_excp_set_handler(num, handler));
+	}
+
+	/**
+	 * @see k1b_excp_unset_handler()
+	 */
+	static inline int exception_unset_handler(int num)
+	{
+		return (k1b_excp_unset_handler(num));
 	}
 
 /**@endcond*/

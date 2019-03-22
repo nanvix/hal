@@ -200,11 +200,20 @@
 	 * @param num     Number of the target exception.
 	 * @param handler Exception handler.
 	 *
-	 * @note This function does not check if a handler is already
-	 * set for the target hardware exception.
-	 *
+	 * @returns Upon successful completion zero is returned. Upon
+	 * failure a negative error code is returned instead.
 	 */
-	EXTERN void i486_excp_set_handler(int num, i486_exception_handler_fn handler);
+	EXTERN int i486_excp_set_handler(int num, i486_exception_handler_fn handler);
+
+	/**
+	 * @brief Unsets a handler for an exception.
+	 *
+	 * @param excpnum Number of the target exception.
+	 *
+	 * @returns Upon successful completion zero is returned. Upon
+	 * failure a negative error code is returned instead.
+	 */
+	EXTERN int i486_excp_unset_handler(int excpnum);
 
 /**@}*/
 
@@ -239,10 +248,11 @@
 	 * @name Exported Functions
 	 */
 	/**@{*/
-	#define __exception_get_addr    /**< @ref exception_get_addr()    */
-	#define __exception_get_instr   /**< @ref exception_get_instr()   */
-	#define __exception_get_num     /**< @ref exception_get_num()     */
-	#define __exception_set_handler /**< @ref exception_set_handler() */
+	#define __exception_get_addr      /**< @ref exception_get_addr()      */
+	#define __exception_get_instr     /**< @ref exception_get_instr()     */
+	#define __exception_get_num       /**< @ref exception_get_num()       */
+	#define __exception_set_handler   /**< @ref exception_set_handler()   */
+	#define __exception_unset_handler /**< @ref exception_unset_handler() */
 	/**@}*/
 
 	/**
@@ -272,9 +282,17 @@
 	/**
 	 * @see i486_excp_set_handler()
 	 */
-	static inline void exception_set_handler(int num, i486_exception_handler_fn handler)
+	static inline int exception_set_handler(int num, i486_exception_handler_fn handler)
 	{
-		i486_excp_set_handler(num, handler);
+		return (i486_excp_set_handler(num, handler));
+	}
+
+	/**
+	 * @see i486_excp_unset_handler()
+	 */
+	static inline int exception_unset_handler(int num)
+	{
+		return (i486_excp_unset_handler(num));
 	}
 
 /**@endcond*/
