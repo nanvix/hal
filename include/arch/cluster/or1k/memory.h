@@ -139,9 +139,9 @@
 	 * @name Physical Memory Layout
 	 */
 	/**@{*/
-	#define _KBASE_PHYS OR1K_KERNEL_BASE_PHYS /**< Kernel Base      */
-	#define _KPOOL_PHYS OR1K_KPOOL_PHYS       /**< Kernel Page Pool */
-	#define _UBASE_PHYS OR1K_UBASE_PHYS       /**< User Base        */
+	#define _KBASE_PHYS OR1K_KBASE_PHYS /**< Kernel Base      */
+	#define _KPOOL_PHYS OR1K_KPOOL_PHYS /**< Kernel Page Pool */
+	#define _UBASE_PHYS OR1K_UBASE_PHYS /**< User Base        */
 	/**@}*/
 
 /**@endcond*/
