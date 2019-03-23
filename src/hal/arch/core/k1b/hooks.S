@@ -99,6 +99,14 @@ _do_syscall:
 		/* Save preserved registers. */
 		_do_prologue_slow
 		;;
+
+		/* mOS supports trap calls with 8 arguments, and thus the trap
+		 * call number is stored in the R7.  However, we support trap
+		 * calls only with 5 arguments, so we should fix the arguments
+		 * of the trap call here, by storing into the register R5 the
+		 * trap call number.
+		 */
+		copy $r5, $r7
 		;;
 
 		/*
