@@ -119,9 +119,9 @@
 	 * @name Physical Memory Layout
 	 */
 	/**@{*/
-	#define _KBASE_PHYS I486_KERNEL_BASE_PHYS /**< Kernel Base      */
-	#define _KPOOL_PHYS I486_KPOOL_PHYS       /**< Kernel Page Pool */
-	#define _UBASE_PHYS I486_UBASE_PHYS       /**< User Base        */
+	#define _KBASE_PHYS I486_KBASE_PHYS /**< Kernel Base      */
+	#define _KPOOL_PHYS I486_KPOOL_PHYS /**< Kernel Page Pool */
+	#define _UBASE_PHYS I486_UBASE_PHYS /**< User Base        */
 	/**@}*/
 
 /**@endcond*/
