@@ -96,16 +96,9 @@ _do_syscall:
 
 	_do_syscall.continue:
 
-		/* Save system call context. */
-		add $sp = $sp, -K1B_DWORD_SIZE
+		/* Save preserved registers. */
+		_do_prologue_slow
 		;;
-		get $r8 = $ra
-		;;
-		copy $bp = $r7
-		;;
-		sw 0 [$sp] = $bp
-		;;
-		sw 4 [$sp] = $r8
 		;;
 
 		/*
@@ -118,14 +111,8 @@ _do_syscall:
 		redzone_free
 		;;
 
-		/* Restore system call context. */
-		lw $r8 = 4 [$sp]
-		;;
-		lw $bp = 0 [$sp]
-		;;
-		add $sp = $sp, K1B_DWORD_SIZE
-		;;
-		set $ra = $r8
+		/* Restore preserved registers. */
+		_do_epilogue_slow
 		;;
 
 	_do_syscall.out:
