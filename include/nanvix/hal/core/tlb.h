@@ -89,6 +89,20 @@
 
 	#include <nanvix/const.h>
 
+#if defined(HAL_TLB_HARDWARE)
+
+	/**
+	 * @name TLB Types
+	 */
+	/**@{*/
+	#define TLB_INSTRUCTION 0 /**< Instruction TLB */
+	#define TLB_DATA        1 /**< Data TLB        */
+	/**@}*/
+
+#endif
+
+
+
 	/**
 	 * @brief TLB entry.
 	 */
@@ -117,43 +131,43 @@
 	/**
 	 * @brief Lookups a TLB entry by virtual address.
 	 *
-	 * @param tlb   Target TLB (D-TLB or I-TLB).
-	 * @param vaddr Target virtual address.
+	 * @param tlb_type Target TLB (D-TLB or I-TLB).
+	 * @param vaddr    Target virtual address.
 	 *
 	 * @returns Upon successful completion, a pointer to the TLB entry
 	 * that matches the virtual address @p vaddr is returned. If no
 	 * TLB entry matches @p vaddr, @p NULL is returned instead.
 	 */
-	EXTERN const struct tlbe *tlb_lookup_vaddr(int tlb, vaddr_t vaddr);
+	EXTERN const struct tlbe *tlb_lookup_vaddr(int tlb_type, vaddr_t vaddr);
 
 	/**
 	 * @brief Lookups a TLB entry by physical address.
 	 *
-	 * @param tlb   Target TLB (D-TLB or I-TLB).
-	 * @param paddr Target physical address.
+	 * @param tlb_type Target TLB (D-TLB or I-TLB).
+	 * @param paddr    Target physical address.
 	 *
 	 * @returns Upon successful completion, a pointer to the TLB entry
 	 * that matches the physical address @p paddr is returned. If no
 	 * TLB entry matches @p paddr, @p NULL is returned instead.
 	 */
-	EXTERN const struct tlbe *tlb_lookup_paddr(int tlb, paddr_t paddr);
+	EXTERN const struct tlbe *tlb_lookup_paddr(int tlb_type, paddr_t paddr);
 
 	/**
 	 * @brief Encodes a virtual address into the TLB.
 	 *
-	 * @param tlb   Target TLB (D-TLB or I-TLB).
-	 * @param vaddr Target virtual address.
-	 * @param paddr Target physical address.
+	 * @param tlb_type Target TLB (D-TLB or I-TLB).
+	 * @param vaddr    Target virtual address.
+	 * @param paddr    Target physical address.
 	 *
 	 * @returns Upon successful completion, zero is returned. Upon
 	 * failure, a negative error code is returned instead.
 	 */
 #if !((defined(HAL_TLB_HARDWARE) && !defined(__tlb_write_fn)))
-	EXTERN int tlb_write(int tlb, vaddr_t vaddr, paddr_t paddr);
+	EXTERN int tlb_write(int tlb_type, vaddr_t vaddr, paddr_t paddr);
 #else
-	static inline int tlb_write(int tlb, vaddr_t vaddr, paddr_t paddr)
+	static inline int tlb_write(int tlb_type, vaddr_t vaddr, paddr_t paddr)
 	{
-		((void) tlb);
+		((void) tlb_type);
 		((void) vaddr);
 		((void) paddr);
 
@@ -164,18 +178,18 @@
 	/**
 	 * @brief Invalidates a virtual address in the TLB.
 	 *
-	 * @param tlb   Target TLB (D-TLB or I-TLB).
-	 * @param vaddr Target virtual address.
+	 * @param tlb_type Target TLB (D-TLB or I-TLB).
+	 * @param vaddr    Target virtual address.
 	 *
 	 * @returns Upon successful completion, zero is returned. Upon
 	 * failure, a negative error code is returned instead.
 	 */
 #if !((defined(HAL_TLB_HARDWARE) && !defined(__tlb_inval_fn)))
-	EXTERN int tlb_inval(int tlb, vaddr_t vaddr);
+	EXTERN int tlb_inval(int tlb_type, vaddr_t vaddr);
 #else
-	static inline int tlb_inval(int tlb, vaddr_t vaddr)
+	static inline int tlb_inval(int tlb_type, vaddr_t vaddr)
 	{
-		((void) tlb);
+		((void) tlb_type);
 		((void) vaddr);
 
 		return (0);
