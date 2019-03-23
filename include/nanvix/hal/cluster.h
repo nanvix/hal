@@ -32,6 +32,9 @@
 	/* Cluster Interface Implementation */
 	#include <nanvix/hal/cluster/_cluster.h>
 
+	#include <nanvix/hal/cluster/cpu.h>
+	#include <nanvix/hal/cluster/memory.h>
+
 /*============================================================================*
  * Interface Implementation Checking                                          *
  *============================================================================*/
