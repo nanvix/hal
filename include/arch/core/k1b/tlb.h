@@ -38,30 +38,13 @@
 	#include <mOS_vcore_u.h>
 	#include <mOS_segment_manager_u.h>
 
-/**
- * @cond k1b
- */
-
 	/**
-	 * @brief Software-managed TLB.
-	 */
-	#define HAL_TLB_SOFTWARE
-
-	/**
-	 * @brief Provided Interface
+	 * @name TLB Types
 	 */
 	/**@{*/
-	#define __tlbe_st             /**< TLB Entry           */
-	#define __tlbe_vaddr_get_fn   /**< tlbe_vaddr_get()    */
-	#define __tlbe_paddr_get_fn   /**< tlbe_paddr_get()    */
-	#define __tlb_lookup_vaddr_fn /**< tlbe_lookup_vaddr() */
-	#define __tlb_lookup_paddr_fn /**< tlbe_lookup()       */
-	#define __tlb_write_fn        /**< tlb_write()         */
-	#define __tlb_inval_fn        /**< tlb_inval()         */
-	#define __tlb_flush_fn        /**< tlb_flush()         */
+	#define K1B_TLB_INSTRUCTION 0 /**< Instruction TLB */
+	#define K1B_TLB_DATA        1 /**< Data TLB        */
 	/**@}*/
-
-/**@endcond*/
 
 	/**
 	 * @brief Length of Locked TLB (number of entries).
@@ -304,9 +287,34 @@
 	 */
 	extern void k1b_tlb_init(void);
 
+/**@}*/
+
+/*============================================================================*
+ * Exported Interface                                                         *
+ *============================================================================*/
+
 /**
  * @cond k1b
  */
+
+	/**
+	 * @brief Software-managed TLB.
+	 */
+	#define HAL_TLB_SOFTWARE
+
+	/**
+	 * @brief Provided Interface
+	 */
+	/**@{*/
+	#define __tlbe_st             /**< TLB Entry           */
+	#define __tlbe_vaddr_get_fn   /**< tlbe_vaddr_get()    */
+	#define __tlbe_paddr_get_fn   /**< tlbe_paddr_get()    */
+	#define __tlb_lookup_vaddr_fn /**< tlbe_lookup_vaddr() */
+	#define __tlb_lookup_paddr_fn /**< tlbe_lookup()       */
+	#define __tlb_write_fn        /**< tlb_write()         */
+	#define __tlb_inval_fn        /**< tlb_inval()         */
+	#define __tlb_flush_fn        /**< tlb_flush()         */
+	/**@}*/
 
 	/**
 	 * @brief Length of TLB (number of entries).
@@ -318,6 +326,14 @@
 	 * the JTLB, therefore this should not be @p K1B_TLB_SIZE.
 	 */
 	#define TLB_LENGTH K1B_JTLB_LENGTH
+
+	/**
+	 * @name TLB Types
+	 */
+	/**@{*/
+	#define TLB_INSTRUCTION K1B_TLB_INSTRUCTION /**< Instruction TLB */
+	#define TLB_DATA        K1B_TLB_DATA        /**< Data TLB        */
+	/**@}*/
 
 	/**
 	 * @see k1b_tlbe_vaddr_get().
@@ -338,36 +354,36 @@
 	/**
 	 * @see k1b_tlb_lookup_vaddr().
 	 */
-	static inline const struct tlbe *tlb_lookup_vaddr(int tlb, vaddr_t vaddr)
+	static inline const struct tlbe *tlb_lookup_vaddr(int tlb_type, vaddr_t vaddr)
 	{
-		UNUSED(tlb);
+		UNUSED(tlb_type);
 		return (k1b_tlb_lookup_vaddr(vaddr));
 	}
 
 	/**
 	 * @see k1b_tlb_lookup_paddr().
 	 */
-	static inline const struct tlbe *tlb_lookup_paddr(int tlb, paddr_t paddr)
+	static inline const struct tlbe *tlb_lookup_paddr(int tlb_type, paddr_t paddr)
 	{
-		UNUSED(tlb);
+		UNUSED(tlb_type);
 		return (k1b_tlb_lookup_paddr(paddr));
 	}
 
 	/**
 	 * @see k1b_tlb_write()
 	 */
-	static inline int tlb_write(int tlb, vaddr_t vaddr, paddr_t paddr)
+	static inline int tlb_write(int tlb_type, vaddr_t vaddr, paddr_t paddr)
 	{
-		UNUSED(tlb);
+		UNUSED(tlb_type);
 		return (k1b_tlb_write(vaddr, paddr, 12, 0, K1B_TLBE_PROT_RW));
 	}
 
 	/**
 	 * @see k1b_tlb_inval()
 	 */
-	static inline int tlb_inval(int tlb, vaddr_t vaddr)
+	static inline int tlb_inval(int tlb_type, vaddr_t vaddr)
 	{
-		UNUSED(tlb);
+		UNUSED(tlb_type);
 		return (k1b_tlb_inval(vaddr, 12, 0));
 	}
 
@@ -380,11 +396,5 @@
 	}
 
 /**@endcond*/
-
-/**@}*/
-
-/*============================================================================*
- * Exported Interface                                                         *
- *============================================================================*/
 
 #endif /* ARCH_CORE_K1B_TLB_H_ */

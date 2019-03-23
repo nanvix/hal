@@ -76,6 +76,7 @@ PRIVATE void or1k_do_tlb_fault(
 	const struct context *ctx
 )
 {
+	int tlb;           /* Target TLB.                     */
 	paddr_t paddr;     /* Physical address.               */
 	vaddr_t vaddr;     /* Faulting address.               */
 	struct pte *pte;   /* Working page table table entry. */
@@ -101,7 +102,9 @@ PRIVATE void or1k_do_tlb_fault(
 
 	/* Writing mapping to TLB. */
 	paddr = pte_frame_get(pte) << OR1K_PAGE_SHIFT;
-	if (or1k_tlb_write(excp->num, vaddr, paddr) < 0)
+	tlb = (excp->num == OR1K_EXCEPTION_ITLB_FAULT) ?
+		OR1K_TLB_INSTRUCTION : OR1K_TLB_DATA;
+	if (or1k_tlb_write(tlb, vaddr, paddr) < 0)
 		kpanic("[hal] cannot write to tlb");
 }
 
