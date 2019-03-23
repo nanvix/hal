@@ -138,7 +138,7 @@ _do_excp:
 
 	l.mfspr r3, r0, OR1K_SPR_EEAR_BASE
 	l.sw OR1K_EXCEPTION_EEAR(sp), r3
-	
+
 	l.mfspr r3, r0, OR1K_SPR_EPCR_BASE
 	l.sw OR1K_EXCEPTION_EPCR(sp), r3
 
