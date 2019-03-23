@@ -271,7 +271,6 @@ PUBLIC int k1b_tlb_write(
 	idx = 2*((vaddr >> shift) & 0x3f) + way;
 
 	kmemcpy(&_tlbe, &tlbe, K1B_TLBE_SIZE);
-	kmemcpy(&tlb[coreid].jtlb[idx], &tlbe, K1B_TLBE_SIZE);
 
 	/* Write to hardware TLB. */
 	if (mOS_mem_write_jtlb(_tlbe, way) != 0)
@@ -279,6 +278,8 @@ PUBLIC int k1b_tlb_write(
 		kprintf("[hal] failed to write tlb %x", vaddr);
 		return (-EAGAIN);
 	}
+
+	kmemcpy(&tlb[coreid].jtlb[idx], &tlbe, K1B_TLBE_SIZE);
 
 	return (0);
 }
@@ -310,7 +311,6 @@ PUBLIC int k1b_tlb_inval(vaddr_t vaddr, unsigned shift, unsigned way)
 	idx = 2*((vaddr >> shift) & 0x3f) + way;
 
 	kmemcpy(&_tlbe, &tlbe, K1B_TLBE_SIZE);
-	kmemcpy(&tlb[coreid].jtlb[idx], &tlbe, K1B_TLBE_SIZE);
 
 	/* Write to hardware TLB. */
 	if (mOS_mem_write_jtlb(_tlbe, way) != 0)
@@ -318,6 +318,8 @@ PUBLIC int k1b_tlb_inval(vaddr_t vaddr, unsigned shift, unsigned way)
 		kprintf("[hal] failed to invalidate tlb %x", vaddr);
 		return (-EAGAIN);
 	}
+
+	kmemcpy(&tlb[coreid].jtlb[idx], &tlbe, K1B_TLBE_SIZE);
 
 	return (0);
 }
