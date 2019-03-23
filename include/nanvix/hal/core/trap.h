@@ -157,13 +157,12 @@
 	 * @brief Handles a system call.
 	 */
 	EXTERN int do_syscall(
-		int arg0,
-		int arg1,
-		int arg2,
-		int arg3,
-		int arg4,
-		int arg5,
-		int syscall_nr);
+		unsigned arg0,
+		unsigned arg1,
+		unsigned arg2,
+		unsigned arg3,
+		unsigned arg4,
+		unsigned syscall_nr);
 
 /**@*/
 
