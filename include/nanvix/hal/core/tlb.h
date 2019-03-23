@@ -97,6 +97,20 @@
 
 	#include <nanvix/const.h>
 
+	/**
+	 * @brief Casts something to a virtual address.
+	 *
+	 * @param x Something.
+	 */
+	#define VADDR(x) ((vaddr_t) (x))
+
+	/**
+	 * @brief Casts something to a physical address.
+	 *
+	 * @param x Something.
+	 */
+	#define PADDR(x) ((paddr_t) (x))
+
 #if defined(HAL_TLB_HARDWARE)
 
 	/**
