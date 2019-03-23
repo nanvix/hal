@@ -56,8 +56,9 @@
 	 * @name Provided Features
 	 */
 	/**@{*/
-	#define TARGET_HAS_STDOUT 1 /**< Standard Output feature */
-	#define TARGET_HAS_SYNC   0 /**< Synchronization feature */
+	#define TARGET_HAS_STDOUT  1 /**< Standard Output feature */
+	#define TARGET_HAS_SYNC    0 /**< Synchronization feature */
+	#define TARGET_HAS_MAILBOX 0 /**< Mailbox feature         */
 	/**@}*/
 
 /**@endcond*/
