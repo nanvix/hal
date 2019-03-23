@@ -31,11 +31,154 @@
 /**
  * @brief Run destructive tests?
  */
-#define TEST_TLB_DESTRUCTIVE 0
+#define TEST_TLB_DESTRUCTIVE 1
+
+/**
+ * @brief Launch verbose tests?
+ */
+#define TEST_TLB_VERBOSE 0
 
 /*============================================================================*
  * API Tests                                                                  *
  *============================================================================*/
+
+/*----------------------------------------------------------------------------*
+ * Lookup a Virtual Address                                                   *
+ *----------------------------------------------------------------------------*/
+
+/**
+ * @brief API Test: Lookup a Virtual Address
+ */
+PRIVATE void test_tlb_lookup_vaddr(void)
+{
+	vaddr_t vaddr;
+
+	vaddr = TRUNCATE(VADDR(test_tlb_lookup_vaddr), KPAGE_SIZE);
+
+#if (TEST_TLB_VERBOSE)
+	kprintf("tlb_lookup_vaddr() vaddr = %x", vaddr);
+#endif
+
+	KASSERT(tlb_lookup_vaddr(TLB_INSTRUCTION, vaddr) != NULL);
+}
+
+/*----------------------------------------------------------------------------*
+ * Lookup a Physical Address                                                  *
+ *----------------------------------------------------------------------------*/
+
+/**
+ * @brief API Test: Lookup a Physical Address
+ */
+PRIVATE void test_tlb_lookup_paddr(void)
+{
+	paddr_t paddr;
+
+	paddr = TRUNCATE(PADDR(test_tlb_lookup_paddr), KPAGE_SIZE);
+
+#if (TEST_TLB_VERBOSE)
+	kprintf("tlb_lookup_paddr() paddr = %x", paddr);
+#endif
+
+	KASSERT(tlb_lookup_paddr(TLB_INSTRUCTION, paddr) != NULL);
+}
+
+/*----------------------------------------------------------------------------*
+ * Write an Entry to the TLB (nondestructive)                                 *
+ *----------------------------------------------------------------------------*/
+
+/**
+ * @brief API Test: Write an Entry to the TLB (nondestructive)
+ */
+PRIVATE void test_tlb_write(void)
+{
+	vaddr_t vaddr;
+	paddr_t paddr;
+
+	vaddr = TRUNCATE(VADDR(_UBASE_VIRT) + PAGE_SIZE, PAGE_SIZE);
+	paddr = TRUNCATE(PADDR(_UBASE_PHYS) + PAGE_SIZE, PAGE_SIZE);
+
+#if (TEST_TLB_VERBOSE)
+	kprintf("tlb_write() vaddr = %x, paddr = %x", vaddr, paddr);
+#endif
+
+	/* Write TLB entry. */
+	KASSERT(tlb_write(TLB_DATA, vaddr, paddr) == 0);
+	KASSERT(tlb_flush() == 0);
+
+	/*
+	 * TLB entry will be invalidated in
+	 * test_tlb_invalidate().
+	 */
+}
+
+/*----------------------------------------------------------------------------*
+ * Invalidate an Entry of the TLB                                             *
+ *----------------------------------------------------------------------------*/
+
+/**
+ * @brief API Test: Invalidate an Entry of the TLB
+ */
+PRIVATE void test_tlb_invalidate(void)
+{
+	vaddr_t vaddr;
+
+	vaddr = TRUNCATE(VADDR(_UBASE_VIRT) + PAGE_SIZE, PAGE_SIZE);
+
+#if (TEST_TLB_VERBOSE)
+	kprintf("tlb_inval() vaddr = %x", vaddr);
+#endif
+
+	/* This entry should exist. */
+	KASSERT(tlb_lookup_vaddr(TLB_DATA, vaddr) != NULL);
+
+	/* Invalidate TLB entry. */
+	KASSERT(tlb_inval(TLB_DATA, vaddr) == 0);
+	KASSERT(tlb_flush() == 0);
+
+	/* This entry should no longer exist. */
+	KASSERT(tlb_lookup_vaddr(TLB_DATA, vaddr) == NULL);
+}
+
+/*----------------------------------------------------------------------------*
+ * Write an Entry to the TLB (destructive)                                    *
+ *----------------------------------------------------------------------------*/
+
+/**
+ * @brief API Test: Write an Entry to the TLB (destructive)
+ */
+PRIVATE void test_tlb_write_destructive(void)
+{
+	vaddr_t vaddr;
+	paddr_t paddr;
+
+	/* Don't run this test. */
+	if (!TEST_TLB_DESTRUCTIVE)
+		return;
+
+	vaddr = TRUNCATE(VADDR(_UBASE_VIRT) + PAGE_SIZE, PAGE_SIZE);
+	paddr = TRUNCATE(PADDR(_UBASE_PHYS) + PAGE_SIZE, PAGE_SIZE);
+
+#if (TEST_TLB_VERBOSE)
+	kprintf("tlb_write() vaddr = %x, paddr = %x", vaddr, paddr);
+#endif
+
+	/* Write TLB entry. */
+	KASSERT(tlb_write(TLB_DATA, vaddr, paddr) == 0);
+	KASSERT(tlb_flush() == 0);
+
+	/* This entry should exist. */
+	KASSERT(tlb_lookup_vaddr(TLB_DATA, vaddr) != NULL);
+
+	/* Write to the page. */
+	kmemset((void *) vaddr, -1, PAGE_SIZE);
+
+	/* Invalidate TLB entry. */
+	KASSERT(tlb_inval(TLB_DATA, vaddr) == 0);
+	KASSERT(tlb_flush() == 0);
+
+	/* This entry should no longer exist. */
+	KASSERT(tlb_lookup_vaddr(TLB_DATA, vaddr) == NULL);
+}
 
 /*----------------------------------------------------------------------------*
  * Test Driver Table                                                          *
@@ -45,7 +188,12 @@
  * @brief Unit tests.
  */
 PRIVATE struct test tlb_api_tests[] = {
-	{ NULL, NULL },
+	{ test_tlb_lookup_vaddr,      "lookup virtual address"  },
+	{ test_tlb_lookup_paddr,      "lookup physical address" },
+	{ test_tlb_write,             "write"                   },
+	{ test_tlb_invalidate,        "invalidate"              },
+	{ test_tlb_write_destructive, "write destructive"       },
+	{ NULL,                        NULL                     },
 };
 
 /*============================================================================*
@@ -75,6 +223,11 @@ PRIVATE struct test tlb_fault_tests[] = {
  */
 PUBLIC void test_tlb(void)
 {
+	/* Test not applicable. */
+#ifdef HAL_TLB_HARDWARE
+		return;
+#endif
+
 	for (int i = 0; tlb_api_tests[i].test_fn != NULL; i++)
 	{
 		tlb_api_tests[i].test_fn();
