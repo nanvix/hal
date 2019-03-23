@@ -296,7 +296,7 @@
 	.endm
 
 /*============================================================================*
- * General macros                                                             *
+ * Misc                                                                       *
  *============================================================================*/
 
 	/*
@@ -313,6 +313,36 @@
 		l.ori r25, r0, 0; l.ori r26, r0, 0; l.ori r27, r0, 0; l.ori r28, r0, 0;
 		l.ori r29, r0, 0; l.ori r30, r0, 0; l.ori r31, r0, 0;
 
+	.endm
+
+	/*
+	 * Unconditional jump with delay slot.
+	 */
+	.macro jump N
+		l.j \N
+		l.nop
+	.endm
+
+/*============================================================================*
+ * Stack Operations                                                           *
+ *============================================================================*/
+
+	/*
+	 * Pushes a 32-bit register onto the stack.
+	 *   - rA Target register.
+	 */
+	.macro pushw rA
+		l.addi sp, sp, -4
+		l.sw 0(sp), \rA
+	.endm
+
+	/*
+	 * Pops a 32-bit register from the stack.
+	 *   - rA Target register.
+	 */
+	.macro popw rA
+		l.lwz \rA, 0(sp)
+		l.addi sp, sp, 4
 	.endm
 
 #endif /* ARCH_CORE_OR1K_ASM_H_ */
