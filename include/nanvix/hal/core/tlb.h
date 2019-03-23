@@ -48,6 +48,14 @@
 	 */
 	#ifdef HAL_TLB_SOFTWARE
 
+		/* Constants. */
+		#ifndef TLB_INSTRUCTION
+		#error "TLB_INSTRUCTION not defined!"
+		#endif
+		#ifndef TLB_DATA
+		#error "TLB_DATA not defined!"
+		#endif
+
 		/* Types and Structures */
 		#ifndef __tlbe_st
 			#error "struct tlbe not defined?"
