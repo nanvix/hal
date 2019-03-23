@@ -39,6 +39,7 @@
 	#include <nanvix/hal/core/interrupt.h>
 	#include <nanvix/hal/core/mmu.h>
 	#include <nanvix/hal/core/spinlock.h>
+	#include <nanvix/hal/core/tlb.h>
 	#include <nanvix/hal/core/trap.h>
 	#include <nanvix/hal/core/upcall.h>
 	#include <nanvix/const.h>
