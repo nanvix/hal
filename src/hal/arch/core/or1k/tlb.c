@@ -91,8 +91,8 @@ struct tlbe_value
  */
 PRIVATE int or1k_tlb_check_inst(vaddr_t vaddr)
 {
-	vaddr_t kcode; /* Kernel text start address. */
-	vaddr_t kdata; /* Kernel data start address. */
+	volatile vaddr_t kcode; /* Kernel text start address. */
+	volatile vaddr_t kdata; /* Kernel data start address. */
 
 	kcode = (vaddr_t)&KSTART_CODE;
 	kdata = (vaddr_t)&KSTART_DATA;
@@ -258,7 +258,7 @@ PUBLIC int or1k_tlb_write(int tlb_type, vaddr_t vaddr, paddr_t paddr)
 	unsigned idx;            /* TLB Index.         */
 	unsigned user;           /* User address flag. */
 	unsigned inst;           /* Instruction flag.  */
-	vaddr_t kcode;           /* Kernel start code. */
+	volatile vaddr_t kcode;  /* Kernel start code. */
 	int coreid;              /* Core ID.           */
 
 	coreid = or1k_core_get_id();
