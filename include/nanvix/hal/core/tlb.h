@@ -123,8 +123,6 @@
 
 #endif
 
-
-
 	/**
 	 * @brief TLB entry.
 	 */
