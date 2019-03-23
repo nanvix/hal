@@ -165,7 +165,10 @@ PUBLIC const struct tlbe *k1b_tlb_lookup_vaddr(vaddr_t vaddr)
 
 		/* Found */
 		if (k1b_tlbe_vaddr_get(tlbe) == vaddr)
-			return (tlbe);
+		{
+			if (tlbe->status != K1B_TLBE_STATUS_INVALID)
+				return (tlbe);
+		}
 	}
 
 	/* Search in LTLB. */
@@ -175,7 +178,10 @@ PUBLIC const struct tlbe *k1b_tlb_lookup_vaddr(vaddr_t vaddr)
 
 		/* Found */
 		if (k1b_tlbe_vaddr_get(tlbe) == vaddr)
-			return (tlbe);
+		{
+			if (tlbe->status != K1B_TLBE_STATUS_INVALID)
+				return (tlbe);
+		}
 	}
 
 	return (NULL);
@@ -205,7 +211,10 @@ PUBLIC const struct tlbe *k1b_tlb_lookup_paddr(paddr_t paddr)
 
 		/* Found */
 		if (k1b_tlbe_paddr_get(tlbe) == paddr)
-			return (tlbe);
+		{
+			if (tlbe->status != K1B_TLBE_STATUS_INVALID)
+				return (tlbe);
+		}
 	}
 
 	/* Search in LTLB. */
@@ -215,7 +224,10 @@ PUBLIC const struct tlbe *k1b_tlb_lookup_paddr(paddr_t paddr)
 
 		/* Found */
 		if (k1b_tlbe_paddr_get(tlbe) == paddr)
-			return (tlbe);
+		{
+			if (tlbe->status != K1B_TLBE_STATUS_INVALID)
+				return (tlbe);
+		}
 	}
 
 	return (NULL);
@@ -264,7 +276,7 @@ PUBLIC int k1b_tlb_write(
 	/* Write to hardware TLB. */
 	if (mOS_mem_write_jtlb(_tlbe, way) != 0)
 	{
-		kprintf("[hal] failed to invalidate tlb %x", vaddr);
+		kprintf("[hal] failed to write tlb %x", vaddr);
 		return (-EAGAIN);
 	}
 
