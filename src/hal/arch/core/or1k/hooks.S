@@ -299,14 +299,6 @@ _syscall:
  */
 
 _do_start:
-	l.ori r1, r0,  0; l.ori r2,  r0, 0; l.ori r3,  r0, 0; l.ori r4,  r0, 0;
-	l.ori r5, r0,  0; l.ori r6,  r0, 0; l.ori r7,  r0, 0; l.ori r8,  r0, 0;
-	l.ori r9, r0,  0; l.ori r10, r0, 0; l.ori r11, r0, 0; l.ori r12, r0, 0;
-	l.ori r13, r0, 0; l.ori r14, r0, 0; l.ori r15, r0, 0; l.ori r16, r0, 0;
-	l.ori r17, r0, 0; l.ori r18, r0, 0; l.ori r19, r0, 0; l.ori r20, r0, 0;
-	l.ori r21, r0, 0; l.ori r22, r0, 0; l.ori r23, r0, 0; l.ori r24, r0, 0;
-	l.ori r25, r0, 0; l.ori r26, r0, 0; l.ori r27, r0, 0; l.ori r28, r0, 0;
-	l.ori r29, r0, 0; l.ori r30, r0, 0; l.ori r31, r0, 0;
-
+	or1k_clear_gprs
 	l.jal start
 	l.nop

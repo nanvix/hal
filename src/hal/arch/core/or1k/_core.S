@@ -24,10 +24,15 @@
 
 /* Must come first. */
 #define _ASM_FILE_
+#define __NEED_OR1K_REGS
 
+#include <arch/core/or1k/asm.h>
 #include <arch/core/or1k/core.h>
+#include <arch/core/or1k/mmu.h>
 
+/* Exported symbols. */
 .global _or1k_core_reset
+.global core.kstack
 
 .section .text
 
@@ -39,5 +44,25 @@
  * Resets the underlying core.
  */
 _or1k_core_reset:
+	/* Clear GPRs. */
+	or1k_clear_gprs
+
+	/* Get core id. */
+	OR1K_LOAD_SYMBOL_2_GPR(r1, core.kstack)
+	l.mfspr r3, r0, OR1K_SPR_COREID
+	l.addi  r3, r3, 1
+
+	/* Setup kernel stack. */
+	l.slli  r3, r3, OR1K_PAGE_SHIFT
+	l.add   r1, r1, r3
+	l.addi  r1, r1, -OR1K_WORD_SIZE  /* Stack pointer. */
+	l.or    r2, r1, r0               /* Frame pointer. */
+
+	/* Restart core. */
+	l.j or1k_slave_setup
 	l.nop
-	l.nop
+
+	/* Never gets here. */
+	_or1k_core_reset.halt:
+		l.j _or1k_core_reset.halt
+		l.nop
