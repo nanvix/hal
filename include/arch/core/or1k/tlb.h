@@ -38,6 +38,14 @@
 	#include <arch/core/or1k/mmu.h>
 
 	/**
+	 * @name TLB Types
+	 */
+	/**@{*/
+	#define OR1K_TLB_INSTRUCTION 0 /**< Instruction TLB */
+	#define OR1K_TLB_DATA        1 /**< Data TLB        */
+	/**@}*/
+
+	/**
 	 * @brief Length of architectural TLB (number of entries).
 	 */
 	#define OR1K_TLB_LENGTH 64
@@ -177,51 +185,43 @@
 	/**
 	 * @brief Lookups a TLB entry by virtual address.
 	 *
-	 * @param handler_num Handler number, identifies which TLB
-	 * type should be used.
-	 *
-	 * @param vaddr Target virtual address.
+	 * @param tlb_type Target TLB.
+	 * @param vaddr    Target virtual address.
 	 *
 	 * @returns Upon successful completion, a pointer to the TLB entry
 	 * that matches the virtual address @p vaddr is returned. If no
 	 * entry that meets this criteria is found, @p NULL is returned.
 	 */
-	EXTERN const struct tlbe *or1k_tlb_lookup_vaddr(int handler_num, vaddr_t vaddr);
+	EXTERN const struct tlbe *or1k_tlb_lookup_vaddr(int tlb_type, vaddr_t vaddr);
 
 	/**
 	 * @brief Lookups a TLB entry by physical address.
 	 *
-	 * @param handler_num Handler number, identifies which TLB
-	 * type should be used.
-	 *
-	 * @param paddr Target physical address.
+	 * @param tlb_type Target TLB.
+	 * @param paddr    Target physical address.
 	 *
 	 * @returns Upon successful completion, a pointer to the TLB entry
 	 * that matches the physical address @p paddr is returned. If no
 	 * entry that meets this criteria is found, @p NULL is returned.
 	 */
-	EXTERN const struct tlbe *or1k_tlb_lookup_paddr(int handler_num, paddr_t paddr);
+	EXTERN const struct tlbe *or1k_tlb_lookup_paddr(int tlb_type, paddr_t paddr);
 
 	/**
 	 * @brief Writes a TLB entry.
 	 *
-	 * @param handler_num Handler number, identifies which TLB
-	 * type should be used.
-	 *
-	 * @param vaddr  Target virtual address.
-	 * @param paddr  Target physical address.
+	 * @param tlb_type Target TLB.
+	 * @param vaddr    Target virtual address.
+	 * @param paddr    Target physical address.
 	 */
-	EXTERN int or1k_tlb_write(int handler_num, vaddr_t vaddr, paddr_t paddr);
+	EXTERN int or1k_tlb_write(int tlb_type, vaddr_t vaddr, paddr_t paddr);
 
 	/**
 	 * @brief Invalidates a TLB entry.
 	 *
-	 * @param handler_num Handler number, identifies which TLB
-	 * type should be used.
-	 *
-	 * @param vaddr Target virtual address.
+	 * @param tlb_type Target TLB.
+	 * @param vaddr    Target virtual address.
 	 */
-	EXTERN int or1k_tlb_inval(int handler_num, vaddr_t vaddr);
+	EXTERN int or1k_tlb_inval(int tlb_type, vaddr_t vaddr);
 
 	/**
 	 * @brief Flushes the TLB.
@@ -271,6 +271,14 @@
 	#define TLB_LENGTH OR1K_TLB_LENGTH
 
 	/**
+	 * @name TLB Types
+	 */
+	/**@{*/
+	#define TLB_INSTRUCTION OR1K_TLB_INSTRUCTION /**< Instruction TLB */
+	#define TLB_DATA        OR1K_TLB_DATA        /**< Data TLB        */
+	/**@}*/
+
+	/**
 	 * @see or1k_tlbe_vaddr_get().
 	 */
 	static inline vaddr_t tlbe_vaddr_get(const struct tlbe *tlbe)
@@ -289,33 +297,33 @@
 	/**
 	 * @see or1k_tlb_lookup_vaddr().
 	 */
-	static inline const struct tlbe *tlb_lookup_vaddr(int handler_num, vaddr_t vaddr)
+	static inline const struct tlbe *tlb_lookup_vaddr(int tlb_type, vaddr_t vaddr)
 	{
-		return (or1k_tlb_lookup_vaddr(handler_num, vaddr));
+		return (or1k_tlb_lookup_vaddr(tlb_type, vaddr));
 	}
 
 	/**
 	 * @see or1k_tlb_lookup_paddr().
 	 */
-	static inline const struct tlbe *tlb_lookup_paddr(int handler_num, paddr_t paddr)
+	static inline const struct tlbe *tlb_lookup_paddr(int tlb_type, paddr_t paddr)
 	{
-		return (or1k_tlb_lookup_paddr(handler_num, paddr));
+		return (or1k_tlb_lookup_paddr(tlb_type, paddr));
 	}
 
 	/**
 	 * @see or1k_tlb_write()
 	 */
-	static inline int tlb_write(int handler_num, vaddr_t vaddr, paddr_t paddr)
+	static inline int tlb_write(int tlb_type, vaddr_t vaddr, paddr_t paddr)
 	{
-		return (or1k_tlb_write(handler_num, vaddr, paddr));
+		return (or1k_tlb_write(tlb_type, vaddr, paddr));
 	}
 
 	/**
 	 * @see or1k_tlb_inval()
 	 */
-	static inline int tlb_inval(int handler_num, vaddr_t vaddr)
+	static inline int tlb_inval(int tlb_type, vaddr_t vaddr)
 	{
-		return (or1k_tlb_inval(handler_num, vaddr));
+		return (or1k_tlb_inval(tlb_type, vaddr));
 	}
 
 	/**
