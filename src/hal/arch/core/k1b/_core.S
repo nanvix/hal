@@ -41,6 +41,10 @@
  */
 .align 8
 _k1b_core_reset:
+
+	k1b_clear_gprs
+	;;
+
 	/* Get core id. */
 	get   $r2, $pi
 	;;
