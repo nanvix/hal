@@ -37,6 +37,7 @@
 	#include <nanvix/klib.h>
 	#include <mOS_vcore_u.h>
 	#include <mOS_segment_manager_u.h>
+	#include <errno.h>
 
 	/**
 	 * @name TLB Types
@@ -356,7 +357,10 @@
 	 */
 	static inline const struct tlbe *tlb_lookup_vaddr(int tlb_type, vaddr_t vaddr)
 	{
-		UNUSED(tlb_type);
+		/* Invalid TLB type. */
+		if ((tlb_type != K1B_TLB_INSTRUCTION) && (tlb_type != K1B_TLB_DATA))
+			return (NULL);
+
 		return (k1b_tlb_lookup_vaddr(vaddr));
 	}
 
@@ -365,7 +369,10 @@
 	 */
 	static inline const struct tlbe *tlb_lookup_paddr(int tlb_type, paddr_t paddr)
 	{
-		UNUSED(tlb_type);
+		/* Invalid TLB type. */
+		if ((tlb_type != K1B_TLB_INSTRUCTION) && (tlb_type != K1B_TLB_DATA))
+			return (NULL);
+
 		return (k1b_tlb_lookup_paddr(paddr));
 	}
 
@@ -374,7 +381,10 @@
 	 */
 	static inline int tlb_write(int tlb_type, vaddr_t vaddr, paddr_t paddr)
 	{
-		UNUSED(tlb_type);
+		/* Invalid TLB type. */
+		if ((tlb_type != K1B_TLB_INSTRUCTION) && (tlb_type != K1B_TLB_DATA))
+			return (-EINVAL);
+
 		return (k1b_tlb_write(vaddr, paddr, 12, 0, K1B_TLBE_PROT_RW));
 	}
 
@@ -383,7 +393,10 @@
 	 */
 	static inline int tlb_inval(int tlb_type, vaddr_t vaddr)
 	{
-		UNUSED(tlb_type);
+		/* Invalid TLB type. */
+		if ((tlb_type != K1B_TLB_INSTRUCTION) && (tlb_type != K1B_TLB_DATA))
+			return (-EINVAL);
+
 		return (k1b_tlb_inval(vaddr, 12, 0));
 	}
 
