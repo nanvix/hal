@@ -107,18 +107,19 @@
 	 * @name Exported Constants
 	 */
 	/**@{*/
-	#define PAGE_SIZE   K1B_PAGE_SIZE   /**< @ref K1B_PAGE_SIZE   */
-	#define PGTAB_SIZE  K1B_PGTAB_SIZE  /**< @ref K1B_PGTAB_BIT   */
-	#define PTE_SIZE    K1B_PTE_SIZE    /**< @ref K1B_PTE_SIZE    */
-	#define PDE_SIZE    K1B_PDE_SIZE    /**< @ref K1B_PDE_SIZE    */
-	#define PAGE_SHIFT  K1B_PAGE_SHIFT  /**< @ref K1B_PAGE_SHIFT  */
-	#define PGTAB_SHIFT K1B_PGTAB_SHIFT /**< @ref K1B_PGTAB_SHIFT */
-	#define PAGE_MASK   K1B_PAGE_MASK   /**< @ref K1B_PAGE_MASK   */
-	#define PGTAB_MASK  K1B_PGTAB_MASK  /**< @ref K1B_PGTAB_MASK  */
-	#define PADDR_BIT   K1B_PADDR_BIT   /**< @ref K1B_PADDR_BIT   */
-	#define VADDR_BIT   K1B_VADDR_BIT   /**< @ref K1B_VADDR_BIT   */
-	#define PADDR_BYTE  K1B_PADDR_BYTE  /**< @ref K1B_PADDR_BYTE  */
-	#define VADDR_BYTE  K1B_VADDR_BYTE  /**< @ref K1B_VADDR_BYTE  */
+	#define KPAGE_SIZE  K1B_HUGE_PAGE_SIZE /**< @ref K1B_PAGE_SIZE   */
+	#define PAGE_SIZE   K1B_PAGE_SIZE      /**< @ref K1B_PAGE_SIZE   */
+	#define PGTAB_SIZE  K1B_PGTAB_SIZE     /**< @ref K1B_PGTAB_BIT   */
+	#define PTE_SIZE    K1B_PTE_SIZE       /**< @ref K1B_PTE_SIZE    */
+	#define PDE_SIZE    K1B_PDE_SIZE       /**< @ref K1B_PDE_SIZE    */
+	#define PAGE_SHIFT  K1B_PAGE_SHIFT     /**< @ref K1B_PAGE_SHIFT  */
+	#define PGTAB_SHIFT K1B_PGTAB_SHIFT    /**< @ref K1B_PGTAB_SHIFT */
+	#define PAGE_MASK   K1B_PAGE_MASK      /**< @ref K1B_PAGE_MASK   */
+	#define PGTAB_MASK  K1B_PGTAB_MASK     /**< @ref K1B_PGTAB_MASK  */
+	#define PADDR_BIT   K1B_PADDR_BIT      /**< @ref K1B_PADDR_BIT   */
+	#define VADDR_BIT   K1B_VADDR_BIT      /**< @ref K1B_VADDR_BIT   */
+	#define PADDR_BYTE  K1B_PADDR_BYTE     /**< @ref K1B_PADDR_BYTE  */
+	#define VADDR_BYTE  K1B_VADDR_BYTE     /**< @ref K1B_VADDR_BYTE  */
 	/**@}*/
 
 	/**

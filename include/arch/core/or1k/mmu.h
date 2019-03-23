@@ -130,6 +130,7 @@
 	 * @name Exported Constants
 	 */
 	/**@{*/
+	#define KPAGE_SIZE  OR1K_PAGE_SIZE   /**< @ref OR1K_PAGE_SIZE   */
 	#define PAGE_SIZE   OR1K_PAGE_SIZE   /**< @ref OR1K_PAGE_SIZE   */
 	#define PGTAB_SIZE  OR1K_PGTAB_SIZE  /**< @ref OR1K_PGTAB_BIT   */
 	#define PTE_SIZE    OR1K_PTE_SIZE    /**< @ref OR1K_PTE_SIZE    */

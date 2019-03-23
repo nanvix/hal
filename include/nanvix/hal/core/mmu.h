@@ -39,6 +39,9 @@
 	#ifndef PGTAB_SHIFT
 	#error "PGTAB_SHIFT not defined"
 	#endif
+	#ifndef KPAGE_SIZE
+	#error "KPAGE_SIZE not defined"
+	#endif
 	#ifndef PAGE_SIZE
 	#error "PAGE_SIZE not defined"
 	#endif
