@@ -295,6 +295,182 @@ PRIVATE struct test mmu_api_tests[] = {
  *============================================================================*/
 
 /*----------------------------------------------------------------------------*
+ * Clear Invalid PTE                                                          *
+ *----------------------------------------------------------------------------*/
+
+/**
+ * @brief Fault Injection Test: Clear Invalid PTE
+ */
+PRIVATE void mmu_pte_clear_inval(void)
+{
+	KASSERT(pte_clear(NULL) == -EINVAL);
+}
+
+/*----------------------------------------------------------------------------*
+ * Clear Invalid PDE                                                          *
+ *----------------------------------------------------------------------------*/
+
+/**
+ * @brief Fault Injection Test: Clear Invalid PDE
+ */
+PRIVATE void mmu_pde_clear_inval(void)
+{
+	KASSERT(pde_clear(NULL) == -EINVAL);
+}
+
+/*----------------------------------------------------------------------------*
+ * Set a Frame in an Invalid PTE                                              *
+ *----------------------------------------------------------------------------*/
+
+/**
+ * @brief API Test: Set a Frame in an Invalid PTE
+ */
+PRIVATE void mmu_pte_frame_set_inval(void)
+{
+	frame_t frame = (1 << (VADDR_BIT - PAGE_SHIFT)) - 1;
+
+	KASSERT(pte_frame_set(NULL, frame) == -EINVAL);
+}
+
+/*----------------------------------------------------------------------------*
+ * Set a Frame in an Invalid PDE                                              *
+ *----------------------------------------------------------------------------*/
+
+/**
+ * @brief API Test: Set a Frame in an Invalid PDE
+ */
+PRIVATE void mmu_pde_frame_set_inval(void)
+{
+	frame_t frame = (1 << (VADDR_BIT - PAGE_SHIFT)) - 1;
+
+	KASSERT(pde_frame_set(NULL, frame) == -EINVAL);
+}
+
+/*----------------------------------------------------------------------------*
+ * Set Invalid Frame in a PTE                                                 *
+ *----------------------------------------------------------------------------*/
+
+/**
+ * @brief API Test: Set Invalid Frame in a PTE
+ */
+PRIVATE void mmu_pte_frame_set_inval2(void)
+{
+	struct pte pte;
+
+	KASSERT(pte_frame_set(&pte, -1) == -EINVAL);
+}
+
+/*----------------------------------------------------------------------------*
+ * Set Invalid Frame in a PDE                                                 *
+ *----------------------------------------------------------------------------*/
+
+/**
+ * @brief API Test: Set Invalid Frame in a PDE
+ */
+PRIVATE void mmu_pde_frame_set_inval2(void)
+{
+	struct pde pde;
+
+	KASSERT(pde_frame_set(&pde, -1) == -EINVAL);
+}
+
+/*----------------------------------------------------------------------------*
+ * Set a Present Bit in an Invalid PTE                                        *
+ *----------------------------------------------------------------------------*/
+
+/**
+ * @brief API Test: Set Present Bit in an Invalid PTE
+ */
+PRIVATE void mmu_pte_present_set_inval(void)
+{
+	KASSERT(pte_present_set(NULL, 0) == -EINVAL);
+}
+
+/*----------------------------------------------------------------------------*
+ * Set a Present Bit in an Invalid PDE                                        *
+ *----------------------------------------------------------------------------*/
+
+/**
+ * @brief API Test: Set Present Bit in an Invalid PDE
+ */
+PRIVATE void mmu_pde_present_set_inval(void)
+{
+	KASSERT(pde_present_set(NULL, 0) == -EINVAL);
+}
+
+/*----------------------------------------------------------------------------*
+ * Set a User Bit in an Invalid PTE                                           *
+ *----------------------------------------------------------------------------*/
+
+/**
+ * @brief API Test: Set User Bit in an Invalid PTE
+ */
+PRIVATE void mmu_pte_user_set_inval(void)
+{
+	KASSERT(pte_user_set(NULL, 0) == -EINVAL);
+}
+
+/*----------------------------------------------------------------------------*
+ * Set a User Bit in an Invalid PDE                                           *
+ *----------------------------------------------------------------------------*/
+
+/**
+ * @brief API Test: Set User Bit in an Invalid PDE
+ */
+PRIVATE void mmu_pde_user_set_inval(void)
+{
+	KASSERT(pde_user_set(NULL, 0) == -EINVAL);
+}
+
+/*----------------------------------------------------------------------------*
+ * Set a Write Bit in an Invalid PTE                                           *
+ *----------------------------------------------------------------------------*/
+
+/**
+ * @brief API Test: Set Write Bit in an Invalid PTE
+ */
+PRIVATE void mmu_pte_write_set_inval(void)
+{
+	KASSERT(pte_write_set(NULL, 0) == -EINVAL);
+}
+
+/*----------------------------------------------------------------------------*
+ * Set a Write Bit in an Invalid PDE                                           *
+ *----------------------------------------------------------------------------*/
+
+/**
+ * @brief API Test: Set Write Bit in an Invalid PDE
+ */
+PRIVATE void mmu_pde_write_set_inval(void)
+{
+	KASSERT(pde_write_set(NULL, 0) == -EINVAL);
+}
+
+/*----------------------------------------------------------------------------*
+ * Invalid Get PTE                                                            *
+ *----------------------------------------------------------------------------*/
+
+/**
+ * @brief API Test: Invalid Get PTE
+ */
+PRIVATE void mmu_pte_get_inval(void)
+{
+	KASSERT(pte_get(NULL, _KBASE_VIRT) == NULL);
+}
+
+/*----------------------------------------------------------------------------*
+ * Invalid Get PDE                                                            *
+ *----------------------------------------------------------------------------*/
+
+/**
+ * @brief API Test: Invalid Get PDE
+ */
+PRIVATE void mmu_pde_get_inval(void)
+{
+	KASSERT(pde_get(NULL, _KBASE_VIRT) == NULL);
+}
+
+/*----------------------------------------------------------------------------*
  * Test Driver Table                                                          *
  *----------------------------------------------------------------------------*/
 
@@ -302,6 +478,20 @@ PRIVATE struct test mmu_api_tests[] = {
  * @brief Unit tests.
  */
 PRIVATE struct test mmu_fault_tests[] = {
+	{ mmu_pte_clear_inval,       "clear invalid pte"              },
+	{ mmu_pde_clear_inval,       "clear invalid pde"              },
+	{ mmu_pte_frame_set_inval,   "set frame in invalid pte"       },
+	{ mmu_pde_frame_set_inval,   "set frame in invalid pde"       },
+	{ mmu_pte_frame_set_inval2,  "set invalid frame in pte"       },
+	{ mmu_pde_frame_set_inval2,  "set invalid frame in pde"       },
+	{ mmu_pte_present_set_inval, "set present bit in invalid pte" },
+	{ mmu_pde_present_set_inval, "set present bit in invalid pde" },
+	{ mmu_pte_user_set_inval,    "set user bit in invalid pte"    },
+	{ mmu_pde_user_set_inval,    "set user bit in invalid pde"    },
+	{ mmu_pte_write_set_inval,   "set write bit in invalid pte"   },
+	{ mmu_pde_write_set_inval,   "set write bit in invalid pde"   },
+	{ mmu_pte_get_inval,         "get invalid pte"                },
+	{ mmu_pde_get_inval,         "get invalid pde"                },
 	{ NULL, NULL },
 };
 
