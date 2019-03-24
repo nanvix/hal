@@ -61,8 +61,8 @@
 	#ifndef __interrupt_set_handler
 	#error "interrupt_set_handler() not defined?"
 	#endif
-	#ifndef __hal_intlvl_set
-	#error "hal_intlvl_set() not defined?"
+	#ifndef __interrupt_level_set
+	#error "interrupt_level_set() not defined?"
 	#endif
 
 /*============================================================================*
@@ -120,7 +120,7 @@
 	 *
 	 * @returns The old interrupt level.
 	 */
-	EXTERN int hal_intlvl_set(int newlevel);
+	EXTERN int interrupt_level_set(int newlevel);
 
 	/**
 	 * @brief Acknowledges an interrupt.
