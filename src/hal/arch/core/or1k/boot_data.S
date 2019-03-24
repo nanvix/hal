@@ -30,8 +30,8 @@
 #include <arch/cluster/or1k/cores.h>
 
 /* Exported symbols. */
-.globl kernel_pgtab
-.globl kpool_pgtab
+.globl or1k_kernel_pgtab
+.globl or1k_kpool_pgtab
 .globl dtlb_table
 .globl itlb_table
 .globl core.kstack
@@ -40,25 +40,25 @@
 
 .section .data
 /*----------------------------------------------------------------------------*
- * kernel_pgtab                                                               *
+ * or1k_kernel_pgtab                                                          *
  *----------------------------------------------------------------------------*/
 
 /**
  * @brief Page table for kernel code and data.
  */
 .align OR1K_PAGE_SIZE
-kernel_pgtab:
+or1k_kernel_pgtab:
 	.fill OR1K_PAGE_SIZE/OR1K_PTE_SIZE, OR1K_PTE_SIZE, 0
 
 /*----------------------------------------------------------------------------*
- * kpool_pgtab                                                                *
+ * or1k_kpool_pgtab                                                           *
  *----------------------------------------------------------------------------*/
 
 /**
  * @brief Page table for kernel page pool.
  */
 .align OR1K_PAGE_SIZE
-kpool_pgtab:
+or1k_kpool_pgtab:
 	.fill OR1K_PAGE_SIZE/OR1K_PTE_SIZE, OR1K_PTE_SIZE, 0
 
 /*----------------------------------------------------------------------------*
