@@ -103,7 +103,9 @@
 	 * @name Exported Variables
 	 */
 	/**@{*/
-	#define __root_pgdir /**< @ref root_pgdir */
+	#define __root_pgdir   /**< @ref root_pgdir   */
+	#define __kernel_pgtab /**< @ref kernel_pgtab */
+	#define __kpool_pgtab  /**< @ref kpool_pgtab  */
 	/**@}*/
 
 	/**

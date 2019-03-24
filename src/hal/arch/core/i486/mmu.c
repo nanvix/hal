@@ -31,6 +31,26 @@
 EXTERN struct pde i486_root_pgdir[];
 
 /**
+ * @brief Kernel page table.
+ */
+EXTERN struct pte i486_kernel_pgtab[];
+
+/**
+ * @brief Kernel page pool page table.
+ */
+EXTERN struct pte i486_kpool_pgtab[];
+
+/**
  * Alias to root page directory.
  */
 PUBLIC struct pde *root_pgdir = &i486_root_pgdir[0];
+
+/**
+ * Alias to kernel page table.
+ */
+PUBLIC struct pte *kernel_pgtab = &i486_kernel_pgtab[0];
+
+/**
+ * Alias to kernel page pool page table.
+ */
+PUBLIC struct pte *kpool_pgtab = &i486_kpool_pgtab[0];
