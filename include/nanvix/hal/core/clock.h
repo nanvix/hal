@@ -38,8 +38,8 @@
 	#endif
 
 	/* Functions */
-	#ifndef __hal_clock_init
-	#error "hal_clock_init() not defined?"
+	#ifndef __clock_init_fn
+	#error "clock_init() not defined?"
 	#endif
 
 /*============================================================================*
@@ -61,7 +61,7 @@
 	 *
 	 * @param freq Frequency for the clock device.
 	 */
-	EXTERN void hal_clock_init(unsigned freq);
+	EXTERN void clock_init(unsigned freq);
 
 /**@}*/
 

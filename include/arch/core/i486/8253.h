@@ -39,7 +39,7 @@
 	 * @name Provided Interface
 	 */
 	/**@{*/
-	#define __hal_clock_init
+	#define __clock_init_fn
 	/**@}*/
 
 	/**
@@ -65,7 +65,7 @@
 	/**
 	 * @see i486_clock_init()
 	 */
-	static inline void hal_clock_init(unsigned freq)
+	static inline void clock_init(unsigned freq)
 	{
 		i486_clock_init(freq);
 	}

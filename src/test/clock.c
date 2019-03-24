@@ -62,7 +62,7 @@ PRIVATE void test_do_clock(void)
 {
 	const unsigned nticks = 10;
 
-	hal_clock_init(CLOCK_FREQ);
+	clock_init(CLOCK_FREQ);
 
 	KASSERT(interrupt_register(HAL_INT_CLOCK, do_clock) == 0);
 
