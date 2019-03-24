@@ -82,6 +82,12 @@
 	#ifndef __root_pgdir
 	#error "root_pgdir not defined?"
 	#endif
+	#ifndef __kernel_pgtab
+	#error "kernel_pgtab not defined?"
+	#endif
+	#ifndef __kpool_pgtab
+	#error "kpool_pgtab not defined?"
+	#endif
 
 	/* Functions */
 	#ifndef __pde_clear_fn
@@ -158,6 +164,16 @@
 	 * @brief Root page directory.
 	 */
 	EXTERN struct pde *root_pgdir;
+
+	/**
+	 * @brief Kernel page table.
+	 */
+	EXTERN struct pte *kernel_pgtab;
+
+	/**
+	 * @brief Kernel page pool page table.
+	 */
+	EXTERN struct pte *kpool_pgtab;
 
 /**@}*/
 
