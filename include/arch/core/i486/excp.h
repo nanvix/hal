@@ -229,7 +229,7 @@
 	 * @name Exported Constants
 	 */
 	/**@{*/
-	#define HAL_NUM_EXCEPTIONS            I486_NUM_EXCEPTIONS                /**< @ref I486_NUM_EXCEPTIONS               */
+	#define EXCEPTIONS_NUM                I486_NUM_EXCEPTIONS                /**< @ref I486_NUM_EXCEPTIONS               */
 	#define EXCEPTION_SIZE                I486_EXCEPTION_SIZE                /**< @ref I486_EXCEPTION_SIZE               */
 	#define EXCEPTION_INVALID_OPCODE      I486_EXCEPTION_INVALID_OPCODE      /**< @ref I486_EXCEPTION_INVALID_OPCODE     */
 	#define EXCEPTION_PAGE_FAULT          I486_EXCEPTION_PAGE_FAULT          /**< @ref I486_EXCEPTION_PAGE_FAULT         */

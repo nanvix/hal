@@ -36,8 +36,8 @@
 	#ifndef EXCEPTION_SIZE
 	#error "EXCEPTION_SIZE not defined"
 	#endif
-	#ifndef HAL_NUM_EXCEPTIONS
-	#error "HAL_NUM_EXCEPTIONS not defined"
+	#ifndef EXCEPTIONS_NUM
+	#error "EXCEPTIONS_NUM not defined"
 	#endif
 	#ifndef EXCEPTION_INVALID_OPCODE
 	#error "EXCEPTION_INVALID_OPCODE not defined"

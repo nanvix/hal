@@ -107,7 +107,7 @@ PRIVATE struct test exception_api_tests[] = {
 PRIVATE void test_exception_set_handler_inval(void)
 {
 	KASSERT(exception_set_handler(-1, dummy_handler) == -EINVAL);
-	KASSERT(exception_set_handler(HAL_NUM_EXCEPTIONS + 1, dummy_handler) == -EINVAL);
+	KASSERT(exception_set_handler(EXCEPTIONS_NUM + 1, dummy_handler) == -EINVAL);
 }
 
 /*----------------------------------------------------------------------------*
@@ -134,7 +134,7 @@ PRIVATE void test_exception_set_handler_bad(void)
 PRIVATE void test_exception_unset_handler_inval(void)
 {
 	KASSERT(exception_unset_handler(-1) == -EINVAL);
-	KASSERT(exception_unset_handler(HAL_NUM_EXCEPTIONS + 1) == -EINVAL);
+	KASSERT(exception_unset_handler(EXCEPTIONS_NUM + 1) == -EINVAL);
 }
 
 /*----------------------------------------------------------------------------*

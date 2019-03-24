@@ -233,7 +233,7 @@
 	 * @name Exported Constants
 	 */
 	/**@{*/
-	#define HAL_NUM_EXCEPTIONS            K1B_NUM_EXCEPTIONS            /**< @ref K1B_NUM_EXCEPTIONS            */
+	#define EXCEPTIONS_NUM                K1B_NUM_EXCEPTIONS            /**< @ref K1B_NUM_EXCEPTIONS            */
 	#define EXCEPTION_SIZE                K1B_EXCEPTION_SIZE            /**< @ref K1B_EXCEPTION_SIZE            */
 	#define EXCEPTION_INVALID_OPCODE      K1B_EXCEPTION_OPCODE          /**< @ref K1B_EXCEPTION_OPCODE          */
 	#define EXCEPTION_PAGE_FAULT          K1B_EXCEPTION_VIRT_PAGE_FAULT /**< @ref K1B_EXCEPTION_VIRT_PAGE_FAULT */
