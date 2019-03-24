@@ -132,6 +132,13 @@
 	/**@}*/
 
 	/**
+	 * @name Exported Variables
+	 */
+	/**@{*/
+	#define __root_pgdir /**< @ref root_pgdir */
+	/**@}*/
+
+	/**
 	 * @brief Exported Functions
 	 */
 	/**@{*/

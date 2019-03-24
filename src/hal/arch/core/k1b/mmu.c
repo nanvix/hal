@@ -71,12 +71,12 @@ PRIVATE struct pte root_pgtab[K1B_PGTAB_LENGTH] __attribute__((aligned(K1B_PAGE_
 /**
  * @brief Root Page Directories.
  */
-PRIVATE struct pde root_pgdir[K1B_PGDIR_LENGTH] __attribute__((aligned(K1B_PAGE_SIZE)));
+PRIVATE struct pde k1b_root_pgdir[K1B_PGDIR_LENGTH] __attribute__((aligned(K1B_PAGE_SIZE)));
 
 /**
  * Alias to root page directory.
  */
-PUBLIC struct pde *idle_pgdir = &root_pgdir[0];
+PUBLIC struct pde *root_pgdir = &k1b_root_pgdir[0];
 
 /*
  * Physical Memory Layout
@@ -323,7 +323,7 @@ PUBLIC void k1b_mmu_setup(void)
 
 		/* Clean root page directory. */
 		for (int i = 0; i < K1B_PGDIR_LENGTH; i++)
-			pde_clear(&root_pgdir[i]);
+			pde_clear(&k1b_root_pgdir[i]);
 
 		/* Build root page table. */
 		mmu_map_hypervisor(root_pgtab);
@@ -331,10 +331,10 @@ PUBLIC void k1b_mmu_setup(void)
 		mmu_map_kpool(root_pgtab);
 
 		/* Build root page directory. */
-		root_pgdir[0].present = 1;
-		root_pgdir[0].writable = 1;
-		root_pgdir[0].user = 0;
-		root_pgdir[0].frame = (vaddr_t)(root_pgtab) >> K1B_PAGE_SHIFT;
+		k1b_root_pgdir[0].present = 1;
+		k1b_root_pgdir[0].writable = 1;
+		k1b_root_pgdir[0].user = 0;
+		k1b_root_pgdir[0].frame = (vaddr_t)(root_pgtab) >> K1B_PAGE_SHIFT;
 	}
 
 	mmu_warmup();
