@@ -45,7 +45,7 @@
 	EXTERN void test_core(void);
 
 	/**
-	 * @brief Test driver for the sync interface
+	 * @brief Test driver for the Sync Interface
 	 */
 	EXTERN void test_sync(void);
 
@@ -55,18 +55,23 @@
 	EXTERN void test_exception(void);
 
 	/**
-	 * @brief Test driver for trap interface.
+	 * @brief Test driver for Trap Interface.
 	 */
 	EXTERN void test_trap(void);
-	
+
 	/**
-	 * @brief Test driver for the upcall interface.
+	 * @brief Test driver for the Upcall Interface.
 	 */
 	EXTERN void test_upcall(void);
 
 	/**
-	 * @brief Test driver for hardware interrupt interface.
+	 * @brief Test driver for Hardware Interrupt Interface.
 	 */
 	EXTERN void test_interrupt(void);
+
+	/**
+	 * @brief Test driver for TLB Interface
+	 */
+	EXTERN void test_tlb(void);
 
 #endif /* _HAL_TEST_H_ */
