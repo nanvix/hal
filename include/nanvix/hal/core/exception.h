@@ -48,7 +48,7 @@
 	#ifndef EXCEPTION_PAGE_PROTECTION
 	#error "EXCEPTION_PAGE_PROTECTION not defined"
 	#endif
-	#ifdef HAL_TLB_SOFTWARE
+	#ifdef TLB_SOFTWARE
 		#ifndef EXCEPTION_DTLB_FAULT
 		#error "EXCEPTION_DTLB_FAULT not defined"
 		#endif

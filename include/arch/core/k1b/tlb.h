@@ -301,7 +301,7 @@
 	/**
 	 * @brief Software-managed TLB.
 	 */
-	#define HAL_TLB_SOFTWARE
+	#define TLB_SOFTWARE
 
 	/**
 	 * @brief Provided Interface

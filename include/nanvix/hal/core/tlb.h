@@ -32,7 +32,7 @@
  * Interface Implementation Checking                                          *
  *============================================================================*/
 
-	#if (!defined(HAL_TLB_SOFTWARE) && !defined (TLB_HARDWARE))
+	#if (!defined(TLB_SOFTWARE) && !defined (TLB_HARDWARE))
 		#error "who manages the TLB?"
 	#endif
 
@@ -46,7 +46,7 @@
 	/*
 	 * Required interface for software-managed TLBs.
 	 */
-	#ifdef HAL_TLB_SOFTWARE
+	#ifdef TLB_SOFTWARE
 
 		/* Constants. */
 		#ifndef TLB_INSTRUCTION
