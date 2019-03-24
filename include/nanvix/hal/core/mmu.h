@@ -80,13 +80,13 @@
 
 	/* Functions */
 	#ifndef __pde_clear_fn
-	#error "ipde_clear() not defined?"
+	#error "pde_clear() not defined?"
 	#endif
 	#ifndef __pde_frame_set_fn
-	#error "ipde_frame_set() not defined?"
+	#error "pde_frame_set() not defined?"
 	#endif
 	#ifndef __pde_frame_get_fn
-	#error "ipde_frame_get() not defined?"
+	#error "pde_frame_get() not defined?"
 	#endif
 	#ifndef __pde_get_fn
 	#error "pde_get() not defined?"
