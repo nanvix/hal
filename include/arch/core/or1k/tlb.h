@@ -36,6 +36,7 @@
 	#define __NEED_MEMORY_TYPES
 	#include <arch/core/or1k/types.h>
 	#include <arch/core/or1k/mmu.h>
+	#include <errno.h>
 
 	/**
 	 * @name TLB Types
@@ -299,6 +300,10 @@
 	 */
 	static inline const struct tlbe *tlb_lookup_vaddr(int tlb_type, vaddr_t vaddr)
 	{
+		/* Invalid TLB type. */
+		if ((tlb_type != OR1K_TLB_INSTRUCTION) && (tlb_type != OR1K_TLB_DATA))
+			return (NULL);
+
 		return (or1k_tlb_lookup_vaddr(tlb_type, vaddr));
 	}
 
@@ -307,6 +312,10 @@
 	 */
 	static inline const struct tlbe *tlb_lookup_paddr(int tlb_type, paddr_t paddr)
 	{
+		/* Invalid TLB type. */
+		if ((tlb_type != OR1K_TLB_INSTRUCTION) && (tlb_type != OR1K_TLB_DATA))
+			return (NULL);
+
 		return (or1k_tlb_lookup_paddr(tlb_type, paddr));
 	}
 
@@ -315,6 +324,10 @@
 	 */
 	static inline int tlb_write(int tlb_type, vaddr_t vaddr, paddr_t paddr)
 	{
+		/* Invalid TLB type. */
+		if ((tlb_type != OR1K_TLB_INSTRUCTION) && (tlb_type != OR1K_TLB_DATA))
+			return (-EINVAL);
+
 		return (or1k_tlb_write(tlb_type, vaddr, paddr));
 	}
 
@@ -323,6 +336,10 @@
 	 */
 	static inline int tlb_inval(int tlb_type, vaddr_t vaddr)
 	{
+		/* Invalid TLB type. */
+		if ((tlb_type != OR1K_TLB_INSTRUCTION) && (tlb_type != OR1K_TLB_DATA))
+			return (-EINVAL);
+
 		return (or1k_tlb_inval(tlb_type, vaddr));
 	}
 
