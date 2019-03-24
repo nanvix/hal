@@ -36,7 +36,7 @@
 	/**
 	 * @brief Hardware-managed TLB.
 	 */
-	#define HAL_TLB_HARDWARE
+	#define TLB_HARDWARE
 
 	/**
 	 * @name Provided Interface

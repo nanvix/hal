@@ -32,7 +32,7 @@
  * Interface Implementation Checking                                          *
  *============================================================================*/
 
-	#if (!defined(HAL_TLB_SOFTWARE) && !defined (HAL_TLB_HARDWARE))
+	#if (!defined(HAL_TLB_SOFTWARE) && !defined (TLB_HARDWARE))
 		#error "who manages the TLB?"
 	#endif
 
@@ -111,7 +111,7 @@
 	 */
 	#define PADDR(x) ((paddr_t) (x))
 
-#if defined(HAL_TLB_HARDWARE)
+#if defined(TLB_HARDWARE)
 
 	/**
 	 * @name TLB Types
@@ -158,7 +158,7 @@
 	 * that matches the virtual address @p vaddr is returned. If no
 	 * TLB entry matches @p vaddr, @p NULL is returned instead.
 	 */
-#if !((defined(HAL_TLB_HARDWARE) && !defined(__tlb_lookup_vaddr)))
+#if !((defined(TLB_HARDWARE) && !defined(__tlb_lookup_vaddr)))
 	EXTERN const struct tlbe *tlb_lookup_vaddr(int tlb_type, vaddr_t vaddr);
 #else
 	static const struct tlbe *tlb_lookup_vaddr(int tlb_type, vaddr_t vaddr)
@@ -180,7 +180,7 @@
 	 * that matches the physical address @p paddr is returned. If no
 	 * TLB entry matches @p paddr, @p NULL is returned instead.
 	 */
-#if !((defined(HAL_TLB_HARDWARE) && !defined(__tlb_lookup_paddr_fn)))
+#if !((defined(TLB_HARDWARE) && !defined(__tlb_lookup_paddr_fn)))
 	EXTERN const struct tlbe *tlb_lookup_paddr(int tlb_type, paddr_t paddr);
 #else
 	static const struct tlbe *tlb_lookup_paddr(int tlb_type, paddr_t paddr)
@@ -202,7 +202,7 @@
 	 * @returns Upon successful completion, zero is returned. Upon
 	 * failure, a negative error code is returned instead.
 	 */
-#if !((defined(HAL_TLB_HARDWARE) && !defined(__tlb_write_fn)))
+#if !((defined(TLB_HARDWARE) && !defined(__tlb_write_fn)))
 	EXTERN int tlb_write(int tlb_type, vaddr_t vaddr, paddr_t paddr);
 #else
 	static inline int tlb_write(int tlb_type, vaddr_t vaddr, paddr_t paddr)
@@ -224,7 +224,7 @@
 	 * @returns Upon successful completion, zero is returned. Upon
 	 * failure, a negative error code is returned instead.
 	 */
-#if !((defined(HAL_TLB_HARDWARE) && !defined(__tlb_inval_fn)))
+#if !((defined(TLB_HARDWARE) && !defined(__tlb_inval_fn)))
 	EXTERN int tlb_inval(int tlb_type, vaddr_t vaddr);
 #else
 	static inline int tlb_inval(int tlb_type, vaddr_t vaddr)
