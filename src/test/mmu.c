@@ -43,6 +43,231 @@
  *============================================================================*/
 
 /*----------------------------------------------------------------------------*
+ * Clear a PTE (nondestructive)                                               *
+ *----------------------------------------------------------------------------*/
+
+/**
+ * @brief API Test: Clear a PTE (nondestructive)
+ */
+PRIVATE void mmu_pte_clear(void)
+{
+	struct pte pte;
+
+	kmemset(&pte, 1, sizeof(struct pte));
+	pte_clear(&pte);
+	KASSERT(
+		(pte_frame_get(&pte) == 0) &&
+		(pte_is_present(&pte) == 0)
+	);
+}
+
+/*----------------------------------------------------------------------------*
+ * Clear a PDE (nondestructive)                                               *
+ *----------------------------------------------------------------------------*/
+
+/**
+ * @brief API Test: Clear a PDE
+ */
+PRIVATE void mmu_pde_clear(void)
+{
+	struct pde pde;
+
+	kmemset(&pde, 1, sizeof(struct pde));
+	pde_clear(&pde);
+	KASSERT((pde_frame_get(&pde) == 0) && (pde_is_present(&pde) == 0));
+}
+
+/*----------------------------------------------------------------------------*
+ * Set a Frame of a PTE (nondestructive)                                      *
+ *----------------------------------------------------------------------------*/
+
+/**
+ * @brief API Test: Set a Frame of a PTE (nondestructive)
+ */
+PRIVATE void mmu_pte_frame_set(void)
+{
+	struct pte pte;
+	frame_t frame = (1 << (VADDR_BIT - PAGE_SHIFT)) - 1;
+
+	kmemset(&pte, 1, sizeof(struct pte));
+	pte_clear(&pte);
+	pte_frame_set(&pte, frame);
+
+#if (TEST_MMU_VERBOSE)
+	kprintf("frame = %x, pte->frame = %x",
+		frame,
+		pte_frame_get(&pte)
+	);
+#endif
+
+	KASSERT(pte_frame_get(&pte) == frame);
+}
+
+/*----------------------------------------------------------------------------*
+ * Set a Frame of a PDE (nondestructive)                                      *
+ *----------------------------------------------------------------------------*/
+
+/**
+ * @brief API Test: Set a Frame of a PDE (nondestructive)
+ */
+PRIVATE void mmu_pde_frame_set(void)
+{
+	struct pde pde;
+	frame_t frame = (1 << (VADDR_BIT - PAGE_SHIFT)) - 1;
+
+	kmemset(&pde, 1, sizeof(struct pde));
+	pde_clear(&pde);
+	pde_frame_set(&pde, frame);
+
+#if (TEST_MMU_VERBOSE)
+	kprintf("frame = %x, pde->frame = %x",
+		frame,
+		pde_frame_get(&pde)
+	);
+#endif
+
+	KASSERT(pde_frame_get(&pde) == frame);
+}
+
+/*----------------------------------------------------------------------------*
+ * Set Present Bit of a PTE (nondestructive)                                  *
+ *----------------------------------------------------------------------------*/
+
+/**
+ * @brief API Test: Set Present Bit of a PTE (nondestructive)
+ */
+PRIVATE void mmu_pte_present_set(void)
+{
+	struct pte pte;
+
+	kmemset(&pte, 1, sizeof(struct pte));
+	pte_clear(&pte);
+	pte_present_set(&pte, 1);
+	KASSERT(pte_is_present(&pte));
+	pte_present_set(&pte, 0);
+	KASSERT(!pte_is_present(&pte));
+}
+
+/*----------------------------------------------------------------------------*
+ * Set Present Bit of a PDE (nondestructive)                                  *
+ *----------------------------------------------------------------------------*/
+
+/**
+ * @brief API Test: Set Present Bit of a PDE (nondestructive)
+ */
+PRIVATE void mmu_pde_present_set(void)
+{
+	struct pde pde;
+
+	kmemset(&pde, 1, sizeof(struct pde));
+	pde_clear(&pde);
+	pde_present_set(&pde, 1);
+	KASSERT(pde_is_present(&pde));
+	pde_present_set(&pde, 0);
+	KASSERT(!pde_is_present(&pde));
+}
+
+/*----------------------------------------------------------------------------*
+ * Set User Bit of a PTE (nondestructive)                                     *
+ *----------------------------------------------------------------------------*/
+
+/**
+ * @brief API Test: Set User Bit of a PTE (nondestructive)
+ */
+PRIVATE void mmu_pte_user_set(void)
+{
+	struct pte pte;
+
+	kmemset(&pte, 1, sizeof(struct pte));
+	pte_clear(&pte);
+	pte_user_set(&pte, 1);
+	KASSERT(pte_is_user(&pte));
+	pte_user_set(&pte, 0);
+	KASSERT(!pte_is_user(&pte));
+}
+
+/*----------------------------------------------------------------------------*
+ * Set User Bit of a PDE (nondestructive)                                     *
+ *----------------------------------------------------------------------------*/
+
+/**
+ * @brief API Test: Set User Bit of a PDE (nondestructive)
+ */
+PRIVATE void mmu_pde_user_set(void)
+{
+	struct pde pde;
+
+	kmemset(&pde, 1, sizeof(struct pde));
+	pde_clear(&pde);
+	pde_user_set(&pde, 1);
+	KASSERT(pde_is_user(&pde));
+	pde_user_set(&pde, 0);
+	KASSERT(!pde_is_user(&pde));
+}
+
+/*----------------------------------------------------------------------------*
+ * Set Write Bit of a PTE (nondestructive)                                    *
+ *----------------------------------------------------------------------------*/
+
+/**
+ * @brief API Test: Set Write Bit of a PTE (nondestructive)
+ */
+PRIVATE void mmu_pte_write_set(void)
+{
+	struct pte pte;
+
+	kmemset(&pte, 1, sizeof(struct pte));
+	pte_clear(&pte);
+	pte_write_set(&pte, 1);
+	KASSERT(pte_is_write(&pte));
+	pte_write_set(&pte, 0);
+	KASSERT(!pte_is_write(&pte));
+}
+
+/*----------------------------------------------------------------------------*
+ * Set Write Bit of a PDE (nondestructive)                                    *
+ *----------------------------------------------------------------------------*/
+
+/**
+ * @brief API Test: Set Write Bit of a PDE (nondestructive)
+ */
+PRIVATE void mmu_pde_write_set(void)
+{
+	struct pde pde;
+
+	kmemset(&pde, 1, sizeof(struct pde));
+	pde_clear(&pde);
+	pde_write_set(&pde, 1);
+	KASSERT(pde_is_write(&pde));
+	pde_write_set(&pde, 0);
+	KASSERT(!pde_is_write(&pde));
+}
+
+/*----------------------------------------------------------------------------*
+ * Get a PTE                                                                  *
+ *----------------------------------------------------------------------------*/
+
+/**
+ * @brief API Test: Get a PTE
+ */
+PRIVATE void mmu_pte_get(void)
+{
+	KASSERT(pte_get(kernel_pgtab, _KBASE_VIRT) != NULL);
+}
+
+/*----------------------------------------------------------------------------*
+ * Get a PDE                                                                  *
+ *----------------------------------------------------------------------------*/
+
+/**
+ * @brief API Test: Get a PDE
+ */
+PRIVATE void mmu_pde_get(void)
+{
+	KASSERT(pde_get(root_pgdir, _KBASE_VIRT) != NULL);
+}
+
+/*----------------------------------------------------------------------------*
  * Test Driver Table                                                          *
  *----------------------------------------------------------------------------*/
 
@@ -50,7 +275,19 @@
  * @brief Unit tests.
  */
 PRIVATE struct test mmu_api_tests[] = {
-	{ NULL, NULL },
+	{ mmu_pte_clear,       "clear pte"       },
+	{ mmu_pde_clear,       "clear pde"       },
+	{ mmu_pte_frame_set,   "pte frame set"   },
+	{ mmu_pde_frame_set,   "pde frame set"   },
+	{ mmu_pte_present_set, "pte present set" },
+	{ mmu_pde_present_set, "pde present set" },
+	{ mmu_pte_user_set,    "pte user set"    },
+	{ mmu_pde_user_set,    "pde user set"    },
+	{ mmu_pte_write_set,   "pte write set"   },
+	{ mmu_pde_write_set,   "pde write set"   },
+	{ mmu_pte_get,         "pte get"         },
+	{ mmu_pde_get,         "pde get"         },
+	{ NULL,                 NULL             },
 };
 
 /*============================================================================*
