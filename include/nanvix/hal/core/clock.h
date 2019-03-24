@@ -33,8 +33,8 @@
  *============================================================================*/
 
 	/* Constants */
-	#ifndef HAL_INT_CLOCK
-	#error "HAL_INT_CLOCK not defined"
+	#ifndef INTERRUPT_CLOCK
+	#error "INTERRUPT_CLOCK not defined"
 	#endif
 
 	/* Functions */

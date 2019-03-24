@@ -155,7 +155,7 @@
 	 * @name Hardware Interrupts
 	 */
 	/**@{*/
-	#define HAL_INT_CLOCK I486_PC_INT_CLOCK /*< Programmable interrupt timer. */
+	#define INTERRUPT_CLOCK I486_PC_INT_CLOCK /*< Programmable interrupt timer. */
 	/**@}*/
 
 	/**
