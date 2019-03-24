@@ -201,6 +201,142 @@ PRIVATE struct test tlb_api_tests[] = {
  *============================================================================*/
 
 /*----------------------------------------------------------------------------*
+ * Lookup a Virtual Address in Invalid TLB Type                               *
+ *----------------------------------------------------------------------------*/
+
+/**
+ * @brief Fault Injection Test: Lookup a Virtual Address in Invalid TLB Type
+ */
+PRIVATE void test_tlb_lookup_vaddr_tlb_type_inval(void)
+{
+	vaddr_t vaddr;
+
+	vaddr = VADDR(_KBASE_VIRT);
+
+#if (TEST_TLB_VERBOSE)
+	kprintf("tlb_lookup_vaddr() vaddr = %x", vaddr);
+#endif
+
+	KASSERT(tlb_lookup_vaddr(-1, vaddr) == NULL);
+}
+
+/*----------------------------------------------------------------------------*
+ * Lookup an Bad Virtual Address                                              *
+ *----------------------------------------------------------------------------*/
+
+/**
+ * Fault Injection Test: Lookup Bad Virtual Address
+ */
+PRIVATE void test_tlb_lookup_vaddr_bad(void)
+{
+	vaddr_t vaddr;
+
+	vaddr = TRUNCATE(VADDR(_UBASE_VIRT) + PAGE_SIZE, PAGE_SIZE);
+
+#if (TEST_TLB_VERBOSE)
+	kprintf("tlb_lookup_vaddr() vaddr = %x", vaddr);
+#endif
+
+	KASSERT(tlb_lookup_vaddr(TLB_INSTRUCTION, vaddr) == NULL);
+}
+
+/*----------------------------------------------------------------------------*
+ * Lookup a Physical Address in Invalid TLB Type                              *
+ *----------------------------------------------------------------------------*/
+
+/**
+ * @brief Fault Injection Test: Lookup a Physical Address in Invalid TLB Type
+ */
+PRIVATE void test_tlb_lookup_paddr_tlb_type_inval(void)
+{
+	paddr_t paddr;
+
+	paddr = PADDR(_KBASE_PHYS);
+
+#if (TEST_TLB_VERBOSE)
+	kprintf("tlb_lookup_paddr() paddr = %x", paddr);
+#endif
+
+	KASSERT(tlb_lookup_paddr(-1, paddr) == NULL);
+}
+
+/*----------------------------------------------------------------------------*
+ * Lookup an Bad Physical Address                                             *
+ *----------------------------------------------------------------------------*/
+
+/**
+ * Fault Injection Test: Lookup Bad Physical Address
+ */
+PRIVATE void test_tlb_lookup_paddr_bad(void)
+{
+	paddr_t paddr;
+
+	paddr = TRUNCATE(VADDR(_UBASE_PHYS) + PAGE_SIZE, PAGE_SIZE);
+
+#if (TEST_TLB_VERBOSE)
+	kprintf("tlb_lookup_paddr() paddr = %x", paddr);
+#endif
+
+	KASSERT(tlb_lookup_paddr(TLB_INSTRUCTION, paddr) == NULL);
+}
+
+/*----------------------------------------------------------------------------*
+ * Write an Invalid TLB Entry                                                 *
+ *----------------------------------------------------------------------------*/
+
+/**
+ * @brief Fault Injection Test: Write an Invalid TLB Entry
+ */
+PRIVATE void test_tlb_write_inval(void)
+{
+	vaddr_t vaddr;
+	paddr_t paddr;
+
+	vaddr = TRUNCATE(VADDR(_UBASE_VIRT) + PAGE_SIZE, PAGE_SIZE);
+	paddr = TRUNCATE(PADDR(_UBASE_PHYS) + PAGE_SIZE, PAGE_SIZE);
+
+#if (TEST_TLB_VERBOSE)
+	kprintf("tlb_write() vaddr = %x, paddr = %x", vaddr, paddr);
+#endif
+
+	/* Write TLB entry. */
+	KASSERT(tlb_write(-1, vaddr, paddr) == -EINVAL);
+	KASSERT(tlb_flush() == 0);
+
+	/*
+	 * TLB entry will be invalidated in
+	 * test_tlb_invalidate().
+	 */
+}
+
+/*----------------------------------------------------------------------------*
+ * Invalidate an Invalid TLB Entry                                            *
+ *----------------------------------------------------------------------------*/
+
+/**
+ * @brief Fault Injection Test: Invalidate an Invalid TLB Entry
+ */
+PRIVATE void test_tlb_invalidate_inval(void)
+{
+	vaddr_t vaddr;
+
+	vaddr = TRUNCATE(VADDR(_UBASE_VIRT) + PAGE_SIZE, PAGE_SIZE);
+
+#if (TEST_TLB_VERBOSE)
+	kprintf("tlb_write() vaddr = %x, paddr = %x", vaddr, paddr);
+#endif
+
+	/* Write TLB entry. */
+	KASSERT(tlb_inval(-1, vaddr) == -EINVAL);
+	KASSERT(tlb_flush() == 0);
+
+	/*
+	 * TLB entry will be invalidated in
+	 * test_tlb_invalidate().
+	 */
+}
+
+/*----------------------------------------------------------------------------*
  * Test Driver Table                                                          *
  *----------------------------------------------------------------------------*/
 
@@ -208,7 +344,13 @@ PRIVATE struct test tlb_api_tests[] = {
  * @brief Unit tests.
  */
 PRIVATE struct test tlb_fault_tests[] = {
-	{ NULL, NULL },
+	{ test_tlb_lookup_vaddr_tlb_type_inval, "lookup invalid virtual address"  },
+	{ test_tlb_lookup_vaddr_bad,            "lookup bad virtual address"      },
+	{ test_tlb_lookup_paddr_tlb_type_inval, "lookup invalid physical address" },
+	{ test_tlb_lookup_paddr_bad,            "lookup bad physical address"     },
+	{ test_tlb_write_inval,                 "write invalid entry"             },
+	{ test_tlb_invalidate_inval,            "invalidate invalid entry"        },
+	{ NULL,                                  NULL                             },
 };
 
 /*============================================================================*
