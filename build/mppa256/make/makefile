@@ -26,7 +26,8 @@
 # Target Configuration
 #===============================================================================
 
-export PROCESSOR = bostan
+export TARGET    ?= mppa256
+export PROCESSOR := bostan
 
 #===============================================================================
 # Toolchain Configuration
@@ -51,23 +52,9 @@ export LDFLAGS  = -Wl,--allow-multiple-definition
 #===============================================================================
 
 # Builds Nanvix for the MPPA-256 target.
-nanvix-target: nanvix-k1bdp nanvix-k1bio
+nanvix-target:
+	$(MAKE) -C $(SRCDIR) -f build/processor/makefile.$(PROCESSOR) all
 
 # Cleans everything for the MPPA-256 target.
-distclean-target: distclean-k1bdp distclean-k1bio
-
-# Builds Nanvix for a Compute Cluster.
-nanvix-k1bdp:
-	$(MAKE) -C $(SRCDIR) -f build/makefile.k1bdp all
-
-# Builds Nanvix for an IO Cluster.
-nanvix-k1bio:
-	$(MAKE) -C $(SRCDIR) -f build/makefile.k1bio all
-
-# Cleans compilation files for a Compute Cluster.
-distclean-k1bdp:
-	$(MAKE) -C $(SRCDIR) -f build/makefile.k1bdp distclean
-
-# Cleans compilation files for an IO Cluster.
-distclean-k1bio:
-	$(MAKE) -C $(SRCDIR) -f build/makefile.k1bio distclean
+distclean-target:
+	$(MAKE) -C $(SRCDIR) -f build/processor/makefile.$(PROCESSOR) distclean

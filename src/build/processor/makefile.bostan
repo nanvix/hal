@@ -20,31 +20,25 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# NOTES:
-#   - This script should work in any Linux distribution.
-#   - You should run this script with superuser privileges.
-#
 
-export CURDIR=`pwd`
+# Builds everything.
+all: all-k1bdp all-k1bio
 
-case "$TARGET" in
-	"qemu-x86")
-		qemu-system-i386 -s -S      \
-			--display curses        \
-			-kernel bin/test-driver \
-			-m 256M                 \
-			-mem-prealloc
-		;;
-	"qemu-openrisc")
-		qemu-system-or1k -s -S      \
-			-kernel bin/test-driver \
-			-serial stdio           \
-			-display none           \
-			-m 256M                 \
-			-mem-prealloc           \
-			-smp 2
-		;;
-	*)
-        echo "error: unsupported target"
-		;;
-esac
+# Cleans compilation files.
+distclean: distclean-k1bdp distclean-k1bio
+
+# Builds for Compute Cluster.
+all-k1bdp:
+	$(MAKE) -C $(SRCDIR) -f build/cluster/makefile.k1bdp all
+
+# Builds IO Cluster.
+all-k1bio:
+	$(MAKE) -C $(SRCDIR) -f build/cluster/makefile.k1bio all
+
+# Cleans compilation files for Compute Cluster.
+distclean-k1bdp:
+	$(MAKE) -C $(SRCDIR) -f build/cluster/makefile.k1bdp distclean
+
+# Cleans compilation files for IO Cluster.
+distclean-k1bio:
+	$(MAKE) -C $(SRCDIR) -f build/cluster/makefile.k1bio distclean

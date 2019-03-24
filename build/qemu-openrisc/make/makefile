@@ -24,17 +24,47 @@
 # Target Configuration
 #===============================================================================
 
-# Target Configuration
-export CORE            = k1b
-export CLUSTER         = k1b
-export CLUSTER_VARIANT = ioddr
+export TARGET    ?= qemu-openrisc
+export PROCESSOR := or1k
+
+#===============================================================================
+# Toolchain Configuration
+#===============================================================================
+
+# Toolchain Directory
+export TOOLCHAIN_DIR ?= $(TOOLSDIR)/dev/toolchain/or1k/bin/
+
+# Toolchain
+export CC = $(TOOLCHAIN_DIR)/or1k-elf-gcc
+export LD = $(TOOLCHAIN_DIR)/or1k-elf-ld
+export AR = $(TOOLCHAIN_DIR)/or1k-elf-ar
+
+# Compiler Options
+export CFLAGS   = -D __or1k__ -D __pc__
+export CFLAGS  += -fextended-identifiers
+export CFLAGS  += -nostdlib -nostdinc -fno-stack-protector
+export CFLAGS  += -D __HAS_HW_DIVISION
+
+# Linker Options
+export LDFLAGS  =
 
 #===============================================================================
 # Libraries and Binaries
+#===============================================================================
+
+# Libraries
+export LIBKERNEL = libhal-$(TARGET).a
+export LIBS = $(LIBDIR)/$(LIBKERNEL)
 
 # Binaries
-export EXECBIN = test-driver-k1bio
+export EXECBIN = test-driver
 
 #===============================================================================
 
-include $(SRCDIR)/build/makefile.k1b
+# Builds Nanvix for the or1k PC target.
+nanvix-target:
+	$(MAKE) -C $(SRCDIR) -f build/processor/makefile.$(PROCESSOR) all
+
+# Cleans everything for the or1k PC target.
+distclean-target:
+	$(MAKE) -C $(SRCDIR) -f build/processor/makefile.$(PROCESSOR) distclean

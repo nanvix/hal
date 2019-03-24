@@ -47,16 +47,16 @@ case "$TARGET" in
 		source "tools/image/arch/mppa256.sh"
 		BIN="$BIN-k1bio $BIN-k1bdp"
 		;;
-	"i486-pc")
-		source "tools/image/arch/i486.sh"
+	"qemu-x86")
+		source "tools/image/arch/qemu-x86.sh"
 		BIN="$BIN-i486"
 		;;
 	"optimsoc")
 		source "tools/image/arch/optimsoc.sh"
 		BIN="$BIN-optimsoc"
 		;;
-	"or1k-pc")
-		source "tools/image/arch/or1k.sh"
+	"qemu-openrisc")
+		source "tools/image/arch/qemu-openrisc.sh"
 		BIN="$BIN-or1k"
 		;;
 	*)

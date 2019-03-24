@@ -24,9 +24,17 @@
 # Target Configuration
 #===============================================================================
 
-export CORE      = i486
-export CLUSTER   = i486
+# Target Configuration
+export CORE            = k1b
+export CLUSTER         = k1b
+export CLUSTER_VARIANT = ioddr
+
+#===============================================================================
+# Libraries and Binaries
+
+# Binaries
+export EXECBIN = test-driver-k1bio
 
 #===============================================================================
 
-include $(SRCDIR)/build/makefile.nanvix
+include $(SRCDIR)/build/cluster/makefile.k1b

@@ -24,9 +24,8 @@
 # Target Configuration
 #===============================================================================
 
-# Target Configuration
-export ARCH = or1k
-export PROCESSOR = optimsoc
+export TARGET    ?= optimsoc
+export PROCESSOR := optimsoc
 
 #===============================================================================
 # Toolchain Configuration
@@ -63,8 +62,8 @@ export EXECBIN = kernel
 
 # Builds Nanvix for the or1k PC target.
 nanvix-target:
-	$(MAKE) -C $(SRCDIR) -f build/makefile.optimsoc all
+	$(MAKE) -C $(SRCDIR) -f build/processor/makefile.$(PROCESSOR) all
 
 # Cleans everything for the or1k PC target.
 distclean-target:
-	$(MAKE) -C $(SRCDIR) -f build/makefile.optimsoc distclean
+	$(MAKE) -C $(SRCDIR) -f build/processor/makefile.$(PROCESSOR) distclean
