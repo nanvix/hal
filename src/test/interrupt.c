@@ -275,7 +275,7 @@ PRIVATE void test_interrupt_unregister_handler_bad(void)
 }
 
 /*----------------------------------------------------------------------------*
- * Mask an Invalid Interrupt                                *
+ * Mask an Invalid Interrupt                                                  *
  *----------------------------------------------------------------------------*/
 
 /**
@@ -290,7 +290,7 @@ PRIVATE void test_interrupt_mask_handler_inval(void)
 }
 
 /*----------------------------------------------------------------------------*
- * Unmak an Invalid Interrupt                              *
+ * Unmak an Invalid Interrupt                                                 *
  *----------------------------------------------------------------------------*/
 
 /**
