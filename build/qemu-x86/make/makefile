@@ -1,3 +1,4 @@
+#
 # MIT License
 #
 # Copyright(c) 2011-2019 The Maintainers of Nanvix
@@ -19,6 +20,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+#
 
 #===============================================================================
 # Target Configuration
@@ -40,9 +42,8 @@ export LD = $(TOOLCHAIN_DIR)/i486-elf-ld
 export AR = $(TOOLCHAIN_DIR)/i486-elf-ar
 
 # Compiler Options
-export CFLAGS   = -D __i486__ -D __pc__
-export CFLAGS  += -pedantic-errors -fextended-identifiers
-export CFLAGS  += -nostdlib -nostdinc -fno-stack-protector
+export CFLAGS   = -D __qemu_x86__ -D __x86__
+export CFLAGS  += -nostdlib -nostdinc
 export CFLAGS  += -ansi -pedantic-errors
 export CFLAGS  += -Wstack-usage=4096
 export CFLAGS  += -D __HAS_HW_DIVISION
@@ -58,15 +59,3 @@ export LDFLAGS  =
 export LIBKERNEL = libhal-$(TARGET).a
 export LIBS = $(LIBDIR)/$(LIBKERNEL)
 
-# Binaries
-export EXECBIN = test-driver
-
-#===============================================================================
-
-# Builds Nanvix for the QEMU x86 target.
-nanvix-target:
-	$(MAKE) -C $(SRCDIR) -f build/processor/makefile.$(PROCESSOR) all
-
-# Cleans everything for the QEMU x86 target.
-distclean-target:
-	$(MAKE) -C $(SRCDIR) -f build/processor/makefile.$(PROCESSOR) distclean

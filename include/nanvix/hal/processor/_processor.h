@@ -29,25 +29,25 @@
 	 * @defgroup processors Processors
 	 */
 
-	#if (defined(__k1b__))
+	#if (defined(__bostan__))
 
 		#undef  __NEED_PROCESSOR_BOSTAN
 		#define __NEED_PROCESSOR_BOSTAN
 		#include <arch/processor/bostan.h>
 
-	#elif (defined(__i486__))
+	#elif (defined(__x86__))
 
 		#undef  __NEED_PROCESSOR_I486_QEMU
 		#define __NEED_PROCESSOR_I486_QEMU
 		#include <arch/processor/i486-qemu.h>
 
-	#elif (defined(__optimsoc__))
+	#elif (defined(__optimsoc4__))
 
 		#undef  __NEED_PROCESSOR_OR1K_OPTIMSOC
 		#define __NEED_PROCESSOR_OR1K_OPTIMSOC
 		#include <arch/processor/optimsoc.h>
 
-	#elif (defined(__or1k__))
+	#elif (defined(__openrisc__))
 
 		#undef  __NEED_PROCESSOR_OR1K_QEMU
 		#define __NEED_PROCESSOR_OR1K_QEMU

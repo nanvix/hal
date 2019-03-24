@@ -35,13 +35,13 @@
 		#define __NEED_CORE_K1B
 		#include <arch/core/k1b.h>
 
-	#elif (defined(__i486__))
+	#elif (defined(__x86__))
 
 		#undef  __NEED_CORE_I486
 		#define __NEED_CORE_I486
 		#include <arch/core/i486.h>
 
-	#elif (defined(__or1k__))
+	#elif (defined(__or1200__) || defined(__mor1kx__))
 
 		#undef  __NEED_CORE_OR1K
 		#define __NEED_CORE_OR1K

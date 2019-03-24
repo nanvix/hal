@@ -1,3 +1,4 @@
+#
 # MIT License
 #
 # Copyright(c) 2011-2019 The Maintainers of Nanvix
@@ -19,6 +20,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+#
 
 #===============================================================================
 # Target Configuration
@@ -40,9 +42,10 @@ export LD = $(TOOLCHAIN_DIR)/or1k-elf-ld
 export AR = $(TOOLCHAIN_DIR)/or1k-elf-ar
 
 # Compiler Options
-export CFLAGS   = -D __optimsoc__
-export CFLAGS  += -fextended-identifiers
-export CFLAGS  += -nostdlib -nostdinc -fno-stack-protector
+export CFLAGS   = -D __optimsoc__ -D__optimsoc4__
+export CFLAGS  += -nostdlib -nostdinc
+export CFLAGS  += -ansi -pedantic-errors
+export CFLAGS  += -Wstack-usage=4096
 
 # Linker Options
 export LDFLAGS  =
@@ -54,16 +57,3 @@ export LDFLAGS  =
 # Libraries
 export LIBKERNEL = libhal-$(TARGET).a
 export LIBS = $(LIBDIR)/$(LIBKERNEL)
-
-# Binaries
-export EXECBIN = kernel
-
-#===============================================================================
-
-# Builds Nanvix for the or1k PC target.
-nanvix-target:
-	$(MAKE) -C $(SRCDIR) -f build/processor/makefile.$(PROCESSOR) all
-
-# Cleans everything for the or1k PC target.
-distclean-target:
-	$(MAKE) -C $(SRCDIR) -f build/processor/makefile.$(PROCESSOR) distclean

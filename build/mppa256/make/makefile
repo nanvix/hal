@@ -34,12 +34,12 @@ export PROCESSOR := bostan
 #===============================================================================
 
 # Toolchain Directory
-export K1_TOOLCHAIN_DIR=/usr/local/k1tools
+export TOOLCHAIN_DIR ?= /usr/local/k1tools
 
-# Tools
-export CC = $(K1_TOOLCHAIN_DIR)/bin/k1-gcc
-export LD = $(K1_TOOLCHAIN_DIR)/bin/k1-gcc
-export AR = $(K1_TOOLCHAIN_DIR)/bin/k1-ar
+# Toolchain
+export CC = $(TOOLCHAIN_DIR)/bin/k1-gcc
+export LD = $(TOOLCHAIN_DIR)/bin/k1-gcc
+export AR = $(TOOLCHAIN_DIR)/bin/k1-ar
 
 # Compiler Options
 export CFLAGS   = -D __mppa256__ -D __k1b__
@@ -48,13 +48,3 @@ export CFLAGS  += -D __HAS_HW_DIVISION
 
 # Linker Options
 export LDFLAGS  = -Wl,--allow-multiple-definition
-
-#===============================================================================
-
-# Builds Nanvix for the MPPA-256 target.
-nanvix-target:
-	$(MAKE) -C $(SRCDIR) -f build/processor/makefile.$(PROCESSOR) all
-
-# Cleans everything for the MPPA-256 target.
-distclean-target:
-	$(MAKE) -C $(SRCDIR) -f build/processor/makefile.$(PROCESSOR) distclean

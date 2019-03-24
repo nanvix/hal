@@ -20,6 +20,14 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+#===============================================================================
+# Toolchain Configuration
+#===============================================================================
+
+# Compiler Options
+export CFLAGS += -D __bostan__
+
+#===============================================================================
 
 # Builds everything.
 all: all-k1bdp all-k1bio

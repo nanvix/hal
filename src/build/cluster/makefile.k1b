@@ -20,6 +20,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+#===============================================================================
+# Target Configuration
+#===============================================================================
+
+# Target Configuration
+export CORE    = k1b
+export CLUSTER = k1b
 
 #===============================================================================
 # Toolchain Configuration

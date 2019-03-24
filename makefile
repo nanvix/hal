@@ -37,6 +37,11 @@ export TOOLSDIR  = $(CURDIR)/tools
 
 #===============================================================================
 
+# Target-Specific Make Rules
+include $(MAKEDIR)/makefile
+
+#===============================================================================
+
 export ARTIFACTS =  include/arch/
 export ARTIFACTS += include/arch/stdout/8250.h
 export ARTIFACTS += include/arch/stdout/console.h
@@ -57,6 +62,10 @@ export ARTIFACTS += include/stddef.h
 export ARTIFACTS += include/stdint.h
 
 #===============================================================================
+
+# Binary Name
+export EXECBIN = test-driver
+
 # Image Name
 export IMAGE = nanvix-debug.img
 
@@ -72,10 +81,18 @@ nanvix:
 	mkdir -p $(BINDIR)
 	mkdir -p $(LIBDIR)
 
+# Builds Nanvix for the QEMU x86 target.
+nanvix-target:
+	$(MAKE) -C $(SRCDIR) -f build/processor/makefile.$(PROCESSOR) all
+
 # Cleans everything.
 distclean: distclean-target
 	rm -rf $(IMAGE)
 	rm -rf $(BINDIR) $(LIBDIR)
+
+# Cleans everything for the QEMU x86 target.
+distclean-target:
+	$(MAKE) -C $(SRCDIR) -f build/processor/makefile.$(PROCESSOR) distclean
 
 # Install
 install: $(ARTIFACTS) | nanvix nanvix-target
@@ -109,5 +126,3 @@ uninstall:
 documentation:
 	mkdir -p $(DOCDIR)
 	doxygen doxygen/doxygen.$(TARGET)
-
-include $(MAKEDIR)/makefile

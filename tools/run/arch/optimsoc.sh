@@ -25,12 +25,12 @@
 #
 function run_hw
 {
-	osd-target-run                             \
-		-e bin/kernel                          \
-		-b uart                                \
+	osd-target-run                            \
+		-e bin/test-driver                    \
+		-b uart                               \
 		-o device=/dev/ttyUSB1,speed=12000000 \
-		--systrace                             \
-		--coretrace                            \
+		--systrace                            \
+		--coretrace                           \
 		-vvv
 }
 
@@ -40,9 +40,9 @@ function run_hw
 function run_sim
 {
 	$OPTIMSOC/examples/sim/compute_tile/compute_tile_sim_singlecore_debug &
-	osd-target-run    \
-		-e bin/kernel \
-		--systrace    \
-		--coretrace   \
+	osd-target-run         \
+		-e bin/test-driver \
+		--systrace         \
+		--coretrace        \
 		-vvv
 }
