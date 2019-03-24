@@ -36,7 +36,7 @@
 
 /* Exported symbols. */
 .globl start
-.globl idle_pgdir
+.globl i486_root_pgdir
 
 /*============================================================================*
  *                              bootstrap section                             *
@@ -94,13 +94,13 @@ start:
 	 *   - Kernel page pool at 0xc1000000
 	 */
 	start.kpgdir.init:
-		movl $kernel_pgtab + 3, idle_pgdir + I486_PTE_SIZE*0
-		movl $kernel_pgtab + 3, idle_pgdir + I486_PTE_SIZE*768
-		movl $kpool_pgtab + 3,  idle_pgdir + I486_PTE_SIZE*772
+		movl $kernel_pgtab + 3, i486_root_pgdir + I486_PTE_SIZE*0
+		movl $kernel_pgtab + 3, i486_root_pgdir + I486_PTE_SIZE*768
+		movl $kpool_pgtab + 3,  i486_root_pgdir + I486_PTE_SIZE*772
 
 	/* Enable paging. */
 	start.paging.enable:
-		movl $idle_pgdir, %eax
+		movl $i486_root_pgdir, %eax
 		movl %eax, %cr3
 		movl %cr0, %eax
 		orl $0x80000000, %eax
@@ -143,14 +143,14 @@ kpool_pgtab:
 	.fill I486_PAGE_SIZE/I486_PTE_SIZE, I486_PTE_SIZE, 0
 
 /*----------------------------------------------------------------------------*
- * idle_pgdir                                                                 *
+ * i486_root_pgdir                                                            *
  *----------------------------------------------------------------------------*/
 
 /**
  * @brief Page directory of idle process.
  */
 .align I486_PAGE_SIZE
-idle_pgdir:
+i486_root_pgdir:
 	.fill I486_PAGE_SIZE/I486_PTE_SIZE, I486_PTE_SIZE, 0
 
 /*----------------------------------------------------------------------------*
