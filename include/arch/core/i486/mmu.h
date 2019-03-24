@@ -75,6 +75,7 @@
 	 * @name Exported Constants
 	 */
 	/**@{*/
+	#define KPAGE_SIZE  I486_PAGE_SIZE   /**< @ref I486_PAGE_SIZE   */
 	#define PAGE_SIZE   I486_PAGE_SIZE   /**< @ref I486_PAGE_SIZE   */
 	#define PGTAB_SIZE  I486_PGTAB_SIZE  /**< @ref I486_PGTAB_BIT   */
 	#define PTE_SIZE    I486_PTE_SIZE    /**< @ref I486_PTE_SIZE    */
