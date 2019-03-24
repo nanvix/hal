@@ -133,7 +133,7 @@
 	/**
 	 * @brief Number of hardware interrupts.
 	 */
-	#define _HAL_INT_NR OR1K_NUM_HWINT
+	#define _INTERRUPTS_NUM OR1K_NUM_HWINT
 
 	/**
 	 * @name Hardware Interrupts

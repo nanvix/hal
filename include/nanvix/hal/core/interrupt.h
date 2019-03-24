@@ -33,8 +33,8 @@
  *============================================================================*/
 
 	/* Constants */
-	#ifndef _HAL_INT_NR
-	#error "_HAL_INT_NR not defined"
+	#ifndef _INTERRUPTS_NUM
+	#error "_INTERRUPTS_NUM not defined"
 	#endif
 
 	/* Structures & Types */
@@ -82,7 +82,7 @@
 	/**
 	 * @brief Number of hardware interrupts.
 	 */
-	#define HAL_INT_NR _HAL_INT_NR
+	#define INTERRUPTS_NUM _INTERRUPTS_NUM
 
 	/**
 	 * @brief Hardware interrupt handler.

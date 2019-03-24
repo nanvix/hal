@@ -122,7 +122,7 @@
 	/**
 	 * @brief Number of hardware interrupts in the Kalray MPPA-256 target.
 	 */
-	#define _HAL_INT_NR K1B_NUM_HWINT
+	#define _INTERRUPTS_NUM K1B_NUM_HWINT
 
 	/**
 	 * @name Hardware Interrupts

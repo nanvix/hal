@@ -33,7 +33,7 @@
 PRIVATE struct
 {
 	int handled; /**< Handled? */
-} interrupts[HAL_INT_NR];
+} interrupts[INTERRUPTS_NUM];
 
 /**
  * @brief Default hardware interrupt handler.
@@ -56,7 +56,7 @@ PRIVATE void default_handler(int num)
 PUBLIC int interrupt_register(int num, interrupt_handler_t handler)
 {
 	/* Invalid interrupt number. */
-	if ((num < 0) || (num >= HAL_INT_NR))
+	if ((num < 0) || (num >= INTERRUPTS_NUM))
 		return (-EINVAL);
 
 	/* Handler function already registered. */
@@ -81,7 +81,7 @@ PUBLIC int interrupt_register(int num, interrupt_handler_t handler)
 PUBLIC int interrupt_unregister(int num)
 {
 	/* Invalid interrupt number. */
-	if ((num < 0) || (num >= HAL_INT_NR))
+	if ((num < 0) || (num >= INTERRUPTS_NUM))
 		return (-EINVAL);
 
 	/* No handler function is registered. */
@@ -103,7 +103,7 @@ PUBLIC int interrupt_unregister(int num)
  */
 PUBLIC void interrupt_setup(void)
 {
-	for (int i = 0; i < HAL_INT_NR; i++)
+	for (int i = 0; i < INTERRUPTS_NUM; i++)
 	{
 		interrupts[i].handled = FALSE;
 		dcache_invalidate();

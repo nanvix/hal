@@ -196,7 +196,7 @@ PRIVATE struct test interrupt_tests_api[] = {
 PRIVATE void test_interrupt_set_handler_inval(void)
 {
 	KASSERT(interrupt_set_handler(-1, dummy_handler) == -EINVAL);
-	KASSERT(interrupt_set_handler(HAL_INT_NR + 1, dummy_handler) == -EINVAL);
+	KASSERT(interrupt_set_handler(INTERRUPTS_NUM + 1, dummy_handler) == -EINVAL);
 }
 
 /*----------------------------------------------------------------------------*
@@ -211,7 +211,7 @@ PRIVATE void test_interrupt_set_handler_inval(void)
 PRIVATE void test_interrupt_clear_handler_inval(void)
 {
 	KASSERT(interrupt_set_handler(-1, NULL) == -EINVAL);
-	KASSERT(interrupt_set_handler(HAL_INT_NR + 1, NULL) == -EINVAL);
+	KASSERT(interrupt_set_handler(INTERRUPTS_NUM + 1, NULL) == -EINVAL);
 }
 
 /*----------------------------------------------------------------------------*
@@ -226,7 +226,7 @@ PRIVATE void test_interrupt_clear_handler_inval(void)
 PRIVATE void test_interrupt_register_handler_inval(void)
 {
 	KASSERT(interrupt_register(-1, dummy_handler) == -EINVAL);
-	KASSERT(interrupt_register(HAL_INT_NR + 1, dummy_handler) == -EINVAL);
+	KASSERT(interrupt_register(INTERRUPTS_NUM + 1, dummy_handler) == -EINVAL);
 }
 
 /*----------------------------------------------------------------------------*
@@ -241,7 +241,7 @@ PRIVATE void test_interrupt_register_handler_inval(void)
 PRIVATE void test_interrupt_unregister_handler_inval(void)
 {
 	KASSERT(interrupt_unregister(-1) == -EINVAL);
-	KASSERT(interrupt_unregister(HAL_INT_NR + 1) == -EINVAL);
+	KASSERT(interrupt_unregister(INTERRUPTS_NUM + 1) == -EINVAL);
 }
 
 /*----------------------------------------------------------------------------*
@@ -286,7 +286,7 @@ PRIVATE void test_interrupt_unregister_handler_bad(void)
 PRIVATE void test_interrupt_mask_handler_inval(void)
 {
 	KASSERT(interrupt_mask(-1) == -EINVAL);
-	KASSERT(interrupt_mask(HAL_INT_NR + 1) == -EINVAL);
+	KASSERT(interrupt_mask(INTERRUPTS_NUM + 1) == -EINVAL);
 }
 
 /*----------------------------------------------------------------------------*
@@ -301,7 +301,7 @@ PRIVATE void test_interrupt_mask_handler_inval(void)
 PRIVATE void test_interrupt_unmask_handler_inval(void)
 {
 	KASSERT(interrupt_unmask(-1) == -EINVAL);
-	KASSERT(interrupt_unmask(HAL_INT_NR + 1) == -EINVAL);
+	KASSERT(interrupt_unmask(INTERRUPTS_NUM + 1) == -EINVAL);
 }
 
 /*----------------------------------------------------------------------------*

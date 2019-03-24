@@ -149,7 +149,7 @@
 	/**
 	 * @brief Number of hardware interrupts in the IBM PC target.
 	 */
-	#define _HAL_INT_NR I486_NUM_HWINT
+	#define _INTERRUPTS_NUM I486_NUM_HWINT
 
 	/**
 	 * @name Hardware Interrupts
