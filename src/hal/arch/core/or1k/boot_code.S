@@ -51,7 +51,7 @@
 .globl start
 .globl kernel_pgtab
 .globl kpool_pgtab
-.globl idle_pgdir
+.globl root_pgdir
 .globl dtlb_table
 .globl itlb_table
 .globl core.kstack
@@ -105,7 +105,7 @@ start:
 	l.slli r1, r1, OR1K_PT_SHIFT
 	l.ori  r1, r1, OR1K_PT_PRESENT
 
-	OR1K_LOAD_SYMBOL_2_GPR(r3, idle_pgdir)
+	OR1K_LOAD_SYMBOL_2_GPR(r3, root_pgdir)
 	l.lwz r3, 0(r3)
 
 	l.sw  OR1K_PTE_SIZE*0(r3),   r1       /* Kernel code + data at 0x00000000 */
