@@ -78,6 +78,11 @@
 	#error "vaddr_t not defined?"
 	#endif
 
+	/* Variables. */
+	#ifndef __root_pgdir
+	#error "root_pgdir not defined?"
+	#endif
+
 	/* Functions */
 	#ifndef __pde_clear_fn
 	#error "pde_clear() not defined?"
@@ -148,6 +153,11 @@
  * @brief MMU HAL Interface
  */
 /**@{*/
+
+	/**
+	 * @brief Root page directory.
+	 */
+	EXTERN struct pde *root_pgdir;
 
 /**@}*/
 
