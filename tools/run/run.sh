@@ -89,7 +89,7 @@ case $test in
 	;&
 	kernel-core)
 		echo "=== Running Core and NoC Interface Tests"
-		run_hw "nanvix-debug.img" "bin/test-driver" "--debug --hal-core" "$debug" "$type"
+		run_hw "hal-debug.img" "bin/test-driver" "--debug --hal-core" "$debug" "$type"
 		stop_if_short_test $mode
 	;&
 esac

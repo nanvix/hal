@@ -67,22 +67,22 @@ export ARTIFACTS += include/stdint.h
 export EXECBIN = test-driver
 
 # Image Name
-export IMAGE = nanvix-debug.img
+export IMAGE = hal-debug.img
 
 # Builds everything.
 all: image
 
 # Builds image.
-image: | nanvix nanvix-target
+image: | hal hal-target
 	bash $(TOOLSDIR)/image/build-image.sh $(BINDIR) $(IMAGE)
 
 # Builds Nanvix.
-nanvix:
+hal:
 	mkdir -p $(BINDIR)
 	mkdir -p $(LIBDIR)
 
-# Builds Nanvix for the QEMU x86 target.
-nanvix-target:
+# Builds HAL.
+hal-target:
 	$(MAKE) -C $(SRCDIR) -f build/processor/makefile.$(PROCESSOR) all
 
 # Cleans everything.
@@ -90,12 +90,12 @@ distclean: distclean-target
 	rm -rf $(IMAGE)
 	rm -rf $(BINDIR) $(LIBDIR)
 
-# Cleans everything for the QEMU x86 target.
+# Cleans compilation files.
 distclean-target:
 	$(MAKE) -C $(SRCDIR) -f build/processor/makefile.$(PROCESSOR) distclean
 
 # Install
-install: $(ARTIFACTS) | nanvix nanvix-target
+install: $(ARTIFACTS) | hal hal-target
 	mkdir -p $(PREFIX)/include/
 	cp -r include/arch/                    $(PREFIX)/include/arch/
 	mkdir -p $(PREFIX)/include/grub/
