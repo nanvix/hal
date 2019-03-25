@@ -57,6 +57,21 @@
 		K1B_TLBE_STATUS_AMODIFIED      \
 	)
 
+/**
+ * @brief DDR TLB entry.
+ */
+#define K1B_TLBE_DDR \
+	K1B_TLBE_INITIALIZER(\
+		0x80000,                          \
+		0x0,                              \
+		0x0,                              \
+		0x80000,                          \
+		0x00,                             \
+		0x0,                              \
+		K1B_TLBE_PROT_RW,                 \
+		K1B_DTLBE_CACHE_POLICY_WRTHROUGH, \
+		K1B_TLBE_STATUS_AMODIFIED         \
+	)
 
 /**
  * @brief Null TLB entry.
@@ -129,7 +144,7 @@ volatile mOS_bin_desc_t bin_descriptor SECTION_BINDESC OVERRIDE =
 	 */
 	.ltlb               = {
 #ifdef __k1io__
-		{._dword        = (0x80000000800000db) | (((uint64_t) (DDR_SIZE)) << 31) },
+		{._dword = K1B_TLBE_DDR       },
 		{._dword = K1B_TLBE_ETHERNET  },
 		{._dword = K1B_TLBE_NULL      },
 		{._dword = K1B_TLBE_NULL      },
