@@ -28,18 +28,14 @@
  * All rights reserved.
  *
  */
-
+/* Must come first. */
+#define __NEED_TARGET_MPPA256
 #define __NEED_K1B_ELF
-#include <arch/core/k1b/elf.h>
-#include <arch/core/k1b/tlb.h>
+
+#include <arch/target/kalray/mppa256.h>
 #include <nanvix/const.h>
 #include <mOS_common_types_c.h>
 #include <mOS_vcore_u.h>
-
-/**
- * @brief DDR size (in bytes).
- */
-#define DDR_SIZE (2*1024*1024*1024ULL)
 
 /**
  * @brief Ethernet TLB entry.
