@@ -22,13 +22,14 @@
  * SOFTWARE.
  */
 
-#include <nanvix/hal/cluster/cpu.h>
+#define __NEED_HAL_CLUSTER
+#include <nanvix/hal/cluster.h>
 #include <nanvix/const.h>
 
 /**
  * @brief Cores table.
  */
-PUBLIC struct coreinfo ALIGN(K1B_CACHE_LINE_SIZE) cores[K1B_NUM_CORES] = {
+PUBLIC struct coreinfo ALIGN(K1B_CACHE_LINE_SIZE) cores[K1B_CLUSTER_NUM_CORES] = {
 	{ TRUE,  CORE_RUNNING,   0, NULL, K1B_SPINLOCK_UNLOCKED }, /* Master Core   */
 	{ FALSE, CORE_RESETTING, 0, NULL, K1B_SPINLOCK_LOCKED   }, /* Slave Core 1  */
 	{ FALSE, CORE_RESETTING, 0, NULL, K1B_SPINLOCK_LOCKED   }, /* Slave Core 2  */

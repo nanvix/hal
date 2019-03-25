@@ -39,26 +39,26 @@
 	/**
 	 * @brief Number of cores in a cluster.
 	 */
-	#define OR1K_NUM_CORES 2
+	#define OR1K_SMP_NUM_CORES 2
 
 	/**
 	 * @brief ID of the master core.
 	 */
-	#define OR1K_COREID_MASTER 0
+	#define OR1K_SMP_COREID_MASTER 0
 
 #ifndef _ASM_FILE_
 
 	/**
 	 * @brief Gets the number of cores.
 	 *
-	 * The or1k_cpu_get_num_cores() gets the number of cores in the
+	 * The or1k_smp_cluster_get_num_cores() gets the number of cores in the
 	 * underlying or1k processor.
 	 *
 	 * @returns The the number of cores in the underlying processor.
 	 */
-	static inline int or1k_cpu_get_num_cores(void)
+	static inline int or1k_smp_cluster_get_num_cores(void)
 	{
-		return (OR1K_NUM_CORES);
+		return (OR1K_SMP_NUM_CORES);
 	}
 
 #endif /* _ASM_FILE_ */
@@ -70,34 +70,34 @@
  *============================================================================*/
 
 /**
- * @cond or1k
+ * @cond or1k_smp
  */
 
 	/**
 	 * @name Provided Functions
 	 */
 	/**@{*/
-	#define __hal_cpu_get_num_cores /**< hal_cpu_get_num_cores() */
+	#define __cluster_get_num_cores /**< cluster_get_num_cores() */
 	/**@}*/
 
 	/**
 	 * @brief Number of cores in a cluster.
 	 */
-	#define HAL_NUM_CORES OR1K_NUM_CORES
+	#define CORES_NUM OR1K_SMP_NUM_CORES
 
 	/**
 	 * @brief ID of the master core.
 	 */
-	#define COREID_MASTER OR1K_COREID_MASTER
+	#define COREID_MASTER OR1K_SMP_COREID_MASTER
 
 #ifndef _ASM_FILE_
 
 	/**
-	 * @see or1k_cpu_get_num_cores()
+	 * @see or1k_smp_cluster_get_num_cores()
 	 */
-	static inline int hal_cpu_get_num_cores(void)
+	static inline int cluster_get_num_cores(void)
 	{
-		return (or1k_cpu_get_num_cores());
+		return (or1k_smp_cluster_get_num_cores());
 	}
 
 #endif /* _ASM_FILE_ */

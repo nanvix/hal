@@ -44,7 +44,7 @@ PRIVATE struct
 	 * @brief Instruction TLB.
 	 */
 	struct tlbe itlb[OR1K_TLB_LENGTH];
-} tlb[OR1K_NUM_CORES];
+} tlb[OR1K_SMP_NUM_CORES];
 
 /**
  * @brief TLB Entry Value

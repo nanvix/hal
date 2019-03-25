@@ -39,24 +39,24 @@
 	/**
 	 * @brief Number of cores.
 	 */
-	#define I486_NUM_CORES 1
+	#define X86_SMP_NUM_CORES 1
 
 	/**
 	 * @brief ID of the master core.
 	 */
-	#define I486_COREID_MASTER 0
+	#define X86_SMP_COREID_MASTER 0
 
 	/**
 	 * @brief Gets the number of cores.
 	 *
-	 * The i486_cpu_get_num_cores() gets the number of cores in the
-	 * underlying i486 processor.
+	 * The x86_smp_cluster_get_num_cores() gets the number of cores in
+	 * the underlying x86 cluster.
 	 *
-	 * @returns The the number of cores in the underlying processor.
+	 * @returns The the number of cores in the underlying cluster.
 	 */
-	static inline int i486_cpu_get_num_cores(void)
+	static inline int x86_smp_cluster_get_num_cores(void)
 	{
-		return (I486_NUM_CORES);
+		return (X86_SMP_NUM_CORES);
 	}
 
 /**@}*/
@@ -66,32 +66,32 @@
  *============================================================================*/
 
 /**
- * @cond i486
+ * @cond x86_smp
  */
 
 	/**
 	 * @name Provided Functions
 	 */
 	/**@{*/
-	#define __hal_cpu_get_num_cores
+	#define __cluster_get_num_cores /**< cluster_get_num_cores() */
 	/**@}*/
 
 	/**
 	 * @brief Number of cores in a cluster.
 	 */
-	#define HAL_NUM_CORES I486_NUM_CORES
+	#define CORES_NUM X86_SMP_NUM_CORES
 
 	/**
 	 * @brief ID of the master core.
 	 */
-	#define COREID_MASTER I486_COREID_MASTER
+	#define COREID_MASTER X86_SMP_COREID_MASTER
 
 	/**
-	 * @see i486_cpu_get_num_cores()
+	 * @see x86_smp_cluster_get_num_cores()
 	 */
-	static inline int hal_cpu_get_num_cores(void)
+	static inline int cluster_get_num_cores(void)
 	{
-		return (i486_cpu_get_num_cores());
+		return (x86_smp_cluster_get_num_cores());
 	}
 
 /**@endcond*/

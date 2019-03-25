@@ -32,8 +32,8 @@
 	/* Cluster Interface Implementation */
 	#include <nanvix/hal/cluster/_cluster.h>
 
-	#include <nanvix/hal/cluster/cpu.h>
 	#include <nanvix/hal/cluster/memory.h>
+	#include <nanvix/const.h>
 
 /*============================================================================*
  * Interface Implementation Checking                                          *
@@ -42,6 +42,28 @@
 	/* Feature Checking */
 	#ifndef CLUSTER_IS_MULTICORE
 	#error "is this a multicore cluster?"
+	#endif
+	#ifndef CLUSTER_IS_IO
+	#error "is this an i/o cluster?"
+	#endif
+	#ifndef CLUSTER_IS_COMPUTE
+	#error "is this a compute cluster?"
+	#endif
+	#if (CLUSTER_IS_IO == CLUSTER_IS_COMPUTE)
+	#error "ambiguous cluster type!"
+	#endif
+
+	/* Constants */
+	#ifndef CORES_NUM
+	#error "CORES_NUM not defined"
+	#endif
+	#ifndef COREID_MASTER
+	#error "COREID_MASTER not defined"
+	#endif
+
+	/* Functions */
+	#ifndef __cluster_get_num_cores
+	#error "cluster_get_num_cores() not defined?"
 	#endif
 
 /*============================================================================*
@@ -55,6 +77,60 @@
  * @brief Cluster HAL Interface
  */
 /**@{*/
+
+	/**
+	 * @name Types of Cluster
+	 */
+	/**@{*/
+	#define CLUSTER_IO      1 /**< I/O Cluster     */
+	#define CLUSTER_COMPUTE 2 /**< Compute Cluster */
+	/**@}*/
+
+	/**
+	 * @brief Gets the number of cores.
+	 *
+	 * @returns The number of cores in the underlying cluster
+	 */
+	EXTERN int cluster_get_num_cores(void);
+
+	/**
+	 * @brief Asserts whether the cluster is an I/O Cluster.
+	 *
+	 * @returns Non-zero if the underlying cluster is an I/O cluster
+	 * and zero otherwise.
+	 *
+	 * @author Pedro Henrique Penna
+	 */
+	static int cluster_is_io(void)
+	{
+		return (CLUSTER_IS_IO);
+	}
+
+	/**
+	 * @brief Asserts whether the cluster is an Compute Cluster.
+	 *
+	 * @returns Non-zero if the underlying cluster is an Compute
+	 * cluster and zero otherwise.
+	 *
+	 * @author Pedro Henrique Penna
+	 */
+	static int cluster_is_compute(void)
+	{
+		return (CLUSTER_IS_COMPUTE);
+	}
+
+	/**
+	 * @brief Gets the type of cluster.
+	 *
+	 * @returns CLUSTER_IO if the underlying cluster is an I/O cluster
+	 * and CLUSTER_COMPUTE if it is a compute cluster.
+	 *
+	 * @author Pedro Henrique Penna
+	 */
+	static int cluster_get_type(void)
+	{
+		return ((CLUSTER_IS_IO) ? CLUSTER_IO : CLUSTER_COMPUTE);
+	}
 
 /**@}*/
 

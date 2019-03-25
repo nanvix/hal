@@ -22,12 +22,13 @@
  * SOFTWARE.
  */
 
-#include <nanvix/hal/cluster/cpu.h>
+#define __NEED_HAL_CLUSTER
+#include <nanvix/hal/cluster.h>
 #include <nanvix/const.h>
 
 /**
  * @brief Cores table.
  */
-PUBLIC struct coreinfo ALIGN(I486_CACHE_LINE_SIZE) cores[I486_NUM_CORES] = {
+PUBLIC struct coreinfo ALIGN(I486_CACHE_LINE_SIZE) cores[X86_SMP_NUM_CORES] = {
 	{ TRUE,  CORE_RUNNING,   0, NULL, I486_SPINLOCK_LOCKED }, /* Master Core   */
 };

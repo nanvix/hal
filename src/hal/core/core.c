@@ -22,7 +22,8 @@
  * SOFTWARE.
  */
 
-#include <nanvix/hal/cluster/cpu.h>
+#define __NEED_HAL_CLUSTER
+#include <nanvix/hal/cluster.h>
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
 

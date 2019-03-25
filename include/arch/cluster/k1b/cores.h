@@ -50,27 +50,27 @@
 	 * @brief Number of cores in the underlying cluster.
 	 */
 	#ifdef __k1io__
-		#define K1B_NUM_CORES K1BIO_CORES_NUM
+		#define K1B_CLUSTER_NUM_CORES K1BIO_CORES_NUM
 	#else
-		#define K1B_NUM_CORES K1BDP_CORES_NUM
+		#define K1B_CLUSTER_NUM_CORES K1BDP_CORES_NUM
 	#endif
 
 	/**
 	 * @brief ID of the master core.
 	 */
-	#define K1B_COREID_MASTER 0
+	#define K1B_CLUSTER_COREID_MASTER 0
 
 	/**
 	 * @brief Gets the number of cores.
 	 *
-	 * The k1b_cpu_get_num_cores() gets the number of cores in the
+	 * The k1b_cluster_get_num_cores() gets the number of cores in the
 	 * underlying k1b processor.
 	 *
 	 * @returns The the number of cores in the underlying processor.
 	 */
-	static inline int k1b_cpu_get_num_cores(void)
+	static inline int k1b_cluster_get_num_cores(void)
 	{
-		return (K1B_NUM_CORES);
+		return (K1B_CLUSTER_NUM_CORES);
 	}
 
 /**@}*/
@@ -87,25 +87,25 @@
 	 * @name Provided Functions
 	 */
 	/**@{*/
-	#define __hal_cpu_get_num_cores /**< hal_cpu_get_num_cores() */
+	#define __cluster_get_num_cores /**< cluster_get_num_cores() */
 	/**@}*/
 
 	/**
 	 * @brief Number of cores in a cluster.
 	 */
-	#define HAL_NUM_CORES K1B_NUM_CORES
+	#define CORES_NUM K1B_CLUSTER_NUM_CORES
 
 	/**
 	 * @brief ID of the master core.
 	 */
-	#define COREID_MASTER K1B_COREID_MASTER
+	#define COREID_MASTER K1B_CLUSTER_COREID_MASTER
 
 	/**
-	 * @see k1b_cpu_get_num_cores().
+	 * @see k1b_cluster_get_num_cores().
 	 */
-	static inline int hal_cpu_get_num_cores(void)
+	static inline int cluster_get_num_cores(void)
 	{
-		return (k1b_cpu_get_num_cores());
+		return (k1b_cluster_get_num_cores());
 	}
 
 /**@endcond*/
