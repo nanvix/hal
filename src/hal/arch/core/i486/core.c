@@ -29,6 +29,6 @@
 /**
  * @brief Cores table.
  */
-PUBLIC struct coreinfo ALIGN(I486_CACHE_LINE_SIZE) cores[I486_NUM_CORES] = {
+PUBLIC struct coreinfo ALIGN(I486_CACHE_LINE_SIZE) cores[X86_SMP_NUM_CORES] = {
 	{ TRUE,  CORE_RUNNING,   0, NULL, I486_SPINLOCK_LOCKED }, /* Master Core   */
 };
