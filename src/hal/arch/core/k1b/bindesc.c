@@ -41,7 +41,22 @@
  */
 #define DDR_SIZE (2*1024*1024*1024ULL)
 
-#define MOS_ETHERNET_TLB_ENTRY (0x0442000004400093ULL)
+/**
+ * @brief Ethernet TLB entry.
+ */
+#define K1B_TLBE_ETHERNET \
+	K1B_TLBE_INITIALIZER(\
+		0x04200,                       \
+		0x0,                           \
+		0x0,                           \
+		0x04400,                       \
+		0x00,                          \
+		0x0,                           \
+		K1B_TLBE_PROT_RW,              \
+		K1B_DTLBE_CACHE_POLICY_DEVICE, \
+		K1B_TLBE_STATUS_AMODIFIED      \
+	)
+
 
 /**
  * @brief Null TLB entry.
@@ -115,19 +130,19 @@ volatile mOS_bin_desc_t bin_descriptor SECTION_BINDESC OVERRIDE =
 	.ltlb               = {
 #ifdef __k1io__
 		{._dword        = (0x80000000800000db) | (((uint64_t) (DDR_SIZE)) << 31) },
-		{._dword        = MOS_ETHERNET_TLB_ENTRY                                 },
-		{._dword        = MOS_NULL_TLB_ENTRY                                     },
-		{._dword        = MOS_NULL_TLB_ENTRY                                     },
-		{._dword        = MOS_NULL_TLB_ENTRY                                     },
-		{._dword        = MOS_NULL_TLB_ENTRY                                     },
-		{._dword        = MOS_NULL_TLB_ENTRY                                     },
+		{._dword = K1B_TLBE_ETHERNET  },
+		{._dword = K1B_TLBE_NULL      },
+		{._dword = K1B_TLBE_NULL      },
+		{._dword = K1B_TLBE_NULL      },
+		{._dword = K1B_TLBE_NULL      },
+		{._dword = K1B_TLBE_NULL      },
 #else
-		{._dword        = MOS_NULL_TLB_ENTRY                                     },
-		{._dword        = MOS_NULL_TLB_ENTRY                                     },
+		{._dword = K1B_TLBE_NULL      },
+		{._dword = K1B_TLBE_NULL      },
 #endif
-		{._dword        = MOS_NULL_TLB_ENTRY                                     },
-		{._dword        = MOS_NULL_TLB_ENTRY                                     },
-		{._dword        = MOS_NULL_TLB_ENTRY                                     },
+		{._dword = K1B_TLBE_NULL      },
+		{._dword = K1B_TLBE_NULL      },
+		{._dword = K1B_TLBE_NULL      },
 	},
 
 	/*
