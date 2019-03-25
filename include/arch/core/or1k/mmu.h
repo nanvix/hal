@@ -39,6 +39,7 @@
 	#include <arch/core/or1k/types.h>
 
 	#include <nanvix/klib.h>
+	#include <errno.h>
 	#include <stdint.h>
 
 #endif /* _ASM_FILE_ */
@@ -177,11 +178,11 @@
 	#define __pde_present_set_fn /**< pde_present_set() */
 	#define __pde_user_set_fn    /**< pde_user_set()    */
 	#define __pde_write_set_fn   /**< pde_write_set()   */
-	#define __pte_clear_fn       /**< pde_clear()       */
-	#define __pte_frame_get_fn   /**< pde_frame_get()   */
-	#define __pte_frame_set_fn   /**< pde_frame_set()   */
-	#define __pte_get_fn         /**< pde_get()         */
-	#define __pte_is_present_fn  /**< pde_is_present()  */
+	#define __pte_clear_fn       /**< pte_clear()       */
+	#define __pte_frame_get_fn   /**< pte_frame_get()   */
+	#define __pte_frame_set_fn   /**< pte_frame_set()   */
+	#define __pte_get_fn         /**< pte_get()         */
+	#define __pte_is_present_fn  /**< pte_is_present()  */
 	#define __pte_is_user_fn     /**< pte_is_user()     */
 	#define __pte_is_write_fn    /**< pte_is_write()    */
 	#define __pte_present_set_fn /**< pte_present_set() */
@@ -239,9 +240,15 @@
 	 *
 	 * @param pde Target page directory entry.
 	 */
-	static inline void pde_clear(struct pde *pde)
+	static inline int pde_clear(struct pde *pde)
 	{
-		kmemset(pde, 0, PDE_SIZE);
+		/* Invalid PDE. */
+		if (pde == NULL)
+			return (-EINVAL);
+
+		kmemset(pde, 0, PTE_SIZE);
+
+		return (0);
 	}
 
 	/**
@@ -250,9 +257,19 @@
 	 * @param pde Page directory entry of target page table.
 	 * @param frame Frame number.
 	 */
-	static inline void pde_frame_set(struct pde *pde, frame_t frame)
+	static inline int pde_frame_set(struct pde *pde, frame_t frame)
 	{
+		/* Invalid PDE. */
+		if (pde == NULL)
+			return (-EINVAL);
+
+		/* Invalid frame. */
+		if (frame > ~(frame_t)((1 << (VADDR_BIT - PAGE_SHIFT)) - 1))
+			return (-EINVAL);
+
 		pde->frame = frame;
+
+		return (0);
 	}
 
 	/**
@@ -261,9 +278,15 @@
 	 * @param pde Page directory entry of target page table.
 	 * @param set Set bit?
 	 */
-	static inline void pde_present_set(struct pde *pde, int set)
+	static inline int pde_present_set(struct pde *pde, int set)
 	{
+		/* Invalid PDE. */
+		if (pde == NULL)
+			return (-EINVAL);
+
 		pde->present = (set) ? 1 : 0;
+
+		return (0);
 	}
 
 	/**
@@ -276,6 +299,10 @@
 	 */
 	static inline int pde_is_present(struct pde *pde)
 	{
+		/* Invalid PDE. */
+		if (pde == NULL)
+			return (-EINVAL);
+
 		return (pde->present);
 	}
 
@@ -297,10 +324,16 @@
 	 * @param pde Page directory entry of target page table.
 	 * @param set Set bit?
 	 */
-	static inline void pde_write_set(struct pde *pde, int set)
+	static inline int pde_write_set(struct pde *pde, int set)
 	{
+		/* Invalid PDE. */
+		if (pde == NULL)
+			return (-EINVAL);
+
 		pde->ppi = (set) ? (OR1K_PT_PPI_USR_RDWR >> OR1K_PT_PPI_OFFSET)
 			: (OR1K_PT_PPI_USR_RD >> OR1K_PT_PPI_OFFSET);
+
+		return (0);
 	}
 
 	/**
@@ -313,6 +346,10 @@
 	 */
 	static inline int pde_is_write(struct pde *pde)
 	{
+		/* Invalid PDE. */
+		if (pde == NULL)
+			return (-EINVAL);
+
 		return (pde->ppi == (OR1K_PT_PPI_USR_RDWR >> OR1K_PT_PPI_OFFSET));
 	}
 
@@ -322,9 +359,15 @@
 	 * @param pde Page directory entry of target page table.
 	 * @param set Set bit?
 	 */
-	static inline void pde_user_set(struct pde *pde, int set)
+	static inline int pde_user_set(struct pde *pde, int set)
 	{
+		/* Invalid PDE. */
+		if (pde == NULL)
+			return (-EINVAL);
+
 		pde->ppi = (set) ? (OR1K_PT_PPI_USR_RD >> OR1K_PT_PPI_OFFSET) : 0;
+
+		return (0);
 	}
 
 	/**
@@ -337,6 +380,10 @@
 	 */
 	static inline int pde_is_user(struct pde *pde)
 	{
+		/* Invalid PDE. */
+		if (pde == NULL)
+			return (-EINVAL);
+
 		return (pde->ppi & (OR1K_PT_PPI_USR_RD >> OR1K_PT_PPI_OFFSET));
 	}
 
@@ -345,9 +392,15 @@
 	 *
 	 * @param pte Target page table entry.
 	 */
-	static inline void pte_clear(struct pte *pte)
+	static inline int pte_clear(struct pte *pte)
 	{
+		/* Invalid PTE. */
+		if (pte == NULL)
+			return (-EINVAL);
+
 		kmemset(pte, 0, PTE_SIZE);
+
+		return (0);
 	}
 
 	/**
@@ -356,9 +409,15 @@
 	 * @param pte Page table entry of target page.
 	 * @param set Set bit?
 	 */
-	static inline void pte_present_set(struct pte *pte, int set)
+	static inline int pte_present_set(struct pte *pte, int set)
 	{
+		/* Invalid PTE. */
+		if (pte == NULL)
+			return (-EINVAL);
+
 		pte->present = (set) ? 1 : 0;
+
+		return (0);
 	}
 
 	/**
@@ -371,7 +430,13 @@
 	 */
 	static inline int pte_is_present(struct pte *pte)
 	{
+		/* Invalid PTE. */
+		if (pte == NULL)
+			return (-EINVAL);
+
 		return (pte->present);
+
+		return (0);
 	}
 
 	/**
@@ -380,9 +445,19 @@
 	 * @param pte   Page table entry of target page.
 	 * @param frame Frame number.
 	 */
-	static inline void pte_frame_set(struct pte *pte, frame_t frame)
+	static inline int pte_frame_set(struct pte *pte, frame_t frame)
 	{
+		/* Invalid PTE. */
+		if (pte == NULL)
+			return (-EINVAL);
+
+		/* Invalid frame. */
+		if (frame > ~(frame_t)((1 << (VADDR_BIT - PAGE_SHIFT)) - 1))
+			return (-EINVAL);
+
 		pte->frame = frame;
+
+		return (0);
 	}
 
 	/**
@@ -403,10 +478,16 @@
 	 * @param pte Page table entry of target page.
 	 * @param set Set bit?
 	 */
-	static inline void pte_write_set(struct pte *pte, int set)
+	static inline int pte_write_set(struct pte *pte, int set)
 	{
+		/* Invalid PTE. */
+		if (pte == NULL)
+			return (-EINVAL);
+
 		pte->ppi = (set) ? (OR1K_PT_PPI_USR_RDWR >> OR1K_PT_PPI_OFFSET)
 			: (OR1K_PT_PPI_USR_RD >> OR1K_PT_PPI_OFFSET);
+
+		return (0);
 	}
 
 	/**
@@ -419,6 +500,10 @@
 	 */
 	static inline int pte_is_write(struct pte *pte)
 	{
+		/* Invalid PTE. */
+		if (pte == NULL)
+			return (-EINVAL);
+
 		return (pte->ppi == (OR1K_PT_PPI_USR_RDWR >> OR1K_PT_PPI_OFFSET));
 	}
 
@@ -428,9 +513,15 @@
 	 * @param pte Page table entry of target page.
 	 * @param set Set bit?
 	 */
-	static inline void pte_user_set(struct pte *pte, int set)
+	static inline int pte_user_set(struct pte *pte, int set)
 	{
+		/* Invalid PTE. */
+		if (pte == NULL)
+			return (-EINVAL);
+
 		pte->ppi = (set) ? (OR1K_PT_PPI_USR_RD >> OR1K_PT_PPI_OFFSET) : 0;
+
+		return (0);
 	}
 
 	/**
@@ -443,6 +534,10 @@
 	 */
 	static inline int pte_is_user(struct pte *pte)
 	{
+		/* Invalid PTE. */
+		if (pte == NULL)
+			return (-EINVAL);
+
 		return (pte->ppi & (OR1K_PT_PPI_USR_RD >> OR1K_PT_PPI_OFFSET));
 	}
 
@@ -482,6 +577,10 @@
 	 */
 	static inline struct pde *pde_get(struct pde *pgdir, vaddr_t vaddr)
 	{
+		/* Invalid page directory. */
+		if (pgdir == NULL)
+			return (NULL);
+
 		return (&pgdir[pde_idx_get(vaddr)]);
 	}
 
@@ -495,6 +594,10 @@
 	 */
 	static inline struct pte *pte_get(struct pte *pgtab, vaddr_t vaddr)
 	{
+		/* Invalid page table. */
+		if (pgtab == NULL)
+			return (NULL);
+
 		return (&pgtab[pte_idx_get(vaddr)]);
 	}
 
