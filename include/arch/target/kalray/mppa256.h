@@ -43,6 +43,11 @@
 	#include <arch/target/kalray/mppa256/stdout.h>
 	#include <arch/target/kalray/mppa256/sync.h>
 
+	/**
+	 * @brief DRAM size (in bytes).
+	 */
+	#define MPPA256_DRAM_SIZE (2*1024*1024*1024ULL)
+
 /**@}*/
 
 /*============================================================================*
