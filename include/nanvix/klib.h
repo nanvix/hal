@@ -201,7 +201,7 @@
 	/**
 	 * @brief No operation.
 	 */
-	#define noop()  __asm__ __volatile__("")
+	#define noop() __asm__ __volatile__ ("":::"memory")
 
 	/**
 	 * @brief Asserts if a number is within a range.

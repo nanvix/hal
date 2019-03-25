@@ -76,6 +76,7 @@ PRIVATE void test_do_clock(void)
 			dcache_invalidate();
 		} while (ticks < nticks);
 
+	interrupt_mask(HAL_INT_CLOCK);
 	interrupts_disable();
 }
 
