@@ -158,7 +158,17 @@
 	 * that matches the virtual address @p vaddr is returned. If no
 	 * TLB entry matches @p vaddr, @p NULL is returned instead.
 	 */
+#if !((defined(HAL_TLB_HARDWARE) && !defined(__tlb_lookup_vaddr)))
 	EXTERN const struct tlbe *tlb_lookup_vaddr(int tlb_type, vaddr_t vaddr);
+#else
+	static const struct tlbe *tlb_lookup_vaddr(int tlb_type, vaddr_t vaddr)
+	{
+		((void) tlb_type);
+		((void) vaddr);
+
+		return (NULL);
+	}
+#endif
 
 	/**
 	 * @brief Lookups a TLB entry by physical address.
@@ -170,7 +180,17 @@
 	 * that matches the physical address @p paddr is returned. If no
 	 * TLB entry matches @p paddr, @p NULL is returned instead.
 	 */
+#if !((defined(HAL_TLB_HARDWARE) && !defined(__tlb_lookup_paddr_fn)))
 	EXTERN const struct tlbe *tlb_lookup_paddr(int tlb_type, paddr_t paddr);
+#else
+	static const struct tlbe *tlb_lookup_paddr(int tlb_type, paddr_t paddr)
+	{
+		((void) tlb_type);
+		((void) paddr);
+
+		return (NULL);
+	}
+#endif
 
 	/**
 	 * @brief Encodes a virtual address into the TLB.
