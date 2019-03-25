@@ -73,7 +73,7 @@
 	 * @name Provided Functions
 	 */
 	/**@{*/
-	#define __hal_cpu_get_num_cores
+	#define __cluster_get_num_cores
 	/**@}*/
 
 	/**
@@ -89,7 +89,7 @@
 	/**
 	 * @see i486_cpu_get_num_cores()
 	 */
-	static inline int hal_cpu_get_num_cores(void)
+	static inline int cluster_get_num_cores(void)
 	{
 		return (i486_cpu_get_num_cores());
 	}

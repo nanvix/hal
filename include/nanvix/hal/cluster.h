@@ -53,8 +53,8 @@
 	#endif
 
 	/* Functions */
-	#ifndef __hal_cpu_get_num_cores
-	#error "hal_cpu_get_num_cores() not defined?"
+	#ifndef __cluster_get_num_cores
+	#error "cluster_get_num_cores() not defined?"
 	#endif
 
 /*============================================================================*
@@ -74,7 +74,7 @@
 	 *
 	 * @returns The number of cores in the underlying processor.
 	 */
-	EXTERN int hal_cpu_get_num_cores(void);
+	EXTERN int cluster_get_num_cores(void);
 
 /**@}*/
 
