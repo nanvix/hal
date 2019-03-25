@@ -29,6 +29,10 @@
 		#error "do not include this header in C files"
 	#endif
 
+	/* Must come first. */
+	#define __NEED_CORE_TYPES
+
+	#include <arch/core/k1b/types.h>
 	#include <arch/core/k1b/context.h>
 
 	/**
@@ -487,6 +491,58 @@
 
 		/* Wipe out allocated memory. */
 		add $r12, $r12, K1B_CONTEXT_SIZE
+		;;
+	.endm
+
+/*============================================================================*
+ * Stack Operations                                                           *
+ *============================================================================*/
+
+	/*
+	 * Pushes a word on the stack.
+	 *
+	 * - word Target register.
+	 */
+	.macro k1b_pushw reg
+		add $sp, $sp, -K1B_WORD_SIZE
+		;;
+		sw  0[$sp], \reg
+		;;
+	.endm
+
+	/*
+	 * Pops a word from the stack.
+	 *
+	 * - reg Target register.
+	 */
+	.macro k1b_popw reg
+		lw  \reg, 0[$sp]
+		;;
+		add $sp, $sp, K1B_WORD_SIZE
+		;;
+	.endm
+
+	/*
+	 * Pushes a dword on the stack.
+	 *
+	 * - reg Target register.
+	 */
+	.macro k1b_pushd reg
+		add $sp, $sp, -K1B_DWORD_SIZE
+		;;
+		sd  0[$sp], \reg
+		;;
+	.endm
+
+	/*
+	 * Pops a dword from the stack.
+	 *
+	 * - reg Target register.
+	 */
+	.macro k1b_popd reg
+		ld  \reg, 0[$sp]
+		;;
+		add $sp, $sp, K1B_DWORD_SIZE
 		;;
 	.endm
 
