@@ -74,6 +74,7 @@ _do_syscall:
 		;;
 
 		_scoreboard_get $r2 $r3
+		;;
 
 		/* Restore saved program counter. */
 		lw  $r4 = K1B_CONTEXT_SPC[$sp]
