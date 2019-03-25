@@ -26,19 +26,20 @@
 # Target Configuration
 #===============================================================================
 
-export PROCESSOR = bostan
+export TARGET    ?= mppa256
+export PROCESSOR := bostan
 
 #===============================================================================
 # Toolchain Configuration
 #===============================================================================
 
 # Toolchain Directory
-export K1_TOOLCHAIN_DIR=/usr/local/k1tools
+export TOOLCHAIN_DIR ?= /usr/local/k1tools
 
-# Tools
-export CC = $(K1_TOOLCHAIN_DIR)/bin/k1-gcc
-export LD = $(K1_TOOLCHAIN_DIR)/bin/k1-gcc
-export AR = $(K1_TOOLCHAIN_DIR)/bin/k1-ar
+# Toolchain
+export CC = $(TOOLCHAIN_DIR)/bin/k1-gcc
+export LD = $(TOOLCHAIN_DIR)/bin/k1-gcc
+export AR = $(TOOLCHAIN_DIR)/bin/k1-ar
 
 # Compiler Options
 export CFLAGS   = -D __mppa256__ -D __k1b__
@@ -47,27 +48,3 @@ export CFLAGS  += -D __HAS_HW_DIVISION
 
 # Linker Options
 export LDFLAGS  = -Wl,--allow-multiple-definition
-
-#===============================================================================
-
-# Builds Nanvix for the MPPA-256 target.
-nanvix-target: nanvix-k1bdp nanvix-k1bio
-
-# Cleans everything for the MPPA-256 target.
-distclean-target: distclean-k1bdp distclean-k1bio
-
-# Builds Nanvix for a Compute Cluster.
-nanvix-k1bdp:
-	$(MAKE) -C $(SRCDIR) -f build/makefile.k1bdp all
-
-# Builds Nanvix for an IO Cluster.
-nanvix-k1bio:
-	$(MAKE) -C $(SRCDIR) -f build/makefile.k1bio all
-
-# Cleans compilation files for a Compute Cluster.
-distclean-k1bdp:
-	$(MAKE) -C $(SRCDIR) -f build/makefile.k1bdp distclean
-
-# Cleans compilation files for an IO Cluster.
-distclean-k1bio:
-	$(MAKE) -C $(SRCDIR) -f build/makefile.k1bio distclean

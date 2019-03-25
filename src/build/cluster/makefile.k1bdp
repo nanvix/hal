@@ -20,31 +20,26 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# NOTES:
-#   - This script should work in any Linux distribution.
-#   - You should run this script with superuser privileges.
-#
+#===============================================================================
+# Target Configuration
+#===============================================================================
 
-export CURDIR=`pwd`
+# Target Configuration
+export CLUSTER_VARIANT = node
 
-case "$TARGET" in
-	"qemu-x86")
-		qemu-system-i386 -s -S      \
-			--display curses        \
-			-kernel bin/test-driver \
-			-m 256M                 \
-			-mem-prealloc
-		;;
-	"qemu-openrisc")
-		qemu-system-or1k -s -S      \
-			-kernel bin/test-driver \
-			-serial stdio           \
-			-display none           \
-			-m 256M                 \
-			-mem-prealloc           \
-			-smp 2
-		;;
-	*)
-        echo "error: unsupported target"
-		;;
-esac
+#===============================================================================
+# Toolchain Configuration
+#===============================================================================
+
+# Compiler Options
+export CFLAGS += -D __k1bdp__
+
+#===============================================================================
+# Libraries and Binaries
+
+# Binaries
+export EXECBIN = test-driver-k1bdp
+
+#===============================================================================
+
+include $(SRCDIR)/build/cluster/makefile.k1b

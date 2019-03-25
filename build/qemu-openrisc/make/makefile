@@ -1,3 +1,4 @@
+#
 # MIT License
 #
 # Copyright(c) 2011-2019 The Maintainers of Nanvix
@@ -19,30 +20,30 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+#
 
 #===============================================================================
 # Target Configuration
 #===============================================================================
 
-export ARCH = i486
-export PROCESSOR = i486-qemu
+export TARGET    ?= qemu-openrisc
+export PROCESSOR := or1k
 
 #===============================================================================
 # Toolchain Configuration
 #===============================================================================
 
 # Toolchain Directory
-export TOOLCHAIN_DIR ?= $(TOOLSDIR)/dev/toolchain/i486/bin
+export TOOLCHAIN_DIR ?= $(TOOLSDIR)/dev/toolchain/or1k/bin/
 
 # Toolchain
-export CC = $(TOOLCHAIN_DIR)/i486-elf-gcc
-export LD = $(TOOLCHAIN_DIR)/i486-elf-ld
-export AR = $(TOOLCHAIN_DIR)/i486-elf-ar
+export CC = $(TOOLCHAIN_DIR)/or1k-elf-gcc
+export LD = $(TOOLCHAIN_DIR)/or1k-elf-ld
+export AR = $(TOOLCHAIN_DIR)/or1k-elf-ar
 
 # Compiler Options
-export CFLAGS   = -D __i486__ -D __pc__
-export CFLAGS  += -pedantic-errors -fextended-identifiers
-export CFLAGS  += -nostdlib -nostdinc -fno-stack-protector
+export CFLAGS   = -D __qemu_openrisc__ -D__openrisc__
+export CFLAGS  += -nostdlib -nostdinc
 export CFLAGS  += -ansi -pedantic-errors
 export CFLAGS  += -Wstack-usage=4096
 export CFLAGS  += -D __HAS_HW_DIVISION
@@ -57,16 +58,3 @@ export LDFLAGS  =
 # Libraries
 export LIBKERNEL = libhal-$(TARGET).a
 export LIBS = $(LIBDIR)/$(LIBKERNEL)
-
-# Binaries
-export EXECBIN = test-driver
-
-#===============================================================================
-
-# Builds Nanvix for the i486 PC target.
-nanvix-target:
-	$(MAKE) -C $(SRCDIR) -f build/makefile.i486 all
-
-# Cleans everything for the i486 PC target.
-distclean-target:
-	$(MAKE) -C $(SRCDIR) -f build/makefile.i486 distclean

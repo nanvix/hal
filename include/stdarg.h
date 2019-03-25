@@ -48,7 +48,7 @@ see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
 #ifndef STDARG_H_
 #define STDARG_H_
 
-#if defined(__i486__)
+#if defined(__x86__)
 
     typedef char* va_list;
 
@@ -71,7 +71,7 @@ see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
     #endif
     #endif
 
-#elif (defined(__or1k__) || defined(__optimsoc__) || defined(__k1b__))
+#elif (defined(__openrisc__) || defined(__optimsoc__) || defined(__k1b__))
 
 	#define va_start(v,l) __builtin_va_start(v,l)
 	#define va_end(v)     __builtin_va_end(v)

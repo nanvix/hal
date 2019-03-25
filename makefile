@@ -37,6 +37,11 @@ export TOOLSDIR  = $(CURDIR)/tools
 
 #===============================================================================
 
+# Target-Specific Make Rules
+include $(MAKEDIR)/makefile
+
+#===============================================================================
+
 export ARTIFACTS =  include/arch/
 export ARTIFACTS += include/arch/stdout/8250.h
 export ARTIFACTS += include/arch/stdout/console.h
@@ -57,28 +62,40 @@ export ARTIFACTS += include/stddef.h
 export ARTIFACTS += include/stdint.h
 
 #===============================================================================
+
+# Binary Name
+export EXECBIN = test-driver
+
 # Image Name
-export IMAGE = nanvix-debug.img
+export IMAGE = hal-debug.img
 
 # Builds everything.
 all: image
 
 # Builds image.
-image: | nanvix nanvix-target
+image: | hal hal-target
 	bash $(TOOLSDIR)/image/build-image.sh $(BINDIR) $(IMAGE)
 
 # Builds Nanvix.
-nanvix:
+hal:
 	mkdir -p $(BINDIR)
 	mkdir -p $(LIBDIR)
+
+# Builds HAL.
+hal-target:
+	$(MAKE) -C $(SRCDIR) -f build/processor/makefile.$(PROCESSOR) all
 
 # Cleans everything.
 distclean: distclean-target
 	rm -rf $(IMAGE)
 	rm -rf $(BINDIR) $(LIBDIR)
 
+# Cleans compilation files.
+distclean-target:
+	$(MAKE) -C $(SRCDIR) -f build/processor/makefile.$(PROCESSOR) distclean
+
 # Install
-install: $(ARTIFACTS) | nanvix nanvix-target
+install: $(ARTIFACTS) | hal hal-target
 	mkdir -p $(PREFIX)/include/
 	cp -r include/arch/                    $(PREFIX)/include/arch/
 	mkdir -p $(PREFIX)/include/grub/
@@ -109,5 +126,3 @@ uninstall:
 documentation:
 	mkdir -p $(DOCDIR)
 	doxygen doxygen/doxygen.$(TARGET)
-
-include $(MAKEDIR)/makefile

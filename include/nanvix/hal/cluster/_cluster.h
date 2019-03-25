@@ -29,19 +29,19 @@
 	 * @defgroup clusters Clusters
 	 */
 
-	#if (defined(__k1b__))
+	#if (defined(__k1bdp__) || defined(__k1bio__))
 
 		#undef  __NEED_CLUSTER_K1B
 		#define __NEED_CLUSTER_K1B
 		#include <arch/cluster/k1b.h>
 
-	#elif (defined(__i486__))
+	#elif (defined(__x86_smp__))
 
 		#undef  __NEED_CLUSTER_I486
 		#define __NEED_CLUSTER_I486
 		#include <arch/cluster/i486.h>
 
-	#elif (defined(__or1k__))
+	#elif (defined(__or1k_smp__))
 
 		#undef  __NEED_CLUSTER_OR1K
 		#define __NEED_CLUSTER_OR1K

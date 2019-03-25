@@ -24,17 +24,16 @@
 # Target Configuration
 #===============================================================================
 
-# Target Configuration
-export CORE            = k1b
-export CLUSTER         = k1b
-export CLUSTER_VARIANT = node
+export CLUSTER = x86-smp
+export CORE    = i486
 
 #===============================================================================
-# Libraries and Binaries
+# Toolchain Configuration
+#===============================================================================
 
-# Binaries
-export EXECBIN = test-driver-k1bdp
+# Compiler Options
+export CFLAGS += -D __x86_smp__ -D __i486__
 
 #===============================================================================
 
-include $(SRCDIR)/build/makefile.k1b
+include $(SRCDIR)/build/makefile.nanvix

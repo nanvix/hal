@@ -21,20 +21,32 @@
 # SOFTWARE.
 
 #===============================================================================
-# Target Configuration
+# Toolchain Configuration
 #===============================================================================
 
-# Target Configuration
-export CORE            = k1b
-export CLUSTER         = k1b
-export CLUSTER_VARIANT = ioddr
-
-#===============================================================================
-# Libraries and Binaries
-
-# Binaries
-export EXECBIN = test-driver-k1bio
+# Compiler Options
+export CFLAGS += -D __bostan__
 
 #===============================================================================
 
-include $(SRCDIR)/build/makefile.k1b
+# Builds everything.
+all: all-k1bdp all-k1bio
+
+# Cleans compilation files.
+distclean: distclean-k1bdp distclean-k1bio
+
+# Builds for Compute Cluster.
+all-k1bdp:
+	$(MAKE) -C $(SRCDIR) -f build/cluster/makefile.k1bdp all
+
+# Builds IO Cluster.
+all-k1bio:
+	$(MAKE) -C $(SRCDIR) -f build/cluster/makefile.k1bio all
+
+# Cleans compilation files for Compute Cluster.
+distclean-k1bdp:
+	$(MAKE) -C $(SRCDIR) -f build/cluster/makefile.k1bdp distclean
+
+# Cleans compilation files for IO Cluster.
+distclean-k1bio:
+	$(MAKE) -C $(SRCDIR) -f build/cluster/makefile.k1bio distclean

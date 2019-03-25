@@ -24,48 +24,17 @@
 # Target Configuration
 #===============================================================================
 
-# Target Configuration
-export ARCH = or1k
-export PROCESSOR = or1k-qemu
+export CLUSTER = or1k-smp
+export CORE = or1k
+export CORE_VARIANT = mor1kx
 
 #===============================================================================
 # Toolchain Configuration
 #===============================================================================
 
-# Toolchain Directory
-export TOOLCHAIN_DIR ?= $(TOOLSDIR)/dev/toolchain/or1k/bin/
-
-# Toolchain
-export CC = $(TOOLCHAIN_DIR)/or1k-elf-gcc
-export LD = $(TOOLCHAIN_DIR)/or1k-elf-ld
-export AR = $(TOOLCHAIN_DIR)/or1k-elf-ar
-
 # Compiler Options
-export CFLAGS   = -D __or1k__ -D __pc__
-export CFLAGS  += -fextended-identifiers
-export CFLAGS  += -nostdlib -nostdinc -fno-stack-protector
-export CFLAGS  += -D __HAS_HW_DIVISION
-
-# Linker Options
-export LDFLAGS  =
-
-#===============================================================================
-# Libraries and Binaries
-#===============================================================================
-
-# Libraries
-export LIBKERNEL = libhal-$(TARGET).a
-export LIBS = $(LIBDIR)/$(LIBKERNEL)
-
-# Binaries
-export EXECBIN = test-driver
+export CFLAGS += -D __or1k_smp__ -D__or1k__ -D __mor1kx__
 
 #===============================================================================
 
-# Builds Nanvix for the or1k PC target.
-nanvix-target:
-	$(MAKE) -C $(SRCDIR) -f build/makefile.or1k all
-
-# Cleans everything for the or1k PC target.
-distclean-target:
-	$(MAKE) -C $(SRCDIR) -f build/makefile.or1k distclean
+include $(SRCDIR)/build/makefile.nanvix

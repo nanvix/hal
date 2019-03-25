@@ -20,21 +20,26 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+#===============================================================================
+# Target Configuration
+#===============================================================================
+
+# Target Configuration
+export CLUSTER_VARIANT = ioddr
 
 #===============================================================================
 # Toolchain Configuration
 #===============================================================================
 
 # Compiler Options
-export CFLAGS += -mcluster=$(CLUSTER_VARIANT)
+export CFLAGS += -D __k1bio__
 
 #===============================================================================
 # Libraries and Binaries
+
+# Binaries
+export EXECBIN = test-driver-k1bio
+
 #===============================================================================
 
-# Libraries
-export LIBKERNEL    = libhal-$(CORE)-$(CLUSTER_VARIANT).a
-export LIBS_OURS    = $(LIBDIR)/$(LIBKERNEL)
-export LIBS_THEIRS  = -lvbsp -lmppanoc -lmpparouting -mhypervisor
-
-include $(SRCDIR)/build/makefile.nanvix
+include $(SRCDIR)/build/cluster/makefile.k1b
