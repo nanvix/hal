@@ -54,14 +54,14 @@
  *============================================================================*/
 
 /**
- * @cond mor1kx
+ * @cond or1k
  */
 
 	/**
 	 * @name Provided Interface
 	 */
 	/**@{*/
-	#define __hal_clock_init /**< hal_clock_init() */
+	#define __clock_init_fn /**< clock_init() */
 	/**@}*/
 
 	/**
@@ -72,7 +72,7 @@
 	/**
 	 * @see or1k_clock_init().
 	 */
-	static inline void hal_clock_init(unsigned freq)
+	static inline void clock_init(unsigned freq)
 	{
 		or1k_clock_init(freq);
 	}

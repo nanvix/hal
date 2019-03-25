@@ -241,13 +241,13 @@
  *============================================================================*/
 
 /**
- * @cond mor1kx
+ * @cond or1k
  */
 
 	/**
 	 * @brief Hardware-managed TLB.
 	 */
-	#define HAL_TLB_SOFTWARE
+	#define TLB_SOFTWARE
 
 	/**
 	 * @name Provided Interface

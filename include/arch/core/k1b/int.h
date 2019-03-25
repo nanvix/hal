@@ -122,14 +122,14 @@
 	/**
 	 * @brief Number of hardware interrupts in the Kalray MPPA-256 target.
 	 */
-	#define _HAL_INT_NR K1B_NUM_HWINT
+	#define _INTERRUPTS_NUM K1B_NUM_HWINT
 
 	/**
 	 * @name Hardware Interrupts
 	 */
 	/**@{*/
-	#define HAL_INT_CLOCK K1B_INT_CLOCK0 /*< Programmable interrupt timer. */
-	#define HAL_INT_CNOC  K1B_INT_CNOC   /*< Control NoC interrupt.        */
+	#define INTERRUPT_CLOCK K1B_INT_CLOCK0 /*< Programmable interrupt timer. */
+	#define HAL_INT_CNOC    K1B_INT_CNOC   /*< Control NoC interrupt.        */
 	/**@}*/
 
 	/**

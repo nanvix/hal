@@ -118,7 +118,7 @@
  *============================================================================*/
 
 /**
- * @cond mor1kx
+ * @cond or1k
  */
 
 	/**
@@ -133,13 +133,13 @@
 	/**
 	 * @brief Number of hardware interrupts.
 	 */
-	#define _HAL_INT_NR OR1K_NUM_HWINT
+	#define _INTERRUPTS_NUM OR1K_NUM_HWINT
 
 	/**
 	 * @name Hardware Interrupts
 	 */
 	/**@{*/
-	#define HAL_INT_CLOCK OR1K_INT_CLOCK /*< Programmable interrupt timer. */
+	#define INTERRUPT_CLOCK OR1K_INT_CLOCK /*< Programmable interrupt timer. */
 	/**@}*/
 
 #ifndef _ASM_FILE_

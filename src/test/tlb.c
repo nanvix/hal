@@ -366,7 +366,7 @@ PRIVATE struct test tlb_fault_tests[] = {
 PUBLIC void test_tlb(void)
 {
 	/* Test not applicable. */
-#ifdef HAL_TLB_HARDWARE
+#ifdef TLB_HARDWARE
 		return;
 #endif
 

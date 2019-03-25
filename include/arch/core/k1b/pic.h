@@ -45,7 +45,7 @@
 	 * @name Provided Interface
 	 */
 	/**@{*/
-	#define __hal_intlvl_set
+	#define __interrupt_level_set
 	#define __interrupt_ack
 	#define __interrupt_mask
 	#define __interrupt_unmask
@@ -181,7 +181,7 @@
 	 *
 	 * @cond k1b
 	 */
-	static inline int hal_intlvl_set(int newlevel)
+	static inline int interrupt_level_set(int newlevel)
 	{
 		return (k1b_pic_lvl_set(newlevel));
 	}

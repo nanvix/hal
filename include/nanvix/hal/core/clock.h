@@ -33,13 +33,13 @@
  *============================================================================*/
 
 	/* Constants */
-	#ifndef HAL_INT_CLOCK
-	#error "HAL_INT_CLOCK not defined"
+	#ifndef INTERRUPT_CLOCK
+	#error "INTERRUPT_CLOCK not defined"
 	#endif
 
 	/* Functions */
-	#ifndef __hal_clock_init
-	#error "hal_clock_init() not defined?"
+	#ifndef __clock_init_fn
+	#error "clock_init() not defined?"
 	#endif
 
 /*============================================================================*
@@ -61,7 +61,7 @@
 	 *
 	 * @param freq Frequency for the clock device.
 	 */
-	EXTERN void hal_clock_init(unsigned freq);
+	EXTERN void clock_init(unsigned freq);
 
 /**@}*/
 

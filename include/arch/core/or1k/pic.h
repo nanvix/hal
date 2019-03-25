@@ -224,16 +224,16 @@
  *============================================================================*/
 
 /**
- * @cond mor1kx
+ * @cond or1k
  */
 	/**
 	 * @name Provided Interface
 	 */
 	/**@{*/
-	#define __hal_intlvl_set       /**< hal_intlvl_set()       */
-	#define __interrupt_mask   /**< interrupt_mask()   */
-	#define __interrupt_unmask /**< interrupt_unmask() */
-	#define __interrupt_ack    /**< interrupt_ack()    */
+	#define __interrupt_level_set /**< interrupt_level_set() */
+	#define __interrupt_mask      /**< interrupt_mask()      */
+	#define __interrupt_unmask    /**< interrupt_unmask()    */
+	#define __interrupt_ack       /**< interrupt_ack()       */
 	/**@}*/
 
 #ifndef _ASM_FILE_
@@ -241,7 +241,7 @@
 	/**
 	 * @see or1k_pic_lvl_set()
 	 */
-	static inline int hal_intlvl_set(int newlevel)
+	static inline int interrupt_level_set(int newlevel)
 	{
 		return (or1k_pic_lvl_set(newlevel));
 	}

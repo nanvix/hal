@@ -64,8 +64,8 @@ PRIVATE void dummy_handler(int num)
  */
 PRIVATE void test_interrupt_set_clear_handler(void)
 {
-	KASSERT(interrupt_set_handler(HAL_INT_CLOCK, dummy_handler) == 0);
-	KASSERT(interrupt_set_handler(HAL_INT_CLOCK, NULL) == 0);
+	KASSERT(interrupt_set_handler(INTERRUPT_CLOCK, dummy_handler) == 0);
+	KASSERT(interrupt_set_handler(INTERRUPT_CLOCK, NULL) == 0);
 }
 
 /*----------------------------------------------------------------------------*
@@ -79,8 +79,8 @@ PRIVATE void test_interrupt_set_clear_handler(void)
  */
 PRIVATE void test_interrupt_register_unregister(void)
 {
-	KASSERT(interrupt_register(HAL_INT_CLOCK, dummy_handler) == 0);
-	KASSERT(interrupt_unregister(HAL_INT_CLOCK) == 0);
+	KASSERT(interrupt_register(INTERRUPT_CLOCK, dummy_handler) == 0);
+	KASSERT(interrupt_unregister(INTERRUPT_CLOCK) == 0);
 }
 
 /*----------------------------------------------------------------------------*
@@ -99,7 +99,7 @@ PRIVATE void test_interrupt_enable_disable(void)
 	ncalls = 0;
 	dcache_invalidate();
 
-	KASSERT(interrupt_register(HAL_INT_CLOCK, dummy_handler) == 0);
+	KASSERT(interrupt_register(INTERRUPT_CLOCK, dummy_handler) == 0);
 
 	interrupts_enable();
 
@@ -109,7 +109,7 @@ PRIVATE void test_interrupt_enable_disable(void)
 
 	interrupts_disable();
 
-	KASSERT(interrupt_unregister(HAL_INT_CLOCK) == 0);
+	KASSERT(interrupt_unregister(INTERRUPT_CLOCK) == 0);
 
 	/*
 	 * Ensure that the handler is not
@@ -140,17 +140,17 @@ PRIVATE void test_interrupt_mask_unmask(void)
 	ncalls = 0;
 	dcache_invalidate();
 
-	KASSERT(interrupt_register(HAL_INT_CLOCK, dummy_handler) == 0);
+	KASSERT(interrupt_register(INTERRUPT_CLOCK, dummy_handler) == 0);
 
-	interrupt_unmask(HAL_INT_CLOCK);
+	interrupt_unmask(INTERRUPT_CLOCK);
 
 		do
 			dcache_invalidate();
 		while (ncalls > 0);
 
-	interrupt_mask(HAL_INT_CLOCK);
+	interrupt_mask(INTERRUPT_CLOCK);
 
-	KASSERT(interrupt_unregister(HAL_INT_CLOCK) == 0);
+	KASSERT(interrupt_unregister(INTERRUPT_CLOCK) == 0);
 
 	/*
 	 * Ensure that the handler is not
@@ -196,7 +196,7 @@ PRIVATE struct test interrupt_tests_api[] = {
 PRIVATE void test_interrupt_set_handler_inval(void)
 {
 	KASSERT(interrupt_set_handler(-1, dummy_handler) == -EINVAL);
-	KASSERT(interrupt_set_handler(HAL_INT_NR + 1, dummy_handler) == -EINVAL);
+	KASSERT(interrupt_set_handler(INTERRUPTS_NUM + 1, dummy_handler) == -EINVAL);
 }
 
 /*----------------------------------------------------------------------------*
@@ -211,7 +211,7 @@ PRIVATE void test_interrupt_set_handler_inval(void)
 PRIVATE void test_interrupt_clear_handler_inval(void)
 {
 	KASSERT(interrupt_set_handler(-1, NULL) == -EINVAL);
-	KASSERT(interrupt_set_handler(HAL_INT_NR + 1, NULL) == -EINVAL);
+	KASSERT(interrupt_set_handler(INTERRUPTS_NUM + 1, NULL) == -EINVAL);
 }
 
 /*----------------------------------------------------------------------------*
@@ -226,7 +226,7 @@ PRIVATE void test_interrupt_clear_handler_inval(void)
 PRIVATE void test_interrupt_register_handler_inval(void)
 {
 	KASSERT(interrupt_register(-1, dummy_handler) == -EINVAL);
-	KASSERT(interrupt_register(HAL_INT_NR + 1, dummy_handler) == -EINVAL);
+	KASSERT(interrupt_register(INTERRUPTS_NUM + 1, dummy_handler) == -EINVAL);
 }
 
 /*----------------------------------------------------------------------------*
@@ -241,7 +241,7 @@ PRIVATE void test_interrupt_register_handler_inval(void)
 PRIVATE void test_interrupt_unregister_handler_inval(void)
 {
 	KASSERT(interrupt_unregister(-1) == -EINVAL);
-	KASSERT(interrupt_unregister(HAL_INT_NR + 1) == -EINVAL);
+	KASSERT(interrupt_unregister(INTERRUPTS_NUM + 1) == -EINVAL);
 }
 
 /*----------------------------------------------------------------------------*
@@ -255,9 +255,9 @@ PRIVATE void test_interrupt_unregister_handler_inval(void)
  */
 PRIVATE void test_interrupt_register_handler_bad(void)
 {
-	KASSERT(interrupt_register(HAL_INT_CLOCK, dummy_handler) == 0);
-	KASSERT(interrupt_register(HAL_INT_CLOCK, dummy_handler) == -EBUSY);
-	KASSERT(interrupt_unregister(HAL_INT_CLOCK) == 0);
+	KASSERT(interrupt_register(INTERRUPT_CLOCK, dummy_handler) == 0);
+	KASSERT(interrupt_register(INTERRUPT_CLOCK, dummy_handler) == -EBUSY);
+	KASSERT(interrupt_unregister(INTERRUPT_CLOCK) == 0);
 }
 
 /*----------------------------------------------------------------------------*
@@ -271,7 +271,7 @@ PRIVATE void test_interrupt_register_handler_bad(void)
  */
 PRIVATE void test_interrupt_unregister_handler_bad(void)
 {
-	KASSERT(interrupt_unregister(HAL_INT_CLOCK) == -EINVAL);
+	KASSERT(interrupt_unregister(INTERRUPT_CLOCK) == -EINVAL);
 }
 
 /*----------------------------------------------------------------------------*
@@ -286,7 +286,7 @@ PRIVATE void test_interrupt_unregister_handler_bad(void)
 PRIVATE void test_interrupt_mask_handler_inval(void)
 {
 	KASSERT(interrupt_mask(-1) == -EINVAL);
-	KASSERT(interrupt_mask(HAL_INT_NR + 1) == -EINVAL);
+	KASSERT(interrupt_mask(INTERRUPTS_NUM + 1) == -EINVAL);
 }
 
 /*----------------------------------------------------------------------------*
@@ -301,7 +301,7 @@ PRIVATE void test_interrupt_mask_handler_inval(void)
 PRIVATE void test_interrupt_unmask_handler_inval(void)
 {
 	KASSERT(interrupt_unmask(-1) == -EINVAL);
-	KASSERT(interrupt_unmask(HAL_INT_NR + 1) == -EINVAL);
+	KASSERT(interrupt_unmask(INTERRUPTS_NUM + 1) == -EINVAL);
 }
 
 /*----------------------------------------------------------------------------*

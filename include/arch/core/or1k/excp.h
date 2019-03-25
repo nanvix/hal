@@ -86,7 +86,7 @@
 #ifndef _ASM_FILE_
 
 /**
- * @cond mor1kx
+ * @cond or1k
  */
 
 	/**
@@ -210,7 +210,7 @@
  *============================================================================*/
 
 /**
- * @cond mor1kx
+ * @cond or1k
  */
 
 
@@ -218,7 +218,7 @@
 	 * @name Exported Constants
 	 */
 	/**@{*/
-	#define HAL_NUM_EXCEPTIONS            OR1K_NUM_EXCEPTIONS                /**< @ref OR1K_NUM_EXCEPTIONS                */
+	#define EXCEPTIONS_NUM                OR1K_NUM_EXCEPTIONS                /**< @ref OR1K_NUM_EXCEPTIONS                */
 	#define EXCEPTION_SIZE                OR1K_EXCEPTION_SIZE                /**< @ref OR1K_EXCEPTION_SIZE                */
 	#define EXCEPTION_INVALID_OPCODE      OR1K_EXCEPTION_ILLEGAL_INSTRUCTION /**< @ref OR1K_EXCEPTION_ILLEGAL_INSTRUCTION */
 	#define EXCEPTION_PAGE_FAULT          OR1K_EXCEPTION_PAGE_FAULT          /**< @ref OR1K_EXCEPTION_PAGE_FAULT          */

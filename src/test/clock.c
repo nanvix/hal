@@ -44,7 +44,7 @@ PRIVATE unsigned ticks = 0;
  */
 PRIVATE void do_clock(int num)
 {
-	KASSERT(num == HAL_INT_CLOCK);
+	KASSERT(num == INTERRUPT_CLOCK);
 
 	ticks++;
 	dcache_invalidate();
@@ -62,12 +62,12 @@ PRIVATE void test_do_clock(void)
 {
 	const unsigned nticks = 10;
 
-	hal_clock_init(CLOCK_FREQ);
+	clock_init(CLOCK_FREQ);
 
-	KASSERT(interrupt_register(HAL_INT_CLOCK, do_clock) == 0);
+	KASSERT(interrupt_register(INTERRUPT_CLOCK, do_clock) == 0);
 
 	interrupts_enable();
-	interrupt_unmask(HAL_INT_CLOCK);
+	interrupt_unmask(INTERRUPT_CLOCK);
 
 		/* Wait for enough clock interrupts. */
 		do
@@ -76,7 +76,7 @@ PRIVATE void test_do_clock(void)
 			dcache_invalidate();
 		} while (ticks < nticks);
 
-	interrupt_mask(HAL_INT_CLOCK);
+	interrupt_mask(INTERRUPT_CLOCK);
 	interrupts_disable();
 }
 
