@@ -22,22 +22,39 @@
  * SOFTWARE.
  */
 
-#ifndef _CLUSTER_OR1K_H_
-#define _CLUSTER_OR1K_H_
+#ifndef CORE_OR1K_H_
+#define CORE_OR1K_H_
 
-	#undef  __NEED_CORE_OR1K
-	#define __NEED_CORE_OR1K
-#ifndef _ASM_FILE_
+	/**
+	 * @addtogroup or1k-core OpenRISC Core
+	 * @ingroup cores
+	 */
 
-	#if (defined(__or1200__))
-		#include <arch/core/or1k.h>
-	#elif (defined(__mor1kx__))
-		#include <arch/core/mor1kx.h>
-	#else
-		#error "unkonwn core"
+	#ifndef __NEED_CORE_OR1K
+		#error "or1k core not required"
 	#endif
 
-#endif
+	#include <arch/core/or1k/cache.h>
+	#include <arch/core/mor1kx/clock.h>
+	#include <arch/core/or1k/core.h>
+	#include <arch/core/or1k/excp.h>
+	#include <arch/core/or1k/int.h>
+	#include <arch/core/or1k/mmu.h>
+	#include <arch/core/or1k/ompic.h>
+	#include <arch/core/or1k/pic.h>
+	#include <arch/core/or1k/spinlock.h>
+	#include <arch/core/or1k/tlb.h>
+	#include <arch/core/or1k/trap.h>
+	#include <arch/core/or1k/upcall.h>
 
-#endif /* _CLUSTER_OR1K_H_ */
+/**
+ * @cond or1k
+ */
+
+	/* Feature Declaration */
+	#define CORE_SUPPORTS_PMIO 0
+
+/**@}*/
+
+#endif /* CORE_OR1K_H_ */
 

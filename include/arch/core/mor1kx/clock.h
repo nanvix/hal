@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 
-#ifndef ARCH_CORE_OR1K_CLOCK_H_
-#define ARCH_CORE_OR1K_CLOCK_H_
+#ifndef ARCH_CORE_MOR1KX_CLOCK_H_
+#define ARCH_CORE_MOR1KX_CLOCK_H_
 
 /**
  * @addtogroup or1k-core-clock Clock
@@ -36,9 +36,9 @@
 	#include <nanvix/const.h>
 
 	/**
-	 * @brief Estimated CPU frequency (in Hz), 20Mhz/30Hz.
+	 * @brief Estimated CPU frequency (in Hz), 50Mhz/30Hz.
 	 */
-	#define OR1K_CPU_FREQUENCY 666666
+	#define OR1K_CPU_FREQUENCY 1666666
 
 	/**
 	 * @brief Initializes the clock driver in the or1k architecture.
@@ -84,4 +84,4 @@
 
 /**@endcond*/
 
-#endif /* ARCH_CORE_OR1K_CLOCK */
+#endif /* ARCH_CORE_MOR1KX_CLOCK */
