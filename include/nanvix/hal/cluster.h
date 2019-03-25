@@ -69,11 +69,6 @@
  */
 /**@{*/
 
-
-	#if (HAL_NUM_CORES > 1)
-	#define HAL_SMP
-	#endif
-
 	/**
 	 * @brief Gets the number of cores.
 	 *
