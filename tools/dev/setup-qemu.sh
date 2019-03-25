@@ -40,7 +40,7 @@ wget "http://wiki.qemu-project.org/download/qemu-$QEMU_VERSION.tar.bz2"
 # Build qemu
 tar -xjvf qemu-$QEMU_VERSION.tar.bz2
 cd qemu-$QEMU_VERSION
-./configure --target-list=i386-softmmu,or1k-softmmu --enable-sdl --enable-curses
+./configure --target-list=i386-softmmu,or1k-softmmu,riscv32-softmmu --enable-sdl --enable-curses
 make -j $NCORES all
 make install
 
