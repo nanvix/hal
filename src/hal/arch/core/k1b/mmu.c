@@ -273,7 +273,7 @@ PRIVATE void k1b_mmu_check_layout(void)
 	size_t kstack_size;
 
 	kstack_size = (vaddr_t)(&_user_stack_start) - (vaddr_t)(&_user_stack_end);
-	kstack_size /= K1B_NUM_CORES;
+	kstack_size /= K1B_CLUSTER_NUM_CORES;
 
 	if (K1B_KSTACK_BASE_VIRT != (vaddr_t)(&_user_stack_start))
 		kpanic("bad kernel stack base address");

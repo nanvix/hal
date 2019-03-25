@@ -51,7 +51,14 @@
 	 * @name Provided Features
 	 */
 	/**@{*/
-	#define CLUSTER_IS_MULTICORE 1
+	#define CLUSTER_IS_MULTICORE   1 /**< Multicore Cluster */
+	#ifdef __k1io__
+		#define CLUSTER_IS_IO      1 /**< I/O Cluster       */
+		#define CLUSTER_IS_COMPUTE 0 /**< Compute Cluster   */
+	#else
+		#define CLUSTER_IS_IO      0 /**< I/O Cluster       */
+		#define CLUSTER_IS_COMPUTE 1 /**< Compute Cluster   */
+	#endif
 	/**@}*/
 
 /**@}*/

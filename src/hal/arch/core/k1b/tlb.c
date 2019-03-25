@@ -60,7 +60,7 @@ PRIVATE struct
 	 * translation.
 	 */
 	struct tlbe ltlb[K1B_LTLB_LENGTH];
-} __attribute__((aligned(K1B_CACHE_LINE_SIZE))) tlb[K1B_NUM_CORES];
+} __attribute__((aligned(K1B_CACHE_LINE_SIZE))) tlb[K1B_CLUSTER_NUM_CORES];
 
 /*============================================================================*
  * k1b_tlbe_idx_get()                                                         *

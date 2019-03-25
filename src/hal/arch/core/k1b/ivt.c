@@ -33,7 +33,7 @@
 /**
  * @brief Kernel stack.
  */
-PRIVATE uint64_t excp_stacks[K1B_NUM_CORES][EXCEPTION_STACK_SIZE] ALIGN(K1B_PAGE_SIZE);
+PRIVATE uint64_t excp_stacks[K1B_CLUSTER_NUM_CORES][EXCEPTION_STACK_SIZE] ALIGN(K1B_PAGE_SIZE);
 
 /**
  * Lookup table that maps hardware interrupt IDs into numbers.
