@@ -44,6 +44,22 @@
 #define MOS_ETHERNET_TLB_ENTRY (0x0442000004400093ULL)
 
 /**
+ * @brief Null TLB entry.
+ */
+#define K1B_TLBE_NULL \
+	K1B_TLBE_INITIALIZER(\
+		0x00000,                       \
+		0x0,                           \
+		0x0,                           \
+		0x00000,                       \
+		0x00,                          \
+		0x0,                           \
+		K1B_TLBE_PROT_NONE,            \
+		K1B_ITLBE_CACHE_POLICY_ENABLE, \
+		K1B_TLBE_STATUS_INVALID        \
+	)
+
+/**
  * @brief User-space hook for RM.
  */
 extern int _vhook_rm OVERRIDE;
@@ -119,22 +135,22 @@ volatile mOS_bin_desc_t bin_descriptor SECTION_BINDESC OVERRIDE =
 	 */
 	.jtlb               = {
 #ifdef __k1dp__
-		{._dword  = MOS_NULL_TLB_ENTRY   },
-		{._dword  = MOS_NULL_TLB_ENTRY   },
-		{._dword  = MOS_NULL_TLB_ENTRY   },
-		{._dword  = MOS_NULL_TLB_ENTRY   },
-		{._dword  = MOS_NULL_TLB_ENTRY   },
-		{._dword  = MOS_NULL_TLB_ENTRY   },
-		{._dword  = MOS_NULL_TLB_ENTRY   },
-		{._dword  = MOS_NULL_TLB_ENTRY   },
-		{._dword  = MOS_NULL_TLB_ENTRY   },
-		{._dword  = MOS_NULL_TLB_ENTRY   },
-		{._dword  = MOS_NULL_TLB_ENTRY   },
-		{._dword  = MOS_NULL_TLB_ENTRY   },
-		{._dword  = MOS_NULL_TLB_ENTRY   },
-		{._dword  = MOS_NULL_TLB_ENTRY   },
-		{._dword  = MOS_NULL_TLB_ENTRY   },
-		{._dword  = MOS_NULL_TLB_ENTRY   },
+		{._dword  = K1B_TLBE_NULL   },
+		{._dword  = K1B_TLBE_NULL   },
+		{._dword  = K1B_TLBE_NULL   },
+		{._dword  = K1B_TLBE_NULL   },
+		{._dword  = K1B_TLBE_NULL   },
+		{._dword  = K1B_TLBE_NULL   },
+		{._dword  = K1B_TLBE_NULL   },
+		{._dword  = K1B_TLBE_NULL   },
+		{._dword  = K1B_TLBE_NULL   },
+		{._dword  = K1B_TLBE_NULL   },
+		{._dword  = K1B_TLBE_NULL   },
+		{._dword  = K1B_TLBE_NULL   },
+		{._dword  = K1B_TLBE_NULL   },
+		{._dword  = K1B_TLBE_NULL   },
+		{._dword  = K1B_TLBE_NULL   },
+		{._dword  = K1B_TLBE_NULL   },
 		{ ._dword =  K1B_TLBE_INITIALIZER(0x08, 0x1, 0x1, 0x00, 0x08, 0x0, K1B_TLBE_PROT_RWX, K1B_ITLBE_CACHE_POLICY_ENABLE, K1B_TLBE_STATUS_AMODIFIED) } /* VA: 0x8000   PA: 0x8000   */,
 		{ ._dword =  K1B_TLBE_INITIALIZER(0x44, 0x0, 0x1, 0x00, 0x40, 0x0, K1B_TLBE_PROT_RWX, K1B_ITLBE_CACHE_POLICY_ENABLE, K1B_TLBE_STATUS_AMODIFIED) } /* VA: 0x44000  PA: 0x40000  */,
 		{ ._dword =  K1B_TLBE_INITIALIZER(0x09, 0x1, 0x1, 0x00, 0x09, 0x0, K1B_TLBE_PROT_RWX, K1B_ITLBE_CACHE_POLICY_ENABLE, K1B_TLBE_STATUS_AMODIFIED) } /* VA: 0x9000   PA: 0x9000   */,
@@ -249,21 +265,21 @@ volatile mOS_bin_desc_t bin_descriptor SECTION_BINDESC OVERRIDE =
 		{ ._dword =  0x1fc400001f80dbULL } /* VA: 0x1f8000 PA: 0x1f8000 */,
 
 #else
-		{ ._dword = MOS_NULL_TLB_ENTRY  },
-		{ ._dword = MOS_NULL_TLB_ENTRY  },
-		{ ._dword = MOS_NULL_TLB_ENTRY  },
-		{ ._dword = MOS_NULL_TLB_ENTRY  },
-		{ ._dword = MOS_NULL_TLB_ENTRY  },
-		{ ._dword = MOS_NULL_TLB_ENTRY  },
-		{ ._dword = MOS_NULL_TLB_ENTRY  },
-		{ ._dword = MOS_NULL_TLB_ENTRY  },
-		{ ._dword = MOS_NULL_TLB_ENTRY  },
-		{ ._dword = 0x48400000400dbULL  } /* VA: 0x40000 PA: 0x40000 */,
-		{ ._dword = MOS_NULL_TLB_ENTRY  },
-		{ ._dword = 0x58400000500dbULL  } /* VA: 0x50000 PA: 0x50000 */,
-		{ ._dword = MOS_NULL_TLB_ENTRY  },
-		{ ._dword = 0x68400000600dbULL  } /* VA: 0x60000 PA: 0x60000 */,
-		{ ._dword = MOS_NULL_TLB_ENTRY  },
+		{ ._dword = K1B_TLBE_NULL  },
+		{ ._dword = K1B_TLBE_NULL  },
+		{ ._dword = K1B_TLBE_NULL  },
+		{ ._dword = K1B_TLBE_NULL  },
+		{ ._dword = K1B_TLBE_NULL  },
+		{ ._dword = K1B_TLBE_NULL  },
+		{ ._dword = K1B_TLBE_NULL  },
+		{ ._dword = K1B_TLBE_NULL  },
+		{ ._dword = K1B_TLBE_NULL  },
+		{ ._dword = K1B_TLBE_INITIALIZER(0x48, 0x0, 0x1, 0x00, 0x40, 0x0, K1B_TLBE_PROT_RWX, K1B_ITLBE_CACHE_POLICY_ENABLE, K1B_TLBE_STATUS_AMODIFIED) } /* VA: 0x48000  PA: 0x40000 */,
+		{ ._dword = K1B_TLBE_NULL  },
+		{ ._dword = K1B_TLBE_INITIALIZER(0x58, 0x0, 0x1, 0x00, 0x50, 0x0, K1B_TLBE_PROT_RWX, K1B_ITLBE_CACHE_POLICY_ENABLE, K1B_TLBE_STATUS_AMODIFIED) } /* VA: 0x58000  PA: 0x50000 */,
+		{ ._dword = K1B_TLBE_NULL  },
+		{ ._dword = K1B_TLBE_INITIALIZER(0x68, 0x0, 0x1, 0x00, 0x60, 0x0, K1B_TLBE_PROT_RWX, K1B_ITLBE_CACHE_POLICY_ENABLE, K1B_TLBE_STATUS_AMODIFIED) } /* VA: 0x68000  PA: 0x60000 */,
+		{ ._dword = K1B_TLBE_NULL  },
 		{ ._dword = K1B_TLBE_INITIALIZER(0x78, 0x0, 0x1, 0x00, 0x70, 0x0, K1B_TLBE_PROT_RWX, K1B_ITLBE_CACHE_POLICY_ENABLE, K1B_TLBE_STATUS_AMODIFIED) } /* VA: 0x78000  PA: 0x70000  */,
 		{ ._dword = K1B_TLBE_INITIALIZER(0x08, 0x1, 0x1, 0x00, 0x08, 0x0, K1B_TLBE_PROT_RWX, K1B_ITLBE_CACHE_POLICY_ENABLE, K1B_TLBE_STATUS_AMODIFIED) } /* VA: 0x08000  PA: 0x08000  */,
 		{ ._dword = K1B_TLBE_INITIALIZER(0x88, 0x0, 0x1, 0x00, 0x80, 0x0, K1B_TLBE_PROT_RWX, K1B_ITLBE_CACHE_POLICY_ENABLE, K1B_TLBE_STATUS_AMODIFIED) } /* VA: 0x88000  PA: 0x80000  */,

@@ -105,6 +105,7 @@
 	 * revise this.
 	 */
 	/**@{*/
+	#define K1B_TLBE_PROT_NONE  0 /**< None                    */
 	#define K1B_TLBE_PROT_R     5 /**< Read-Only               */
 	#define K1B_TLBE_PROT_RW    9 /**< Read and Write          */
 	#define K1B_TLBE_PROT_RX   11 /**< Read and Execute        */
