@@ -25,6 +25,7 @@
 #include <arch/core/or1k/int.h>
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
+#include <nanvix/hal/core/clock.h>
 #include <errno.h>
 
 /**
@@ -86,7 +87,7 @@ PUBLIC void or1k_do_hwint(int num, const struct context *ctx)
 	if (num == OR1K_INT_CLOCK)
 	{
 		/* ack. */
-		or1k_pic_ack(num);
+		or1k_clock_ack();
 
 		/* Nothing to do. */
 		if (or1k_handlers[num] == NULL)

@@ -24,8 +24,24 @@
 
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
+#include <nanvix/hal/core/clock.h>
 #include <arch/core/or1k/core.h>
-#include <arch/core/or1k/clock.h>
+
+/**
+ * ACKs the clock interrupt and adjusts the timer again.
+ */
+PUBLIC void or1k_clock_ack(void)
+{
+	/* Ack. */
+	or1k_mtspr(OR1K_SPR_TTMR, OR1K_SPR_TTMR_DI);
+
+	/* Reenable timer. */
+	or1k_mtspr(OR1K_SPR_TTMR, OR1K_SPR_TTMR_SR | OR1K_SPR_TTMR_IE |
+		OR1K_CPU_FREQUENCY);
+
+	/* Reset counter. */
+	or1k_mtspr(OR1K_SPR_TTCR, 0);
+}
 
 /**
  * The or1k_clock_init() function initializes the clock driver in the
@@ -47,6 +63,6 @@ PUBLIC void or1k_clock_init(unsigned freq)
 	rate = OR1K_CPU_FREQUENCY;
 
 	/* Ensures that the clock is disabled. */
+	or1k_mtspr(OR1K_SPR_TTMR, OR1K_SPR_TTMR_SR | OR1K_SPR_TTMR_IE | rate);
 	or1k_mtspr(OR1K_SPR_TTCR, 0);
-	or1k_mtspr(OR1K_SPR_TTMR, OR1K_SPR_TTMR_RT | OR1K_SPR_TTMR_IE | rate);
 }

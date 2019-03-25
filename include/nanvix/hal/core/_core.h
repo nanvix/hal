@@ -41,11 +41,17 @@
 		#define __NEED_CORE_I486
 		#include <arch/core/i486.h>
 
-	#elif (defined(__or1200__) || defined(__mor1kx__))
+	#elif (defined(__or1200__))
 
 		#undef  __NEED_CORE_OR1K
 		#define __NEED_CORE_OR1K
 		#include <arch/core/or1k.h>
+
+	#elif (defined(__mor1kx__))
+
+		#undef  __NEED_CORE_OR1K
+		#define __NEED_CORE_OR1K
+		#include <arch/core/mor1kx.h>
 
 	#else
 
