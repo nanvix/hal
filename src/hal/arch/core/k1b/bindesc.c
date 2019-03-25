@@ -129,13 +129,8 @@ volatile mOS_bin_desc_t bin_descriptor SECTION_BINDESC OVERRIDE =
 	.pe_pool            = (0x1 << ((BSP_NB_PE_P & ~(0x3)))) - 1, /* Required PE Set. */
 #endif
 
-	.tlb_small_size     = 0x1000,                                /* Small page size. */
-
-#ifdef __k1io__
-	.tlb_big_size       = 0x10000,                               /* Huge page size. */
-#else
-	.tlb_big_size       = 0x8000,                                /* Huge page size. */
-#endif
+	.tlb_small_size     = K1B_PAGE_SIZE,                         /* Default page size. */
+	.tlb_big_size       = K1B_HUGE_PAGE_SIZE,                    /* Huge page size.    */
 
 	.security_level     = (int) &_MOS_SECURITY_LEVEL,            /* Security level. */
 
