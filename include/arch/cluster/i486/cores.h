@@ -79,7 +79,7 @@
 	/**
 	 * @brief Number of cores in a cluster.
 	 */
-	#define HAL_NUM_CORES I486_NUM_CORES
+	#define CORES_NUM I486_NUM_CORES
 
 	/**
 	 * @brief ID of the master core.

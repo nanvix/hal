@@ -83,7 +83,7 @@
 	/**
 	 * @brief Number of cores in a cluster.
 	 */
-	#define HAL_NUM_CORES OR1K_NUM_CORES
+	#define CORES_NUM OR1K_NUM_CORES
 
 	/**
 	 * @brief ID of the master core.

@@ -106,7 +106,7 @@ PRIVATE void test_core_start_slave(void)
 	/**
 	 * Start each slave core.
 	 */
-	for (int i = 0; i < HAL_NUM_CORES; i++)
+	for (int i = 0; i < CORES_NUM; i++)
 	{
 		if (i != COREID_MASTER)
 			core_start(i, test_core_slave_entry);
@@ -122,7 +122,7 @@ PRIVATE void test_core_start_slave(void)
 	{
 		dcache_invalidate();
 
-		if (cores_started == HAL_NUM_CORES)
+		if (cores_started == CORES_NUM)
 			break;
 	}
 }
@@ -174,7 +174,7 @@ PRIVATE void test_core_suspend_resume_master(void)
 	/*
 	 * Start one slave core.
 	 */
-	for (i = 0; i < HAL_NUM_CORES; i++)
+	for (i = 0; i < CORES_NUM; i++)
 	{
 		if (i != COREID_MASTER)
 		{

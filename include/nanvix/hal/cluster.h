@@ -45,8 +45,8 @@
 	#endif
 
 	/* Constants */
-	#ifndef HAL_NUM_CORES
-	#error "HAL_NUM_CORES not defined"
+	#ifndef CORES_NUM
+	#error "CORES_NUM not defined"
 	#endif
 	#ifndef COREID_MASTER
 	#error "COREID_MASTER not defined"
