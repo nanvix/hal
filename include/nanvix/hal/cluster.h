@@ -32,8 +32,8 @@
 	/* Cluster Interface Implementation */
 	#include <nanvix/hal/cluster/_cluster.h>
 
-	#include <nanvix/hal/cluster/cpu.h>
 	#include <nanvix/hal/cluster/memory.h>
+	#include <nanvix/const.h>
 
 /*============================================================================*
  * Interface Implementation Checking                                          *
@@ -42,6 +42,19 @@
 	/* Feature Checking */
 	#ifndef CLUSTER_IS_MULTICORE
 	#error "is this a multicore cluster?"
+	#endif
+
+	/* Constants */
+	#ifndef HAL_NUM_CORES
+	#error "HAL_NUM_CORES not defined"
+	#endif
+	#ifndef COREID_MASTER
+	#error "COREID_MASTER not defined"
+	#endif
+
+	/* Functions */
+	#ifndef __hal_cpu_get_num_cores
+	#error "hal_cpu_get_num_cores() not defined?"
 	#endif
 
 /*============================================================================*
@@ -55,6 +68,18 @@
  * @brief Cluster HAL Interface
  */
 /**@{*/
+
+
+	#if (HAL_NUM_CORES > 1)
+	#define HAL_SMP
+	#endif
+
+	/**
+	 * @brief Gets the number of cores.
+	 *
+	 * @returns The number of cores in the underlying processor.
+	 */
+	EXTERN int hal_cpu_get_num_cores(void);
 
 /**@}*/
 
