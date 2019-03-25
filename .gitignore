@@ -5,8 +5,8 @@
 *.output
 
 tools/dev/toolchain/or1k/
-tools/dev/toolchain/i386/
 tools/dev/toolchain/i486/
+tools/dev/toolchain/riscv32/
 
 doc/html
 bin/

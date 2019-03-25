@@ -37,6 +37,10 @@ case "$TARGET" in
 	"openrisc")
 		bash "tools/dev/arch/or1k.sh"
 		;;
+	# RISC-V 32-bit
+	"riscv32")
+		bash "tools/dev/arch/riscv32.sh"
+		;;
 	# Unknown
 	*)
 		echo "$0: unknown target platform"
