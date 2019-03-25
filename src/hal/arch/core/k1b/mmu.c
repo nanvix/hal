@@ -64,19 +64,29 @@
 #define K1B_PGTAB_LENGTH (1 << (K1B_PGTAB_SHIFT - K1B_PAGE_SHIFT))
 
 /**
- * @brief Root Page Table.
+ * @brief Root page directory.
  */
-PRIVATE struct pte root_pgtab[K1B_PGTAB_LENGTH] __attribute__((aligned(K1B_PAGE_SIZE)));
+PRIVATE struct pde k1b_root_pgdir[K1B_PGDIR_LENGTH] ALIGN(K1B_PAGE_SIZE);
 
 /**
- * @brief Root Page Directories.
+ * @brief Root page table.
  */
-PRIVATE struct pde root_pgdir[K1B_PGDIR_LENGTH] __attribute__((aligned(K1B_PAGE_SIZE)));
+PRIVATE struct pte k1b_root_pgtab[K1B_PGTAB_LENGTH] ALIGN(K1B_PAGE_SIZE);
 
 /**
  * Alias to root page directory.
  */
-PUBLIC struct pde *idle_pgdir = &root_pgdir[0];
+PUBLIC struct pde *root_pgdir = &k1b_root_pgdir[0];
+
+/**
+ * Alias to kernel page table.
+ */
+PUBLIC struct pte *kernel_pgtab = &k1b_root_pgtab[0];
+
+/**
+ * Alias to kernel page pool page table.
+ */
+PUBLIC struct pte *kpool_pgtab = &k1b_root_pgtab[0];
 
 /*
  * Physical Memory Layout
@@ -319,22 +329,22 @@ PUBLIC void k1b_mmu_setup(void)
 
 		/* Clean root page table. */
 		for (int i = 0; i < K1B_PGTAB_LENGTH; i++)
-			pte_clear(&root_pgtab[i]);
+			pte_clear(&k1b_root_pgtab[i]);
 
 		/* Clean root page directory. */
 		for (int i = 0; i < K1B_PGDIR_LENGTH; i++)
-			pde_clear(&root_pgdir[i]);
+			pde_clear(&k1b_root_pgdir[i]);
 
 		/* Build root page table. */
-		mmu_map_hypervisor(root_pgtab);
-		mmu_map_kernel(root_pgtab);
-		mmu_map_kpool(root_pgtab);
+		mmu_map_hypervisor(k1b_root_pgtab);
+		mmu_map_kernel(k1b_root_pgtab);
+		mmu_map_kpool(k1b_root_pgtab);
 
 		/* Build root page directory. */
-		root_pgdir[0].present = 1;
-		root_pgdir[0].writable = 1;
-		root_pgdir[0].user = 0;
-		root_pgdir[0].frame = (vaddr_t)(root_pgtab) >> K1B_PAGE_SHIFT;
+		k1b_root_pgdir[0].present = 1;
+		k1b_root_pgdir[0].writable = 1;
+		k1b_root_pgdir[0].user = 0;
+		k1b_root_pgdir[0].frame = (vaddr_t)(k1b_root_pgtab) >> K1B_PAGE_SHIFT;
 	}
 
 	mmu_warmup();

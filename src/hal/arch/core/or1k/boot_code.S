@@ -49,9 +49,9 @@
 
 /* Exported symbols. */
 .globl start
-.globl kernel_pgtab
-.globl kpool_pgtab
-.globl idle_pgdir
+.globl or1k_kernel_pgtab
+.globl or1k_kpool_pgtab
+.globl root_pgdir
 .globl dtlb_table
 .globl itlb_table
 .globl core.kstack
@@ -84,7 +84,7 @@ start:
 	l.nop
 
 	/* Build kernel and kernel pool page tables. */
-	OR1K_LOAD_SYMBOL_2_GPR(r1, kpool_pgtab)
+	OR1K_LOAD_SYMBOL_2_GPR(r1, or1k_kpool_pgtab)
 	l.addi  r1, r1,  OR1K_PAGE_SIZE
 	l.addi  r1, r1, -OR1K_WORD_SIZE
 
@@ -100,18 +100,18 @@ start:
 		l.nop
 
 	/* Build init page directory. */
-	OR1K_LOAD_SYMBOL_2_GPR(r1, kernel_pgtab)
+	OR1K_LOAD_SYMBOL_2_GPR(r1, or1k_kernel_pgtab)
 	l.srli r1, r1, PAGE_SHIFT
 	l.slli r1, r1, OR1K_PT_SHIFT
 	l.ori  r1, r1, OR1K_PT_PRESENT
 
-	OR1K_LOAD_SYMBOL_2_GPR(r3, idle_pgdir)
+	OR1K_LOAD_SYMBOL_2_GPR(r3, root_pgdir)
 	l.lwz r3, 0(r3)
 
 	l.sw  OR1K_PTE_SIZE*0(r3),   r1       /* Kernel code + data at 0x00000000 */
 	l.sw  OR1K_PTE_SIZE*192(r3), r1       /* Kernel code + data at 0xc0000000 */
 
-	OR1K_LOAD_SYMBOL_2_GPR(r1, kpool_pgtab)  /* Kernel page pool at 0xc1000000   */
+	OR1K_LOAD_SYMBOL_2_GPR(r1, or1k_kpool_pgtab)  /* Kernel page pool at 0xc1000000   */
 	l.srli r1, r1, PAGE_SHIFT
 	l.slli r1, r1, OR1K_PT_SHIFT
 	l.ori  r1, r1, OR1K_PT_PRESENT

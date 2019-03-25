@@ -49,12 +49,32 @@
 /**
  * @brief Root Page Directories.
  */
-PRIVATE struct pde root_pgdir[OR1K_PGDIR_LENGTH];
+PRIVATE struct pde or1k_root_pgdir[OR1K_PGDIR_LENGTH];
+
+/**
+ * @brief Kernel page table.
+ */
+EXTERN struct pte or1k_kernel_pgtab[];
+
+/**
+ * @brief Kernel page pool page table.
+ */
+EXTERN struct pte or1k_kpool_pgtab[];
 
 /**
  * Alias to root page directory.
  */
-PUBLIC struct pde *idle_pgdir = &root_pgdir[0];
+PUBLIC struct pde *root_pgdir = &or1k_root_pgdir[0];
+
+/**
+ * Alias to kernel page table.
+ */
+PUBLIC struct pte *kernel_pgtab = &or1k_kernel_pgtab[0];
+
+/**
+ * Alias to kernel page pool page table.
+ */
+PUBLIC struct pte *kpool_pgtab = &or1k_kpool_pgtab[0];
 
 /**
  * @brief Handles a TLB fault.
@@ -90,7 +110,7 @@ PRIVATE void or1k_do_tlb_fault(
 	vaddr &= OR1K_PAGE_MASK;
 
 	/* Lookup PDE. */
-	pde = pde_get(idle_pgdir, vaddr);
+	pde = pde_get(root_pgdir, vaddr);
 	if (!pde_is_present(pde))
 		kpanic("[hal] page fault at %x", exception_get_addr(excp));
 

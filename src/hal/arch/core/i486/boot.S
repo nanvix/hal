@@ -36,7 +36,9 @@
 
 /* Exported symbols. */
 .globl start
-.globl idle_pgdir
+.globl i486_root_pgdir
+.globl i486_kernel_pgtab
+.globl i486_kpool_pgtab
 
 /*============================================================================*
  *                              bootstrap section                             *
@@ -69,22 +71,22 @@ start:
 
 	/* Build kernel page tables. */
 	start.kernel.init:
-		movl $kernel_pgtab, %edi
+		movl $i486_kernel_pgtab, %edi
 		movl $0x00000000 + 7, %eax
 		start.kernel.init.loop:
 			stosl
 			addl $I486_PAGE_SIZE, %eax
-			cmpl $kernel_pgtab + I486_PAGE_SIZE, %edi
+			cmpl $i486_kernel_pgtab + I486_PAGE_SIZE, %edi
 			jl start.kernel.init.loop
 
 	/* Build kernel pool tables. */
 	start.kpool.init:
-		movl $kpool_pgtab, %edi
+		movl $i486_kpool_pgtab, %edi
 		movl $0x01000000 + 7, %eax
 		start.kpool.init.loop:
 			stosl
 			addl $I486_PAGE_SIZE, %eax
-			cmpl $kpool_pgtab + I486_PAGE_SIZE, %edi
+			cmpl $i486_kpool_pgtab + I486_PAGE_SIZE, %edi
 			jl start.kpool.init.loop
 
 	/*
@@ -94,13 +96,13 @@ start:
 	 *   - Kernel page pool at 0xc1000000
 	 */
 	start.kpgdir.init:
-		movl $kernel_pgtab + 3, idle_pgdir + I486_PTE_SIZE*0
-		movl $kernel_pgtab + 3, idle_pgdir + I486_PTE_SIZE*768
-		movl $kpool_pgtab + 3,  idle_pgdir + I486_PTE_SIZE*772
+		movl $i486_kernel_pgtab + 3, i486_root_pgdir + I486_PTE_SIZE*0
+		movl $i486_kernel_pgtab + 3, i486_root_pgdir + I486_PTE_SIZE*768
+		movl $i486_kpool_pgtab  + 3, i486_root_pgdir + I486_PTE_SIZE*772
 
 	/* Enable paging. */
 	start.paging.enable:
-		movl $idle_pgdir, %eax
+		movl $i486_root_pgdir, %eax
 		movl %eax, %cr3
 		movl %cr0, %eax
 		orl $0x80000000, %eax
@@ -121,36 +123,36 @@ start:
 		jmp start.halt
 
 /*----------------------------------------------------------------------------*
- * kernel_pgtab                                                               *
+ * i486_kernel_pgtab                                                          *
  *----------------------------------------------------------------------------*/
 
 /**
  * @brief Page table for kernel code and data.
  */
 .align I486_PAGE_SIZE
-kernel_pgtab:
+i486_kernel_pgtab:
 	.fill I486_PAGE_SIZE/I486_PTE_SIZE, I486_PTE_SIZE, 0
 
 /*----------------------------------------------------------------------------*
- * kpool_pgtab                                                                *
+ * i486_kpool_pgtab                                                           *
  *----------------------------------------------------------------------------*/
 
 /**
  * @brief Page table for kernel page pool.
  */
 .align I486_PAGE_SIZE
-kpool_pgtab:
+i486_kpool_pgtab:
 	.fill I486_PAGE_SIZE/I486_PTE_SIZE, I486_PTE_SIZE, 0
 
 /*----------------------------------------------------------------------------*
- * idle_pgdir                                                                 *
+ * i486_root_pgdir                                                            *
  *----------------------------------------------------------------------------*/
 
 /**
  * @brief Page directory of idle process.
  */
 .align I486_PAGE_SIZE
-idle_pgdir:
+i486_root_pgdir:
 	.fill I486_PAGE_SIZE/I486_PTE_SIZE, I486_PTE_SIZE, 0
 
 /*----------------------------------------------------------------------------*
