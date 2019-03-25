@@ -29,6 +29,7 @@
 #include <arch/core/i486/asm.h>
 #include <arch/core/i486/upcall.h>
 #include <arch/core/i486/types.h>
+#include <arch/core/i486/trap.h>
 
 .global i486_upcall_ret
 
@@ -60,5 +61,5 @@ i486_upcall_ret:
 	/* Call special syscall. */
 	movl $I486_NR_upcall_ret, %eax
 	movl %esp, %ebx
-	int $0x80
+	int $I486_TRAP_GATE
 
