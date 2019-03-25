@@ -59,6 +59,7 @@
 		#define CLUSTER_IS_IO      0 /**< I/O Cluster       */
 		#define CLUSTER_IS_COMPUTE 1 /**< Compute Cluster   */
 	#endif
+	#define CLUSTER_SUPPORTS_MMIO  0 /**< MMIO Support      */
 	/**@}*/
 
 /**@}*/

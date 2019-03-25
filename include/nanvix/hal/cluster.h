@@ -33,6 +33,7 @@
 	#include <nanvix/hal/cluster/_cluster.h>
 
 	#include <nanvix/hal/cluster/memory.h>
+	#include <nanvix/hal/cluster/mmio.h>
 	#include <nanvix/const.h>
 
 /*============================================================================*
