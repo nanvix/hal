@@ -41,6 +41,8 @@
 	 */
 	#define I486_TRAP_GATE 0x80
 
+#ifndef _ASM_FILE_
+
 	/**
 	 * @brief Issues a system call with no arguments.
 	 *
@@ -53,9 +55,10 @@
 		word_t ret;
 
 		__asm__ volatile (
-			"int $0x80"
+			"int %2"
 			: "=a" (ret)
-			: "a"  (syscall_nr)
+			: "a"  (syscall_nr),
+			  "N"  (I486_TRAP_GATE)
 			: "memory", "cc"
 		);
 
@@ -77,9 +80,10 @@
 		word_t ret;
 
 		__asm__ volatile (
-			"int $0x80"
+			"int %2"
 			: "=a" (ret)
 			: "a"  (syscall_nr),
+			  "N"  (I486_TRAP_GATE),
 			  "b"  (arg0)
 			: "memory", "cc"
 		);
@@ -104,9 +108,10 @@
 		word_t ret;
 
 		__asm__ volatile (
-			"int $0x80"
+			"int %2"
 			: "=a" (ret)
 			: "a"  (syscall_nr),
+			  "N"  (I486_TRAP_GATE),
 			  "b"  (arg0),
 			  "c"  (arg1)
 			: "memory", "cc"
@@ -134,9 +139,10 @@
 		word_t ret;
 
 		__asm__ volatile (
-			"int $0x80"
+			"int %2"
 			: "=a" (ret)
 			: "a"  (syscall_nr),
+			  "N"  (I486_TRAP_GATE),
 			  "b"  (arg0),
 			  "c"  (arg1),
 			  "d"  (arg2)
@@ -167,9 +173,10 @@
 		word_t ret;
 
 		__asm__ volatile (
-			"int $0x80"
+			"int %2"
 			: "=a" (ret)
 			: "a"  (syscall_nr),
+			  "N"  (I486_TRAP_GATE),
 			  "b"  (arg0),
 			  "c"  (arg1),
 			  "d"  (arg2),
@@ -203,9 +210,10 @@
 		word_t ret;
 
 		__asm__ volatile (
-			"int $0x80"
+			"int %2"
 			: "=a" (ret)
 			: "a"  (syscall_nr),
+			  "N"  (I486_TRAP_GATE),
 			  "b"  (arg0),
 			  "c"  (arg1),
 			  "d"  (arg2),
@@ -221,6 +229,8 @@
 	 * @brief System Call Hook
 	 */
 	EXTERN void i486_syscall(void);
+
+#endif /* _ASM_FILE */
 
 /**@*/
 
@@ -243,6 +253,8 @@
 	#define __syscall4_fn /**< i486_syscall4() */
 	#define __syscall5_fn /**< i486_syscall5() */
 	/**@}*/
+
+#ifndef _ASM_FILE_
 
 	/**
 	 * @see i486_syscall_0()
@@ -348,6 +360,8 @@
 			)
 		);
 	}
+
+#endif /* _ASM_FILE_ */
 
 /**@endcond*/
 
