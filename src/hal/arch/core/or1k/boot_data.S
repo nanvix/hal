@@ -92,7 +92,7 @@ itlb_table:
  */
 .align OR1K_PAGE_SIZE
 core.kstack:
-	.fill (OR1K_PAGE_SIZE/OR1K_PTE_SIZE)*OR1K_NUM_CORES, OR1K_PTE_SIZE, 0
+	.fill (OR1K_PAGE_SIZE/OR1K_PTE_SIZE)*OR1K_SMP_NUM_CORES, OR1K_PTE_SIZE, 0
 
 /*----------------------------------------------------------------------------*
  * ompic_pgtab                                                                *
