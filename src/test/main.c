@@ -58,6 +58,7 @@ PUBLIC void kmain(int argc, const char *argv[])
 	test_exception();
 	test_clock();
 	test_tlb();
+	test_mmu();
 	test_core();
 	test_trap();
 	test_upcall();

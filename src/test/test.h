@@ -74,4 +74,9 @@
 	 */
 	EXTERN void test_tlb(void);
 
+	/**
+	 * @brief Test driver for MMU Interface
+	 */
+	EXTERN void test_mmu(void);
+
 #endif /* _HAL_TEST_H_ */
