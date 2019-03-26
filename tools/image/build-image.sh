@@ -59,6 +59,10 @@ case "$TARGET" in
 		source "tools/image/arch/qemu-openrisc.sh"
 		BIN="$BIN-or1k"
 		;;
+	"qemu-riscv32")
+		source "tools/image/arch/qemu-riscv32.sh"
+		BIN="$BIN-riscv32"
+		;;
 	*)
         echo "error: unsupported target"
 		exit 1

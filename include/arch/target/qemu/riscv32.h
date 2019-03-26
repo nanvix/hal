@@ -22,45 +22,44 @@
  * SOFTWARE.
  */
 
-#ifndef _NANVIX_HAL_CLUSTER_CLUSTER_H_
-#define _NANVIX_HAL_CLUSTER_CLUSTER_H_
+#ifndef TARGET_QEMU_RISCV32_H_
+#define TARGET_QEMU_RISCV32_H_
 
-	/**
-	 * @defgroup clusters Clusters
-	 */
-
-	#if (defined(__k1bdp__) || defined(__k1bio__))
-
-		#undef  __NEED_CLUSTER_K1B
-		#define __NEED_CLUSTER_K1B
-		#include <arch/cluster/k1b.h>
-
-	#elif (defined(__x86_smp__))
-
-		#undef  __NEED_CLUSTER_I486
-		#define __NEED_CLUSTER_I486
-		#include <arch/cluster/i486.h>
-
-	#elif (defined(__or1k_smp__))
-
-		#undef  __NEED_CLUSTER_OR1K
-		#define __NEED_CLUSTER_OR1K
-		#include <arch/cluster/or1k.h>
-
-	#elif (defined(__riscv32_smp__))
-
-		#undef  __NEED_CLUSTER_RISCV32_SMP
-		#define __NEED_CLUSTER_RISCV32_SMP
-		#include <arch/cluster/riscv32-smp.h>
-
-	#else
-
-		#error "unkonwn cluster"
-
+	#ifndef __NEED_TARGET_QEMU_RISCV32
+		#error "bad target configuration?"
 	#endif
 
-	#undef  __NEED_HAL_CORE
-	#define __NEED_HAL_CORE
-	#include <nanvix/hal/core.h>
+	/* Target Interface Implementation */
+	#include <arch/target/qemu/riscv32/_riscv32.h>
 
-#endif /* _NANVIX_HAL_CLUSTER_CLUSTER_H_ */
+/**
+ * @defgroup target-qemu-riscv32 QEMU RISC-V 32-bit
+ * @ingroup targets
+ *
+ * @brief QEMU RISC-V 32-bit
+ */
+/**@{*/
+
+	#include <arch/target/qemu/riscv32/stdout.h>
+
+/**@}*/
+
+/*============================================================================*
+ * Exported Interface                                                         *
+ *============================================================================*/
+
+/**
+ * @cond qemu_riscv32
+ */
+
+	/**
+	 * @name Provided Features
+	 */
+	/**@{*/
+	#define TARGET_HAS_STDOUT 1 /**< Standard Output feature */
+	#define TARGET_HAS_SYNC   0 /**< Synchronization feature */
+	/**@}*/
+
+/**@endcond*/
+
+#endif /* TARGET_QEMU_RISCV32_H_ */

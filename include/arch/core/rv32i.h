@@ -22,45 +22,34 @@
  * SOFTWARE.
  */
 
-#ifndef _NANVIX_HAL_CLUSTER_CLUSTER_H_
-#define _NANVIX_HAL_CLUSTER_CLUSTER_H_
+#ifndef ARCH_CORE_RV32I_H_
+#define ARCH_CORE_RV32I_H_
 
 	/**
-	 * @defgroup clusters Clusters
+	 * @addtogroup rv32i-core RV32I Core
+	 * @ingroup cores
 	 */
 
-	#if (defined(__k1bdp__) || defined(__k1bio__))
-
-		#undef  __NEED_CLUSTER_K1B
-		#define __NEED_CLUSTER_K1B
-		#include <arch/cluster/k1b.h>
-
-	#elif (defined(__x86_smp__))
-
-		#undef  __NEED_CLUSTER_I486
-		#define __NEED_CLUSTER_I486
-		#include <arch/cluster/i486.h>
-
-	#elif (defined(__or1k_smp__))
-
-		#undef  __NEED_CLUSTER_OR1K
-		#define __NEED_CLUSTER_OR1K
-		#include <arch/cluster/or1k.h>
-
-	#elif (defined(__riscv32_smp__))
-
-		#undef  __NEED_CLUSTER_RISCV32_SMP
-		#define __NEED_CLUSTER_RISCV32_SMP
-		#include <arch/cluster/riscv32-smp.h>
-
-	#else
-
-		#error "unkonwn cluster"
-
+	#ifndef __NEED_CORE_RV32I
+		#error "rv32i core not required"
 	#endif
 
-	#undef  __NEED_HAL_CORE
-	#define __NEED_HAL_CORE
-	#include <nanvix/hal/core.h>
+	#include <arch/core/rv32i/cache.h>
+	#include <arch/core/rv32i/core.h>
+	#include <arch/core/rv32i/spinlock.h>
 
-#endif /* _NANVIX_HAL_CLUSTER_CLUSTER_H_ */
+	#define __NEED_CORE_TYPES
+	#define __NEED_MEMORY_TYPES
+	#include <arch/core/rv32i/types.h>
+
+/**
+ * @cond rv32i
+ */
+
+	/* Feature Declaration */
+	#define CORE_SUPPORTS_PMIO 0
+
+/**@}*/
+
+#endif /* ARCH_CORE_RV32I_H_ */
+

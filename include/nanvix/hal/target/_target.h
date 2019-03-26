@@ -53,6 +53,12 @@
 		#define __NEED_TARGET_QEMU_OR1K_PC
 		#include <arch/target/qemu/or1k-pc.h>
 
+	#elif (defined(__qemu_riscv32__))
+
+		#undef  __NEED_TARGET_QEMU_RISCV32
+		#define __NEED_TARGET_QEMU_RISCV32
+		#include <arch/target/qemu/riscv32.h>
+
 	#else
 
 		#error "unknown target"

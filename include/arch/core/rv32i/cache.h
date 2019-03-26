@@ -22,45 +22,55 @@
  * SOFTWARE.
  */
 
-#ifndef _NANVIX_HAL_CLUSTER_CLUSTER_H_
-#define _NANVIX_HAL_CLUSTER_CLUSTER_H_
+#ifndef ARCH_CORE_RV32I_CACHE_H_
+#define ARCH_CORE_RV32I_CACHE_H_
+
+/**
+ * @addtogroup rv32i-core-cache Cache
+ * @ingroup rv32i-core
+ *
+ * @brief Memory Cache
+ */
+/**@{*/
 
 	/**
-	 * @defgroup clusters Clusters
+	 * @brief Cache line size (in bytes).
+	 *
+	 * @TODO Check this.
 	 */
+	#define RV32I_CACHE_LINE_SIZE 64
 
-	#if (defined(__k1bdp__) || defined(__k1bio__))
+/**@}*/
 
-		#undef  __NEED_CLUSTER_K1B
-		#define __NEED_CLUSTER_K1B
-		#include <arch/cluster/k1b.h>
+/*============================================================================*
+ * Exported Interface                                                         *
+ *============================================================================*/
 
-	#elif (defined(__x86_smp__))
+/**
+ * @cond rv32i
+ */
 
-		#undef  __NEED_CLUSTER_I486
-		#define __NEED_CLUSTER_I486
-		#include <arch/cluster/i486.h>
+	/**
+	 * @name Provided Interface
+	 */
+	/**@{*/
+	#define __dcache_invalidate_fn /**< dcache_invalidate() */
+	/**@}*/
 
-	#elif (defined(__or1k_smp__))
+	/**
+	 * @see RV32I_CACHE_LINE_SIZE.
+	 */
+	#define CACHE_LINE_SIZE RV32I_CACHE_LINE_SIZE
 
-		#undef  __NEED_CLUSTER_OR1K
-		#define __NEED_CLUSTER_OR1K
-		#include <arch/cluster/or1k.h>
+	/**
+	 * @see rv32i_dcache_inval().
+	 *
+	 * @todo Implement this.
+	 */
+	static inline void dcache_invalidate(void)
+	{
+	}
 
-	#elif (defined(__riscv32_smp__))
+/**@endcond*/
 
-		#undef  __NEED_CLUSTER_RISCV32_SMP
-		#define __NEED_CLUSTER_RISCV32_SMP
-		#include <arch/cluster/riscv32-smp.h>
-
-	#else
-
-		#error "unkonwn cluster"
-
-	#endif
-
-	#undef  __NEED_HAL_CORE
-	#define __NEED_HAL_CORE
-	#include <nanvix/hal/core.h>
-
-#endif /* _NANVIX_HAL_CLUSTER_CLUSTER_H_ */
+#endif /* ARCH_CORE_RV32I_CACHE_H_ */
