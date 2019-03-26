@@ -22,45 +22,64 @@
  * SOFTWARE.
  */
 
-#ifndef _NANVIX_HAL_CLUSTER_CLUSTER_H_
-#define _NANVIX_HAL_CLUSTER_CLUSTER_H_
+OUTPUT_FORMAT("elf32-littleriscv")
+OUTPUT_ARCH("riscv")
 
-	/**
-	 * @defgroup clusters Clusters
-	 */
+ENTRY(_do_start)
 
-	#if (defined(__k1bdp__) || defined(__k1bio__))
 
-		#undef  __NEED_CLUSTER_K1B
-		#define __NEED_CLUSTER_K1B
-		#include <arch/cluster/k1b.h>
+BOOT_ADDR = 0x80000000;
 
-	#elif (defined(__x86_smp__))
+MEMORY
+{
+	ram(wxa!ri) : ORIGIN = BOOT_ADDR, LENGTH = 128M
+}
 
-		#undef  __NEED_CLUSTER_I486
-		#define __NEED_CLUSTER_I486
-		#include <arch/cluster/i486.h>
+SECTIONS
+{
+	. = BOOT_ADDR;
 
-	#elif (defined(__or1k_smp__))
+	KSTART_CODE = .;
 
-		#undef  __NEED_CLUSTER_OR1K
-		#define __NEED_CLUSTER_OR1K
-		#include <arch/cluster/or1k.h>
+	/* Bootstrap section. */
+	.bootstrap :
+	{
+		*boot.o
+	} > ram
 
-	#elif (defined(__riscv32_smp__))
+	. = ALIGN(4096);
 
-		#undef  __NEED_CLUSTER_RISCV32_SMP
-		#define __NEED_CLUSTER_RISCV32_SMP
-		#include <arch/cluster/riscv32-smp.h>
+	/* Kernel code section. */
+	.text : AT(ADDR(.text))
+	{
+		*(.text)
+	} > ram
 
-	#else
+	KSTART_DATA = ALIGN(4096);
 
-		#error "unkonwn cluster"
+	/* Initialized kernel data section. */
+	.data ALIGN(4096) : AT(ADDR(.data))
+	{
+		*(.rodata)
+		*(.data)
+	} > ram
 
-	#endif
+	/* Uninitialized kernel data section. */
+	.bss : AT(ADDR(.bss))
+	{
+		__BSS_START = .;
+		*(.bss)
+		__BSS_END = .;
+	} > ram
 
-	#undef  __NEED_HAL_CORE
-	#define __NEED_HAL_CORE
-	#include <nanvix/hal/core.h>
+	. =ALIGN(4096);
 
-#endif /* _NANVIX_HAL_CLUSTER_CLUSTER_H_ */
+	KDATA_END = .;
+
+	/* Discarded. */
+	/DISCARD/ :
+	{
+		*(.comment)
+		*(.note)
+	}
+}

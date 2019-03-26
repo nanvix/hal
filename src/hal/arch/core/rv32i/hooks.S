@@ -22,45 +22,17 @@
  * SOFTWARE.
  */
 
-#ifndef _NANVIX_HAL_CLUSTER_CLUSTER_H_
-#define _NANVIX_HAL_CLUSTER_CLUSTER_H_
+/* Must come first. */
+#define _ASM_FILE_
 
-	/**
-	 * @defgroup clusters Clusters
-	 */
+.global _do_syscall
 
-	#if (defined(__k1bdp__) || defined(__k1bio__))
+.section .text,"ax",@progbits
 
-		#undef  __NEED_CLUSTER_K1B
-		#define __NEED_CLUSTER_K1B
-		#include <arch/cluster/k1b.h>
+/*----------------------------------------------------------------------------*
+ * _do_syscall()                                                              *
+ *----------------------------------------------------------------------------*/
 
-	#elif (defined(__x86_smp__))
-
-		#undef  __NEED_CLUSTER_I486
-		#define __NEED_CLUSTER_I486
-		#include <arch/cluster/i486.h>
-
-	#elif (defined(__or1k_smp__))
-
-		#undef  __NEED_CLUSTER_OR1K
-		#define __NEED_CLUSTER_OR1K
-		#include <arch/cluster/or1k.h>
-
-	#elif (defined(__riscv32_smp__))
-
-		#undef  __NEED_CLUSTER_RISCV32_SMP
-		#define __NEED_CLUSTER_RISCV32_SMP
-		#include <arch/cluster/riscv32-smp.h>
-
-	#else
-
-		#error "unkonwn cluster"
-
-	#endif
-
-	#undef  __NEED_HAL_CORE
-	#define __NEED_HAL_CORE
-	#include <nanvix/hal/core.h>
-
-#endif /* _NANVIX_HAL_CLUSTER_CLUSTER_H_ */
+.align 4
+_do_syscall:
+	j _do_syscall

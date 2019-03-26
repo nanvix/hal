@@ -22,14 +22,14 @@
  * SOFTWARE.
  */
 
-#ifndef ARCH_CORE_I486_SPINLOCK_H_
-#define ARCH_CORE_I486_SPINLOCK_H_
+#ifndef ARCH_CORE_RV32I_SPINLOCK_H_
+#define ARCH_CORE_RV32I_SPINLOCK_H_
 
 /**
- * @addtogroup i486-core-spinlock Spinlock
- * @ingroup i486-core
+ * @addtogroup rv32i-core-spinlock Spinlock
+ * @ingroup rv32i-core
  *
- * @brief i486 Spinlocks
+ * @brief rv32i Spinlocks
  */
 /**@{*/
 
@@ -44,75 +44,75 @@
 	 * @name Spinlock State
 	 */
 	/**@{*/
-	#define I486_SPINLOCK_UNLOCKED 0x0 /**< Unlocked */
-	#define I486_SPINLOCK_LOCKED   0x1 /**< Locked   */
+	#define RV32I_SPINLOCK_UNLOCKED 0x0 /**< Unlocked */
+	#define RV32I_SPINLOCK_LOCKED   0x1 /**< Locked   */
 	/**@}*/
 
 	/**
 	 * @brief Spinlock.
 	 */
-	typedef uint32_t i486_spinlock_t;
+	typedef uint32_t rv32i_spinlock_t;
 
 	/**
-	 * @brief Initializes a i486_spinlock_t.
+	 * @brief Initializes a rv32i_spinlock_t.
 	 *
-	 * @param lock Target i486_spinlock_t.
+	 * @param lock Target rv32i_spinlock_t.
 	 *
 	 * @todo Implement this function.
 	 */
-	static inline void i486_spinlock_init(i486_spinlock_t *lock)
+	static inline void rv32i_spinlock_init(rv32i_spinlock_t *lock)
 	{
-		*lock = I486_SPINLOCK_UNLOCKED;
+		*lock = RV32I_SPINLOCK_UNLOCKED;
 	}
 
 	/**
-	 * @brief Attempts to lock a i486_spinlock_t.
+	 * @brief Attempts to lock a rv32i_spinlock_t.
 	 *
-	 * @param lock Target i486_spinlock_t.
+	 * @param lock Target rv32i_spinlock_t.
 	 *
-	 * @returns Upon successful completion, the i486_spinlock_t pointed to by
+	 * @returns Upon successful completion, the rv32i_spinlock_t pointed to by
 	 * @p lock is locked and zero is returned. Upon failure, non-zero
 	 * is returned instead, and the lock is not acquired by the
 	 * caller.
 	 *
 	 * @todo Implement this function.
 	 */
-	static inline int i486_spinlock_trylock(i486_spinlock_t *lock)
+	static inline int rv32i_spinlock_trylock(rv32i_spinlock_t *lock)
 	{
 		return (
 			!__sync_bool_compare_and_swap(
 				lock,
-				I486_SPINLOCK_UNLOCKED,
-				I486_SPINLOCK_LOCKED
+				RV32I_SPINLOCK_UNLOCKED,
+				RV32I_SPINLOCK_LOCKED
 			)
 		);
 	}
 
 	/**
-	 * @brief Locks a i486_spinlock_t.
+	 * @brief Locks a rv32i_spinlock_t.
 	 *
-	 * @param lock Target i486_spinlock_t.
+	 * @param lock Target rv32i_spinlock_t.
 	 *
 	 * @todo Implement this function.
 	 */
-	static inline void i486_spinlock_lock(i486_spinlock_t *lock)
+	static inline void rv32i_spinlock_lock(rv32i_spinlock_t *lock)
 	{
-		while (i486_spinlock_trylock(lock))
+		while (rv32i_spinlock_trylock(lock))
 			/* noop */;
 		__sync_synchronize();
 	}
 
 	/**
-	 * @brief Unlocks a i486_spinlock_t.
+	 * @brief Unlocks a rv32i_spinlock_t.
 	 *
-	 * @param lock Target i486_spinlock_t.
+	 * @param lock Target rv32i_spinlock_t.
 	 *
 	 * @todo Implement this function.
 	 */
-	static inline void i486_spinlock_unlock(i486_spinlock_t *lock)
+	static inline void rv32i_spinlock_unlock(rv32i_spinlock_t *lock)
 	{
 		__sync_synchronize();
-		*lock = I486_SPINLOCK_UNLOCKED;
+		*lock = RV32I_SPINLOCK_UNLOCKED;
 	}
 
 /**@}*/
@@ -122,7 +122,7 @@
  *============================================================================*/
 
 /**
- * @cond i486
+ * @cond rv32i
  */
 
 	/**
@@ -140,51 +140,51 @@
 	 * @name Spinlock State
 	 */
 	/**@{*/
-	#define SPINLOCK_UNLOCKED I486_SPINLOCK_UNLOCKED /**< @see I486_SPINLOCK_UNLOCKED */
-	#define SPINLOCK_LOCKED   I486_SPINLOCK_LOCKED   /**< @see I486_SPINLOCK_LOCKED   */
+	#define SPINLOCK_UNLOCKED RV32I_SPINLOCK_UNLOCKED /**< @see RV32I_SPINLOCK_UNLOCKED */
+	#define SPINLOCK_LOCKED   RV32I_SPINLOCK_LOCKED   /**< @see RV32I_SPINLOCK_LOCKED   */
 	/**@}*/
 
 #ifndef _ASM_FILE_
 
 	/**
-	 * @see i486_spinlock_t
+	 * @see rv32i_spinlock_t
 	 */
-	typedef i486_spinlock_t spinlock_t;
+	typedef rv32i_spinlock_t spinlock_t;
 
 	/**
-	 * @see i486_spinlock_init().
+	 * @see rv32i_spinlock_init().
 	 */
 	static inline void spinlock_init(spinlock_t *lock)
 	{
-		i486_spinlock_init(lock);
+		rv32i_spinlock_init(lock);
 	}
 
 	/**
-	 * @see i486_spinlock_trylock().
+	 * @see rv32i_spinlock_trylock().
 	 */
 	static inline int spinlock_trylock(spinlock_t *lock)
 	{
-		return (i486_spinlock_trylock(lock));
+		return (rv32i_spinlock_trylock(lock));
 	}
 
 	/**
-	 * @see i486_spinlock_lock().
+	 * @see rv32i_spinlock_lock().
 	 */
 	static inline void spinlock_lock(spinlock_t *lock)
 	{
-		i486_spinlock_lock(lock);
+		rv32i_spinlock_lock(lock);
 	}
 
 	/**
-	 * @see i486_spinlock_unlock().
+	 * @see rv32i_spinlock_unlock().
 	 */
 	static inline void spinlock_unlock(spinlock_t *lock)
 	{
-		i486_spinlock_unlock(lock);
+		rv32i_spinlock_unlock(lock);
 	}
 
 #endif /* _ASM_FILE_ */
 
 /**@endcond*/
 
-#endif /* ARCH_CORE_I486_SPINLOCK_H_ */
+#endif /* ARCH_CORE_RV32I_SPINLOCK_H_ */

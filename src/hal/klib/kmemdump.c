@@ -36,7 +36,7 @@
 PUBLIC void kmemdump(const void *s, size_t n)
 {
 	const unsigned *p  = s;
-	
+
 	/* Dump memory area in chunks. */
 	for (size_t i = 0; i < n; i += 16, p += 4)
 	{

@@ -22,7 +22,8 @@
  * SOFTWARE.
  */
 
-#include <nanvix/hal/hal.h>
+#include <nanvix/hal/target/stdout.h>
+#include <nanvix/hal/log.h>
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
 

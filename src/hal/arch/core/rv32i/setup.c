@@ -22,45 +22,49 @@
  * SOFTWARE.
  */
 
-#ifndef _NANVIX_HAL_CLUSTER_CLUSTER_H_
-#define _NANVIX_HAL_CLUSTER_CLUSTER_H_
+#include <nanvix/hal/log.h>
+#include <nanvix/const.h>
+#include <nanvix/klib.h>
 
-	/**
-	 * @defgroup clusters Clusters
-	 */
+/* Import definitions. */
+EXTERN NORETURN void kmain(int, const char *[]);
+EXTERN unsigned char __BSS_START;
+EXTERN unsigned char __BSS_END;
 
-	#if (defined(__k1bdp__) || defined(__k1bio__))
+/**
+ * Initializes the core components for riscv.
+ *
+ * @author Pedro Henrique Penna
+ */
+PUBLIC void riscv_core_setup(void)
+{
+	/* TODO */
+}
 
-		#undef  __NEED_CLUSTER_K1B
-		#define __NEED_CLUSTER_K1B
-		#include <arch/cluster/k1b.h>
+/**
+ * @brief Initializes the master core.
+ *
+ * The rv32i_master_setup() function initializes the underlying
+ * master core. It setups the stack and then call the kernel
+ * main function.
+ *
+ * @note This function does not return.
+ *
+ * @author Pedro Henrique Penna
+ */
+PUBLIC NORETURN void rv32i_master_setup(void)
+{
+	kmemset(&__BSS_START, 0, &__BSS_END - &__BSS_START);
 
-	#elif (defined(__x86_smp__))
+	/* Core setup. */
+	riscv_core_setup();
 
-		#undef  __NEED_CLUSTER_I486
-		#define __NEED_CLUSTER_I486
-		#include <arch/cluster/i486.h>
+	hal_log_setup();
 
-	#elif (defined(__or1k_smp__))
+	/* Say hello. */
+	kprintf("[hal] Hello Word!");
+	kprintf("[hal] Nanvix for RISC-V is comming soon!");
+	kprintf("[hal] halting...");
 
-		#undef  __NEED_CLUSTER_OR1K
-		#define __NEED_CLUSTER_OR1K
-		#include <arch/cluster/or1k.h>
-
-	#elif (defined(__riscv32_smp__))
-
-		#undef  __NEED_CLUSTER_RISCV32_SMP
-		#define __NEED_CLUSTER_RISCV32_SMP
-		#include <arch/cluster/riscv32-smp.h>
-
-	#else
-
-		#error "unkonwn cluster"
-
-	#endif
-
-	#undef  __NEED_HAL_CORE
-	#define __NEED_HAL_CORE
-	#include <nanvix/hal/core.h>
-
-#endif /* _NANVIX_HAL_CLUSTER_CLUSTER_H_ */
+	while(1);
+}

@@ -20,41 +20,20 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# NOTES:
-#   - This script should work in any Linux distribution.
-#   - You should run this script with superuser privileges.
-#
+#===============================================================================
+# Target Configuration
+#===============================================================================
 
-export CURDIR=`pwd`
+export CLUSTER = riscv32-smp
+export CORE = rv32i
 
-case "$TARGET" in
-	"qemu-x86")
-		qemu-system-i386 -s -S      \
-			--display curses        \
-			-kernel bin/test-driver \
-			-m 256M                 \
-			-mem-prealloc
-		;;
-	"qemu-openrisc")
-		qemu-system-or1k -s -S      \
-			-kernel bin/test-driver \
-			-serial stdio           \
-			-display none           \
-			-m 256M                 \
-			-mem-prealloc           \
-			-smp 2
-		;;
-	"qemu-riscv32")
-		qemu-system-riscv32 -s -S   \
-			-machine virt           \
-			-serial stdio           \
-			-display none           \
-			-kernel bin/test-driver \
-			-m 128M                 \
-			-mem-prealloc           \
-			-smp 1
-		;;
-	*)
-        echo "error: unsupported target"
-		;;
-esac
+#===============================================================================
+# Toolchain Configuration
+#===============================================================================
+
+# Compiler Options
+export CFLAGS += -D __riscv32_smp__ -D__rv32i__
+
+#===============================================================================
+
+include $(SRCDIR)/build/makefile.nanvix

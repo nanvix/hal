@@ -20,41 +20,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# NOTES:
-#   - This script should work in any Linux distribution.
-#   - You should run this script with superuser privileges.
-#
+# Builds object files.
+all:
+	# Do nothing	
 
-export CURDIR=`pwd`
-
-case "$TARGET" in
-	"qemu-x86")
-		qemu-system-i386 -s -S      \
-			--display curses        \
-			-kernel bin/test-driver \
-			-m 256M                 \
-			-mem-prealloc
-		;;
-	"qemu-openrisc")
-		qemu-system-or1k -s -S      \
-			-kernel bin/test-driver \
-			-serial stdio           \
-			-display none           \
-			-m 256M                 \
-			-mem-prealloc           \
-			-smp 2
-		;;
-	"qemu-riscv32")
-		qemu-system-riscv32 -s -S   \
-			-machine virt           \
-			-serial stdio           \
-			-display none           \
-			-kernel bin/test-driver \
-			-m 128M                 \
-			-mem-prealloc           \
-			-smp 1
-		;;
-	*)
-        echo "error: unsupported target"
-		;;
-esac
+# Cleans all object files.
+clean:
+	# Do nothing	

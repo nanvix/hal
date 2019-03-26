@@ -22,45 +22,36 @@
  * SOFTWARE.
  */
 
-#ifndef _NANVIX_HAL_CLUSTER_CLUSTER_H_
-#define _NANVIX_HAL_CLUSTER_CLUSTER_H_
+#ifndef CLUSTER_RISCV32_SMP_H_
+#define CLUSTER_RISCV32_SMP_H_
 
-	/**
-	 * @defgroup clusters Clusters
-	 */
-
-	#if (defined(__k1bdp__) || defined(__k1bio__))
-
-		#undef  __NEED_CLUSTER_K1B
-		#define __NEED_CLUSTER_K1B
-		#include <arch/cluster/k1b.h>
-
-	#elif (defined(__x86_smp__))
-
-		#undef  __NEED_CLUSTER_I486
-		#define __NEED_CLUSTER_I486
-		#include <arch/cluster/i486.h>
-
-	#elif (defined(__or1k_smp__))
-
-		#undef  __NEED_CLUSTER_OR1K
-		#define __NEED_CLUSTER_OR1K
-		#include <arch/cluster/or1k.h>
-
-	#elif (defined(__riscv32_smp__))
-
-		#undef  __NEED_CLUSTER_RISCV32_SMP
-		#define __NEED_CLUSTER_RISCV32_SMP
-		#include <arch/cluster/riscv32-smp.h>
-
-	#else
-
-		#error "unkonwn cluster"
-
+	#ifndef __NEED_CLUSTER_RISCV32_SMP
+		#error "bad cluster configuration?"
 	#endif
 
-	#undef  __NEED_HAL_CORE
-	#define __NEED_HAL_CORE
-	#include <nanvix/hal/core.h>
+	/* Cluster Interface Implementation */
+	#include <arch/cluster/riscv32-smp/_riscv32-smp.h>
 
-#endif /* _NANVIX_HAL_CLUSTER_CLUSTER_H_ */
+/**
+ * @addtogroup riscv-cluster RISC-V 32-Bit Cluster
+ * @ingroup clusters
+ *
+ * @brief RISC-V 32-Bit Cluster
+ */
+/**@{*/
+
+	#include <arch/cluster/riscv32-smp/cores.h>
+
+	/**
+	 * @name Provided Features
+	 */
+	/**@{*/
+	#define CLUSTER_IS_MULTICORE  1 /**< Multicore Cluster */
+	#define CLUSTER_IS_IO         1 /**< I/O Cluster       */
+	#define CLUSTER_IS_COMPUTE    0 /**< Compute Cluster   */
+	#define CLUSTER_SUPPORTS_MMIO 0 /**< MMIO Support      */
+	/**@}*/
+
+/**@}*/
+
+#endif /* CLUSTER_RISCV32_SMP_H_ */

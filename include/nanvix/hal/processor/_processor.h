@@ -53,6 +53,12 @@
 		#define __NEED_PROCESSOR_OR1K_QEMU
 		#include <arch/processor/or1k-qemu.h>
 
+	#elif (defined(__riscv32__))
+
+		#undef  __NEED_PROCESSOR_RISCV32
+		#define __NEED_PROCESSOR_RISCV32
+		#include <arch/processor/riscv32.h>
+
 	#else
 
 		#error "unkonwn processor"
