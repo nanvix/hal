@@ -32,6 +32,8 @@
  * Interface Implementation Checking                                          *
  *============================================================================*/
 
+#ifdef __INTERFACE_CHECK
+
 	/* Constants */
 	#ifndef CONTEXT_SIZE
 	#error "CONTEXT_SIZE not defined"
@@ -55,6 +57,8 @@
 	#ifndef __context_set_pc_fn
 	#error "context_set_pc() not defined?"
 	#endif
+
+#endif
 
 /*============================================================================*
  * Execution Context Interface                                                *

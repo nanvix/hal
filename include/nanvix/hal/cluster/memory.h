@@ -32,6 +32,8 @@
  * Interface Implementation Checking                                          *
  *============================================================================*/
 
+#ifdef __INTERFACE_CHECK
+
 	/* Constants */
 	#ifndef _UBASE_VIRT
 	#error "_UBASE_VIRT not defined"
@@ -66,6 +68,8 @@
 	#ifndef _UMEM_SIZE
 	#error "_UMEM_SIZE not defined"
 	#endif
+
+#endif
 
 /*============================================================================*
  * Memory Interface                                                           *

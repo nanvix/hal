@@ -32,6 +32,8 @@
  * Interface Implementation Checking                                          *
  *============================================================================*/
 
+#ifdef __INTERFACE_CHECK
+
 	/* Constants */
 	#ifndef PAGE_SHIFT
 	#error "PAGE_SHIFT not defined"
@@ -147,6 +149,8 @@
 	#ifndef __pte_write_set_fn
 	#error "pte_write_set() not defined?"
 	#endif
+
+#endif
 
 /*============================================================================*
  * Memory Management Unit Interface                                           *

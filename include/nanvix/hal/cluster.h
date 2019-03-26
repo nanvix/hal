@@ -40,6 +40,8 @@
  * Interface Implementation Checking                                          *
  *============================================================================*/
 
+#ifdef __INTERFACE_CHECK
+
 	/* Feature Checking */
 	#ifndef CLUSTER_IS_MULTICORE
 	#error "is this a multicore cluster?"
@@ -66,6 +68,8 @@
 	#ifndef __cluster_get_num_cores
 	#error "cluster_get_num_cores() not defined?"
 	#endif
+
+#endif
 
 /*============================================================================*
  * Cluster Interface                                                          *

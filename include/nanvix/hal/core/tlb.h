@@ -32,6 +32,8 @@
  * Interface Implementation Checking                                          *
  *============================================================================*/
 
+#ifdef __INTERFACE_CHECK
+
 	#if (!defined(TLB_SOFTWARE) && !defined (TLB_HARDWARE))
 		#error "who manages the TLB?"
 	#endif
@@ -82,6 +84,8 @@
 		#endif
 
 	#endif
+
+#endif
 
 /*============================================================================*
  * TLB Interface                                                              *

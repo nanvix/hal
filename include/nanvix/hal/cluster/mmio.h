@@ -34,6 +34,8 @@
  * Interface Implementation Checking                                          *
  *============================================================================*/
 
+#ifdef __INTERFACE_CHECK
+
 	/* Constants */
 	#ifndef CLUSTER_SUPPORTS_MMIO
 	#error "does this cluster supports memory-mapped i/o devices?"
@@ -56,6 +58,8 @@
 		#endif
 
 	#endif
+
+#endif
 
 /*============================================================================*
  * MMIO Interface                                                             *

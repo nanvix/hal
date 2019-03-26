@@ -32,6 +32,8 @@
  * Interface Implementation Checking                                          *
  *============================================================================*/
 
+#ifdef __INTERFACE_CHECK
+
 	/* Constants */
 	#ifndef SPINLOCK_LOCKED
 	#error "SPINLOCK_LOCKED not defined"
@@ -58,6 +60,8 @@
 	#ifndef __spinlock_unlock_fn
 	#error "spinlock_unlock() not defined?"
 	#endif
+
+#endif
 
 /*============================================================================*
  * Spinlocks Interface                                                        *

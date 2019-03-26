@@ -32,6 +32,8 @@
  * Interface Implementation Checking                                          *
  *============================================================================*/
 
+#ifdef __INTERFACE_CHECK
+
 	/* Feature Checking */
 	#ifndef CORE_SUPPORTS_PMIO
 	#error "does this core support port-mapped i/o devices?"
@@ -51,6 +53,8 @@
 		#endif
 
 	#endif
+
+#endif
 
 /*============================================================================*
  * Input/Output Interface                                                     *
