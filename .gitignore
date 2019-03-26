@@ -7,6 +7,7 @@
 tools/dev/toolchain/or1k/
 tools/dev/toolchain/i486/
 tools/dev/toolchain/riscv32/
+tools/dev/toolchain/riscv64/
 
 doc/html
 bin/

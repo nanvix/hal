@@ -41,6 +41,10 @@ case "$TARGET" in
 	"riscv32")
 		bash "tools/dev/arch/riscv32.sh"
 		;;
+	# RISC-V 64-bit
+	"riscv64")
+		bash "tools/dev/arch/riscv64.sh"
+		;;
 	# Unknown
 	*)
 		echo "$0: unknown target platform"
