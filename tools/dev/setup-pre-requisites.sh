@@ -32,13 +32,9 @@ DISTRO=`cat /etc/os-release | grep "^ID="`
 case "$DISTRO" in
     *"ubuntu"*|*"debian"*)
         apt-get install -y  \
+			build-essential \
 			bison           \
-			ddd             \
-			dh-autoreconf   \
 			flex            \
-			g++             \
-			genisoimage     \
-			libglib2.0-dev  \
 			libncurses5-dev \
 			libpixman-1-dev \
 			libsdl2-dev     \
