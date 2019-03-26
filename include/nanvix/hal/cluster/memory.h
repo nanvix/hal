@@ -77,6 +77,7 @@
  *
  * @brief Memory HAL Interface
  */
+/**@{*/
 
 	#include <nanvix/const.h>
 
