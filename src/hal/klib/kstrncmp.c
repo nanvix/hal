@@ -41,14 +41,14 @@ PUBLIC int kstrncmp(const char *str1, const char *str2, size_t n)
 		/* Strings differ. */
 		if (*str1 != *str2)
 			break;
-			
+
 		/* End of string. */
 		if (*str1 == '\0')
 			return (0);
-		
+
 		str1++;
 		str2++;
 	}
-	
+
 	return (*str1 - *str2);
 }

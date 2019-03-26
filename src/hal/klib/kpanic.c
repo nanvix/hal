@@ -38,9 +38,9 @@ PUBLIC void kpanic(const char *fmt, ...)
 	size_t len;                    /* String length.           */
 	va_list args;                  /* Variable arguments list. */
 	char buffer[KBUFFER_SIZE + 1]; /* Temporary buffer.        */
-	
+
 	kstrncpy(buffer, "PANIC: ", 7);
-	
+
 	/* Convert to raw string. */
 	va_start(args, fmt);
 	len = kvsprintf(buffer + 7, fmt, args) + 7;

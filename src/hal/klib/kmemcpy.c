@@ -44,7 +44,7 @@ PUBLIC void *kmemcpy(void *dest, const void *src, size_t n)
 
     while (n-- > 0)
 	{
-    	*d++ = *s++;
+		*d++ = *s++;
 		dcache_invalidate();
 	}
 

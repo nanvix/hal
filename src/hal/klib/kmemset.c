@@ -47,5 +47,5 @@ PUBLIC void *kmemset(void *ptr, int c, size_t n)
 		dcache_invalidate();
 	}
 
-    return (ptr);	
+    return (ptr);
 }
