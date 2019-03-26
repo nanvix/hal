@@ -34,6 +34,8 @@
  * Interface Implementation Checking                                          *
  *============================================================================*/
 
+#ifdef __INTERFACE_CHECK
+
 	/* Feature Checking */
 	#ifndef TARGET_HAS_SYNC
 	#error "does this target feature a synchronization service?"
@@ -85,6 +87,8 @@
 		#define HAL_SYNC_OPEN_MAX   1
 
 	#endif
+
+#endif
 
 /*============================================================================*
  * Provided Interface                                                         *

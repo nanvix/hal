@@ -34,6 +34,8 @@
  * Interface Implementation Checking                                          *
  *============================================================================*/
 
+#ifdef __INTERFACE_CHECK
+
 	/* Feature Checking */
 	#ifndef PROCESSOR_IS_MULTICLUSTER
 	#error "Is this processor multicluster?"
@@ -68,6 +70,8 @@
 		#define _PROCESSOR_IOCLUSTERS_NUM 1
 
 	#endif
+
+#endif
 
 /*============================================================================*
  * Cluster Interface                                                          *

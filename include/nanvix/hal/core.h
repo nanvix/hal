@@ -48,6 +48,8 @@
  * Interface Implementation Checking                                          *
  *============================================================================*/
 
+#ifdef __INTERFACE_CHECK
+
 	/* Constants */
 	#ifndef BYTE_BIT
 	#error "BYTE_BIT not defined"
@@ -110,6 +112,8 @@
 	#ifndef __core_waitclear_fn
 	#error "core_waitclear() not defined?"
 	#endif
+
+#endif
 
 /*============================================================================*
  * Core Interface                                                             *

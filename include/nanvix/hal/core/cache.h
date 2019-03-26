@@ -32,6 +32,8 @@
  * Interface Implementation Checking                                          *
  *============================================================================*/
 
+#ifdef __INTERFACE_CHECK
+
 	/* Constants */
 	#ifndef CACHE_LINE_SIZE
 	#error "CACHE_LINE_SIZE not defined"
@@ -41,6 +43,8 @@
 	#ifndef __dcache_invalidate_fn
 	#error "dcache_invalidate() not defined?"
 	#endif
+
+#endif
 
 /*============================================================================*
  * Cache Interface                                                             *

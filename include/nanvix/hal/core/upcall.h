@@ -32,6 +32,8 @@
  * Interface Implementation Checking                                          *
  *============================================================================*/
 
+#ifdef __INTERFACE_CHECK
+
 	/* Constants. */
 	#ifndef NR_upcall_ret
 	#error "NR_upcall_ret not defined!"
@@ -41,6 +43,8 @@
 	#ifndef __upcall_ret_fn
 	#error "upcall_ret() not defined?"
 	#endif
+
+#endif
 
 /*============================================================================*
  * Upcall Interface                                                           *

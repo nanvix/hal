@@ -34,6 +34,8 @@
  * Interface Implementation Checking                                          *
  *============================================================================*/
 
+#ifdef __INTERFACE_CHECK
+
 	/* Feature Checking */
 	#ifndef PROCESSOR_HAS_NOC
 	#error "Does this processor have Network-on-Chip (NoC) ?"
@@ -84,6 +86,8 @@
 		#define HAL_NR_NOC_NODES (HAL_NR_NOC_IONODES + HAL_NR_NOC_CNODES)
 
 	#endif
+
+#endif
 
 /*============================================================================*
  * NoC Interface                                                              *

@@ -32,6 +32,8 @@
  * Interface Implementation Checking                                          *
  *============================================================================*/
 
+#ifdef __INTERFACE_CHECK
+
 	/* Constants */
 	#ifndef EXCEPTION_SIZE
 	#error "EXCEPTION_SIZE not defined"
@@ -81,6 +83,8 @@
 	#ifndef __exception_unset_handler
 	#error "exception_unset_handler() not defined?"
 	#endif
+
+#endif
 
 /*============================================================================*
  * Exception Interface                                                        *

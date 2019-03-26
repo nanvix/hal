@@ -35,6 +35,8 @@
  * Interface Implementation Checking                                          *
  *============================================================================*/
 
+#ifdef __INTERFACE_CHECK
+
 	/* Feature Checking */
 	#ifndef TARGET_HAS_STDOUT
 	#error "does this target feature a standard output device?"
@@ -52,6 +54,8 @@
 		#endif
 
 	#endif
+
+#endif
 
 /*============================================================================*
  * Provided Interface                                                         *

@@ -32,6 +32,8 @@
  * Interface Implementation Checking                                          *
  *============================================================================*/
 
+#ifdef __INTERFACE_CHECK
+
 	/* Constants */
 	#ifndef _INTERRUPTS_NUM
 	#error "_INTERRUPTS_NUM not defined"
@@ -64,6 +66,8 @@
 	#ifndef __interrupt_level_set
 	#error "interrupt_level_set() not defined?"
 	#endif
+
+#endif
 
 /*============================================================================*
  * Interrupt Interface                                                        *

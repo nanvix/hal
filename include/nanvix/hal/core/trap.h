@@ -32,6 +32,8 @@
  * Interface Implementation Checking                                          *
  *============================================================================*/
 
+#ifdef __INTERFACE_CHECK
+
 	/* Functions. */
 	#ifndef __syscall0_fn
 	#error "syscall0() not defined?"
@@ -51,6 +53,8 @@
 	#ifndef __syscall5_fn
 	#error "syscall5() not defined?"
 	#endif
+
+#endif
 
 /*============================================================================*
  * Trap Interface                                                             *

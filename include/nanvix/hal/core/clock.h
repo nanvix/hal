@@ -32,6 +32,8 @@
  * Interface Implementation Checking                                          *
  *============================================================================*/
 
+#ifdef __INTERFACE_CHECK
+
 	/* Constants */
 	#ifndef INTERRUPT_CLOCK
 	#error "INTERRUPT_CLOCK not defined"
@@ -41,6 +43,8 @@
 	#ifndef __clock_init_fn
 	#error "clock_init() not defined?"
 	#endif
+
+#endif
 
 /*============================================================================*
  * Clock Device Interface                                                     *
