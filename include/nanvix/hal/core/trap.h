@@ -75,7 +75,7 @@
 	 *
 	 * @returns The system call return value.
 	 */
-	EXTERN inline word_t syscall0(word_t syscall_nr);
+	EXTERN word_t syscall0(word_t syscall_nr);
 
 	/**
 	 * @brief Issues a system call with one argument.
@@ -85,7 +85,7 @@
 	 *
 	 * @returns The system call return value.
 	 */
-	EXTERN inline word_t syscall1(
+	EXTERN word_t syscall1(
 		word_t syscall_nr,
 		word_t arg0);
 
@@ -98,7 +98,7 @@
 	 *
 	 * @returns The system call return value.
 	 */
-	EXTERN inline word_t syscall2(
+	EXTERN word_t syscall2(
 		word_t syscall_nr,
 		word_t arg0,
 		word_t arg1);
@@ -113,7 +113,7 @@
 	 *
 	 * @returns The system call return value.
 	 */
-	EXTERN inline word_t syscall3(
+	EXTERN word_t syscall3(
 		word_t syscall_nr,
 		word_t arg0,
 		word_t arg1,
@@ -130,7 +130,7 @@
 	 *
 	 * @returns The system call return value.
 	 */
-	EXTERN inline word_t syscall4(
+	EXTERN word_t syscall4(
 		word_t syscall_nr,
 		word_t arg0,
 		word_t arg1,
@@ -149,7 +149,7 @@
 	 *
 	 * @returns The system call return value.
 	 */
-	EXTERN inline word_t syscall5(
+	EXTERN word_t syscall5(
 		word_t syscall_nr,
 		word_t arg0,
 		word_t arg1,
