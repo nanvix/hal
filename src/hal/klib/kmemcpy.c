@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-#include <nanvix/hal/hal.h>
+#include <nanvix/hal/core/cache.h>
 #include <nanvix/const.h>
 
 /**
