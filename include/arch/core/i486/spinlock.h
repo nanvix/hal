@@ -152,7 +152,7 @@
 	typedef i486_spinlock_t spinlock_t;
 
 	/**
-	 * @see ork1_spinlock_init().
+	 * @see i486_spinlock_init().
 	 */
 	static inline void spinlock_init(spinlock_t *lock)
 	{
@@ -160,7 +160,7 @@
 	}
 
 	/**
-	 * @see ork1_spinlock_trylock().
+	 * @see i486_spinlock_trylock().
 	 */
 	static inline int spinlock_trylock(spinlock_t *lock)
 	{
@@ -168,7 +168,7 @@
 	}
 
 	/**
-	 * @see ork1_spinlock_lock().
+	 * @see i486_spinlock_lock().
 	 */
 	static inline void spinlock_lock(spinlock_t *lock)
 	{
@@ -176,7 +176,7 @@
 	}
 
 	/**
-	 * @see ork1_spinlock_unlock().
+	 * @see i486_spinlock_unlock().
 	 */
 	static inline void spinlock_unlock(spinlock_t *lock)
 	{
