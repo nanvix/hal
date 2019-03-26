@@ -20,30 +20,63 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# QEMU Version
-export QEMU_VERSION=2.12.0
-
-# Working Directory
+# Required variables.
 export CURDIR=`pwd`
-export WORKDIR=$CURDIR/nanvix-toolchain
+export WORKDIR=$CURDIR/tools/dev/toolchain/riscv32
+export PREFIX=$WORKDIR
+export TARGET=riscv32-elf
+export COMMIT=5496efdf2da08a74689640051fe854bf634202ab
 
-# Number of Cores
-NCORES=`grep -c "^processor" /proc/cpuinfo`
+# Retrieve the number of processor cores
+NCORES=`grep -c ^processor /proc/cpuinfo`
 
-# Set working directory.
 mkdir -p $WORKDIR
 cd $WORKDIR
 
-# Get qemu.
-wget "http://wiki.qemu-project.org/download/qemu-$QEMU_VERSION.tar.bz2"
+# Get toolchain.
+wget "https://github.com/nanvix/toolchain/archive/$COMMIT.zip"
+unzip $COMMIT.zip
+mv toolchain-$COMMIT/* .
 
-# Build qemu
-tar -xjvf qemu-$QEMU_VERSION.tar.bz2
-cd qemu-$QEMU_VERSION
-./configure --target-list=i386-softmmu,or1k-softmmu,riscv32-softmmu --enable-sdl --enable-curses
+# Cleanup.
+rm -rf toolchain-$COMMIT
+rm -rf $COMMIT.zip
+
+# Build binutils.
+cd binutils*/
+./configure --target=$TARGET --prefix=$PREFIX --disable-nls
 make -j $NCORES all
 make install
 
-# Cleans files.
-cd $WORKDIR/..
-rm -R -f $WORKDIR
+# Cleanup.
+cd $WORKDIR
+rm -rf binutils*
+
+# Build GCC.
+cd gcc*/
+./contrib/download_prerequisites
+mkdir build
+cd build
+../configure --target=$TARGET --prefix=$PREFIX --disable-nls --enable-languages=c --without-headers --disable-multilib
+make -j $NCORES all-gcc
+make -j $NCORES all-target-libgcc
+make install-gcc
+make install-target-libgcc
+
+# Cleanup.
+cd $WORKDIR
+rm -rf gcc*
+
+# Build GDB.
+cd $WORKDIR
+cd gdb*/
+./configure --target=$TARGET --prefix=$PREFIX --with-auto-load-safe-path=/ --with-guile=no
+make -j $NCORES
+make install
+
+# Cleanup.
+cd $WORKDIR
+rm -rf gdb*
+
+# Back to the current folder
+cd $CURDIR
