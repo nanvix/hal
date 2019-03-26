@@ -75,6 +75,9 @@
 	#ifndef DWORD_SIZE
 	#error "DWORD_SIZE not defined"
 	#endif
+	#ifndef CORE_IS_LITTLE_ENDIAN
+	#error "CORE_IS_LITTLE_ENDIAN not defined"
+	#endif
 
 	/* Types */
 	#ifndef __byte_t

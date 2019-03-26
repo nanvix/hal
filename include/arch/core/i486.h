@@ -52,7 +52,8 @@
  */
 
 	/* Feature Declaration */
-	#define CORE_SUPPORTS_PMIO 1
+	#define CORE_SUPPORTS_PMIO    1
+	#define CORE_IS_LITTLE_ENDIAN 1
 
 /**@}*/
 
