@@ -34,11 +34,24 @@
 /**@{*/
 
 	/**
-	 * @brief Cache line size (in bytes).
-	 *
-	 * @TODO Check this.
+	 * @brief L1 Cache line shift.
 	 */
-	#define RV32I_CACHE_LINE_SIZE 64
+	#define RV32I_CACHE_LINE_SHIFT 6
+
+	/**
+	 * @brief L1 Cache line size (in bytes).
+	 */
+	#define RV32I_CACHE_LINE_SIZE (1 << RV32I_CACHE_LINE_SHIFT)
+
+	/**
+	 * @brief Flushes the data and instruction caches.
+	 *
+	 * @note This function flushes the whole cache.
+	 */
+	static inline void rv32i_cache_inval(void)
+	{
+		__asm__ __volatile__ ("fence.i" ::: "memory");
+	}
 
 /**@}*/
 
@@ -55,6 +68,7 @@
 	 */
 	/**@{*/
 	#define __dcache_invalidate_fn /**< dcache_invalidate() */
+	#define __icache_invalidate_fn /**< icache_invalidate() */
 	/**@}*/
 
 	/**
@@ -64,11 +78,18 @@
 
 	/**
 	 * @see rv32i_dcache_inval().
-	 *
-	 * @todo Implement this.
 	 */
 	static inline void dcache_invalidate(void)
 	{
+		rv32i_cache_inval();
+	}
+
+	/**
+	 * @see rv32i_icache_inval().
+	 */
+	static inline void icache_invalidate(void)
+	{
+		rv32i_cache_inval();
 	}
 
 /**@endcond*/
