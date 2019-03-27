@@ -24,15 +24,90 @@
 
 /* Must come first. */
 #define _ASM_FILE_
+#define __NEED_CONTEXT
+#define __NEED_CORE_REGS
+#define __NEED_CORE_TYPES
 
-.global _do_syscall
+#include <arch/core/rv32i/asm.h>
+#include <arch/core/rv32i/excp.h>
+#include <arch/core/rv32i/types.h>
+#include <arch/core/rv32i/regs.h>
+
+.global rv32i_do_event
 
 .section .text,"ax",@progbits
 
 /*----------------------------------------------------------------------------*
- * _do_syscall()                                                              *
+ * Event Handler                                                              *
  *----------------------------------------------------------------------------*/
 
-.align 4
-_do_syscall:
-	j _do_syscall
+/*
+ * Low-level dispatcher for interrupts, exceptions and interrupts.
+ */
+.align RV32I_WORD_SIZE
+rv32i_do_event:
+
+	/* Save all registers. */
+	rv32i_context_save
+
+	/* Get reference to context structure. */
+	mv s1, sp
+
+	csrr s2, mcause
+
+	/* Parse event. */
+	li   t0, RV32I_MCAUSE_INT
+	and  t0, s2, t0
+	beqz t0, rv32i_do_event.excp
+
+	/* Interrupt. */
+	rv32i_do_event.int:
+
+		/*
+		 * TODO: forward interrupts and
+		 * traps to high-level dispatcher.
+		 */
+
+		j rv32i_do_event.ret
+
+	/* Event. */
+	rv32i_do_event.excp:
+
+		/*
+		 * Allocate exception
+		 * information structure.
+		 */
+		addi sp, sp, -RV32I_EXCP_SIZE
+
+		/*
+		 *  Build exception
+		 * information structure.
+		 */
+		andi t0, s2, RV32I_MCAUSE_CAUSE
+		sw   t0, RV32I_EXCP_ID(sp)
+		csrr t0, mtval
+		sw   t0, RV32I_EXCP_ADDR(sp)
+		csrr t0, mepc
+		sw   t0, RV32I_EXCP_INSTR(sp)
+
+		/*
+		 * Call high-level
+		 * exception dispatcher.
+		 */
+		mv   a0, sp
+		mv   a1, s1
+		call rv32i_do_excp
+
+		/*
+		 * Wipe out exception
+		 * information structure.
+		 */
+		addi sp, sp, RV32I_EXCP_SIZE
+
+	rv32i_do_event.ret:
+
+		/* Retore all registers. */
+		rv32i_context_restore
+
+		/* Return from event. */
+		mret
