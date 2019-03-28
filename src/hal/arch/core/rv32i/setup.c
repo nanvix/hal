@@ -31,15 +31,24 @@ EXTERN NORETURN void kmain(int, const char *[]);
 EXTERN unsigned char __BSS_START;
 EXTERN unsigned char __BSS_END;
 
+/*============================================================================*
+ * rv32i_core_setup()                                                         *
+ *============================================================================*/
+
 /**
- * Initializes the core components for riscv.
+ * The rv32i_core_setup() function initializes all architectural
+ * structures of the underlying core.
  *
  * @author Pedro Henrique Penna
  */
-PUBLIC void riscv_core_setup(void)
+PUBLIC void rv32i_core_setup(void)
 {
 	/* TODO */
 }
+
+/*============================================================================*
+ * rv32i_master_setup()                                                       *
+ *============================================================================*/
 
 /**
  * @brief Initializes the master core.
@@ -57,7 +66,7 @@ PUBLIC NORETURN void rv32i_master_setup(void)
 	kmemset(&__BSS_START, 0, &__BSS_END - &__BSS_START);
 
 	/* Core setup. */
-	riscv_core_setup();
+	rv32i_core_setup();
 
 	hal_log_setup();
 
