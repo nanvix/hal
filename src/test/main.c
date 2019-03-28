@@ -61,8 +61,8 @@ PUBLIC void kmain(int argc, const char *argv[])
 
 	clock_init(CLOCK_FREQ);
 
-	test_interrupt();
 	test_exception();
+	test_interrupt();
 
 #if !defined(__rv32i__)
 

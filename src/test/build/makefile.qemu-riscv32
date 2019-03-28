@@ -24,8 +24,9 @@
 export LDFLAGS  += -L $(LINKERDIR)/ -T link.ld
 
 # Override Sources
-C_SRC = $(wildcard main.c) \
-        $(wildcard exception.c)
+C_SRC = $(wildcard main.c)      \
+        $(wildcard exception.c) \
+        $(wildcard interrupt.c)
 
 # Object Files
 OBJ = $(C_SRC:.c=.o) \
