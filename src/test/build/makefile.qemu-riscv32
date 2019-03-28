@@ -20,10 +20,21 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# Builds object files.
-all:
-	# Do nothing	
+# Tweak toolchain.
+export LDFLAGS  += -L $(LINKERDIR)/ -T link.ld
+
+# Override Sources
+C_SRC = $(wildcard main.c) \
+        $(wildcard exception.c)
+
+# Object Files
+OBJ = $(C_SRC:.c=.o) \
+      $(ASM_SRC:.S=.o)
+
+# Builds object files for or1k PC target.
+all: $(OBJ)
+	$(CC) $(CFLAGS) $(LDFLAGS) $(OBJ) -o $(BINDIR)/$(EXECBIN) -Wl,--whole-archive $(LIBS)
 
 # Cleans all object files.
 clean:
-	# Do nothing	
+	rm -rf $(BINDIR)/$(EXECBIN) $(OBJ)

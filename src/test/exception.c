@@ -33,6 +33,47 @@
  */
 #define TEST_EXCEPTION_DESTRUCTIVE 0
 
+#if defined(__rv32i__)
+
+	/**
+	 * @brief Triggers an invalid instruction exception.
+	 *
+	 * The trigger_exception() function triggers an invalid
+	 * instruction exception in the rv32i core. It does so by writing
+	 * a random value into the mhartid special function register.
+	 * Hopefully, if the core is compliant to the standards this is
+	 * not allowed.
+	 *
+	 * @author Pedro Henrique Penna
+	 */
+	PRIVATE inline void trigger_exception(void)
+	{
+		__asm__ __volatile__ (
+			"csrw mhartid, %0;"
+			:
+			: "r" (0xdeadc0de)
+		);
+	}
+
+#else
+
+	/**
+	 * @brief Triggers a page fault exception.
+	 *
+	 * The trigger_exception() function forces a page fault exception
+	 * by writing some data into a random memory location. Hopefully,
+	 * the target memory location is not mapped.
+	 *
+	 * @author Pedro Henrique Penna
+	 */
+	PRIVATE inline void trigger_exception(void)
+	{
+		unsigned char *p = (unsigned char *) 0x4badbeef; /* I like beefs. */
+		*p = 0xfe;
+	}
+
+#endif
+
 /**
  * @brief Dummy exception handler
  */
@@ -71,13 +112,11 @@ PRIVATE void test_exception_set_unset_handler(void)
  */
 PRIVATE void test_trigger_exception(void)
 {
-	char *p = (char *) 0x4badbeef; /* I like beefs. */
-
 	/* Don't run destructive tests. */
 	if (!TEST_EXCEPTION_DESTRUCTIVE)
 		return;
 
-	*p = 1;
+	trigger_exception();
 }
 
 /*----------------------------------------------------------------------------*

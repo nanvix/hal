@@ -28,7 +28,6 @@
 
 #include <arch/core/rv32i/types.h>
 #include <arch/core/rv32i/ivt.h>
-#include <nanvix/hal/log.h>
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
 
@@ -77,12 +76,10 @@ PUBLIC NORETURN void rv32i_master_setup(void)
 	/* Core setup. */
 	rv32i_core_setup();
 
-	hal_log_setup();
-
 	/* Say hello. */
 	kprintf("[hal] Hello Word!");
 	kprintf("[hal] Nanvix for RISC-V is comming soon!");
 	kprintf("[hal] halting...");
 
-	while(1);
+	kmain(0, NULL);
 }

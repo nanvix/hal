@@ -26,7 +26,8 @@ export LDFLAGS  += -L $(LINKERDIR)/ -T link.ld
 # Override Sources
 C_SRC = $(wildcard arch/core/$(CORE)/*.c) \
         $(wildcard klib/*.c)              \
-        $(wildcard log.c)
+		$(wildcard core/interrupt.c)      \
+        $(wildcard *.c) \
 
 ASM_SRC = $(wildcard arch/core/$(CORE)/*.S)
 
@@ -39,7 +40,7 @@ OBJ = $(ASM_SRC:.S=.o) \
 
 # Builds All Object Files
 all: $(OBJ)
-	$(CC) $(LDFLAGS) -o $(BINDIR)/$(EXECBIN) $(OBJ)
+	$(AR) $(ARFLAGS) $(LIBDIR)/$(LIBKERNEL) $(OBJ)
 
 # Cleans All Object Files
 clean:
