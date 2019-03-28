@@ -36,12 +36,14 @@
 	/* Must come first. */
 	#define __NEED_IVT
 	#define __NEED_CONTEXT
+	#define __NEED_CORE_PIC
 	#define __NEED_CORE_REGS
 	#define __NEED_CORE_TYPES
 
 	#include <arch/core/rv32i/context.h>
 	#include <arch/core/rv32i/types.h>
 	#include <arch/core/rv32i/ivt.h>
+	#include <arch/core/rv32i/pic.h>
 	#include <arch/core/rv32i/regs.h>
 
 	/**
@@ -76,11 +78,12 @@
 	/**
 	 * @brief Enables interrupts.
 	 *
-	 * Enables all interrupts in the underlying core.
+	 * The rv32i_int_enable() enables all interrupts in the underlying
+	 * rv32i core.
 	 */
 	static inline void rv32i_int_enable(void)
 	{
-		word_t mstatus;
+		rv32i_word_t mstatus;
 
 		__asm__ __volatile__ (
 			"csrrs %0, mstatus, %1"
@@ -97,7 +100,7 @@
 	 */
 	static inline void rv32i_int_disable(void)
 	{
-		word_t mstatus;
+		rv32i_word_t mstatus;
 
 		__asm__ __volatile__ (
 			"csrrc %0, mstatus, %1"
@@ -121,7 +124,8 @@
 	 * @name Exported Constants
 	 */
 	/**@{*/
-	#define _INTERRUPTS_NUM RV32I_INT_NUM  /**< @ref RV32I_INT_NUM  */
+	#define _INTERRUPTS_NUM RV32I_INT_NUM           /**< @ref RV32I_INT_NUM            */
+	#define INTERRUPT_CLOCK RV32I_INT_TIMER_MACHINE /**< @ref RV32I_INT_TIMER_MACHINE. */
 	/**@}*/
 
 	/**
@@ -131,6 +135,8 @@
 	#define __interrupts_disable    /**< interrupts_disable()    */
 	#define __interrupts_enable     /**< interrupts_enable()     */
 	#define __interrupt_set_handler /**< interrupt_set_handler() */
+	#define __interrupt_mask        /**< interrupt_mask()        */
+	#define __interrupt_unmask      /**< interrupt_unmask()      */
 	/**@}*/
 
 	/**
