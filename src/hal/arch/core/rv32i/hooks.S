@@ -64,9 +64,12 @@ rv32i_do_event:
 	rv32i_do_event.int:
 
 		/*
-		 * TODO: forward interrupts and
-		 * traps to high-level dispatcher.
+		 * Call high-level
+		 * interrupt dispatcher.
 		 */
+		andi a0, s2, RV32I_MCAUSE_CAUSE
+		mv   a1, s1
+		call rv32i_do_int
 
 		j rv32i_do_event.ret
 
