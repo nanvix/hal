@@ -56,7 +56,7 @@ _do_start:
 	rv32i_clear_gprs
 
 	/* Setup trap vector. */
-    la   t0, _do_syscall
+    la   t0, rv32i_early_ivt
     csrw mtvec, t0
 
 	/* Setup stack. */
@@ -73,6 +73,17 @@ _do_start:
 	j rv32i_master_setup
 
 	j halt
+
+/*----------------------------------------------------------------------------*
+ * Early Interrupt Vector Table                                               *
+ *----------------------------------------------------------------------------*/
+
+/*
+ * Early interrupt vector table.
+ */
+.align RV32I_WORD_SIZE
+rv32i_early_ivt:
+	j rv32i_early_ivt
 
 /*----------------------------------------------------------------------------*
  * halt()                                                                     *
