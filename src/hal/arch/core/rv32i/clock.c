@@ -22,35 +22,59 @@
  * SOFTWARE.
  */
 
-#ifndef ARCH_CORE_RV32I_H_
-#define ARCH_CORE_RV32I_H_
-
-	/**
-	 * @addtogroup rv32i-core RV32I Core
-	 * @ingroup cores
-	 */
-
-	#ifndef __NEED_CORE_RV32I
-		#error "rv32i core not required"
-	#endif
-
-	#include <arch/core/rv32i/cache.h>
-	#include <arch/core/rv32i/clock.h>
-	#include <arch/core/rv32i/core.h>
-	#include <arch/core/rv32i/excp.h>
-	#include <arch/core/rv32i/int.h>
-	#include <arch/core/rv32i/mmu.h>
-	#include <arch/core/rv32i/spinlock.h>
+#include <arch/core/rv32i/clock.h>
+#include <arch/core/rv32i/int.h>
+#include <nanvix/const.h>
+#include <nanvix/klib.h>
 
 /**
- * @cond rv32i
+ * @brief Was the clock device initialized?
  */
+PRIVATE int initialized = FALSE;
 
-	/* Feature Declaration */
-	#define CORE_SUPPORTS_PMIO    0
-	#define CORE_IS_LITTLE_ENDIAN 1
+/**
+ * @brief Clock delta
+ */
+PRIVATE unsigned clock_delta = 0;
 
-/**@}*/
+/**
+ * @brief Clock jitter.
+ */
+PRIVATE unsigned clock_delay = 0;
 
-#endif /* ARCH_CORE_RV32I_H_ */
+/**
+ * The rv32i_clock_reset() function resets the clock device in the
+ * underlying rv32i core.
+ */
+PUBLIC void rv32i_clock_reset(void)
+{
+	rv32i_dword_t ctime;
 
+	/* Get current time. */
+	ctime = rv32i_mtimecmp_read();
+
+	/* Set next timer interrupt to near future. */
+	rv32i_mtime_write(ctime + clock_delta + clock_delay);
+}
+
+/**
+ * The rv32i_clock_init() function initializes the clock device in the
+ * underlying rv32i core.
+ */
+PUBLIC void rv32i_clock_init(unsigned freq)
+{
+	rv32i_dword_t t0, t1;
+
+	kprintf("[hal] initializing the clock device...");
+
+	/* Initialize clock. */
+	clock_delta = MTIME_TIMEBASE/freq;
+	t0 = rv32i_mtimecmp_read();
+	t1 = rv32i_mtimecmp_read();
+	clock_delay = t1 - t0;
+
+	/* Reset the clock device. */
+	rv32i_clock_reset();
+
+	initialized = TRUE;
+}
