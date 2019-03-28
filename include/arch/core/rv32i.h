@@ -36,12 +36,9 @@
 
 	#include <arch/core/rv32i/cache.h>
 	#include <arch/core/rv32i/core.h>
+	#include <arch/core/rv32i/int.h>
 	#include <arch/core/rv32i/mmu.h>
 	#include <arch/core/rv32i/spinlock.h>
-
-	#define __NEED_CORE_TYPES
-	#define __NEED_MEMORY_TYPES
-	#include <arch/core/rv32i/types.h>
 
 /**
  * @cond rv32i
