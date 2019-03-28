@@ -32,4 +32,6 @@ define hook-stop
 	if $_isvoid ($_exitcode) != 1
 		quit
 	end
+
+	focus cmd
 end
