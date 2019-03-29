@@ -149,6 +149,9 @@
 	#ifndef __pte_write_set_fn
 	#error "pte_write_set() not defined?"
 	#endif
+	#ifndef __mmu_is_enabled_fn
+	#error "mmu_is_enabled() not defined?"
+	#endif
 
 #endif
 
@@ -178,6 +181,12 @@
 	 * @brief Kernel page pool page table.
 	 */
 	EXTERN struct pte *kpool_pgtab;
+	
+	/**
+	 * @brief Searches for a page belonging to a 
+	 * given physical address.
+	 */
+	EXTERN void* mmu_page_walk(paddr_t paddr);
 
 /**@}*/
 

@@ -31,37 +31,6 @@
 	#include <nanvix/const.h>
 
 /*============================================================================*
- * Interface Implementation Checking                                          *
- *============================================================================*/
-
-#ifdef __INTERFACE_CHECK
-
-	/* Constants */
-	#ifndef CLUSTER_SUPPORTS_MMIO
-	#error "does this cluster supports memory-mapped i/o devices?"
-	#endif
-
-	#if (CLUSTER_SUPPORTS_MMIO)
-
-		/* Functions*/
-		#ifndef __mmio_write8_fn
-		#error "mmio_write8() not defined?"
-		#endif
-		#ifndef __mmio_write8s_fn
-		#error "mmio_write8s() not defined?"
-		#endif
-		#ifndef __mmio_read8_fn
-		#error "mmio_read8() not defined?"
-		#endif
-		#ifndef __mmio_read8s_fn
-		#error "mmio_read8s() not defined?"
-		#endif
-
-	#endif
-
-#endif
-
-/*============================================================================*
  * MMIO Interface                                                             *
  *============================================================================*/
 
@@ -73,53 +42,23 @@
  */
 /**@{*/
 
-#if (CLUSTER_SUPPORTS_MMIO)
-
-	/**
-	 * @brief Writes an 8-bit value to a memory-mapped i/o device.
-	 *
-	 * @param vaddr Target virtual address.
-	 * @param value 8-bit value.
-	 *
-	 * @returns Upon successful completion, zero is returned. Upon
-	 * failure, a negative error code is returned instead.
-	 */
-	EXTERN int mmio_write8(vaddr_t vaddr, uint8_t value);
-
-	/**
-	 * @brief Writes an 8-bit string to a memory-mapped i/o device.
-	 *
-	 * @param vaddr Target virtual address.
-	 * @param str   8-bit string.
-	 *
-	 * @returns Upon successful completion, zero is returned. Upon
-	 * failure, a negative error code is returned instead.
-	 */
-	EXTERN int mmio_write8s(vaddt_t vaddr, const uint8_t *str);
-
-	/**
-	 * @brief Reads an 8-bit value from a memory-mapped i/o device.
-	 *
-	 * @param vaddr  Target virtual address.
-	 * @param valuep Target store location for 8-bit value.
-	 *
-	 * @returns Upon successful completion, zero is returned. Upon
-	 * failure, a negative error code is returned instead.
-	 */
-	EXTERN int mmio_read8(vaddr_t vaddr, uint8_t *valuep);
-
-	/**
-	 * @brief Reads an 8-bit string from a memory-mapped i/o device.
-	 *
-	 * @param vaddr Target virtual address.
-	 * @param strp  Target store location for 8-bit string.
-	 *
-	 * @returns Upon successful completion, zero is returned. Upon
-	 * failure, a negative error code is returned instead.
-	 */
-	EXTERN int mmio_read8s(vaddr_t vaddr, uint8_t **strp);
-
-#endif /* CLUSTER_SUPPORTS_MMIO */
+/**
+ * @brief Gets the equivalent address accordingly with
+ * the current state of the MMU.
+ *
+ * @param paddr Target virtual physical address.
+ *
+ * @returns If mmu is enabled, returns the equivalent
+ * virtual address, otherwise, returns the same physical
+ * address.
+ */
+static inline void* mmio_get(paddr_t paddr)
+{
+	if (mmu_is_enabled())
+		return (mmu_page_walk(paddr));
+	else
+		return ((void*)paddr);
+}
 
 /**@{*/
 
