@@ -132,7 +132,6 @@
 	#define _USTACK_ADDR OR1K_USTACK_ADDR /**< User Stack       */
 	#define _KBASE_VIRT  OR1K_KBASE_VIRT  /**< Kernel Base      */
 	#define _KPOOL_VIRT  OR1K_KPOOL_VIRT  /**< Kernel Page Pool */
-	#define _UART_ADDR   OR1K_UART_VIRT   /**< UART Device      */
 	/**@}*/
 
 	/**
@@ -142,6 +141,7 @@
 	#define _KBASE_PHYS OR1K_KBASE_PHYS /**< Kernel Base      */
 	#define _KPOOL_PHYS OR1K_KPOOL_PHYS /**< Kernel Page Pool */
 	#define _UBASE_PHYS OR1K_UBASE_PHYS /**< User Base        */
+	#define _UART_ADDR  OR1K_UART_PHYS  /**< UART Device      */
 	/**@}*/
 
 /**@endcond*/

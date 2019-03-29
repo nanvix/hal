@@ -22,36 +22,58 @@
  * SOFTWARE.
  */
 
-#ifndef CLUSTER_OR1K_H_
-#define CLUSTER_OR1K_H_
-
-	#ifndef __NEED_CLUSTER_OR1K
-		#error "bad cluster configuration?"
-	#endif
-
-	/* Cluster Interface Implementation */
-	#include <arch/cluster/or1k/_or1k.h>
+#ifndef ARCH_RV32I_MMU_H_
+#define ARCH_RV32I_MMU_H_
 
 /**
- * @addtogroup or1k-cluster OpenRISC Cluster
- * @ingroup clusters
+ * @addtogroup rv32i-core-mmu MMU
+ * @ingroup rv32i-core
  *
- * @brief OpenRISC Cluster
+ * @brief Memory Management Unit
  */
 /**@{*/
 
-	#include <arch/cluster/or1k/cores.h>
-	#include <arch/cluster/or1k/memory.h>
+	/* Must comme first. */
+	#define __NEED_MEMORY_TYPES
 
-	/**
-	 * @name Provided Features
-	 */
-	/**@{*/
-	#define CLUSTER_IS_MULTICORE  1 /**< Multicore Cluster */
-	#define CLUSTER_IS_IO         1 /**< I/O Cluster       */
-	#define CLUSTER_IS_COMPUTE    0 /**< Compute Cluster   */
-	/**@}*/
+	#include <arch/core/rv32i/types.h>
+#ifndef _ASM_FILE_
+	#include <nanvix/klib.h>
+	#include <errno.h>
+#endif
 
 /**@}*/
 
-#endif /* CLUSTER_OR1K_H_ */
+/*============================================================================*
+ * Exported Interface                                                         *
+ *============================================================================*/
+
+/**
+ * @cond rv32i
+ */
+
+	/**
+	 * @brief Exported Functions
+	 */
+	/**@{*/
+	#define __mmu_is_enabled_fn  /**< mmu_is_enabled()  */
+	/**@}*/
+
+#ifndef _ASM_FILE_
+
+	/**
+	 * @brief Checks if the MMU is enabled.
+	 *
+	 * @returns A non-zero value if the MMU is enabled, and
+	 * 0 otherwise.
+	 */
+	static inline int mmu_is_enabled(void)
+	{
+		return (1);
+	}
+
+#endif
+
+/**@endcond*/
+
+#endif /* ARCH_RV32I_MMU_H_ */
