@@ -36,6 +36,7 @@
 
 	#include <arch/core/rv32i/cache.h>
 	#include <arch/core/rv32i/core.h>
+	#include <arch/core/rv32i/mmu.h>
 	#include <arch/core/rv32i/spinlock.h>
 
 	#define __NEED_CORE_TYPES

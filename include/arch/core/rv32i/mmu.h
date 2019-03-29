@@ -22,35 +22,58 @@
  * SOFTWARE.
  */
 
-#ifndef CLUSTER_RISCV32_SMP_H_
-#define CLUSTER_RISCV32_SMP_H_
-
-	#ifndef __NEED_CLUSTER_RISCV32_SMP
-		#error "bad cluster configuration?"
-	#endif
-
-	/* Cluster Interface Implementation */
-	#include <arch/cluster/riscv32-smp/_riscv32-smp.h>
+#ifndef ARCH_RV32I_MMU_H_
+#define ARCH_RV32I_MMU_H_
 
 /**
- * @addtogroup riscv-cluster RISC-V 32-Bit Cluster
- * @ingroup clusters
+ * @addtogroup rv32i-core-mmu MMU
+ * @ingroup rv32i-core
  *
- * @brief RISC-V 32-Bit Cluster
+ * @brief Memory Management Unit
  */
 /**@{*/
 
-	#include <arch/cluster/riscv32-smp/cores.h>
+	/* Must comme first. */
+	#define __NEED_MEMORY_TYPES
 
-	/**
-	 * @name Provided Features
-	 */
-	/**@{*/
-	#define CLUSTER_IS_MULTICORE  1 /**< Multicore Cluster */
-	#define CLUSTER_IS_IO         1 /**< I/O Cluster       */
-	#define CLUSTER_IS_COMPUTE    0 /**< Compute Cluster   */
-	/**@}*/
+	#include <arch/core/rv32i/types.h>
+#ifndef _ASM_FILE_
+	#include <nanvix/klib.h>
+	#include <errno.h>
+#endif
 
 /**@}*/
 
-#endif /* CLUSTER_RISCV32_SMP_H_ */
+/*============================================================================*
+ * Exported Interface                                                         *
+ *============================================================================*/
+
+/**
+ * @cond rv32i
+ */
+
+	/**
+	 * @brief Exported Functions
+	 */
+	/**@{*/
+	#define __mmu_is_enabled_fn  /**< mmu_is_enabled()  */
+	/**@}*/
+
+#ifndef _ASM_FILE_
+
+	/**
+	 * @brief Checks if the MMU is enabled.
+	 *
+	 * @returns A non-zero value if the MMU is enabled, and
+	 * 0 otherwise.
+	 */
+	static inline int mmu_is_enabled(void)
+	{
+		return (1);
+	}
+
+#endif
+
+/**@endcond*/
+
+#endif /* ARCH_RV32I_MMU_H_ */
