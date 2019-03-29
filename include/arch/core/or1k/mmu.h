@@ -188,6 +188,7 @@
 	#define __pte_present_set_fn /**< pte_present_set() */
 	#define __pte_user_set_fn    /**< pte_user_set()    */
 	#define __pte_write_set_fn   /**< pte_write_set()   */
+	#define __mmu_is_enabled_fn  /**< mmu_is_enabled()  */
 	/**@}*/
 
 #ifndef _ASM_FILE_
@@ -599,6 +600,17 @@
 			return (NULL);
 
 		return (&pgtab[pte_idx_get(vaddr)]);
+	}
+	
+	/**
+	 * @brief Checks if the MMU is enabled.
+	 *
+	 * @returns A non-zero value if the MMU is enabled, and
+	 * 0 otherwise.
+	 */
+	static inline int mmu_is_enabled(void)
+	{
+		return (or1k_mfspr(OR1K_SPR_SR) & (OR1K_SPR_SR_DME | OR1K_SPR_SR_IME));
 	}
 
 #endif /* _ASM_FILE_ */
