@@ -23,12 +23,8 @@
  */
 
 #include <arch/stdout/8250.h>
+#include <nanvix/hal/cluster/mmio.h>
 #include <nanvix/const.h>
-
-/**
- * @brief uart8250 memory.
- */
-PRIVATE uint8_t *uart8250 = (uint8_t*)UART_ADDR;
 
 /**
  * @brief Flag that indicates if the device was initialized.
@@ -41,6 +37,7 @@ PRIVATE int uart8250_initialized = 0;
  */
 PUBLIC void uart8250_write(const char *buf, size_t n)
 {
+	uint8_t *uart8250;
 	size_t counter;
 	counter = 0;
 
@@ -50,6 +47,9 @@ PUBLIC void uart8250_write(const char *buf, size_t n)
 	 */
 	if (!uart8250_initialized)
 		return;
+
+	/* Get address of uart. */
+	uart8250 = mmio_get(UART_ADDR);
 
 	while (n)
 	{
@@ -69,7 +69,11 @@ PUBLIC void uart8250_write(const char *buf, size_t n)
  */
 PUBLIC void uart8250_init(void)
 {
+	uint8_t *uart8250;
 	uint16_t divisor;
+
+	/* Get address of uart. */
+	uart8250 = mmio_get(UART_ADDR);
 
 	/* Calculate and set divisor. */
 	divisor = UART_CLOCK_SIGNAL / (UART_BAUD << 4);
