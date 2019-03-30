@@ -35,6 +35,12 @@ PRIVATE struct
 	int handled; /**< Handled? */
 } interrupts[INTERRUPTS_NUM];
 
+
+/**
+ * @brief Number of spurious interrupts.
+ */
+PRIVATE unsigned spurious = 0;
+
 /**
  * @brief Default hardware interrupt handler.
  *
@@ -43,6 +49,10 @@ PRIVATE struct
 PRIVATE void default_handler(int num)
 {
 	UNUSED(num);
+
+	/* Too many spurious interrupts. */
+	if (spurious >= INTERRUPT_SPURIOUS_THRESHOLD)
+		kprintf("[hal] spurious interrupt %d", num);
 
 	noop();
 }
