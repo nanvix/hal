@@ -84,14 +84,14 @@
 	/**
 	 * @brief Initializes the interrupt vector table.
 	 *
-	 * @param do_hwint Default hardware interrupt handler.
-	 * @param do_swint Default software interrupt handler.
-	 * @param do_excp  Default exception handler.
+	 * @param hwint_handler Default hardware interrupt handler.
+	 * @param swint_handler Default software interrupt handler.
+	 * @param excp_handler  Default exception handler.
 	 */
 	extern void k1b_ivt_setup(
-			k1b_hwint_handler_fn do_hwint,
-			k1b_swint_handler_fn do_swint,
-			k1b_excp_handler_fn do_excp
+			k1b_hwint_handler_fn hwint_handler,
+			k1b_swint_handler_fn swint_handler,
+			k1b_excp_handler_fn excp_handler
 	);
 
 /**@}*/

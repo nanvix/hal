@@ -55,7 +55,7 @@
 	#define CORE_SUPPORTS_PMIO    0
 	#define CORE_IS_LITTLE_ENDIAN 0
 
-/**@}*/
+/**@endcond*/
 
 #endif /* CORE_OR1K_H_ */
 

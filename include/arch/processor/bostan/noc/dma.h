@@ -26,8 +26,10 @@
 #define PROCESSOR_BOSTAN_NOC_DMA_H_
 
 /**
- * @cond bostan-noc
+ * @addtogroup processor-bostan-noc
+ * @ingroup processor-bostan
  */
+/**@*/
 
 /* Processor Interface Implementation */
 #include <arch/processor/bostan/_bostan.h>
@@ -227,6 +229,6 @@
 		/* Note: New parameters will be inserted during portal and mailbox development. */
 	);
 
-/**@endcond*/
+/**@}*/
 
 #endif /* PROCESSOR_BOSTAN_NOC_DMA_H_ */

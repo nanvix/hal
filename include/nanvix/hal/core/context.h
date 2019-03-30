@@ -103,7 +103,7 @@
 	 * @brief Sets the value of the stack pointer register.
 	 *
 	 * @param ctx Target context.
-	 * @para  val Value to store.
+	 * @param val Value to store.
 	 */
 	EXTERN void context_set_sp(struct context *ctx, word_t val);
 
@@ -111,7 +111,7 @@
 	 * @brief Sets the value of the program conter register.
 	 *
 	 * @param ctx Target context.
-	 * @para  val Value to store.
+	 * @param val Value to store.
 	 */
 	EXTERN void context_set_pc(struct context *ctx, word_t val);
 

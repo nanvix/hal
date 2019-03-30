@@ -76,7 +76,7 @@
 	/**
 	 * @brief Initializes the interrupt vector table.
 	 *
-	 * @param do_ecent Event handler.
+	 * @param do_event Event handler.
 	 */
 	extern void rv32i_ivt_setup(rv32i_handler_fn do_event);
 

@@ -48,7 +48,7 @@
 	 *
 	 * @returns The ID of the underlying core.
 	 *
-	 * @FIXME Fix this.
+	 * @todo FIXME
 	 */
 	static inline int rv32i_core_get_id(void)
 	{

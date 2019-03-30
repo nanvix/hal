@@ -75,7 +75,7 @@
 	/**
 	 * @brief Sets a resource as used.
 	 *
-	 * @param resource Target resource.
+	 * @param rsrc Target resource.
 	 */
 	static inline void resource_set_used(struct resource *rsrc)
 	{
@@ -85,7 +85,7 @@
 	/**
 	 * @brief Sets a resource as not used.
 	 *
-	 * @param resource Target resource.
+	 * @param rsrc Target resource.
 	 */
 	static inline void resource_set_unused(struct resource *rsrc)
 	{
@@ -95,7 +95,7 @@
 	/**
 	 * @brief Sets a resource as busy.
 	 *
-	 * @param resource Target resource.
+	 * @param rsrc Target resource.
 	 */
 	static inline void resource_set_busy(struct resource *rsrc)
 	{
@@ -105,7 +105,7 @@
 	/**
 	 * @brief Sets a resource as not busy.
 	 *
-	 * @param resource Target resource.
+	 * @param rsrc Target resource.
 	 */
 	static inline void resource_set_notbusy(struct resource *rsrc)
 	{
@@ -115,7 +115,7 @@
 	/**
 	 * @brief Sets a resource as write-only.
 	 *
-	 * @param resource Target resource.
+	 * @param rsrc Target resource.
 	 */
 	static inline void resource_set_wronly(struct resource *rsrc)
 	{
@@ -126,7 +126,7 @@
 	/**
 	 * @brief Sets a resource as read-only.
 	 *
-	 * @param resource Target resource.
+	 * @param rsrc Target resource.
 	 */
 	static inline void resource_set_rdonly(struct resource *rsrc)
 	{
@@ -137,7 +137,7 @@
 	/**
 	 * @brief Sets a resource as readable and writable.
 	 *
-	 * @param resource Target resource.
+	 * @param rsrc Target resource.
 	 */
 	static inline void resource_set_rdwr(struct resource *rsrc)
 	{
@@ -147,7 +147,7 @@
 	/**
 	 * @brief Sets a resource as asynchronous.
 	 *
-	 * @param resource Target resource.
+	 * @param rsrc Target resource.
 	 *
 	 * @note A resource cannot be synchronous and asynchronous at the same time.
 	 */
@@ -159,7 +159,7 @@
 	/**
 	 * @brief Sets a resource as synchronous.
 	 *
-	 * @param resource Target resource.
+	 * @param rsrc Target resource.
 	 *
 	 * @note A resource cannot be synchronous and asynchronous at the same time.
 	 */
@@ -171,7 +171,7 @@
 	/**
 	 * @brief Asserts whether or not a resource is in use.
 	 *
-	 * @param resource Target resource.
+	 * @param rsrc Target resource.
 	 *
 	 * @returns One if the target resource is in used, and zero otherwise.
 	 */
@@ -183,7 +183,7 @@
 	/**
 	 * @brief Asserts whether or not a resource is busy.
 	 *
-	 * @param resource Target resource.
+	 * @param rsrc Target resource.
 	 *
 	 * @returns One if the target resource is busy, and zero otherwise.
 	 */
@@ -195,7 +195,7 @@
 	/**
 	 * @brief Asserts whether or not a resource is readable.
 	 *
-	 * @param resource Target resource.
+	 * @param rsrc Target resource.
 	 *
 	 * @returns One if the target resource is readable and zero otherwise.
 	 */
@@ -207,7 +207,7 @@
 	/**
 	 * @brief Asserts whether or not a resource is read-only.
 	 *
-	 * @param resource Target resource.
+	 * @param rsrc Target resource.
 	 *
 	 * @returns One if the target resource is read-inly and zero otherwise.
 	 */
@@ -219,7 +219,7 @@
 	/**
 	 * @brief Asserts whether or not a resource is writable.
 	 *
-	 * @param resource Target resource.
+	 * @param rsrc Target resource.
 	 *
 	 * @returns One if the target resource is writable and zero otherwise.
 	 */
@@ -231,7 +231,7 @@
 	/**
 	 * @brief Asserts whether or not a resource is write-only.
 	 *
-	 * @param resource Target resource.
+	 * @param rsrc Target resource.
 	 *
 	 * @returns One if the target resource is write-only and zero otherwise.
 	 */
@@ -243,7 +243,7 @@
 	/**
 	 * @brief Asserts whether or not a resource is asynchronous.
 	 *
-	 * @param resource Target resource.
+	 * @param rsrc Target resource.
 	 *
 	 * @returns One if the target resource is asynchronous and zero otherwise.
 	 *
@@ -257,7 +257,7 @@
 	/**
 	 * @brief Asserts whether or not a resource is synchronous.
 	 *
-	 * @param resource Target resource.
+	 * @param rsrc Target resource.
 	 *
 	 * @returns One if the target resource is synchronous and zero otherwise.
 	 *

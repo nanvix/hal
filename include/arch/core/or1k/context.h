@@ -138,7 +138,7 @@
 	 * @brief Sets the value of the stack pointer register.
 	 *
 	 * @param ctx Target context.
-	 * @para  val Value to store.
+	 * @param val Value to store.
 	 */
 	static inline void or1k_context_set_sp(struct context *ctx, or1k_word_t val)
 	{
@@ -149,7 +149,7 @@
 	 * @brief Sets the value of the program conter register.
 	 *
 	 * @param ctx Target context.
-	 * @para  val Value to store.
+	 * @param val Value to store.
 	 */
 	static inline void or1k_context_set_pc(struct context *ctx, or1k_word_t val)
 	{

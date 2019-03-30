@@ -38,7 +38,6 @@ PRIVATE int initialized = 0;
 
 /**
  * Writes into serial port.
- * @param c Data to be written.
  */
 PUBLIC void uart_16550a_write(const char *buf, size_t n)
 {

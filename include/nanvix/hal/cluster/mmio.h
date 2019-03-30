@@ -60,6 +60,6 @@ static inline void* mmio_get(paddr_t paddr)
 		return ((void*)paddr);
 }
 
-/**@{*/
+/**@}*/
 
 #endif /* NANVIX_HAL_CLUSTER_MMIO_H_ */

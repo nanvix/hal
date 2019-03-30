@@ -195,12 +195,12 @@
 	/**
 	 * @brief Unsets a handler for an exception.
 	 *
-	 * @param excpnum Number of the target exception.
+	 * @param num Number of the target exception.
 	 *
 	 * @returns Upon successful completion zero is returned. Upon
 	 * failure a negative error code is returned instead.
 	 */
-	extern int k1b_excp_unset_handler(int excpnum);
+	extern int k1b_excp_unset_handler(int num);
 
 	/**
 	 * @brief Low-level exception dispatcher.
@@ -312,8 +312,8 @@
 		return (k1b_excp_unset_handler(num));
 	}
 
-/**@endcond*/
-
 #endif /* _ASM_FILE_ */
+
+/**@endcond*/
 
 #endif /* ARCH_CORE_K1B_EXCP_H_ */

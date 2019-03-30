@@ -90,9 +90,11 @@
 	/**
 	 * @name Virtual Exceptions
 	 */
+	/**@{*/
 	#define RV32I_VIRT_PAGE_FAULT         16 /**< Page Fault         */
 	#define RV32I_VIRT_PAGE_PROTECTION    17 /**< Page Protection    */
 	#define RV32I_VIRT_GENERAL_PROTECTION 18 /**< General Protection */
+	/**@}*/
 
 	/**
 	 * @name Offsets to the Exception Information Structure
@@ -123,7 +125,7 @@
 
 	} PACK;
 
-/**@endif*/
+/**@endcond*/
 
 	/**
 	 * @brief Exception handler.
@@ -201,12 +203,12 @@
 	/**
 	 * @brief Unsets a handler for an exception.
 	 *
-	 * @param excpnum Number of the target exception.
+	 * @param num Number of the target exception.
 	 *
 	 * @returns Upon successful completion zero is returned. Upon
 	 * failure a negative error code is returned instead.
 	 */
-	EXTERN int rv32i_excp_unset_handler(int excpnum);
+	EXTERN int rv32i_excp_unset_handler(int num);
 
 	/**
 	 * @brief Low-level exception dispatcher.

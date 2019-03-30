@@ -105,7 +105,6 @@ PRIVATE int mppa256_sync_tx_is_valid(int syncid)
  *
  * @param nodes  IDs of target NoC nodes.
  * @param nnodes Number of target NoC nodes.
- * @param class  Class of synchronization point.
  *
  * @return Interface ID [0..(K1BIO_CORES_NUM-1)]
  */
@@ -256,13 +255,7 @@ PUBLIC int mppa256_sync_create(const int *nodes, int nnodes, int type)
 }
 
 /**
- * @brief Allocates and configures the sending side of the synchronization point.
- *
- * @param nodes  IDs of target NoC nodes.
- * @param nnodes Number of target NoC nodes.
- * @param type   Type of synchronization point.
- *
- * @return The tag of underlying resource ID.
+ * @todo Comment this function.
  */
 PUBLIC int mppa256_sync_open(void)
 {
@@ -289,10 +282,7 @@ PUBLIC int mppa256_sync_open(void)
 }
 
 /**
- * @brief Free the receiver resources.
- *
- * @param  tag Resource ID.
- * @return Zero if free the resource and non zero otherwise.
+ * @todo Document this function.
  */
 PUBLIC int mppa256_sync_unlink(int syncid)
 {

@@ -26,8 +26,10 @@
 #define PROCESSOR_BOSTAN_NOC_CTAG_H_
 
 /**
- * @cond bostan-noc
+ * @addtogroup processor-bostan-noc
+ * @ingroup processor-bostan
  */
+/**@*/
 
 	/* Cluster API. */
 	#include <arch/processor/bostan/_bostan.h>
@@ -243,7 +245,7 @@
 		int target_tag
 	);
 
-/**@endcond*/
+/**@}*/
 
 #endif /* PROCESSOR_BOSTAN_NOC_CTAG_H_ */
 

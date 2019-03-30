@@ -26,8 +26,10 @@
 #define PROCESSOR_BOSTAN_NOC_DTAG_H_
 
 /**
- * @cond bostan-noc
+ * @addtogroup processor-bostan-noc
+ * @ingroup processor-bostan
  */
+/**@*/
 
 	/* Processor Interface Implementation */
 	#include <arch/processor/bostan/_bostan.h>
@@ -75,7 +77,7 @@
 	/**@{*/
 	#define BOSTAN_NR_DNOC_RX (BOSTAN_DNOC_RX_MAX - BOSTAN_DNOC_RX_BASE) /**< Number of receive buffers.  */
 	#define BOSTAN_NR_DNOC_TX (BOSTAN_DNOC_TX_MAX - BOSTAN_DNOC_TX_BASE) /**< Number of transfer buffers. */
-	#define BOSTAN_NR_DNOC_UC (BOSTAN_DNOC_UC_MAX - BOSTAN_DNOC_UC_BASE) /**< Number of ucore threads.	*/
+	#define BOSTAN_NR_DNOC_UC (BOSTAN_DNOC_UC_MAX - BOSTAN_DNOC_UC_BASE) /**< Number of ucore threads.	  */
 	/**@}*/
 
 	/**
@@ -98,6 +100,7 @@
 	/**
 	 * @brief Assess reciver tag limits.
 	 *
+	 * @param interface Number of the interface.
 	 * @param tag Number of the interface.
 	 *
 	 * @return Zero if tag is valid non zero otherwise.
@@ -150,8 +153,6 @@
 	 *
 	 * @param interface Number of the interface.
 	 * @param tag       Number of receiver buffer.
-	 * @param mode      Number of target buffer.
-	 * @param mask      Initial value of the buffer.
 	 *
 	 * @return Zero if configure sucefully and non zero otherwise.
 	 */
@@ -274,7 +275,8 @@
 	 * @brief Releases D-NoC Ucore thread.
 	 *
 	 * @param interface Number of the interface.
-	 * @param tag       Number of transfer buffer.
+	 * @param txtag     Number of transfer buffer.
+	 * @param uctag     Number of ucore thread.
 	 */
 	static inline int bostan_dnoc_uc_desconfig(int interface, int txtag, int uctag)
 	{
@@ -335,6 +337,6 @@
 		size_t size
 	);
 
-/**@endcond*/
+/**@}*/
 
 #endif /* PROCESSOR_BOSTAN_NOC_DTAG_H_ */
