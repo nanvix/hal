@@ -67,6 +67,8 @@ PUBLIC int interrupt_register(int num, interrupt_handler_t handler)
 	dcache_invalidate();
 	interrupt_set_handler(num, handler);
 
+	interrupt_unmask(num);
+
 	kprintf("[hal] interrupt handler registered for irq %d", num);
 
 	return (0);
@@ -91,6 +93,8 @@ PUBLIC int interrupt_unregister(int num)
 	interrupts[num].handled = FALSE;
 	dcache_invalidate();
 	interrupt_set_handler(num, default_handler);
+
+	interrupt_mask(num);
 
 	kprintf("[hal] interrupt handler unregistered for irq %d", num);
 
