@@ -54,21 +54,6 @@ PRIVATE void dummy_handler(int num)
  *============================================================================*/
 
 /*----------------------------------------------------------------------------*
- * Set and Clear an Interrupt Handler                                         *
- *----------------------------------------------------------------------------*/
-
-/**
- * @brief API Test: Set and Clear an Interrupt Handler
- *
- * @author Pedro Henrique Penna
- */
-PRIVATE void test_interrupt_set_clear_handler(void)
-{
-	KASSERT(interrupt_set_handler(INTERRUPT_CLOCK, dummy_handler) == 0);
-	KASSERT(interrupt_set_handler(INTERRUPT_CLOCK, NULL) == 0);
-}
-
-/*----------------------------------------------------------------------------*
  * Register and Unregister an Interrupt Handler                               *
  *----------------------------------------------------------------------------*/
 
@@ -173,7 +158,6 @@ PRIVATE void test_interrupt_mask_unmask(void)
  * @brief Unit tests.
  */
 PRIVATE struct test interrupt_tests_api[] = {
-	{ test_interrupt_set_clear_handler,   "Set and Clear a Handler"           },
 	{ test_interrupt_register_unregister, "Register and Unregister a Handler" },
 	{ test_interrupt_enable_disable,      "Enable and Disable Interrupts"     },
 	{ test_interrupt_mask_unmask,         "Mask and Unmask an Interrupt"      },
@@ -183,36 +167,6 @@ PRIVATE struct test interrupt_tests_api[] = {
 /*============================================================================*
  * Fault Injection Tests                                                      *
  *============================================================================*/
-
-/*----------------------------------------------------------------------------*
- * Set a Handler for an Invalid Interrupt                                     *
- *----------------------------------------------------------------------------*/
-
-/**
- * @brief API Test: Set a Handler for an Invalid Interrupt
- *
- * @author Pedro Henrique Penna
- */
-PRIVATE void test_interrupt_set_handler_inval(void)
-{
-	KASSERT(interrupt_set_handler(-1, dummy_handler) == -EINVAL);
-	KASSERT(interrupt_set_handler(INTERRUPTS_NUM + 1, dummy_handler) == -EINVAL);
-}
-
-/*----------------------------------------------------------------------------*
- * Clear a Handler for an Invalid Interrupt                                   *
- *----------------------------------------------------------------------------*/
-
-/**
- * @brief API Test: Clear a Handler for an Invalid Interrupt
- *
- * @author Pedro Henrique Penna
- */
-PRIVATE void test_interrupt_clear_handler_inval(void)
-{
-	KASSERT(interrupt_set_handler(-1, NULL) == -EINVAL);
-	KASSERT(interrupt_set_handler(INTERRUPTS_NUM + 1, NULL) == -EINVAL);
-}
 
 /*----------------------------------------------------------------------------*
  * Register a Handler for an Invalid Interrupt                                *
@@ -312,8 +266,6 @@ PRIVATE void test_interrupt_unmask_handler_inval(void)
  * @brief Unit tests.
  */
 PRIVATE struct test interrupt_tests_fault_injection[] = {
-	{ test_interrupt_set_handler_inval,        "Set Handler for Invalid Interrupt"        },
-	{ test_interrupt_clear_handler_inval,      "Clear Handler for Invalid Interrupt"      },
 	{ test_interrupt_register_handler_inval,   "Register Handler for Invalid Interrupt"   },
 	{ test_interrupt_unregister_handler_inval, "Unregister Handler for Invalid Interrupt" },
 	{ test_interrupt_register_handler_bad,     "Register Handler for Bad Interrupt"       },
