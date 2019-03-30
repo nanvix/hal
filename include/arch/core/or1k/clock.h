@@ -48,9 +48,9 @@
 	EXTERN void or1k_clock_init(unsigned freq);
 
 	/**
-	 * @brief ACKs the clock interrupt and adjusts the timer again.
+	 * @brief Resets the clock device.
 	 */
-	EXTERN void or1k_clock_ack(void);
+	EXTERN void or1k_clock_reset(void);
 
 /**@}*/
 
@@ -63,10 +63,11 @@
  */
 
 	/**
-	 * @name Provided Interface
+	 * @name Exported Functions
 	 */
 	/**@{*/
-	#define __clock_init_fn /**< clock_init() */
+	#define __clock_init_fn  /**< clock_init()  */
+	#define __clock_reset_fn /**< clock_reset() */
 	/**@}*/
 
 	/**
@@ -75,6 +76,14 @@
 	static inline void clock_init(unsigned freq)
 	{
 		or1k_clock_init(freq);
+	}
+
+	/**
+	 * @see or1k_clock_reset().
+	 */
+	static inline void clock_reset(void)
+	{
+		or1k_clock_reset();
 	}
 
 /**@endcond*/
