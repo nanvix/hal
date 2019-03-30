@@ -35,6 +35,10 @@ PRIVATE struct
 	int handled; /**< Handled? */
 } interrupts[INTERRUPTS_NUM];
 
+/**
+ * @brief Clock handler.
+ */
+PRIVATE interrupt_handler_t clock_handler = NULL;
 
 /**
  * @brief Number of spurious interrupts.
@@ -58,6 +62,18 @@ PRIVATE void default_handler(int num)
 }
 
 /**
+ * @brief Wrapper for clock interrupt.
+ */
+PRIVATE void do_clock(int num)
+{
+	/* Forward clock interrupt handling. */
+	if (clock_handler != NULL)
+		clock_handler(num);
+
+	clock_reset();
+}
+
+/**
  * The interrupt_register() function registers @p handler as the
  * handler function for the interrupt whose number is @p num. If a
  * handler function was previously registered with this number, the
@@ -75,7 +91,14 @@ PUBLIC int interrupt_register(int num, interrupt_handler_t handler)
 
 	interrupts[num].handled = TRUE;
 	dcache_invalidate();
-	interrupt_set_handler(num, handler);
+
+	if (num != INTERRUPT_CLOCK)
+		interrupt_set_handler(num, handler);
+	else
+	{
+		clock_handler = handler;
+		interrupt_set_handler(num, do_clock);
+	}
 
 	interrupt_unmask(num);
 
@@ -102,7 +125,14 @@ PUBLIC int interrupt_unregister(int num)
 
 	interrupts[num].handled = FALSE;
 	dcache_invalidate();
-	interrupt_set_handler(num, default_handler);
+
+	if (num != INTERRUPT_CLOCK)
+		interrupt_set_handler(num, default_handler);
+	else
+	{
+		clock_handler = default_handler;
+		interrupt_set_handler(num, do_clock);
+	}
 
 	interrupt_mask(num);
 
@@ -117,13 +147,20 @@ PUBLIC int interrupt_unregister(int num)
  */
 PUBLIC void interrupt_setup(void)
 {
+	kputs("[hal] initializing interrupts...\n");
+
 	for (int i = 0; i < INTERRUPTS_NUM; i++)
 	{
+		interrupt_handler_t handler;
+
+		handler = (i == INTERRUPT_CLOCK) ? do_clock : default_handler;
+
 		interrupts[i].handled = FALSE;
 		dcache_invalidate();
-		interrupt_set_handler(i, default_handler);
+
+		interrupt_set_handler(i, handler);
 	}
 
-	kputs("initializing interrupts\n");
+	clock_handler = default_handler;
 }
 

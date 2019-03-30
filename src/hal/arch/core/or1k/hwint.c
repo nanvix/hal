@@ -86,9 +86,6 @@ PUBLIC void or1k_do_hwint(int num, const struct context *ctx)
 	 */
 	if (num == OR1K_INT_CLOCK)
 	{
-		/* Acknowledge and reset. */
-		or1k_clock_reset();
-
 		/* Nothing to do. */
 		if (or1k_handlers[num] == NULL)
 			return;
