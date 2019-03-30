@@ -70,11 +70,6 @@
 	/**@}*/
 
 	/**
-	 * @brief Estimated CPU frequency (in Hz)
-	 */
-	#define CPU_FREQUENCY OR1K_CPU_FREQUENCY
-
-	/**
 	 * @see or1k_clock_init().
 	 */
 	static inline void clock_init(unsigned freq)

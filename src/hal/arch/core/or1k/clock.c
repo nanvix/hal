@@ -56,7 +56,7 @@ PUBLIC void or1k_clock_init(unsigned freq)
 	UNUSED(freq);
 
 	upr = or1k_mfspr(OR1K_SPR_UPR);
-	if ( !(upr & OR1K_SPR_UPR_TTP) )
+	if (!(upr & OR1K_SPR_UPR_TTP))
 		while (1);
 
 	/* Clock rate. */
