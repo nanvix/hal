@@ -90,7 +90,7 @@ PRIVATE void test_interrupt_enable_disable(void)
 
 		do
 			dcache_invalidate();
-		while (ncalls > 0);
+		while (ncalls == 0);
 
 	interrupts_disable();
 
