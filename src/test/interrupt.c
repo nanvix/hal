@@ -110,47 +110,6 @@ PRIVATE void test_interrupt_enable_disable(void)
 }
 
 /*----------------------------------------------------------------------------*
- * Mask and Unmask an Interrupt                                               *
- *----------------------------------------------------------------------------*/
-
-/**
- * @brief API Test: Mask and Unmask an Interrupt
- *
- * @author Pedro Henrique Penna
- */
-PRIVATE void test_interrupt_mask_unmask(void)
-{
-	const int ntrials = 1000000;
-
-	ncalls = 0;
-	dcache_invalidate();
-
-	KASSERT(interrupt_register(INTERRUPT_CLOCK, dummy_handler) == 0);
-
-	interrupt_unmask(INTERRUPT_CLOCK);
-
-		do
-			dcache_invalidate();
-		while (ncalls > 0);
-
-	interrupt_mask(INTERRUPT_CLOCK);
-
-	KASSERT(interrupt_unregister(INTERRUPT_CLOCK) == 0);
-
-	/*
-	 * Ensure that the handler is not
-	 * longer called.
-	 */
-	ncalls = 0;
-	dcache_invalidate();
-	for (int i = 0; i < ntrials; i++)
-	{
-		noop();
-		KASSERT(ncalls == 0);
-	}
-}
-
-/*----------------------------------------------------------------------------*
  * Test Driver Table                                                          *
  *----------------------------------------------------------------------------*/
 
@@ -160,7 +119,6 @@ PRIVATE void test_interrupt_mask_unmask(void)
 PRIVATE struct test interrupt_tests_api[] = {
 	{ test_interrupt_register_unregister, "Register and Unregister a Handler" },
 	{ test_interrupt_enable_disable,      "Enable and Disable Interrupts"     },
-	{ test_interrupt_mask_unmask,         "Mask and Unmask an Interrupt"      },
 	{ NULL,                                NULL                               },
 };
 
@@ -229,36 +187,6 @@ PRIVATE void test_interrupt_unregister_handler_bad(void)
 }
 
 /*----------------------------------------------------------------------------*
- * Mask an Invalid Interrupt                                                  *
- *----------------------------------------------------------------------------*/
-
-/**
- * @brief API Test: Mask an Invalid Interrupt
- *
- * @author Pedro Henrique Penna
- */
-PRIVATE void test_interrupt_mask_handler_inval(void)
-{
-	KASSERT(interrupt_mask(-1) == -EINVAL);
-	KASSERT(interrupt_mask(INTERRUPTS_NUM + 1) == -EINVAL);
-}
-
-/*----------------------------------------------------------------------------*
- * Unmak an Invalid Interrupt                                                 *
- *----------------------------------------------------------------------------*/
-
-/**
- * @brief API Test: Unmak an Invalid Interrupt
- *
- * @author Pedro Henrique Penna
- */
-PRIVATE void test_interrupt_unmask_handler_inval(void)
-{
-	KASSERT(interrupt_unmask(-1) == -EINVAL);
-	KASSERT(interrupt_unmask(INTERRUPTS_NUM + 1) == -EINVAL);
-}
-
-/*----------------------------------------------------------------------------*
  * Test Driver Table                                                          *
  *----------------------------------------------------------------------------*/
 
@@ -270,8 +198,6 @@ PRIVATE struct test interrupt_tests_fault_injection[] = {
 	{ test_interrupt_unregister_handler_inval, "Unregister Handler for Invalid Interrupt" },
 	{ test_interrupt_register_handler_bad,     "Register Handler for Bad Interrupt"       },
 	{ test_interrupt_unregister_handler_bad,   "Unregister Handler for Bad Interrupt"     },
-	{ test_interrupt_mask_handler_inval,       "Mask Invalid Interrupt"                   },
-	{ test_interrupt_unmask_handler_inval,     "Unmask Invalid Interrupt"                 },
 	{ NULL,                                    NULL                                       },
 };
 
