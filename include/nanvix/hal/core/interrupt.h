@@ -89,6 +89,15 @@
 	#define INTERRUPTS_NUM _INTERRUPTS_NUM
 
 	/**
+	 * @brief Threshold for spurious interrupts.
+	 *
+	 * INTERRUPT_SPURIOUS_THRESHOLD states the number of spurious
+	 * interrupts that we are willing to get, before enter in verbose
+	 * mode.
+	 */
+	#define INTERRUPT_SPURIOUS_THRESHOLD 100
+
+	/**
 	 * @brief Hardware interrupt handler.
 	 */
 	typedef void (*interrupt_handler_t)(int);
