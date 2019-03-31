@@ -41,6 +41,7 @@
 	#include <arch/core/rv32i/int.h>
 	#include <arch/core/rv32i/mmu.h>
 	#include <arch/core/rv32i/spinlock.h>
+	#include <arch/core/rv32i/trap.h>
 
 /**
  * @cond rv32i

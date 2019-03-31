@@ -43,131 +43,194 @@
 	 *
 	 * @returns The system call return value.
 	 */
-	static inline word_t rv32i_syscall0(word_t syscall_nr)
+	static inline rv32i_word_t rv32i_syscall0(rv32i_word_t syscall_nr)
 	{
-		((void) syscall_nr);
+		register word_t _syscall_nr __asm__("a0") = syscall_nr;
+		register word_t ret __asm__ ("a0");
 
-		return (0);
+		__asm__ __volatile__ (
+			"ecall"
+			: "=r" (ret)
+			: "r"  (_syscall_nr)
+			: "memory", "cc"
+		);
+
+		return (ret);
 	}
 
 	/**
 	 * @brief Issues a system call with one argument.
 	 *
 	 * @param syscall_nr System call number.
-	 * @param arg0 System call number.
+	 * @param arg0       Argument 0.
 	 *
 	 * @returns The system call return value.
 	 */
-	static inline word_t rv32i_syscall1(
-		word_t syscall_nr,
-		word_t arg0)
+	static inline rv32i_word_t rv32i_syscall1(
+		rv32i_word_t syscall_nr,
+		rv32i_word_t arg0)
 	{
-		((void) syscall_nr);
-		((void) arg0);
+		register word_t _syscall_nr __asm__("a0") = syscall_nr;
+		register word_t _arg0 __asm__("a1") = arg0;
+		register word_t ret __asm__ ("a0");
 
-		return (0);
+		__asm__ __volatile__ (
+			"ecall"
+			: "=r" (ret)
+			: "r"  (_syscall_nr),
+			  "r"  (_arg0)
+			: "memory", "cc"
+		);
+
+		return (ret);
 	}
 
 	/**
 	 * @brief Issues a system call with two arguments.
 	 *
 	 * @param syscall_nr System call number.
-	 * @param arg0 System call number.
-	 * @param arg1 System call number.
+	 * @param arg0       Argument 0.
+	 * @param arg1       Argument 1.
 	 *
 	 * @returns The system call return value.
 	 */
-	static inline word_t rv32i_syscall2(
-		word_t syscall_nr,
-		word_t arg0,
-		word_t arg1)
+	static inline rv32i_word_t rv32i_syscall2(
+		rv32i_word_t syscall_nr,
+		rv32i_word_t arg0,
+		rv32i_word_t arg1)
 	{
-		((void) syscall_nr);
-		((void) arg0);
-		((void) arg1);
+		register word_t _syscall_nr __asm__("a0") = syscall_nr;
+		register word_t _arg0 __asm__("a1") = arg0;
+		register word_t _arg1 __asm__("a2") = arg1;
+		register word_t ret __asm__ ("a0");
 
-		return (0);
+		__asm__ __volatile__ (
+			"ecall"
+			: "=r" (ret)
+			: "r"  (_syscall_nr),
+			  "r"  (_arg0),
+			  "r"  (_arg1)
+			: "memory", "cc"
+		);
+
+		return (ret);
 	}
 
 	/**
 	 * @brief Issues a system call with three arguments.
 	 *
 	 * @param syscall_nr System call number.
-	 * @param arg0 System call number.
-	 * @param arg1 System call number.
-	 * @param arg2 System call number.
+	 * @param arg0       Argument 0.
+	 * @param arg1       Argument 1.
+	 * @param arg2       Argument 2.
 	 *
 	 * @returns The system call return value.
 	 */
-	static inline word_t rv32i_syscall3(
-		word_t syscall_nr,
-		word_t arg0,
-		word_t arg1,
-		word_t arg2)
+	static inline rv32i_word_t rv32i_syscall3(
+		rv32i_word_t syscall_nr,
+		rv32i_word_t arg0,
+		rv32i_word_t arg1,
+		rv32i_word_t arg2)
 	{
-		((void) syscall_nr);
-		((void) arg0);
-		((void) arg1);
-		((void) arg2);
+		register word_t _syscall_nr __asm__("a0") = syscall_nr;
+		register word_t _arg0 __asm__("a1") = arg0;
+		register word_t _arg1 __asm__("a2") = arg1;
+		register word_t _arg2 __asm__("a3") = arg2;
+		register word_t ret __asm__ ("a0");
 
-		return (0);
+		__asm__ __volatile__ (
+			"ecall"
+			: "=r" (ret)
+			: "r"  (_syscall_nr),
+			  "r"  (_arg0),
+			  "r"  (_arg1),
+			  "r"  (_arg2)
+			: "memory", "cc"
+		);
+
+		return (ret);
 	}
 
 	/**
 	 * @brief Issues a system call with four arguments.
 	 *
 	 * @param syscall_nr System call number.
-	 * @param arg0 System call number.
-	 * @param arg1 System call number.
-	 * @param arg2 System call number.
-	 * @param arg3 System call number.
+	 * @param arg0       Argument 0.
+	 * @param arg1       Argument 1.
+	 * @param arg2       Argument 2.
+	 * @param arg3       Argument 3.
 	 *
 	 * @returns The system call return value.
 	 */
-	static inline word_t rv32i_syscall4(
-		word_t syscall_nr,
-		word_t arg0,
-		word_t arg1,
-		word_t arg2,
-		word_t arg3)
+	static inline rv32i_word_t rv32i_syscall4(
+		rv32i_word_t syscall_nr,
+		rv32i_word_t arg0,
+		rv32i_word_t arg1,
+		rv32i_word_t arg2,
+		rv32i_word_t arg3)
 	{
-		((void) syscall_nr);
-		((void) arg0);
-		((void) arg1);
-		((void) arg2);
-		((void) arg3);
+		register word_t _syscall_nr __asm__("a0") = syscall_nr;
+		register word_t _arg0 __asm__("a1") = arg0;
+		register word_t _arg1 __asm__("a2") = arg1;
+		register word_t _arg2 __asm__("a3") = arg2;
+		register word_t _arg3 __asm__("a4") = arg3;
+		register word_t ret __asm__ ("a0");
 
-		return (0);
+		__asm__ __volatile__ (
+			"ecall"
+			: "=r" (ret)
+			: "r"  (_syscall_nr),
+			  "r"  (_arg0),
+			  "r"  (_arg1),
+			  "r"  (_arg2),
+			  "r"  (_arg3)
+			: "memory", "cc"
+		);
+
+		return (ret);
 	}
 
 	/**
 	 * @brief Issues a system call with five arguments.
 	 *
 	 * @param syscall_nr System call number.
-	 * @param arg0 System call number.
-	 * @param arg1 System call number.
-	 * @param arg2 System call number.
-	 * @param arg3 System call number.
-	 * @param arg4 System call number.
+	 * @param arg0       Argument 0.
+	 * @param arg1       Argument 1.
+	 * @param arg2       Argument 2.
+	 * @param arg3       Argument 3.
+	 * @param arg4       Argument 4.
 	 *
 	 * @returns The system call return value.
 	 */
-	static inline word_t rv32i_syscall5(
-		word_t syscall_nr,
-		word_t arg0,
-		word_t arg1,
-		word_t arg2,
-		word_t arg3,
-		word_t arg4)
+	static inline rv32i_word_t rv32i_syscall5(
+		rv32i_word_t syscall_nr,
+		rv32i_word_t arg0,
+		rv32i_word_t arg1,
+		rv32i_word_t arg2,
+		rv32i_word_t arg3,
+		rv32i_word_t arg4)
 	{
-		((void) syscall_nr);
-		((void) arg0);
-		((void) arg1);
-		((void) arg2);
-		((void) arg3);
-		((void) arg4);
+		register word_t _syscall_nr __asm__("a0") = syscall_nr;
+		register word_t _arg0 __asm__("a1") = arg0;
+		register word_t _arg1 __asm__("a2") = arg1;
+		register word_t _arg2 __asm__("a3") = arg2;
+		register word_t _arg3 __asm__("a4") = arg3;
+		register word_t _arg4 __asm__("a5") = arg4;
+		register word_t ret __asm__ ("a0");
 
-		return (0);
+		__asm__ __volatile__ (
+			"ecall"
+			: "=r" (ret)
+			: "r"  (_syscall_nr),
+			  "r"  (_arg0),
+			  "r"  (_arg1),
+			  "r"  (_arg2),
+			  "r"  (_arg3),
+			  "r"  (_arg4)
+			: "memory", "cc"
+		);
+
+		return (ret);
 	}
 
 	/**
@@ -200,7 +263,7 @@
 	/**
 	 * @see rv32i_syscall_0()
 	 */
-	static inline word_t syscall0(word_t syscall_nr)
+	static inline rv32i_word_t syscall0(rv32i_word_t syscall_nr)
 	{
 		return (
 			rv32i_syscall0(syscall_nr)
@@ -210,9 +273,9 @@
 	/**
 	 * @see rv32i_syscall_1()
 	 */
-	static inline word_t syscall1(
-		word_t syscall_nr,
-		word_t arg0)
+	static inline rv32i_word_t syscall1(
+		rv32i_word_t syscall_nr,
+		rv32i_word_t arg0)
 	{
 		return (
 			rv32i_syscall1(
@@ -225,10 +288,10 @@
 	/**
 	 * @see rv32i_syscall_2()
 	 */
-	static inline word_t syscall2(
-		word_t syscall_nr,
-		word_t arg0,
-		word_t arg1)
+	static inline rv32i_word_t syscall2(
+		rv32i_word_t syscall_nr,
+		rv32i_word_t arg0,
+		rv32i_word_t arg1)
 	{
 		return (
 			rv32i_syscall2(
@@ -242,11 +305,11 @@
 	/**
 	 * @see rv32i_syscall_3()
 	 */
-	static inline word_t syscall3(
-		word_t syscall_nr,
-		word_t arg0,
-		word_t arg1,
-		word_t arg2)
+	static inline rv32i_word_t syscall3(
+		rv32i_word_t syscall_nr,
+		rv32i_word_t arg0,
+		rv32i_word_t arg1,
+		rv32i_word_t arg2)
 	{
 		return (
 			rv32i_syscall3(
@@ -261,12 +324,12 @@
 	/**
 	 * @see rv32i_syscall_4()
 	 */
-	static inline word_t syscall4(
-		word_t syscall_nr,
-		word_t arg0,
-		word_t arg1,
-		word_t arg2,
-		word_t arg3)
+	static inline rv32i_word_t syscall4(
+		rv32i_word_t syscall_nr,
+		rv32i_word_t arg0,
+		rv32i_word_t arg1,
+		rv32i_word_t arg2,
+		rv32i_word_t arg3)
 	{
 		return (
 			rv32i_syscall4(
@@ -282,13 +345,13 @@
 	/**
 	 * @see rv32i_syscall_5()
 	 */
-	static inline word_t syscall5(
-		word_t syscall_nr,
-		word_t arg0,
-		word_t arg1,
-		word_t arg2,
-		word_t arg3,
-		word_t arg4)
+	static inline rv32i_word_t syscall5(
+		rv32i_word_t syscall_nr,
+		rv32i_word_t arg0,
+		rv32i_word_t arg1,
+		rv32i_word_t arg2,
+		rv32i_word_t arg3,
+		rv32i_word_t arg4)
 	{
 		return (
 			rv32i_syscall5(

@@ -58,10 +58,10 @@ rv32i_do_event:
 	/* Parse event. */
 	li   t0, RV32I_MCAUSE_INT
 	and  t0, s2, t0
-	beqz t0, rv32i_do_event.excp
+	beqz t0, rv32i_do_event.sync
 
 	/* Interrupt. */
-	rv32i_do_event.int:
+	rv32i_do_event.async:
 
 		/*
 		 * Call high-level
@@ -72,6 +72,18 @@ rv32i_do_event:
 		call rv32i_do_int
 
 		j rv32i_do_event.ret
+
+	/* Synchronous event. */
+	rv32i_do_event.sync:
+
+		li  t0, RV32I_MCAUSE_CAUSE
+		and t0, s2, t0
+		li  t1, RV32I_MCAUSE_SYNC_ECALL_MMODE
+		beq t0, t1, rv32i_do_event.syscall
+		li  t1, RV32I_MCAUSE_SYNC_ECALL_SMODE
+		beq t0, t1, rv32i_do_event.syscall
+		li  t1, RV32I_MCAUSE_SYNC_ECALL_UMODE
+		beq t0, t1, rv32i_do_event.syscall
 
 	/* Event. */
 	rv32i_do_event.excp:
@@ -106,6 +118,37 @@ rv32i_do_event:
 		 * information structure.
 		 */
 		addi sp, sp, RV32I_EXCP_SIZE
+
+		j rv32i_do_event.ret
+
+	/* Kernel call. */
+	rv32i_do_event.syscall:
+
+		/*
+		 * Get system call parameters.
+		 *  Note that the system call
+		 * number is the last  paramenter.
+		 */
+		lw a5, RV32I_CONTEXT_A0(fp) /* System Call Number */
+		lw a0, RV32I_CONTEXT_A1(fp) /* Argument 0         */
+		lw a1, RV32I_CONTEXT_A2(fp) /* Argument 1         */
+		lw a2, RV32I_CONTEXT_A3(fp) /* Argument 2         */
+		lw a3, RV32I_CONTEXT_A4(fp) /* Argument 3         */
+		lw a4, RV32I_CONTEXT_A5(fp) /* Argument 4         */
+
+		/* Call high-level dispatcher. */
+		call do_syscall
+
+		/* Copy return value to the user stack. */
+		sw a0, RV32I_CONTEXT_A0(fp)
+
+		/*
+		 * Advance PC to next instruction, otherwise another kernel
+		 * call will be triggered.
+		 */
+		lw t0, RV32I_CONTEXT_PC(fp)
+		add t0, t0, RV32I_WORD_SIZE
+		sw t0, RV32I_CONTEXT_PC(fp)
 
 	rv32i_do_event.ret:
 
