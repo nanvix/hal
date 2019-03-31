@@ -32,13 +32,20 @@
  * @brief Programmable Timer Interface
  */
 /**@{*/
-	
+
 	/**
 	 * @brief Initializes the clock driver in the k1b architecture.
 	 *
 	 * @param freq Target frequency for the clock device.
 	 */
 	extern void k1b_clock_init(unsigned freq);
+
+	/**
+	 * @brief Resets the clock device.
+	 */
+	static inline void k1b_clock_reset(void)
+	{
+	}
 
 /**@}*/
 
@@ -51,10 +58,11 @@
  */
 
 	/**
-	 * @name Provided Interface
+	 * @name Exported Functions
 	 */
 	/**@{*/
-	#define __clock_init_fn /**< clock_init() */
+	#define __clock_init_fn  /**< clock_init()  */
+	#define __clock_reset_fn /**< clock_reset() */
 	/**@}*/
 
 	/**
@@ -63,6 +71,14 @@
 	static inline void clock_init(unsigned freq)
 	{
 		k1b_clock_init(freq);
+	}
+
+	/**
+	 * @see k1b_clock_reset().
+	 */
+	static inline void clock_reset(void)
+	{
+		k1b_clock_reset();
 	}
 
 /**@endcond*/

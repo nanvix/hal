@@ -28,9 +28,10 @@
 #include <arch/core/or1k/core.h>
 
 /**
- * ACKs the clock interrupt and adjusts the timer again.
+ * The or1k_clock_reset() function acknoledges the clock interrupt and
+ * resets the clock counter.
  */
-PUBLIC void or1k_clock_ack(void)
+PUBLIC void or1k_clock_reset(void)
 {
 	/* Ack. */
 	or1k_mtspr(OR1K_SPR_TTMR, OR1K_SPR_TTMR_DI);
@@ -56,7 +57,7 @@ PUBLIC void or1k_clock_init(unsigned freq)
 	UNUSED(freq);
 
 	upr = or1k_mfspr(OR1K_SPR_UPR);
-	if ( !(upr & OR1K_SPR_UPR_TTP) )
+	if (!(upr & OR1K_SPR_UPR_TTP))
 		while (1);
 
 	/* Clock rate. */

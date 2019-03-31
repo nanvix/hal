@@ -46,7 +46,7 @@
 	 * @brief Oscillator frequency (in Hz)
 	 */
 	#define PIT_FREQUENCY 1193182
-	
+
 	/**
 	 * @name Registers
 	 */
@@ -56,21 +56,54 @@
 	/**@}*/
 
 	/**
-	 * @brief Initializes the clock driver in the i486 architecture.
+	 * @brief Initializes the clock device.
 	 *
 	 * @param freq Target frequency for the clock device.
 	 */
 	EXTERN void i486_clock_init(unsigned freq);
 
 	/**
-	 * @see i486_clock_init()
+	 * @brief Resets the clock device.
+	 */
+	static inline void i486_clock_reset(void)
+	{
+	}
+
+/**@}*/
+
+/*============================================================================*
+ * Exported Interface                                                         *
+ *============================================================================*/
+
+/**
+ * @cond i486
+ */
+
+	/**
+	 * @name Exported functions
+	 */
+	/**@{*/
+	#define __clock_init_fn  /**< clock_init(   */
+	#define __clock_reset_fn /**< clock_reset() */
+	/**@}*/
+
+	/**
+	 * @see i486_clock_init().
 	 */
 	static inline void clock_init(unsigned freq)
 	{
 		i486_clock_init(freq);
 	}
 
-/**@}*/
+	/**
+	 * @see i486_clock_reset().
+	 */
+	static inline void clock_reset(void)
+	{
+		i486_clock_reset();
+	}
+
+/**@endcond*/
 
 #endif /* ARCH_I486_8253_H_ */
 

@@ -28,6 +28,8 @@
 	/* Core Interface Implementation */
 	#include <nanvix/hal/core/_core.h>
 
+	#include <nanvix/const.h>
+
 /*============================================================================*
  * Interface Implementation Checking                                          *
  *============================================================================*/
@@ -42,6 +44,9 @@
 	/* Functions */
 	#ifndef __clock_init_fn
 	#error "clock_init() not defined?"
+	#endif
+	#ifndef __clock_reset_fn
+	#error "clock_reset() not defined?"
 	#endif
 
 #endif
@@ -58,14 +63,17 @@
  */
 /**@{*/
 
-	#include <nanvix/const.h>
-
 	/**
-	 * @brief Initializes the hardware dependent clock driver.
+	 * @brief Initializes the clock device
 	 *
 	 * @param freq Frequency for the clock device.
 	 */
 	EXTERN void clock_init(unsigned freq);
+
+	/**
+	 * @brief Resets the timer of the clock device.
+	 */
+	EXTERN void clock_reset(void);
 
 /**@}*/
 
