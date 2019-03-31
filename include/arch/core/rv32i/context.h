@@ -137,7 +137,7 @@
 	 */
 	static inline rv32i_word_t rv32i_context_get_pc(const struct context *ctx)
 	{
-		return (ctx->ra);
+		return (ctx->pc);
 	}
 
 	/**
@@ -159,7 +159,7 @@
 	 */
 	static inline void rv32i_context_set_pc(struct context *ctx, rv32i_word_t val)
 	{
-		ctx->ra = val;
+		ctx->pc = val;
 	}
 
 /**@endcond*/
