@@ -22,33 +22,64 @@
  * SOFTWARE.
  */
 
-#ifndef ARCH_CORE_RV32I_H_
-#define ARCH_CORE_RV32I_H_
-
-	/**
-	 * @addtogroup rv32i-core RV32I Core
-	 * @ingroup cores
-	 */
-
-	#ifndef __NEED_CORE_RV32I
-		#error "rv32i core not required"
-	#endif
-
-	#include <arch/core/rv32i/cache.h>
-	#include <arch/core/rv32i/core.h>
-	#include <arch/core/rv32i/int.h>
-	#include <arch/core/rv32i/mmu.h>
-	#include <arch/core/rv32i/spinlock.h>
+#ifndef ARCH_CORE_RV32I_IVT_H_
+#define ARCH_CORE_RV32I_IVT_H_
 
 /**
- * @cond rv32i
+ * @addtogroup rv32i-core-ivt IVT
+ * @ingroup rv32i-core
+ *
+ * @brief Interrupt Vector Table
  */
+/**@{*/
 
-	/* Feature Declaration */
-	#define CORE_SUPPORTS_PMIO    0
-	#define CORE_IS_LITTLE_ENDIAN 1
+	#ifndef __NEED_IVT
+		#error "do not include this file"
+	#endif
+
+	/* Must come first. */
+	#define __NEED_CORE_TYPES
+
+	#include <arch/core/rv32i/types.h>
+
+	/**
+	 * @brief Number of interrupts.
+	 */
+	#define RV32I_INT_NUM 12
+
+	/**
+	 * @brief Number of exceptions.
+	 */
+	#define RV32I_EXCP_NUM 16
+
+	/**
+	 * @brief Event handler.
+	 */
+	typedef void (*rv32i_handler_fn)(void);
+
+	/**
+	 * @brief Set ups the interrupt vector table.
+	 *
+	 * @param do_event Event handler.
+	 *
+	 * @note We assume a direct vector table.
+	 */
+	static inline void rv32i_mtvec_set(rv32i_handler_fn do_event)
+	{
+		__asm__ __volatile__(
+			"csrw mtvec, %0;"
+			:
+			: "r" (RV32I_WORD(do_event))
+		);
+	}
+
+	/**
+	 * @brief Initializes the interrupt vector table.
+	 *
+	 * @param do_ecent Event handler.
+	 */
+	extern void rv32i_ivt_setup(rv32i_handler_fn do_event);
 
 /**@}*/
 
-#endif /* ARCH_CORE_RV32I_H_ */
-
+#endif /* ARCH_CORE_RV32I_IVT_H_ */

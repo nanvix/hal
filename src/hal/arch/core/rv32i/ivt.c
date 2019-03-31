@@ -22,33 +22,17 @@
  * SOFTWARE.
  */
 
-#ifndef ARCH_CORE_RV32I_H_
-#define ARCH_CORE_RV32I_H_
+/* Must come first. */
+#define __NEED_IVT
 
-	/**
-	 * @addtogroup rv32i-core RV32I Core
-	 * @ingroup cores
-	 */
-
-	#ifndef __NEED_CORE_RV32I
-		#error "rv32i core not required"
-	#endif
-
-	#include <arch/core/rv32i/cache.h>
-	#include <arch/core/rv32i/core.h>
-	#include <arch/core/rv32i/int.h>
-	#include <arch/core/rv32i/mmu.h>
-	#include <arch/core/rv32i/spinlock.h>
+#include <arch/core/rv32i/ivt.h>
+#include <nanvix/const.h>
 
 /**
- * @cond rv32i
+ * The rv32i_ivt_setup() function initializes the interrupt vector
+ * table in the rv32i core.
  */
-
-	/* Feature Declaration */
-	#define CORE_SUPPORTS_PMIO    0
-	#define CORE_IS_LITTLE_ENDIAN 1
-
-/**@}*/
-
-#endif /* ARCH_CORE_RV32I_H_ */
-
+PUBLIC void rv32i_ivt_setup(void (*do_event)(void))
+{
+	rv32i_mtvec_set(do_event);
+}
