@@ -66,10 +66,12 @@
 	 *
 	 * @returns A non-zero value if the MMU is enabled, and
 	 * 0 otherwise.
+	 *
+	 * @FIXME: pgramatically get this.
 	 */
 	static inline int mmu_is_enabled(void)
 	{
-		return (1);
+		return (0);
 	}
 
 #endif

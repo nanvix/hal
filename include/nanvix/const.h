@@ -74,6 +74,13 @@
 	#define ALIGN(x) __attribute__((aligned(x)))
 
 	/**
+	 * @brief Packs a structure
+	 *
+	 * @param x Boundary.
+	 */
+	#define PACK __attribute__((packed))
+
+	/**
 	 * @name Logical Constants
 	 */
 	/**@{*/

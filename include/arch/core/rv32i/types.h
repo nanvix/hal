@@ -63,6 +63,16 @@
 	#define RV32I_DWORD_SIZE  8 /**< Double Word */
 	/**@}*/
 
+	/**
+	 * @name Casters for Core Types
+	 */
+	/**@{*/
+	#define RV32I_BYTE(x)  ((rv32i_byte_t)(x))  /**< To Byte        */
+	#define RV32I_HWORD(x) ((rv32i_hword_t)(x)) /**< To Half Word   */
+	#define RV32I_WORD(x)  ((rv32i_word_t)(x))  /**< To Word        */
+	#define RV32I_DWORD(x) ((rv32i_dword_t)(x)) /**< To Double Word */
+	/**@}*/
+
 #endif
 #endif
 
