@@ -25,6 +25,8 @@
 /* Must come first. */
 #define _ASM_FILE_
 
+#include <arch/core/rv32i/asm.h>
+
 #define RV32I_HARTS_NUM    4
 #define RV32I_STACK_SIZE   1024
 #define RV32I_STACK_SHIFT  10
@@ -32,10 +34,6 @@
 /* Exported symbols. */
 .global _do_start
 .global kstacks
-
-.macro get_hartid dest
-	csrr \dest, mhartid
-.endm
 
 /*============================================================================*
  * bootstrap section                                                          *
@@ -48,6 +46,8 @@
  *----------------------------------------------------------------------------*/
 
 _do_start:
+
+	rv32i_clear_gprs
 
 	/* Setup trap vector. */
     la   t0, _do_syscall
