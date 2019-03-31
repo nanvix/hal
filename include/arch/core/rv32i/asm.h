@@ -179,6 +179,10 @@
 		sw x30, RV32I_CONTEXT_T5(sp)
 		sw x31, RV32I_CONTEXT_T6(sp)
 
+		/* Save Program Counter (pc)*/
+		csrr t0, mepc
+		sw   t0, RV32I_CONTEXT_PC(sp)
+
 		/* Save Stack Pointer (SP). */
 		addi t0, sp, RV32I_CONTEXT_SIZE
 		sw   t0, RV32I_CONTEXT_SP(sp)
@@ -195,6 +199,10 @@
 
 		/* Restore stack frame. */
 		mv sp, fp
+
+		/* Restore Program Counter (pc)*/
+		lw   t0, RV32I_CONTEXT_PC(sp)
+		csrw mepc, t0
 
 		/*
 		 * Save all GPRs, but the
