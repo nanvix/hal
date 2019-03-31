@@ -29,6 +29,11 @@
 #include "test.h"
 
 /**
+ * @brief Clock frequency (in Hz).
+ */
+#define CLOCK_FREQ 100
+
+/**
  * @brief Dummy main function.
  */
 PUBLIC int main(int argc, const char **argv)
@@ -54,9 +59,10 @@ PUBLIC void kmain(int argc, const char *argv[])
 	 */
 	hal_init();
 
+	clock_init(CLOCK_FREQ);
+
 	test_interrupt();
 	test_exception();
-	test_clock();
 	test_tlb();
 	test_mmu();
 	test_core();
