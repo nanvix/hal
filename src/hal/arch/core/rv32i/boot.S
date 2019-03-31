@@ -24,8 +24,10 @@
 
 /* Must come first. */
 #define _ASM_FILE_
+#define __NEED_CORE_TYPES
 
 #include <arch/core/rv32i/asm.h>
+#include <arch/core/rv32i/types.h>
 
 #define RV32I_HARTS_NUM    4
 #define RV32I_STACK_SIZE   1024
@@ -45,12 +47,16 @@
  * _do_start()                                                                *
  *----------------------------------------------------------------------------*/
 
+/*
+ * Entry point.
+ */
+.align RV32I_WORD_SIZE
 _do_start:
 
 	rv32i_clear_gprs
 
 	/* Setup trap vector. */
-    la   t0, _do_syscall
+    la   t0, rv32i_early_ivt
     csrw mtvec, t0
 
 	/* Setup stack. */
@@ -67,6 +73,17 @@ _do_start:
 	j rv32i_master_setup
 
 	j halt
+
+/*----------------------------------------------------------------------------*
+ * Early Interrupt Vector Table                                               *
+ *----------------------------------------------------------------------------*/
+
+/*
+ * Early interrupt vector table.
+ */
+.align RV32I_WORD_SIZE
+rv32i_early_ivt:
+	j rv32i_early_ivt
 
 /*----------------------------------------------------------------------------*
  * halt()                                                                     *
@@ -86,6 +103,6 @@ halt:
 
 .section .bss,"aw",@nobits
 
-.align 4
+.align RV32I_WORD_SIZE
 kstacks:
 	.skip RV32I_STACK_SIZE * RV32I_HARTS_NUM
