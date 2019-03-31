@@ -63,13 +63,13 @@ PUBLIC void kmain(int argc, const char *argv[])
 
 	test_exception();
 	test_interrupt();
+	test_trap();
 
 #if !defined(__rv32i__)
 
 	test_tlb();
 	test_mmu();
 	test_core();
-	test_trap();
 	test_upcall();
 
 #endif
