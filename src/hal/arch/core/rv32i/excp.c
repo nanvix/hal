@@ -49,7 +49,7 @@ PRIVATE const struct
 	{ RV32I_EXCP_GENERAL_PROTECTION_UMODE, "environment call from u-mode"   },
 	{ RV32I_EXCP_GENERAL_PROTECTION_SMODE, "environment call from s-mode"   },
 	{ RV32I_EXCP_RESERVED2,                "reserved"                       },
-	{ RV32I_EXCP_GENERAL_PROECTION_MMODE,  "environment call from m-mode"   },
+	{ RV32I_EXCP_GENERAL_PROTECTION_MMODE, "environment call from m-mode"   },
 	{ RV32I_EXCP_PAGE_FAULT_INSTR,         "instruction page fault"         },
 	{ RV32I_EXCP_PAGE_FAULT_LOAD,          "load page fault"                },
 	{ RV32I_EXCP_RESERVED1,                "reserved"                       },

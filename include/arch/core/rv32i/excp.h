@@ -80,7 +80,7 @@
 	#define RV32I_EXCP_GENERAL_PROTECTION_UMODE  8 /**< Environment Call from U-mode   */
 	#define RV32I_EXCP_GENERAL_PROTECTION_SMODE  9 /**< Environment Call from S-mode   */
 	#define RV32I_EXCP_RESERVED2                10 /**< Reserved                       */
-	#define RV32I_EXCP_GENERAL_PROECTION_MMODE  11 /**< Environment Call from M-mode   */
+	#define RV32I_EXCP_GENERAL_PROTECTION_MMODE 11 /**< Environment Call from M-mode   */
 	#define RV32I_EXCP_PAGE_FAULT_INSTR         12 /**< Instruction Page Fault         */
 	#define RV32I_EXCP_PAGE_FAULT_LOAD          13 /**< Load Page Fault                */
 	#define RV32I_EXCP_RESERVED1                14 /**< Reserved                       */
