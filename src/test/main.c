@@ -61,13 +61,18 @@ PUBLIC void kmain(int argc, const char *argv[])
 
 	clock_init(CLOCK_FREQ);
 
-	test_interrupt();
 	test_exception();
+	test_interrupt();
+
+#if !defined(__rv32i__)
+
 	test_tlb();
 	test_mmu();
 	test_core();
 	test_trap();
 	test_upcall();
+
+#endif
 
 #if (TARGET_HAS_SYNC)
 	test_sync();

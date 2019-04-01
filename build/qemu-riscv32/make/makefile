@@ -60,4 +60,4 @@ export LDFLAGS  = -nostdlib -nostdinc -Wl,--nmagic -Wl,--gc-sections
 
 # Libraries
 export LIBKERNEL = libhal-$(TARGET).a
-export LIBS = $(LIBDIR)/$(LIBKERNEL) -lgcc
+export LIBS = $(LIBDIR)/$(LIBKERNEL)
