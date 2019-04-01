@@ -55,6 +55,8 @@
 	 */
 	#define MTIMECMP_ADDR (PIC_BASE + PIC_MTIMECMP_OFFSET)
 
+#ifndef _ASM_FILE_
+
 	/**
 	 * @brief Initializes the clock device.
 	 *
@@ -110,6 +112,8 @@
 		*((rv32i_word_t *)(MTIMECMP_ADDR + RV32I_WORD_SIZE)) = RV32I_WORD(time >> 32);
 	}
 
+#endif
+
 /**@}*/
 
 /*============================================================================*
@@ -128,6 +132,8 @@
 	#define __clock_reset_fn /**< clock_reset() */
 	/**@}*/
 
+#ifndef _ASM_FILE_
+
 	/**
 	 * @see clock_init().
 	 */
@@ -143,6 +149,8 @@
 	{
 		rv32i_clock_reset();
 	}
+
+#endif
 
 /**@endcond*/
 

@@ -36,6 +36,8 @@
 	#define __NEED_CORE_TYPES
 	#include <arch/core/rv32i/types.h>
 
+#ifndef _ASM_FILE_
+
 	/**
 	 * @brief Issues a system call with no arguments.
 	 *
@@ -238,6 +240,8 @@
 	 */
 	EXTERN void rv32i_syscall(void);
 
+#endif
+
 /**@}*/
 
 /*============================================================================*
@@ -259,6 +263,8 @@
 	#define __syscall4_fn /**< rv32i_syscall4() */
 	#define __syscall5_fn /**< rv32i_syscall5() */
 	/**@}*/
+
+#ifndef _ASM_FILE_
 
 	/**
 	 * @see rv32i_syscall_0()
@@ -364,6 +370,8 @@
 			)
 		);
 	}
+
+#endif
 
 /**@endcond*/
 

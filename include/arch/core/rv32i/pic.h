@@ -61,6 +61,8 @@
 	 */
 	#define RV32I_IRQ_NUM 12
 
+#ifndef _ASM_FILE_
+
 	/**
 	 * Table of Interrupt Requests (IRQs).
 	 */
@@ -179,6 +181,8 @@
 			rv32i_pic_unmask(i);
 	}
 
+#endif
+
 /**@}*/
 
 /*============================================================================*
@@ -197,6 +201,8 @@
 	#define __interrupt_unmask /**< interrupt_unmask() */
 	/**@}*/
 
+#ifndef _ASM_FILE_
+
 	/**
 	 * @see rv32i_pic_mask().
 	 */
@@ -212,6 +218,8 @@
 	{
 		return (rv32i_pic_unmask(irqnum));
 	}
+
+#endif
 
 /**@endcond*/
 

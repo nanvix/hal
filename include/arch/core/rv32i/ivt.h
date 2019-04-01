@@ -53,6 +53,8 @@
 	 */
 	#define RV32I_EXCP_NUM 16
 
+#ifndef _ASM_FILE_
+
 	/**
 	 * @brief Event handler.
 	 */
@@ -80,6 +82,8 @@
 	 * @param do_event Event handler.
 	 */
 	extern void rv32i_ivt_setup(rv32i_handler_fn do_event);
+
+#endif
 
 /**@}*/
 
