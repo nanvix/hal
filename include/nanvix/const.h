@@ -47,6 +47,15 @@
 	/**@}*/
 
 	/**
+	 * @name Common Sizes
+	 */
+	/**@{*/
+	#define KB 1024       /**< Kilobyte */
+	#define MB (KB*KB)    /**< Megabyte */
+	#define GB (KB*KB*KB) /**< Gigabyte */
+	/**@}*/
+
+	/**
 	 * @name Logical Constants
 	 */
 	/**@{*/
