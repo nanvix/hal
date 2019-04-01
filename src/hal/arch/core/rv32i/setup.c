@@ -34,6 +34,7 @@ EXTERN NORETURN void kmain(int, const char *[]);
 EXTERN unsigned char __BSS_START;
 EXTERN unsigned char __BSS_END;
 EXTERN void rv32i_do_strap(void);
+EXTERN void rv32i_mmu_setup(void);
 
 /*============================================================================*
  * rv32i_core_setup()                                                         *
@@ -50,6 +51,8 @@ PUBLIC void rv32i_core_setup(void)
 	kprintf("[hal] booting up master core...");
 
 	rv32i_ivt_setup(&rv32i_do_strap);
+
+	rv32i_mmu_setup();
 }
 
 /*============================================================================*
