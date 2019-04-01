@@ -64,6 +64,8 @@
 	#define RV32I_INT_EXTERN_MACHINE  11 /**< Machine External Interrupt    */
 	/**@}*/
 
+#ifndef _ASM_FILE_
+
 	/**
 	 * @brief Sets a handler for a interrupt.
 	 *
@@ -110,6 +112,8 @@
 		);
 	}
 
+#endif
+
 /**@}*/
 
 /*============================================================================*
@@ -139,6 +143,8 @@
 	#define __interrupt_unmask      /**< interrupt_unmask()      */
 	/**@}*/
 
+#ifndef _ASM_FILE_
+
 	/**
 	 * @see rv32i_int_enable().
 	 */
@@ -162,6 +168,8 @@
 	{
 		return (rv32i_int_handler_set(num, handler));
 	}
+
+#endif
 
 /**@endcond*/
 

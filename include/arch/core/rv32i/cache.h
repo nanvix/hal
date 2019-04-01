@@ -45,6 +45,8 @@
 	 */
 	#define RV32I_CACHE_LINE_SIZE (1 << RV32I_CACHE_LINE_SHIFT)
 
+#ifndef _ASM_FILE_
+
 	/**
 	 * @brief Flushes the data and instruction caches.
 	 *
@@ -54,6 +56,8 @@
 	{
 		asm volatile ("fence.i" ::: "memory");
 	}
+
+#endif
 
 /**@}*/
 
@@ -78,6 +82,8 @@
 	 */
 	#define CACHE_LINE_SIZE RV32I_CACHE_LINE_SIZE
 
+#ifndef _ASM_FILE_
+
 	/**
 	 * @see rv32i_dcache_inval().
 	 */
@@ -93,6 +99,8 @@
 	{
 		rv32i_cache_inval();
 	}
+
+#endif
 
 /**@endcond*/
 

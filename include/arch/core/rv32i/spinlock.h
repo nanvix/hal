@@ -48,6 +48,8 @@
 	#define RV32I_SPINLOCK_LOCKED   0x1 /**< Locked   */
 	/**@}*/
 
+#ifndef _ASM_FILE_
+
 	/**
 	 * @brief Spinlock.
 	 */
@@ -114,6 +116,8 @@
 		__sync_synchronize();
 		*lock = RV32I_SPINLOCK_UNLOCKED;
 	}
+
+#endif
 
 /**@}*/
 
