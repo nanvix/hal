@@ -124,6 +124,14 @@
 	#define __MEMORY_TYPES
 
 		/**
+		 * @name Casters for Memory Types
+		 */
+		/**@{*/
+		#define RV32I_PADDR(x) ((paddr_t)(x)) /**< To Physical Address */
+		#define RV32I_VADDR(x) ((vaddr_t)(x)) /**< To VIrtual Address   */
+		/**@}*/
+
+		/**
 		 * @brief Virtual address.
 		 */
 		typedef uint32_t vaddr_t;
