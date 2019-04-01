@@ -22,6 +22,12 @@
  * SOFTWARE.
  */
 
+/* Must come first. */
+#define __NEED_IVT
+#define __NEED_MEMORY_TYPES
+
+#include <arch/core/rv32i/types.h>
+#include <arch/core/rv32i/ivt.h>
 #include <nanvix/hal/log.h>
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
@@ -30,6 +36,7 @@
 EXTERN NORETURN void kmain(int, const char *[]);
 EXTERN unsigned char __BSS_START;
 EXTERN unsigned char __BSS_END;
+EXTERN void rv32i_do_event(void);
 
 /*============================================================================*
  * rv32i_core_setup()                                                         *
@@ -43,7 +50,9 @@ EXTERN unsigned char __BSS_END;
  */
 PUBLIC void rv32i_core_setup(void)
 {
-	/* TODO */
+	kprintf("[hal] booting up master core...");
+
+	rv32i_ivt_setup(&rv32i_do_event);
 }
 
 /*============================================================================*
