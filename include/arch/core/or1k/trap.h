@@ -154,7 +154,7 @@
 	/**
 	 * @brief Issues a system call with four arguments.
 	 *
-	 * @param  __asm__("r11") syscall_nr System call number.
+	 * @param syscall_nr System call number.
 	 * @param arg0 System call number.
 	 * @param arg1 System call number.
 	 * @param arg2 System call number.
@@ -193,7 +193,7 @@
 	/**
 	 * @brief Issues a system call with five arguments.
 	 *
-	 * @param  __asm__("r11") syscall_nr System call number.
+	 * @param syscall_nr System call number.
 	 * @param arg0 System call number.
 	 * @param arg1 System call number.
 	 * @param arg2 System call number.
@@ -238,7 +238,7 @@
 	 */
 	EXTERN void or1k_syscall(void);
 
-/**@*/
+/**@}*/
 
 /*============================================================================*
  * Exported Interface                                                         *

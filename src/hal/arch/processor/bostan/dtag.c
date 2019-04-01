@@ -33,14 +33,7 @@
 #include <errno.h>
 
 /**
- * @brief Configure D-NoC receiver buffer.
- *
- * @param interface Number of the interface.
- * @param tag       Number of receiver buffer.
- * @param mode      Number of target buffer.
- * @param mask      Initial value of the buffer.
- *
- * @return Zero if configure sucefully and non zero otherwise.
+ * @todo Document this function.
  */
 PUBLIC int bostan_dnoc_rx_config(
     int interface,

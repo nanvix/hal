@@ -26,8 +26,10 @@
 #define PROCESSOR_BOSTAN_NOC_TAG_H_
 
 /**
- * @cond bostan-noc
+ * @addtogroup processor-bostan-noc
+ * @ingroup processor-bostan
  */
+/**@{*/
 
 	/**
 	 * @name Type of operation of the NoC Tag
@@ -54,6 +56,6 @@
 		#define BOSTAN_NR_INTERFACES 4
 	#endif
 
-/**@endcond*/
+/**@}*/
 
 #endif /* PROCESSOR_BOSTAN_NOC_TAG_H_ */

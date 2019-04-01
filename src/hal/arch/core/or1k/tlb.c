@@ -121,15 +121,7 @@ PRIVATE int or1k_tlb_check_inst(vaddr_t vaddr)
 /**
  * The or1k_tlb_lookup_vaddr() function searches the architectural TLB
  * for an entry that matches the virtual address @p vaddr.
- *
- * @param tlb Handler number, identifies which TLB
  * type should be used.
- *
- * @param vaddr Address to be queried.
- *
- * @returns Upon successful completion, the matching TLB
- * entry for the address @p vaddr is returned. If none
- * is found, @p NULL is returned.
  *
  * @author Davidson Francis
  */
@@ -178,11 +170,6 @@ PUBLIC const struct tlbe *or1k_tlb_lookup_vaddr(int tlb_type, vaddr_t vaddr)
 /**
  * The or1k_tlb_lookup_paddr() function searches the architectural TLB
  * for an entry that matches the physical address @p paddr.
- *
- * @param tlb Handler number, identifies which TLB
- * type should be used.
- *
- * @param paddr Address to be queried.
  *
  * @returns Upon successful completion, the matching TLB
  * entry for the address @p vaddr is returned. If none
@@ -236,13 +223,6 @@ PUBLIC const struct tlbe *or1k_tlb_lookup_paddr(int tlb_type, paddr_t paddr)
  * The or1k_tlb_write() function writes an entry into the architectural
  * TLB. If the new entry conflicts to an old one, the old one is
  * overwritten.
- *
- * @param tlb Handler number, identifies which TLB
- * type should be used.
- *
- * @param vaddr Virtual address to be mapped.
- *
- * @param paddr Physical address to be mapped.
  *
  * @note Although the OpenRISC specification states that the TLB can
  * have up to 4-ways, there is no known implementation that uses more
@@ -386,11 +366,6 @@ PUBLIC int or1k_tlb_write(int tlb_type, vaddr_t vaddr, paddr_t paddr)
  * The or1k_tlb_inval() function invalidates the TLB entry that
  * encodes the virtual address @p vaddr.
  *
- * @param tlb Handler number, identifies which TLB
- * type should be used.
- *
- * @param vaddr Address to be invalidated.
- *
  * @author Davidson Francis
  */
 PUBLIC int or1k_tlb_inval(int tlb_type, vaddr_t vaddr)
@@ -428,12 +403,8 @@ PUBLIC int or1k_tlb_inval(int tlb_type, vaddr_t vaddr)
  *============================================================================*/
 
 /**
- * @brief Flushes changes in the TLB.
- *
- * The or1k_tlb_flush() function flushes the changes made to the
- * TLB of the underlying or1k core.
- *
- * @returns This function always returns zero.
+ * The or1k_tlb_flush() function flushes the changes made to the TLB
+ * of the underlying or1k core.
  */
 PUBLIC int or1k_tlb_flush(void)
 {

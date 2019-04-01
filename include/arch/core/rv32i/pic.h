@@ -154,7 +154,7 @@
 	 *
 	 * @author Pedro Henrique Penna
 	 *
-	 * @FIXME: we should do this atomically.
+	 * @todo FIXME we should do this atomically.
 	 */
 	static inline void rv32i_pic_unmask_all(void)
 	{
@@ -170,7 +170,7 @@
 	 *
 	 * @author Pedro Henrique Penna
 	 *
-	 * @FIXME: we should do this atomically.
+	 * @todo FIXME we should do this atomically.
 	 */
 	static inline void rv32i_pic_mask_all(void)
 	{

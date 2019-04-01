@@ -33,7 +33,6 @@ PRIVATE int uart8250_initialized = 0;
 
 /**
  * Writes into serial port.
- * @param c Data to be written.
  */
 PUBLIC void uart8250_write(const char *buf, size_t n)
 {

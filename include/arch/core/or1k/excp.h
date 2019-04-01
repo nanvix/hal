@@ -101,7 +101,7 @@
 
 	} __attribute__((packed));
 
-/**@endif*/
+/**@endcond*/
 
 	/**
 	 * @brief Exception handler.
@@ -179,12 +179,12 @@
 	/**
 	 * @brief Unsets a handler for an exception.
 	 *
-	 * @param excpnum Number of the target exception.
+	 * @param num Number of the target exception.
 	 *
 	 * @returns Upon successful completion zero is returned. Upon
 	 * failure a negative error code is returned instead.
 	 */
-	EXTERN int or1k_excp_unset_handler(int excpnum);
+	EXTERN int or1k_excp_unset_handler(int num);
 
 	/**
 	 * @brief Low-level exception dispatcher.

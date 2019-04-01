@@ -168,6 +168,6 @@
 		unsigned arg4,
 		unsigned syscall_nr);
 
-/**@*/
+/**@}*/
 
 #endif /* HAL_CORE_TRAP_H_ */

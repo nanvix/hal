@@ -42,7 +42,7 @@
 	 * @brief Writes 8 bits to an I/O port.
 	 *
 	 * @param port Number of the target port.
-	 * @param bits Bits to write.
+	 * @param byte Byte to write.
 	 */
 	static inline void k1b_output8(uint16_t port, uint8_t byte)
 	{

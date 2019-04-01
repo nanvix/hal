@@ -50,7 +50,7 @@
 	#define CORE_SUPPORTS_PMIO    0
 	#define CORE_IS_LITTLE_ENDIAN 1
 
-/**@}*/
+/**@endcond*/
 
 #endif /* ARCH_CORE_RV32I_H_ */
 

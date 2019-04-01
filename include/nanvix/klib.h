@@ -226,7 +226,7 @@
 	 * @brief Expands a macro.
 	 *
 	 * @param x First macro.
-	 * @param x Second macro.
+	 * @param y Second macro.
 	 */
 	#define EXPAND2(x, y) CONCAT2(x, y)
 

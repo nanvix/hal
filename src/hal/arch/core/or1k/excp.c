@@ -156,7 +156,7 @@ PUBLIC int or1k_excp_set_handler(int num, or1k_exception_handler_fn handler)
 }
 
 /**
- * The or1k_excp_iunset_handler() function unsets a handler function
+ * The or1k_excp_unset_handler() function unsets a handler function
  * for the exception @p num.
  *
  * @author Pedro Henrique Penna

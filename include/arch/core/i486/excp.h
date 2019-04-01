@@ -208,12 +208,12 @@
 	/**
 	 * @brief Unsets a handler for an exception.
 	 *
-	 * @param excpnum Number of the target exception.
+	 * @param num Number of the target exception.
 	 *
 	 * @returns Upon successful completion zero is returned. Upon
 	 * failure a negative error code is returned instead.
 	 */
-	EXTERN int i486_excp_unset_handler(int excpnum);
+	EXTERN int i486_excp_unset_handler(int num);
 
 /**@}*/
 

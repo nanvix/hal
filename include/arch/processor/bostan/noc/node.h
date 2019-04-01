@@ -26,8 +26,10 @@
 #define PROCESSOR_BOSTAN_NOC_NODE_H_
 
 /**
- * @cond bostan-noc
+ * @addtogroup processor-bostan-noc
+ * @ingroup processor-bostan
  */
+/**@{*/
 
 	/* Cluster API. */
 	#include <arch/processor/bostan/_bostan.h>
@@ -53,7 +55,7 @@
 		return __k1_get_cluster_id();
 	}
 
-/**@endcond*/
+/**@}*/
 
 /*============================================================================*
  * Exported Interface                                                         *
