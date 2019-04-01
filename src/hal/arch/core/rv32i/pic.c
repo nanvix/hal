@@ -24,58 +24,21 @@
 
 #include <arch/core/rv32i/int.h>
 #include <nanvix/const.h>
-#include <nanvix/klib.h>
-#include <errno.h>
 
 /**
- * @brief Interrupt handlers.
+ * @brief Table of Interrupt Requests (IRQs).
  */
-PRIVATE void (*handlers[RV32I_INT_NUM])(int) = {
-	NULL, NULL, NULL, NULL,
-	NULL, NULL, NULL, NULL,
-	NULL, NULL, NULL, NULL,
+PUBLIC const int irqs[RV32I_IRQ_NUM] = {
+	RV32I_MIE_USIE, /* User Software Interrupt Enable       */
+	RV32I_MIE_SSIE, /* Supervisor Interrupt Enable          */
+	RV32I_MIE_R0,
+	RV32I_MIE_MSIE, /* Machine Software Interrupt Enable    */
+	RV32I_MIE_UTIE, /* User Timer Interrupt Enable          */
+	RV32I_MIE_STIE, /* Supervisor Timer Interrupt Enable    */
+	RV32I_MIE_R1,
+	RV32I_MIE_MTIE, /* Machine Timer Interrupt Enable       */
+	RV32I_MIE_UEUE, /* User External Interrupt Enable       */
+	RV32I_MIE_SEIE, /* Supervisor External Interrupt Enable */
+	RV32I_MIE_R2,
+	RV32I_MIE_MEIE  /* Machine External Interrupt Enable    */
 };
-
-/**
- * The do_int() function dispatches an interrupt request to a
- * previously-registered handler. If no function was previously
- * registered to handle the triggered hardware interrupt request, this
- * function returns immediately.
- *
- * @note This function is called from assembly code.
- */
-PUBLIC void rv32i_do_int(int num, const struct context *ctx)
-{
-	void (*handler)(int);
-
-	UNUSED(ctx);
-
-	/* Unknown interrupt. */
-	if (num >= RV32I_INT_NUM)
-	{
-		kprintf("[hal] unknown interrupt source %d", num);
-		return;
-	}
-
-	/* Nothing to do. */
-	if ((handler = handlers[num]) == NULL)
-		return;
-
-	handler(num);
-}
-
-/**
- * The rv32i_int_handler_set() function sets the function pointed to
- * by @p handler as the handler for the hardware interrupt whose
- * number is @p num.
- */
-PUBLIC int rv32i_int_handler_set(int num, void (*handler)(int))
-{
-	/* Invalid interrupt number. */
-	if ((num < 0) || (num >= RV32I_INT_NUM))
-		return (-EINVAL);
-
-	handlers[num] = handler;
-
-	return (0);
-}

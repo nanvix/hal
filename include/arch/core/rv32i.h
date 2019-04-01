@@ -35,6 +35,7 @@
 	#endif
 
 	#include <arch/core/rv32i/cache.h>
+	#include <arch/core/rv32i/clock.h>
 	#include <arch/core/rv32i/core.h>
 	#include <arch/core/rv32i/excp.h>
 	#include <arch/core/rv32i/int.h>

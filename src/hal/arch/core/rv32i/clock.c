@@ -22,60 +22,59 @@
  * SOFTWARE.
  */
 
+#include <arch/core/rv32i/clock.h>
 #include <arch/core/rv32i/int.h>
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
-#include <errno.h>
 
 /**
- * @brief Interrupt handlers.
+ * @brief Was the clock device initialized?
  */
-PRIVATE void (*handlers[RV32I_INT_NUM])(int) = {
-	NULL, NULL, NULL, NULL,
-	NULL, NULL, NULL, NULL,
-	NULL, NULL, NULL, NULL,
-};
+PRIVATE int initialized = FALSE;
 
 /**
- * The do_int() function dispatches an interrupt request to a
- * previously-registered handler. If no function was previously
- * registered to handle the triggered hardware interrupt request, this
- * function returns immediately.
- *
- * @note This function is called from assembly code.
+ * @brief Clock delta
  */
-PUBLIC void rv32i_do_int(int num, const struct context *ctx)
+PRIVATE unsigned clock_delta = 0;
+
+/**
+ * @brief Clock jitter.
+ */
+PRIVATE unsigned clock_delay = 0;
+
+/**
+ * The rv32i_clock_reset() function resets the clock device in the
+ * underlying rv32i core.
+ */
+PUBLIC void rv32i_clock_reset(void)
 {
-	void (*handler)(int);
+	rv32i_dword_t ctime;
 
-	UNUSED(ctx);
+	/* Get current time. */
+	ctime = rv32i_mtimecmp_read();
 
-	/* Unknown interrupt. */
-	if (num >= RV32I_INT_NUM)
-	{
-		kprintf("[hal] unknown interrupt source %d", num);
-		return;
-	}
-
-	/* Nothing to do. */
-	if ((handler = handlers[num]) == NULL)
-		return;
-
-	handler(num);
+	/* Set next timer interrupt to near future. */
+	rv32i_mtime_write(ctime + clock_delta + clock_delay);
 }
 
 /**
- * The rv32i_int_handler_set() function sets the function pointed to
- * by @p handler as the handler for the hardware interrupt whose
- * number is @p num.
+ * The rv32i_clock_init() function initializes the clock device in the
+ * underlying rv32i core.
  */
-PUBLIC int rv32i_int_handler_set(int num, void (*handler)(int))
+PUBLIC void rv32i_clock_init(unsigned freq)
 {
-	/* Invalid interrupt number. */
-	if ((num < 0) || (num >= RV32I_INT_NUM))
-		return (-EINVAL);
+	rv32i_dword_t t0, t1;
 
-	handlers[num] = handler;
+	kprintf("[hal] initializing the clock device...");
 
-	return (0);
+	/* Initialize clock. */
+	clock_delta = MTIME_TIMEBASE/freq;
+	t0 = rv32i_mtimecmp_read();
+	t1 = rv32i_mtimecmp_read();
+	clock_delay = t1 - t0;
+
+	/* Reset the clock device. */
+	rv32i_clock_reset();
+
+	initialized = TRUE;
 }

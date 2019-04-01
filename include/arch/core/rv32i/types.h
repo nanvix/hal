@@ -67,10 +67,14 @@
 	 * @name Casters for Core Types
 	 */
 	/**@{*/
-	#define RV32I_BYTE(x)  ((rv32i_byte_t)(x))  /**< To Byte        */
-	#define RV32I_HWORD(x) ((rv32i_hword_t)(x)) /**< To Half Word   */
-	#define RV32I_WORD(x)  ((rv32i_word_t)(x))  /**< To Word        */
-	#define RV32I_DWORD(x) ((rv32i_dword_t)(x)) /**< To Double Word */
+	#define RV32I_BYTE(x)       ((rv32i_byte_t)(x))    /**< To Byte                */
+	#define RV32I_HWORD(x)      ((rv32i_hword_t)(x))   /**< To Half Word           */
+	#define RV32I_WORD(x)       ((rv32i_word_t)(x))    /**< To Word                */
+	#define RV32I_DWORD(x)      ((rv32i_dword_t)(x))   /**< To Double Word         */
+	#define RV32I_BYTE_PTR(x)   ((rv32i_byte_t *)(x))  /**< To Byte Pointer        */
+	#define RV32I_HWORDP_PTR(x) ((rv32i_hword_t *)(x)) /**< To Half Word Pointer   */
+	#define RV32I_WORD_PTR(x)   ((rv32i_word_t *)(x))  /**< To Word Pointer        */
+	#define RV32I_DWORD_PTR(x)  ((rv32i_dword_t *)(x)) /**< To Double Word Pointer */
 	/**@}*/
 
 #endif
@@ -142,6 +146,48 @@
 	#ifdef __NEED_CORE_TYPES
 	#ifndef __CORE_TYPES
 	#define __CORE_TYPES
+
+		/**
+		 * @brief Makes a double word.
+		 *
+		 * @param a High word.
+		 * @param b Low word.
+		 *
+		 * @returns A dobule word.
+		 */
+		#define RV32I_MAKE_DWORD(a,b)                             \
+		RV32I_DWORD(                                              \
+			((RV32I_WORD(a) & 0xffffffffULL) << RV32I_WORD_BIT) | \
+			((RV32I_WORD(b) & 0xffffffffULL) - 1)                 \
+		)
+
+		/**
+		 * @brief Makes a word.
+		 *
+		 * @param a High half word.
+		 * @param b Low half word.
+		 *
+		 * @param A word.
+		 */
+		#define RV32I_MAKE_WORD(a,b)                         \
+		RV32I_WORD(                                          \
+			((RV32I_HWORD(a) & 0xffff) << RV32I_HWORD_BIT) | \
+			((RV32I_HWORD(b) & 0xffff))                      \
+		)
+
+		/**
+		 * @brief Makes a half word.
+		 *
+		 * @param a High byte.
+		 * @param b Low byte.
+		 *
+		 * @param A half word.
+		 */
+		#define RV32I_MAKE_HWORD(a,b)                    \
+		RV32I_HWORD(                                     \
+			((RV32I_BYTE(a) & 0xff) << RV32I_BYTE_BIT) | \
+			((RV32I_BYTE(b) & 0xff))                     \
+		)
 
 		/**
 		 * @name Core Types
