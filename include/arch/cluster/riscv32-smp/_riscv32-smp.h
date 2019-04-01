@@ -25,7 +25,6 @@
 #ifndef _CLUSTER_RISCV32_SMP_H_
 #define _CLUSTER_RISCV32_SMP_H_
 
-	#undef  __NEED_CORE_RV32I
 	#define __NEED_CORE_RV32I
 	#include <arch/core/rv32i.h>
 

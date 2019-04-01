@@ -267,7 +267,7 @@
 #ifndef _ASM_FILE_
 
 	/**
-	 * @see rv32i_syscall_0()
+	 * @see rv32i_syscall0()
 	 */
 	static inline rv32i_word_t syscall0(rv32i_word_t syscall_nr)
 	{
@@ -277,7 +277,7 @@
 	}
 
 	/**
-	 * @see rv32i_syscall_1()
+	 * @see rv32i_syscall1()
 	 */
 	static inline rv32i_word_t syscall1(
 		rv32i_word_t syscall_nr,
@@ -292,7 +292,7 @@
 	}
 
 	/**
-	 * @see rv32i_syscall_2()
+	 * @see rv32i_syscall2()
 	 */
 	static inline rv32i_word_t syscall2(
 		rv32i_word_t syscall_nr,
@@ -309,7 +309,7 @@
 	}
 
 	/**
-	 * @see rv32i_syscall_3()
+	 * @see rv32i_syscall3()
 	 */
 	static inline rv32i_word_t syscall3(
 		rv32i_word_t syscall_nr,
@@ -328,7 +328,7 @@
 	}
 
 	/**
-	 * @see rv32i_syscall_4()
+	 * @see rv32i_syscall4()
 	 */
 	static inline rv32i_word_t syscall4(
 		rv32i_word_t syscall_nr,
@@ -349,7 +349,7 @@
 	}
 
 	/**
-	 * @see rv32i_syscall_5()
+	 * @see rv32i_syscall5()
 	 */
 	static inline rv32i_word_t syscall5(
 		rv32i_word_t syscall_nr,
