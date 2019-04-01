@@ -113,56 +113,6 @@
 	EXTERN void interrupts_enable(void);
 
 	/**
-	 * @brief Sets a handler for an interrupt.
-	 *
-	 * @param num     Number of the target interrupt.
-	 * @param handler Handler.
-	 *
-	 * @returns Upon successful completion, zero is returned. Upon
-	 * failure, a negative error code is returned instead.
-	 *
-	 * @note This function does not check if a handler is already
-	 * set for the target hardware interrupt.
-	 */
-	EXTERN int interrupt_set_handler(int num, interrupt_handler_t handler);
-
-	/**
-	 * @brief Sets the interrupt level of the underlying core.
-	 *
-	 * @param newlevel New interrupt level.
-	 *
-	 * @returns The old interrupt level.
-	 */
-	EXTERN int interrupt_level_set(int newlevel);
-
-	/**
-	 * @brief Acknowledges an interrupt.
-	 *
-	 * @param intnum Number of the target interrupt.
-	 */
-	EXTERN void interrupt_ack(int intnum);
-
-	/**
-	 * @brief Masks an interrupt.
-	 *
-	 * @param intnum Number of the target interrupt.
-	 *
-	 * @returns Upon successful completion, zero is returned. Upon
-	 * failure, a negative error code is returned instead.
-	 */
-	EXTERN int interrupt_mask(int intnum);
-
-	/**
-	 * @brief Unmasks an interrupt.
-	 *
-	 * @param intnum Number of the target interrupt.
-	 *
-	 * @returns Upon successful completion, zero is returned. Upon
-	 * failure, a negative error number is returned instead.
-	 */
-	EXTERN int interrupt_unmask(int intnum);
-
-	/**
 	 * @brief Registers an interrupt handler.
 	 *
 	 * @param num     Number of the interrupt.
