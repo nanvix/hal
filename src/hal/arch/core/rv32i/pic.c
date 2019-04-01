@@ -22,7 +22,10 @@
  * SOFTWARE.
  */
 
-#include <arch/core/rv32i/int.h>
+/* Must come first. */
+#define __NEED_CORE_PIC
+
+#include <arch/core/rv32i/pic.h>
 #include <nanvix/const.h>
 
 /**

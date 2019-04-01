@@ -85,6 +85,7 @@
 	#define RV32I_CONTEXT_T4  28*RV32I_WORD_SIZE /**< Temporary Register 4         */
 	#define RV32I_CONTEXT_T5  29*RV32I_WORD_SIZE /**< Temporary Register 5         */
 	#define RV32I_CONTEXT_T6  30*RV32I_WORD_SIZE /**< Temporary Register 6         */
+	#define RV32I_CONTEXT_PC  31*RV32I_WORD_SIZE /**< Program Counter              */
 	/**@}*/
 
 #ifndef _ASM_FILE_
@@ -110,7 +111,7 @@
 		rv32i_word_t s2, s3, s4, s5, s6;     /**< Saved Registers 2 to 6                   */
 		rv32i_word_t s7, s8, s9, s10, s11;   /**< Saved Registers 7 to 11                  */
 		rv32i_word_t t3, t4, t5, t6;         /**< Temporary Registers 3 to 6               */
-		rv32i_byte_t RESERVED[4];            /**< Required padding.                        */
+		rv32i_word_t pc;                     /**< Program Counter                          */
 	} PACK;
 
 	/**
@@ -136,7 +137,7 @@
 	 */
 	static inline rv32i_word_t rv32i_context_get_pc(const struct context *ctx)
 	{
-		return (ctx->ra);
+		return (ctx->pc);
 	}
 
 	/**
@@ -158,7 +159,7 @@
 	 */
 	static inline void rv32i_context_set_pc(struct context *ctx, rv32i_word_t val)
 	{
-		ctx->ra = val;
+		ctx->pc = val;
 	}
 
 /**@endcond*/
