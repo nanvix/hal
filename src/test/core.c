@@ -39,7 +39,7 @@
 /**
  * @brief API Test: Number of cores started.
  */
-PRIVATE int cores_started = 1;
+PRIVATE int cores_started = 0;
 
 /**
  * @brief API Test: Spinlock for number of cores.
@@ -109,20 +109,23 @@ PRIVATE void test_core_start_slave(void)
 	for (int i = 0; i < CORES_NUM; i++)
 	{
 		if (i != COREID_MASTER)
+		{
 			core_start(i, test_core_slave_entry);
+			break;
+		}
 	}
 
 	/**
-	 * Wait indefinitely for all cores start.
+	 * Wait indefinitely for the slave start.
 	 *
-	 * @note: If for some reason not all cores were started,
+	 * @note: If for some reason the slave core not start,
 	 * the master core will hang forever.
 	 */
 	while (TRUE)
 	{
 		dcache_invalidate();
 
-		if (cores_started == CORES_NUM)
+		if (cores_started == 1)
 			break;
 	}
 }
