@@ -218,6 +218,92 @@ PRIVATE void test_core_suspend_resume_master(void)
 	}
 }
 
+/*----------------------------------------------------------------------------*
+ * Stop Execution in a Slave Core                                             *
+ *----------------------------------------------------------------------------*/
+
+/**
+ * @brief API Test: Stop Execution in a Slave Core, slave entry point.
+ */
+PRIVATE void test_core_stop_execution_slave_entry(void)
+{
+#if (TEST_CORE_VERBOSE)
+	kprintf("core %d running", core_get_id());
+#endif
+
+	spinlock_lock(&core_start_lock);
+		cores_started++;
+	spinlock_unlock(&core_start_lock);
+
+#if (TEST_CORE_VERBOSE)
+	kprintf("core %d resetting", core_get_id());
+#endif
+
+	/* If first invocation, lets reset. */
+	if (cores_started == 1)
+		core_reset();
+}
+
+/**
+ * @brief API Test: Stop Execution in a Slave Core
+ */
+PRIVATE void test_core_stop_execution_slave(void)
+{
+	int i; /* Slave index. */
+
+	/* Unit test not applicable. */
+	if (!CLUSTER_IS_MULTICORE)
+		return;
+
+	/* Reset flag. */
+	cores_started = 0;
+
+	/* Start a slave core. */
+	for (i = 0; i < CORES_NUM; i++)
+	{
+		if (i != COREID_MASTER)
+		{
+			core_start(i, test_core_stop_execution_slave_entry);
+			break;
+		}
+	}
+
+	/*
+	 * Wait indefinitely for the slave start. Note that, if for some
+	 * reason the slave core not start, the master core will hang
+	 * forever.
+	 */
+	while (TRUE)
+	{
+		dcache_invalidate();
+
+		if (cores_started == 1)
+			break;
+	}
+
+	/*
+	 * Wait for the slave become available again, which should
+	 * occur when core_start returns 0, meaning that a successful
+	 * start command was sent to the slave core.
+	 */
+	while (core_start(i, test_core_stop_execution_slave_entry))
+		noop();
+
+	/*
+	 * Wait indefinitely for the slave start again, which should
+	 * happens when the cores_started is incremented again. Note that,
+	 * if for some reason the slave core not start, the master core
+	 * will hang forever.
+	 */
+	while (TRUE)
+	{
+		dcache_invalidate();
+
+		if (cores_started == 2)
+			break;
+	}
+}
+
 /*============================================================================*
  * Test Driver                                                                *
  *============================================================================*/
@@ -229,6 +315,7 @@ PRIVATE struct test core_tests_api[] = {
 	{ test_core_get_id,                "Get Core ID"                    },
 	{ test_core_start_slave,           "Start Execution Slave"          },
 	{ test_core_suspend_resume_master, "Suspend and Resume from Master" },
+	{ test_core_stop_execution_slave,  "Stop Execution in a Slave Core" },
 	{ NULL,                            NULL                             },
 };
 
