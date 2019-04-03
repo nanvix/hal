@@ -34,8 +34,8 @@
 /**@{*/
 
 	/* Must come first. */
-	#define __NEED_CORE_TYPES
 	#define __NEED_CORE_PIC
+	#define __NEED_CORE_TYPES
 
 	#include <arch/core/rv32i/pic.h>
 	#include <arch/core/rv32i/types.h>
@@ -105,11 +105,12 @@
 	 *
 	 * @param time Value to write.
 	 */
-	static inline void rv32i_mtime_write(rv32i_dword_t time)
+	static inline void rv32i_mtimecmp_write(rv32i_dword_t time)
 	{
-		*((rv32i_word_t *)(MTIMECMP_ADDR + RV32I_WORD_SIZE)) = 0xffffffff;
-		*((rv32i_word_t *)(MTIMECMP_ADDR)) = RV32I_WORD(time & 0xffffffff);
-		*((rv32i_word_t *)(MTIMECMP_ADDR + RV32I_WORD_SIZE)) = RV32I_WORD(time >> 32);
+		*((rv32i_word_t *)(MTIMECMP_ADDR + RV32I_WORD_SIZE)) = -1;
+		*((rv32i_word_t *)(MTIMECMP_ADDR)) = RV32I_WORD(time & -1);
+		*((rv32i_word_t *)(MTIMECMP_ADDR + RV32I_WORD_SIZE)) =
+			RV32I_WORD(time >> RV32I_WORD_BIT);
 	}
 
 #endif
