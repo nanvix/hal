@@ -128,7 +128,8 @@
 		 */
 		/**@{*/
 		#define RV32I_PADDR(x) ((paddr_t)(x)) /**< To Physical Address */
-		#define RV32I_VADDR(x) ((vaddr_t)(x)) /**< To VIrtual Address   */
+		#define RV32I_VADDR(x) ((vaddr_t)(x)) /**< To Virtual Address  */
+		#define RV32I_FRAME(x) ((frame_t)(x)) /**< To Frame Number     */
 		/**@}*/
 
 		/**
