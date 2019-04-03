@@ -840,6 +840,20 @@
 		return (satp);
 	}
 
+	/**
+	 * @brief Writes to the satp register.
+	 *
+	 * @param val Value to write.
+	 */
+	static inline void rv32i_satp_write(rv32i_word_t val)
+	{
+		__asm__ __volatile__(
+			"csrw satp, %0;"
+			:
+			: "r" (val)
+		);
+	}
+
 #endif /* _ASM_FILE_ */
 
 /**@}*/
