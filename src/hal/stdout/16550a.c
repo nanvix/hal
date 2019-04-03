@@ -23,6 +23,7 @@
  */
 
 #include <arch/stdout/16550a.h>
+#include <nanvix/hal/hal.h>
 #include <nanvix/const.h>
 #include <stdint.h>
 
@@ -93,4 +94,5 @@ void uart_16550a_init(void)
 
 	/* Device initialized. */
 	initialized = 1;
+	dcache_invalidate();
 }
