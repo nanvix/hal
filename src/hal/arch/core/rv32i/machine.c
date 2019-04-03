@@ -34,8 +34,6 @@
 #include <nanvix/const.h>
 #include <errno.h>
 
-#define UNREACHABLE() \
-	{ while(TRUE) ; __builtin_unreachable(); }
 EXTERN unsigned char __BSS_START;
 EXTERN unsigned char __BSS_END;
 
