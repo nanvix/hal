@@ -61,9 +61,9 @@
 	static inline void or1k_spinlock_init(or1k_spinlock_t *lock)
 	{
 		register or1k_spinlock_t *lock_reg
-			__asm__("r5") = lock;
+			asm("r5") = lock;
 
-		__asm__ __volatile__
+		asm __volatile__
 		(
 			"l.sw 0(r5), r0"
 			:
@@ -84,14 +84,14 @@
 	static inline int or1k_spinlock_trylock(or1k_spinlock_t *lock)
 	{
 		register or1k_spinlock_t *lock_reg
-			__asm__("r5") = lock;
+			asm("r5") = lock;
 		register or1k_spinlock_t lock_value
-			__asm__("r7") = OR1K_SPINLOCK_UNLOCKED;
+			asm("r7") = OR1K_SPINLOCK_UNLOCKED;
 		register unsigned locked
-			__asm__("r9") = 0;
+			asm("r9") = 0;
 
 		/* First, atomically reads the lock. */
-		__asm__ __volatile__
+		asm __volatile__
 		(
 			"l.lwa r7, 0(r5)"
 			: "=r" (lock_value)
@@ -104,7 +104,7 @@
 
 		/* Tries to lock. */
 		lock_value = OR1K_SPINLOCK_LOCKED;
-		__asm__ __volatile__
+		asm __volatile__
 		(
 			"l.swa   0(r5),  r7\n"
 			"l.mfspr r9, r0, 0x11\n"  /* Supervisor Register. */
@@ -140,9 +140,9 @@
 	static inline void or1k_spinlock_unlock(or1k_spinlock_t *lock)
 	{
 		register or1k_spinlock_t *lock_reg
-			__asm__("r5") = lock;
+			asm("r5") = lock;
 
-		__asm__ __volatile__
+		asm __volatile__
 		(
 			"1:\n"
 			"	l.lwa r7, 0(r5)\n"

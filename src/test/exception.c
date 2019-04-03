@@ -48,7 +48,7 @@
 	 */
 	PRIVATE inline void trigger_exception(void)
 	{
-		__asm__ __volatile__ (
+		asm __volatile__ (
 			"csrw mhartid, %0;"
 			:
 			: "r" (0xdeadc0de)

@@ -41,6 +41,7 @@
 	#define __NEED_CORE_TYPES
 
 	#include <arch/core/rv32i/types.h>
+	#include <nanvix/cc.h>
 
 	/**
 	 * @brief Number of interrupts.
@@ -66,7 +67,7 @@
 	 */
 	static inline void rv32i_mtvec_set(rv32i_handler_fn do_event)
 	{
-		__asm__ __volatile__(
+		asm __volatile__(
 			"csrw mtvec, %0;"
 			:
 			: "r" (RV32I_WORD(do_event))

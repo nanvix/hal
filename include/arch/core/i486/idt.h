@@ -97,7 +97,7 @@
 	 */
 	static inline void idt_flush(const struct idtptr *idtptr)
 	{
-		__asm__ __volatile__(
+		asm __volatile__(
 			"mov %0, %%eax;\
 			lidt (%%eax);"
 			:

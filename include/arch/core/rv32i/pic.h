@@ -43,6 +43,7 @@
 
 	#include <arch/core/rv32i/regs.h>
 	#include <arch/core/rv32i/types.h>
+	#include <nanvix/cc.h>
 	#include <errno.h>
 
 	/**
@@ -106,7 +107,7 @@
 		if (rv32i_pic_is_reserved(irqnum))
 			return (-ENOTSUP);
 
-		__asm__ __volatile__ (
+		asm __volatile__ (
 			"csrrs %0, mie, %1"
 			: "=r"(mie)
 			: "r"(irqs[irqnum])
@@ -137,7 +138,7 @@
 		if (rv32i_pic_is_reserved(irqnum))
 			return (-ENOTSUP);
 
-		__asm__ __volatile__ (
+		asm __volatile__ (
 			"csrrc %0, mie, %1"
 			: "=r"(mie)
 			: "r"(irqs[irqnum])

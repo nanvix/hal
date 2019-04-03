@@ -109,7 +109,7 @@
 	 */
 	static inline void gdt_flush(const struct gdtptr *gdtptr)
 	{
-		__asm__ __volatile__ (
+		asm __volatile__ (
 			"mov %0, %%eax;\
 			lgdt (%%eax);\
 			ljmp %1, $reload_cs;\

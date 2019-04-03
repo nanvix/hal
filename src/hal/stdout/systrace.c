@@ -35,13 +35,13 @@ PRIVATE int systrace_initialized = 0;
  */
 PRIVATE inline void systrace_putchar(char c)
 {
-	__asm__ __volatile__
+	asm __volatile__
 	(
 		"l.addi r3, %0, 0"
 		:
 		: "r" (c) : "r3"
 	);
-	__asm__ __volatile__("l.nop 4");
+	asm __volatile__("l.nop 4");
 }
 
 /**
