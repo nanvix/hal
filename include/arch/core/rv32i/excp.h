@@ -128,6 +128,18 @@
 /**@endcond*/
 
 	/**
+	 * @brief Dumps all GPRs.
+	 *
+	 * @brief ctx  Saved execution context.
+	 */
+	EXTERN void rv32i_dump_all_gpr(const struct context *ctx);
+
+	/**
+	 * @brief Dumps all CSRs.
+	 */
+	EXTERN void rv32i_dump_all_csr(void);
+
+	/**
 	 * @brief Exception handler.
 	 */
 	typedef void (*rv32i_exception_handler_fn)(const struct exception *, const struct context *);
