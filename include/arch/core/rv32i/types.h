@@ -158,7 +158,7 @@
 		#define RV32I_MAKE_DWORD(a,b)                             \
 		RV32I_DWORD(                                              \
 			((RV32I_WORD(a) & 0xffffffffULL) << RV32I_WORD_BIT) | \
-			((RV32I_WORD(b) & 0xffffffffULL) - 1)                 \
+			((RV32I_WORD(b) & 0xffffffffULL))                     \
 		)
 
 		/**
