@@ -28,6 +28,7 @@ file bin/test-driver
 target remote localhost:1234
 handle SIGSEGV nostop noprint nopass
 set confirm off
+focus cmd
 define hook-stop
 	if $_isvoid ($_exitcode) != 1
 		quit
