@@ -44,7 +44,7 @@
 	 */
 	static inline void i486_output8(uint16_t port, uint8_t bits)
 	{
-		asm __volatile__ ("outb %0, %1" : : "a"(bits), "Nd"(port));
+		asm volatile ("outb %0, %1" : : "a"(bits), "Nd"(port));
 	}
 
 	/**
@@ -52,7 +52,7 @@
 	 */
 	static inline void i486_iowait(void)
 	{
-		asm __volatile__("outb %%al, $0x80" : : "a"(0));
+		asm volatile ("outb %%al, $0x80" : : "a"(0));
 	}
 
 	/**

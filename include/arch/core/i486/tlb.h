@@ -57,7 +57,7 @@
 	 */
 	static inline int i486_tlb_flush(void)
 	{
-		asm __volatile__ (
+		asm volatile (
 			"movl %%cr3, %%eax;\
 			movl %%eax, %%cr3;"
 			:

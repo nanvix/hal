@@ -52,7 +52,7 @@
 	 */
 	static inline void rv32i_cache_inval(void)
 	{
-		asm __volatile__ ("fence.i" ::: "memory");
+		asm volatile ("fence.i" ::: "memory");
 	}
 
 /**@}*/

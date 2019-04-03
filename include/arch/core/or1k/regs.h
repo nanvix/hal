@@ -458,7 +458,7 @@
 		register unsigned r5
 			asm("r5") = (unsigned) reg;
 
-		asm __volatile__
+		asm volatile
 		(
 			"l.mfspr r3, r5, 0"
 			: "=r" (ret)
@@ -480,7 +480,7 @@
 		register unsigned r5
 			asm("r5") = (unsigned) value;
 
-		asm __volatile__
+		asm volatile
 		(
 			"l.mtspr r3, r5, 0\n"
 			:

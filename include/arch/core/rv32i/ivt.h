@@ -67,7 +67,7 @@
 	 */
 	static inline void rv32i_mtvec_set(rv32i_handler_fn do_event)
 	{
-		asm __volatile__(
+		asm volatile (
 			"csrw mtvec, %0;"
 			:
 			: "r" (RV32I_WORD(do_event))

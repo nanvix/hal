@@ -63,7 +63,7 @@
 		register or1k_spinlock_t *lock_reg
 			asm("r5") = lock;
 
-		asm __volatile__
+		asm volatile
 		(
 			"l.sw 0(r5), r0"
 			:
@@ -91,7 +91,7 @@
 			asm("r9") = 0;
 
 		/* First, atomically reads the lock. */
-		asm __volatile__
+		asm volatile
 		(
 			"l.lwa r7, 0(r5)"
 			: "=r" (lock_value)
@@ -104,7 +104,7 @@
 
 		/* Tries to lock. */
 		lock_value = OR1K_SPINLOCK_LOCKED;
-		asm __volatile__
+		asm volatile
 		(
 			"l.swa   0(r5),  r7\n"
 			"l.mfspr r9, r0, 0x11\n"  /* Supervisor Register. */
@@ -142,7 +142,7 @@
 		register or1k_spinlock_t *lock_reg
 			asm("r5") = lock;
 
-		asm __volatile__
+		asm volatile
 		(
 			"1:\n"
 			"	l.lwa r7, 0(r5)\n"

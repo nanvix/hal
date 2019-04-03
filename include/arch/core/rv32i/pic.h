@@ -107,7 +107,7 @@
 		if (rv32i_pic_is_reserved(irqnum))
 			return (-ENOTSUP);
 
-		asm __volatile__ (
+		asm volatile (
 			"csrrs %0, mie, %1"
 			: "=r"(mie)
 			: "r"(irqs[irqnum])
@@ -138,7 +138,7 @@
 		if (rv32i_pic_is_reserved(irqnum))
 			return (-ENOTSUP);
 
-		asm __volatile__ (
+		asm volatile (
 			"csrrc %0, mie, %1"
 			: "=r"(mie)
 			: "r"(irqs[irqnum])

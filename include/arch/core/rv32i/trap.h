@@ -48,7 +48,7 @@
 		register word_t _syscall_nr asm("a0") = syscall_nr;
 		register word_t ret asm ("a0");
 
-		asm __volatile__ (
+		asm volatile (
 			"ecall"
 			: "=r" (ret)
 			: "r"  (_syscall_nr)
@@ -74,7 +74,7 @@
 		register word_t _arg0 asm("a1") = arg0;
 		register word_t ret asm ("a0");
 
-		asm __volatile__ (
+		asm volatile (
 			"ecall"
 			: "=r" (ret)
 			: "r"  (_syscall_nr),
@@ -104,7 +104,7 @@
 		register word_t _arg1 asm("a2") = arg1;
 		register word_t ret asm ("a0");
 
-		asm __volatile__ (
+		asm volatile (
 			"ecall"
 			: "=r" (ret)
 			: "r"  (_syscall_nr),
@@ -138,7 +138,7 @@
 		register word_t _arg2 asm("a3") = arg2;
 		register word_t ret asm ("a0");
 
-		asm __volatile__ (
+		asm volatile (
 			"ecall"
 			: "=r" (ret)
 			: "r"  (_syscall_nr),
@@ -176,7 +176,7 @@
 		register word_t _arg3 asm("a4") = arg3;
 		register word_t ret asm ("a0");
 
-		asm __volatile__ (
+		asm volatile (
 			"ecall"
 			: "=r" (ret)
 			: "r"  (_syscall_nr),
@@ -218,7 +218,7 @@
 		register word_t _arg4 asm("a5") = arg4;
 		register word_t ret asm ("a0");
 
-		asm __volatile__ (
+		asm volatile (
 			"ecall"
 			: "=r" (ret)
 			: "r"  (_syscall_nr),
