@@ -22,6 +22,7 @@
  * SOFTWARE.
  */
 
+#include <arch/core/rv32i/core.h>
 #include <arch/core/rv32i/excp.h>
 #include <arch/core/rv32i/cache.h>
 #include <nanvix/const.h>
@@ -72,6 +73,60 @@ PRIVATE rv32i_exception_handler_fn rv32i_excp_handlers[RV32I_EXCP_NUM_EXT] = {
 };
 
 /**
+ * @todo: FIXME comment this function.
+ *
+ * @author Pedro Henrique Penna
+ */
+PUBLIC void rv32i_dump_all_gpr(const struct context *ctx)
+{
+	kprintf("[rv32i]  ra=%x   sp=%x   fp=%x",        ctx->ra, ctx->sp, ctx->fp);
+	kprintf("[rv32i]  gp=%x   tp=%x",                ctx->gp, ctx->tp);
+	kprintf("[rv32i]  a0=%x   a1=%x  s2=%x  a3=%x", ctx->a0, ctx->a1,  ctx->a2,  ctx->a3);
+	kprintf("[rv32i]  a4=%x   a5=%x  s6=%x  a7=%x", ctx->a4, ctx->a5,  ctx->a6,  ctx->a7);
+	kprintf("[rv32i]  t0=%x   t1=%x  t2=%x",        ctx->t0, ctx->t1,  ctx->t2);
+	kprintf("[rv32i]  t3=%x   t4=%x  t5=%x  t6=%x", ctx->t3, ctx->t4,  ctx->t5,  ctx->t6);
+	kprintf("[rv32i]  s1=%x   s2=%x  s3=%x  s4=%x", ctx->s1, ctx->s2,  ctx->s3,  ctx->s4);
+	kprintf("[rv32i]  s5=%x   s6=%x  s7=%x  s8=%x", ctx->s5, ctx->s6,  ctx->s7,  ctx->s8);
+	kprintf("[rv32i]  s9=%x  s10=%x s11=%x",        ctx->s9, ctx->s10, ctx->s11);
+}
+
+/**
+ * @todo: FIXME comment this function.
+ *
+ * @author Pedro Henrique Penna
+ */
+PUBLIC void rv32i_dump_all_csr(void)
+{
+		kprintf("[rv32i]  mstatus=%x      mie=%x     mip=%x",
+			rv32i_mstatus_read(),
+			rv32i_mie_read(),
+			rv32i_mip_read()
+		);
+	kprintf("[rv32i]  sstatus=%x      sie=%x     sip=%x",
+		rv32i_sstatus_read(),
+		rv32i_sie_read(),
+		rv32i_sip_read()
+	);
+		kprintf("[rv32i]    mtvec=%x   mcause=%x   mtval=%x",
+			rv32i_mtvec_read(),
+			rv32i_mcause_read(),
+			rv32i_mtval_read()
+		);
+	kprintf("[rv32i]    stvec=%x   scause=%x   stval=%x",
+		rv32i_stvec_read(),
+		rv32i_scause_read(),
+		rv32i_stval_read()
+	);
+		kprintf("[rv32i]     mepc=%x",
+			rv32i_mepc_read()
+		);
+	kprintf("[rv32i]     sepc=%x    satp=%x",
+		rv32i_sepc_read(),
+		rv32i_satp_read()
+	);
+}
+
+/**
  * @brief Handles an unhandled exception.
  *
  * @brief excp Exception information.
@@ -85,16 +140,8 @@ PRIVATE rv32i_exception_handler_fn rv32i_excp_handlers[RV32I_EXCP_NUM_EXT] = {
  */
 PRIVATE void do_generic_excp(const struct exception *excp, const struct context *ctx)
 {
-	/* Dump general purpose registers. */
-	kprintf("[rv32i]  ra=%x  sp=%x   fp=%x",        ctx->ra, ctx->sp, ctx->fp);
-	kprintf("[rv32i]  gp=%x  tp=%x",                ctx->gp, ctx->tp);
-	kprintf("[rv32i]  a0=%x  a1=%x   s2=%x  a3=%x", ctx->a0, ctx->a1,  ctx->a2,  ctx->a3);
-	kprintf("[rv32i]  a4=%x  a5=%x   s6=%x  a7=%x", ctx->a4, ctx->a5,  ctx->a6,  ctx->a7);
-	kprintf("[rv32i]  t0=%x  t1=%x   t2=%x",        ctx->t0, ctx->t1,  ctx->t2);
-	kprintf("[rv32i]  t3=%x  t4=%x   t5=%x  t6=%x", ctx->t3, ctx->t4,  ctx->t5,  ctx->t6);
-	kprintf("[rv32i]  s1=%x  s2=%x   s3=%x, s4=%x", ctx->s1, ctx->s2,  ctx->s3,  ctx->s4);
-	kprintf("[rv32i]  s5=%x  s6=%x   s7=%x, s8=%x", ctx->s5, ctx->s6,  ctx->s7,  ctx->s8);
-	kprintf("[rv32i]  s9=%x  s10=%x s11=%x",        ctx->s9, ctx->s10, ctx->s11);
+	rv32i_dump_all_gpr(ctx);
+	rv32i_dump_all_csr();
 
 	kpanic("unhandled %s exception at %x\n", exceptions[excp->id].errmsg, excp->addr);
 }
