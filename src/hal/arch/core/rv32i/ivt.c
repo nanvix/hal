@@ -36,7 +36,7 @@
  * The rv32i_ivt_setup() function initializes the interrupt vector
  * table in the rv32i core.
  */
-PUBLIC void rv32i_ivt_setup(void (*do_event)(void))
+PUBLIC void rv32i_ivt_setup(void (*do_trap)(void))
 {
-	rv32i_mtvec_write(RV32I_WORD(do_trap));
+	rv32i_stvec_write(RV32I_WORD(do_trap));
 }

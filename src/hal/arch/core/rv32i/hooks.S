@@ -33,7 +33,7 @@
 #include <arch/core/rv32i/types.h>
 #include <arch/core/rv32i/regs.h>
 
-.global rv32i_do_event
+.global rv32i_do_strap
 
 .section .text,"ax",@progbits
 
@@ -45,48 +45,36 @@
  * Low-level dispatcher for interrupts, exceptions and interrupts.
  */
 .align RV32I_WORD_SIZE
-rv32i_do_event:
+rv32i_do_strap:
 
 	/* Save all registers. */
 	rv32i_context_save
 
-	/* Get reference to context structure. */
-	mv s1, sp
+	/*
+	 * Save pointer to
+	 * context structure.
+	 */
+	csrw sscratch, sp
 
-	csrr s2, mcause
+	/*
+	 * Get reference to
+	 * context structure.
+	 */
+	csrr s1, sscratch
 
-	/* Parse event. */
-	li   t0, RV32I_MCAUSE_INT
-	and  t0, s2, t0
-	beqz t0, rv32i_do_event.sync
+	/* Parse trap. */
+	bug:
+	csrr  s2, scause
+	li    t0, RV32I_SCAUSE_INT
+	and   t0, s2, t0
+	bnez  t0, rv32i_do_strap.sint
+	li    t0, RV32I_SCAUSE_CAUSE
+	and   t0, s2, t0
+	li    t1, RV32I_SCAUSE_ECALL_UMODE
+	beq   t0, t1, rv32i_do_strap.scall
 
-	/* Interrupt. */
-	rv32i_do_event.async:
-
-		/*
-		 * Call high-level
-		 * interrupt dispatcher.
-		 */
-		andi a0, s2, RV32I_MCAUSE_CAUSE
-		mv   a1, s1
-		call rv32i_do_int
-
-		j rv32i_do_event.ret
-
-	/* Synchronous event. */
-	rv32i_do_event.sync:
-
-		li  t0, RV32I_MCAUSE_CAUSE
-		and t0, s2, t0
-		li  t1, RV32I_MCAUSE_ECALL_MMODE
-		beq t0, t1, rv32i_do_event.syscall
-		li  t1, RV32I_MCAUSE_ECALL_SMODE
-		beq t0, t1, rv32i_do_event.syscall
-		li  t1, RV32I_MCAUSE_ECALL_UMODE
-		beq t0, t1, rv32i_do_event.syscall
-
-	/* Event. */
-	rv32i_do_event.excp:
+	/* Exceptions. */
+	rv32i_do_strap.excp:
 
 		/*
 		 * Allocate exception
@@ -95,22 +83,22 @@ rv32i_do_event:
 		addi sp, sp, -RV32I_EXCP_SIZE
 
 		/*
-		 *  Build exception
+		 * Build exception
 		 * information structure.
 		 */
-		andi t0, s2, RV32I_MCAUSE_CAUSE
-		sw   t0, RV32I_EXCP_ID(sp)
-		csrr t0, mtval
-		sw   t0, RV32I_EXCP_ADDR(sp)
-		csrr t0, mepc
-		sw   t0, RV32I_EXCP_INSTR(sp)
+		andi  t0, s2, RV32I_SCAUSE_CAUSE
+		sw    t0, RV32I_EXCP_ID(sp)
+		csrr  t0, stval
+		sw    t0, RV32I_EXCP_ADDR(sp)
+		csrr  t0, sepc
+		sw    t0, RV32I_EXCP_INSTR(sp)
 
 		/*
 		 * Call high-level
 		 * exception dispatcher.
 		 */
-		mv   a0, sp
-		mv   a1, s1
+		mv   a0, sp           # struct exception *excp
+		mv   a1, s1           # struct context *ctx
 		call rv32i_do_excp
 
 		/*
@@ -119,10 +107,10 @@ rv32i_do_event:
 		 */
 		addi sp, sp, RV32I_EXCP_SIZE
 
-		j rv32i_do_event.ret
+		j rv32i_do_strap.ret
 
 	/* Kernel call. */
-	rv32i_do_event.syscall:
+	rv32i_do_strap.scall:
 
 		/*
 		 * Get system call parameters.
@@ -151,10 +139,24 @@ rv32i_do_event:
 		add t0, t0, RV32I_WORD_SIZE
 		sw t0, RV32I_CONTEXT_PC(fp)
 
-	rv32i_do_event.ret:
+		j rv32i_do_strap.ret
+
+	/* Interrupt. */
+	rv32i_do_strap.sint:
+
+		/*
+		 * Call high-level
+		 * interrupt dispatcher.
+		 */
+		andi a0, s2, RV32I_SCAUSE_CAUSE  # int intnum
+		mv   a1, s1                      # struct context *ctx
+		call rv32i_do_int
+
+	rv32i_do_strap.ret:
 
 		/* Retore all registers. */
+		csrr sp, sscratch
 		rv32i_context_restore
 
 		/* Return from event. */
-		mret
+		sret

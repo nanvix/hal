@@ -37,6 +37,7 @@
 	#define __NEED_CORE_PIC
 	#define __NEED_CORE_TYPES
 
+	#include <arch/core/rv32i/mcall.h>
 	#include <arch/core/rv32i/pic.h>
 	#include <arch/core/rv32i/types.h>
 
@@ -111,6 +112,8 @@
 		*((rv32i_word_t *)(MTIMECMP_ADDR)) = RV32I_WORD(time & -1);
 		*((rv32i_word_t *)(MTIMECMP_ADDR + RV32I_WORD_SIZE)) =
 			RV32I_WORD(time >> RV32I_WORD_BIT);
+
+		rv32i_mcall_timer_ack();
 	}
 
 #endif

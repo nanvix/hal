@@ -31,9 +31,7 @@
 
 /* Import definitions. */
 EXTERN NORETURN void kmain(int, const char *[]);
-EXTERN unsigned char __BSS_START;
-EXTERN unsigned char __BSS_END;
-EXTERN void rv32i_do_event(void);
+EXTERN void rv32i_do_strap(void);
 
 /*============================================================================*
  * rv32i_core_setup()                                                         *
@@ -49,7 +47,7 @@ PUBLIC void rv32i_core_setup(void)
 {
 	kprintf("[hal] booting up master core...");
 
-	rv32i_ivt_setup(&rv32i_do_event);
+	rv32i_ivt_setup(&rv32i_do_strap);
 }
 
 /*============================================================================*
@@ -69,8 +67,6 @@ PUBLIC void rv32i_core_setup(void)
  */
 PUBLIC NORETURN void rv32i_master_setup(void)
 {
-	kmemset(&__BSS_START, 0, &__BSS_END - &__BSS_START);
-
 	/* Core setup. */
 	rv32i_core_setup();
 
