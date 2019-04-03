@@ -81,6 +81,12 @@
 	#define PACK __attribute__((packed))
 
 	/**
+	 * @brief Makes code unreachable.
+	 */
+	#define UNREACHABLE() \
+		{ while(TRUE) ; __builtin_unreachable(); }
+
+	/**
 	 * @name Logical Constants
 	 */
 	/**@{*/
