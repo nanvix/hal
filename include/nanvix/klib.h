@@ -91,6 +91,35 @@
 /**@}*/
 
 /*============================================================================*
+ * Bit-Wise Manipulation                                                      *
+ *============================================================================*/
+
+/**
+ * @addtogroup klib-bits Bit-Wise Manipulation
+ * @ingroup klib
+ */
+/**@{*/
+
+	/**
+	 * @brief Get bits of a bitmap.
+	 *
+	 * @param bits Bitmap.
+	 * @param mask Mask.
+	 */
+	#define BITS_GET(bits, mask) \
+		(((bits) & (mask)) / ((mask) & ~((mask)-1)))
+
+	/**
+	 * @brief      Set bits on a bitmap.
+	 * @param mask Mask.
+	 * @param val  Value.
+	 */
+	#define BITS_SET(bits, mask, val) \
+		(((bits) & ~(mask)) | ((val) * ((mask) & ~((mask)-1))))
+
+/**@}*/
+
+/*============================================================================*
  *                                 Memory                                     *
  *============================================================================*/
 
