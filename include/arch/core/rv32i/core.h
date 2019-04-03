@@ -31,6 +31,7 @@
 
 	#include <arch/core/rv32i/regs.h>
 	#include <arch/core/rv32i/types.h>
+	#include <arch/core/rv32i/mcall.h>
 
 /**
  * @addtogroup rv32i-core
@@ -41,23 +42,10 @@
 
 	#include <nanvix/const.h>
 
-#endif /* _ASM_FILE_ */
-
-#ifndef _ASM_FILE_
-
 	/**
-	 * @brief Gets the ID of the core.
-	 *
-	 * The rv32i_core_get_id() returns the ID of the underlying core.
-	 *
-	 * @returns The ID of the underlying core.
-	 *
-	 * @todo FIXME
+	 * @brief Current priviledge level.
 	 */
-	static inline int rv32i_core_get_id(void)
-	{
-		return (0);
-	}
+	EXTERN int rv32i_curr_prv;
 
 #endif /* _ASM_FILE_ */
 
@@ -121,11 +109,15 @@
 	/**@}*/
 
 	/**
-	 * @see rv32i_core_get_id().
+	 * @see mhartid_read().
 	 */
 	static inline int core_get_id(void)
 	{
-		return (rv32i_core_get_id());
+		return (
+			(rv32i_curr_prv == RV32I_PRV_M) ?
+				rv32i_mhartid_read() :
+				rv32i_mcall_csr_read(RV32I_CSR_MHARTID)
+		);
 	}
 
 #endif /* _ASM_FILE_ */

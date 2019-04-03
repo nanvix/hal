@@ -97,29 +97,38 @@ PUBLIC void rv32i_dump_all_gpr(const struct context *ctx)
  */
 PUBLIC void rv32i_dump_all_csr(void)
 {
+	if (rv32i_curr_prv == RV32I_PRV_M)
+	{
 		kprintf("[rv32i]  mstatus=%x      mie=%x     mip=%x",
 			rv32i_mstatus_read(),
 			rv32i_mie_read(),
 			rv32i_mip_read()
 		);
+	}
 	kprintf("[rv32i]  sstatus=%x      sie=%x     sip=%x",
 		rv32i_sstatus_read(),
 		rv32i_sie_read(),
 		rv32i_sip_read()
 	);
+	if (rv32i_curr_prv == RV32I_PRV_M)
+	{
 		kprintf("[rv32i]    mtvec=%x   mcause=%x   mtval=%x",
 			rv32i_mtvec_read(),
 			rv32i_mcause_read(),
 			rv32i_mtval_read()
 		);
+	}
 	kprintf("[rv32i]    stvec=%x   scause=%x   stval=%x",
 		rv32i_stvec_read(),
 		rv32i_scause_read(),
 		rv32i_stval_read()
 	);
+	if (rv32i_curr_prv == RV32I_PRV_M)
+	{
 		kprintf("[rv32i]     mepc=%x",
 			rv32i_mepc_read()
 		);
+	}
 	kprintf("[rv32i]     sepc=%x    satp=%x",
 		rv32i_sepc_read(),
 		rv32i_satp_read()

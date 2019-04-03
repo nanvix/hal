@@ -41,10 +41,11 @@
 	#define __NEED_CORE_TYPES
 
 	#include <arch/core/rv32i/context.h>
-	#include <arch/core/rv32i/types.h>
 	#include <arch/core/rv32i/ivt.h>
+	#include <arch/core/rv32i/mcall.h>
 	#include <arch/core/rv32i/pic.h>
 	#include <arch/core/rv32i/regs.h>
+	#include <arch/core/rv32i/types.h>
 
 	/**
 	 * @name Interrupts
@@ -85,14 +86,15 @@
 	 */
 	static inline void rv32i_int_enable(void)
 	{
-		rv32i_word_t mstatus;
+		rv32i_word_t sstatus;
 
 		asm volatile (
-			"csrrs %0, mstatus, %1"
-				: "=r"(mstatus)
-				: "r"
-				(RV32I_MSTATUS_MIE)
+			"csrrs %0, sstatus, %1"
+				: "=r"(sstatus)
+				: "r" (RV32I_SSTATUS_SIE)
 		);
+
+		rv32i_mcall_mint_enable();
 	}
 
 	/**
@@ -102,13 +104,15 @@
 	 */
 	static inline void rv32i_int_disable(void)
 	{
-		rv32i_word_t mstatus;
+		rv32i_word_t sstatus;
+
+		rv32i_mcall_mint_disable();
 
 		asm volatile (
-			"csrrc %0, mstatus, %1"
-				: "=r"(mstatus)
+			"csrrc %0, sstatus, %1"
+				: "=r"(sstatus)
 				: "r"
-				(RV32I_MSTATUS_MIE)
+				(RV32I_SSTATUS_SIE)
 		);
 	}
 
@@ -128,8 +132,8 @@
 	 * @name Exported Constants
 	 */
 	/**@{*/
-	#define _INTERRUPTS_NUM RV32I_INT_NUM           /**< @ref RV32I_INT_NUM            */
-	#define INTERRUPT_CLOCK RV32I_INT_TIMER_MACHINE /**< @ref RV32I_INT_TIMER_MACHINE. */
+	#define _INTERRUPTS_NUM RV32I_INT_NUM          /**< @ref RV32I_INT_NUM          */
+	#define INTERRUPT_CLOCK RV32I_INT_TIMER_KERNEL /**< @ref RV32I_INT_TIMER_KERNEL */
 	/**@}*/
 
 	/**

@@ -32,16 +32,16 @@
  * @brief Table of Interrupt Requests (IRQs).
  */
 PUBLIC const int irqs[RV32I_IRQ_NUM] = {
-	RV32I_MIE_USIE, /* User Software Interrupt Enable       */
-	RV32I_MIE_SSIE, /* Supervisor Interrupt Enable          */
-	RV32I_MIE_R0,
-	RV32I_MIE_MSIE, /* Machine Software Interrupt Enable    */
-	RV32I_MIE_UTIE, /* User Timer Interrupt Enable          */
-	RV32I_MIE_STIE, /* Supervisor Timer Interrupt Enable    */
-	RV32I_MIE_R1,
-	RV32I_MIE_MTIE, /* Machine Timer Interrupt Enable       */
-	RV32I_MIE_UEUE, /* User External Interrupt Enable       */
-	RV32I_MIE_SEIE, /* Supervisor External Interrupt Enable */
-	RV32I_MIE_R2,
-	RV32I_MIE_MEIE  /* Machine External Interrupt Enable    */
+	RV32I_SIE_USIE, /* User Software Interrupt Enable       */
+	RV32I_SIE_SSIE, /* Supervisor Interrupt Enable          */
+	0,
+	0,
+	RV32I_SIE_UTIE, /* User Timer Interrupt Enable          */
+	RV32I_SIE_STIE, /* Supervisor Timer Interrupt Enable    */
+	0,
+	0,
+	RV32I_SIE_UEUE, /* User External Interrupt Enable       */
+	RV32I_SIE_SEIE, /* Supervisor External Interrupt Enable */
+	0,
+	0
 };
