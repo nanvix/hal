@@ -304,6 +304,121 @@ PRIVATE void test_core_stop_execution_slave(void)
 	}
 }
 
+/*----------------------------------------------------------------------------*
+ * Start Execution in a Slave Core (from Slave Core)                          *
+ *----------------------------------------------------------------------------*/
+
+/**
+ * @brief API Test: Start Execution in a Slave Core (from Slave Core), 'slave'
+ * slave entry-point.
+ */
+PRIVATE void test_core_start_execution_second_slave_entry(void)
+{
+#if (TEST_CORE_VERBOSE)
+	kprintf("core %d running", core_get_id());
+#endif
+
+	spinlock_lock(&core_start_lock);
+		cores_started = core_get_id();
+	spinlock_unlock(&core_start_lock);
+
+#if (TEST_CORE_VERBOSE)
+	kprintf("core %d resetting", core_get_id());
+#endif
+}
+
+/**
+ * @brief API Test: Start Execution in a Slave Core (from Slave Core), 'master'
+ * slave entry-point.
+ */
+PRIVATE void test_core_start_execution_first_slave_entry(void)
+{
+	int mycoreid; /* First slave core index. */
+	int i;        /* Slave index.            */
+
+#if (TEST_CORE_VERBOSE)
+	kprintf("core %d running", core_get_id());
+#endif
+
+	mycoreid = core_get_id();
+
+	/*
+	 * Starts the second available slave core.
+	 */
+	for (i = 0; i < CORES_NUM; i++)
+	{
+		if (i != COREID_MASTER && i != mycoreid)
+		{
+			core_start(i, test_core_start_execution_second_slave_entry);
+			break;
+		}
+	}
+
+	/*
+	 * Wait indefinitely for the slave start.
+	 *
+	 * @note: If for some reason the slave core not start,
+	 * the master core will hang forever.
+	 */
+	while (TRUE)
+	{
+		dcache_invalidate();
+
+		if (cores_started == i)
+			break;
+	}
+
+	spinlock_lock(&core_start_lock);
+		cores_started = mycoreid;
+	spinlock_unlock(&core_start_lock);
+
+#if (TEST_CORE_VERBOSE)
+	kprintf("core %d stopping", core_get_id());
+#endif
+}
+
+/**
+ * @brief API Test: Start Execution in a Slave Core (from Slave Core)
+ */
+PRIVATE void test_core_start_execution_slave(void)
+{
+	int i; /* Slave index. */
+
+	/* Unit test not applicable. */
+	if (!CLUSTER_IS_MULTICORE)
+		return;
+
+
+	/* Reset cores_start with an invalid core number. */
+	cores_started = -1;
+
+	/*
+	 * Start the first available slave core.
+	 */
+	for (i = 0; i < CORES_NUM; i++)
+	{
+		if (i != COREID_MASTER)
+		{
+			core_start(i, test_core_start_execution_first_slave_entry);
+			break;
+		}
+	}
+
+	/*
+	 * Wait indefinitely for the slave start.
+	 *
+	 * @note: If for some reason the slave core not start,
+	 * the master core will hang forever.
+	 */
+	while (TRUE)
+	{
+		dcache_invalidate();
+
+		if (cores_started == i)
+			break;
+	}
+}
+
 /*============================================================================*
  * Test Driver                                                                *
  *============================================================================*/
@@ -316,6 +431,9 @@ PRIVATE struct test core_tests_api[] = {
 	{ test_core_start_slave,           "Start Execution Slave"          },
 	{ test_core_suspend_resume_master, "Suspend and Resume from Master" },
 	{ test_core_stop_execution_slave,  "Stop Execution in a Slave Core" },
+#if CORES_NUM > 2
+	{ test_core_start_execution_slave, "Start Execution in a Slave Core"},
+#endif
 	{ NULL,                            NULL                             },
 };
 
