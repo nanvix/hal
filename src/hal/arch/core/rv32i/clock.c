@@ -51,10 +51,10 @@ PUBLIC void rv32i_clock_reset(void)
 	rv32i_dword_t ctime;
 
 	/* Get current time. */
-	ctime = rv32i_mtimecmp_read();
+	ctime = rv32i_mtime_read();
 
 	/* Set next timer interrupt to near future. */
-	rv32i_mtime_write(ctime + clock_delta + clock_delay);
+	rv32i_mtimecmp_write(ctime + clock_delta + clock_delay);
 }
 
 /**
@@ -69,12 +69,15 @@ PUBLIC void rv32i_clock_init(unsigned freq)
 
 	/* Initialize clock. */
 	clock_delta = MTIME_TIMEBASE/freq;
-	t0 = rv32i_mtimecmp_read();
-	t1 = rv32i_mtimecmp_read();
+	t0 = rv32i_mtime_read();
+	t1 = rv32i_mtime_read();
 	clock_delay = t1 - t0;
 
 	/* Reset the clock device. */
 	rv32i_clock_reset();
+
+	kprintf("[hal] clock delay is %d ticks", clock_delay);
+	kprintf("[hal] clock delta is %d ticks", clock_delta);
 
 	initialized = TRUE;
 }
