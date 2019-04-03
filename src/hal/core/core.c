@@ -158,13 +158,16 @@ PUBLIC void core_wakeup(int coreid)
  * sleeping core whose ID equals to @p coreid to @p start and sends a
  * wakeup signal to this core.
  *
+ * @return Returns 0 if the core start was successful and, otherwise,
+ * non-zero value.
+ *
  * @see core_idle(), core_run().
  *
  * @todo Check if the calling core is not the target core.
  *
  * @author Pedro Henrique Penna and Davidson Francis
  */
-PUBLIC void core_start(int coreid, void (*start)(void))
+PUBLIC int core_start(int coreid, void (*start)(void))
 {
 again:
 
@@ -187,9 +190,13 @@ again:
 		dcache_invalidate();
 
 		core_notify(coreid);
+
+		spinlock_unlock(&cores[coreid].lock);
+		return (0);
 	}
 
 	spinlock_unlock(&cores[coreid].lock);
+	return (-EBUSY);
 }
 
 /*============================================================================*
