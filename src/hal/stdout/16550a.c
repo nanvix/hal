@@ -72,6 +72,9 @@ void uart_16550a_init(void)
 {
 	uint32_t divisor;
 
+	if (initialized)
+		return;
+
 	/* Calculate and set divisor. */
 	divisor = UART_CLOCK/(UART_BAUD << 4);
     uart[UART_LCR] = UART_LCR_DLAB;
