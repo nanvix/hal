@@ -36,6 +36,8 @@
 
 #define UNREACHABLE() \
 	{ while(TRUE) ; __builtin_unreachable(); }
+EXTERN unsigned char __BSS_START;
+EXTERN unsigned char __BSS_END;
 
 /**
  * Current privilege level.
@@ -321,6 +323,8 @@ PRIVATE void rv32i_machine_delegate_traps(void)
 PUBLIC NORETURN void rv32i_machine_setup(rv32i_word_t pc)
 {
 	rv32i_word_t mie;
+
+	kmemset(&__BSS_START, 0, &__BSS_END - &__BSS_START);
 
 	/*
 	 * Early initialization of

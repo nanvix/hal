@@ -31,8 +31,6 @@
 
 /* Import definitions. */
 EXTERN NORETURN void kmain(int, const char *[]);
-EXTERN unsigned char __BSS_START;
-EXTERN unsigned char __BSS_END;
 EXTERN void rv32i_do_strap(void);
 EXTERN void rv32i_mmu_setup(void);
 
@@ -72,8 +70,6 @@ PUBLIC void rv32i_core_setup(void)
  */
 PUBLIC NORETURN void rv32i_master_setup(void)
 {
-	kmemset(&__BSS_START, 0, &__BSS_END - &__BSS_START);
-
 	/* Core setup. */
 	rv32i_core_setup();
 
