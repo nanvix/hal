@@ -30,7 +30,7 @@
 #include <arch/core/rv32i/types.h>
 
 #define RV32I_HARTS_NUM    4
-#define RV32I_STACK_SIZE   1024
+#define RV32I_STACK_SIZE   4096
 #define RV32I_STACK_SHIFT  10
 
 /* Exported symbols. */
