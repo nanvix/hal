@@ -25,7 +25,11 @@
 #ifndef ARCH_CORE_RV32I_CORE_H_
 #define ARCH_CORE_RV32I_CORE_H_
 
+	/* Must come first. */
 	#define __NEED_CORE_TYPES
+	#define __NEED_CORE_REGS
+
+	#include <arch/core/rv32i/regs.h>
 	#include <arch/core/rv32i/types.h>
 
 /**
