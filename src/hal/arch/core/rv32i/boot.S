@@ -60,13 +60,13 @@ _do_start:
     csrw mtvec, t0
 
 	/* Setup stack. */
-	get_hartid t0
+	csrr t0, mhartid
     slli t0, t0, RV32I_STACK_SHIFT
     la   sp, kstacks + RV32I_STACK_SIZE
     add  sp, sp, t0
 
     /* Halt slave harts. */
-	get_hartid t0
+	csrr t0, mhartid
     bnez t0, halt
 
 	/* Jump to C code. */

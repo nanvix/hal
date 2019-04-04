@@ -270,13 +270,6 @@
  * Misc                                                                       *
  *============================================================================*/
 
-	/**
-	 * @brief Get the ID of the underlying HART.
-	 */
-	.macro get_hartid dest
-		csrr \dest, mhartid
-	.endm
-
 	/*
 	 * Clear all GPR registers.
 	 */
