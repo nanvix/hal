@@ -221,8 +221,11 @@
 	 *
 	 * @param coreid ID of the target core.
 	 * @param start  Starting routine to execute.
+	 *
+	 * @return Returns 0 if the core start was successful and, otherwise,
+	 * non-zero value.
 	 */
-	EXTERN void core_start(int coreid, void (*start)(void));
+	EXTERN int core_start(int coreid, void (*start)(void));
 
 	/**
 	 * @brief Wait and clears the current IPIs pending of the underlying core.
