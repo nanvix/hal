@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 
-#ifndef HAL_PROCESSOR_NOC_H_
-#define HAL_PROCESSOR_NOC_H_
+#ifndef NANVIX_HAL_PROCESSOR_NOC_H_
+#define NANVIX_HAL_PROCESSOR_NOC_H_
 
 	/* Processor Interface Implementation */
 	#include <nanvix/hal/processor/_processor.h>
@@ -45,14 +45,14 @@
 	#if (PROCESSOR_HAS_NOC)
 
 		/* Constants */
-		#ifndef HAL_NR_NOC_IONODES
-		#error "HAL_NR_NOC_IONODES not defined"
+		#ifndef NR_NOC_IONODES
+		#error "NR_NOC_IONODES not defined"
 		#endif
-		#ifndef HAL_NR_NOC_CNODES
-		#error "HAL_NR_NOC_CNODES not defined"
+		#ifndef NR_NOC_CNODES
+		#error "NR_NOC_CNODES not defined"
 		#endif
-		#ifndef HAL_NR_NOC_NODES
-		#error "HAL_NR_NOC_NODES not defined"
+		#ifndef NR_NOC_NODES
+		#error "NR_NOC_NODES not defined"
 		#endif
 
 		/* Functions */
@@ -81,9 +81,9 @@
 	#else
 
 		/* Constants */
-		#define HAL_NR_NOC_IONODES 1
-		#define HAL_NR_NOC_CNODES 0
-		#define HAL_NR_NOC_NODES (HAL_NR_NOC_IONODES + HAL_NR_NOC_CNODES)
+		#define NR_NOC_IONODES 1
+		#define NR_NOC_CNODES 0
+		#define NR_NOC_NODES (NR_NOC_IONODES + NR_NOC_CNODES)
 
 	#endif
 
@@ -235,4 +235,4 @@
 
 /**@}*/
 
-#endif /* HAL_PROCESSOR_NOC_H_ */
+#endif /* NANVIX_HAL_PROCESSOR_NOC_H_ */

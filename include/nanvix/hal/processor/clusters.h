@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 
-#ifndef HAL_PROCESSOR_CLUSTERS_H_
-#define HAL_PROCESSOR_CLUSTERS_H_
+#ifndef NANVIX_HAL_PROCESSOR_CLUSTERS_H_
+#define NANVIX_HAL_PROCESSOR_CLUSTERS_H_
 
 	/* Processor Interface Implementation */
 	#include <nanvix/hal/processor/_processor.h>
@@ -139,5 +139,5 @@
 
 /**@}*/
 
-#endif /* HAL_PROCESSOR_CLUSTERS_H_ */
+#endif /* NANVIX_HAL_PROCESSOR_CLUSTERS_H_ */
 
