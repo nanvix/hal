@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 
-#ifndef ARCH_RV32I_MMU_H_
-#define ARCH_RV32I_MMU_H_
+#ifndef ARCH_CORE_RV32I_MMU_H_
+#define ARCH_CORE_RV32I_MMU_H_
 
 /**
  * @addtogroup rv32i-core-mmu MMU
@@ -78,4 +78,4 @@
 
 /**@endcond*/
 
-#endif /* ARCH_RV32I_MMU_H_ */
+#endif /* ARCH_CORE_RV32I_MMU_H_ */

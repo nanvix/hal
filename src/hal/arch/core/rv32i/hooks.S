@@ -143,7 +143,8 @@ rv32i_do_event:
 		sw a0, RV32I_CONTEXT_A0(fp)
 
 		/*
-		 * Advance PC to next instruction, otherwise another kernel
+		 * Advance PC to next instruction,
+		 * otherwise another supervisor
 		 * call will be triggered.
 		 */
 		lw t0, RV32I_CONTEXT_PC(fp)
