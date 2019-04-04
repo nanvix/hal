@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 
-#ifndef HAL_CORE_TRAP_H_
-#define HAL_CORE_TRAP_H_
+#ifndef NANVIX_HAL_CORE_TRAP_H_
+#define NANVIX_HAL_CORE_TRAP_H_
 
 	/* Core Interface Implementation */
 	#include <nanvix/hal/core/_core.h>
@@ -170,4 +170,4 @@
 
 /**@}*/
 
-#endif /* HAL_CORE_TRAP_H_ */
+#endif /* NANVIX_HAL_CORE_TRAP_H_ */
