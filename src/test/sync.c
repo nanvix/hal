@@ -43,7 +43,7 @@
 /**
  * @brief API Test: Synchronization Point Create Unlink
  */
-static void hal_test_sync_create_unlink(void)
+static void test_sync_create_unlink(void)
 {
 	int tmp;
 	int nodenum;
@@ -54,26 +54,26 @@ static void hal_test_sync_create_unlink(void)
 	nodes[0] = nodenum;
 	nodes[1] = nodenum == NODENUM_MASTER ? NODENUM_SLAVE : NODENUM_MASTER;
 
-	KASSERT((syncid = hal_sync_create(nodes, NODES_AMOUNT, HAL_SYNC_ALL_TO_ONE)) >= 0);
-	KASSERT(hal_sync_unlink(syncid) == 0);
+	KASSERT((syncid = sync_create(nodes, NODES_AMOUNT, SYNC_ALL_TO_ONE)) >= 0);
+	KASSERT(sync_unlink(syncid) == 0);
 
 	tmp = nodes[0];
 	nodes[0] = nodes[1];
 	nodes[1] = tmp;
 
-	KASSERT((syncid = hal_sync_create(nodes, NODES_AMOUNT, HAL_SYNC_ONE_TO_ALL)) >= 0);
-	KASSERT(hal_sync_unlink(syncid) == 0);
+	KASSERT((syncid = sync_create(nodes, NODES_AMOUNT, SYNC_ONE_TO_ALL)) >= 0);
+	KASSERT(sync_unlink(syncid) == 0);
 }
 
 /**
  * @brief API Test: Synchronization Point Open Close
  */
-static void hal_test_sync_open_close(void)
+static void test_sync_open_close(void)
 {
 	int syncid;
 
-	KASSERT((syncid = hal_sync_open()) >= 0);
-	KASSERT(hal_sync_close(syncid) == 0);
+	KASSERT((syncid = sync_open()) >= 0);
+	KASSERT(sync_close(syncid) == 0);
 }
 
 /*============================================================================*/
@@ -83,8 +83,8 @@ static void hal_test_sync_open_close(void)
  */
 struct test sync_tests_api[] = {
 	/* Intra-Cluster API Tests */
-	{hal_test_sync_create_unlink, "Create Unlink" },
-	{hal_test_sync_open_close,    "Open Close"    },
+	{test_sync_create_unlink, "Create Unlink" },
+	{test_sync_open_close,    "Open Close"    },
 	{NULL,                        NULL            },
 };
 
@@ -95,7 +95,7 @@ struct test sync_tests_api[] = {
 /**
  * @brief Fault Injection Test: Synchronization Point Invalid Create
  */
-static void test_hal_sync_invalid_create(void)
+static void test_sync_invalid_create(void)
 {
 	int tmp;
 	int syncid;
@@ -106,82 +106,82 @@ static void test_hal_sync_invalid_create(void)
 	nodes[0] = nodenum == NODENUM_MASTER ? NODENUM_SLAVE : NODENUM_MASTER;
 	nodes[1] = nodenum;
 
-	KASSERT(hal_sync_create(NULL, NODES_AMOUNT, HAL_SYNC_ALL_TO_ONE) < 0);
-	KASSERT(hal_sync_create(nodes, -1, HAL_SYNC_ALL_TO_ONE) < 0);
-	KASSERT(hal_sync_create(nodes, 0, HAL_SYNC_ALL_TO_ONE) < 0);
-	KASSERT(hal_sync_create(nodes, 1, HAL_SYNC_ALL_TO_ONE) < 0);
-	KASSERT(hal_sync_create(nodes, 1000, HAL_SYNC_ALL_TO_ONE) < 0);
-	KASSERT(hal_sync_create(nodes, NODES_AMOUNT, -1) < 0);
-	KASSERT(hal_sync_create(nodes, NODES_AMOUNT, 1000) < 0);
-	KASSERT(hal_sync_create(nodes, NODES_AMOUNT, HAL_SYNC_ALL_TO_ONE) < 0);
-	KASSERT(hal_sync_create(nodes, NODES_AMOUNT, -1) < 0);
-	KASSERT(hal_sync_create(nodes, NODES_AMOUNT, 1000) < 0);
+	KASSERT(sync_create(NULL, NODES_AMOUNT, SYNC_ALL_TO_ONE) < 0);
+	KASSERT(sync_create(nodes, -1, SYNC_ALL_TO_ONE) < 0);
+	KASSERT(sync_create(nodes, 0, SYNC_ALL_TO_ONE) < 0);
+	KASSERT(sync_create(nodes, 1, SYNC_ALL_TO_ONE) < 0);
+	KASSERT(sync_create(nodes, 1000, SYNC_ALL_TO_ONE) < 0);
+	KASSERT(sync_create(nodes, NODES_AMOUNT, -1) < 0);
+	KASSERT(sync_create(nodes, NODES_AMOUNT, 1000) < 0);
+	KASSERT(sync_create(nodes, NODES_AMOUNT, SYNC_ALL_TO_ONE) < 0);
+	KASSERT(sync_create(nodes, NODES_AMOUNT, -1) < 0);
+	KASSERT(sync_create(nodes, NODES_AMOUNT, 1000) < 0);
 
 	tmp = nodes[0];
 	nodes[0] = nodes[1];
 	nodes[1] = tmp;
 
-	KASSERT(hal_sync_create(NULL, NODES_AMOUNT, HAL_SYNC_ONE_TO_ALL) < 0);
-	KASSERT(hal_sync_create(nodes, -1, HAL_SYNC_ONE_TO_ALL) < 0);
-	KASSERT(hal_sync_create(nodes, 0, HAL_SYNC_ONE_TO_ALL) < 0);
-	KASSERT(hal_sync_create(nodes, 1, HAL_SYNC_ONE_TO_ALL) < 0);
-	KASSERT(hal_sync_create(nodes, 1000, HAL_SYNC_ONE_TO_ALL) < 0);
-	KASSERT(hal_sync_create(nodes, NODES_AMOUNT, -1) < 0);
-	KASSERT(hal_sync_create(nodes, NODES_AMOUNT, 1000) < 0);
-	KASSERT(hal_sync_create(nodes, NODES_AMOUNT, HAL_SYNC_ONE_TO_ALL) < 0);
-	KASSERT(hal_sync_create(nodes, NODES_AMOUNT, -1) < 0);
-	KASSERT(hal_sync_create(nodes, NODES_AMOUNT, 1000) < 0);
+	KASSERT(sync_create(NULL, NODES_AMOUNT, SYNC_ONE_TO_ALL) < 0);
+	KASSERT(sync_create(nodes, -1, SYNC_ONE_TO_ALL) < 0);
+	KASSERT(sync_create(nodes, 0, SYNC_ONE_TO_ALL) < 0);
+	KASSERT(sync_create(nodes, 1, SYNC_ONE_TO_ALL) < 0);
+	KASSERT(sync_create(nodes, 1000, SYNC_ONE_TO_ALL) < 0);
+	KASSERT(sync_create(nodes, NODES_AMOUNT, -1) < 0);
+	KASSERT(sync_create(nodes, NODES_AMOUNT, 1000) < 0);
+	KASSERT(sync_create(nodes, NODES_AMOUNT, SYNC_ONE_TO_ALL) < 0);
+	KASSERT(sync_create(nodes, NODES_AMOUNT, -1) < 0);
+	KASSERT(sync_create(nodes, NODES_AMOUNT, 1000) < 0);
 
-	KASSERT((syncid = hal_sync_create(nodes, NODES_AMOUNT, HAL_SYNC_ALL_TO_ONE)) >= 0);
-	KASSERT(hal_sync_create(nodes, NODES_AMOUNT, HAL_SYNC_ALL_TO_ONE) < 0);
-	KASSERT(hal_sync_unlink(syncid) == 0);
-	KASSERT(hal_sync_unlink(syncid) < 0);
+	KASSERT((syncid = sync_create(nodes, NODES_AMOUNT, SYNC_ALL_TO_ONE)) >= 0);
+	KASSERT(sync_create(nodes, NODES_AMOUNT, SYNC_ALL_TO_ONE) < 0);
+	KASSERT(sync_unlink(syncid) == 0);
+	KASSERT(sync_unlink(syncid) < 0);
 }
 
 /**
  * @brief Fault Injection Test: Synchronization Point Invalid Open
  */
-static void test_hal_sync_invalid_open(void)
+static void test_sync_invalid_open(void)
 {
-	int syncids[HAL_SYNC_OPEN_MAX];
+	int syncids[SYNC_OPEN_MAX];
 
-	for (int i = 0; i < HAL_SYNC_OPEN_MAX; i++)
-		KASSERT((syncids[i] = hal_sync_open()) >= 0);
-	KASSERT(hal_sync_open() < 0);
+	for (int i = 0; i < SYNC_OPEN_MAX; i++)
+		KASSERT((syncids[i] = sync_open()) >= 0);
+	KASSERT(sync_open() < 0);
 
-	for (int i = 0; i < HAL_SYNC_OPEN_MAX; i++)
+	for (int i = 0; i < SYNC_OPEN_MAX; i++)
 	{
-		KASSERT(hal_sync_close(syncids[i]) == 0);
-		KASSERT(hal_sync_close(syncids[i]) < 0);
+		KASSERT(sync_close(syncids[i]) == 0);
+		KASSERT(sync_close(syncids[i]) < 0);
 	}
 }
 
 /**
  * @brief Fault Injection Test: Synchronization Point Invalid Unlink
  */
-static void test_hal_sync_invalid_unlink(void)
+static void test_sync_invalid_unlink(void)
 {
-	KASSERT(hal_sync_unlink(-1) < 0);
-	KASSERT(hal_sync_unlink(1) < 0);
-	KASSERT(hal_sync_unlink(1000000) < 0);
+	KASSERT(sync_unlink(-1) < 0);
+	KASSERT(sync_unlink(1) < 0);
+	KASSERT(sync_unlink(1000000) < 0);
 }
 
 /**
  * @brief Fault Injection Test: Synchronization Point Bad Unlink
  */
-static void test_hal_sync_bad_unlink(void)
+static void test_sync_bad_unlink(void)
 {
 	int syncid;
 
-	KASSERT((syncid = hal_sync_open()) >= 0);
-	KASSERT(hal_sync_unlink(syncid) < 0);
-	KASSERT(hal_sync_close(syncid) == 0);
+	KASSERT((syncid = sync_open()) >= 0);
+	KASSERT(sync_unlink(syncid) < 0);
+	KASSERT(sync_close(syncid) == 0);
 }
 
 /**
  * @brief Fault Injection Test: Synchronization Point Double Unlink
  */
-static void test_hal_sync_double_unlink(void)
+static void test_sync_double_unlink(void)
 {
 	int nodenum;
 	int syncid;
@@ -191,25 +191,25 @@ static void test_hal_sync_double_unlink(void)
 	nodes[0] = nodenum;
 	nodes[1] = nodenum == NODENUM_MASTER ? NODENUM_SLAVE : NODENUM_MASTER;
 
-	KASSERT((syncid = hal_sync_create(nodes, NODES_AMOUNT, HAL_SYNC_ALL_TO_ONE)) >= 0);
-	KASSERT(hal_sync_unlink(syncid) == 0);
-	KASSERT(hal_sync_unlink(syncid) < 0);
+	KASSERT((syncid = sync_create(nodes, NODES_AMOUNT, SYNC_ALL_TO_ONE)) >= 0);
+	KASSERT(sync_unlink(syncid) == 0);
+	KASSERT(sync_unlink(syncid) < 0);
 }
 
 /**
  * @brief Fault Injection Test: Synchronization Point Invalid Close
  */
-static void test_hal_sync_invalid_close(void)
+static void test_sync_invalid_close(void)
 {
-	KASSERT(hal_sync_close(-1) < 0);
-	KASSERT(hal_sync_close(1) < 0);
-	KASSERT(hal_sync_close(1000000) < 0);
+	KASSERT(sync_close(-1) < 0);
+	KASSERT(sync_close(1) < 0);
+	KASSERT(sync_close(1000000) < 0);
 }
 
 /**
  * @brief Fault Injection Test: Synchronization Point Bad Close
  */
-static void test_hal_sync_bad_close(void)
+static void test_sync_bad_close(void)
 {
 	int nodenum;
 	int syncid;
@@ -219,27 +219,27 @@ static void test_hal_sync_bad_close(void)
 	nodes[0] = nodenum;
 	nodes[1] = nodenum == NODENUM_MASTER ? NODENUM_SLAVE : NODENUM_MASTER;
 
-	KASSERT((syncid = hal_sync_create(nodes, NODES_AMOUNT, HAL_SYNC_ALL_TO_ONE)) >= 0);
-	KASSERT(hal_sync_close(syncid) < 0);
-	KASSERT(hal_sync_unlink(syncid) == 0);
+	KASSERT((syncid = sync_create(nodes, NODES_AMOUNT, SYNC_ALL_TO_ONE)) >= 0);
+	KASSERT(sync_close(syncid) < 0);
+	KASSERT(sync_unlink(syncid) == 0);
 }
 
 /**
  * @brief Fault Injection Test: Synchronization Point Double Close
  */
-static void test_hal_sync_double_close(void)
+static void test_sync_double_close(void)
 {
 	int syncid;
 
-	KASSERT((syncid = hal_sync_open()) >= 0);
-	KASSERT(hal_sync_close(syncid) == 0);
-	KASSERT(hal_sync_close(syncid) < 0);
+	KASSERT((syncid = sync_open()) >= 0);
+	KASSERT(sync_close(syncid) == 0);
+	KASSERT(sync_close(syncid) < 0);
 }
 
 /**
  * @brief Fault Injection Test: Synchronization Point Invalid Signal
  */
-static void test_hal_sync_invalid_signal(void)
+static void test_sync_invalid_signal(void)
 {
 	int tmp;
 	int nodenum;
@@ -250,45 +250,45 @@ static void test_hal_sync_invalid_signal(void)
 	nodes[0] = nodenum;
 	nodes[1] = nodenum == NODENUM_MASTER ? NODENUM_SLAVE : NODENUM_MASTER;
 
-	KASSERT(hal_sync_signal(-1, nodes, NODES_AMOUNT, HAL_SYNC_ONE_TO_ALL) < 0);
-	KASSERT(hal_sync_signal(1, nodes, NODES_AMOUNT, HAL_SYNC_ONE_TO_ALL) < 0);
-	KASSERT(hal_sync_signal(1000000, nodes, NODES_AMOUNT, HAL_SYNC_ONE_TO_ALL) < 0);
+	KASSERT(sync_signal(-1, nodes, NODES_AMOUNT, SYNC_ONE_TO_ALL) < 0);
+	KASSERT(sync_signal(1, nodes, NODES_AMOUNT, SYNC_ONE_TO_ALL) < 0);
+	KASSERT(sync_signal(1000000, nodes, NODES_AMOUNT, SYNC_ONE_TO_ALL) < 0);
 
-	KASSERT((syncid = hal_sync_open()) >= 0);
+	KASSERT((syncid = sync_open()) >= 0);
 
 	nodenum = processor_node_get_num(processor_node_get_id());
 	nodes[0] = nodenum;
 	nodes[1] = nodenum == NODENUM_MASTER ? NODENUM_SLAVE : NODENUM_MASTER;
 
-	KASSERT(hal_sync_signal(syncid, NULL, NODES_AMOUNT, HAL_SYNC_ALL_TO_ONE) < 0);
-	KASSERT(hal_sync_signal(syncid, nodes, -1, HAL_SYNC_ALL_TO_ONE) < 0);
-	KASSERT(hal_sync_signal(syncid, nodes, 0, HAL_SYNC_ALL_TO_ONE) < 0);
-	KASSERT(hal_sync_signal(syncid, nodes, 1, HAL_SYNC_ALL_TO_ONE) < 0);
-	KASSERT(hal_sync_signal(syncid, nodes, 1000, HAL_SYNC_ALL_TO_ONE) < 0);
-	KASSERT(hal_sync_signal(syncid, nodes, NODES_AMOUNT, HAL_SYNC_ALL_TO_ONE) < 0);
-	KASSERT(hal_sync_signal(syncid, nodes, NODES_AMOUNT, -1) < 0);
-	KASSERT(hal_sync_signal(syncid, nodes, NODES_AMOUNT, 1000) < 0);
+	KASSERT(sync_signal(syncid, NULL, NODES_AMOUNT, SYNC_ALL_TO_ONE) < 0);
+	KASSERT(sync_signal(syncid, nodes, -1, SYNC_ALL_TO_ONE) < 0);
+	KASSERT(sync_signal(syncid, nodes, 0, SYNC_ALL_TO_ONE) < 0);
+	KASSERT(sync_signal(syncid, nodes, 1, SYNC_ALL_TO_ONE) < 0);
+	KASSERT(sync_signal(syncid, nodes, 1000, SYNC_ALL_TO_ONE) < 0);
+	KASSERT(sync_signal(syncid, nodes, NODES_AMOUNT, SYNC_ALL_TO_ONE) < 0);
+	KASSERT(sync_signal(syncid, nodes, NODES_AMOUNT, -1) < 0);
+	KASSERT(sync_signal(syncid, nodes, NODES_AMOUNT, 1000) < 0);
 
 	tmp = nodes[0];
 	nodes[0] = nodes[1];
 	nodes[1] = tmp;
 
-	KASSERT(hal_sync_signal(syncid, NULL, NODES_AMOUNT, HAL_SYNC_ONE_TO_ALL) < 0);
-	KASSERT(hal_sync_signal(syncid, nodes, -1, HAL_SYNC_ONE_TO_ALL) < 0);
-	KASSERT(hal_sync_signal(syncid, nodes, 0, HAL_SYNC_ONE_TO_ALL) < 0);
-	KASSERT(hal_sync_signal(syncid, nodes, 1, HAL_SYNC_ONE_TO_ALL) < 0);
-	KASSERT(hal_sync_signal(syncid, nodes, 1000, HAL_SYNC_ONE_TO_ALL) < 0);
-	KASSERT(hal_sync_signal(syncid, nodes, NODES_AMOUNT, HAL_SYNC_ONE_TO_ALL) < 0);
-	KASSERT(hal_sync_signal(syncid, nodes, NODES_AMOUNT, -1) < 0);
-	KASSERT(hal_sync_signal(syncid, nodes, NODES_AMOUNT, 1000) < 0);
+	KASSERT(sync_signal(syncid, NULL, NODES_AMOUNT, SYNC_ONE_TO_ALL) < 0);
+	KASSERT(sync_signal(syncid, nodes, -1, SYNC_ONE_TO_ALL) < 0);
+	KASSERT(sync_signal(syncid, nodes, 0, SYNC_ONE_TO_ALL) < 0);
+	KASSERT(sync_signal(syncid, nodes, 1, SYNC_ONE_TO_ALL) < 0);
+	KASSERT(sync_signal(syncid, nodes, 1000, SYNC_ONE_TO_ALL) < 0);
+	KASSERT(sync_signal(syncid, nodes, NODES_AMOUNT, SYNC_ONE_TO_ALL) < 0);
+	KASSERT(sync_signal(syncid, nodes, NODES_AMOUNT, -1) < 0);
+	KASSERT(sync_signal(syncid, nodes, NODES_AMOUNT, 1000) < 0);
 
-	KASSERT(hal_sync_close(syncid) == 0);
+	KASSERT(sync_close(syncid) == 0);
 }
 
 /**
  * @brief Fault Injection Test: Synchronization Point Bad Signal
  */
-static void test_hal_sync_bad_signal(void)
+static void test_sync_bad_signal(void)
 {
 	int nodenum;
 	int syncid;
@@ -298,49 +298,49 @@ static void test_hal_sync_bad_signal(void)
 	nodes[0] = nodenum;
 	nodes[1] = nodenum == NODENUM_MASTER ? NODENUM_SLAVE : NODENUM_MASTER;
 
-	KASSERT((syncid = hal_sync_create(nodes, NODES_AMOUNT, HAL_SYNC_ALL_TO_ONE)) >= 0);
-	KASSERT(hal_sync_signal(syncid, nodes, NODES_AMOUNT, HAL_SYNC_ALL_TO_ONE) < 0);
-	KASSERT(hal_sync_unlink(syncid) == 0);
+	KASSERT((syncid = sync_create(nodes, NODES_AMOUNT, SYNC_ALL_TO_ONE)) >= 0);
+	KASSERT(sync_signal(syncid, nodes, NODES_AMOUNT, SYNC_ALL_TO_ONE) < 0);
+	KASSERT(sync_unlink(syncid) == 0);
 }
 
 /**
  * @brief Fault Injection Test: Synchronization Point Invalid Wait
  */
-static void test_hal_sync_invalid_wait(void)
+static void test_sync_invalid_wait(void)
 {
-	KASSERT(hal_sync_wait(-1) < 0);
-	KASSERT(hal_sync_wait(1) < 0);
-	KASSERT(hal_sync_wait(1000000) < 0);
+	KASSERT(sync_wait(-1) < 0);
+	KASSERT(sync_wait(1) < 0);
+	KASSERT(sync_wait(1000000) < 0);
 }
 
 /**
  * @brief Fault Injection Test: Synchronization Point Bad Signal
  */
-static void test_hal_sync_bad_wait(void)
+static void test_sync_bad_wait(void)
 {
 	int syncid;
 
-	KASSERT((syncid = hal_sync_open()) >= 0);
-	KASSERT(hal_sync_wait(syncid) < 0);
-	KASSERT(hal_sync_close(syncid) == 0);
+	KASSERT((syncid = sync_open()) >= 0);
+	KASSERT(sync_wait(syncid) < 0);
+	KASSERT(sync_close(syncid) == 0);
 }
 
 /**
  * @brief Unit tests.
  */
 struct test sync_tests_fault[] = {
-	{test_hal_sync_invalid_create, "Invalid Create" },
-	{test_hal_sync_invalid_open,   "Invalid Open"   },
-	{test_hal_sync_invalid_unlink, "Invalid Unlink" },
-	{test_hal_sync_bad_unlink,     "Bad Unlink"     },
-	{test_hal_sync_double_unlink,  "Double Unlink"  },
-	{test_hal_sync_invalid_close,  "Invalid Close"  },
-	{test_hal_sync_bad_close,      "Bad Close"      },
-	{test_hal_sync_double_close,   "Double Close"   },
-	{test_hal_sync_invalid_signal, "Invalid Signal" },
-	{test_hal_sync_bad_signal,     "Bad Signal"     },
-	{test_hal_sync_invalid_wait,   "Invalid Wait"   },
-	{test_hal_sync_bad_wait,       "Bad Wait"       },
+	{test_sync_invalid_create, "Invalid Create" },
+	{test_sync_invalid_open,   "Invalid Open"   },
+	{test_sync_invalid_unlink, "Invalid Unlink" },
+	{test_sync_bad_unlink,     "Bad Unlink"     },
+	{test_sync_double_unlink,  "Double Unlink"  },
+	{test_sync_invalid_close,  "Invalid Close"  },
+	{test_sync_bad_close,      "Bad Close"      },
+	{test_sync_double_close,   "Double Close"   },
+	{test_sync_invalid_signal, "Invalid Signal" },
+	{test_sync_bad_signal,     "Bad Signal"     },
+	{test_sync_invalid_wait,   "Invalid Wait"   },
+	{test_sync_bad_wait,       "Bad Wait"       },
 	{NULL,                         NULL             },
 };
 
