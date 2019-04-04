@@ -102,7 +102,7 @@
 	 */
 	static inline void i486_hwint_enable(void)
 	{
-		 __asm__("sti");
+		 asm("sti");
 	}
 
 	/**
@@ -113,7 +113,7 @@
 	 */
 	static inline void i486_hwint_disable(void)
 	{
-		 __asm__("cli");
+		 asm("cli");
 	}
 
 	/**

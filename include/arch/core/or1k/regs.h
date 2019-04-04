@@ -48,6 +48,8 @@
 		#error "do not include this file"
 	#endif
 
+	#include <nanvix/cc.h>
+
 	/**
 	 * @brief Shadow registers support, not all architectures have,
 	 * so must ensure that the underlying architecture have, to
@@ -452,11 +454,11 @@
 	static inline unsigned or1k_mfspr(unsigned reg)
 	{
 		register unsigned ret
-			__asm__("r3") = (unsigned) 0;
+			asm("r3") = (unsigned) 0;
 		register unsigned r5
-			__asm__("r5") = (unsigned) reg;
+			asm("r5") = (unsigned) reg;
 
-		__asm__ __volatile__
+		asm volatile
 		(
 			"l.mfspr r3, r5, 0"
 			: "=r" (ret)
@@ -474,11 +476,11 @@
 	static inline void or1k_mtspr(unsigned reg, unsigned value)
 	{
 		register unsigned r3
-			__asm__("r3") = (unsigned) reg;
+			asm("r3") = (unsigned) reg;
 		register unsigned r5
-			__asm__("r5") = (unsigned) value;
+			asm("r5") = (unsigned) value;
 
-		__asm__ __volatile__
+		asm volatile
 		(
 			"l.mtspr r3, r5, 0\n"
 			:

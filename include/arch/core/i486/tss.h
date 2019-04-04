@@ -120,7 +120,7 @@
 	 */
 	static inline void tss_flush(void)
 	{
-		__asm__ __volatile__(
+		asm volatile (
 			"movl %0, %%eax;\
 			ltr %%ax;"
 			:

@@ -33,6 +33,8 @@
  */
 /**@{*/
 
+	#include <nanvix/cc.h>
+
 	/**
 	 * @brief L1 Cache line shift.
 	 */
@@ -50,7 +52,7 @@
 	 */
 	static inline void rv32i_cache_inval(void)
 	{
-		__asm__ __volatile__ ("fence.i" ::: "memory");
+		asm volatile ("fence.i" ::: "memory");
 	}
 
 /**@}*/

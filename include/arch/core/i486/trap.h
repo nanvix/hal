@@ -54,7 +54,7 @@
 	{
 		word_t ret;
 
-		__asm__ volatile (
+		asm volatile (
 			"int %2"
 			: "=a" (ret)
 			: "a"  (syscall_nr),
@@ -79,7 +79,7 @@
 	{
 		word_t ret;
 
-		__asm__ volatile (
+		asm volatile (
 			"int %2"
 			: "=a" (ret)
 			: "a"  (syscall_nr),
@@ -107,7 +107,7 @@
 	{
 		word_t ret;
 
-		__asm__ volatile (
+		asm volatile (
 			"int %2"
 			: "=a" (ret)
 			: "a"  (syscall_nr),
@@ -138,7 +138,7 @@
 	{
 		word_t ret;
 
-		__asm__ volatile (
+		asm volatile (
 			"int %2"
 			: "=a" (ret)
 			: "a"  (syscall_nr),
@@ -172,7 +172,7 @@
 	{
 		word_t ret;
 
-		__asm__ volatile (
+		asm volatile (
 			"int %2"
 			: "=a" (ret)
 			: "a"  (syscall_nr),
@@ -209,7 +209,7 @@
 	{
 		word_t ret;
 
-		__asm__ volatile (
+		asm volatile (
 			"int %2"
 			: "=a" (ret)
 			: "a"  (syscall_nr),

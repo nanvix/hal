@@ -85,7 +85,7 @@
 	{
 		rv32i_word_t mstatus;
 
-		__asm__ __volatile__ (
+		asm volatile (
 			"csrrs %0, mstatus, %1"
 				: "=r"(mstatus)
 				: "r"
@@ -102,7 +102,7 @@
 	{
 		rv32i_word_t mstatus;
 
-		__asm__ __volatile__ (
+		asm volatile (
 			"csrrc %0, mstatus, %1"
 				: "=r"(mstatus)
 				: "r"

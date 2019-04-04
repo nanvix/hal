@@ -45,10 +45,10 @@
 	 */
 	static inline word_t or1k_syscall0(word_t syscall_nr)
 	{
-		register word_t _syscall_nr __asm__("r11") = syscall_nr;
-		register word_t ret __asm__ ("r11");
+		register word_t _syscall_nr asm("r11") = syscall_nr;
+		register word_t ret asm ("r11");
 
-		__asm__ volatile (
+		asm volatile (
 			"l.sys 1"
 			: "=r" (ret)
 			: "r"  (_syscall_nr)
@@ -70,11 +70,11 @@
 		word_t syscall_nr,
 		word_t arg0)
 	{
-		register word_t _syscall_nr __asm__("r11") = syscall_nr;
-		register word_t _arg0 __asm__("r3") = arg0;
-		register word_t ret __asm__ ("r11");
+		register word_t _syscall_nr asm("r11") = syscall_nr;
+		register word_t _arg0 asm("r3") = arg0;
+		register word_t ret asm ("r11");
 
-		__asm__ volatile (
+		asm volatile (
 			"l.sys 1"
 			: "=r" (ret)
 			: "r"  (_syscall_nr),
@@ -99,12 +99,12 @@
 		word_t arg0,
 		word_t arg1)
 	{
-		register word_t _syscall_nr __asm__("r11") = syscall_nr;
-		register word_t _arg0 __asm__("r3") = arg0;
-		register word_t _arg1 __asm__("r4") = arg1;
-		register word_t ret __asm__ ("r11");
+		register word_t _syscall_nr asm("r11") = syscall_nr;
+		register word_t _arg0 asm("r3") = arg0;
+		register word_t _arg1 asm("r4") = arg1;
+		register word_t ret asm ("r11");
 
-		__asm__ volatile (
+		asm volatile (
 			"l.sys 1"
 			: "=r" (ret)
 			: "r"  (_syscall_nr),
@@ -132,13 +132,13 @@
 		word_t arg1,
 		word_t arg2)
 	{
-		register word_t _syscall_nr __asm__("r11") = syscall_nr;
-		register word_t _arg0 __asm__("r3") = arg0;
-		register word_t _arg1 __asm__("r4") = arg1;
-		register word_t _arg2 __asm__("r5") = arg2;
-		register word_t ret __asm__ ("r11");
+		register word_t _syscall_nr asm("r11") = syscall_nr;
+		register word_t _arg0 asm("r3") = arg0;
+		register word_t _arg1 asm("r4") = arg1;
+		register word_t _arg2 asm("r5") = arg2;
+		register word_t ret asm ("r11");
 
-		__asm__ volatile (
+		asm volatile (
 			"l.sys 1"
 			: "=r" (ret)
 			: "r"  (_syscall_nr),
@@ -169,14 +169,14 @@
 		word_t arg2,
 		word_t arg3)
 	{
-		register word_t _syscall_nr __asm__("r11") = syscall_nr;
-		register word_t _arg0 __asm__("r3") = arg0;
-		register word_t _arg1 __asm__("r4") = arg1;
-		register word_t _arg2 __asm__("r5") = arg2;
-		register word_t _arg3 __asm__("r6") = arg3;
-		register word_t ret __asm__ ("r11");
+		register word_t _syscall_nr asm("r11") = syscall_nr;
+		register word_t _arg0 asm("r3") = arg0;
+		register word_t _arg1 asm("r4") = arg1;
+		register word_t _arg2 asm("r5") = arg2;
+		register word_t _arg3 asm("r6") = arg3;
+		register word_t ret asm ("r11");
 
-		__asm__ volatile (
+		asm volatile (
 			"l.sys 1"
 			: "=r" (ret)
 			: "r"  (_syscall_nr),
@@ -210,15 +210,15 @@
 		word_t arg3,
 		word_t arg4)
 	{
-		register word_t _syscall_nr __asm__("r11") = syscall_nr;
-		register word_t _arg0 __asm__("r3") = arg0;
-		register word_t _arg1 __asm__("r4") = arg1;
-		register word_t _arg2 __asm__("r5") = arg2;
-		register word_t _arg3 __asm__("r6") = arg3;
-		register word_t _arg4 __asm__("r7") = arg4;
-		register word_t ret __asm__ ("r11");
+		register word_t _syscall_nr asm("r11") = syscall_nr;
+		register word_t _arg0 asm("r3") = arg0;
+		register word_t _arg1 asm("r4") = arg1;
+		register word_t _arg2 asm("r5") = arg2;
+		register word_t _arg3 asm("r6") = arg3;
+		register word_t _arg4 asm("r7") = arg4;
+		register word_t ret asm ("r11");
 
-		__asm__ volatile (
+		asm volatile (
 			"l.sys 1"
 			: "=r" (ret)
 			: "r"  (_syscall_nr),
