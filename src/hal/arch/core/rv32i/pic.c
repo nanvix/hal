@@ -34,14 +34,14 @@
 PUBLIC const int irqs[RV32I_IRQ_NUM] = {
 	RV32I_MIE_USIE, /* User Software Interrupt Enable       */
 	RV32I_MIE_SSIE, /* Supervisor Interrupt Enable          */
-	RV32I_MIE_R0,
+	0,
 	RV32I_MIE_MSIE, /* Machine Software Interrupt Enable    */
 	RV32I_MIE_UTIE, /* User Timer Interrupt Enable          */
 	RV32I_MIE_STIE, /* Supervisor Timer Interrupt Enable    */
-	RV32I_MIE_R1,
+	0,
 	RV32I_MIE_MTIE, /* Machine Timer Interrupt Enable       */
-	RV32I_MIE_UEUE, /* User External Interrupt Enable       */
+	RV32I_MIE_UEIE, /* User External Interrupt Enable       */
 	RV32I_MIE_SEIE, /* Supervisor External Interrupt Enable */
-	RV32I_MIE_R2,
+	0,
 	RV32I_MIE_MEIE  /* Machine External Interrupt Enable    */
 };

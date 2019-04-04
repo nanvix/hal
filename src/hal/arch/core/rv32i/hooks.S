@@ -78,11 +78,11 @@ rv32i_do_event:
 
 		li  t0, RV32I_MCAUSE_CAUSE
 		and t0, s2, t0
-		li  t1, RV32I_MCAUSE_SYNC_ECALL_MMODE
+		li  t1, RV32I_MCAUSE_ECALL_MMODE
 		beq t0, t1, rv32i_do_event.syscall
-		li  t1, RV32I_MCAUSE_SYNC_ECALL_SMODE
+		li  t1, RV32I_MCAUSE_ECALL_SMODE
 		beq t0, t1, rv32i_do_event.syscall
-		li  t1, RV32I_MCAUSE_SYNC_ECALL_UMODE
+		li  t1, RV32I_MCAUSE_ECALL_UMODE
 		beq t0, t1, rv32i_do_event.syscall
 
 	/* Event. */

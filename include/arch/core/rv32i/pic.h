@@ -69,25 +69,6 @@
 	extern const int irqs[RV32I_IRQ_NUM];
 
 	/**
-	 * @brief Asserts a reserved interrupt number.
-	 *
-	 * @param irqnum Number of target interrupt request.
-	 *
-	 * @returns One if @p irqnum refers to a reserved interrupt
-	 * request line, and non-zero otherwise.
-	 *
-	 * @author Pedro Henrique Penna
-	 */
-	static inline int rv32i_pic_is_reserved(int irqnum)
-	{
-		return (
-			(irqnum == RV32I_MIE_R0) ||
-			(irqnum == RV32I_MIE_R1) ||
-			(irqnum == RV32I_MIE_R2)
-		);
-	}
-
-	/**
 	 * @brief Unmasks an interrupt.
 	 *
 	 * @param irqnum Number of target interrupt request.
@@ -104,10 +85,6 @@
 		/* Invalid interrupt number. */
 		if ((irqnum < 0) || (irqnum >= RV32I_IRQ_NUM))
 			return (-EINVAL);
-
-		/* Unsupported interrupt number. */
-		if (rv32i_pic_is_reserved(irqnum))
-			return (-ENOTSUP);
 
 		asm volatile (
 			"csrrs %0, mie, %1"
@@ -135,10 +112,6 @@
 		/* Invalid interrupt number. */
 		if ((irqnum < 0) || (irqnum >= RV32I_IRQ_NUM))
 			return (-EINVAL);
-
-		/* Unsupported interrupt number. */
-		if (rv32i_pic_is_reserved(irqnum))
-			return (-ENOTSUP);
 
 		asm volatile (
 			"csrrc %0, mie, %1"
