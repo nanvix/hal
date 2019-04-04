@@ -192,18 +192,6 @@
 	#define KASSERT(x) kassert(x, "kassert() failed")
 
 	/**
-	 * @brief Declares something to be unused.
-	 *
-	 * @param x Thing.
-	 */
-	#define UNUSED(x) ((void) (x))
-
-	/**
-	 * @brief No operation.
-	 */
-	#define noop() __asm__ __volatile__ ("":::"memory")
-
-	/**
 	 * @brief Asserts if a number is within a range.
 	 *
 	 * @param x Number.

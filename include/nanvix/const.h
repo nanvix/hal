@@ -35,6 +35,8 @@
  */
 /**@{*/
 
+	#include <nanvix/cc.h>
+
 	/**
 	 * @name Scope Constants
 	 */
@@ -43,42 +45,6 @@
 	#define PRIVATE static /**< File scope.        */
 	#define EXTERN extern  /**< Defined elsewhere. */
 	/**@}*/
-
-	/**
-	 * @brief Places object in a binary section.
-	 *
-	 * @param x Target binary section.
-	 */
-	#define SECTION(x) __attribute__((section(x)))
-
-	/**
-	 * @brief Overrides a symbol.
-	 */
-	#define OVERRIDE __attribute__((weak))
-
-	/**
-	 * @brief Casts an inline function.
-	 */
-	#define INLINE __atribute__((inline))
-
-	/**
-	 * @brief Casts a function  with no return.
-	 */
-	#define NORETURN __attribute__((noreturn))
-
-	/**
-	 * @brief Aligns an object at a boundary.
-	 *
-	 * @param x Boundary.
-	 */
-	#define ALIGN(x) __attribute__((aligned(x)))
-
-	/**
-	 * @brief Packs a structure
-	 *
-	 * @param x Boundary.
-	 */
-	#define PACK __attribute__((packed))
 
 	/**
 	 * @name Logical Constants
