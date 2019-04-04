@@ -153,6 +153,10 @@
 	 *
 	 * @param interface Number of the interface.
 	 * @param tag       Number of receiver buffer.
+	 * @param buffer    Local data pointer.
+	 * @param min_size  Minimal value to generate an event (in bytes).
+	 * @param max_size  Size of the receiver buffer (in bytes).
+	 * @param offset    Offset in receiver buffer where data shall be written.
 	 *
 	 * @return Zero if configure sucefully and non zero otherwise.
 	 */
@@ -160,12 +164,13 @@
 		int interface,
 		int tag,
 		void *buffer,
-		size_t size,
+		size_t min_size,
+		size_t max_size,
 		size_t offset
 	);
 
 /*============================================================================*
- * D-Noc Transfer Interface                                                   *
+ * D-NoC Transfer Interface                                                   *
  *============================================================================*/
 
 	/**
@@ -225,7 +230,7 @@
 	);
 
 	/**
-	 * @brief Sync Writes on D-NoC transfer buffer.
+	 * @brief Writes on D-NoC transfer buffer.
 	 *
 	 * @param interface Number of the DMA channel.
 	 * @param tag       Transfer buffer ID.
