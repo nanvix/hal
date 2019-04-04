@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 
-#ifndef HAL_TARGET_SYNC_H_
-#define HAL_TARGET_SYNC_H_
+#ifndef NANVIX_HAL_TARGET_SYNC_H_
+#define NANVIX_HAL_TARGET_SYNC_H_
 
 	/* Target Interface Implementation */
 	#include <nanvix/hal/target/_target.h>
@@ -45,46 +45,46 @@
 	#if (TARGET_HAS_SYNC)
 
 		/* Constants */
-		#ifndef HAL_SYNC_ONE_TO_ALL
-		#error "HAL_SYNC_ONE_TO_ALL not defined"
+		#ifndef SYNC_ONE_TO_ALL
+		#error "SYNC_ONE_TO_ALL not defined"
 		#endif
-		#ifndef HAL_SYNC_ALL_TO_ONE
-		#error "HAL_SYNC_ALL_TO_ONE not defined"
+		#ifndef SYNC_ALL_TO_ONE
+		#error "SYNC_ALL_TO_ONE not defined"
 		#endif
-		#ifndef HAL_SYNC_CREATE_MAX
-		#error "HAL_SYNC_CREATE_MAX not defined"
+		#ifndef SYNC_CREATE_MAX
+		#error "SYNC_CREATE_MAX not defined"
 		#endif
-		#ifndef HAL_SYNC_OPEN_MAX
-		#error "HAL_SYNC_OPEN_MAX not defined"
+		#ifndef SYNC_OPEN_MAX
+		#error "SYNC_OPEN_MAX not defined"
 		#endif
 
 		/* Functions */
-		#ifndef __hal_sync_create_fn
-		#error "hal_sync_create() not defined?"
+		#ifndef __sync_create_fn
+		#error "sync_create() not defined?"
 		#endif
-		#ifndef __hal_sync_open_fn
-		#error "hal_sync_open() not defined?"
+		#ifndef __sync_open_fn
+		#error "sync_open() not defined?"
 		#endif
-		#ifndef __hal_sync_unlink_fn
-		#error "hal_sync_unlink() not defined?"
+		#ifndef __sync_unlink_fn
+		#error "sync_unlink() not defined?"
 		#endif
-		#ifndef __hal_sync_close_fn
-		#error "hal_sync_close_() not defined?"
+		#ifndef __sync_close_fn
+		#error "sync_close_() not defined?"
 		#endif
-		#ifndef __hal_sync_wait_fn
-		#error "hal_sync_wait() not defined?"
+		#ifndef __sync_wait_fn
+		#error "sync_wait() not defined?"
 		#endif
-		#ifndef __hal_sync_signal_fn
-		#error "hal_sync_signal() not defined?"
+		#ifndef __sync_signal_fn
+		#error "sync_signal() not defined?"
 		#endif
 
 	#else
 
 		/* Constants */
-		#define HAL_SYNC_ONE_TO_ALL 0
-		#define HAL_SYNC_ALL_TO_ONE 1
-		#define HAL_SYNC_CREATE_MAX 1
-		#define HAL_SYNC_OPEN_MAX   1
+		#define SYNC_ONE_TO_ALL 0
+		#define SYNC_ALL_TO_ONE 1
+		#define SYNC_CREATE_MAX 1
+		#define SYNC_OPEN_MAX   1
 
 	#endif
 
@@ -112,9 +112,9 @@
 	 * @return The tag of underlying resource ID.
 	 */
 #if (TARGET_HAS_SYNC)
-	EXTERN int hal_sync_create(const int *nodes, int nnodes, int type);
+	EXTERN int sync_create(const int *nodes, int nnodes, int type);
 #else
-	static inline int hal_sync_create(const int *nodes, int nnodes, int type)
+	static inline int sync_create(const int *nodes, int nnodes, int type)
 	{
 		UNUSED(nodes);
 		UNUSED(nnodes);
@@ -130,9 +130,9 @@
 	 * @return The tag of underlying resource ID.
 	 */
 #if (TARGET_HAS_SYNC)
-	EXTERN int hal_sync_open(void);
+	EXTERN int sync_open(void);
 #else
-	static inline int hal_sync_open(void)
+	static inline int sync_open(void)
 	{
 		return (0);
 	}
@@ -146,9 +146,9 @@
 	 * @return Zero if free the resource and non zero otherwise.
 	 */
 #if (TARGET_HAS_SYNC)
-	EXTERN int hal_sync_unlink(int syncid);
+	EXTERN int sync_unlink(int syncid);
 #else
-	static inline int hal_sync_unlink(int syncid)
+	static inline int sync_unlink(int syncid)
 	{
 		UNUSED(syncid);
 
@@ -164,9 +164,9 @@
 	 * @return Zero if free the resource and non zero otherwise.
 	 */
 #if (TARGET_HAS_SYNC)
-	EXTERN int hal_sync_close(int syncid);
+	EXTERN int sync_close(int syncid);
 #else
-	static inline int hal_sync_close(int syncid)
+	static inline int sync_close(int syncid)
 	{
 		UNUSED(syncid);
 
@@ -182,9 +182,9 @@
 	 * @return Zero if wait signal correctly and non zero otherwise.
 	 */
 #if (TARGET_HAS_SYNC)
-	EXTERN int hal_sync_wait(int syncid);
+	EXTERN int sync_wait(int syncid);
 #else
-	static inline int hal_sync_wait(int syncid)
+	static inline int sync_wait(int syncid)
 	{
 		UNUSED(syncid);
 
@@ -203,9 +203,9 @@
 	 * @return Zero if send signal correctly and non zero otherwise.
 	 */
 #if (TARGET_HAS_SYNC)
-	EXTERN int hal_sync_signal(int syncid, const int *nodes, int nnodes, int type);
+	EXTERN int sync_signal(int syncid, const int *nodes, int nnodes, int type);
 #else
-	static inline int hal_sync_signal(int syncid, const int *nodes, int nnodes, int type)
+	static inline int sync_signal(int syncid, const int *nodes, int nnodes, int type)
 	{
 		UNUSED(syncid);
 		UNUSED(nodes);
@@ -218,4 +218,4 @@
 
 /**@}*/
 
-#endif /* HAL_TARGET_SYNC_H_ */
+#endif /* NANVIX_HAL_TARGET_SYNC_H_ */

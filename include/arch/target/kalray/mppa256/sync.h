@@ -123,12 +123,12 @@
 	 * @name Provided Interface
 	 */
 	/**@{*/
-	#define __hal_sync_create_fn /**< hal_sync_create()    */
-	#define __hal_sync_open_fn   /**< hal_sync_open()      */
-	#define __hal_sync_unlink_fn /**< hal_sync_unlink()    */
-	#define __hal_sync_close_fn  /**< hal_sync_close()     */
-	#define __hal_sync_wait_fn   /**< hal_sync_wait()      */
-	#define __hal_sync_signal_fn /**< hal_sync_signal()    */
+	#define __sync_create_fn /**< sync_create()    */
+	#define __sync_open_fn   /**< sync_open()      */
+	#define __sync_unlink_fn /**< sync_unlink()    */
+	#define __sync_close_fn  /**< sync_close()     */
+	#define __sync_wait_fn   /**< sync_wait()      */
+	#define __sync_signal_fn /**< sync_signal()    */
 	/**@}*/
 
 	/**
@@ -136,8 +136,8 @@
 	 * @see MPPA256_SYNC_ALL_TO_ONE
 	 */
 	/**@{*/
-	#define HAL_SYNC_ONE_TO_ALL MPPA256_SYNC_ONE_TO_ALL
-	#define HAL_SYNC_ALL_TO_ONE MPPA256_SYNC_ALL_TO_ONE
+	#define SYNC_ONE_TO_ALL MPPA256_SYNC_ONE_TO_ALL
+	#define SYNC_ALL_TO_ONE MPPA256_SYNC_ALL_TO_ONE
 	/**@}*/
 
 	/**
@@ -145,14 +145,14 @@
 	 * @see BOSTAN_SYNC_OPEN_MAX
 	 */
 	/**@{*/
-	#define HAL_SYNC_CREATE_MAX MPPA256_SYNC_CREATE_MAX
-	#define HAL_SYNC_OPEN_MAX   MPPA256_SYNC_OPEN_MAX
+	#define SYNC_CREATE_MAX MPPA256_SYNC_CREATE_MAX
+	#define SYNC_OPEN_MAX   MPPA256_SYNC_OPEN_MAX
 	/**@}*/
 
 	/**
 	 * @see mppa256_sync_create()
 	 */
-	static inline int hal_sync_create(const int *nodes, int nnodes, int type)
+	static inline int sync_create(const int *nodes, int nnodes, int type)
 	{
 		return mppa256_sync_create(nodes, nnodes, type);
 	}
@@ -160,7 +160,7 @@
 	/**
 	 * @see mppa256_sync_open()
 	 */
-	static inline int hal_sync_open(void)
+	static inline int sync_open(void)
 	{
 		return mppa256_sync_open();
 	}
@@ -168,7 +168,7 @@
 	/**
 	 * @see mppa256_sync_unlink()
 	 */
-	static inline int hal_sync_unlink(int syncid)
+	static inline int sync_unlink(int syncid)
 	{
 		return mppa256_sync_unlink(syncid);
 	}
@@ -176,7 +176,7 @@
 	/**
 	 * @see mppa256_sync_close()
 	 */
-	static inline int hal_sync_close(int syncid)
+	static inline int sync_close(int syncid)
 	{
 		return mppa256_sync_close(syncid);
 	}
@@ -184,7 +184,7 @@
 	/**
 	 * @see mppa256_sync_wait()
 	 */
-	static inline int hal_sync_wait(int syncid)
+	static inline int sync_wait(int syncid)
 	{
 		return mppa256_sync_wait(syncid);
 	}
@@ -192,7 +192,7 @@
 	/**
 	 * @see mppa256_sync_signal()
 	 */
-	static inline int hal_sync_signal(int syncid, const int *nodes, int nnodes, int type)
+	static inline int sync_signal(int syncid, const int *nodes, int nnodes, int type)
 	{
 		return mppa256_sync_signal(syncid, nodes, nnodes, type);
 	}
