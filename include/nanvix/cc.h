@@ -101,12 +101,18 @@
 	#define UNUSED(x) ((void) (x))
 
 	/**
-	 * @brief Hints for branch condition.
+	 * @brief Hints a likely condition.
 	 *
 	 * @param expr Target expression.
-	 * @param val  Excepted logic value (one or zero).
 	 */
-	#define EXPECT(expr, val) __builtin_expect(expr, val)
+	#define LIKELY(expr) __builtin_expect(expr, 1)
+
+	/**
+	 * @brief Hints an unlikely condition.
+	 *
+	 * @param expr Target expression.
+	 */
+	#define UNLIKELY(expr) __builtin_expect(expr, 0)
 
 	/**
 	 * @brief No operation.
