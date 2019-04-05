@@ -26,7 +26,7 @@
 
 # Target Configuration
 export CORE    = k1b
-export CLUSTER = k1b
+export CLUSTER = k1b-cluster
 
 #===============================================================================
 # Toolchain Configuration
