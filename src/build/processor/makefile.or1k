@@ -24,7 +24,7 @@
 # Target Configuration
 #===============================================================================
 
-export CLUSTER = or1k-smp
+export CLUSTER = or1k-cluster
 export CORE = or1k
 export CORE_VARIANT = or1200
 
@@ -33,7 +33,7 @@ export CORE_VARIANT = or1200
 #===============================================================================
 
 # Compiler Options
-export CFLAGS += -D __or1k_smp__ -D__or1k__ -D __or1200__
+export CFLAGS += -D __or1k_cluster__ -D__or1k__ -D __or1200__
 
 #===============================================================================
 

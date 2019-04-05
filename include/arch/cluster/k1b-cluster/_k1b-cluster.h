@@ -22,12 +22,13 @@
  * SOFTWARE.
  */
 
-#ifndef _CLUSTER_I486_H_
-#define _CLUSTER_I486_H_
+#ifndef _CLUSTER_K1B_CLUSTER_H_
+#define _CLUSTER_K1B_CLUSTER_H_
 
-	#undef  __NEED_CORE_I486
-	#define __NEED_CORE_I486
-	#include <arch/core/i486.h>
+	#define __NEED_CORE_K1B
 
-#endif /* _CLUSTER_I486_H_ */
+#ifndef _ASM_FILE_
+	#include <arch/core/k1b.h>
+#endif
 
+#endif /* _CLUSTER_K1B_CLUSTER_H_ */

@@ -22,11 +22,11 @@
  * SOFTWARE.
  */
 
-#ifndef CLUSTER_I486_MEMORY_H_
-#define CLUSTER_I486_MEMORY_H_
+#ifndef CLUSTER_X86_MEMORY_H_
+#define CLUSTER_X86_MEMORY_H_
 
 	/* Cluster Interface Implementation */
-	#include <arch/cluster/i486/_i486.h>
+	#include <arch/cluster/x86-cluster/_x86-cluster.h>
 
 /**
  * @addtogroup i486-cluster-mem Memory
@@ -87,7 +87,7 @@
  *============================================================================*/
 
 /**
- * @cond x86_smp
+ * @cond x86_cluster
  */
 
 	/**
@@ -109,4 +109,4 @@
 
 /**@endcond*/
 
-#endif /* CLUSTER_I486_MEMORY_H_ */
+#endif /* CLUSTER_X86_CLUSTER_MEMORY_H_ */

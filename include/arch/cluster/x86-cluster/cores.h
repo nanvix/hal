@@ -22,15 +22,15 @@
  * SOFTWARE.
  */
 
-#ifndef ARCH_CLUSTER_I486_CORES_H_
-#define ARCH_CLUSTER_I486_CORES_H_
+#ifndef ARCH_CLUSTER_X86_CLUSTER_CORES_H_
+#define ARCH_CLUSTER_X86_CLUSTER_CORES_H_
 
 	/* Cluster Interface Implementation */
-	#include <arch/cluster/i486/_i486.h>
+	#include <arch/cluster/x86-cluster/_x86-cluster.h>
 
 /**
- * @addtogroup i486-cluster-cpu Cores
- * @ingroup i486-cluster
+ * @addtogroup x86-cluster-cpu Cores
+ * @ingroup x86-cluster
  *
  * @brief Cores
  */
@@ -39,24 +39,24 @@
 	/**
 	 * @brief Number of cores.
 	 */
-	#define X86_SMP_NUM_CORES 1
+	#define X86_CLUSTER_NUM_CORES 1
 
 	/**
 	 * @brief ID of the master core.
 	 */
-	#define X86_SMP_COREID_MASTER 0
+	#define X86_CLUSTER_COREID_MASTER 0
 
 	/**
 	 * @brief Gets the number of cores.
 	 *
-	 * The x86_smp_cluster_get_num_cores() gets the number of cores in
+	 * The x86_cluster_cluster_get_num_cores() gets the number of cores in
 	 * the underlying x86 cluster.
 	 *
 	 * @returns The the number of cores in the underlying cluster.
 	 */
-	static inline int x86_smp_cluster_get_num_cores(void)
+	static inline int x86_cluster_cluster_get_num_cores(void)
 	{
-		return (X86_SMP_NUM_CORES);
+		return (X86_CLUSTER_NUM_CORES);
 	}
 
 /**@}*/
@@ -66,7 +66,7 @@
  *============================================================================*/
 
 /**
- * @cond x86_smp
+ * @cond x86_cluster
  */
 
 	/**
@@ -79,21 +79,21 @@
 	/**
 	 * @brief Number of cores in a cluster.
 	 */
-	#define CORES_NUM X86_SMP_NUM_CORES
+	#define CORES_NUM X86_CLUSTER_NUM_CORES
 
 	/**
 	 * @brief ID of the master core.
 	 */
-	#define COREID_MASTER X86_SMP_COREID_MASTER
+	#define COREID_MASTER X86_CLUSTER_COREID_MASTER
 
 	/**
-	 * @see x86_smp_cluster_get_num_cores()
+	 * @see x86_cluster_cluster_get_num_cores()
 	 */
 	static inline int cluster_get_num_cores(void)
 	{
-		return (x86_smp_cluster_get_num_cores());
+		return (x86_cluster_cluster_get_num_cores());
 	}
 
 /**@endcond*/
 
-#endif /* ARCH_CLUSTER_I486_CORES_H_ */
+#endif /* ARCH_CLUSTER_X86_CLUSTER_CORES_H_ */

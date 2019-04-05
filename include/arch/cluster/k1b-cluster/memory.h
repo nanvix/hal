@@ -26,7 +26,7 @@
 #define CLUSTER_K1B_MEMORY_H_
 
 	/* Cluster Interface Implementation */
-	#include <arch/cluster/k1b/_k1b.h>
+	#include <arch/cluster/k1b-cluster/_k1b-cluster.h>
 
 /**
  * @addtogroup k1b-cluster-mem Memory
@@ -176,4 +176,4 @@
 
 /**@endcond*/
 
-#endif /* CLUSTER_K1B_MEMORY_H_ */
+#endif /* CLUSTER_K1B_CLUSTER_MEMORY_H_ */

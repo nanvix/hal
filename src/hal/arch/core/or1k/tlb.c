@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 
-#include <arch/cluster/or1k/cores.h>
-#include <arch/cluster/or1k/memory.h>
+#include <arch/cluster/or1k-cluster/cores.h>
+#include <arch/cluster/or1k-cluster/memory.h>
 #include <nanvix/const.h>
 
 /**
@@ -44,7 +44,7 @@ PRIVATE struct
 	 * @brief Instruction TLB.
 	 */
 	struct tlbe itlb[OR1K_TLB_LENGTH];
-} tlb[OR1K_SMP_NUM_CORES];
+} tlb[OR1K_CLUSTER_NUM_CORES];
 
 /**
  * @brief TLB Entry Value

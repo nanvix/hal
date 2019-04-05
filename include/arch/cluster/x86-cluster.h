@@ -22,86 +22,40 @@
  * SOFTWARE.
  */
 
-#ifndef ARCH_CLUSTER_OR1K_CORES_H_
-#define ARCH_CLUSTER_OR1K_CORES_H_
+#ifndef ARCH_CLUSTER_X86_CLUSTER_H_
+#define ARCH_CLUSTER_X86_CLUSTER_H_
+
+	#ifndef __NEED_CLUSTER_X86
+		#error "bad cluster configuration?"
+	#endif
 
 	/* Cluster Interface Implementation */
-	#include <arch/cluster/or1k/_or1k.h>
-
-/**
- * @addtogroup or1k-cluster-cpu Cores
- * @ingroup or1k-cluster
- *
- * @brief Cores
- */
-/**@{*/
-
-	/**
-	 * @brief Number of cores in a cluster.
-	 */
-	#define OR1K_SMP_NUM_CORES 2
-
-	/**
-	 * @brief ID of the master core.
-	 */
-	#define OR1K_SMP_COREID_MASTER 0
-
-#ifndef _ASM_FILE_
-
-	/**
-	 * @brief Gets the number of cores.
-	 *
-	 * The or1k_smp_cluster_get_num_cores() gets the number of cores in the
-	 * underlying or1k processor.
-	 *
-	 * @returns The the number of cores in the underlying processor.
-	 */
-	static inline int or1k_smp_cluster_get_num_cores(void)
-	{
-		return (OR1K_SMP_NUM_CORES);
-	}
-
-#endif /* _ASM_FILE_ */
-
-/**@}*/
+	#include <arch/cluster/x86-cluster/_x86-cluster.h>
 
 /*============================================================================*
  * Exported Interface                                                         *
  *============================================================================*/
 
 /**
- * @cond or1k_smp
+ * @addtogroup x86-cluster x86 Cluster
+ * @ingroup clusters
+ *
+ * @brief x86 Cluster
  */
+/**@{*/
+
+	#include <arch/cluster/x86-cluster/cores.h>
+	#include <arch/cluster/x86-cluster/memory.h>
 
 	/**
-	 * @name Provided Functions
+	 * @name Provided Features
 	 */
 	/**@{*/
-	#define __cluster_get_num_cores /**< cluster_get_num_cores() */
+	#define CLUSTER_IS_MULTICORE  1 /**< Multicore Cluster */
+	#define CLUSTER_IS_IO         1 /**< I/O Cluster       */
+	#define CLUSTER_IS_COMPUTE    0 /**< Compute Cluster   */
 	/**@}*/
 
-	/**
-	 * @brief Number of cores in a cluster.
-	 */
-	#define CORES_NUM OR1K_SMP_NUM_CORES
+/**@}*/
 
-	/**
-	 * @brief ID of the master core.
-	 */
-	#define COREID_MASTER OR1K_SMP_COREID_MASTER
-
-#ifndef _ASM_FILE_
-
-	/**
-	 * @see or1k_smp_cluster_get_num_cores()
-	 */
-	static inline int cluster_get_num_cores(void)
-	{
-		return (or1k_smp_cluster_get_num_cores());
-	}
-
-#endif /* _ASM_FILE_ */
-
-/**@endcond*/
-
-#endif /* ARCH_CLUSTER_OR1K_CORES_H_ */
+#endif /* ARCH_CLUSTER_X86_CLUSTER_H_ */

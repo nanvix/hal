@@ -27,7 +27,7 @@
 
 	#undef  __NEED_CLUSTER_K1B
 	#define __NEED_CLUSTER_K1B
-	#include <arch/cluster/k1b.h>
+	#include <arch/cluster/k1b-cluster.h>
 
 #endif /* _PROCESSOR_BOSTAN_H_ */
 

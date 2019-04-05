@@ -24,7 +24,7 @@
 
 #include <arch/core/or1k/core.h>
 #include <arch/core/or1k/ompic.h>
-#include <arch/cluster/or1k/memory.h>
+#include <arch/cluster/or1k-cluster/memory.h>
 #include <nanvix/const.h>
 #include <stdint.h>
 

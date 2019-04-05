@@ -22,45 +22,23 @@
  * SOFTWARE.
  */
 
-#ifndef CLUSTER_K1B_H_
-#define CLUSTER_K1B_H_
+#ifndef _CLUSTER_OR1K_CLUSTER_H_
+#define _CLUSTER_OR1K_CLUSTER_H_
 
-	#ifndef __NEED_CLUSTER_K1B
-		#error "bad cluster configuration?"
-	#endif
+	#undef  __NEED_CORE_OR1K
+	#define __NEED_CORE_OR1K
 
-	/* Cluster Interface Implementation */
-	#include <arch/cluster/k1b/_k1b.h>
+#ifndef _ASM_FILE_
 
-/*============================================================================*
- * Exported Interface                                                         *
- *============================================================================*/
-
-/**
- * @addtogroup k1b-cluster Bostan Cluster
- * @ingroup clusters
- *
- * @brief Bostan Cluster
- */
-/**@{*/
-
-	#include <arch/cluster/k1b/cores.h>
-	#include <arch/cluster/k1b/memory.h>
-
-	/**
-	 * @name Provided Features
-	 */
-	/**@{*/
-	#define CLUSTER_IS_MULTICORE   1 /**< Multicore Cluster */
-	#ifdef __k1io__
-		#define CLUSTER_IS_IO      1 /**< I/O Cluster       */
-		#define CLUSTER_IS_COMPUTE 0 /**< Compute Cluster   */
+	#if (defined(__or1200__))
+		#include <arch/core/or1k.h>
+	#elif (defined(__mor1kx__))
+		#include <arch/core/mor1kx.h>
 	#else
-		#define CLUSTER_IS_IO      0 /**< I/O Cluster       */
-		#define CLUSTER_IS_COMPUTE 1 /**< Compute Cluster   */
+		#error "unkonwn core"
 	#endif
-	/**@}*/
 
-/**@}*/
+#endif
 
-#endif /* CLUSTER_K1B_H_ */
+#endif /* _CLUSTER_OR1K_CLUSTER_H_ */
+

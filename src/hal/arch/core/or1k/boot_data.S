@@ -27,7 +27,7 @@
 
 #include <arch/core/or1k/core.h>
 #include <arch/core/or1k/mmu.h>
-#include <arch/cluster/or1k/cores.h>
+#include <arch/cluster/or1k-cluster/cores.h>
 
 /* Exported symbols. */
 .globl or1k_kernel_pgtab
@@ -92,7 +92,7 @@ itlb_table:
  */
 .align OR1K_PAGE_SIZE
 core.kstack:
-	.fill (OR1K_PAGE_SIZE/OR1K_PTE_SIZE)*OR1K_SMP_NUM_CORES, OR1K_PTE_SIZE, 0
+	.fill (OR1K_PAGE_SIZE/OR1K_PTE_SIZE)*OR1K_CLUSTER_NUM_CORES, OR1K_PTE_SIZE, 0
 
 /*----------------------------------------------------------------------------*
  * ompic_pgtab                                                                *

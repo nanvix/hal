@@ -22,13 +22,35 @@
  * SOFTWARE.
  */
 
-#ifndef _CLUSTER_K1B_H_
-#define _CLUSTER_K1B_H_
+#ifndef CLUSTER_RISCV32_CLUSTER_H_
+#define CLUSTER_RISCV32_CLUSTER_H_
 
-	#undef  __NEED_CORE_K1B
-	#define __NEED_CORE_K1B
-#ifndef _ASM_FILE_
-	#include <arch/core/k1b.h>
-#endif
+	#ifndef __NEED_RISCV32_CLUSTER
+		#error "bad cluster configuration?"
+	#endif
 
-#endif /* _CLUSTER_K1B_H_ */
+	/* Cluster Interface Implementation */
+	#include <arch/cluster/riscv32-cluster/_riscv32-cluster.h>
+
+/**
+ * @addtogroup riscv-cluster RISC-V 32-Bit Cluster
+ * @ingroup clusters
+ *
+ * @brief RISC-V 32-Bit Cluster
+ */
+/**@{*/
+
+	#include <arch/cluster/riscv32-cluster/cores.h>
+
+	/**
+	 * @name Provided Features
+	 */
+	/**@{*/
+	#define CLUSTER_IS_MULTICORE  1 /**< Multicore Cluster */
+	#define CLUSTER_IS_IO         1 /**< I/O Cluster       */
+	#define CLUSTER_IS_COMPUTE    0 /**< Compute Cluster   */
+	/**@}*/
+
+/**@}*/
+
+#endif /* CLUSTER_RISCV32_CLUSTER_H_ */

@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 
-#include <arch/cluster/k1b/cores.h>
-#include <arch/cluster/k1b/memory.h>
+#include <arch/cluster/k1b-cluster/cores.h>
+#include <arch/cluster/k1b-cluster/memory.h>
 #include <nanvix/const.h>
 
 /*

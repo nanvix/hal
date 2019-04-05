@@ -22,11 +22,11 @@
  * SOFTWARE.
  */
 
-#ifndef CLUSTER_OR1K_MEMORY_H_
-#define CLUSTER_OR1K_MEMORY_H_
+#ifndef CLUSTER_OR1K_CLUSTER_MEMORY_H_
+#define CLUSTER_OR1K_CLUSTER_MEMORY_H_
 
 	/* Cluster Interface Implementation */
-	#include <arch/cluster/or1k/_or1k.h>
+	#include <arch/cluster/or1k-cluster/_or1k-cluster.h>
 
 /**
  * @addtogroup or1k-cluster-mem Memory
@@ -106,7 +106,7 @@
  *============================================================================*/
 
 /**
- * @cond or1k_smp
+ * @cond or1k_cluster
  */
 
 	/**
@@ -129,4 +129,4 @@
 
 /**@endcond*/
 
-#endif /* CLUSTER_OR1K_MEMORY_H_ */
+#endif /* CLUSTER_OR1K_CLUSTER_MEMORY_H_ */

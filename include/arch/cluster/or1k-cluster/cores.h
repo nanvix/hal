@@ -22,56 +22,46 @@
  * SOFTWARE.
  */
 
-#ifndef ARCH_CLUSTER_K1B_CORES_H_
-#define ARCH_CLUSTER_K1B_CORES_H_
+#ifndef ARCH_CLUSTER_OR1K_CLUSTER_CORES_H_
+#define ARCH_CLUSTER_OR1K_CLUSTER_CORES_H_
 
 	/* Cluster Interface Implementation */
-	#include <arch/cluster/k1b/_k1b.h>
+	#include <arch/cluster/or1k-cluster/_or1k-cluster.h>
 
 /**
- * @addtogroup k1b-cluster-cpu Cores
- * @ingroup k1b-cluster
+ * @addtogroup or1k-cluster-cpu Cores
+ * @ingroup or1k-cluster
  *
  * @brief Cores
  */
 /**@{*/
 
 	/**
-	 * @brief Number of cores in an I/O Cluster.
+	 * @brief Number of cores in a cluster.
 	 */
-	#define K1BIO_CORES_NUM 4
-
-	/**
-	 * @brief Number of cores in an Compute Cluster.
-	 */
-	#define K1BDP_CORES_NUM 16
-
-	/**
-	 * @brief Number of cores in the underlying cluster.
-	 */
-	#ifdef __k1io__
-		#define K1B_CLUSTER_NUM_CORES K1BIO_CORES_NUM
-	#else
-		#define K1B_CLUSTER_NUM_CORES K1BDP_CORES_NUM
-	#endif
+	#define OR1K_CLUSTER_NUM_CORES 2
 
 	/**
 	 * @brief ID of the master core.
 	 */
-	#define K1B_CLUSTER_COREID_MASTER 0
+	#define OR1K_CLUSTER_COREID_MASTER 0
+
+#ifndef _ASM_FILE_
 
 	/**
 	 * @brief Gets the number of cores.
 	 *
-	 * The k1b_cluster_get_num_cores() gets the number of cores in the
-	 * underlying k1b processor.
+	 * The or1k_cluster_cluster_get_num_cores() gets the number of cores in the
+	 * underlying or1k processor.
 	 *
 	 * @returns The the number of cores in the underlying processor.
 	 */
-	static inline int k1b_cluster_get_num_cores(void)
+	static inline int or1k_cluster_cluster_get_num_cores(void)
 	{
-		return (K1B_CLUSTER_NUM_CORES);
+		return (OR1K_CLUSTER_NUM_CORES);
 	}
+
+#endif /* _ASM_FILE_ */
 
 /**@}*/
 
@@ -80,7 +70,7 @@
  *============================================================================*/
 
 /**
- * @cond k1b
+ * @cond or1k_cluster
  */
 
 	/**
@@ -93,21 +83,25 @@
 	/**
 	 * @brief Number of cores in a cluster.
 	 */
-	#define CORES_NUM K1B_CLUSTER_NUM_CORES
+	#define CORES_NUM OR1K_CLUSTER_NUM_CORES
 
 	/**
 	 * @brief ID of the master core.
 	 */
-	#define COREID_MASTER K1B_CLUSTER_COREID_MASTER
+	#define COREID_MASTER OR1K_CLUSTER_COREID_MASTER
+
+#ifndef _ASM_FILE_
 
 	/**
-	 * @see k1b_cluster_get_num_cores().
+	 * @see or1k_cluster_cluster_get_num_cores()
 	 */
 	static inline int cluster_get_num_cores(void)
 	{
-		return (k1b_cluster_get_num_cores());
+		return (or1k_cluster_cluster_get_num_cores());
 	}
+
+#endif /* _ASM_FILE_ */
 
 /**@endcond*/
 
-#endif /* ARCH_CLUSTER_K1B_CORES_H_ */
+#endif /* ARCH_CLUSTER_OR1K_CLUSTER_CORES_H_ */

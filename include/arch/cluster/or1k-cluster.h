@@ -22,15 +22,15 @@
  * SOFTWARE.
  */
 
-#ifndef CLUSTER_OR1K_H_
-#define CLUSTER_OR1K_H_
+#ifndef CLUSTER_OR1K_CLUSTER_H_
+#define CLUSTER_OR1K_CLUSTER_H_
 
 	#ifndef __NEED_CLUSTER_OR1K
 		#error "bad cluster configuration?"
 	#endif
 
 	/* Cluster Interface Implementation */
-	#include <arch/cluster/or1k/_or1k.h>
+	#include <arch/cluster/or1k-cluster/_or1k-cluster.h>
 
 /**
  * @addtogroup or1k-cluster OpenRISC Cluster
@@ -40,8 +40,8 @@
  */
 /**@{*/
 
-	#include <arch/cluster/or1k/cores.h>
-	#include <arch/cluster/or1k/memory.h>
+	#include <arch/cluster/or1k-cluster/cores.h>
+	#include <arch/cluster/or1k-cluster/memory.h>
 
 	/**
 	 * @name Provided Features
@@ -54,4 +54,4 @@
 
 /**@}*/
 
-#endif /* CLUSTER_OR1K_H_ */
+#endif /* CLUSTER_OR1K_CLUSTER_H_ */
