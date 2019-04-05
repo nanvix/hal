@@ -196,11 +196,6 @@
 	/**@}*/
 
 	/**
-	 * @brief Page Frame number.
-	 */
-	typedef uint32_t frame_t;
-
-	/**
 	 * @brief Page directory entry.
 	 */
 	struct pde
