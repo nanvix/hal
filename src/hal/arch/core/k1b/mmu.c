@@ -27,15 +27,9 @@
 #include <errno.h>
 
 /**
- * @brief Maps a page.
+ * @todo TODO provide a detailed description for this function.
  *
- * @param pgtab Target page table.
- * @param paddr Physical address of the target page frame.
- * @param vaddr Virtual address of the target page.
- * @param w     Writable page?
- *
- * @returns Upon successful completion, zero is returned. Upon
- * failure, a negative error code is returned instead.
+ * @author Pedro Henrique Penna
  */
 PUBLIC int k1b_page_map(struct pte *pgtab, paddr_t paddr, vaddr_t vaddr, int w)
 {
@@ -55,11 +49,9 @@ PUBLIC int k1b_page_map(struct pte *pgtab, paddr_t paddr, vaddr_t vaddr, int w)
 }
 
 /**
- * @brief Maps a page table.
+ * @todo TODO provide a detailed description for this function.
  *
- * @param pgdir Target page directory.
- * @param paddr Physical address of the target page table frame.
- * @param vaddr Virtual address of the target page table.
+ * @author Pedro Henrique Penna
  */
 PUBLIC int k1b_pgtab_map(struct pde *pgdir, paddr_t paddr, vaddr_t vaddr)
 {

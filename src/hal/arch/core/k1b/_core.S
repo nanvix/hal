@@ -52,9 +52,9 @@ _k1b_core_reset:
 	;;
 
 	/* Setup kernel stack. */
-	mulwdl $r0 = $r1, K1B_KSTACK_SIZE
+	mulwdl $r0 = $r1, K1B_CLUSTER_KSTACK_SIZE
 	;;
-	make   $r1 = K1B_KSTACK_BASE_VIRT
+	make   $r1 = K1B_CLUSTER_KSTACK_BASE_VIRT
 	;;
 	lw     $r2 = 0[$r1]
 	;;

@@ -84,7 +84,7 @@ PUBLIC void k1b_core_setup(void)
 		(k1b_excp_handler_fn) _do_excp
 	);
 
-	k1b_mmu_setup();
+	k1b_cluster_mem_setup();
 }
 
 /*============================================================================*

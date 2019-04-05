@@ -117,9 +117,61 @@
 	#define K1B_PGTAB_LENGTH (1 << (K1B_PGTAB_SHIFT - K1B_PAGE_SHIFT))
 
 	/**
-	 * @brief Initializes the MMU.
+	 * @brief Page directory entry.
 	 */
-	extern void k1b_mmu_setup(void);
+	struct pde
+	{
+		unsigned present  :  1; /**< Present in memory? */
+		unsigned writable :  1; /**< Writable page?     */
+		unsigned user     :  1; /**< User page?         */
+		unsigned          :  2; /**< Reserved.          */
+		unsigned accessed :  1; /**< Accessed?          */
+		unsigned          :  1; /**< Unused             */
+		unsigned          :  2; /**< Reserved.          */
+		unsigned          :  3; /**< Unused.            */
+		unsigned frame    : 20; /**< Frame number.      */
+	};
+
+	/**
+	 * @brief Page table entry.
+	 */
+	struct pte
+	{
+		unsigned present  :  1; /**< Present in memory? */
+		unsigned writable :  1; /**< Writable page?     */
+		unsigned user     :  1; /**< User page?         */
+		unsigned          :  2; /**< Reserved.          */
+		unsigned accessed :  1; /**< Accessed?          */
+		unsigned          :  1; /**< Unused             */
+		unsigned          :  2; /**< Reserved.          */
+		unsigned          :  3; /**< Unused.            */
+		unsigned frame    : 20; /**< Frame number.      */
+	};
+
+	/**
+	 * @brief Maps a page.
+	 *
+	 * @param pgtab Target page table.
+	 * @param paddr Physical address of the target page frame.
+	 * @param vaddr Virtual address of the target page.
+	 * @param w     Writable page?
+	 *
+	 * @returns Upon successful completion, zero is returned. Upon
+	 * failure, a negative error code is returned instead.
+	 */
+	EXTERN int k1b_page_map(struct pte *pgtab, paddr_t paddr, vaddr_t vaddr, int w);
+
+	/**
+	 * @brief Maps a page table.
+	 *
+	 * @param pgdir Target page directory.
+	 * @param paddr Physical address of the target page table frame.
+	 * @param vaddr Virtual address of the target page table.
+	 *
+	 * @returns Upon successful completion, zero is returned. Upon
+	 * failure, a negative error code is returned instead.
+	 */
+	EXTERN int k1b_pgtab_map(struct pde *pgdir, paddr_t paddr, vaddr_t vaddr);
 
 /**@}*/
 
@@ -194,63 +246,6 @@
 	#define __pte_write_set_fn   /**< pte_write_set()   */
 	#define __mmu_is_enabled_fn  /**< mmu_is_enabled()  */
 	/**@}*/
-
-	/**
-	 * @brief Page directory entry.
-	 */
-	struct pde
-	{
-		unsigned present  :  1; /**< Present in memory? */
-		unsigned writable :  1; /**< Writable page?     */
-		unsigned user     :  1; /**< User page?         */
-		unsigned          :  2; /**< Reserved.          */
-		unsigned accessed :  1; /**< Accessed?          */
-		unsigned          :  1; /**< Unused             */
-		unsigned          :  2; /**< Reserved.          */
-		unsigned          :  3; /**< Unused.            */
-		unsigned frame    : 20; /**< Frame number.      */
-	};
-
-	/**
-	 * @brief Page table entry.
-	 */
-	struct pte
-	{
-		unsigned present  :  1; /**< Present in memory? */
-		unsigned writable :  1; /**< Writable page?     */
-		unsigned user     :  1; /**< User page?         */
-		unsigned          :  2; /**< Reserved.          */
-		unsigned accessed :  1; /**< Accessed?          */
-		unsigned          :  1; /**< Unused             */
-		unsigned          :  2; /**< Reserved.          */
-		unsigned          :  3; /**< Unused.            */
-		unsigned frame    : 20; /**< Frame number.      */
-	};
-
-	/**
-	 * @brief Maps a page.
-	 *
-	 * @param pgtab Target page table.
-	 * @param paddr Physical address of the target page frame.
-	 * @param vaddr Virtual address of the target page.
-	 * @param w     Writable page?
-	 *
-	 * @returns Upon successful completion, zero is returned. Upon
-	 * failure, a negative error code is returned instead.
-	 */
-	EXTERN int k1b_page_map(struct pte *pgtab, paddr_t paddr, vaddr_t vaddr, int w);
-
-	/**
-	 * @brief Maps a page table.
-	 *
-	 * @param pgdir Target page directory.
-	 * @param paddr Physical address of the target page table frame.
-	 * @param vaddr Virtual address of the target page table.
-	 *
-	 * @returns Upon successful completion, zero is returned. Upon
-	 * failure, a negative error code is returned instead.
-	 */
-	EXTERN int k1b_pgtab_map(struct pde *pgdir, paddr_t paddr, vaddr_t vaddr);
 
 	/**
 	 * @brief Clears a page directory entry.
