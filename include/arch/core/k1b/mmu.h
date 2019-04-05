@@ -233,6 +233,31 @@
 	};
 
 	/**
+	 * @brief Maps a page.
+	 *
+	 * @param pgtab Target page table.
+	 * @param paddr Physical address of the target page frame.
+	 * @param vaddr Virtual address of the target page.
+	 * @param w     Writable page?
+	 *
+	 * @returns Upon successful completion, zero is returned. Upon
+	 * failure, a negative error code is returned instead.
+	 */
+	EXTERN int k1b_page_map(struct pte *pgtab, paddr_t paddr, vaddr_t vaddr, int w);
+
+	/**
+	 * @brief Maps a page table.
+	 *
+	 * @param pgdir Target page directory.
+	 * @param paddr Physical address of the target page table frame.
+	 * @param vaddr Virtual address of the target page table.
+	 *
+	 * @returns Upon successful completion, zero is returned. Upon
+	 * failure, a negative error code is returned instead.
+	 */
+	EXTERN int k1b_pgtab_map(struct pde *pgdir, paddr_t paddr, vaddr_t vaddr);
+
+	/**
 	 * @brief Clears a page directory entry.
 	 *
 	 * @param pde Target page directory entry.
