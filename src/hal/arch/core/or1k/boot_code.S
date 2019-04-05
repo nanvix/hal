@@ -124,7 +124,7 @@ start:
 	l.sw  OR1K_PTE_SIZE*196(r3), r1
 
 	OR1K_LOAD_SYMBOL_2_GPR(r1, uart_pgtab)
-	OR1K_LOAD_SYMBOL_2_GPR(r2, (OR1K_UART_PHYS >> PAGE_SHIFT) << OR1K_PPN_SHIFT)
+	OR1K_LOAD_SYMBOL_2_GPR(r2, (OR1K_UART_BASE_PHYS >> PAGE_SHIFT) << OR1K_PPN_SHIFT)
 	l.ori r2, r2, OR1K_PT_L | OR1K_PT_PRESENT
 	l.sw 0(r1), r2
 
@@ -135,7 +135,7 @@ start:
 	l.sw  PTE_SIZE*197(r3), r1
 
 	OR1K_LOAD_SYMBOL_2_GPR(r1, ompic_pgtab)
-	OR1K_LOAD_SYMBOL_2_GPR(r2, (OR1K_OMPIC_PHYS >> PAGE_SHIFT) << OR1K_PPN_SHIFT)
+	OR1K_LOAD_SYMBOL_2_GPR(r2, (OR1K_OMPIC_BASE_PHYS >> PAGE_SHIFT) << OR1K_PPN_SHIFT)
 	l.ori r2, r2, OR1K_PT_L | OR1K_PT_PRESENT
 	l.sw 0(r1), r2
 
@@ -173,7 +173,7 @@ start:
 			OR1K_LOAD_SYMBOL_2_GPR(r3, or1k_slave_setup)
 			l.jalr r3
 			l.nop
-	
+
 		/* Halt execution. */
 		start.halt:
 			l.j start.halt

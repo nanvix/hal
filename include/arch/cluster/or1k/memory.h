@@ -52,26 +52,36 @@
 	#define OR1K_KPOOL_SIZE (4*1024*1024)
 
 	/**
+	 * @brief User memory size (in bytes).
+	 */
+	#define OR1K_UMEM_SIZE (OR1K_MEM_SIZE - OR1K_KMEM_SIZE - OR1K_KPOOL_SIZE)
+
+	/**
+	 * @brief Kernel stack size (in bytes).
+	 */
+	#define OR1K_KSTACK_SIZE OR1K_PAGE_SIZE
+
+	/**
 	 * @name Virtual Memory Layout
 	 */
 	/**@{*/
-	#define OR1K_UBASE_VIRT  0x02000000 /**< User base.        */
-	#define OR1K_USTACK_ADDR 0xc0000000 /**< User stack.       */
-	#define OR1K_KBASE_VIRT  0xc0000000 /**< Kernel base.      */
-	#define OR1K_KPOOL_VIRT  0xc1000000 /**< Kernel page pool. */
-	#define OR1K_UART_VIRT   0xc4000000 /**< Kernel UART page. */
-	#define OR1K_OMPIC_VIRT  0xc5000000 /**< Kernel OMPIC page.*/
+	#define OR1K_USER_BASE_VIRT    0x02000000 /**< User Base Base        */
+	#define OR1K_USTACK_BASE_VIRT  0xc0000000 /**< User Stack Base       */
+	#define OR1K_KERNEL_BASE_VIRT  0xc0000000 /**< Kernel Base           */
+	#define OR1K_KPOOL_BASE_VIRT   0xc1000000 /**< Kernel Page Pool Base */
+	#define OR1K_UART_BASE_VIRT    0xc4000000 /**< Kernel UART Base      */
+	#define OR1K_OMPIC_BASE_VIRT   0xc5000000 /**< Kernel OMPIC Base     */
 	/**@}*/
 
 	/**
 	 * @name Physical Memory Layout
 	 */
 	/**@{*/
-	#define OR1K_KBASE_PHYS 0x00000000 /**< Kernel base.            */
-	#define OR1K_KPOOL_PHYS 0x01000000 /**< Kernel page pool.       */
-	#define OR1K_UBASE_PHYS 0x02000000 /**< User base.              */
-	#define OR1K_UART_PHYS  0x90000000 /**< UART Physical address.  */
-	#define OR1K_OMPIC_PHYS 0x98000000 /**< OMPIC Physical address. */
+	#define OR1K_KERNEL_BASE_PHYS 0x00000000 /**< Kernel Base           */
+	#define OR1K_KPOOL_BASE_PHYS  0x01000000 /**< Kernel Page Pool Base */
+	#define OR1K_USER_BASE_PHYS   0x02000000 /**< User Base             */
+	#define OR1K_UART_BASE_PHYS   0x90000000 /**< UART Base             */
+	#define OR1K_OMPIC_BASE_PHYS  0x98000000 /**< OMPIC Base            */
 	/**@}*/
 
 	/**
@@ -79,8 +89,8 @@
 	 */
 	/**@{*/
 	#define OR1K_OMPIC_CPUBYTES	        8
-	#define OR1K_OMPIC_CTRL(cpu)        (OR1K_OMPIC_VIRT + (0x0 + ((cpu) * OR1K_OMPIC_CPUBYTES)))
-	#define OR1K_OMPIC_STAT(cpu)        (OR1K_OMPIC_VIRT + (0x4 + ((cpu) * OR1K_OMPIC_CPUBYTES)))
+	#define OR1K_OMPIC_CTRL(cpu)        (OR1K_OMPIC_BASE_VIRT + (0x0 + ((cpu) * OR1K_OMPIC_CPUBYTES)))
+	#define OR1K_OMPIC_STAT(cpu)        (OR1K_OMPIC_BASE_VIRT + (0x4 + ((cpu) * OR1K_OMPIC_CPUBYTES)))
 	#define OR1K_OMPIC_CTRL_IRQ_ACK	    (1 << 31)
 	#define OR1K_OMPIC_CTRL_IRQ_GEN	    (1 << 30)
 	#define OR1K_OMPIC_CTRL_DST(cpu)    (((cpu) & 0x3fff) << 16)
@@ -96,52 +106,25 @@
  *============================================================================*/
 
 /**
- * @cond or1k
+ * @cond or1k_smp
  */
 
 	/**
-	 * @brief Memory size (in bytes).
+	 * @name Exported Constants
 	 */
-	#define _MEMORY_SIZE OR1K_MEM_SIZE
-
-	/**
-	 * @brief Kernel stack size (in bytes).
-	 */
-	#define _KSTACK_SIZE OR1K_PAGE_SIZE
-
-	/**
-	 * @brief Kernel memory size (in bytes).
-	 */
-	#define _KMEM_SIZE OR1K_KMEM_SIZE
-
-	/**
-	 * @brief Kernel page pool size (in bytes).
-	 */
-	#define _KPOOL_SIZE OR1K_KPOOL_SIZE
-
-	/**
-	 * @brief User memory size (in bytes).
-	 */
-	#define _UMEM_SIZE (OR1K_MEM_SIZE - OR1K_KMEM_SIZE - OR1K_KPOOL_SIZE)
-
-	/**
-	 * @name Virtual Memory Layout
-	 */
-	/**@{*/
-	#define _UBASE_VIRT  OR1K_UBASE_VIRT  /**< User Base        */
-	#define _USTACK_ADDR OR1K_USTACK_ADDR /**< User Stack       */
-	#define _KBASE_VIRT  OR1K_KBASE_VIRT  /**< Kernel Base      */
-	#define _KPOOL_VIRT  OR1K_KPOOL_VIRT  /**< Kernel Page Pool */
-	/**@}*/
-
-	/**
-	 * @name Physical Memory Layout
-	 */
-	/**@{*/
-	#define _KBASE_PHYS OR1K_KBASE_PHYS /**< Kernel Base      */
-	#define _KPOOL_PHYS OR1K_KPOOL_PHYS /**< Kernel Page Pool */
-	#define _UBASE_PHYS OR1K_UBASE_PHYS /**< User Base        */
-	#define _UART_ADDR  OR1K_UART_PHYS  /**< UART Device      */
+	#define MEMORY_SIZE  OR1K_MEM_SIZE         /**< @see OR1K_MEM_SIZE         */
+	#define KMEM_SIZE    OR1K_KMEM_SIZE        /**< @see OR1K_KMEM_SIZE        */
+	#define UMEM_SIZE    OR1K_UMEM_SIZE        /**< @see OR1K_UMEM_SIZE        */
+	#define KSTACK_SIZE  OR1K_KSTACK_SIZE      /**< @see OR1K_KSTACK_SIZE      */
+	#define KPOOL_SIZE   OR1K_KPOOL_SIZE       /**< @see OR1K_KPOOL_SIZE       */
+	#define KBASE_PHYS   OR1K_KERNEL_BASE_PHYS /**< @see OR1K_KERNEL_BASE_PHYS */
+	#define KPOOL_PHYS   OR1K_KPOOL_BASE_PHYS  /**< @see OR1K_KPOOL_BASE_PHYS  */
+	#define UBASE_PHYS   OR1K_USER_BASE_PHYS   /**< @see OR1K_USER_BASE_PHYS   */
+	#define USTACK_VIRT  OR1K_USTACK_BASE_VIRT /**< @see OR1K_USTACK_BASE_VIRT */
+	#define _UART_ADDR   OR1K_UART_BASE_PHYS   /**< @see OR1K_UART_BASE_PHYS   */
+	#define UBASE_VIRT   OR1K_USER_BASE_VIRT   /**< @see OR1K_USER_BASE_VIRT   */
+	#define KBASE_VIRT   OR1K_KERNEL_BASE_VIRT /**< @see OR1K_KERNEL_BASE_VIRT */
+	#define KPOOL_VIRT   OR1K_KPOOL_BASE_VIRT  /**< @see OR1K_KPOOL_BASE_VIRT  */
 	/**@}*/
 
 /**@endcond*/
