@@ -63,6 +63,33 @@
 	/**@}*/
 
 	/**
+	 * @brief Length of virtual addresses.
+	 *
+	 * Number of bits in a virtual address.
+	 *
+	 * @author Pedro Henrique Penna
+	 */
+	#define RV32I_VADDR_LENGTH 32
+
+	/**
+	 * @brief Page Directory length.
+	 *
+	 * Number of Page Directory Entries (PDEs) per Page Directory.
+	 *
+	 * @author Pedro Henrique Penna
+	 */
+	#define RV32I_PGDIR_LENGTH (1 << (RV32I_VADDR_LENGTH - RV32I_PGTAB_SHIFT))
+
+	/**
+	 * @brief Page Table length.
+	 *
+	 * Number of Page Table Entries (PTEs) per Page Table.
+	 *
+	 * @author Pedro Henrique Penna
+	 */
+	#define RV32I_PGTAB_LENGTH (1 << (RV32I_PGTAB_SHIFT - RV32I_PAGE_SHIFT))
+
+	/**
 	 * @name Page Table Entry Shifts and Masks
 	 */
 	/**@{*/
