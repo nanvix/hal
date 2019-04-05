@@ -41,6 +41,7 @@
 /**@{*/
 
 	#include <arch/cluster/riscv32-cluster/cores.h>
+	#include <arch/cluster/riscv32-cluster/memory.h>
 
 	/**
 	 * @name Provided Features

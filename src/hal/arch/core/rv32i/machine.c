@@ -25,6 +25,7 @@
 /* Must come first. */
 #define __NEED_CORE_TYPES
 
+#include <arch/cluster/riscv32-cluster/memory.h>
 #include <arch/core/rv32i/core.h>
 #include <arch/core/rv32i/clock.h>
 #include <arch/core/rv32i/excp.h>
@@ -34,8 +35,6 @@
 #include <nanvix/const.h>
 #include <errno.h>
 
-EXTERN unsigned char __BSS_START;
-EXTERN unsigned char __BSS_END;
 /**
  * Current privilege level.
  */
@@ -321,6 +320,7 @@ PUBLIC NORETURN void rv32i_machine_setup(rv32i_word_t pc)
 {
 	rv32i_word_t mie;
 
+	/* TODO: do this even earlier. */
 	kmemset(&__BSS_START, 0, &__BSS_END - &__BSS_START);
 
 	/*

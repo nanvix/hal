@@ -24,12 +24,14 @@
 export LDFLAGS  += -L $(LINKERDIR)/ -T link.ld
 
 # Override Sources
-C_SRC = $(wildcard arch/core/$(CORE)/*.c) \
-        $(wildcard klib/*.c)              \
-		$(wildcard core/interrupt.c)      \
-        $(wildcard *.c) \
+C_SRC = $(wildcard arch/core/$(CORE)/*.c)       \
+        $(wildcard arch/cluster/$(CLUSTER)/*.c) \
+        $(wildcard klib/*.c)                    \
+		$(wildcard core/interrupt.c)            \
+        $(wildcard *.c)
 
-ASM_SRC = $(wildcard arch/core/$(CORE)/*.S)
+ASM_SRC = $(wildcard arch/core/$(CORE)/*.S)       \
+          $(wildcard arch/cluster/$(CLUSTER)/*.S)
 
 # C Source Files
 C_SRC += $(wildcard stdout/16550a.c)

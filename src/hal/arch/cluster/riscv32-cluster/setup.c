@@ -32,6 +32,7 @@
 /* Import definitions. */
 EXTERN NORETURN void kmain(int, const char *[]);
 EXTERN void rv32i_do_strap(void);
+EXTERN void riscv32_mmu_setup(void);
 
 /*============================================================================*
  * rv32i_core_setup()                                                         *
@@ -48,6 +49,8 @@ PUBLIC void rv32i_core_setup(void)
 	kprintf("[hal] booting up master core...");
 
 	rv32i_ivt_setup(&rv32i_do_strap);
+
+	riscv32_mmu_setup();
 }
 
 /*============================================================================*
