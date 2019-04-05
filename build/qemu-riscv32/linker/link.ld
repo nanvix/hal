@@ -44,7 +44,7 @@ SECTIONS
 	/* Bootstrap section. */
 	.bootstrap :
 	{
-		*boot.o
+		*boot.o (.*)
 	} > ram
 
 	. = ALIGN(4096);

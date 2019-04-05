@@ -50,6 +50,8 @@ PUBLIC void rv32i_do_int(int num, const struct context *ctx)
 
 	UNUSED(ctx);
 
+	rv32i_pic_ack(num);
+
 	/* Unknown interrupt. */
 	if (num >= RV32I_INT_NUM)
 	{

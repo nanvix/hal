@@ -124,6 +124,15 @@
 	#define __MEMORY_TYPES
 
 		/**
+		 * @name Casters for Memory Types
+		 */
+		/**@{*/
+		#define RV32I_PADDR(x) ((paddr_t)(x)) /**< To Physical Address */
+		#define RV32I_VADDR(x) ((vaddr_t)(x)) /**< To Virtual Address  */
+		#define RV32I_FRAME(x) ((frame_t)(x)) /**< To Frame Number     */
+		/**@}*/
+
+		/**
 		 * @brief Virtual address.
 		 */
 		typedef uint32_t vaddr_t;
@@ -158,7 +167,7 @@
 		#define RV32I_MAKE_DWORD(a,b)                             \
 		RV32I_DWORD(                                              \
 			((RV32I_WORD(a) & 0xffffffffULL) << RV32I_WORD_BIT) | \
-			((RV32I_WORD(b) & 0xffffffffULL) - 1)                 \
+			((RV32I_WORD(b) & 0xffffffffULL))                     \
 		)
 
 		/**

@@ -53,6 +53,8 @@
 	 */
 	#define RV32I_EXCP_NUM 16
 
+#ifndef _ASM_FILE_
+
 	/**
 	 * @brief Event handler.
 	 */
@@ -77,9 +79,11 @@
 	/**
 	 * @brief Initializes the interrupt vector table.
 	 *
-	 * @param do_event Event handler.
+	 * @param do_trap Trap handler.
 	 */
-	extern void rv32i_ivt_setup(rv32i_handler_fn do_event);
+	extern void rv32i_ivt_setup(rv32i_handler_fn do_trap);
+
+#endif
 
 /**@}*/
 

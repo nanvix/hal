@@ -36,6 +36,8 @@
 	#define __NEED_CORE_TYPES
 	#include <arch/core/rv32i/types.h>
 
+#ifndef _ASM_FILE_
+
 	/**
 	 * @brief Issues a system call with no arguments.
 	 *
@@ -45,8 +47,8 @@
 	 */
 	static inline rv32i_word_t rv32i_syscall0(rv32i_word_t syscall_nr)
 	{
-		register word_t _syscall_nr asm("a0") = syscall_nr;
-		register word_t ret asm ("a0");
+		register rv32i_word_t _syscall_nr asm("a0") = syscall_nr;
+		register rv32i_word_t ret asm ("a0");
 
 		asm volatile (
 			"ecall"
@@ -70,9 +72,9 @@
 		rv32i_word_t syscall_nr,
 		rv32i_word_t arg0)
 	{
-		register word_t _syscall_nr asm("a0") = syscall_nr;
-		register word_t _arg0 asm("a1") = arg0;
-		register word_t ret asm ("a0");
+		register rv32i_word_t _syscall_nr asm("a0") = syscall_nr;
+		register rv32i_word_t _arg0 asm("a1") = arg0;
+		register rv32i_word_t ret asm ("a0");
 
 		asm volatile (
 			"ecall"
@@ -99,10 +101,10 @@
 		rv32i_word_t arg0,
 		rv32i_word_t arg1)
 	{
-		register word_t _syscall_nr asm("a0") = syscall_nr;
-		register word_t _arg0 asm("a1") = arg0;
-		register word_t _arg1 asm("a2") = arg1;
-		register word_t ret asm ("a0");
+		register rv32i_word_t _syscall_nr asm("a0") = syscall_nr;
+		register rv32i_word_t _arg0 asm("a1") = arg0;
+		register rv32i_word_t _arg1 asm("a2") = arg1;
+		register rv32i_word_t ret asm ("a0");
 
 		asm volatile (
 			"ecall"
@@ -132,11 +134,11 @@
 		rv32i_word_t arg1,
 		rv32i_word_t arg2)
 	{
-		register word_t _syscall_nr asm("a0") = syscall_nr;
-		register word_t _arg0 asm("a1") = arg0;
-		register word_t _arg1 asm("a2") = arg1;
-		register word_t _arg2 asm("a3") = arg2;
-		register word_t ret asm ("a0");
+		register rv32i_word_t _syscall_nr asm("a0") = syscall_nr;
+		register rv32i_word_t _arg0 asm("a1") = arg0;
+		register rv32i_word_t _arg1 asm("a2") = arg1;
+		register rv32i_word_t _arg2 asm("a3") = arg2;
+		register rv32i_word_t ret asm ("a0");
 
 		asm volatile (
 			"ecall"
@@ -169,12 +171,12 @@
 		rv32i_word_t arg2,
 		rv32i_word_t arg3)
 	{
-		register word_t _syscall_nr asm("a0") = syscall_nr;
-		register word_t _arg0 asm("a1") = arg0;
-		register word_t _arg1 asm("a2") = arg1;
-		register word_t _arg2 asm("a3") = arg2;
-		register word_t _arg3 asm("a4") = arg3;
-		register word_t ret asm ("a0");
+		register rv32i_word_t _syscall_nr asm("a0") = syscall_nr;
+		register rv32i_word_t _arg0 asm("a1") = arg0;
+		register rv32i_word_t _arg1 asm("a2") = arg1;
+		register rv32i_word_t _arg2 asm("a3") = arg2;
+		register rv32i_word_t _arg3 asm("a4") = arg3;
+		register rv32i_word_t ret asm ("a0");
 
 		asm volatile (
 			"ecall"
@@ -210,13 +212,13 @@
 		rv32i_word_t arg3,
 		rv32i_word_t arg4)
 	{
-		register word_t _syscall_nr asm("a0") = syscall_nr;
-		register word_t _arg0 asm("a1") = arg0;
-		register word_t _arg1 asm("a2") = arg1;
-		register word_t _arg2 asm("a3") = arg2;
-		register word_t _arg3 asm("a4") = arg3;
-		register word_t _arg4 asm("a5") = arg4;
-		register word_t ret asm ("a0");
+		register rv32i_word_t _syscall_nr asm("a0") = syscall_nr;
+		register rv32i_word_t _arg0 asm("a1") = arg0;
+		register rv32i_word_t _arg1 asm("a2") = arg1;
+		register rv32i_word_t _arg2 asm("a3") = arg2;
+		register rv32i_word_t _arg3 asm("a4") = arg3;
+		register rv32i_word_t _arg4 asm("a5") = arg4;
+		register rv32i_word_t ret asm ("a0");
 
 		asm volatile (
 			"ecall"
@@ -237,6 +239,8 @@
 	 * @brief System Call Hook
 	 */
 	EXTERN void rv32i_syscall(void);
+
+#endif
 
 /**@}*/
 
@@ -260,8 +264,10 @@
 	#define __syscall5_fn /**< rv32i_syscall5() */
 	/**@}*/
 
+#ifndef _ASM_FILE_
+
 	/**
-	 * @see rv32i_syscall_0()
+	 * @see rv32i_syscall0()
 	 */
 	static inline rv32i_word_t syscall0(rv32i_word_t syscall_nr)
 	{
@@ -271,7 +277,7 @@
 	}
 
 	/**
-	 * @see rv32i_syscall_1()
+	 * @see rv32i_syscall1()
 	 */
 	static inline rv32i_word_t syscall1(
 		rv32i_word_t syscall_nr,
@@ -286,7 +292,7 @@
 	}
 
 	/**
-	 * @see rv32i_syscall_2()
+	 * @see rv32i_syscall2()
 	 */
 	static inline rv32i_word_t syscall2(
 		rv32i_word_t syscall_nr,
@@ -303,7 +309,7 @@
 	}
 
 	/**
-	 * @see rv32i_syscall_3()
+	 * @see rv32i_syscall3()
 	 */
 	static inline rv32i_word_t syscall3(
 		rv32i_word_t syscall_nr,
@@ -322,7 +328,7 @@
 	}
 
 	/**
-	 * @see rv32i_syscall_4()
+	 * @see rv32i_syscall4()
 	 */
 	static inline rv32i_word_t syscall4(
 		rv32i_word_t syscall_nr,
@@ -343,7 +349,7 @@
 	}
 
 	/**
-	 * @see rv32i_syscall_5()
+	 * @see rv32i_syscall5()
 	 */
 	static inline rv32i_word_t syscall5(
 		rv32i_word_t syscall_nr,
@@ -364,6 +370,8 @@
 			)
 		);
 	}
+
+#endif
 
 /**@endcond*/
 

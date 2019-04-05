@@ -180,16 +180,16 @@
 		sw x31, RV32I_CONTEXT_T6(sp)
 
 		/* Save Program Counter (pc)*/
+	#ifndef __RV32I_MACHINE_CODE
+		csrr t0, sepc
+	#else
 		csrr t0, mepc
+	#endif
 		sw   t0, RV32I_CONTEXT_PC(sp)
 
 		/* Save Stack Pointer (SP). */
 		addi t0, sp, RV32I_CONTEXT_SIZE
 		sw   t0, RV32I_CONTEXT_SP(sp)
-
-		/* Save stack frame. */
-		mv fp, sp
-
 	.endm
 
 	/*
@@ -197,12 +197,13 @@
 	 */
 	.macro rv32i_context_restore
 
-		/* Restore stack frame. */
-		mv sp, fp
-
 		/* Restore Program Counter (pc)*/
 		lw   t0, RV32I_CONTEXT_PC(sp)
+	#ifndef __RV32I_MACHINE_CODE
+		csrw sepc, t0
+	#else
 		csrw mepc, t0
+	#endif
 
 		/*
 		 * Save all GPRs, but the
@@ -269,13 +270,6 @@
 /*============================================================================*
  * Misc                                                                       *
  *============================================================================*/
-
-	/**
-	 * @brief Get the ID of the underlying HART.
-	 */
-	.macro get_hartid dest
-		csrr \dest, mhartid
-	.endm
 
 	/*
 	 * Clear all GPR registers.

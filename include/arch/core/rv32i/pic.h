@@ -41,6 +41,7 @@
 	#define __NEED_CORE_REGS
 	#define __NEED_CORE_TYPES
 
+	#include <arch/core/rv32i/mcall.h>
 	#include <arch/core/rv32i/regs.h>
 	#include <arch/core/rv32i/types.h>
 	#include <nanvix/cc.h>
@@ -61,29 +62,12 @@
 	 */
 	#define RV32I_IRQ_NUM 12
 
+#ifndef _ASM_FILE_
+
 	/**
 	 * Table of Interrupt Requests (IRQs).
 	 */
 	extern const int irqs[RV32I_IRQ_NUM];
-
-	/**
-	 * @brief Asserts a reserved interrupt number.
-	 *
-	 * @param irqnum Number of target interrupt request.
-	 *
-	 * @returns One if @p irqnum refers to a reserved interrupt
-	 * request line, and non-zero otherwise.
-	 *
-	 * @author Pedro Henrique Penna
-	 */
-	static inline int rv32i_pic_is_reserved(int irqnum)
-	{
-		return (
-			(irqnum == RV32I_MIE_R0) ||
-			(irqnum == RV32I_MIE_R1) ||
-			(irqnum == RV32I_MIE_R2)
-		);
-	}
 
 	/**
 	 * @brief Unmasks an interrupt.
@@ -97,19 +81,17 @@
 	 */
 	static inline int rv32i_pic_unmask(int irqnum)
 	{
-		rv32i_word_t mie;
+		rv32i_word_t sie;
 
 		/* Invalid interrupt number. */
 		if ((irqnum < 0) || (irqnum >= RV32I_IRQ_NUM))
 			return (-EINVAL);
 
-		/* Unsupported interrupt number. */
-		if (rv32i_pic_is_reserved(irqnum))
-			return (-ENOTSUP);
+		rv32i_mcall_csr_set(RV32I_CSR_MIE, RV32I_MIE_MTIE);
 
 		asm volatile (
-			"csrrs %0, mie, %1"
-			: "=r"(mie)
+			"csrrs %0, sie, %1"
+			: "=r"(sie)
 			: "r"(irqs[irqnum])
 		);
 
@@ -128,19 +110,44 @@
 	 */
 	static inline int rv32i_pic_mask(int irqnum)
 	{
-		rv32i_word_t mie;
+		rv32i_word_t sie;
 
 		/* Invalid interrupt number. */
 		if ((irqnum < 0) || (irqnum >= RV32I_IRQ_NUM))
 			return (-EINVAL);
 
-		/* Unsupported interrupt number. */
-		if (rv32i_pic_is_reserved(irqnum))
-			return (-ENOTSUP);
+		rv32i_mcall_csr_clear(RV32I_CSR_MIE, RV32I_MIE_MTIE);
 
 		asm volatile (
-			"csrrc %0, mie, %1"
-			: "=r"(mie)
+			"csrrc %0, sie, %1"
+			: "=r"(sie)
+			: "r"(irqs[irqnum])
+		);
+
+		return (0);
+	}
+
+	/**
+	 * @brief Acknowledges an interrupt.
+	 *
+	 * @param irqnum Number of the target interrupt request.
+	 *
+	 * @returns Upon successful completion, zero is returned. Upon
+	 * failure, a negative error code is returned instead.
+	 *
+	 * @author Pedro Henrique Penna
+	 */
+	static inline int rv32i_pic_ack(int irqnum)
+	{
+		rv32i_word_t sie;
+
+		/* Invalid interrupt number. */
+		if ((irqnum < 0) || (irqnum >= RV32I_IRQ_NUM))
+			return (-EINVAL);
+
+		asm volatile (
+			"csrrc %0, sip, %1"
+			: "=r"(sie)
 			: "r"(irqs[irqnum])
 		);
 
@@ -179,6 +186,8 @@
 			rv32i_pic_unmask(i);
 	}
 
+#endif
+
 /**@}*/
 
 /*============================================================================*
@@ -197,6 +206,8 @@
 	#define __interrupt_unmask /**< interrupt_unmask() */
 	/**@}*/
 
+#ifndef _ASM_FILE_
+
 	/**
 	 * @see rv32i_pic_mask().
 	 */
@@ -212,6 +223,8 @@
 	{
 		return (rv32i_pic_unmask(irqnum));
 	}
+
+#endif
 
 /**@endcond*/
 

@@ -24,15 +24,19 @@
 
 /* Must come first. */
 #define __NEED_IVT
+#define __NEED_CORE_REGS
+#define __NEED_CORE_TYPES
 
 #include <arch/core/rv32i/ivt.h>
+#include <arch/core/rv32i/regs.h>
+#include <arch/core/rv32i/types.h>
 #include <nanvix/const.h>
 
 /**
  * The rv32i_ivt_setup() function initializes the interrupt vector
  * table in the rv32i core.
  */
-PUBLIC void rv32i_ivt_setup(void (*do_event)(void))
+PUBLIC void rv32i_ivt_setup(void (*do_trap)(void))
 {
-	rv32i_mtvec_set(do_event);
+	rv32i_stvec_write(RV32I_WORD(do_trap));
 }
