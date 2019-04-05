@@ -37,33 +37,6 @@
 #endif
 
 /**
- * @brief Length of virtual addresses.
- *
- * Number of bits in a virtual address.
- *
- * @author Pedro Henrique Penna
- */
-#define K1B_VADDR_LENGTH 32
-
-/**
- * @brief Page Directory length.
- *
- * Number of Page Directory Entries (PDEs) per Page Directory.
- *
- * @author Pedro Henrique Penna
- */
-#define K1B_PGDIR_LENGTH (1 << (K1B_VADDR_LENGTH - K1B_PGTAB_SHIFT))
-
-/**
- * @brief Page Table length.
- *
- * Number of Page Table Entries (PTEs) per Page Table.
- *
- * @author Pedro Henrique Penna
- */
-#define K1B_PGTAB_LENGTH (1 << (K1B_PGTAB_SHIFT - K1B_PAGE_SHIFT))
-
-/**
  * @brief Root page directory.
  */
 PRIVATE struct pde k1b_root_pgdir[K1B_PGDIR_LENGTH] ALIGN(K1B_PAGE_SIZE);
