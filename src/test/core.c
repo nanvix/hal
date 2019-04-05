@@ -419,6 +419,134 @@ PRIVATE void test_core_start_execution_slave(void)
 	}
 }
 
+/*----------------------------------------------------------------------------*
+ * Suspend and Resume from Slave                                              *
+ *----------------------------------------------------------------------------*/
+
+/**
+ * @brief API Test: Slave Core, Suspend/Resume entry point.
+ */
+PRIVATE void test_core_suspend_resume_slave_entry(void)
+{
+#if (TEST_CORE_VERBOSE)
+	kprintf("core %d running", core_get_id());
+#endif
+
+	/* Running. */
+	dcache_invalidate();
+	cores_started = TEST_CORE_RUNNING;
+
+#if (TEST_CORE_VERBOSE)
+	kprintf("core %d suspending", core_get_id());
+#endif
+
+	/* Sleep. */
+	core_sleep();
+
+	/* Wakeup. */
+	dcache_invalidate();
+	cores_started = TEST_CORE_AWAKEN;
+
+#if (TEST_CORE_VERBOSE)
+	kprintf("core %d waking up", core_get_id());
+#endif
+}
+
+/**
+ * @brief API Test: Slave Core, start Slave entry point.
+ */
+PRIVATE void test_core_suspend_start_slave_entry(void)
+{
+	int mycoreid; /* First slave core index. */
+	int i;        /* Slave index. */
+
+	mycoreid = core_get_id();
+
+	/*
+	 * Starts the second available slave core.
+	 */
+	for (i = 0; i < CORES_NUM; i++)
+	{
+		if (i != COREID_MASTER && i != mycoreid)
+		{
+			core_start(i, test_core_suspend_resume_slave_entry);
+			break;
+		}
+	}
+
+	/*
+	 * Send a wakeup signal to the slave core.
+	 *
+	 * Note: It's important to note that the wakeup signal is
+	 * not atomic, i.e, the signal can arrives before the core
+	 * slept. The HAL covers this scenario using a wakeups
+	 * counter that is able to prevent a core from sleeping if
+	 * it has already received a wakeup signal.
+	 */
+	while (TRUE)
+	{
+		dcache_invalidate();
+
+		if (cores_started == TEST_CORE_RUNNING)
+		{
+			core_wakeup(i);
+			break;
+		}
+	}
+
+	/*
+	 * Wait for the slave wake up.
+	 */
+	while (TRUE)
+	{
+		dcache_invalidate();
+
+		if (cores_started == TEST_CORE_AWAKEN)
+			break;
+	}
+
+	dcache_invalidate();
+	cores_started = mycoreid;
+}
+
+/**
+ * @brief API Test: Suspend and resume a Slave core from a Slave.
+ */
+PRIVATE void test_core_suspend_resume_slave(void)
+{
+	int i;   /* Slave index. */
+
+	/* Unit test not applicable. */
+	if (!CLUSTER_IS_MULTICORE)
+		return;
+
+	/* Reset cores_start with an invalid core number. */
+	cores_started = -1;
+
+	/*
+	 * Start the first available slave core.
+	 */
+	for (i = 0; i < CORES_NUM; i++)
+	{
+		if (i != COREID_MASTER)
+		{
+			core_start(i, test_core_suspend_start_slave_entry);
+			break;
+		}
+	}
+
+	/*
+	 * Wait for the first slave wake up.
+	 */
+	while (TRUE)
+	{
+		dcache_invalidate();
+
+		if (cores_started == i)
+			break;
+	}
+}
+
 /*============================================================================*
  * Test Driver                                                                *
  *============================================================================*/
@@ -433,6 +561,7 @@ PRIVATE struct test core_tests_api[] = {
 	{ test_core_stop_execution_slave,  "Stop Execution in a Slave Core" },
 #if CORES_NUM > 2
 	{ test_core_start_execution_slave, "Start Execution in a Slave Core"},
+	{ test_core_suspend_resume_slave,  "Suspend and Resume from Slave"  },
 #endif
 	{ NULL,                            NULL                             },
 };
