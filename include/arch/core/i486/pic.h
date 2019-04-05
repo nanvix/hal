@@ -23,15 +23,15 @@
  */
 
 /**
- * @addtogroup i486-core-8259 8259 Chip
+ * @addtogroup i486-core-pic PIC
  * @ingroup i486-core
  *
  * @brief Programmable Interrupt Controller
  */
 /**@{*/
 
-#ifndef ARCH_I486_8259_H_
-#define ARCH_I486_8259_H_
+#ifndef ARCH_I486_PIC_H_
+#define ARCH_I486_PIC_H_
 
 	/**
 	 * @name Provided Interface
@@ -204,5 +204,5 @@
 
 /**@}*/
 
-#endif /* ARCH_I486_8259_H_ */
+#endif /* ARCH_I486_PIC_H_ */
 

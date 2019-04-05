@@ -23,7 +23,7 @@
  */
 
 #include <nanvix/const.h>
-#include <arch/core/i486/8259.h>
+#include <arch/core/i486/pic.h>
 #include <arch/core/i486/pmio.h>
 #include <errno.h>
 #include <stdint.h>

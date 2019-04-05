@@ -22,14 +22,14 @@
  * SOFTWARE.
  */
 
-#ifndef ARCH_I486_8253_H_
-#define ARCH_I486_8253_H_
+#ifndef ARCH_I486_CLOCK_H_
+#define ARCH_I486_CLOCK_H_
 
 /**
- * @addtogroup i486-core-8253 8253 Chip
+ * @addtogroup i486-core-clock Clock
  * @ingroup i486-core
  *
- * @brief Programmable Interval Timer
+ * @brief Clock Interface
  */
 /**@{*/
 
@@ -105,5 +105,5 @@
 
 /**@endcond*/
 
-#endif /* ARCH_I486_8253_H_ */
+#endif /* ARCH_I486_CLOCK_H_ */
 

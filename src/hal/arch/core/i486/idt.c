@@ -24,7 +24,7 @@
 
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
-#include <arch/core/i486/8259.h>
+#include <arch/core/i486/pic.h>
 #include <arch/core/i486/excp.h>
 #include <arch/core/i486/gdt.h>
 #include <arch/core/i486/idt.h>

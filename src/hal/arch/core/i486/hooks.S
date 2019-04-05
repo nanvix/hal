@@ -25,7 +25,7 @@
 /* Must come first. */
 #define _ASM_FILE_
 
-#include <arch/core/i486/8259.h>
+#include <arch/core/i486/pic.h>
 #include <arch/core/i486/asm.h>
 #include <arch/core/i486/context.h>
 #include <arch/core/i486/core.h>

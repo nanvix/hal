@@ -39,14 +39,14 @@ PUBLIC void tss_setup(void)
 {
 	/* Size-error checking. */
 	KASSERT_SIZE(sizeof(struct tss), TSS_SIZE);
-	
+
 	/* Blank TSS. */
 	kmemset(&tss, 0, TSS_SIZE);
-	
+
 	/* Fill up TSS. */
 	tss.ss0 = KERNEL_DS;
 	tss.iomap = (TSS_SIZE - 1) << 16;
-	
+
 	/* Flush TSS. */
 	tss_flush();
 }
