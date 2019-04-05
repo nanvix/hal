@@ -33,30 +33,43 @@
 #include <errno.h>
 
 /**
- * @todo Document this function.
+ * @brief Configure D-NoC receiver buffer.
+ *
+ * @param interface Number of the interface.
+ * @param tag       Number of receiver buffer.
+ * @param buffer    Local data pointer.
+ * @param min_size  Minimal value to generate an event (in bytes).
+ * @param max_size  Size of the receiver buffer (in bytes).
+ * @param offset    Offset in receiver buffer where data shall be written.
+ *
+ * @return Zero if configure sucefully and non zero otherwise.
  */
 PUBLIC int bostan_dnoc_rx_config(
-    int interface,
-    int tag,
-    void *buffer,
-    size_t size,
-    size_t offset)
+	int interface,
+	int tag,
+	void *buffer,
+	size_t min_size,
+	size_t max_size,
+	size_t offset)
 {
-    mppa_noc_dnoc_rx_configuration_t config = {
-        .buffer_base = (uintptr_t)buffer,
-        .buffer_size = size,
-        .current_offset = offset,
-        .item_reload = 0,
-        .item_counter = 0,
-        .event_counter = 0,
-        .reload_mode = 0,
-        .activation = MPPA_NOC_ACTIVATED,
-        .counter_id = 0
+	if (max_size < min_size || (max_size - offset) < min_size)
+		return (-EINVAL);
+
+	mppa_noc_dnoc_rx_configuration_t config = {
+		.buffer_base    = (uintptr_t) buffer,
+		.buffer_size    = max_size,
+		.current_offset = offset,
+		.item_reload    = min_size,
+		.item_counter   = min_size,
+		.event_counter  = 0,
+		.reload_mode    = MPPA_NOC_RX_RELOAD_MODE_DECR_DATA_RELOAD,
+		.activation     = MPPA_NOC_ACTIVATED,
+		.counter_id     = 0
 	};
 
-    k1b_dcache_inval();
+	k1b_dcache_inval();
 
-    return mppa_noc_dnoc_rx_configure(interface, tag, config);
+	return mppa_noc_dnoc_rx_configure(interface, tag, config);
 }
 
 /**
@@ -71,29 +84,29 @@ PUBLIC int bostan_dnoc_rx_config(
  * @return Zero if configure sucefully and non zero otherwise.
  */
 PUBLIC int bostan_dnoc_tx_config(
-    int interface,
-    int source_node,
-    int source_tag,
-    int target_tag,
-    int target_node)
+	int interface,
+	int source_node,
+	int source_tag,
+	int target_tag,
+	int target_node)
 {
-    mppa_dnoc_channel_config_t config = {0};
-    mppa_dnoc_header_t header = {0};
+	mppa_dnoc_channel_config_t config = {0};
+	mppa_dnoc_header_t header = {0};
 
-    MPPA_NOC_DNOC_TX_CONFIG_INITIALIZER_DEFAULT(config, 0);
-    header._.tag = target_tag;
-    header._.valid = 1;
+	MPPA_NOC_DNOC_TX_CONFIG_INITIALIZER_DEFAULT(config, 0);
+	header._.tag   = target_tag;
+	header._.valid = 1;
 
-    k1b_dcache_inval();
+	k1b_dcache_inval();
 
-    if (mppa_routing_get_dnoc_unicast_route(source_node, target_node, &config, &header) != 0)
-        return (-EINVAL);
+	if (mppa_routing_get_dnoc_unicast_route(source_node, target_node, &config, &header) != 0)
+		return (-EINVAL);
 
-    return mppa_noc_dnoc_tx_configure(interface, source_tag, header, config);
+	return mppa_noc_dnoc_tx_configure(interface, source_tag, header, config);
 }
 
 /**
- * @brief Sync Writes on D-NoC transfer buffer.
+ * @brief Writes on D-NoC transfer buffer.
  *
  * @param interface Number of the DMA channel.
  * @param tag       Transfer buffer ID.
@@ -102,24 +115,24 @@ PUBLIC int bostan_dnoc_tx_config(
  * @param offset    Offset on local buffer data.
  */
 PUBLIC void bostan_dnoc_tx_write(
-    int interface,
-    int tag,
-    const void *buffer,
-    size_t size,
-    size_t offset)
+	int interface,
+	int tag,
+	const void *buffer,
+	size_t size,
+	size_t offset)
 {
-    mppa_noc_dnoc_tx_flush(interface, tag);
+	mppa_noc_dnoc_tx_flush(interface, tag);
 
-    mppa_dnoc_push_offset_t offset_config = {0};
-    offset_config._.offset = offset;
-    offset_config._.protocol = 0x1; //! absolute offset
-    offset_config._.valid = 1;
+	mppa_dnoc_push_offset_t offset_config = {0};
+	offset_config._.offset   = offset;
+	offset_config._.protocol = 0x1; /**< Absolute offset */
+	offset_config._.valid    = 1;
 
-    k1b_dcache_inval();
+	k1b_dcache_inval();
 
-    mppa_noc_dnoc_tx_set_push_offset(interface, tag, offset_config);
-    mppa_noc_dnoc_tx_send_data(interface, tag, size, buffer);
-    mppa_noc_dnoc_tx_flush_eot(interface, tag);
+	mppa_noc_dnoc_tx_set_push_offset(interface, tag, offset_config);
+	mppa_noc_dnoc_tx_send_data(interface, tag, size, buffer);
+	mppa_noc_dnoc_tx_flush_eot(interface, tag);
 }
 
 /**
@@ -135,65 +148,65 @@ PUBLIC void bostan_dnoc_tx_write(
  * @param size        Amount of bytes to transfer.
  */
 PUBLIC int bostan_dnoc_uc_config_write(
-    int interface,
-    int source_node,
-    int txtag,
-    int uctag,
-    int target_node,
-    int target_tag,
-    const void *buffer,
-    size_t size)
+	int interface,
+	int source_node,
+	int txtag,
+	int uctag,
+	int target_node,
+	int target_tag,
+	const void *buffer,
+	size_t size)
 {
-    mppa_dnoc_channel_config_t tx_config = {0};
-    mppa_dnoc_header_t tx_header = {0};
+	mppa_dnoc_channel_config_t tx_config = {0};
+	mppa_dnoc_header_t tx_header = {0};
 
-    MPPA_NOC_DNOC_TX_CONFIG_INITIALIZER_DEFAULT(tx_config, 0);
-    tx_config._.payload_max = 32; // for better performances
-    tx_header._.tag = target_tag;
-    tx_header._.valid = 1;
+	MPPA_NOC_DNOC_TX_CONFIG_INITIALIZER_DEFAULT(tx_config, 0);
+	tx_config._.payload_max = 32;
+	tx_header._.tag         = target_tag;
+	tx_header._.valid       = 1;
 
-    if (mppa_routing_get_dnoc_unicast_route(source_node, target_node, &tx_config, &tx_header) != 0)
-        return (-EINVAL);
+	if (mppa_routing_get_dnoc_unicast_route(source_node, target_node, &tx_config, &tx_header) != 0)
+		return (-EINVAL);
 
-    if (mppa_noc_dnoc_tx_configure(interface, txtag, tx_header, tx_config) != 0)
-        return (-EINVAL);
+	if (mppa_noc_dnoc_tx_configure(interface, txtag, tx_header, tx_config) != 0)
+		return (-EINVAL);
 
-    mppa_noc_dnoc_uc_configuration_t uc_config; //! = {0} works?
-    memset(&uc_config, 0, sizeof(uc_config));
+	mppa_noc_dnoc_uc_configuration_t uc_config;
+	memset(&uc_config, 0, sizeof(uc_config));
 
-    uc_config.program_start = (uintptr_t)mppa_noc_linear_firmware_eot_event;
-    uc_config.buffer_base = (uintptr_t)buffer;
-    uc_config.buffer_size = size;
-    uc_config.channel_ids._.channel_0 = txtag;
-    uc_config.channel_ids._.channel_1 = txtag;
-    uc_config.channel_ids._.channel_2 = txtag;
-    uc_config.channel_ids._.channel_3 = txtag;
-    uc_config.channel_ids._.channel_4 = txtag;
-    uc_config.channel_ids._.channel_5 = txtag;
-    uc_config.channel_ids._.channel_6 = txtag;
-    uc_config.channel_ids._.channel_7 = txtag;
+	uc_config.program_start = (uintptr_t) mppa_noc_linear_firmware_eot_event;
+	uc_config.buffer_base   = (uintptr_t) buffer;
+	uc_config.buffer_size   = size;
+	uc_config.channel_ids._.channel_0 = txtag;
+	uc_config.channel_ids._.channel_1 = txtag;
+	uc_config.channel_ids._.channel_2 = txtag;
+	uc_config.channel_ids._.channel_3 = txtag;
+	uc_config.channel_ids._.channel_4 = txtag;
+	uc_config.channel_ids._.channel_5 = txtag;
+	uc_config.channel_ids._.channel_6 = txtag;
+	uc_config.channel_ids._.channel_7 = txtag;
 
-    k1b_dcache_inval();
+	k1b_dcache_inval();
 
-    mppa_noc_dnoc_uc_set_linear_params(&uc_config, size, 0, 0);
+	mppa_noc_dnoc_uc_set_linear_params(&uc_config, size, 0, 0);
 
 #ifdef __node__
-    if (mppa_noc_dnoc_uc_configure(interface, uctag, uc_config, tx_header, tx_config) != 0)
-        return (-EINVAL);
+	if (mppa_noc_dnoc_uc_configure(interface, uctag, uc_config, tx_header, tx_config) != 0)
+		return (-EINVAL);
 
-    if (mppa_noc_dnoc_uc_link(interface, uctag, txtag, uc_config) != 0)
-        return (-EINVAL);
+	if (mppa_noc_dnoc_uc_link(interface, uctag, txtag, uc_config) != 0)
+		return (-EINVAL);
 #else
-    if (mppa_noc_dnoc_uc_configure(interface, uctag, uc_config) != 0)
-        return (-EINVAL);
+	if (mppa_noc_dnoc_uc_configure(interface, uctag, uc_config) != 0)
+		return (-EINVAL);
 #endif
 
-    mppa_noc_uc_program_run_t program_run;
-    memset(&program_run, 0, sizeof(mppa_noc_uc_program_run_t));
-    program_run.semaphore = 1;
-    program_run.activation = 1;
+	mppa_noc_uc_program_run_t program_run;
+	memset(&program_run, 0, sizeof(mppa_noc_uc_program_run_t));
+	program_run.semaphore = 1;
+	program_run.activation = 1;
 
-    mppa_noc_dnoc_uc_set_program_run(interface, uctag, program_run);
+	mppa_noc_dnoc_uc_set_program_run(interface, uctag, program_run);
 
-    return (0);
+	return (0);
 }
