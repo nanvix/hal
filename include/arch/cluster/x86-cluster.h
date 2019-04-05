@@ -22,12 +22,40 @@
  * SOFTWARE.
  */
 
-#ifndef _CLUSTER_I486_H_
-#define _CLUSTER_I486_H_
+#ifndef ARCH_CLUSTER_X86_CLUSTER_H_
+#define ARCH_CLUSTER_X86_CLUSTER_H_
 
-	#undef  __NEED_CORE_I486
-	#define __NEED_CORE_I486
-	#include <arch/core/i486.h>
+	#ifndef __NEED_CLUSTER_X86
+		#error "bad cluster configuration?"
+	#endif
 
-#endif /* _CLUSTER_I486_H_ */
+	/* Cluster Interface Implementation */
+	#include <arch/cluster/x86-cluster/_x86-cluster.h>
 
+/*============================================================================*
+ * Exported Interface                                                         *
+ *============================================================================*/
+
+/**
+ * @addtogroup x86-cluster x86 Cluster
+ * @ingroup clusters
+ *
+ * @brief x86 Cluster
+ */
+/**@{*/
+
+	#include <arch/cluster/x86-cluster/cores.h>
+	#include <arch/cluster/x86-cluster/memory.h>
+
+	/**
+	 * @name Provided Features
+	 */
+	/**@{*/
+	#define CLUSTER_IS_MULTICORE  1 /**< Multicore Cluster */
+	#define CLUSTER_IS_IO         1 /**< I/O Cluster       */
+	#define CLUSTER_IS_COMPUTE    0 /**< Compute Cluster   */
+	/**@}*/
+
+/**@}*/
+
+#endif /* ARCH_CLUSTER_X86_CLUSTER_H_ */

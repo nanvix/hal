@@ -26,7 +26,7 @@
 #define CLUSTER_K1B_MEMORY_H_
 
 	/* Cluster Interface Implementation */
-	#include <arch/cluster/k1b/_k1b.h>
+	#include <arch/cluster/k1b-cluster/_k1b-cluster.h>
 
 /**
  * @addtogroup k1b-cluster-mem Memory
@@ -52,6 +52,17 @@
 	#define K1B_IOETH_MEM_SIZE (4*1024*1024)
 
 	/**
+	 * @brief Memory size (in bytes).
+	 */
+	#if defined(__node__)
+		#define K1B_MEM_SIZE K1B_NODE_MEM_SIZE
+	#elif defined (__ioddr__)
+		#define K1B_MEM_SIZE K1B_IODDR_MEM_SIZE
+	#elif defined (__ioeth__)
+		#define K1B_MEM_SIZE K1B_IOETH_MEM_SIZE
+	#endif
+
+	/**
 	 * @brief Kernel stack size (in bytes).
 	 */
 	#if defined(__ioddr__) || defined(__ioeth__)
@@ -59,6 +70,11 @@
 	#elif defined(__node__)
 		#define K1B_KSTACK_SIZE (0x800)
 	#endif
+
+	/**
+	 * @brief Kernel memory size (in bytes).
+	 */
+	#define K1B_KMEM_SIZE (K1B_KERNEL_END_PHYS - K1B_KERNEL_BASE_PHYS)
 
 	/**
 	 * @brief Kernel pool size (in bytes).
@@ -109,24 +125,25 @@
 	 */
 	/**@{*/
 	#if defined(__ioddr__) || defined(__ioeth__)
-		#define K1B_HYPER_LOW_BASE_VIRT  0x00000000 /**< Low Hypervisor Base  */
-		#define K1B_HYPER_LOW_END_VIRT   0x00010000 /**< Low Hypervisor End   */
-		#define K1B_HYPER_HIGH_BASE_VIRT 0x001f0000 /**< High Hypervisor Base */
-		#define K1B_HYPER_HIGH_END_VIRT  0x00200000 /**< High Hypervisor End  */
+		#define K1B_HYPER_LOW_BASE_VIRT  0x00000000       /**< Low Hypervisor Base  */
+		#define K1B_HYPER_LOW_END_VIRT   0x00010000       /**< Low Hypervisor End   */
+		#define K1B_HYPER_HIGH_BASE_VIRT 0x001f0000       /**< High Hypervisor Base */
+		#define K1B_HYPER_HIGH_END_VIRT  0x00200000       /**< High Hypervisor End  */
 	#elif defined(__node__)
-		#define K1B_HYPER_LOW_BASE_VIRT  0x00000000 /**< Low Hypervisor Base  */
-		#define K1B_HYPER_LOW_END_VIRT   0x00008000 /**< Low Hypervisor End   */
-		#define K1B_HYPER_HIGH_BASE_VIRT 0x001f8000 /**< High Hypervisor Base */
-		#define K1B_HYPER_HIGH_END_VIRT  0x00200000 /**< High Hypervisor End  */
+		#define K1B_HYPER_LOW_BASE_VIRT  0x00000000       /**< Low Hypervisor Base  */
+		#define K1B_HYPER_LOW_END_VIRT   0x00008000       /**< Low Hypervisor End   */
+		#define K1B_HYPER_HIGH_BASE_VIRT 0x001f8000       /**< High Hypervisor Base */
+		#define K1B_HYPER_HIGH_END_VIRT  0x00200000       /**< High Hypervisor End  */
 	#endif
+	#define K1B_USTACK_BASE_VIRT K1B_HYPER_HIGH_BASE_VIRT /**< User Stack           */
 #ifndef _ASM_FILE_
-	extern const vaddr_t K1B_KERNEL_BASE_VIRT;      /**< Kernel Base          */
-	extern const vaddr_t K1B_KERNEL_END_VIRT;       /**< Kernel End           */
-	extern const vaddr_t K1B_KSTACK_BASE_VIRT;      /**< Kernel Stack Base    */
-	extern const vaddr_t K1B_KPOOL_BASE_VIRT;       /**< Kernel Pool Base     */
-	extern const vaddr_t K1B_KPOOL_END_VIRT;        /**< Kernel Pool End      */
-	extern const vaddr_t K1B_USER_BASE_VIRT;        /**< User Base            */
-	extern const vaddr_t K1B_USER_END_VIRT;         /**< User End             */
+	extern const vaddr_t K1B_KERNEL_BASE_VIRT;            /**< Kernel Base          */
+	extern const vaddr_t K1B_KERNEL_END_VIRT;             /**< Kernel End           */
+	extern const vaddr_t K1B_KSTACK_BASE_VIRT;            /**< Kernel Stack Base    */
+	extern const vaddr_t K1B_KPOOL_BASE_VIRT;             /**< Kernel Pool Base     */
+	extern const vaddr_t K1B_KPOOL_END_VIRT;              /**< Kernel Pool End      */
+	extern const vaddr_t K1B_USER_BASE_VIRT;              /**< User Base            */
+	extern const vaddr_t K1B_USER_END_VIRT;               /**< User End             */
 #endif
 	/**@}*/
 
@@ -137,59 +154,26 @@
  *============================================================================*/
 
 /**
- * @cond k1b
+ * @cond k1b_cluster
  */
 
 	/**
-	 * @brief Memory size (in bytes).
+	 * @name Exported Constants
 	 */
-	#if defined(__node__)
-		#define _MEMORY_SIZE K1B_NODE_MEM_SIZE
-	#elif defined (__ioddr__)
-		#define _MEMORY_SIZE K1B_IODDR_MEM_SIZE
-	#elif defined (__ioeth__)
-		#define _MEMORY_SIZE K1B_IOETH_MEM_SIZE
-	#endif
-
-	/**
-	 * @brief Kernel stack size (in bytes).
-	 */
-	#define _KSTACK_SIZE K1B_KSTACK_SIZE
-
-	/**
-	 * @brief Kernel memory size (in bytes).
-	 */
-	#define _KMEM_SIZE (K1B_KERNEL_END_PHYS - K1B_KERNEL_BASE_PHYS)
-
-	/**
-	 * @brief Kernel page pool size (in bytes).
-	 */
-	#define _KPOOL_SIZE K1B_KPOOL_SIZE
-
-	/**
-	 * @brief User memory size (in bytes).
-	 */
-	#define _UMEM_SIZE K1B_UMEM_SIZE
-
-	/**
-	 * @name Virtual Memory Layout
-	 */
-	/**@{*/
-	#define _UBASE_VIRT  K1B_USER_BASE_VIRT       /**< User Base        */
-	#define _USTACK_ADDR K1B_HYPER_HIGH_BASE_VIRT /**< User Stack       */
-	#define _KBASE_VIRT  K1B_KERNEL_BASE_VIRT     /**< Kernel Base      */
-	#define _KPOOL_VIRT  K1B_KPOOL_BASE_VIRT      /**< Kernel Page Pool */
-	/**@}*/
-
-	/**
-	 * @name Physical Memory Layout
-	 */
-	/**@{*/
-	#define _KBASE_PHYS K1B_KERNEL_BASE_PHYS /**< Kernel Base      */
-	#define _KPOOL_PHYS K1B_KPOOL_BASE_PHYS  /**< Kernel Page Pool */
-	#define _UBASE_PHYS K1B_USER_BASE_PHYS   /**< User Base        */
+	#define MEMORY_SIZE  K1B_MEM_SIZE         /**< @see K1B_MEM_SIZE          */
+	#define KMEM_SIZE    K1B_KMEM_SIZE        /**< @see K1B_KMEM_SIZE         */
+	#define UMEM_SIZE    K1B_UMEM_SIZE        /**< @see K1B_UMEM_SIZE         */
+	#define KSTACK_SIZE  K1B_KSTACK_SIZE      /**< @see K1B_KSTACK_SIZE       */
+	#define KPOOL_SIZE   K1B_KPOOL_SIZE       /**< @see K1B_KPOOL_SIZE        */
+	#define KBASE_PHYS   K1B_KERNEL_BASE_PHYS /**< @see K1B_KERNEL_BASE_PHYS  */
+	#define KPOOL_PHYS   K1B_KPOOL_BASE_PHYS  /**< @see K1B_KPOOL_BASE_PHYS   */
+	#define UBASE_PHYS   K1B_USER_BASE_PHYS   /**< @see K1B_USER_BASE_PHYS    */
+	#define USTACK_VIRT  K1B_USTACK_BASE_VIRT /**< @see K1B_USTACK_BASE_VIRT  */
+	#define UBASE_VIRT   K1B_USER_BASE_VIRT   /**< @see K1B_USER_BASE_VIRT    */
+	#define KBASE_VIRT   K1B_KERNEL_BASE_VIRT /**< @see K1B_KERNEL_BASE_VIRT  */
+	#define KPOOL_VIRT   K1B_KPOOL_BASE_VIRT  /**< @see K1B_KPOOL_BASE_VIRT   */
 	/**@}*/
 
 /**@endcond*/
 
-#endif /* CLUSTER_K1B_MEMORY_H_ */
+#endif /* CLUSTER_K1B_CLUSTER_MEMORY_H_ */

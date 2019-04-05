@@ -22,88 +22,45 @@
  * SOFTWARE.
  */
 
-#ifndef ARCH_I486_8253_H_
-#define ARCH_I486_8253_H_
+#ifndef CLUSTER_K1B_CLUSTER_H_
+#define CLUSTER_K1B_CLUSTER_H_
 
-/**
- * @addtogroup i486-core-8253 8253 Chip
- * @ingroup i486-core
- *
- * @brief Programmable Interval Timer
- */
-/**@{*/
+	#ifndef __NEED_CLUSTER_K1B
+		#error "bad cluster configuration?"
+	#endif
 
-	#include <nanvix/const.h>
-
-	/**
-	 * @name Provided Interface
-	 */
-	/**@{*/
-	#define __clock_init_fn
-	/**@}*/
-
-	/**
-	 * @brief Oscillator frequency (in Hz)
-	 */
-	#define PIT_FREQUENCY 1193182
-
-	/**
-	 * @name Registers
-	 */
-	/**@{*/
-	#define PIT_CTRL 0x43 /**< Control */
-	#define PIT_DATA 0x40 /**< Data    */
-	/**@}*/
-
-	/**
-	 * @brief Initializes the clock device.
-	 *
-	 * @param freq Target frequency for the clock device.
-	 */
-	EXTERN void i486_clock_init(unsigned freq);
-
-	/**
-	 * @brief Resets the clock device.
-	 */
-	static inline void i486_clock_reset(void)
-	{
-	}
-
-/**@}*/
+	/* Cluster Interface Implementation */
+	#include <arch/cluster/k1b-cluster/_k1b-cluster.h>
 
 /*============================================================================*
  * Exported Interface                                                         *
  *============================================================================*/
 
 /**
- * @cond i486
+ * @addtogroup k1b-cluster Bostan Cluster
+ * @ingroup clusters
+ *
+ * @brief Bostan Cluster
  */
+/**@{*/
+
+	#include <arch/cluster/k1b-cluster/cores.h>
+	#include <arch/cluster/k1b-cluster/memory.h>
 
 	/**
-	 * @name Exported functions
+	 * @name Provided Features
 	 */
 	/**@{*/
-	#define __clock_init_fn  /**< clock_init(   */
-	#define __clock_reset_fn /**< clock_reset() */
+	#define CLUSTER_IS_MULTICORE   1 /**< Multicore Cluster */
+	#ifdef __k1io__
+		#define CLUSTER_IS_IO      1 /**< I/O Cluster       */
+		#define CLUSTER_IS_COMPUTE 0 /**< Compute Cluster   */
+	#else
+		#define CLUSTER_IS_IO      0 /**< I/O Cluster       */
+		#define CLUSTER_IS_COMPUTE 1 /**< Compute Cluster   */
+	#endif
 	/**@}*/
 
-	/**
-	 * @see i486_clock_init().
-	 */
-	static inline void clock_init(unsigned freq)
-	{
-		i486_clock_init(freq);
-	}
+/**@}*/
 
-	/**
-	 * @see i486_clock_reset().
-	 */
-	static inline void clock_reset(void)
-	{
-		i486_clock_reset();
-	}
-
-/**@endcond*/
-
-#endif /* ARCH_I486_8253_H_ */
-
+#endif /* CLUSTER_K1B_CLUSTER_H_ */

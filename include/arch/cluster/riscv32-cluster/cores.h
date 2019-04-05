@@ -22,40 +22,86 @@
  * SOFTWARE.
  */
 
-#ifndef CLUSTER_I486_H_
-#define CLUSTER_I486_H_
-
-	#ifndef __NEED_CLUSTER_I486
-		#error "bad cluster configuration?"
-	#endif
+#ifndef ARCH_CLUSTER_RISCV32_CLUSTER_CORES_H_
+#define ARCH_CLUSTER_RISCV32_CLUSTER_CORES_H_
 
 	/* Cluster Interface Implementation */
-	#include <arch/cluster/i486/_i486.h>
+	#include <arch/cluster/riscv32-cluster/_riscv32-cluster.h>
+
+/**
+ * @addtogroup riscv-cluster-cpu Cores
+ * @ingroup riscv-cluster
+ *
+ * @brief Cores
+ */
+/**@{*/
+
+	/**
+	 * @brief Number of cores in a cluster.
+	 */
+	#define RISCV32_CLUSTER_NUM_CORES 4
+
+	/**
+	 * @brief ID of the master core.
+	 */
+	#define RISCV32_CLUSTER_COREID_MASTER 0
+
+#ifndef _ASM_FILE_
+
+	/**
+	 * @brief Gets the number of cores.
+	 *
+	 * The riscv32_cluster_cluster_get_num_cores() gets the number of
+	 * cores in the underlying riscv32 cluster.
+	 *
+	 * @returns The the number of cores in the underlying cluster.
+	 */
+	static inline int riscv32_cluster_cluster_get_num_cores(void)
+	{
+		return (RISCV32_CLUSTER_NUM_CORES);
+	}
+
+#endif /* _ASM_FILE_ */
+
+/**@}*/
 
 /*============================================================================*
  * Exported Interface                                                         *
  *============================================================================*/
 
 /**
- * @addtogroup i486-cluster x86 Cluster
- * @ingroup clusters
- *
- * @brief x86 Cluster
+ * @cond riscv32_cluster
  */
-/**@{*/
-
-	#include <arch/cluster/i486/cores.h>
-	#include <arch/cluster/i486/memory.h>
 
 	/**
-	 * @name Provided Features
+	 * @name Provided Functions
 	 */
 	/**@{*/
-	#define CLUSTER_IS_MULTICORE  1 /**< Multicore Cluster */
-	#define CLUSTER_IS_IO         1 /**< I/O Cluster       */
-	#define CLUSTER_IS_COMPUTE    0 /**< Compute Cluster   */
+	#define __cluster_get_num_cores /**< cluster_get_num_cores() */
 	/**@}*/
 
-/**@}*/
+	/**
+	 * @brief Number of cores in a cluster.
+	 */
+	#define CORES_NUM RISCV32_CLUSTER_NUM_CORES
 
-#endif /* CLUSTER_I486_H_ */
+	/**
+	 * @brief ID of the master core.
+	 */
+	#define COREID_MASTER RISCV32_CLUSTER_COREID_MASTER
+
+#ifndef _ASM_FILE_
+
+	/**
+	 * @see riscv32_cluster_cluster_get_num_cores()
+	 */
+	static inline int cluster_get_num_cores(void)
+	{
+		return (riscv32_cluster_cluster_get_num_cores());
+	}
+
+#endif /* _ASM_FILE_ */
+
+/**@endcond*/
+
+#endif /* ARCH_CLUSTER_RISCV32_CORES_H_ */

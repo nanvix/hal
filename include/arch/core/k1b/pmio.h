@@ -25,9 +25,6 @@
 #ifndef CORE_K1B_PMIO_H_
 #define CORE_K1B_PMIO_H_
 
-	/* Cluster Interface Implementation */
-	#include <arch/cluster/k1b/_k1b.h>
-
 /**
  * @addtogroup k1b-core-io Port-Mapped I/O
  * @ingroup k1b-core
@@ -36,6 +33,7 @@
  */
 /**@{*/
 
+	#include <mOS_vcore_u.h>
 	#include <stdint.h>
 
 	/**

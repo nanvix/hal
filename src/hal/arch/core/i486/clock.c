@@ -23,7 +23,7 @@
  */
 
 #include <nanvix/const.h>
-#include <arch/core/i486/8253.h>
+#include <arch/core/i486/clock.h>
 #include <arch/core/i486/pmio.h>
 
 /**

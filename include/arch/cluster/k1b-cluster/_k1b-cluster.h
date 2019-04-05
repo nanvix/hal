@@ -22,13 +22,13 @@
  * SOFTWARE.
  */
 
-#ifndef _CLUSTER_K1B_H_
-#define _CLUSTER_K1B_H_
+#ifndef _CLUSTER_K1B_CLUSTER_H_
+#define _CLUSTER_K1B_CLUSTER_H_
 
-	#undef  __NEED_CORE_K1B
 	#define __NEED_CORE_K1B
+
 #ifndef _ASM_FILE_
 	#include <arch/core/k1b.h>
 #endif
 
-#endif /* _CLUSTER_K1B_H_ */
+#endif /* _CLUSTER_K1B_CLUSTER_H_ */

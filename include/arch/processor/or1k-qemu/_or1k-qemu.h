@@ -27,7 +27,7 @@
 
 	#undef  __NEED_CLUSTER_OR1K
 	#define __NEED_CLUSTER_OR1K
-	#include <arch/cluster/or1k.h>
+	#include <arch/cluster/or1k-cluster.h>
 
 #endif /* _PROCESSOR_OR1K_QEMU_H_ */
 

@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 
-#include <arch/cluster/or1k/cores.h>
-#include <arch/cluster/or1k/memory.h>
+#include <arch/cluster/or1k-cluster/cores.h>
+#include <arch/cluster/or1k-cluster/memory.h>
 #include <nanvix/const.h>
 
 /**
@@ -44,7 +44,7 @@ PRIVATE struct
 	 * @brief Instruction TLB.
 	 */
 	struct tlbe itlb[OR1K_TLB_LENGTH];
-} tlb[OR1K_SMP_NUM_CORES];
+} tlb[OR1K_CLUSTER_NUM_CORES];
 
 /**
  * @brief TLB Entry Value
@@ -98,7 +98,7 @@ PRIVATE int or1k_tlb_check_inst(vaddr_t vaddr)
 	kdata = (vaddr_t)&KSTART_DATA;
 
 	/* Kernel address. */
-	if (vaddr >= kcode && vaddr < _KMEM_SIZE)
+	if (vaddr >= kcode && vaddr < KMEM_SIZE)
 	{
 		if (vaddr >= kcode && vaddr < kdata)
 			return (1);
@@ -107,7 +107,7 @@ PRIVATE int or1k_tlb_check_inst(vaddr_t vaddr)
 	/* User address. */
 	else
 	{
-		if (vaddr >= _UBASE_VIRT && vaddr < _USTACK_ADDR)
+		if (vaddr >= UBASE_VIRT && vaddr < USTACK_VIRT)
 			return (1);
 	}
 
@@ -250,7 +250,7 @@ PUBLIC int or1k_tlb_write(int tlb_type, vaddr_t vaddr, paddr_t paddr)
 	 * Check if the virtual address belongs to
 	 * kernel or user.
 	 */
-	if ((vaddr >= kcode && vaddr < _KMEM_SIZE) || (vaddr >= _KBASE_VIRT))
+	if ((vaddr >= kcode && vaddr < KMEM_SIZE) || (vaddr >= KBASE_VIRT))
 		user = 0;
 
 	/*

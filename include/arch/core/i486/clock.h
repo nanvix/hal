@@ -22,46 +22,52 @@
  * SOFTWARE.
  */
 
-#ifndef ARCH_CLUSTER_OR1K_CORES_H_
-#define ARCH_CLUSTER_OR1K_CORES_H_
-
-	/* Cluster Interface Implementation */
-	#include <arch/cluster/or1k/_or1k.h>
+#ifndef ARCH_I486_CLOCK_H_
+#define ARCH_I486_CLOCK_H_
 
 /**
- * @addtogroup or1k-cluster-cpu Cores
- * @ingroup or1k-cluster
+ * @addtogroup i486-core-clock Clock
+ * @ingroup i486-core
  *
- * @brief Cores
+ * @brief Clock Interface
  */
 /**@{*/
 
+	#include <nanvix/const.h>
+
 	/**
-	 * @brief Number of cores in a cluster.
+	 * @name Provided Interface
 	 */
-	#define OR1K_SMP_NUM_CORES 2
+	/**@{*/
+	#define __clock_init_fn
+	/**@}*/
 
 	/**
-	 * @brief ID of the master core.
+	 * @brief Oscillator frequency (in Hz)
 	 */
-	#define OR1K_SMP_COREID_MASTER 0
-
-#ifndef _ASM_FILE_
+	#define PIT_FREQUENCY 1193182
 
 	/**
-	 * @brief Gets the number of cores.
+	 * @name Registers
+	 */
+	/**@{*/
+	#define PIT_CTRL 0x43 /**< Control */
+	#define PIT_DATA 0x40 /**< Data    */
+	/**@}*/
+
+	/**
+	 * @brief Initializes the clock device.
 	 *
-	 * The or1k_smp_cluster_get_num_cores() gets the number of cores in the
-	 * underlying or1k processor.
-	 *
-	 * @returns The the number of cores in the underlying processor.
+	 * @param freq Target frequency for the clock device.
 	 */
-	static inline int or1k_smp_cluster_get_num_cores(void)
+	EXTERN void i486_clock_init(unsigned freq);
+
+	/**
+	 * @brief Resets the clock device.
+	 */
+	static inline void i486_clock_reset(void)
 	{
-		return (OR1K_SMP_NUM_CORES);
 	}
-
-#endif /* _ASM_FILE_ */
 
 /**@}*/
 
@@ -70,38 +76,34 @@
  *============================================================================*/
 
 /**
- * @cond or1k_smp
+ * @cond i486
  */
 
 	/**
-	 * @name Provided Functions
+	 * @name Exported functions
 	 */
 	/**@{*/
-	#define __cluster_get_num_cores /**< cluster_get_num_cores() */
+	#define __clock_init_fn  /**< clock_init(   */
+	#define __clock_reset_fn /**< clock_reset() */
 	/**@}*/
 
 	/**
-	 * @brief Number of cores in a cluster.
+	 * @see i486_clock_init().
 	 */
-	#define CORES_NUM OR1K_SMP_NUM_CORES
-
-	/**
-	 * @brief ID of the master core.
-	 */
-	#define COREID_MASTER OR1K_SMP_COREID_MASTER
-
-#ifndef _ASM_FILE_
-
-	/**
-	 * @see or1k_smp_cluster_get_num_cores()
-	 */
-	static inline int cluster_get_num_cores(void)
+	static inline void clock_init(unsigned freq)
 	{
-		return (or1k_smp_cluster_get_num_cores());
+		i486_clock_init(freq);
 	}
 
-#endif /* _ASM_FILE_ */
+	/**
+	 * @see i486_clock_reset().
+	 */
+	static inline void clock_reset(void)
+	{
+		i486_clock_reset();
+	}
 
 /**@endcond*/
 
-#endif /* ARCH_CLUSTER_OR1K_CORES_H_ */
+#endif /* ARCH_I486_CLOCK_H_ */
+

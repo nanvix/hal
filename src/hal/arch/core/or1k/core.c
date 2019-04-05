@@ -27,12 +27,12 @@
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
 
-PUBLIC int pending_ipis[OR1K_SMP_NUM_CORES] = {0};
+PUBLIC int pending_ipis[OR1K_CLUSTER_NUM_CORES] = {0};
 
 /**
  * @brief Cores table.
  */
-PUBLIC struct coreinfo  ALIGN(OR1K_CACHE_LINE_SIZE) cores[OR1K_SMP_NUM_CORES] = {
+PUBLIC struct coreinfo  ALIGN(OR1K_CACHE_LINE_SIZE) cores[OR1K_CLUSTER_NUM_CORES] = {
 	{ TRUE,  CORE_RUNNING,   0, NULL, OR1K_SPINLOCK_LOCKED }, /* Master Core   */
 	{ FALSE, CORE_RESETTING, 0, NULL, OR1K_SPINLOCK_LOCKED }, /* Slave Core 1  */
 };
@@ -61,7 +61,7 @@ PUBLIC void or1k_core_waitclear(void)
 	}
 
 		/* Clear IPI. */
-		for (int i = 0; i < OR1K_SMP_NUM_CORES; i++)
+		for (int i = 0; i < OR1K_CLUSTER_NUM_CORES; i++)
 		{
 			if (pending_ipis[mycoreid] & (1 << i))
 			{

@@ -22,11 +22,11 @@
  * SOFTWARE.
  */
 
-#ifndef CLUSTER_I486_MEMORY_H_
-#define CLUSTER_I486_MEMORY_H_
+#ifndef CLUSTER_X86_MEMORY_H_
+#define CLUSTER_X86_MEMORY_H_
 
 	/* Cluster Interface Implementation */
-	#include <arch/cluster/i486/_i486.h>
+	#include <arch/cluster/x86-cluster/_x86-cluster.h>
 
 /**
  * @addtogroup i486-cluster-mem Memory
@@ -52,22 +52,32 @@
 	#define I486_KPOOL_SIZE (4*1024*1024)
 
 	/**
+	 * @brief User memory size (in bytes).
+	 */
+	#define I486_UMEM_SIZE (I486_MEM_SIZE - I486_KMEM_SIZE - I486_KPOOL_SIZE)
+
+	/**
+	 * @brief Kernel stack size (in bytes).
+	 */
+	#define I486_KSTACK_SIZE I486_PAGE_SIZE
+
+	/**
 	 * @name Virtual Memory Layout
 	 */
 	/**@{*/
-	#define I486_UBASE_VIRT  0x02000000 /**< User base.        */
-	#define I486_USTACK_ADDR 0xc0000000 /**< User stack.       */
-	#define I486_KBASE_VIRT  0xc0000000 /**< Kernel base.      */
-	#define I486_KPOOL_VIRT  0xc1000000 /**< Kernel page pool. */
+	#define I486_USER_BASE_VIRT   0x02000000 /**< User Base             */
+	#define I486_USTACK_BASE_VIRT 0xc0000000 /**< User Stack Base       */
+	#define I486_KERNEL_BASE_VIRT 0xc0000000 /**< Kernel Base           */
+	#define I486_KPOOL_BASE_VIRT  0xc1000000 /**< Kernel Page Pool Base */
 	/**@}*/
 
 	/**
 	 * @name Physical Memory Layout
 	 */
 	/**@{*/
-	#define I486_KBASE_PHYS 0x00000000 /**< Kernel base.      */
-	#define I486_KPOOL_PHYS 0x01000000 /**< Kernel page pool. */
-	#define I486_UBASE_PHYS 0x02000000 /**< User base.        */
+	#define I486_KERNEL_BASE_PHYS 0x00000000 /**< Kernel Base           */
+	#define I486_KPOOL_BASE_PHYS  0x01000000 /**< Kernel Page Pool Base */
+	#define I486_USER_BASE_PHYS   0x02000000 /**< User Base             */
 	/**@}*/
 
 /**@}*/
@@ -77,53 +87,26 @@
  *============================================================================*/
 
 /**
- * @cond i486
+ * @cond x86_cluster
  */
 
 	/**
-	 * @brief Memory size (in bytes).
+	 * @name Exported Constants
 	 */
-	#define _MEMORY_SIZE I486_MEM_SIZE
-
-	/**
-	 * @brief Kernel stack size (in bytes).
-	 */
-	#define _KSTACK_SIZE I486_PAGE_SIZE
-
-	/**
-	 * @brief Kernel memory size (in bytes).
-	 */
-	#define _KMEM_SIZE I486_KMEM_SIZE
-
-	/**
-	 * @brief Kernel page pool size (in bytes).
-	 */
-	#define _KPOOL_SIZE I486_KPOOL_SIZE
-
-	/**
-	 * @brief User memory size (in bytes).
-	 */
-	#define _UMEM_SIZE (I486_MEM_SIZE - I486_KMEM_SIZE - I486_KPOOL_SIZE)
-
-	/**
-	 * @name Virtual Memory Layout
-	 */
-	/**@{*/
-	#define _UBASE_VIRT  I486_UBASE_VIRT  /**< User Base        */
-	#define _USTACK_ADDR I486_USTACK_ADDR /**< User Stack       */
-	#define _KBASE_VIRT  I486_KBASE_VIRT  /**< Kernel Base      */
-	#define _KPOOL_VIRT  I486_KPOOL_VIRT  /**< Kernel Page Pool */
-	/**@}*/
-
-	/**
-	 * @name Physical Memory Layout
-	 */
-	/**@{*/
-	#define _KBASE_PHYS I486_KBASE_PHYS /**< Kernel Base      */
-	#define _KPOOL_PHYS I486_KPOOL_PHYS /**< Kernel Page Pool */
-	#define _UBASE_PHYS I486_UBASE_PHYS /**< User Base        */
+	#define MEMORY_SIZE  I486_MEM_SIZE          /**< @see I486_MEM_SIZE         */
+	#define KMEM_SIZE    I486_KMEM_SIZE         /**< @see I486_KMEM_SIZE        */
+	#define UMEM_SIZE    I486_UMEM_SIZE         /**< @see I486_UMEM_SIZE        */
+	#define KSTACK_SIZE  I486_KSTACK_SIZE       /**< @see I486_KSTACK_SIZE      */
+	#define KPOOL_SIZE   I486_KPOOL_SIZE        /**< @see I486_KPOOL_SIZE       */
+	#define KBASE_PHYS   I486_KERNEL_BASE_PHYS  /**< @see I486_KERNEL_BASE_PHYS */
+	#define KPOOL_PHYS   I486_KPOOL_BASE_PHYS   /**< @see I486_KPOOL_BASE_PHYS  */
+	#define UBASE_PHYS   I486_USER_BASE_PHYS    /**< @see I486_USER_BASE_PHYS   */
+	#define USTACK_VIRT  I486_USTACK_BASE_VIRT  /**< @see I486_USTACK_BASE_VIRT */
+	#define UBASE_VIRT   I486_USER_BASE_VIRT    /**< @see I486_USER_BASE_VIRT   */
+	#define KBASE_VIRT   I486_KERNEL_BASE_VIRT  /**< @see I486_KERNEL_BASE_VIRT */
+	#define KPOOL_VIRT   I486_KPOOL_BASE_VIRT   /**< @see I486_KPOOL_BASE_VIRT  */
 	/**@}*/
 
 /**@endcond*/
 
-#endif /* CLUSTER_I486_MEMORY_H_ */
+#endif /* CLUSTER_X86_CLUSTER_MEMORY_H_ */

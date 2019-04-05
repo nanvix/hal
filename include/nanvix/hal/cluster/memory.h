@@ -35,38 +35,38 @@
 #ifdef __INTERFACE_CHECK
 
 	/* Constants */
-	#ifndef _UBASE_VIRT
-	#error "_UBASE_VIRT not defined"
+	#ifndef UBASE_VIRT
+	#error "UBASE_VIRT not defined"
 	#endif
-	#ifndef _USTACK_ADDR
-	#error "_USTACK_ADDR not defined"
+	#ifndef USTACK_VIRT
+	#error "USTACK_VIRT not defined"
 	#endif
-	#ifndef _KBASE_VIRT
-	#error "_KBASE_VIRT not defined"
+	#ifndef KBASE_VIRT
+	#error "KBASE_VIRT not defined"
 	#endif
-	#ifndef _KPOOL_VIRT
-	#error "_KPOOL_VIRT not defined"
+	#ifndef KPOOL_VIRT
+	#error "KPOOL_VIRT not defined"
 	#endif
-	#ifndef _KBASE_PHYS
-	#error "_KBASE_PHYS not defined"
+	#ifndef KBASE_PHYS
+	#error "KBASE_PHYS not defined"
 	#endif
-	#ifndef _KPOOL_PHYS
-	#error "_KPOOL_PHYS not defined"
+	#ifndef KPOOL_PHYS
+	#error "KPOOL_PHYS not defined"
 	#endif
-	#ifndef _UBASE_PHYS
-	#error "_UBASE_PHYS not defined"
+	#ifndef UBASE_PHYS
+	#error "UBASE_PHYS not defined"
 	#endif
-	#ifndef _MEMORY_SIZE
-	#error "_MEMORY_SIZE not defined"
+	#ifndef MEMORY_SIZE
+	#error "MEMORY_SIZE not defined"
 	#endif
-	#ifndef _KMEM_SIZE
-	#error "_KMEM_SIZE not defined"
+	#ifndef KMEM_SIZE
+	#error "KMEM_SIZE not defined"
 	#endif
-	#ifndef _KPOOL_SIZE
-	#error "_KPOOL_SIZE not defined"
+	#ifndef KPOOL_SIZE
+	#error "KPOOL_SIZE not defined"
 	#endif
-	#ifndef _UMEM_SIZE
-	#error "_UMEM_SIZE not defined"
+	#ifndef UMEM_SIZE
+	#error "UMEM_SIZE not defined"
 	#endif
 
 #endif
@@ -82,13 +82,6 @@
  * @brief Memory HAL Interface
  */
 /**@{*/
-
-	#include <nanvix/const.h>
-
-	/**
-	 * @brief Memory size (in bytes).
-	 */
-	#define MEMORY_SIZE _MEMORY_SIZE
 
 /**@}*/
 

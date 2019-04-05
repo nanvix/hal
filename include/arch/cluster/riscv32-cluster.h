@@ -22,45 +22,35 @@
  * SOFTWARE.
  */
 
-#ifndef CLUSTER_K1B_H_
-#define CLUSTER_K1B_H_
+#ifndef CLUSTER_RISCV32_CLUSTER_H_
+#define CLUSTER_RISCV32_CLUSTER_H_
 
-	#ifndef __NEED_CLUSTER_K1B
+	#ifndef __NEED_RISCV32_CLUSTER
 		#error "bad cluster configuration?"
 	#endif
 
 	/* Cluster Interface Implementation */
-	#include <arch/cluster/k1b/_k1b.h>
-
-/*============================================================================*
- * Exported Interface                                                         *
- *============================================================================*/
+	#include <arch/cluster/riscv32-cluster/_riscv32-cluster.h>
 
 /**
- * @addtogroup k1b-cluster Bostan Cluster
+ * @addtogroup riscv-cluster RISC-V 32-Bit Cluster
  * @ingroup clusters
  *
- * @brief Bostan Cluster
+ * @brief RISC-V 32-Bit Cluster
  */
 /**@{*/
 
-	#include <arch/cluster/k1b/cores.h>
-	#include <arch/cluster/k1b/memory.h>
+	#include <arch/cluster/riscv32-cluster/cores.h>
 
 	/**
 	 * @name Provided Features
 	 */
 	/**@{*/
-	#define CLUSTER_IS_MULTICORE   1 /**< Multicore Cluster */
-	#ifdef __k1io__
-		#define CLUSTER_IS_IO      1 /**< I/O Cluster       */
-		#define CLUSTER_IS_COMPUTE 0 /**< Compute Cluster   */
-	#else
-		#define CLUSTER_IS_IO      0 /**< I/O Cluster       */
-		#define CLUSTER_IS_COMPUTE 1 /**< Compute Cluster   */
-	#endif
+	#define CLUSTER_IS_MULTICORE  1 /**< Multicore Cluster */
+	#define CLUSTER_IS_IO         1 /**< I/O Cluster       */
+	#define CLUSTER_IS_COMPUTE    0 /**< Compute Cluster   */
 	/**@}*/
 
 /**@}*/
 
-#endif /* CLUSTER_K1B_H_ */
+#endif /* CLUSTER_RISCV32_CLUSTER_H_ */

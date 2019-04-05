@@ -22,35 +22,23 @@
  * SOFTWARE.
  */
 
-#ifndef CLUSTER_RISCV32_SMP_H_
-#define CLUSTER_RISCV32_SMP_H_
+#ifndef _CLUSTER_OR1K_CLUSTER_H_
+#define _CLUSTER_OR1K_CLUSTER_H_
 
-	#ifndef __NEED_CLUSTER_RISCV32_SMP
-		#error "bad cluster configuration?"
+	#undef  __NEED_CORE_OR1K
+	#define __NEED_CORE_OR1K
+
+#ifndef _ASM_FILE_
+
+	#if (defined(__or1200__))
+		#include <arch/core/or1k.h>
+	#elif (defined(__mor1kx__))
+		#include <arch/core/mor1kx.h>
+	#else
+		#error "unkonwn core"
 	#endif
 
-	/* Cluster Interface Implementation */
-	#include <arch/cluster/riscv32-smp/_riscv32-smp.h>
+#endif
 
-/**
- * @addtogroup riscv-cluster RISC-V 32-Bit Cluster
- * @ingroup clusters
- *
- * @brief RISC-V 32-Bit Cluster
- */
-/**@{*/
+#endif /* _CLUSTER_OR1K_CLUSTER_H_ */
 
-	#include <arch/cluster/riscv32-smp/cores.h>
-
-	/**
-	 * @name Provided Features
-	 */
-	/**@{*/
-	#define CLUSTER_IS_MULTICORE  1 /**< Multicore Cluster */
-	#define CLUSTER_IS_IO         1 /**< I/O Cluster       */
-	#define CLUSTER_IS_COMPUTE    0 /**< Compute Cluster   */
-	/**@}*/
-
-/**@}*/
-
-#endif /* CLUSTER_RISCV32_SMP_H_ */

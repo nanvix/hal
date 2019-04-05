@@ -33,25 +33,25 @@
 
 		#undef  __NEED_CLUSTER_K1B
 		#define __NEED_CLUSTER_K1B
-		#include <arch/cluster/k1b.h>
+		#include <arch/cluster/k1b-cluster.h>
 
-	#elif (defined(__x86_smp__))
+	#elif (defined(__x86_cluster__))
 
-		#undef  __NEED_CLUSTER_I486
-		#define __NEED_CLUSTER_I486
-		#include <arch/cluster/i486.h>
+		#undef  __NEED_CLUSTER_X86
+		#define __NEED_CLUSTER_X86
+		#include <arch/cluster/x86-cluster.h>
 
-	#elif (defined(__or1k_smp__))
+	#elif (defined(__or1k_cluster__))
 
 		#undef  __NEED_CLUSTER_OR1K
 		#define __NEED_CLUSTER_OR1K
-		#include <arch/cluster/or1k.h>
+		#include <arch/cluster/or1k-cluster.h>
 
-	#elif (defined(__riscv32_smp__))
+	#elif (defined(__riscv32_cluster__))
 
-		#undef  __NEED_CLUSTER_RISCV32_SMP
-		#define __NEED_CLUSTER_RISCV32_SMP
-		#include <arch/cluster/riscv32-smp.h>
+		#undef  __NEED_CLUSTER_RISCV32_CLUSTER
+		#define __NEED_CLUSTER_RISCV32_CLUSTER
+		#include <arch/cluster/riscv32-cluster.h>
 
 	#else
 

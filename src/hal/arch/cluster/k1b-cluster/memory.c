@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 
-#include <arch/cluster/k1b/cores.h>
-#include <arch/cluster/k1b/memory.h>
+#include <arch/cluster/k1b-cluster/cores.h>
+#include <arch/cluster/k1b-cluster/memory.h>
 #include <nanvix/const.h>
 
 /*
@@ -241,7 +241,7 @@ PRIVATE void mmu_warmup(void)
 		k1b_tlb_write(vaddr, vaddr, K1B_HUGE_PAGE_SHIFT, 1, K1B_TLBE_PROT_RW);
 
 	/* Invalidate all entries in way 0. */
-	start = 0; end = _MEMORY_SIZE;
+	start = 0; end = MEMORY_SIZE;
 	for (vaddr_t vaddr = start; vaddr < end; vaddr += K1B_PAGE_SIZE)
 		k1b_tlb_inval(vaddr, K1B_PAGE_SHIFT, 0);
 }
@@ -317,10 +317,10 @@ PUBLIC void k1b_mmu_setup(void)
 
 		kprintf("[core %d][hal] memsize=%d MB kmem=%d KB kpool=%d KB umem=%d KB",
 			coreid,
-			_MEMORY_SIZE/(1024*1024),
-			_KMEM_SIZE/1024,
-			_KPOOL_SIZE/1024,
-			_UMEM_SIZE/1024
+			MEMORY_SIZE/(1024*1024),
+			KMEM_SIZE/1024,
+			KPOOL_SIZE/1024,
+			UMEM_SIZE/1024
 		);
 
 		/* Check for memory layout. */

@@ -25,9 +25,9 @@
 #ifndef _PROCESSOR_RISCV32_H_
 #define _PROCESSOR_RISCV32_H_
 
-	#undef  __NEED_CLUSTER_RISCV32_SMP
-	#define __NEED_CLUSTER_RISCV32_SMP
-	#include <arch/cluster/riscv32-smp.h>
+	#undef  __NEED_RISCV32_CLUSTER
+	#define __NEED_RISCV32_CLUSTER
+	#include <arch/cluster/riscv32-cluster.h>
 
 #endif /* _PROCESSOR_RISCV32_H_ */
 

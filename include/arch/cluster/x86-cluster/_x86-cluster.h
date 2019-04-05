@@ -22,22 +22,12 @@
  * SOFTWARE.
  */
 
-#ifndef _CLUSTER_OR1K_H_
-#define _CLUSTER_OR1K_H_
+#ifndef _CLUSTER_X86_CLUSTER_H_
+#define _CLUSTER_X86_CLUSTER_H_
 
-	#undef  __NEED_CORE_OR1K
-	#define __NEED_CORE_OR1K
-#ifndef _ASM_FILE_
+	#undef  __NEED_CORE_I486
+	#define __NEED_CORE_I486
+	#include <arch/core/i486.h>
 
-	#if (defined(__or1200__))
-		#include <arch/core/or1k.h>
-	#elif (defined(__mor1kx__))
-		#include <arch/core/mor1kx.h>
-	#else
-		#error "unkonwn core"
-	#endif
-
-#endif
-
-#endif /* _CLUSTER_OR1K_H_ */
+#endif /* _CLUSTER_X86_CLUSTER_H_ */
 

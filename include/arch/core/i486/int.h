@@ -38,7 +38,7 @@
 /**@{*/
 
 	#include <nanvix/const.h>
-	#include <arch/core/i486/8259.h>
+	#include <arch/core/i486/pic.h>
 	#include <arch/core/i486/context.h>
 
 	/**

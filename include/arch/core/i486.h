@@ -34,8 +34,8 @@
 		#error "i486 core not required"
 	#endif
 
-	#include <arch/core/i486/8253.h>
-	#include <arch/core/i486/8259.h>
+	#include <arch/core/i486/clock.h>
+	#include <arch/core/i486/pic.h>
 	#include <arch/core/i486/cache.h>
 	#include <arch/core/i486/core.h>
 	#include <arch/core/i486/excp.h>

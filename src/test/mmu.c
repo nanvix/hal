@@ -252,7 +252,7 @@ PRIVATE void mmu_pde_write_set(void)
  */
 PRIVATE void mmu_pte_get(void)
 {
-	KASSERT(pte_get(kernel_pgtab, _KBASE_VIRT) != NULL);
+	KASSERT(pte_get(kernel_pgtab, KBASE_VIRT) != NULL);
 }
 
 /*----------------------------------------------------------------------------*
@@ -264,7 +264,7 @@ PRIVATE void mmu_pte_get(void)
  */
 PRIVATE void mmu_pde_get(void)
 {
-	KASSERT(pde_get(root_pgdir, _KBASE_VIRT) != NULL);
+	KASSERT(pde_get(root_pgdir, KBASE_VIRT) != NULL);
 }
 
 /*----------------------------------------------------------------------------*
@@ -455,7 +455,7 @@ PRIVATE void mmu_pde_write_set_inval(void)
  */
 PRIVATE void mmu_pte_get_inval(void)
 {
-	KASSERT(pte_get(NULL, _KBASE_VIRT) == NULL);
+	KASSERT(pte_get(NULL, KBASE_VIRT) == NULL);
 }
 
 /*----------------------------------------------------------------------------*
@@ -467,7 +467,7 @@ PRIVATE void mmu_pte_get_inval(void)
  */
 PRIVATE void mmu_pde_get_inval(void)
 {
-	KASSERT(pde_get(NULL, _KBASE_VIRT) == NULL);
+	KASSERT(pde_get(NULL, KBASE_VIRT) == NULL);
 }
 
 /*----------------------------------------------------------------------------*

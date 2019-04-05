@@ -94,8 +94,8 @@ PRIVATE void test_tlb_write(void)
 	vaddr_t vaddr;
 	paddr_t paddr;
 
-	vaddr = TRUNCATE(VADDR(_UBASE_VIRT) + PAGE_SIZE, PAGE_SIZE);
-	paddr = TRUNCATE(PADDR(_UBASE_PHYS) + PAGE_SIZE, PAGE_SIZE);
+	vaddr = TRUNCATE(VADDR(UBASE_VIRT) + PAGE_SIZE, PAGE_SIZE);
+	paddr = TRUNCATE(PADDR(UBASE_PHYS) + PAGE_SIZE, PAGE_SIZE);
 
 #if (TEST_TLB_VERBOSE)
 	kprintf("tlb_write() vaddr = %x, paddr = %x", vaddr, paddr);
@@ -122,7 +122,7 @@ PRIVATE void test_tlb_invalidate(void)
 {
 	vaddr_t vaddr;
 
-	vaddr = TRUNCATE(VADDR(_UBASE_VIRT) + PAGE_SIZE, PAGE_SIZE);
+	vaddr = TRUNCATE(VADDR(UBASE_VIRT) + PAGE_SIZE, PAGE_SIZE);
 
 #if (TEST_TLB_VERBOSE)
 	kprintf("tlb_inval() vaddr = %x", vaddr);
@@ -155,8 +155,8 @@ PRIVATE void test_tlb_write_destructive(void)
 	if (!TEST_TLB_DESTRUCTIVE)
 		return;
 
-	vaddr = TRUNCATE(VADDR(_UBASE_VIRT) + PAGE_SIZE, PAGE_SIZE);
-	paddr = TRUNCATE(PADDR(_UBASE_PHYS) + PAGE_SIZE, PAGE_SIZE);
+	vaddr = TRUNCATE(VADDR(UBASE_VIRT) + PAGE_SIZE, PAGE_SIZE);
+	paddr = TRUNCATE(PADDR(UBASE_PHYS) + PAGE_SIZE, PAGE_SIZE);
 
 #if (TEST_TLB_VERBOSE)
 	kprintf("tlb_write() vaddr = %x, paddr = %x", vaddr, paddr);
@@ -211,7 +211,7 @@ PRIVATE void test_tlb_lookup_vaddr_tlb_type_inval(void)
 {
 	vaddr_t vaddr;
 
-	vaddr = VADDR(_KBASE_VIRT);
+	vaddr = VADDR(KBASE_VIRT);
 
 #if (TEST_TLB_VERBOSE)
 	kprintf("tlb_lookup_vaddr() vaddr = %x", vaddr);
@@ -231,7 +231,7 @@ PRIVATE void test_tlb_lookup_vaddr_bad(void)
 {
 	vaddr_t vaddr;
 
-	vaddr = TRUNCATE(VADDR(_UBASE_VIRT) + PAGE_SIZE, PAGE_SIZE);
+	vaddr = TRUNCATE(VADDR(UBASE_VIRT) + PAGE_SIZE, PAGE_SIZE);
 
 #if (TEST_TLB_VERBOSE)
 	kprintf("tlb_lookup_vaddr() vaddr = %x", vaddr);
@@ -251,7 +251,7 @@ PRIVATE void test_tlb_lookup_paddr_tlb_type_inval(void)
 {
 	paddr_t paddr;
 
-	paddr = PADDR(_KBASE_PHYS);
+	paddr = PADDR(KBASE_PHYS);
 
 #if (TEST_TLB_VERBOSE)
 	kprintf("tlb_lookup_paddr() paddr = %x", paddr);
@@ -271,7 +271,7 @@ PRIVATE void test_tlb_lookup_paddr_bad(void)
 {
 	paddr_t paddr;
 
-	paddr = TRUNCATE(VADDR(_UBASE_PHYS) + PAGE_SIZE, PAGE_SIZE);
+	paddr = TRUNCATE(VADDR(UBASE_PHYS) + PAGE_SIZE, PAGE_SIZE);
 
 #if (TEST_TLB_VERBOSE)
 	kprintf("tlb_lookup_paddr() paddr = %x", paddr);
@@ -292,8 +292,8 @@ PRIVATE void test_tlb_write_inval(void)
 	vaddr_t vaddr;
 	paddr_t paddr;
 
-	vaddr = TRUNCATE(VADDR(_UBASE_VIRT) + PAGE_SIZE, PAGE_SIZE);
-	paddr = TRUNCATE(PADDR(_UBASE_PHYS) + PAGE_SIZE, PAGE_SIZE);
+	vaddr = TRUNCATE(VADDR(UBASE_VIRT) + PAGE_SIZE, PAGE_SIZE);
+	paddr = TRUNCATE(PADDR(UBASE_PHYS) + PAGE_SIZE, PAGE_SIZE);
 
 #if (TEST_TLB_VERBOSE)
 	kprintf("tlb_write() vaddr = %x, paddr = %x", vaddr, paddr);
@@ -320,7 +320,7 @@ PRIVATE void test_tlb_invalidate_inval(void)
 {
 	vaddr_t vaddr;
 
-	vaddr = TRUNCATE(VADDR(_UBASE_VIRT) + PAGE_SIZE, PAGE_SIZE);
+	vaddr = TRUNCATE(VADDR(UBASE_VIRT) + PAGE_SIZE, PAGE_SIZE);
 
 #if (TEST_TLB_VERBOSE)
 	kprintf("tlb_write() vaddr = %x, paddr = %x", vaddr, paddr);

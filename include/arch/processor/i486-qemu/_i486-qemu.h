@@ -25,9 +25,9 @@
 #ifndef _PROCESSOR_I486_QEMU_H_
 #define _PROCESSOR_I486_QEMU_H_
 
-	#undef  __NEED_CLUSTER_I486
-	#define __NEED_CLUSTER_I486
-	#include <arch/cluster/i486.h>
+	#undef  __NEED_CLUSTER_X86
+	#define __NEED_CLUSTER_X86
+	#include <arch/cluster/x86-cluster.h>
 
 #endif /* _PROCESSOR_I486_QEMU_H_ */
 

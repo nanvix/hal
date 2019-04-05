@@ -22,46 +22,56 @@
  * SOFTWARE.
  */
 
-#ifndef ARCH_CLUSTER_RISCV32_SMP_CORES_H_
-#define ARCH_CLUSTER_RISCV32_SMP_CORES_H_
+#ifndef ARCH_CLUSTER_K1B_CLUSTER_CORES_H_
+#define ARCH_CLUSTER_K1B_CLUSTER_CORES_H_
 
 	/* Cluster Interface Implementation */
-	#include <arch/cluster/riscv32-smp/_riscv32-smp.h>
+	#include <arch/cluster/k1b-cluster/_k1b-cluster.h>
 
 /**
- * @addtogroup riscv-cluster-cpu Cores
- * @ingroup riscv-cluster
+ * @addtogroup k1b-cluster-cpu Cores
+ * @ingroup k1b-cluster
  *
  * @brief Cores
  */
 /**@{*/
 
 	/**
-	 * @brief Number of cores in a cluster.
+	 * @brief Number of cores in an I/O Cluster.
 	 */
-	#define RISCV32_SMP_NUM_CORES 4
+	#define K1BIO_CORES_NUM 4
+
+	/**
+	 * @brief Number of cores in an Compute Cluster.
+	 */
+	#define K1BDP_CORES_NUM 16
+
+	/**
+	 * @brief Number of cores in the underlying cluster.
+	 */
+	#ifdef __k1io__
+		#define K1B_CLUSTER_NUM_CORES K1BIO_CORES_NUM
+	#else
+		#define K1B_CLUSTER_NUM_CORES K1BDP_CORES_NUM
+	#endif
 
 	/**
 	 * @brief ID of the master core.
 	 */
-	#define RISCV32_SMP_COREID_MASTER 0
-
-#ifndef _ASM_FILE_
+	#define K1B_CLUSTER_COREID_MASTER 0
 
 	/**
 	 * @brief Gets the number of cores.
 	 *
-	 * The riscv32_smp_cluster_get_num_cores() gets the number of
-	 * cores in the underlying riscv32 cluster.
+	 * The k1b_cluster_get_num_cores() gets the number of cores in the
+	 * underlying k1b processor.
 	 *
-	 * @returns The the number of cores in the underlying cluster.
+	 * @returns The the number of cores in the underlying processor.
 	 */
-	static inline int riscv32_smp_cluster_get_num_cores(void)
+	static inline int k1b_cluster_get_num_cores(void)
 	{
-		return (RISCV32_SMP_NUM_CORES);
+		return (K1B_CLUSTER_NUM_CORES);
 	}
-
-#endif /* _ASM_FILE_ */
 
 /**@}*/
 
@@ -70,7 +80,7 @@
  *============================================================================*/
 
 /**
- * @cond riscv32_smp
+ * @cond k1b
  */
 
 	/**
@@ -83,25 +93,21 @@
 	/**
 	 * @brief Number of cores in a cluster.
 	 */
-	#define CORES_NUM RISCV32_SMP_NUM_CORES
+	#define CORES_NUM K1B_CLUSTER_NUM_CORES
 
 	/**
 	 * @brief ID of the master core.
 	 */
-	#define COREID_MASTER RISCV32_SMP_COREID_MASTER
-
-#ifndef _ASM_FILE_
+	#define COREID_MASTER K1B_CLUSTER_COREID_MASTER
 
 	/**
-	 * @see riscv32_smp_cluster_get_num_cores()
+	 * @see k1b_cluster_get_num_cores().
 	 */
 	static inline int cluster_get_num_cores(void)
 	{
-		return (riscv32_smp_cluster_get_num_cores());
+		return (k1b_cluster_get_num_cores());
 	}
-
-#endif /* _ASM_FILE_ */
 
 /**@endcond*/
 
-#endif /* ARCH_CLUSTER_RISCV32_CORES_H_ */
+#endif /* ARCH_CLUSTER_K1B_CLUSTER_CORES_H_ */
