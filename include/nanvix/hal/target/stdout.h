@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 
-#ifndef HAL_TARGET_STDOUT_H_
-#define HAL_TARGET_STDOUT_H_
+#ifndef NANVIX_HAL_TARGET_STDOUT_H_
+#define NANVIX_HAL_TARGET_STDOUT_H_
 
 	/* Target Interface Implementation */
 	#include <nanvix/hal/target/_target.h>
@@ -98,5 +98,5 @@
 
 /**@}*/
 
-#endif /* HAL_TARGET_STDOUT_H_ */
+#endif /* NANVIX_HAL_TARGET_STDOUT_H_ */
 
