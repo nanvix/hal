@@ -51,8 +51,8 @@ export CFAGS  += -march=rv32imac -mabi=ilp32
 export CFLAGS += -mcmodel=medany
 
 # Linker Options
-export LDFLAGS  = -march=rv32imac -mabi=ilp32 -mcmodel=medany
-export LDFLAGS  = -nostdlib -nostdinc -Wl,--nmagic -Wl,--gc-sections
+export LDFLAGS   = -march=rv32imac -mabi=ilp32 -mcmodel=medany
+export LDFLAGS  += -nostdlib -nostdinc -Wl,--nmagic -Wl,--gc-sections
 
 #===============================================================================
 # Libraries and Binaries
