@@ -205,11 +205,6 @@
 #ifndef _ASM_FILE_
 
 	/**
-	 * @brief Frame number.
-	 */
-	typedef uint32_t frame_t;
-
-	/**
 	 * @brief Page directory entry.
 	 */
 	struct pde
