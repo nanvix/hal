@@ -36,6 +36,9 @@ ASM_SRC = $(wildcard arch/core/$(CORE)/*.S)       \
 # C Source Files
 C_SRC += $(wildcard stdout/16550a.c)
 
+# Filter C Source List
+C_SRC := $(filter-out klib/math.c, $(C_SRC))
+
 # Object Files
 OBJ = $(ASM_SRC:.S=.o) \
 	  $(C_SRC:.c=.o)
