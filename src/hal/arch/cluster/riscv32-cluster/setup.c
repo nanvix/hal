@@ -22,17 +22,13 @@
  * SOFTWARE.
  */
 
-/* Must come first. */
-#define __NEED_IVT
-
-#include <arch/core/rv32i/ivt.h>
+#include <arch/cluster/riscv32-cluster/memory.h>
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
 
 /* Import definitions. */
 EXTERN NORETURN void kmain(int, const char *[]);
 EXTERN void rv32i_do_strap(void);
-EXTERN void riscv32_mmu_setup(void);
 
 /*============================================================================*
  * rv32i_core_setup()                                                         *
@@ -50,7 +46,7 @@ PUBLIC void rv32i_core_setup(void)
 
 	rv32i_ivt_setup(&rv32i_do_strap);
 
-	riscv32_mmu_setup();
+	riscv32_cluster_mem_setup();
 }
 
 /*============================================================================*
