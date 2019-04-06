@@ -23,9 +23,9 @@
  */
 
 #include <arch/core/rv32i/clock.h>
-#include <arch/core/rv32i/int.h>
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
+#include <stdint.h>
 
 /**
  * @brief Was the clock device initialized?
@@ -35,20 +35,39 @@ PRIVATE int initialized = FALSE;
 /**
  * @brief Clock delta
  */
-PRIVATE unsigned clock_delta = 0;
+PRIVATE uint64_t clock_delta = 0;
 
 /**
- * @brief Clock jitter.
+ * @brief Clock delay.
  */
-PRIVATE unsigned clock_delay = 0;
+PRIVATE uint64_t clock_delay = 0;
+
+/**
+ * @brief Calibrates the clock.
+ *
+ * @todo TODO provide a long description for this function.
+ *
+ * @author Pedro Henrique Penna
+ */
+PRIVATE uint64_t rv32i_clock_calibrate(void)
+{
+	uint64_t t0, t1;
+
+	t0 = rv32i_mtime_read();
+	t1 = rv32i_mtime_read();
+
+	return (t1 - t0);
+}
 
 /**
  * The rv32i_clock_reset() function resets the clock device in the
  * underlying rv32i core.
+ *
+ * @author Pedro Henrique Penna
  */
 PUBLIC void rv32i_clock_reset(void)
 {
-	rv32i_dword_t ctime;
+	uint64_t ctime;
 
 	/* Get current time. */
 	ctime = rv32i_mtime_read();
@@ -60,24 +79,32 @@ PUBLIC void rv32i_clock_reset(void)
 /**
  * The rv32i_clock_init() function initializes the clock device in the
  * underlying rv32i core.
+ *
+ * @author Pedro Henrique Penna
  */
 PUBLIC void rv32i_clock_init(unsigned freq)
 {
-	rv32i_dword_t t0, t1;
+	/* Nothing to do. */
+	if (initialized)
+		return;
 
 	kprintf("[hal] initializing the clock device...");
 
 	/* Initialize clock. */
 	clock_delta = MTIME_TIMEBASE/freq;
-	t0 = rv32i_mtime_read();
-	t1 = rv32i_mtime_read();
-	clock_delay = t1 - t0;
 
-	/* Reset the clock device. */
-	rv32i_clock_reset();
+	/* Initialize clock. */
+	clock_delay = rv32i_clock_calibrate();
+	initialized = TRUE;
 
+	/* Print some info. */
 	kprintf("[hal] clock delay is %d ticks", clock_delay);
 	kprintf("[hal] clock delta is %d ticks", clock_delta);
 
-	initialized = TRUE;
+	/*
+	 * Reset the clock for the first
+	 * time, so that it starts working.
+	 */
+	rv32i_clock_reset();
+
 }

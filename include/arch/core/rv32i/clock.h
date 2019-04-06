@@ -26,8 +26,8 @@
 #define ARCH_CORE_RV32I_CLOCK_H_
 
 /**
- * @addtogroup clock-core-timer Timer
- * @ingroup clock-core
+ * @addtogroup rv32i-clock Timer
+ * @ingroup rv32i
  *
  * @brief Programmable Timer Interface
  */
@@ -75,15 +75,15 @@
 	 *
 	 * @returns The value of the mtime register.
 	 */
-	static inline rv32i_dword_t rv32i_mtime_read(void)
+	static inline uint64_t rv32i_mtime_read(void)
 	{
-		rv32i_word_t lo;
-		rv32i_word_t hi;
+		uint32_t lo;
+		uint32_t hi;
 
 		hi = *(RV32I_WORD_PTR(MTIME_ADDR + RV32I_WORD_SIZE));
 		lo = *(RV32I_WORD_PTR(MTIME_ADDR));
 
-		return (RV32I_MAKE_DWORD(hi, lo));
+		return (((hi & 0xffffffffull) << 32) | (lo & 0xffffffffull));
 	}
 
 	/**
@@ -91,14 +91,15 @@
 	 *
 	 * @returns The value of the mtimecmp register.
 	 */
-	static inline rv32i_dword_t rv32i_mtimecmp_read(void)
+	static inline uint64_t rv32i_mtimecmp_read(void)
 	{
-		rv32i_word_t lo, hi;
+		uint32_t lo;
+		uint32_t hi;
 
 		hi = *(RV32I_WORD_PTR(MTIMECMP_ADDR + RV32I_WORD_SIZE));
 		lo = *(RV32I_WORD_PTR(MTIMECMP_ADDR));
 
-		return (RV32I_MAKE_DWORD(hi, lo));
+		return (((hi & 0xffffffffull) << 32) | (lo & 0xffffffffull));
 	}
 
 	/**
@@ -106,7 +107,7 @@
 	 *
 	 * @param time Value to write.
 	 */
-	static inline void rv32i_mtimecmp_write(rv32i_dword_t time)
+	static inline void rv32i_mtimecmp_write(uint64_t time)
 	{
 		*((rv32i_word_t *)(MTIMECMP_ADDR + RV32I_WORD_SIZE)) = -1;
 		*((rv32i_word_t *)(MTIMECMP_ADDR)) = RV32I_WORD(time & -1);
