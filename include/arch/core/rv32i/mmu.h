@@ -179,6 +179,20 @@
 	EXTERN int rv32i_page_map(struct pte *pgtab, paddr_t paddr, vaddr_t vaddr, int w, int x);
 
 	/**
+	 * @brief Maps a huge page.
+	 *
+	 * @param pgtab Target page directory.
+	 * @param paddr Physical address of the target huge page frame.
+	 * @param vaddr Virtual address of the target huge page.
+	 * @param w     Writable huge page?
+	 * @param x     Executable huge page?
+	 *
+	 * @returns Upon successful completion, zero is returned. Upon
+	 * failure, a negative error code is returned instead.
+	 */
+	EXTERN int rv32i_huge_page_map(struct pte *pgdir, paddr_t paddr, vaddr_t vaddr, int w, int x);
+
+	/**
 	 * @brief Maps a page table.
 	 *
 	 * @param pgdir Target page directory.

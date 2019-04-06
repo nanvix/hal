@@ -55,6 +55,30 @@ PUBLIC int rv32i_page_map(struct pte *pgtab, paddr_t paddr, vaddr_t vaddr, int w
  *
  * @author Pedro Henrique Penna
  */
+PUBLIC int rv32i_huge_page_map(struct pte *pgdir, paddr_t paddr, vaddr_t vaddr, int w, int x)
+{
+	int idx;
+
+	/* Invalid page table. */
+	if (UNLIKELY(pgdir == NULL))
+		return (-EINVAL);
+
+	idx = pde_idx_get(vaddr);
+
+	pgdir[idx].valid = 1;
+	pgdir[idx].readable = 1;
+	pgdir[idx].writable = (w) ? 1 : 0;
+	pgdir[idx].executable = (x) ? 1 : 0;
+	pgdir[idx].frame = RV32I_FRAME(paddr >> RV32I_PAGE_SHIFT);
+
+	return (0);
+}
+
+/**
+ * @todo TODO provide a detailed description for this function.
+ *
+ * @author Pedro Henrique Penna
+ */
 PUBLIC int rv32i_pgtab_map(struct pde *pgdir, paddr_t paddr, vaddr_t vaddr)
 {
 	int idx;
