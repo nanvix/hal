@@ -69,7 +69,9 @@ PUBLIC void kmain(int argc, const char *argv[])
 	test_trap();
 	test_tlb();
 	test_mmu();
+#if (CLUSTER_IS_MULTICORE)
 	test_core();
+#endif
 	test_upcall();
 
 #endif
