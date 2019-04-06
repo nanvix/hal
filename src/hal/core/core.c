@@ -169,6 +169,10 @@ PUBLIC void core_wakeup(int coreid)
  */
 PUBLIC int core_start(int coreid, void (*start)(void))
 {
+	/* No one core should start itself. */
+	if (coreid == core_get_id())
+		return (-EINVAL);
+
 again:
 
 	spinlock_lock(&cores[coreid].lock);
