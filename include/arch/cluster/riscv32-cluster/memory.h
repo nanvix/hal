@@ -36,69 +36,68 @@
  */
 /**@{*/
 
+	/* Must come first. */
+	#define __NEED_CLUSTER_MEMMAP
+
 #ifndef _ASM_FILE
 
 	#include <nanvix/const.h>
 
 #endif /* _ASM_FILE_ */
 
-	/**
-	 * @brief DRAM size (in bytes).
-	 */
-	#define RISCV32_CLUSTER_DRAM_SIZE (128*MB)
-
-	/**
-	 * @brief Base DRAM address.
-	 */
-	#define RISCV32_DRAM_BASE 0x80000000
-
-	/**
-	 * @brief End DRAM address.
-	 */
-	#define RISCV32_DRAM_END (RISCV32_DRAM_BASE + RISCV32_CLUSTER_DRAM_SIZE)
-
-	/**
-	 * @brief Memory size (in bytes).
-	 */
-	#define RISCV32_CLUSTER_MEM_SIZE (RISCV32_CLUSTER_DRAM_SIZE)
-
-	/**
-	 * @brief Kernel memory size (in bytes).
-	 */
-	#define RISCV32_CLUSTER_KMEM_SIZE RV32I_PGTAB_SIZE
-
-	/**
-	 * @brief Kernel page pool size (in bytes).
-	 */
-	#define RISCV32_CLUSTER_KPOOL_SIZE RV32I_PGTAB_SIZE
+	#include <arch/cluster/riscv32-cluster/memmap.h>
 
 	/**
 	 * @name Physical Memory Layout
 	 */
 	/**@{*/
-	#define RISCV32_CLUSTER_PIC_PHYS         0x02000000                                             /**< PIC                  */
-	#define RISCV32_CLUSTER_UART_PHYS        0x10000000                                             /**< UART                 */
-	#define RISCV32_CLUSTER_KERNEL_BASE_PHYS RISCV32_DRAM_BASE                                      /**< Kernel Code and Data */
-	#define RISCV32_CLUSTER_KERNEL_END_PHYS  (RISCV32_CLUSTER_KERNEL_BASE_PHYS + RISCV32_CLUSTER_KMEM_SIZE) /**< Kernel End           */
-	#define RISCV32_CLUSTER_KPOOL_BASE_PHYS  0x80400000                                             /**< Kernel Page Pool     */
-	#define RISCV32_CLUSTER_KPOOL_END_PHYS   (RISCV32_CLUSTER_KPOOL_BASE_PHYS + RISCV32_CLUSTER_KPOOL_SIZE) /**< Kernel Pool End      */
-	#define RISCV32_CLUSTER_USER_BASE_PHYS   0x80800000                                             /**< User Base            */
-	#define RISCV32_CLUSTER_USER_END_PHYS    RISCV32_DRAM_END                                       /**< User End             */
+	#define RISCV32_CLUSTER_KERNEL_BASE_PHYS RISCV32_CLUSTER_DRAM_BASE_PHYS                        /**< Kernel Code and Data */
+	#define RISCV32_CLUSTER_KERNEL_END_PHYS  (RISCV32_CLUSTER_KERNEL_BASE_PHYS + RV32I_PGTAB_SIZE) /**< Kernel End           */
+	#define RISCV32_CLUSTER_KPOOL_BASE_PHYS  (RISCV32_CLUSTER_KERNEL_END_PHYS + RV32I_PGTAB_SIZE)  /**< Kernel Page Pool     */
+	#define RISCV32_CLUSTER_KPOOL_END_PHYS   (RISCV32_CLUSTER_KPOOL_BASE_PHYS + RV32I_PGTAB_SIZE)  /**< Kernel Pool End      */
+	#define RISCV32_CLUSTER_USER_BASE_PHYS   RISCV32_CLUSTER_KPOOL_END_PHYS                        /**< User Base            */
+	#define RISCV32_CLUSTER_USER_END_PHYS    RISCV32_CLUSTER_DRAM_END_PHYS                         /**< User End             */
 	/**@}*/
 
 	/**
 	 * @name Virtual Memory Layout
 	 */
 	/**@{*/
-	#define RISCV32_CLUSTER_PIC_VIRT         0x02000000                                             /**< PIC                  */
-	#define RISCV32_CLUSTER_UART_VIRT        0x10000000                                             /**< UART                 */
-	#define RISCV32_CLUSTER_KERNEL_BASE_VIRT 0x80000000                                             /**< Kernel Code and Data */
-	#define RISCV32_CLUSTER_KERNEL_END_VIRT  (RISCV32_CLUSTER_KERNEL_BASE_VIRT + RISCV32_CLUSTER_KMEM_SIZE) /**< Kernel End           */
-	#define RISCV32_CLUSTER_KPOOL_BASE_VIRT  0x80400000                                             /**< Kernel Page Pool     */
-	#define RISCV32_CLUSTER_KPOOL_END_VIRT   (RISCV32_CLUSTER_KPOOL_BASE_VIRT + RISCV32_CLUSTER_KPOOL_SIZE) /**< Kernel Pool End      */
-	#define RISCV32_CLUSTER_USER_BASE_VIRT   0x90000000                                             /**< User Base            */
-	#define RISCV32_CLUSTER_USER_END_VIRT    0xf0000000                                             /**< User End             */
+	#define RISCV32_CLUSTER_PIC_BASE_VIRT    RISCV32_CLUSTER_PIC_BASE_PHYS    /**< PIC Base             */
+	#define RISCV32_CLUSTER_PIC_END_VIRT     RISCV32_CLUSTER_PIC_END_PHYS     /**< PIC End              */
+	#define RISCV32_CLUSTER_UART_BASE_VIRT   RISCV32_CLUSTER_UART_BASE_PHYS   /**< UART Base            */
+	#define RISCV32_CLUSTER_UART_END_VIRT    RISCV32_CLUSTER_UART_END_PHYS    /**< UART End             */
+	#define RISCV32_CLUSTER_KERNEL_BASE_VIRT RISCV32_CLUSTER_KERNEL_BASE_PHYS /**< Kernel Code and Data */
+	#define RISCV32_CLUSTER_KERNEL_END_VIRT  RISCV32_CLUSTER_KERNEL_END_PHYS  /**< Kernel End           */
+	#define RISCV32_CLUSTER_KPOOL_BASE_VIRT  RISCV32_CLUSTER_KPOOL_BASE_PHYS  /**< Kernel Page Pool     */
+	#define RISCV32_CLUSTER_KPOOL_END_VIRT   RISCV32_CLUSTER_KPOOL_END_PHYS   /**< Kernel Pool End      */
+	#define RISCV32_CLUSTER_USER_BASE_VIRT   0x90000000                       /**< User Base            */
+	#define RISCV32_CLUSTER_USER_END_VIRT    0xf0000000                       /**< User End             */
 	/**@}*/
+
+	/**
+	 * @brief Memory size (in bytes).
+	 */
+	#define RISCV32_CLUSTER_MEM_SIZE \
+		RISCV32_CLUSTER_DRAM_SIZE
+
+	/**
+	 * @brief Kernel memory size (in bytes).
+	 */
+	#define RISCV32_CLUSTER_KMEM_SIZE \
+		(RISCV32_CLUSTER_KERNEL_END_VIRT - RISCV32_CLUSTER_KERNEL_BASE_VIRT)
+
+	/**
+	 * @brief Kernel page pool size (in bytes).
+	 */
+	#define RISCV32_CLUSTER_KPOOL_SIZE \
+		(RISCV32_CLUSTER_KPOOL_END_VIRT - RISCV32_CLUSTER_KPOOL_BASE_VIRT)
+
+	/**
+	 * @brief User memory size (in bytes).
+	 */
+	#define RISCV32_CLUSTER_UMEM_SIZE \
+		(RISCV32_CLUSTER_USER_END_VIRT - RISCV32_CLUSTER_USER_BASE_VIRT)
 
 #ifndef _ASM_FILE
 
@@ -129,48 +128,21 @@
  */
 
 	/**
-	 * @brief Memory size (in bytes).
+	 * @name Exported Constants
 	 */
-	#define _MEMORY_SIZE RISCV32_CLUSTER_MEM_SIZE
-
-	/**
-	 * @brief Kernel stack size (in bytes).
-	 */
-	#define _KSTACK_SIZE RISCV32_CLUSTER_PAGE_SIZE
-
-	/**
-	 * @brief Kernel memory size (in bytes).
-	 */
-	#define _KMEM_SIZE RISCV32_CLUSTER_KMEM_SIZE
-
-	/**
-	 * @brief Kernel page pool size (in bytes).
-	 */
-	#define _KPOOL_SIZE RISCV32_CLUSTER_KPOOL_SIZE
-
-	/**
-	 * @brief User memory size (in bytes).
-	 */
-	#define _UMEM_SIZE (RISCV32_CLUSTER_USER_END_PHYS - RISCV32_CLUSTER_USER_BASE_PHYS)
-
-	/**
-	 * @name Virtual Memory Layout
-	 */
-	/**@{*/
-	#define _UBASE_VIRT  RISCV32_CLUSTER_UBASE_VIRT  /**< User Base        */
-	#define _USTACK_ADDR RISCV32_CLUSTER_USTACK_ADDR /**< User Stack       */
-	#define _KBASE_VIRT  RISCV32_CLUSTER_KBASE_VIRT  /**< Kernel Base      */
-	#define _KPOOL_VIRT  RISCV32_CLUSTER_KPOOL_VIRT  /**< Kernel Page Pool */
-	/**@}*/
-
-	/**
-	 * @name Physical Memory Layout
-	 */
-	/**@{*/
-	#define _KBASE_PHYS RISCV32_CLUSTER_KBASE_PHYS /**< Kernel Base      */
-	#define _KPOOL_PHYS RISCV32_CLUSTER_KPOOL_PHYS /**< Kernel Page Pool */
-	#define _UBASE_PHYS RISCV32_CLUSTER_UBASE_PHYS /**< User Base        */
-	#define _UART_ADDR  RISCV32_CLUSTER_UART_PHYS  /**< UART Device      */
+	#define MEMORY_SIZE  RISCV32_CLUSTER_MEM_SIZE          /**< @see RISCV32_CLUSTER_MEM_SIZE         */
+	#define KMEM_SIZE    RISCV32_CLUSTER_KMEM_SIZE         /**< @see RISCV32_CLUSTER_KMEM_SIZE        */
+	#define UMEM_SIZE    RISCV32_CLUSTER_UMEM_SIZE         /**< @see RISCV32_CLUSTER_UMEM_SIZE        */
+	#define KSTACK_SIZE  RISCV32_CLUSTER_KSTACK_SIZE       /**< @see RISCV32_CLUSTER_KSTACK_SIZE      */
+	#define KPOOL_SIZE   RISCV32_CLUSTER_KPOOL_SIZE        /**< @see RISCV32_CLUSTER_KPOOL_SIZE       */
+	#define KBASE_PHYS   RISCV32_CLUSTER_KERNEL_BASE_PHYS  /**< @see RISCV32_CLUSTER_KERNEL_BASE_PHYS */
+	#define KPOOL_PHYS   RISCV32_CLUSTER_KPOOL_BASE_PHYS   /**< @see RISCV32_CLUSTER_KPOOL_BASE_PHYS  */
+	#define UBASE_PHYS   RISCV32_CLUSTER_USER_BASE_PHYS    /**< @see RISCV32_CLUSTER_USER_BASE_PHYS   */
+	#define USTACK_VIRT  RISCV32_CLUSTER_USTACK_BASE_VIRT  /**< @see RISCV32_CLUSTER_USTACK_BASE_VIRT */
+	#define UBASE_VIRT   RISCV32_CLUSTER_USER_BASE_VIRT    /**< @see RISCV32_CLUSTER_USER_BASE_VIRT   */
+	#define KBASE_VIRT   RISCV32_CLUSTER_KERNEL_BASE_VIRT  /**< @see RISCV32_CLUSTER_KERNEL_BASE_VIRT */
+	#define KPOOL_VIRT   RISCV32_CLUSTER_KPOOL_BASE_VIRT   /**< @see RISCV32_CLUSTER_KPOOL_BASE_VIRT  */
+	#define _UART_ADDR  RISCV32_CLUSTER_UART_PHYS          /**< @see UART Device                      */
 	/**@}*/
 
 /**@endcond*/

@@ -110,10 +110,10 @@ PUBLIC void riscv32_mmu_setup(void)
 			RISCV32_CLUSTER_USER_END_VIRT
 		);
 		kprintf("[hal] memsize=%d MB kmem=%d KB kpool=%d KB umem=%d KB",
-			_MEMORY_SIZE/MB,
-			_KMEM_SIZE/KB,
-			_KPOOL_SIZE/KB,
-			_UMEM_SIZE/KB
+			MEMORY_SIZE/MB,
+			KMEM_SIZE/KB,
+			KPOOL_SIZE/KB,
+			UMEM_SIZE/KB
 		);
 
 		/* Check for memory layout. */
@@ -125,8 +125,8 @@ PUBLIC void riscv32_mmu_setup(void)
 
 		pde_idx_kernel = pde_idx_get(RISCV32_CLUSTER_KERNEL_BASE_VIRT);
 		pde_idx_kpool = pde_idx_get(RISCV32_CLUSTER_KPOOL_BASE_VIRT);
-		pde_idx_uart = pde_idx_get(RISCV32_CLUSTER_UART_VIRT);
-		pde_idx_pic = pde_idx_get(RISCV32_CLUSTER_PIC_VIRT);
+		pde_idx_uart = pde_idx_get(RISCV32_CLUSTER_UART_BASE_VIRT);
+		pde_idx_pic = pde_idx_get(RISCV32_CLUSTER_PIC_BASE_VIRT);
 
 		/* Map kernel code and data. */
 		rv32i_root_pgdir[pde_idx_kernel].valid = 1;
@@ -150,7 +150,7 @@ PUBLIC void riscv32_mmu_setup(void)
 		rv32i_root_pgdir[pde_idx_pic].writable = 1;
 		rv32i_root_pgdir[pde_idx_pic].executable = 0;
 		rv32i_root_pgdir[pde_idx_pic].frame =
-			RV32I_FRAME(RISCV32_CLUSTER_PIC_VIRT >> RV32I_PAGE_SHIFT);
+			RV32I_FRAME(RISCV32_CLUSTER_PIC_BASE_VIRT >> RV32I_PAGE_SHIFT);
 
 		/* Map UART. */
 		rv32i_root_pgdir[pde_idx_uart].valid = 1;
@@ -158,7 +158,7 @@ PUBLIC void riscv32_mmu_setup(void)
 		rv32i_root_pgdir[pde_idx_uart].writable = 1;
 		rv32i_root_pgdir[pde_idx_uart].executable = 0;
 		rv32i_root_pgdir[pde_idx_uart].frame =
-			RV32I_FRAME(RISCV32_CLUSTER_UART_VIRT >> RV32I_PAGE_SHIFT);
+			RV32I_FRAME(RISCV32_CLUSTER_UART_BASE_VIRT >> RV32I_PAGE_SHIFT);
 
 		rv32i_tlb_load(RV32I_PADDR(rv32i_root_pgdir));
 	}
