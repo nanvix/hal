@@ -548,11 +548,38 @@ PRIVATE void test_core_suspend_resume_slave(void)
 }
 
 /*============================================================================*
+ * Fault Injection Tests                                                      *
+ *============================================================================*/
+
+/*----------------------------------------------------------------------------*
+ * Start Instruction Execution in the Master Core                             *
+ *----------------------------------------------------------------------------*/
+
+/**
+ * Fault Injection Tests: Dummy function, does nothing.
+ */
+PRIVATE void test_core_start_master_dummy(void)
+{
+	noop();
+}
+
+/**
+ * @brief Fault Injection Tests: Tries to start the master core again.
+ */
+PRIVATE void test_core_start_master(void)
+{
+	KASSERT(core_start(
+		COREID_MASTER,
+		test_core_start_master_dummy) == -EINVAL
+	);
+}
+
+/*============================================================================*
  * Test Driver                                                                *
  *============================================================================*/
 
 /**
- * @brief Unit tests.
+ * @brief API Tests.
  */
 PRIVATE struct test core_tests_api[] = {
 	{ test_core_get_id,                "Get Core ID"                    },
@@ -564,6 +591,14 @@ PRIVATE struct test core_tests_api[] = {
 	{ test_core_suspend_resume_slave,  "Suspend and Resume from Slave"  },
 #endif
 	{ NULL,                            NULL                             },
+};
+
+/**
+ * @brief Fault Injection Tests.
+ */
+PRIVATE struct test fault_tests_api[] = {
+	{ test_core_start_master,          "Start Execution in a Master Core" },
+	{ NULL,                            NULL                               },
 };
 
 /**
@@ -579,5 +614,12 @@ PUBLIC void test_core(void)
 	{
 		core_tests_api[i].test_fn();
 		kprintf("[test][api][core] %s [passed]", core_tests_api[i].name);
+	}
+
+	/* Fault Tests */
+	for (int i = 0; fault_tests_api[i].test_fn != NULL; i++)
+	{
+		fault_tests_api[i].test_fn();
+		kprintf("[test][fault][core] %s [passed]", fault_tests_api[i].name);
 	}
 }
