@@ -36,14 +36,12 @@
 	/* Must come first. */
 	#define __NEED_IVT
 	#define __NEED_CONTEXT
-	#define __NEED_CORE_PIC
 	#define __NEED_CORE_REGS
 	#define __NEED_CORE_TYPES
 
 	#include <arch/core/rv32i/context.h>
 	#include <arch/core/rv32i/ivt.h>
 	#include <arch/core/rv32i/mcall.h>
-	#include <arch/core/rv32i/pic.h>
 	#include <arch/core/rv32i/regs.h>
 	#include <arch/core/rv32i/types.h>
 	#include <errno.h>
