@@ -25,7 +25,7 @@
 #ifndef CLUSTER_RISCV32_CLUSTER_H_
 #define CLUSTER_RISCV32_CLUSTER_H_
 
-	#ifndef __NEED_RISCV32_CLUSTER
+	#ifndef __NEED_CLUSTER_RISCV32
 		#error "bad cluster configuration?"
 	#endif
 
