@@ -594,6 +594,22 @@ PRIVATE void test_core_bad_execution(void)
 	KASSERT(core_start(i, NULL) == -EINVAL);
 }
 
+/*----------------------------------------------------------------------------*
+ * Start a Invalid Execution Flow                                             *
+ *----------------------------------------------------------------------------*/
+
+/**
+ * @brief Fault Injection Tests: Starts an invalid execution flow, i.e: a valid
+ * function pointer in a invalid core.
+ */
+PRIVATE void test_core_invalid_execution(void)
+{
+	KASSERT(
+		core_start(CORES_NUM + 1, test_core_start_master_dummy)
+		== -EINVAL
+	);
+}
+
 /*============================================================================*
  * Test Driver                                                                *
  *============================================================================*/
@@ -619,6 +635,7 @@ PRIVATE struct test core_tests_api[] = {
 PRIVATE struct test fault_tests_api[] = {
 	{ test_core_start_master,          "Start Execution in a Master Core" },
 	{ test_core_bad_execution,         "Start a Bad Execution Flow"       },
+	{ test_core_invalid_execution,     "Starts an Invalid Execution Flow" },
 	{ NULL,                            NULL                               },
 };
 
