@@ -89,7 +89,7 @@ PUBLIC void* mmu_page_walk(paddr_t paddr)
 			continue;
 
 		pgtab = (struct pte *)(pde_frame_get(pde) << PAGE_SHIFT);
-		
+
 		for (vaddr_pgtab = 0; vaddr_pgtab < PGTAB_ADDR_END;
 			vaddr_pgtab += PAGE_SIZE)
 		{

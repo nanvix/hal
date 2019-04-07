@@ -32,12 +32,9 @@
 
 #include <arch/core/rv32i/asm.h>
 #include <arch/core/rv32i/context.h>
+#include <arch/core/rv32i/mmu.h>
 #include <arch/core/rv32i/types.h>
 #include <arch/core/rv32i/regs.h>
-
-#define RV32I_HARTS_NUM    4
-#define RV32I_STACK_SIZE   4096
-#define RV32I_STACK_SHIFT  10
 
 /* Exported symbols. */
 .global _do_start
@@ -66,10 +63,10 @@ _do_start:
     csrw mtvec, t0
 
 	/* Setup stack. */
-	csrr t0, mhartid
-    slli t0, t0, RV32I_STACK_SHIFT
-    la   sp, kstacks + RV32I_STACK_SIZE
-    add  sp, sp, t0
+	csrr  t0, mhartid
+	slli  t0, t0, RV32I_PAGE_SHIFT
+	la    sp, kstacks + RV32I_PAGE_SIZE
+	add   sp, sp, t0
 
     /* Halt slave harts. */
 	csrr t0, mhartid
@@ -214,4 +211,4 @@ mtrap_table:
 
 .align RV32I_WORD_SIZE
 kstacks:
-	.skip RV32I_STACK_SIZE * RV32I_HARTS_NUM
+	.skip RV32I_PAGE_SIZE
