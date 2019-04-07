@@ -43,6 +43,8 @@
 	 */
 	#define TLB_HARDWARE
 
+#ifndef _ASM_FILE_
+
 	/**
 	 * @brief Flushes changes in the TLB.
 	 *
@@ -79,6 +81,8 @@
 		return (0);
 	}
 
+#endif /* _ASM_FILE_ */
+
 /*============================================================================*
  * Exported Interface                                                         *
  *============================================================================*/
@@ -90,6 +94,8 @@
 	#define __tlb_flush_fn /**< tlb_flush() */
 	/**@}*/
 
+#ifndef _ASM_FILE_
+
 	/**
 	 * @see rv32i_tlb_flush().
 	 */
@@ -97,6 +103,8 @@
 	{
 		return (rv32i_tlb_flush());
 	}
+
+#endif /* _ASM_FILE_ */
 
 /**@}*/
 
