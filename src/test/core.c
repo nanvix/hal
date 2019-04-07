@@ -574,6 +574,26 @@ PRIVATE void test_core_start_master(void)
 	);
 }
 
+/*----------------------------------------------------------------------------*
+ * Start a Bad Execution Flow                                                 *
+ *----------------------------------------------------------------------------*/
+
+/**
+ * @brief Fault Injection Tests: Starts a bad execution flow, i.e: an invalid
+ * function pointer.
+ */
+PRIVATE void test_core_bad_execution(void)
+{
+	int i; /* Slave index. */
+
+	/* First slave available. */
+	for (i = 0; i < CORES_NUM; i++)
+		if (i != COREID_MASTER)
+			break;
+
+	KASSERT(core_start(i, NULL) == -EINVAL);
+}
+
 /*============================================================================*
  * Test Driver                                                                *
  *============================================================================*/
@@ -598,6 +618,7 @@ PRIVATE struct test core_tests_api[] = {
  */
 PRIVATE struct test fault_tests_api[] = {
 	{ test_core_start_master,          "Start Execution in a Master Core" },
+	{ test_core_bad_execution,         "Start a Bad Execution Flow"       },
 	{ NULL,                            NULL                               },
 };
 
