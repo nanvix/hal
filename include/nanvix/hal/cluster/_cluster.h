@@ -49,8 +49,8 @@
 
 	#elif (defined(__riscv32_cluster__))
 
-		#undef  __NEED_CLUSTER_RISCV32_CLUSTER
-		#define __NEED_CLUSTER_RISCV32_CLUSTER
+		#undef  __NEED_CLUSTER_RISCV32
+		#define __NEED_CLUSTER_RISCV32
 		#include <arch/cluster/riscv32-cluster.h>
 
 	#else
