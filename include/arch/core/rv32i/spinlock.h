@@ -65,6 +65,7 @@
 	static inline void rv32i_spinlock_init(rv32i_spinlock_t *lock)
 	{
 		*lock = RV32I_SPINLOCK_UNLOCKED;
+		__sync_synchronize();
 	}
 
 	/**
