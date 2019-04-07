@@ -27,6 +27,8 @@ export LDFLAGS  += -L $(LINKERDIR)/ -T link.ld
 C_SRC = $(wildcard main.c)      \
         $(wildcard exception.c) \
         $(wildcard interrupt.c) \
+        $(wildcard mmu.c) \
+        $(wildcard tlb.c) \
         $(wildcard syscalls.c)
 
 # Object Files

@@ -28,6 +28,7 @@ C_SRC = $(wildcard arch/core/$(CORE)/*.c)       \
         $(wildcard arch/cluster/$(CLUSTER)/*.c) \
         $(wildcard klib/*.c)                    \
 		$(wildcard core/interrupt.c)            \
+		$(wildcard core/mmu.c)                  \
         $(wildcard *.c)
 
 ASM_SRC = $(wildcard arch/core/$(CORE)/*.S)       \
