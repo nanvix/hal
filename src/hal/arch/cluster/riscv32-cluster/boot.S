@@ -70,19 +70,18 @@ _do_start:
 
     /* Halt slave harts. */
 	csrr t0, mhartid
-    bnez t0, halt
+    beqz t0, _do_start.master
+	halt
 
 	/* Enter supervisor mode. */
-	la a0, _do_start.supervisor
-	call rv32i_machine_setup
-
-	/* Hopefully, we never get here. */
-	j halt
+	_do_start.master:
+		la a0, _do_start.supervisor
+		call rv32i_machine_setup
+		halt
 
 _do_start.supervisor:
 	j rv32i_master_setup
-
-	j halt
+	halt
 
 /*----------------------------------------------------------------------------*
  * Machine Interrupt Vector Table                                             *
@@ -154,18 +153,6 @@ rv32i_do_mtrap:
 		 * where we came.
 		 */
 		mret
-
-/*----------------------------------------------------------------------------*
- * halt()                                                                     *
- *----------------------------------------------------------------------------*/
-
-/*
- * Halts instruction execution.
- */
-.align 4
-halt:
-    wfi
-    j   halt
 
 /*============================================================================*
  * DATA                                                                       *
