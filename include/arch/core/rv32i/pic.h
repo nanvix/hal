@@ -87,8 +87,6 @@
 		if ((irqnum < 0) || (irqnum >= RV32I_IRQ_NUM))
 			return (-EINVAL);
 
-		rv32i_mcall_csr_set(RV32I_CSR_MIE, RV32I_MIE_MTIE);
-
 		asm volatile (
 			"csrrs %0, sie, %1"
 			: "=r"(sie)
@@ -115,8 +113,6 @@
 		/* Invalid interrupt number. */
 		if ((irqnum < 0) || (irqnum >= RV32I_IRQ_NUM))
 			return (-EINVAL);
-
-		rv32i_mcall_csr_clear(RV32I_CSR_MIE, RV32I_MIE_MTIE);
 
 		asm volatile (
 			"csrrc %0, sie, %1"
