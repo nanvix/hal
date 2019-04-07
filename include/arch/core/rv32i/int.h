@@ -46,6 +46,7 @@
 	#include <arch/core/rv32i/pic.h>
 	#include <arch/core/rv32i/regs.h>
 	#include <arch/core/rv32i/types.h>
+	#include <errno.h>
 
 	/**
 	 * @name Interrupts
@@ -66,6 +67,11 @@
 	/**@}*/
 
 #ifndef _ASM_FILE_
+
+	/**
+	 * Table of Interrupt Requests (IRQs).
+	 */
+	extern const int irqs[RV32I_INT_NUM];
 
 	/**
 	 * @brief Sets a handler for a interrupt.
@@ -114,6 +120,119 @@
 				: "r"
 				(RV32I_SSTATUS_SIE)
 		);
+	}
+
+	/**
+	 * @brief Unmasks an interrupt.
+	 *
+	 * @param irqnum Number of target interrupt request.
+	 *
+	 * @returns Upon successful completion, zero is returned. Upon
+	 * failure, a negative error code is returned instead.
+	 *
+	 * @author Pedro Henrique Penna
+	 */
+	static inline int rv32i_int_unmask(int irqnum)
+	{
+		rv32i_word_t sie;
+
+		/* Invalid interrupt number. */
+		if ((irqnum < 0) || (irqnum >= RV32I_INT_NUM))
+			return (-EINVAL);
+
+		asm volatile (
+			"csrrs %0, sie, %1"
+			: "=r"(sie)
+			: "r"(irqs[irqnum])
+		);
+
+		return (0);
+	}
+
+	/**
+	 * @brief Masks an interrupt.
+	 *
+	 * @param irqnum Number of the target interrupt request.
+	 *
+	 * @returns Upon successful completion, zero is returned. Upon
+	 * failure, a negative error code is returned instead.
+	 *
+	 * @author Pedro Henrique Penna
+	 */
+	static inline int rv32i_int_mask(int irqnum)
+	{
+		rv32i_word_t sie;
+
+		/* Invalid interrupt number. */
+		if ((irqnum < 0) || (irqnum >= RV32I_INT_NUM))
+			return (-EINVAL);
+
+		asm volatile (
+			"csrrc %0, sie, %1"
+			: "=r"(sie)
+			: "r"(irqs[irqnum])
+		);
+
+		return (0);
+	}
+
+	/**
+	 * @brief Acknowledges an interrupt.
+	 *
+	 * @param irqnum Number of the target interrupt request.
+	 *
+	 * @returns Upon successful completion, zero is returned. Upon
+	 * failure, a negative error code is returned instead.
+	 *
+	 * @author Pedro Henrique Penna
+	 */
+	static inline int rv32i_int_ack(int irqnum)
+	{
+		rv32i_word_t sie;
+
+		/* Invalid interrupt number. */
+		if ((irqnum < 0) || (irqnum >= RV32I_INT_NUM))
+			return (-EINVAL);
+
+		asm volatile (
+			"csrrc %0, sip, %1"
+			: "=r"(sie)
+			: "r"(irqs[irqnum])
+		);
+
+		return (0);
+	}
+
+	/**
+	 * @brief Unmasks all interrupts.
+	 *
+	 * the rv32i_int_unmask_all() unmasks all interrupt request lines
+	 * in the underlying rv32i core.
+	 *
+	 * @author Pedro Henrique Penna
+	 *
+	 * @todo FIXME we should do this atomically.
+	 */
+	static inline void rv32i_int_unmask_all(void)
+	{
+		for (int i = 0; i < RV32I_INT_NUM; i++)
+			rv32i_int_unmask(i);
+	}
+
+	/**
+	 * @brief Masks all interrupts.
+	 *
+	 * the rv32i_int_mask_all() masks all interrupts request lines in
+	 * the underlying rv32i core.
+	 *
+	 * @author Pedro Henrique Penna
+	 *
+	 * @todo FIXME we should do this atomically.
+	 */
+	static inline void rv32i_int_mask_all(void)
+	{
+		for (int i = 0; i < RV32I_INT_NUM; i++)
+			rv32i_int_unmask(i);
 	}
 
 #endif
@@ -171,6 +290,22 @@
 	static inline int interrupt_set_handler(int num, void (*handler)(int))
 	{
 		return (rv32i_int_handler_set(num, handler));
+	}
+
+	/**
+	 * @see rv32i_int_mask().
+	 */
+	static inline int interrupt_mask(int irqnum)
+	{
+		return (rv32i_int_mask(irqnum));
+	}
+
+	/**
+	 * @see rv32i_int_unmask().
+	 */
+	static inline int interrupt_unmask(int irqnum)
+	{
+		return (rv32i_int_unmask(irqnum));
 	}
 
 #endif
