@@ -145,10 +145,6 @@ PUBLIC int core_wakeup(int coreid)
 	if ((coreid < 0) || (coreid > CORES_NUM))
 		return (-EINVAL);
 
-	/* Bad Core. */
-	if (cores[coreid].state == CORE_IDLE)
-		return (-EINVAL);
-
 	spinlock_lock(&cores[coreid].lock);
 	dcache_invalidate();
 
