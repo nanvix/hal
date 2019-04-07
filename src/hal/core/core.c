@@ -148,6 +148,13 @@ PUBLIC int core_wakeup(int coreid)
 	spinlock_lock(&cores[coreid].lock);
 	dcache_invalidate();
 
+		/* Bad Core. */
+		if (cores[coreid].state == CORE_IDLE)
+		{
+			spinlock_unlock(&cores[coreid].lock);
+			return (-EINVAL);
+		}
+
 		/* Wakeup target core. */
 		cores[coreid].wakeups++;
 		core_notify(coreid);
