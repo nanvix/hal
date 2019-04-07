@@ -255,15 +255,24 @@ PUBLIC void core_run(void)
  * the underlying core by reseting the kernel stack to its initial
  * location and relaunching the slave_setup() function.
  *
- * @note This function does not return.
+ * @return Upon successful completion, this function shall not return.
+ * Upon failure, a negative error code is returned instead.
  *
  * @see slave_setup()
  *
  * @author Pedro Henrique Penna and Davidson Francis
  */
-PUBLIC void core_reset(void)
+PUBLIC int core_reset(void)
 {
 	int coreid = core_get_id();
+
+	/*
+	 * The Master core is not allowed to reset, thus
+	 * this function will return an error code. If
+	 * invoked by a slave, no value will be returned.
+	 */
+	if (coreid == COREID_MASTER)
+		return (-EINVAL);
 
 	spinlock_lock(&cores[coreid].lock);
 	dcache_invalidate();
@@ -279,6 +288,10 @@ PUBLIC void core_reset(void)
 		 * be released when resetting
 		 * is completed, in core_idle().
 		 */
+
+	/* Never gets here. */
+	UNREACHABLE();
+	return (0);
 }
 
 /*============================================================================*

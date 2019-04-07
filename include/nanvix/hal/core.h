@@ -159,11 +159,6 @@
 	EXTERN struct coreinfo cores[];
 
 	/**
-	 * @brief Resets the state of the underlying core.
-	 */
-	EXTERN void core_reset(void);
-
-	/**
 	 * @brief Clears the current IPIs pending of the underlying core.
 	 *
 	 * @author Davidson Francis
@@ -197,7 +192,7 @@
 	/**
 	 * @brief Reset the underlying core.
 	 */
-	EXTERN void core_reset(void);
+	EXTERN int core_reset(void);
 
 	/**
 	 * @brief Resumes instruction execution in the underlying core.
