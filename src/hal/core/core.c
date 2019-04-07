@@ -169,8 +169,12 @@ PUBLIC void core_wakeup(int coreid)
  */
 PUBLIC int core_start(int coreid, void (*start)(void))
 {
-	/* No one core should start itself. */
+	/* Invalid core. */
 	if (coreid == core_get_id())
+		return (-EINVAL);
+
+	/* Bad start routine. */
+	if (start == NULL)
 		return (-EINVAL);
 
 again:
