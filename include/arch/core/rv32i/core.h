@@ -43,20 +43,21 @@
 	#include <nanvix/const.h>
 
 	/**
-	 * @brief Current privilege level.
+	 * @brief Resets the underlying core.
 	 */
-	EXTERN int rv32i_curr_prv;
+	EXTERN NORETURN void _rv32i_core_reset(void);
+
+	/**
+	 * @brief Initializes the underlying core.
+	 */
+	EXTERN void rv32i_core_setup(void);
 
 	/**
 	 * @see Gets the ID of the underlying core.
 	 */
 	static inline int rv32i_core_get_id(void)
 	{
-		return (
-			(rv32i_curr_prv == RV32I_PRV_M) ?
-				rv32i_mhartid_read() :
-				rv32i_mcall_csr_read(RV32I_CSR_MHARTID)
-		);
+		return (rv32i_mcall_csr_read(RV32I_CSR_MHARTID));
 	}
 
 #endif /* _ASM_FILE_ */

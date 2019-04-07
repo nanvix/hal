@@ -104,12 +104,6 @@ rv32i_do_mtrap:
 	csrw mscratch, sp
 
 	/*
-	 * Raise privilege level
-	 * to machine mode.
-	 */
-	call rv32i_prv_raise
-
-	/*
 	 * Get reference to
 	 * context structure.
 	 */
@@ -150,12 +144,6 @@ rv32i_do_mtrap:
 
 	/* Return. */
 	rv32i_do_mtrap.out:
-
-		/*
-		 * Drop privilege level
-		 * to previous value.
-		 */
-		call rv32i_prv_drop
 
 		/* Restore all registers. */
 		csrr sp, mscratch

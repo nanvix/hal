@@ -35,40 +35,7 @@
 #include <nanvix/const.h>
 #include <errno.h>
 
-/**
- * Current privilege level.
- */
-PUBLIC int rv32i_curr_prv = RV32I_PRV_M;
 
-/**
- * @brief Raises privilege level.
- *
- * The rv32i_prv_raise() raises the current privilege level to machine
- * mode.
- *
- * @author Pedro Henrique Penna
- */
-PUBLIC void rv32i_prv_raise(void)
-{
-	rv32i_curr_prv = RV32I_PRV_M;
-}
-
-/**
- * @brief Drops privilege level.
- *
- * The rv32i_prv_raise() drops the current privilege level to the
- * previous privilege level, which is stored in the mpp field of the
- * mstatus register.
- *
- * @author Pedro Henrique Penna
- */
-PUBLIC void rv32i_prv_drop(void)
-{
-	rv32i_word_t mstatus;
-
-	mstatus = rv32i_mstatus_read();
-	rv32i_curr_prv = BITS_GET(mstatus, RV32I_MSTATUS_MPP);
-}
 
 /**
  * @todo: FIXME comment this function.
@@ -137,7 +104,6 @@ PRIVATE NORETURN void rv32i_supervisor_enter(rv32i_word_t pc)
 	rv32i_mstatus_write(mstatus);
 
 	/* Set target program counter. */
-	rv32i_prv_drop();
 	rv32i_mepc_write(pc);
 
 	rv32i_mret();
