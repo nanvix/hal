@@ -170,6 +170,10 @@ PUBLIC void core_wakeup(int coreid)
 PUBLIC int core_start(int coreid, void (*start)(void))
 {
 	/* Invalid core. */
+	if ((coreid < 0) || (coreid > CORES_NUM))
+		return (-EINVAL);
+
+	/* Bad core. */
 	if (coreid == core_get_id())
 		return (-EINVAL);
 
