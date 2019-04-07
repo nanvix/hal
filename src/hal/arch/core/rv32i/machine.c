@@ -71,6 +71,42 @@ PUBLIC void rv32i_prv_drop(void)
 }
 
 /**
+ * @todo: FIXME comment this function.
+ *
+ * @author Pedro Henrique Penna
+ */
+PRIVATE void rv32i_dump_all_csr(void)
+{
+	kprintf("[hal]  mstatus=%x      mie=%x     mip=%x",
+		rv32i_mstatus_read(),
+		rv32i_mie_read(),
+		rv32i_mip_read()
+	);
+	kprintf("[hal]  sstatus=%x      sie=%x     sip=%x",
+		rv32i_sstatus_read(),
+		rv32i_sie_read(),
+		rv32i_sip_read()
+	);
+	kprintf("[hal]    mtvec=%x   mcause=%x   mtval=%x",
+	rv32i_mhartid_read(),
+		rv32i_mcause_read(),
+		rv32i_mtval_read()
+	);
+	kprintf("[hal]    stvec=%x   scause=%x   stval=%x",
+		rv32i_stvec_read(),
+		rv32i_scause_read(),
+		rv32i_stval_read()
+	);
+	kprintf("[hal]     mepc=%x",
+		rv32i_mepc_read()
+	);
+	kprintf("[hal]     sepc=%x    satp=%x",
+		rv32i_sepc_read(),
+		rv32i_satp_read()
+	);
+}
+
+/**
  * @brief Issues machine-mode return.
  */
 NORETURN static inline void rv32i_mret(void)
