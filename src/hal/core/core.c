@@ -130,14 +130,21 @@ PUBLIC void core_sleep(void)
  * The core_wakeup() function sends a wakeup signal to the
  * sleeping core whose ID equals to @p coreid.
  *
+ * @return Returns 0 if the wakeup was successful and a negative
+ * number otherwise.
+ *
  * @see core_sleep().
  *
  * @todo Check if the calling core is not the target core.
  *
  * @author Pedro Henrique Penna and Davidson Francis
  */
-PUBLIC void core_wakeup(int coreid)
+PUBLIC int core_wakeup(int coreid)
 {
+	/* Invalid core. */
+	if ((coreid < 0) || (coreid > CORES_NUM))
+		return (-EINVAL);
+
 	spinlock_lock(&cores[coreid].lock);
 	dcache_invalidate();
 
@@ -147,6 +154,7 @@ PUBLIC void core_wakeup(int coreid)
 
 	dcache_invalidate();
 	spinlock_unlock(&cores[coreid].lock);
+	return (0);
 }
 
 /*============================================================================*

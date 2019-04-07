@@ -231,8 +231,11 @@
 	 * @brief Wakes up a core.
 	 *
 	 * @param coreid ID of the target core.
+	 *
+	 * @return Returns 0 if the wakeup was successful and a negative
+	 * number otherwise.
 	 */
-	EXTERN void core_wakeup(int coreid);
+	EXTERN int core_wakeup(int coreid);
 
 /**@}*/
 
