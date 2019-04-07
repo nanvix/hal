@@ -22,37 +22,66 @@
  * SOFTWARE.
  */
 
-#ifndef CLUSTER_RISCV32_CLUSTER_H_
-#define CLUSTER_RISCV32_CLUSTER_H_
-
-	#ifndef __NEED_CLUSTER_RISCV32
-		#error "bad cluster configuration?"
-	#endif
+#ifndef ARCH_CLUSTER_CLUSTER_RISCV32_CLUSTER_CLOCK_H_
+#define ARCH_CLUSTER_CLUSTER_RISCV32_CLUSTER_CLOCK_H_
 
 	/* Cluster Interface Implementation */
 	#include <arch/cluster/riscv32-cluster/_riscv32-cluster.h>
 
 /**
- * @addtogroup riscv-cluster RISC-V 32-Bit Cluster
- * @ingroup clusters
+ * @addtogroup rscv32-cluster-clock Clock
+ * @ingroup riscv32-cluster
  *
- * @brief RISC-V 32-Bit Cluster
+ * @brief 64-bit Timer
  */
 /**@{*/
 
-	#include <arch/cluster/riscv32-cluster/clock.h>
-	#include <arch/cluster/riscv32-cluster/cores.h>
-	#include <arch/cluster/riscv32-cluster/memory.h>
+	/* Must come first. */
+	#define __NEED_CLUSTER_CLINT
+
+	#include <arch/cluster/riscv32-cluster/clint.h>
+	#include <stdint.h>
 
 	/**
-	 * @name Provided Features
+	 * @brief Clock frequency (10 MHz)
 	 */
-	/**@{*/
-	#define CLUSTER_IS_MULTICORE  1 /**< Multicore Cluster */
-	#define CLUSTER_IS_IO         1 /**< I/O Cluster       */
-	#define CLUSTER_IS_COMPUTE    0 /**< Compute Cluster   */
-	/**@}*/
+	#define RISCV32_CLUSTER_TIMEBASE 10000000
 
 /**@}*/
 
-#endif /* CLUSTER_RISCV32_CLUSTER_H_ */
+/*============================================================================*
+ * Exported Interface                                                         *
+ *============================================================================*/
+
+/**
+ * @cond riscv32_smp
+ */
+
+	/**
+	 * @name Exported Functions
+	 */
+	/**@{*/
+	#define __clock_init_fn   /**< clock_init() */
+	/**@}*/
+
+#ifndef _ASM_FILE_
+
+	/**
+	 * @see clock_init().
+	 */
+	static inline void clock_init(unsigned freq)
+	{
+		rv32i_clock_init(
+			freq,
+			RISCV32_CLUSTER_TIMEBASE,
+			(uint64_t *) RISCV32_CLUSTER_CLINT_MTIME_BASE,
+			(uint64_t *) RISCV32_CLUSTER_CLINT_MTIMECMP_BASE
+		);
+	}
+
+#endif
+
+/**@endcond*/
+
+#endif /* ARCH_CLUSTER_CLUSTER_RISCV32_CLUSTER_CLOCK */
+
