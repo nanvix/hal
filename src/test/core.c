@@ -610,6 +610,19 @@ PRIVATE void test_core_invalid_execution(void)
 	);
 }
 
+/*----------------------------------------------------------------------------*
+ * Stop Instruction Execution in the Master Core                              *
+ *----------------------------------------------------------------------------*/
+
+/**
+ * @brief Fault Injection Tests: Tries to stop the execution instruction
+ * in the master core, which should not be allowed.
+ */
+PRIVATE void test_core_stop_execution(void)
+{
+	KASSERT(core_reset() == -EINVAL);
+}
+
 /*============================================================================*
  * Test Driver                                                                *
  *============================================================================*/
@@ -636,6 +649,7 @@ PRIVATE struct test fault_tests_api[] = {
 	{ test_core_start_master,          "Start Execution in a Master Core" },
 	{ test_core_bad_execution,         "Start a Bad Execution Flow"       },
 	{ test_core_invalid_execution,     "Starts an Invalid Execution Flow" },
+	{ test_core_stop_execution,        "Stops the Execution in the Master"},
 	{ NULL,                            NULL                               },
 };
 
