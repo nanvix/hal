@@ -22,9 +22,15 @@
  * SOFTWARE.
  */
 
+#include <nanvix/hal/hal.h>
 #include <arch/stdout/16550a.h>
 #include <nanvix/const.h>
 #include <stdint.h>
+
+/**
+ * @brief lock.
+ */
+PRIVATE spinlock_t lock = SPINLOCK_UNLOCKED;
 
 /**
  * @brief Control register.
@@ -51,6 +57,8 @@ PUBLIC void uart_16550a_write(const char *buf, size_t n)
 	if (!initialized)
 		return;
 
+	spinlock_lock(&lock);
+
 	while (n)
 	{
 		/* Wait until FIFO is empty. */
@@ -63,6 +71,8 @@ PUBLIC void uart_16550a_write(const char *buf, size_t n)
 		n--;
 		counter++;
 	}
+
+	spinlock_unlock(&lock);
 }
 
 /**
