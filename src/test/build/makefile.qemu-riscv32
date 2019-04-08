@@ -29,6 +29,7 @@ C_SRC = $(wildcard main.c)      \
         $(wildcard interrupt.c) \
         $(wildcard mmu.c) \
         $(wildcard tlb.c) \
+        $(wildcard core.c) \
         $(wildcard syscalls.c)
 
 # Object Files

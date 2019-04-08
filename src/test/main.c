@@ -65,12 +65,12 @@ PUBLIC void kmain(int argc, const char *argv[])
 	test_interrupt();
 	test_mmu();
 	test_tlb();
-
-#if !defined(__rv32i__)
-	test_trap();
 #if (CLUSTER_IS_MULTICORE)
 	test_core();
 #endif
+
+#if !defined(__rv32i__)
+	test_trap();
 	test_upcall();
 
 #endif
