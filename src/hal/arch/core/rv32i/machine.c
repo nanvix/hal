@@ -134,8 +134,9 @@ PUBLIC void rv32i_dump_all_csr(void)
 		rv32i_scause_read(),
 		rv32i_stval_read()
 	);
-	kprintf("[hal]     mepc=%x",
-		rv32i_mepc_read()
+	kprintf("[hal]     mepc=%x mhartid=%x",
+		rv32i_mepc_read(),
+		rv32i_mhartid_read()
 	);
 	kprintf("[hal]     sepc=%x    satp=%x",
 		rv32i_sepc_read(),
