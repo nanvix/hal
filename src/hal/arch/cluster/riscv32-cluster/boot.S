@@ -132,8 +132,9 @@ rv32i_do_mtrap:
 			bne   t1, t2, rv32i_do_mtrap.ipi
 			li    t1, RV32I_MIE_MTIE
 			csrc  mie, t1
+			li    t1, RV32I_MIP_MTIP
+			csrc  mip, t1
 			li    t1, RV32I_MIP_STIP
-			csrs  mip, t1
 			csrs  sip, t1
 			j     rv32i_do_mtrap.out
 
