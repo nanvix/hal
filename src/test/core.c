@@ -637,6 +637,27 @@ PRIVATE void test_core_resume_invalid(void)
 	KASSERT(core_wakeup(-1) == -EINVAL);
 }
 
+/*----------------------------------------------------------------------------*
+ * Resume Instruction Execution in a Bad Core                                 *
+ *----------------------------------------------------------------------------*/
+
+/**
+ * @brief Fault Injection Tests: Tries to wakeup a valid core in a bad context,
+ * i.e: a core that does exit but is in IDLE.
+ */
+PRIVATE void test_core_resume_bad(void)
+{
+	/* Resume first slave available. */
+	for (int i = 0; i < CORES_NUM; i++)
+	{
+		if (i != COREID_MASTER)
+		{
+			KASSERT(core_wakeup(i) == -EINVAL);
+			break;
+		}
+	}
+}
+
 /*============================================================================*
  * Test Driver                                                                *
  *============================================================================*/
@@ -665,6 +686,7 @@ PRIVATE struct test fault_tests_api[] = {
 	{ test_core_invalid_execution,     "Starts an Invalid Execution Flow"    },
 	{ test_core_stop_execution,        "Stops the Execution in the Master"   },
 	{ test_core_resume_invalid,        "Resume Execution in an Invalid Core" },
+	{ test_core_resume_bad,            "Resume Execution in a Bad Core"      },
 	{ NULL,                            NULL                                  },
 };
 
