@@ -24,17 +24,10 @@
 
 /* Must come first. */
 #define _ASM_FILE_
-#define __NEED_CONTEXT
-#define __NEED_CORE_REGS
-#define __NEED_CORE_TYPES
 #define __RV32I_MACHINE_CODE
 
-
+#include <arch/cluster/riscv32-cluster/cores.h>
 #include <arch/core/rv32i/asm.h>
-#include <arch/core/rv32i/context.h>
-#include <arch/core/rv32i/mmu.h>
-#include <arch/core/rv32i/types.h>
-#include <arch/core/rv32i/regs.h>
 
 /* Exported symbols. */
 .global _do_start
@@ -69,17 +62,20 @@ _do_start:
     /* Halt slave harts. */
 	csrr t0, mhartid
     beqz t0, _do_start.master
-	halt
 
-	/* Enter supervisor mode. */
-	_do_start.master:
-		la a0, _do_start.supervisor
-		call rv32i_machine_setup
+	/* Slave. */
+	_do_start.slave:
+		la    a0, 1f
+		call  rv32i_machine_slave_setup
+		1: j  riscv32_cluster_slave_setup
 		halt
 
-_do_start.supervisor:
-	j rv32i_master_setup
-	halt
+	/* Master. */
+	_do_start.master:
+		la    a0, 1f
+		call  rv32i_machine_master_setup
+		1: j  riscv32_cluster_master_setup
+		halt
 
 /*----------------------------------------------------------------------------*
  * Machine Interrupt Vector Table                                             *
@@ -183,4 +179,4 @@ mtrap_table:
 
 .align RV32I_WORD_SIZE
 kstacks:
-	.skip RV32I_PAGE_SIZE
+	.skip RV32I_PAGE_SIZE * RISCV32_CLUSTER_NUM_CORES

@@ -349,7 +349,7 @@ PRIVATE void rv32i_machine_delegate_traps(void)
  *
  * @param pc Target program counter.
  */
-PUBLIC NORETURN void rv32i_machine_setup(rv32i_word_t pc)
+PUBLIC NORETURN void rv32i_machine_master_setup(rv32i_word_t pc)
 {
 	rv32i_word_t mie;
 
@@ -372,6 +372,29 @@ PUBLIC NORETURN void rv32i_machine_setup(rv32i_word_t pc)
 	rv32i_mie_write(mie);
 
 	rv32i_machine_delegate_traps();
+
+	rv32i_supervisor_enter(pc);
+}
+
+/**
+ * @brief Initializes machine mode.
+ *
+ * @param pc Target program counter.
+ */
+PUBLIC NORETURN void rv32i_machine_slave_setup(rv32i_word_t pc)
+{
+	rv32i_word_t mie;
+
+	/* Enable machine IRQs. */
+	mie = rv32i_mie_read();
+	mie = BITS_SET(mie, RV32I_MIE_MSIE, 0);
+	mie = BITS_SET(mie, RV32I_MIE_MTIE, 0);
+	mie = BITS_SET(mie, RV32I_MIE_MEIE, 0);
+	rv32i_mie_write(mie);
+
+	rv32i_machine_delegate_traps();
+
+	rv32i_fence_wait();
 
 	rv32i_supervisor_enter(pc);
 }

@@ -55,6 +55,18 @@
 #ifndef _ASM_FILE_
 
 	/**
+	 * @brief Resets the underlying cluster
+	 *
+	 * @param coreid ID of target core.
+	 */
+	EXTERN NORETURN void _riscv32_cluster_core_reset(int coreid);
+
+	/**
+	 * @brief Initializes the underlying cluster.
+	 */
+	EXTERN void riscv32_cluster_setup(void);
+
+	/**
 	 * @brief Gets the number of cores.
 	 *
 	 * The riscv32_cluster_cluster_get_num_cores() gets the number of
@@ -62,7 +74,7 @@
 	 *
 	 * @returns The the number of cores in the underlying cluster.
 	 */
-	static inline int riscv32_cluster_cluster_get_num_cores(void)
+	static inline int riscv32_cluster_get_num_cores(void)
 	{
 		return (RISCV32_CLUSTER_NUM_CORES);
 	}
@@ -101,11 +113,27 @@
 #ifndef _ASM_FILE_
 
 	/**
+	 * @see _rv32i_core_reset().
+	 */
+	static inline void _core_reset(void)
+	{
+		_riscv32_cluster_core_reset(rv32i_core_get_id());
+	}
+
+	/**
 	 * @see riscv32_cluster_cluster_get_num_cores()
 	 */
 	static inline int cluster_get_num_cores(void)
 	{
-		return (riscv32_cluster_cluster_get_num_cores());
+		return (riscv32_cluster_get_num_cores());
+	}
+
+	/**
+	 * @see rv32i_core_setup().
+	 */
+	static inline void core_setup(void)
+	{
+		riscv32_cluster_setup();
 	}
 
 #endif /* _ASM_FILE_ */

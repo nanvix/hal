@@ -43,14 +43,14 @@
 	#include <nanvix/const.h>
 
 	/**
-	 * @brief Resets the underlying core.
-	 */
-	EXTERN NORETURN void _rv32i_core_reset(void);
-
-	/**
 	 * @brief Initializes the underlying core.
 	 */
 	EXTERN void rv32i_core_setup(void);
+
+	/**
+	 * @brief Powers off the underlying core.
+	 */
+	EXTERN NORETURN void rv32i_core_poweroff(void);
 
 	/**
 	 * @see Gets the ID of the underlying core.
@@ -122,6 +122,14 @@
 	static inline int core_get_id(void)
 	{
 		return (rv32i_core_get_id());
+	}
+
+	/**
+	 * @see rv32i_core_poweroff().
+	 */
+	static inline void core_poweroff(void)
+	{
+		rv32i_core_poweroff();
 	}
 
 #endif /* _ASM_FILE_ */

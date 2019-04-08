@@ -22,13 +22,34 @@
  * SOFTWARE.
  */
 
-#include <arch/cluster/riscv32-cluster/memory.h>
+/* Must come first. */
+#define __NEED_IVT
+
+#include <arch/core/rv32i/ivt.h>
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
 
 /* Import definitions. */
-EXTERN NORETURN void kmain(int, const char *[]);
 EXTERN void rv32i_do_strap(void);
+
+/*============================================================================*
+ * rv32i_core_poweroff()                                                      *
+ *============================================================================*/
+
+/**
+ * The rv32i_core_poweroff() function powers off the underlying core.
+ * Afeter powering off a core, instruction execution cannot be
+ * resumed.
+ *
+ * @author Davidson Francis
+ */
+PUBLIC NORETURN void rv32i_core_poweroff(void)
+{
+	while (TRUE)
+		/* noop(). */;
+
+	UNREACHABLE();
+}
 
 /*============================================================================*
  * rv32i_core_setup()                                                         *
@@ -36,38 +57,14 @@ EXTERN void rv32i_do_strap(void);
 
 /**
  * The rv32i_core_setup() function initializes all architectural
- * structures of the underlying core.
+ * structures of the underlying core. It setups the Interrupt Vector
+ * Table (IVT) and the Memory Management Unit (MMU) tables.
  *
  * @author Pedro Henrique Penna
  */
 PUBLIC void rv32i_core_setup(void)
 {
-	kprintf("[hal] booting up master core...");
+	kprintf("[hal] booting up core...");
 
 	rv32i_ivt_setup(&rv32i_do_strap);
-
-	riscv32_cluster_mem_setup();
-}
-
-/*============================================================================*
- * rv32i_master_setup()                                                       *
- *============================================================================*/
-
-/**
- * @brief Initializes the master core.
- *
- * The rv32i_master_setup() function initializes the underlying
- * master core. It setups the stack and then call the kernel
- * main function.
- *
- * @note This function does not return.
- *
- * @author Pedro Henrique Penna
- */
-PUBLIC NORETURN void rv32i_master_setup(void)
-{
-	/* Core setup. */
-	rv32i_core_setup();
-
-	kmain(0, NULL);
 }
