@@ -623,6 +623,20 @@ PRIVATE void test_core_stop_execution(void)
 	KASSERT(core_reset() == -EINVAL);
 }
 
+/*----------------------------------------------------------------------------*
+ * Resume Instruction Execution in an Invalid Core                            *
+ *----------------------------------------------------------------------------*/
+
+/**
+ * @brief Fault Injection Tests: Tries to wakeup an invalid core, i.e: a core
+ * that does not exist.
+ */
+PRIVATE void test_core_resume_invalid(void)
+{
+	KASSERT(core_wakeup(CORES_NUM) == -EINVAL);
+	KASSERT(core_wakeup(-1) == -EINVAL);
+}
+
 /*============================================================================*
  * Test Driver                                                                *
  *============================================================================*/
@@ -646,11 +660,12 @@ PRIVATE struct test core_tests_api[] = {
  * @brief Fault Injection Tests.
  */
 PRIVATE struct test fault_tests_api[] = {
-	{ test_core_start_master,          "Start Execution in a Master Core" },
-	{ test_core_bad_execution,         "Start a Bad Execution Flow"       },
-	{ test_core_invalid_execution,     "Starts an Invalid Execution Flow" },
-	{ test_core_stop_execution,        "Stops the Execution in the Master"},
-	{ NULL,                            NULL                               },
+	{ test_core_start_master,          "Start Execution in a Master Core"    },
+	{ test_core_bad_execution,         "Start a Bad Execution Flow"          },
+	{ test_core_invalid_execution,     "Starts an Invalid Execution Flow"    },
+	{ test_core_stop_execution,        "Stops the Execution in the Master"   },
+	{ test_core_resume_invalid,        "Resume Execution in an Invalid Core" },
+	{ NULL,                            NULL                                  },
 };
 
 /**
