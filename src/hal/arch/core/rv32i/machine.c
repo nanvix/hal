@@ -242,6 +242,13 @@ PUBLIC void rv32i_do_mcall(struct context *ctx)
 			ctx->a0 = 0;
 			break;
 
+		/* Re-Enable IPIs. */
+		case RV32I_MCALL_IPI_ACK:
+			rv32i_csr_clear(mip, RV32I_MIP_MSIP);
+			rv32i_csr_set(mie, RV32I_MIE_MSIE);
+			ctx->a0 = 0;
+		break;
+
 		/* Write mtimecmp register. */
 		case RV32I_MCALL_TIMER_ACK:
 			rv32i_csr_set(mie, RV32I_MIE_MTIE);

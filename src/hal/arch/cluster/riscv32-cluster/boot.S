@@ -127,13 +127,26 @@ rv32i_do_mtrap:
 		and   t1, t0, t1             # t1 = cause
 
 		/* Timer interrupt? */
-		li    t2, RV32I_MCAUSE_MTI
-		bne  t1, t2, rv32i_do_mtrap.out
+		rv32i_do_mtrap.timer:
+			li    t2, RV32I_MCAUSE_MTI
+			bne   t1, t2, rv32i_do_mtrap.ipi
 			li    t1, RV32I_MIE_MTIE
 			csrc  mie, t1
 			li    t1, RV32I_MIP_STIP
 			csrs  mip, t1
 			csrs  sip, t1
+			j     rv32i_do_mtrap.out
+
+		/* IPI */
+		rv32i_do_mtrap.ipi:
+			li    t2, RV32I_MCAUSE_MSI
+			bne   t1, t2, rv32i_do_mtrap.mint.bad
+			call  riscv32_cluster_do_ipi
+			j     rv32i_do_mtrap.out
+
+		/* Unkown Interrupt */
+		rv32i_do_mtrap.mint.bad:
+			call  rv32i_do_mint
 
 	/* Return. */
 	rv32i_do_mtrap.out:

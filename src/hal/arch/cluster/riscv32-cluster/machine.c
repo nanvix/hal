@@ -114,7 +114,7 @@ PUBLIC NORETURN void rv32i_machine_slave_setup(rv32i_word_t pc)
 
 	/* Enable machine IRQs. */
 	mie = rv32i_mie_read();
-	mie = BITS_SET(mie, RV32I_MIE_MSIE, 0);
+	mie = BITS_SET(mie, RV32I_MIE_MSIE, 1);
 	mie = BITS_SET(mie, RV32I_MIE_MTIE, 0);
 	mie = BITS_SET(mie, RV32I_MIE_MEIE, 0);
 	rv32i_mie_write(mie);

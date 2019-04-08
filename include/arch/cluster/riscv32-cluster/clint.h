@@ -38,6 +38,9 @@
 /**@{*/
 
 	#include <arch/cluster/riscv32-cluster/memory.h>
+	#include <arch/cluster/riscv32-cluster/cores.h>
+	#include <nanvix/const.h>
+	#include <errno.h>
 
 	/**
 	 * @brief CLINT base address
@@ -77,6 +80,58 @@
 			(RISCV32_CLUSTER_CLINT_BASE + RISCV32_CLUSTER_CLINT_MTIME_OFFSET)
 
 	/**@}*/
+
+#ifndef _ASM_FILE_
+
+	/**
+	 * @brief Machine Software Interrupt Pending Register (msip).
+	 */
+	EXTERN volatile uint32_t *riscv32_cluster_msip;
+
+	/**
+	 * @brief Sends an IPI.
+	 *
+	 * @param coreid ID of the target core.
+	 *
+	 * @returns Upon successful completion, zero is returned. Upon
+	 * failure, a negative error code is returned instead.
+	 */
+	static inline int riscv32_cluster_ipi_send(int coreid)
+	{
+		/* Invalid core. */
+		if (UNLIKELY((coreid < 0) || (coreid >= RISCV32_CLUSTER_NUM_CORES)))
+			return (-EINVAL);
+
+		/* Raise IPI. */
+		riscv32_cluster_msip[coreid] = 1;
+		rv32i_cache_inval();
+
+		return (0);
+	}
+
+	/**
+	 * @brief Acknowledges an IPI.
+	 *
+	 * @param coreid ID of the target core.
+	 *
+	 * @returns Upon successful completion, zero is returned. Upon
+	 * failure, a negative error code is returned instead.
+	 */
+	static inline int riscv32_cluster_ipi_ack(int coreid)
+	{
+		/* Invalid core. */
+		if (UNLIKELY((coreid < 0) || (coreid >= RISCV32_CLUSTER_NUM_CORES)))
+			return (-EINVAL);
+
+		/* Raise IPI. */
+		riscv32_cluster_msip[coreid] = 0;
+		rv32i_mcall_ipi_ack();
+		rv32i_cache_inval();
+
+		return (0);
+	}
+
+#endif
 
 /**@}*/
 

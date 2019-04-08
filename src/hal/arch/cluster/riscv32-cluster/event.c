@@ -22,6 +22,10 @@
  * SOFTWARE.
  */
 
+/* Must come first. */
+#define __NEED_CLUSTER_CLINT
+
+#include <arch/cluster/riscv32-cluster/clint.h>
 #include <arch/cluster/riscv32-cluster/cores.h>
 #include <nanvix/const.h>
 
@@ -46,6 +50,27 @@ PRIVATE int events[RISCV32_CLUSTER_NUM_CORES] ALIGN(RV32I_CACHE_LINE_SIZE) = {
 	0, /* Slave Core 3 */
 	0, /* Slave Core 4 */
 };
+
+/*============================================================================*
+ * riscv32_cluster_event_send()                                               *
+ *============================================================================*/
+
+/**
+ * @brief Handles IPIs.
+ *
+ * @note This executes in machine mode.
+ */
+PUBLIC void riscv32_cluster_do_ipi(const struct context *ctx)
+{
+	rv32i_word_t mie;
+
+	/* Clear Machine IPI. */
+	mie = rv32i_mie_read();
+	mie = BITS_SET(mie, RV32I_MIE_MSIE, 0);
+	rv32i_mie_write(mie);
+
+	UNUSED(ctx);
+}
 
 /*============================================================================*
  * riscv32_cluster_event_send()                                               *
