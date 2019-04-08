@@ -33,7 +33,7 @@
  */
 /**@{*/
 
-	#ifndef __NEED_IVT
+	#ifndef __NEED_CORE_IVT
 		#error "do not include this file"
 	#endif
 

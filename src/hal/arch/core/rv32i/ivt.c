@@ -23,7 +23,7 @@
  */
 
 /* Must come first. */
-#define __NEED_IVT
+#define __NEED_CORE_IVT
 #define __NEED_CORE_REGS
 #define __NEED_CORE_TYPES
 

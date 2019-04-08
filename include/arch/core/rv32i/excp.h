@@ -34,8 +34,8 @@
 /**@{*/
 
 	/* Must come first. */
-	#define __NEED_IVT
-	#define __NEED_CONTEXT
+	#define __NEED_CORE_IVT
+	#define __NEED_CORE_CONTEXT
 	#define __NEED_MEMORY_TYPES
 
 	#include <arch/core/rv32i/context.h>

@@ -23,7 +23,7 @@
  */
 
 /* Must come first. */
-#define __NEED_IVT
+#define __NEED_CORE_IVT
 
 #include <arch/core/rv32i/ivt.h>
 #include <nanvix/const.h>
