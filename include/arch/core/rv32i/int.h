@@ -121,6 +121,14 @@
 	}
 
 	/**
+	 * @brief Waits for an interrupt.
+	 */
+	static inline void rv32i_int_wait(void)
+	{
+		asm volatile ("wfi");
+	}
+
+	/**
 	 * @brief Unmasks an interrupt.
 	 *
 	 * @param irqnum Number of target interrupt request.
