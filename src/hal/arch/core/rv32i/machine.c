@@ -22,20 +22,51 @@
  * SOFTWARE.
  */
 
-/* Must come first. */
-#define __NEED_CORE_TYPES
-
 #include <arch/cluster/riscv32-cluster/memory.h>
-#include <arch/core/rv32i/core.h>
-#include <arch/core/rv32i/clock.h>
-#include <arch/core/rv32i/excp.h>
-#include <arch/core/rv32i/int.h>
-#include <arch/core/rv32i/types.h>
+#include <arch/cluster/riscv32-cluster/cores.h>
 #include <arch/stdout/16550a.h>
 #include <nanvix/const.h>
 #include <errno.h>
 
+/**
+ * @brief Startup fence.
+ */
+PRIVATE struct
+{
+	int master_alive;
+	rv32i_spinlock_t lock;
+} fence = { FALSE , RV32I_SPINLOCK_UNLOCKED};
 
+/**
+ * @brief Releases the startup fence.
+ */
+PRIVATE void rv32i_fence_release(void)
+{
+	rv32i_spinlock_lock(&fence.lock);
+		fence.master_alive = TRUE;
+	rv32i_spinlock_unlock(&fence.lock);
+}
+
+/**
+ * @brief Waits on the startup fence.
+ */
+PRIVATE void rv32i_fence_wait(void)
+{
+	while (TRUE)
+	{
+		rv32i_spinlock_lock(&fence.lock);
+
+			/* Fence is released. */
+			if (fence.master_alive)
+			{
+				rv32i_spinlock_unlock(&fence.lock);
+				break;
+			}
+
+			noop();
+		rv32i_spinlock_unlock(&fence.lock);
+	}
+}
 
 /**
  * @todo: FIXME comment this function.
@@ -330,6 +361,8 @@ PUBLIC NORETURN void rv32i_machine_setup(rv32i_word_t pc)
 	 * UART to help us debugging.
 	 */
 	uart_16550a_init();
+
+	rv32i_fence_release();
 
 	/* Enable machine IRQs. */
 	mie = rv32i_mie_read();
