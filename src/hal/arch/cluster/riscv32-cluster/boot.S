@@ -62,11 +62,9 @@ _do_start:
     la   t0, rv32i_do_mtrap
     csrw mtvec, t0
 
-	/* Setup stack. */
+	/* Reset stack. */
 	csrr  t0, mhartid
-	slli  t0, t0, RV32I_PAGE_SHIFT
-	la    sp, kstacks + RV32I_PAGE_SIZE
-	add   sp, sp, t0
+	rv32i_core_stack_reset t0
 
     /* Halt slave harts. */
 	csrr t0, mhartid
@@ -149,8 +147,7 @@ rv32i_do_mtrap:
 		rv32i_context_restore
 
 		/*
-		 * Return from
-		 * where we came.
+		 * Return from where we came.
 		 */
 		mret
 
