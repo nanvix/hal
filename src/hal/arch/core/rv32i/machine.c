@@ -22,149 +22,16 @@
  * SOFTWARE.
  */
 
-#include <arch/cluster/riscv32-cluster/memory.h>
-#include <arch/cluster/riscv32-cluster/cores.h>
-#include <arch/stdout/16550a.h>
+/* Must come first. */
+#define __NEED_CORE_CONTEXT
+#define __NEED_CORE_TYPES
+
+#include <arch/core/rv32i/context.h>
+#include <arch/core/rv32i/excp.h>
+#include <arch/core/rv32i/types.h>
 #include <nanvix/const.h>
+#include <nanvix/klib.h>
 #include <errno.h>
-
-/**
- * @brief Startup fence.
- */
-PRIVATE struct
-{
-	int master_alive;
-	rv32i_spinlock_t lock;
-} fence = { FALSE , RV32I_SPINLOCK_UNLOCKED};
-
-/**
- * @brief Releases the startup fence.
- */
-PRIVATE void rv32i_fence_release(void)
-{
-	rv32i_spinlock_lock(&fence.lock);
-		fence.master_alive = TRUE;
-	rv32i_spinlock_unlock(&fence.lock);
-}
-
-/**
- * @brief Waits on the startup fence.
- */
-PRIVATE void rv32i_fence_wait(void)
-{
-	while (TRUE)
-	{
-		rv32i_spinlock_lock(&fence.lock);
-
-			/* Fence is released. */
-			if (fence.master_alive)
-			{
-				rv32i_spinlock_unlock(&fence.lock);
-				break;
-			}
-
-			noop();
-		rv32i_spinlock_unlock(&fence.lock);
-	}
-}
-
-/**
- * @todo: FIXME comment this function.
- *
- * @author Pedro Henrique Penna
- */
-PRIVATE void rv32i_dump_all_csr(void)
-{
-	kprintf("[hal]  mstatus=%x      mie=%x     mip=%x",
-		rv32i_mstatus_read(),
-		rv32i_mie_read(),
-		rv32i_mip_read()
-	);
-	kprintf("[hal]  sstatus=%x      sie=%x     sip=%x",
-		rv32i_sstatus_read(),
-		rv32i_sie_read(),
-		rv32i_sip_read()
-	);
-	kprintf("[hal]    mtvec=%x   mcause=%x   mtval=%x",
-	rv32i_mhartid_read(),
-		rv32i_mcause_read(),
-		rv32i_mtval_read()
-	);
-	kprintf("[hal]    stvec=%x   scause=%x   stval=%x",
-		rv32i_stvec_read(),
-		rv32i_scause_read(),
-		rv32i_stval_read()
-	);
-	kprintf("[hal]     mepc=%x",
-		rv32i_mepc_read()
-	);
-	kprintf("[hal]     sepc=%x    satp=%x",
-		rv32i_sepc_read(),
-		rv32i_satp_read()
-	);
-}
-
-/**
- * @brief Issues machine-mode return.
- */
-NORETURN static inline void rv32i_mret(void)
-{
-	__asm__ __volatile__ ("mret");
-
-	UNREACHABLE();
-}
-
-/**
- * @brief Enters supervisor mode.
- *
- * @param pc Target program counter.
- */
-PRIVATE NORETURN void rv32i_supervisor_enter(rv32i_word_t pc)
-{
-	rv32i_word_t mstatus;
-
-	kprintf("[hal] entering supervisor mode...");
-
-	/*
-	 * Set supervisor privilege mode
-	 * and disable interrupts.
-	 */
-	mstatus = rv32i_mstatus_read();
-	mstatus = BITS_SET(mstatus, RV32I_MSTATUS_MPP, RV32I_PRV_S);
-	mstatus = BITS_SET(mstatus, RV32I_MSTATUS_MPIE, 0);
-	rv32i_mstatus_write(mstatus);
-
-	/* Set target program counter. */
-	rv32i_mepc_write(pc);
-
-	rv32i_mret();
-}
-
-/**
- * @brief Handles a bad machine exception.
- */
-PUBLIC NORETURN void rv32i_do_mbad(const struct context *ctx)
-{
-	rv32i_dump_all_gpr(ctx);
-	rv32i_dump_all_csr();
-
-	kprintf("[rv32i] bad exception");
-	UNREACHABLE();
-}
-
-/**
- * @brief Handles machine exceptions.
- *
- * @param ctx Interrupted context
- */
-PUBLIC NORETURN void rv32i_do_mexcp(const struct context *ctx)
-{
-	rv32i_dump_all_gpr(ctx);
-	rv32i_dump_all_csr();
-
-	kprintf("[rv32i] unhandled exception");
-	UNREACHABLE();
-}
 
 /**
  * @brief Reads a CSR register.
@@ -241,9 +108,101 @@ PRIVATE rv32i_word_t rv32i_do_csr_clear(rv32i_word_t csr, rv32i_word_t bit)
 }
 
 /**
- * @brief Handles machine calls.
+ * @todo TODO provide a detailed description for this function.
  *
- * @param ctx Interrupted context
+ * @author Pedro Henrique Penna
+ */
+PUBLIC void rv32i_dump_all_csr(void)
+{
+	kprintf("[hal]  mstatus=%x      mie=%x     mip=%x",
+		rv32i_mstatus_read(),
+		rv32i_mie_read(),
+		rv32i_mip_read()
+	);
+	kprintf("[hal]  sstatus=%x      sie=%x     sip=%x",
+		rv32i_sstatus_read(),
+		rv32i_sie_read(),
+		rv32i_sip_read()
+	);
+	kprintf("[hal]    mtvec=%x   mcause=%x   mtval=%x",
+	rv32i_mhartid_read(),
+		rv32i_mcause_read(),
+		rv32i_mtval_read()
+	);
+	kprintf("[hal]    stvec=%x   scause=%x   stval=%x",
+		rv32i_stvec_read(),
+		rv32i_scause_read(),
+		rv32i_stval_read()
+	);
+	kprintf("[hal]     mepc=%x",
+		rv32i_mepc_read()
+	);
+	kprintf("[hal]     sepc=%x    satp=%x",
+		rv32i_sepc_read(),
+		rv32i_satp_read()
+	);
+}
+
+/**
+ * @todo TODO provide a detailed description for this function.
+ *
+ * @author Pedro Henrique Penna
+ */
+PUBLIC NORETURN void rv32i_supervisor_enter(rv32i_word_t pc)
+{
+	rv32i_word_t mstatus;
+
+	kprintf("[hal] entering supervisor mode...");
+
+	/*
+	 * Set supervisor privilege mode
+	 * and disable interrupts.
+	 */
+	mstatus = rv32i_mstatus_read();
+	mstatus = BITS_SET(mstatus, RV32I_MSTATUS_MPP, RV32I_PRV_S);
+	mstatus = BITS_SET(mstatus, RV32I_MSTATUS_MPIE, 0);
+	rv32i_mstatus_write(mstatus);
+
+	/* Set target program counter. */
+	rv32i_mepc_write(pc);
+
+	asm volatile ("mret");
+
+	UNREACHABLE();
+}
+
+/**
+ * @todo TODO provide a detailed description for this function.
+ *
+ * @author Pedro Henrique Penna
+ */
+PUBLIC NORETURN void rv32i_do_mbad(const struct context *ctx)
+{
+	rv32i_dump_all_gpr(ctx);
+	rv32i_dump_all_csr();
+
+	kprintf("[rv32i] bad exception");
+	UNREACHABLE();
+}
+
+/**
+ * @todo TODO provide a detailed description for this function.
+ *
+ * @author Pedro Henrique Penna
+ */
+PUBLIC NORETURN void rv32i_do_mexcp(const struct context *ctx)
+{
+	rv32i_dump_all_gpr(ctx);
+	rv32i_dump_all_csr();
+
+	kprintf("[rv32i] unhandled exception");
+	UNREACHABLE();
+}
+
+/**
+ * @todo TODO provide a detailed description for this function.
+ *
+ * @author Pedro Henrique Penna
  */
 PUBLIC void rv32i_do_mcall(struct context *ctx)
 {
@@ -302,9 +261,9 @@ PUBLIC void rv32i_do_mcall(struct context *ctx)
 }
 
 /**
- * @brief Handles machine interrupts.
+ * @todo TODO provide a detailed description for this function.
  *
- * @param ctx Interrupted context.
+ * @author Pedro Henrique Penna
  */
 PUBLIC void rv32i_do_mint(const struct context *ctx)
 {
@@ -316,13 +275,11 @@ PUBLIC void rv32i_do_mint(const struct context *ctx)
 }
 
 /**
- * @brief Delegates traps to loower-privilege levels.
- *
- * @todo: XXX check if supervisor mode is supported.
+ * @todo TODO provide a detailed description for this function.
  *
  * @author Pedro Henrique Penna
  */
-PRIVATE void rv32i_machine_delegate_traps(void)
+PUBLIC void rv32i_machine_delegate_traps(void)
 {
 	rv32i_word_t medeleg;
 	rv32i_word_t mideleg;
@@ -342,59 +299,4 @@ PRIVATE void rv32i_machine_delegate_traps(void)
 	rv32i_mideleg_write(mideleg);
 
 	/* XXX: ensure that these values were written. */
-}
-
-/**
- * @brief Initializes machine mode.
- *
- * @param pc Target program counter.
- */
-PUBLIC NORETURN void rv32i_machine_master_setup(rv32i_word_t pc)
-{
-	rv32i_word_t mie;
-
-	/* TODO: do this even earlier. */
-	kmemset(&__BSS_START, 0, &__BSS_END - &__BSS_START);
-
-	/*
-	 * Early initialization of
-	 * UART to help us debugging.
-	 */
-	uart_16550a_init();
-
-	rv32i_fence_release();
-
-	/* Enable machine IRQs. */
-	mie = rv32i_mie_read();
-	mie = BITS_SET(mie, RV32I_MIE_MSIE, 1);
-	mie = BITS_SET(mie, RV32I_MIE_MTIE, 1);
-	mie = BITS_SET(mie, RV32I_MIE_MEIE, 1);
-	rv32i_mie_write(mie);
-
-	rv32i_machine_delegate_traps();
-
-	rv32i_supervisor_enter(pc);
-}
-
-/**
- * @brief Initializes machine mode.
- *
- * @param pc Target program counter.
- */
-PUBLIC NORETURN void rv32i_machine_slave_setup(rv32i_word_t pc)
-{
-	rv32i_word_t mie;
-
-	/* Enable machine IRQs. */
-	mie = rv32i_mie_read();
-	mie = BITS_SET(mie, RV32I_MIE_MSIE, 0);
-	mie = BITS_SET(mie, RV32I_MIE_MTIE, 0);
-	mie = BITS_SET(mie, RV32I_MIE_MEIE, 0);
-	rv32i_mie_write(mie);
-
-	rv32i_machine_delegate_traps();
-
-	rv32i_fence_wait();
-
-	rv32i_supervisor_enter(pc);
 }
