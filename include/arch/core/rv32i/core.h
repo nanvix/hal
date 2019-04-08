@@ -100,13 +100,8 @@
 	 * @name Exported Functions
 	 */
 	/**@{*/
-	#define ___core_reset_fn    /**< _core_reset()    */
-	#define __core_clear_fn     /**< core_clear()     */
 	#define __core_get_id_fn    /**< core_get_id()    */
-	#define __core_notify_fn    /**< core_notify()    */
 	#define __core_poweroff_fn  /**< core_poweroff()  */
-	#define __core_setup_fn     /**< core_setup()     */
-	#define __core_waitclear_fn /**< core_waitclear() */
 	/**@}*/
 
 #ifndef _ASM_FILE_

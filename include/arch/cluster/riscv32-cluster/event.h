@@ -22,50 +22,40 @@
  * SOFTWARE.
  */
 
-#ifndef ARCH_CLUSTER_RISCV32_CLUSTER_CORES_H_
-#define ARCH_CLUSTER_RISCV32_CLUSTER_CORES_H_
+#ifndef ARCH_CLUSTER_RISCV32_CLUSTER_EVENT_H_
+#define ARCH_CLUSTER_RISCV32_CLUSTER_EVENT_H_
 
 	/* Cluster Interface Implementation */
 	#include <arch/cluster/riscv32-cluster/_riscv32-cluster.h>
 
 /**
- * @addtogroup riscv-cluster-cpu Cores
+ * @addtogroup riscv-cluster-event Events
  * @ingroup riscv-cluster
  *
- * @brief Cores
+ * @brief Events Interface
  */
 /**@{*/
 
-	/* Must come first. */
-	#define __NEED_CLUSTER_EVENT
-
-	#include <arch/cluster/riscv32-cluster/event.h>
 	#include <nanvix/const.h>
-
-	/**
-	 * @brief Number of cores in a cluster.
-	 */
-	#define RISCV32_CLUSTER_NUM_CORES 5
-
-	/**
-	 * @brief ID of the master core.
-	 */
-	#define RISCV32_CLUSTER_COREID_MASTER 0
 
 #ifndef _ASM_FILE_
 
 	/**
-	 * @brief Gets the number of cores.
+	 * @brief Sends an event.
 	 *
-	 * The riscv32_cluster_cluster_get_num_cores() gets the number of
-	 * cores in the underlying riscv32 cluster.
-	 *
-	 * @returns The the number of cores in the underlying cluster.
+	 * @param coreid ID of target core.
 	 */
-	static inline int riscv32_cluster_cluster_get_num_cores(void)
-	{
-		return (RISCV32_CLUSTER_NUM_CORES);
-	}
+	EXTERN int riscv32_cluster_event_send(int coreid);
+
+	/**
+	 * @brief Acknowledges en event.
+	 */
+	EXTERN int riscv32_cluster_event_ack(void);
+
+	/**
+	 * @brief Waits for an event.
+	 */
+	EXTERN int riscv32_cluster_event_waitclear(void);
 
 #endif /* _ASM_FILE_ */
 
@@ -83,33 +73,39 @@
 	 * @name Exported Functions
 	 */
 	/**@{*/
-	#define __core_get_id_fn           /**< core_get_id()           */
-	#define __core_setup_fn            /**< core_setup()            */
-	#define __cluster_get_num_cores_fn /**< cluster_get_num_cores() */
+	#define __core_clear_fn     /**< core_clear()     */
+	#define __core_notify_fn    /**< core_notify()    */
+	#define __core_waitclear_fn /**< core_waitclear() */
 	/**@}*/
-
-	/**
-	 * @brief Number of cores in a cluster.
-	 */
-	#define CORES_NUM RISCV32_CLUSTER_NUM_CORES
-
-	/**
-	 * @brief ID of the master core.
-	 */
-	#define COREID_MASTER RISCV32_CLUSTER_COREID_MASTER
 
 #ifndef _ASM_FILE_
 
 	/**
-	 * @see riscv32_cluster_cluster_get_num_cores()
+	 * @see riscv32_cluster_event_ack().
 	 */
-	static inline int cluster_get_num_cores(void)
+	static inline void core_clear(void)
 	{
-		return (riscv32_cluster_cluster_get_num_cores());
+		riscv32_cluster_event_ack();
+	}
+
+	/**
+	 * @see riscv32_cluster_event_send()
+	 */
+	static inline void core_notify(int coreid)
+	{
+		riscv32_cluster_event_send(coreid);
+	}
+
+	/**
+	 * @see riscv32_cluster_event_waitclear().
+	 */
+	static inline void core_waitclear(void)
+	{
+		riscv32_cluster_event_waitclear();
 	}
 
 #endif /* _ASM_FILE_ */
 
 /**@endcond*/
 
-#endif /* ARCH_CLUSTER_RISCV32_CORES_H_ */
+#endif /* ARCH_CLUSTER_RISCV32_EVENT_H_ */
