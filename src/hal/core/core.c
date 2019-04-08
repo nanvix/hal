@@ -142,7 +142,7 @@ PUBLIC void core_sleep(void)
 PUBLIC int core_wakeup(int coreid)
 {
 	/* Invalid core. */
-	if ((coreid < 0) || (coreid > CORES_NUM))
+	if ((coreid < 0) || (coreid >= CORES_NUM))
 		return (-EINVAL);
 
 	spinlock_lock(&cores[coreid].lock);
