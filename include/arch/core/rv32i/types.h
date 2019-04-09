@@ -142,6 +142,11 @@
 		 */
 		typedef uint32_t paddr_t;
 
+		/**
+		 * @brief Frame number.
+		 */
+		typedef uint32_t frame_t;
+
 	#endif
 	#endif
 

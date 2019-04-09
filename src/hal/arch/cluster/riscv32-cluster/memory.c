@@ -27,166 +27,251 @@
 #include <nanvix/const.h>
 
 /**
- * @brief Length of virtual addresses.
- *
- * Number of bits in a virtual address.
- *
- * @author Pedro Henrique Penna
+ * @brief Number of memory regions.
  */
-#define RV32I_VADDR_LENGTH 32
+#define RISCV32_CLUSTER_MEM_REGIONS 4
 
 /**
- * @brief Page Directory length.
- *
- * Number of Page Directory Entries (PDEs) per Page Directory.
- *
- * @author Pedro Henrique Penna
+ * @brief Memory region.
  */
-#define RV32I_PGDIR_LENGTH (1 << (RV32I_VADDR_LENGTH - RV32I_PGTAB_SHIFT))
+struct memory_region
+{
+	paddr_t pbase;  /**< Base physical address. */
+	vaddr_t vbase;  /**< Base virtual address.  */
+	size_t size;    /**< Size.                  */
+	int writable;   /**< Writable?              */
+	int executable; /**< Executable?            */
+};
 
 /**
- * @brief Page Table length.
- *
- * Number of Page Table Entries (PTEs) per Page Table.
- *
- * @author Pedro Henrique Penna
+ * @brief Memory layout.
  */
-#define RV32I_PGTAB_LENGTH (1 << (RV32I_PGTAB_SHIFT - RV32I_PAGE_SHIFT))
+PRIVATE struct memory_region riscv32_cluster_mem_layout[RISCV32_CLUSTER_MEM_REGIONS] = {
+	{ RISCV32_CLUSTER_KERNEL_BASE_PHYS, RISCV32_CLUSTER_KERNEL_BASE_VIRT,  RISCV32_CLUSTER_KMEM_SIZE,     TRUE, TRUE  },
+	{ RISCV32_CLUSTER_KPOOL_BASE_PHYS,  RISCV32_CLUSTER_KPOOL_BASE_VIRT,   RISCV32_CLUSTER_KPOOL_SIZE,    TRUE, FALSE },
+	{ RISCV32_CLUSTER_PIC_BASE_PHYS,    RISCV32_CLUSTER_PIC_BASE_VIRT,     RISCV32_CLUSTER_PIC_MEM_SIZE,  TRUE, FALSE },
+	{ RISCV32_CLUSTER_UART_BASE_PHYS,   RISCV32_CLUSTER_UART_BASE_VIRT,    RISCV32_CLUSTER_UART_MEM_SIZE, TRUE, FALSE },
+};
 
 /**
  * @brief Root page directory.
  */
-PUBLIC struct pde rv32i_root_pgdir[RV32I_PAGE_SIZE/RV32I_PTE_SIZE] ALIGN(PAGE_SIZE);
+PRIVATE struct pde riscv32_cluster_root_pgdir[RV32I_PGDIR_LENGTH] ALIGN(PAGE_SIZE);
 
 /**
- * @brief PIC page table.
+ * @brief Root page tables.
  */
-PUBLIC struct pte rv32i_pic_pgtab[RV32I_PAGE_SIZE/RV32I_PTE_SIZE] ALIGN(PAGE_SIZE);
+PRIVATE struct pte riscv32_cluster_root_pgtabs[RISCV32_CLUSTER_MEM_REGIONS][RV32I_PGTAB_LENGTH] ALIGN(PAGE_SIZE);
 
 /**
  * Alias to root page directory.
  */
-PUBLIC struct pde *root_pgdir = &rv32i_root_pgdir[0];
+PUBLIC struct pde *root_pgdir = &riscv32_cluster_root_pgdir[0];
 
 /**
  * Alias to kernel page table.
- *
- * @todo FIXME properly initialize this.
  */
-PUBLIC struct pte *kernel_pgtab = NULL;
+PUBLIC struct pte *kernel_pgtab = riscv32_cluster_root_pgtabs[0];
 
 /**
  * Alias to kernel page pool page table.
- *
- * @todo FIXME properly initialize this.
  */
-PUBLIC struct pte *kpool_pgtab = NULL;
+PUBLIC struct pte *kpool_pgtab = riscv32_cluster_root_pgtabs[1];
+
+/*============================================================================*
+ * riscv32_cluster_mem_info()                                                 *
+ *============================================================================*/
 
 /**
- * @brief Assert memory alignment.
+ * @brief Prints information about memory layout.
+ *
+ * The riscv32_cluster_mem_info() prints information about the virtual
+ * memory layout.
+ *
+ * @author Pedro Henrique Penna
  */
-PRIVATE void riscv32_cluster_mmu_check_alignment(void)
+PRIVATE void riscv32_cluster_mem_info(void)
 {
-	if (RISCV32_CLUSTER_KERNEL_BASE_VIRT & (RV32I_PAGE_SIZE - 1))
+	kprintf("[hal] kernel_base=%x kernel_end=%x",
+		RISCV32_CLUSTER_KERNEL_BASE_VIRT,
+		RISCV32_CLUSTER_KERNEL_END_VIRT
+	);
+	kprintf("[hal]  kpool_base=%x  kpool_end=%x",
+		RISCV32_CLUSTER_KPOOL_BASE_VIRT,
+		RISCV32_CLUSTER_KPOOL_END_VIRT
+	);
+	kprintf("[hal]   user_base=%x   user_end=%x",
+		RISCV32_CLUSTER_USER_BASE_VIRT,
+		RISCV32_CLUSTER_USER_END_VIRT
+	);
+	kprintf("[hal]   uart_base=%x   uart_end=%x",
+		RISCV32_CLUSTER_UART_BASE_VIRT,
+		RISCV32_CLUSTER_UART_END_VIRT
+	);
+	kprintf("[hal]    pic_base=%x    pic_end=%x",
+		RISCV32_CLUSTER_PIC_BASE_VIRT,
+		RISCV32_CLUSTER_PIC_END_VIRT
+	);
+	kprintf("[hal] memsize=%d MB kmem=%d KB kpool=%d KB umem=%d KB",
+		RISCV32_CLUSTER_MEM_SIZE/MB,
+		RISCV32_CLUSTER_KMEM_SIZE/KB,
+		RISCV32_CLUSTER_KPOOL_SIZE/KB,
+		RISCV32_CLUSTER_UMEM_SIZE/KB
+	);
+}
+
+/*============================================================================*
+ * riscv32_cluster_mem_check_align()                                          *
+ *============================================================================*/
+
+/**
+ * @brief Asserts the memory alignment.
+ *
+ * @todo TODO provide a detailed description for this function.
+ *
+ * @author Pedro Henrique Penna
+ */
+PRIVATE void riscv32_cluster_mem_check_align(void)
+{
+	/* These should be aligned at page boundaries. */
+	if (RISCV32_CLUSTER_PIC_BASE_VIRT & (RV32I_PAGE_SIZE - 1))
+		kpanic("pic base address misaligned");
+	if (RISCV32_CLUSTER_PIC_END_VIRT & (RV32I_PAGE_SIZE - 1))
+		kpanic("pic end address misaligned");
+	if (RISCV32_CLUSTER_UART_BASE_VIRT & (RV32I_PAGE_SIZE - 1))
+		kpanic("uart base address misaligned");
+	if (RISCV32_CLUSTER_UART_END_VIRT & (RV32I_PAGE_SIZE - 1))
+		kpanic("uart end address misaligned");
+
+	/* These should be aligned at page table boundaries. */
+	if (RISCV32_CLUSTER_KERNEL_BASE_VIRT & (RV32I_PGTAB_SIZE - 1))
 		kpanic("kernel base address misaligned");
-	if (RISCV32_CLUSTER_KERNEL_END_VIRT & (RV32I_PAGE_SIZE - 1))
+	if (RISCV32_CLUSTER_KERNEL_END_VIRT & (RV32I_PGTAB_SIZE - 1))
 		kpanic("kernel end address misaligned");
-	if (RISCV32_CLUSTER_KPOOL_BASE_VIRT & (RV32I_PAGE_SIZE - 1))
+	if (RISCV32_CLUSTER_KPOOL_BASE_VIRT & (RV32I_PGTAB_SIZE - 1))
 		kpanic("kernel pool base address misaligned");
-	if (RISCV32_CLUSTER_KPOOL_END_VIRT & (RV32I_PAGE_SIZE - 1))
+	if (RISCV32_CLUSTER_KPOOL_END_VIRT & (RV32I_PGTAB_SIZE - 1))
 		kpanic("kernel pool end address misaligned");
-	if (RISCV32_CLUSTER_USER_BASE_VIRT & (RV32I_PAGE_SIZE - 1))
+	if (RISCV32_CLUSTER_USER_BASE_VIRT & (RV32I_PGTAB_SIZE - 1))
 		kpanic("user base address misaligned");
-	if (RISCV32_CLUSTER_USER_END_VIRT & (RV32I_PAGE_SIZE - 1))
+	if (RISCV32_CLUSTER_USER_END_VIRT & (RV32I_PGTAB_SIZE - 1))
 		kpanic("user end address misaligned");
 }
 
+/*============================================================================*
+ * riscv32_cluster_mem_check_layout()                                         *
+ *============================================================================*/
+
 /**
- * @brief The rv32i_mmu_setup() function initializes the Memory
- * Management Unit (MMU) of the underlying rv32i core.
+ * @brief Asserts the memory layout.
+ *
+ * @todo TODO provide a detailed description for this function.
+ *
+ * @author Pedro Henrique Penna
  */
-PUBLIC void riscv32_mmu_setup(void)
+PRIVATE void riscv32_cluster_mem_check_layout(void)
+{
+	/*
+	 * These should be identity mapped, becasuse the underlying
+	 * hypervisor runs with virtual memory disabled.
+	 */
+	if (RISCV32_CLUSTER_PIC_BASE_VIRT != RISCV32_CLUSTER_PIC_BASE_PHYS)
+		kpanic("pic base address is not identity mapped");
+	if (RISCV32_CLUSTER_PIC_END_VIRT != RISCV32_CLUSTER_PIC_END_PHYS)
+		kpanic("pic end address is not identity mapped");
+	if (RISCV32_CLUSTER_UART_BASE_VIRT != RISCV32_CLUSTER_UART_BASE_PHYS)
+		kpanic("uart base address is not identity mapped");
+	if (RISCV32_CLUSTER_UART_END_VIRT != RISCV32_CLUSTER_UART_END_PHYS)
+		kpanic("uart end address is not identity mapped");
+	if (RISCV32_CLUSTER_KERNEL_BASE_VIRT != RISCV32_CLUSTER_KERNEL_BASE_PHYS)
+		kpanic("kernel base address is not identity mapped");
+	if (RISCV32_CLUSTER_KERNEL_END_VIRT != RISCV32_CLUSTER_KERNEL_END_PHYS)
+		kpanic("kernel end address is not identity mapped");
+	if (RISCV32_CLUSTER_KPOOL_BASE_VIRT != RISCV32_CLUSTER_KPOOL_BASE_PHYS)
+		kpanic("kernel pool base address is not identity mapped");
+	if (RISCV32_CLUSTER_KPOOL_END_VIRT != RISCV32_CLUSTER_KPOOL_END_PHYS)
+		kpanic("kernel pool end address is not identity mapped");
+}
+
+/*============================================================================*
+ * riscv32_cluster_mem_map()                                                  *
+ *============================================================================*/
+
+/**
+ * @brief Builds the memory layout.
+ *
+ * @todo TODO provide a detailed description for this function.
+ *
+ * @author Pedro Henrique Penna
+ */
+PRIVATE void riscv32_cluster_mem_map(void)
+{
+	/* Clean root page directory. */
+	for (int i = 0; i < RV32I_PGDIR_LENGTH; i++)
+		pde_clear(&riscv32_cluster_root_pgdir[i]);
+
+	/* Build root address space. */
+	for (int i = 0; i < RISCV32_CLUSTER_MEM_REGIONS; i++)
+	{
+		paddr_t j;
+		vaddr_t k;
+		paddr_t pbase = riscv32_cluster_mem_layout[i].pbase;
+		vaddr_t vbase = riscv32_cluster_mem_layout[i].vbase;
+		size_t size = riscv32_cluster_mem_layout[i].size;
+		int w = riscv32_cluster_mem_layout[i].writable;
+		int x = riscv32_cluster_mem_layout[i].executable;
+
+		/* Map underlying pages. */
+		for (j = pbase, k = vbase;
+			 k < (pbase + size);
+			 j += RV32I_PAGE_SIZE, k += RV32I_PAGE_SIZE)
+		{
+			rv32i_page_map(riscv32_cluster_root_pgtabs[i], j, k, w, x);
+		}
+
+		/* Map underlying page table. */
+		rv32i_pgtab_map(
+				riscv32_cluster_root_pgdir,
+				RV32I_PADDR(riscv32_cluster_root_pgtabs[i]),
+				vbase
+		);
+	}
+
+	/* Load virtual address space and enable MMU. */
+	rv32i_tlb_load(RV32I_PADDR(riscv32_cluster_root_pgdir));
+}
+
+/*============================================================================*
+ * riscv32_cluster_mem_setup()                                                *
+ *============================================================================*/
+
+/**
+ * The rv32i_cluster_mem_setup() function initializes the Memory
+ * Interface of the underlying RISC-V 32-Bit Cluster.
+ *
+ * @author Pedro Henrique Penna
+ */
+PUBLIC void riscv32_cluster_mem_setup(void)
 {
 	int coreid;
 
 	coreid = rv32i_core_get_id();
 
-	kprintf("[hal] initializing mmu");
+	kprintf("[hal] initializing memory layout...");
 
-	/*
-	 * Master core builds
-	 * root page directory.
-	 */
+	/* Master core builds root virtual address space. */
 	if (coreid == RISCV32_CLUSTER_COREID_MASTER)
 	{
-		int pde_idx_kernel;
-		int pde_idx_kpool;
-		int pde_idx_uart;
-		int pde_idx_pic;
-
-		kprintf("[hal] kernel_base=%x kernel_end=%x",
-			RISCV32_CLUSTER_KERNEL_BASE_VIRT,
-			RISCV32_CLUSTER_KERNEL_END_VIRT
-		);
-		kprintf("[hal]  kpool_base=%x  kpool_end=%x",
-			RISCV32_CLUSTER_KPOOL_BASE_VIRT,
-			RISCV32_CLUSTER_KPOOL_END_VIRT
-		);
-		kprintf("[hal]   user_base=%x   user_end=%x",
-			RISCV32_CLUSTER_USER_BASE_VIRT,
-			RISCV32_CLUSTER_USER_END_VIRT
-		);
-		kprintf("[hal] memsize=%d MB kmem=%d KB kpool=%d KB umem=%d KB",
-			_MEMORY_SIZE/MB,
-			_KMEM_SIZE/KB,
-			_KPOOL_SIZE/KB,
-			_UMEM_SIZE/KB
-		);
+		riscv32_cluster_mem_info();
 
 		/* Check for memory layout. */
-		riscv32_cluster_mmu_check_alignment();
+		riscv32_cluster_mem_check_layout();
+		riscv32_cluster_mem_check_align();
 
-		/* Clean root page directory. */
-		for (int i = 0; i < RV32I_PGDIR_LENGTH; i++)
-			pde_clear(&rv32i_root_pgdir[i]);
-
-		pde_idx_kernel = pde_idx_get(RISCV32_CLUSTER_KERNEL_BASE_VIRT);
-		pde_idx_kpool = pde_idx_get(RISCV32_CLUSTER_KPOOL_BASE_VIRT);
-		pde_idx_uart = pde_idx_get(RISCV32_CLUSTER_UART_VIRT);
-		pde_idx_pic = pde_idx_get(RISCV32_CLUSTER_PIC_VIRT);
-
-		/* Map kernel code and data. */
-		rv32i_root_pgdir[pde_idx_kernel].valid = 1;
-		rv32i_root_pgdir[pde_idx_kernel].readable = 1;
-		rv32i_root_pgdir[pde_idx_kernel].writable = 1;
-		rv32i_root_pgdir[pde_idx_kernel].executable = 1;
-		rv32i_root_pgdir[pde_idx_kernel].frame =
-			RV32I_FRAME(RISCV32_CLUSTER_KERNEL_BASE_VIRT >> RV32I_PAGE_SHIFT);
-
-		/* Map kernel pool. */
-		rv32i_root_pgdir[pde_idx_kpool].valid = 1;
-		rv32i_root_pgdir[pde_idx_kpool].readable = 1;
-		rv32i_root_pgdir[pde_idx_kpool].writable = 1;
-		rv32i_root_pgdir[pde_idx_kpool].executable = 0;
-		rv32i_root_pgdir[pde_idx_kpool].frame =
-			RV32I_FRAME(RISCV32_CLUSTER_KPOOL_BASE_VIRT >> RV32I_PAGE_SHIFT);
-
-		/* Map PIC. */
-		rv32i_root_pgdir[pde_idx_pic].valid = 1;
-		rv32i_root_pgdir[pde_idx_pic].readable = 1;
-		rv32i_root_pgdir[pde_idx_pic].writable = 1;
-		rv32i_root_pgdir[pde_idx_pic].executable = 0;
-		rv32i_root_pgdir[pde_idx_pic].frame =
-			RV32I_FRAME(RISCV32_CLUSTER_PIC_VIRT >> RV32I_PAGE_SHIFT);
-
-		/* Map UART. */
-		rv32i_root_pgdir[pde_idx_uart].valid = 1;
-		rv32i_root_pgdir[pde_idx_uart].readable = 1;
-		rv32i_root_pgdir[pde_idx_uart].writable = 1;
-		rv32i_root_pgdir[pde_idx_uart].executable = 0;
-		rv32i_root_pgdir[pde_idx_uart].frame =
-			RV32I_FRAME(RISCV32_CLUSTER_UART_VIRT >> RV32I_PAGE_SHIFT);
-
-		rv32i_tlb_load(RV32I_PADDR(rv32i_root_pgdir));
+		riscv32_cluster_mem_map();
 	}
+
+	/*
+	 * TODO: slave cores should warmup the TLB.
+	 */
 }

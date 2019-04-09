@@ -63,6 +63,33 @@
 	/**@}*/
 
 	/**
+	 * @brief Length of virtual addresses.
+	 *
+	 * Number of bits in a virtual address.
+	 *
+	 * @author Pedro Henrique Penna
+	 */
+	#define RV32I_VADDR_LENGTH 32
+
+	/**
+	 * @brief Page Directory length.
+	 *
+	 * Number of Page Directory Entries (PDEs) per Page Directory.
+	 *
+	 * @author Pedro Henrique Penna
+	 */
+	#define RV32I_PGDIR_LENGTH (1 << (RV32I_VADDR_LENGTH - RV32I_PGTAB_SHIFT))
+
+	/**
+	 * @brief Page Table length.
+	 *
+	 * Number of Page Table Entries (PTEs) per Page Table.
+	 *
+	 * @author Pedro Henrique Penna
+	 */
+	#define RV32I_PGTAB_LENGTH (1 << (RV32I_PGTAB_SHIFT - RV32I_PAGE_SHIFT))
+
+	/**
 	 * @name Page Table Entry Shifts and Masks
 	 */
 	/**@{*/
@@ -100,6 +127,84 @@
 	 */
 	#define RV32I_PDE_IDX(x) \
 		((x) >> (RV32I_PGTAB_SHIFT))
+
+#ifndef _ASM_FILE_
+
+	/**
+	 * @brief Page directory entry.
+	 */
+	struct pde
+	{
+		unsigned valid      :  1; /**< Valid?       */
+		unsigned readable   :  1; /**< Readable?    */
+		unsigned writable   :  1; /**< Writable?    */
+		unsigned executable :  1; /**< Executable?  */
+		unsigned            :  1; /**< Reserved     */
+		unsigned global     :  1; /**< Global Page? */
+		unsigned            :  1; /**< Reserved     */
+		unsigned            :  1; /**< Reserved     */
+		unsigned            :  2; /**< Reserved     */
+		unsigned frame      : 22; /**< Frame Number */
+	};
+
+	/**
+	 * @brief Page table entry.
+	 */
+	struct pte
+	{
+		unsigned valid      :  1; /**< Valid?       */
+		unsigned readable   :  1; /**< Readable?    */
+		unsigned writable   :  1; /**< Writable?    */
+		unsigned executable :  1; /**< Executable?  */
+		unsigned user       :  1; /**< User page?   */
+		unsigned global     :  1; /**< Global Page? */
+		unsigned accessed   :  1; /**< Accessed?    */
+		unsigned dirty      :  1; /**< Dirty?       */
+		unsigned            :  2; /**< Reserved     */
+		unsigned frame      : 22; /**< Frame Number */
+	};
+
+	/**
+	 * @brief Maps a page.
+	 *
+	 * @param pgtab Target page table.
+	 * @param paddr Physical address of the target page frame.
+	 * @param vaddr Virtual address of the target page.
+	 * @param w     Writable page?
+	 * @param x     Executable page?
+	 *
+	 * @returns Upon successful completion, zero is returned. Upon
+	 * failure, a negative error code is returned instead.
+	 */
+	EXTERN int rv32i_page_map(struct pte *pgtab, paddr_t paddr, vaddr_t vaddr, int w, int x);
+
+	/**
+	 * @brief Maps a huge page.
+	 *
+	 * @param pgtab Target page directory.
+	 * @param paddr Physical address of the target huge page frame.
+	 * @param vaddr Virtual address of the target huge page.
+	 * @param w     Writable huge page?
+	 * @param x     Executable huge page?
+	 *
+	 * @returns Upon successful completion, zero is returned. Upon
+	 * failure, a negative error code is returned instead.
+	 */
+	EXTERN int rv32i_huge_page_map(struct pte *pgdir, paddr_t paddr, vaddr_t vaddr, int w, int x);
+
+	/**
+	 * @brief Maps a page table.
+	 *
+	 * @param pgdir Target page directory.
+	 * @param paddr Physical address of the target page table frame.
+	 * @param vaddr Virtual address of the target page table.
+	 *
+	 * @returns Upon successful completion, zero is returned. Upon
+	 * failure, a negative error code is returned instead.
+	 */
+	EXTERN int rv32i_pgtab_map(struct pde *pgdir, paddr_t paddr, vaddr_t vaddr);
+
+#endif /* _ASM_FILE_ */
 
 /**@}*/
 
@@ -176,45 +281,6 @@
 	/**@}*/
 
 #ifndef _ASM_FILE_
-
-	/**
-	 * @brief Frame number.
-	 */
-	typedef uint32_t frame_t;
-
-	/**
-	 * @brief Page directory entry.
-	 */
-	struct pde
-	{
-		unsigned valid      :  1; /**< Valid?       */
-		unsigned readable   :  1; /**< Readable?    */
-		unsigned writable   :  1; /**< Writable?    */
-		unsigned executable :  1; /**< Executable?  */
-		unsigned            :  1; /**< Reserved     */
-		unsigned global     :  1; /**< Global Page? */
-		unsigned            :  1; /**< Reserved     */
-		unsigned            :  1; /**< Reserved     */
-		unsigned            :  2; /**< Reserved     */
-		unsigned frame      : 22; /**< Frame Number */
-	};
-
-	/**
-	 * @brief Page table entry.
-	 */
-	struct pte
-	{
-		unsigned valid      :  1; /**< Valid?       */
-		unsigned readable   :  1; /**< Readable?    */
-		unsigned writable   :  1; /**< Writable?    */
-		unsigned executable :  1; /**< Executable?  */
-		unsigned user       :  1; /**< User page?   */
-		unsigned global     :  1; /**< Global Page? */
-		unsigned accessed   :  1; /**< Accessed?    */
-		unsigned dirty      :  1; /**< Dirty?       */
-		unsigned            :  2; /**< Reserved     */
-		unsigned frame      : 22; /**< Frame Number */
-	};
 
 	/**
 	 * @brief Clears a page directory entry.
