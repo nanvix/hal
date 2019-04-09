@@ -42,6 +42,7 @@
 	#include <arch/core/k1b/mmu.h>
 	#include <arch/core/k1b/pmio.h>
 	#include <arch/core/k1b/lpic.h>
+	#include <arch/core/k1b/ivt.h>
 	#include <arch/core/k1b/spinlock.h>
 	#include <arch/core/k1b/tlb.h>
 	#include <arch/core/k1b/trap.h>

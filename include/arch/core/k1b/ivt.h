@@ -33,33 +33,12 @@
  */
 /**@{*/
 
-	#ifndef __NEED_K1B_IVT
-		#error "do not include this file"
-	#endif
-
-	#include <vbsp.h>
+	#include <arch/core/k1b/int.h>
+	#include <nanvix/const.h>
 	#include <mOS_vcore_u.h>
+	#include <vbsp.h>
 
-	/**
-	 * @brief Number of hardware interrupts.
-	 *
-	 * Number of hardware interrupt entries in the Interrupt Vector
-	 * Table (IVT).
-	 */
 	#define K1B_NUM_HWINT 24
-
-	/**
-	 * @brief Number of software interrupts.
-	 *
-	 * Number of software interrupt entries in the Interrupt vector
-	 * table (IVT).
-	 */
-	#define K1B_NUM_SWINT 1
-
-	/**
-	 * @brief Hardware interrupt ID.
-	 */
-	typedef bsp_ev_src_e k1b_hwint_id_t;
 
 	/**
 	 * @brief Hardware Interrupt handler.

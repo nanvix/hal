@@ -33,19 +33,16 @@
  */
 /**@{*/
 
-	/* Must come first. */
-	#define __NEED_K1B_IVT
-
-	#include <arch/core/k1b/ivt.h>
 	#include <nanvix/const.h>
+	#include <mOS_vcore_u.h>
 
 	/**
 	 * @brief Number of interrupt request lines.
 	 */
 	#ifdef __k1io__
-		#define K1B_NUM_IRQ 13
+		#define K1B_IRQ_NUM 13
 	#else
-		#define K1B_NUM_IRQ 10
+		#define K1B_IRQ_NUM 10
 	#endif
 
 	/**
@@ -65,7 +62,7 @@
 	#ifdef __k1io__
 		#define K1B_IRQ_10 MOS_VC_IT_GIC_1            /**< GIC 1             */
 		#define K1B_IRQ_11 MOS_VC_IT_GIC_2            /**< GIC 2             */
-		#define K1B_IRQ_12 MOS_VC_IT_GIC_3            /**< GIC2              */
+		#define K1B_IRQ_12 MOS_VC_IT_GIC_3            /**< GIC 3             */
 	#endif
 	/**@}*/
 
@@ -122,11 +119,6 @@
 	 * @brief Interrupt request line number.
 	 */
 	typedef mOS_vcore_it_lines_e k1b_irq_t;
-
-	/**
-	 * @brief Interrupt request lines.
-	 */
-	extern k1b_irq_t k1b_irqs[K1B_NUM_IRQ];
 
 	/**
 	 * @brief Masks an interrupt.

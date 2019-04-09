@@ -29,19 +29,19 @@
 #include <stdint.h>
 
 /**
- * Current interrupt mask of the underlying k1b core.
+ * @brief Current interrupt mask.
  */
-PUBLIC uint32_t currmask = K1B_IRQLVL_MASK_5;
+PRIVATE uint32_t currmask = K1B_IRQLVL_MASK_5;
 
 /**
- * Current interrupt level of the underlying k1b core.
+ * @brief Current interrupt level.
  */
-PUBLIC int currlevel = K1B_IRQLVL_0;
+PRIVATE int currlevel = K1B_IRQLVL_0;
 
 /**
- * Lookup table for masks of interrupt levels.
+ * @brief Lookup table for masks of interrupt levels.
  */
-PUBLIC uint32_t intlvl_masks[K1B_NUM_IRQLVL] = {
+PRIVATE uint32_t intlvl_masks[K1B_NUM_IRQLVL] = {
 	K1B_IRQLVL_MASK_0,
 	K1B_IRQLVL_MASK_1,
 	K1B_IRQLVL_MASK_2,
@@ -58,27 +58,6 @@ PUBLIC uint32_t intlvl_masks[K1B_NUM_IRQLVL] = {
 	K1B_IRQLVL_MASK_13,
 	K1B_IRQLVL_MASK_14,
 	K1B_IRQLVL_MASK_15
-};
-
-/**
- * Lookup table for interrupt request lines of hardware interrupts.
- */
-PUBLIC k1b_irq_t k1b_irqs[K1B_NUM_IRQ] = {
-	K1B_IRQ_0,
-	K1B_IRQ_1,
-	K1B_IRQ_2,
-	K1B_IRQ_3,
-	K1B_IRQ_4,
-	K1B_IRQ_5,
-	K1B_IRQ_6,
-	K1B_IRQ_7,
-	K1B_IRQ_8,
-	K1B_IRQ_9,
-#ifdef __k1io__
-	K1B_IRQ_10,
-	K1B_IRQ_11,
-	K1B_IRQ_12
-#endif
 };
 
 /**
@@ -103,7 +82,6 @@ PUBLIC int k1b_pic_lvl_set(int newlevel)
 }
 
 /**
- *
  * The k1b_pic_mask() function masks the interrupt line in which
  * the interrupt @p irq is hooked up in the underlying k1b
  * core.
@@ -113,10 +91,10 @@ PUBLIC int k1b_pic_lvl_set(int newlevel)
 PUBLIC int k1b_pic_mask(int irq)
 {
 	/* Invalid interrupt number. */
-	if ((irq < 0) || (irq >= K1B_NUM_HWINT))
+	if ((irq < 0) || (irq >= K1B_IRQ_NUM))
 		return (-EINVAL);
 
-	mOS_it_disable_num(k1b_irqs[irq]);
+	mOS_it_disable_num(irq);
 
 	return (0);
 }
@@ -131,10 +109,10 @@ PUBLIC int k1b_pic_mask(int irq)
 PUBLIC int k1b_pic_unmask(int irq)
 {
 	/* Invalid interrupt number. */
-	if ((irq < 0) || (irq >= K1B_NUM_HWINT))
+	if ((irq < 0) || (irq >= K1B_IRQ_NUM))
 		return (-EINVAL);
 
-	mOS_it_enable_num(k1b_irqs[irq]);
+	mOS_it_enable_num(irq);
 
 	return (0);
 }

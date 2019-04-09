@@ -33,14 +33,15 @@
  */
 /**@{*/
 
-	/* Must come first. */
-	#define __NEED_K1B_IVT
-
-	#include <arch/core/k1b/ivt.h>
 	#include <arch/core/k1b/lpic.h>
 	#include <arch/core/k1b/context.h>
 	#include <mOS_vcore_u.h>
 	#include <vbsp.h>
+
+	/**
+	 * @brief Number of interrupts.
+	 */
+	#define K1B_NUM_INT K1B_IRQ_NUM
 
 	/**
 	 * @name Hardware Interrupts for Kalray MPPA-256 Target
@@ -53,24 +54,22 @@
 	#define K1B_INT_DNOC       4 /**< Data NoC             */
 	#define K1B_INT_DMA        5 /**< DMA                  */
 	#define K1B_INT_NOC_ERR    6 /**< NoC Error            */
-	#define K1B_INT_TIMER_ERR  7 /**< Watchdog Timer Error */
-	#define K1B_INT_PE0        8 /**< Remote Core 0        */
-	#define K1B_INT_PE1        9 /**< Remote Core 1        */
-	#define K1B_INT_PE2       10 /**< Remote Core 2        */
-	#define K1B_INT_PE3       11 /**< Remote Core 3        */
-	#define K1B_INT_PE4       12 /**< Remote Core 4        */
-	#define K1B_INT_PE5       13 /**< Remote Core 5        */
-	#define K1B_INT_PE6       14 /**< Remote Core 6        */
-	#define K1B_INT_PE7       15 /**< Remote Core 7        */
-	#define K1B_INT_PE8       16 /**< Remote Core 8        */
-	#define K1B_INT_PE9       17 /**< Remote Core 9        */
-	#define K1B_INT_PE10      18 /**< Remote Core 10       */
-	#define K1B_INT_PE11      19 /**< Remote Core 11       */
-	#define K1B_INT_PE12      20 /**< Remote Core 12       */
-	#define K1B_INT_PE13      21 /**< Remote Core 14       */
-	#define K1B_INT_PE14      22 /**< Remote Core 14       */
-	#define K1B_INT_PE15      23 /**< Remote Core 15       */
+	#define K1B_INT_VIRT       7 /**< Virtual Line         */
+	#define K1B_INT_TIMER_ERR  8 /**< Watchdog Timer Error */
+	#define K1B_INT_DEBUG      9 /**< Debug                */
+	#ifdef __k1io__
+	#define K1B_INT_GIC1      10 /**< GIC 1                */
+	#define K1B_INT_GIC2      11 /**< GIC 2                */
+	#define K1B_INT_GIC3      12 /**< GIC2                 */
+	#endif
 	/**@}*/
+
+#ifndef _ASM_FILE_
+
+	/**
+	 * @brief Hardware interrupt ID.
+	 */
+	typedef bsp_ev_src_e k1b_hwint_id_t;
 
 	/**
 	 * @brief Hardware interrupt dispatcher.
@@ -78,7 +77,38 @@
 	 * @param hwintid ID of the hardware interrupt that was triggered.
 	 * @param ctx     Interrupted context.
 	 */
-	extern void k1b_do_hwint(k1b_hwint_id_t hwintid, struct context *ctx);
+	EXTERN void k1b_do_hwint(k1b_hwint_id_t hwintid, struct context *ctx);
+
+	/**
+	 * @brief Masks an interrupt.
+	 *
+	 * @param intnum Number of the target interrupt.
+	 *
+	 * @returns Upon successful completion, zero is returned. Upon
+	 * failure, a negative error code is returned instead.
+	 */
+	EXTERN int k1b_int_mask(int intnum);
+
+	/**
+	 * @brief Masks an interrupt.
+	 *
+	 * @param intnum Number of the target interrupt.
+	 *
+	 * @returns Upon successful completion, zero is returned. Upon
+	 * failure, a negative error code is returned instead.
+	 */
+	EXTERN int k1b_int_unmask(int intnum);
+
+	/**
+	 * @brief Sets a handler for a hardware interrupt.
+	 *
+	 * @param num     Number of the target hardware interrupt.
+	 * @param handler Hardware interrupt handler.
+	 *
+	 * @returns Upon successful completion, zero is returned. Upon
+	 * failure, a negative error code is returned instead.
+	 */
+	EXTERN int k1b_hwint_handler_set(int num, void (*handler)(int));
 
 	/**
 	 * @brief Enables interrupts.
@@ -100,16 +130,7 @@
 		mOS_it_disable();
 	}
 
-	/**
-	 * @brief Sets a handler for a hardware interrupt.
-	 *
-	 * @param num     Number of the target hardware interrupt.
-	 * @param handler Hardware interrupt handler.
-	 *
-	 * @returns Upon successful completion, zero is returned. Upon
-	 * failure, a negative error code is returned instead.
-	 */
-	extern int k1b_hwint_handler_set(int num, void (*handler)(int));
+#endif /* _ASM_FILE_ */
 
 /**@}*/
 
@@ -122,6 +143,17 @@
  */
 
 	/**
+	 * @name Exported Functions
+	 */
+	/**@{*/
+	#define __interrupts_disable
+	#define __interrupts_enable
+	#define __interrupt_set_handler
+	#define __interrupt_mask
+	#define __interrupt_unmask
+	/**@}*/
+
+	/**
 	 * @brief Number of hardware interrupts in the Kalray MPPA-256 target.
 	 */
 	#define _INTERRUPTS_NUM K1B_NUM_HWINT
@@ -132,17 +164,6 @@
 	/**@{*/
 	#define INTERRUPT_CLOCK K1B_INT_CLOCK0 /*< Programmable interrupt timer. */
 	#define HAL_INT_CNOC    K1B_INT_CNOC   /*< Control NoC interrupt.        */
-	/**@}*/
-
-	/**
-	 * @name Provided Interface
-	 */
-	/**@{*/
-	#define __interrupts_disable
-	#define __interrupts_enable
-	#define __interrupt_set_handler
-	#define __interrupt_mask
-	#define __interrupt_unmask
 	/**@}*/
 
 	/**
@@ -162,23 +183,23 @@
 	}
 
 	/**
-	 * @see k1b_pic_unmask().
+	 * @see k1b_int_unmask().
 	 */
 	static inline int interrupt_unmask(int intnum)
 	{
-		return (k1b_pic_unmask(intnum));
+		return (k1b_int_unmask(intnum));
 	}
 
 	/**
-	 * @see k1b_pic_mask().
+	 * @see k1b_int_mask().
 	 */
 	static inline int interrupt_mask(int intnum)
 	{
-		return (k1b_pic_mask(intnum));
+		return (k1b_int_mask(intnum));
 	}
 
 	/**
-	 * @see k1b_pic_ack()
+	 * @see k1b_int_ack()
 	 */
 	static inline void interrupt_ack(int intnum)
 	{
