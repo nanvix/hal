@@ -33,9 +33,11 @@
  */
 /**@{*/
 
+	/* Must come first. */
 	#define __NEED_K1B_IVT
-	#include <arch/core/k1b/ivt.h>
 
+	#include <arch/core/k1b/ivt.h>
+	#include <arch/core/k1b/lpic.h>
 	#include <arch/core/k1b/context.h>
 	#include <mOS_vcore_u.h>
 	#include <vbsp.h>
@@ -139,6 +141,8 @@
 	#define __interrupts_disable
 	#define __interrupts_enable
 	#define __interrupt_set_handler
+	#define __interrupt_mask
+	#define __interrupt_unmask
 	/**@}*/
 
 	/**
@@ -155,6 +159,30 @@
 	static inline void interrupts_disable(void)
 	{
 		k1b_hwint_disable();
+	}
+
+	/**
+	 * @see k1b_pic_unmask().
+	 */
+	static inline int interrupt_unmask(int intnum)
+	{
+		return (k1b_pic_unmask(intnum));
+	}
+
+	/**
+	 * @see k1b_pic_mask().
+	 */
+	static inline int interrupt_mask(int intnum)
+	{
+		return (k1b_pic_mask(intnum));
+	}
+
+	/**
+	 * @see k1b_pic_ack()
+	 */
+	static inline void interrupt_ack(int intnum)
+	{
+		((void) intnum);
 	}
 
 	/**
