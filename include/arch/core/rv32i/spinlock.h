@@ -56,9 +56,9 @@
 	typedef uint32_t rv32i_spinlock_t;
 
 	/**
-	 * @brief Initializes a rv32i_spinlock_t.
+	 * @brief Initializes a spinlock.
 	 *
-	 * @param lock Target rv32i_spinlock_t.
+	 * @param lock Target spinlock.
 	 *
 	 * @todo Implement this function.
 	 */
@@ -69,11 +69,11 @@
 	}
 
 	/**
-	 * @brief Attempts to lock a rv32i_spinlock_t.
+	 * @brief Attempts to lock a spinlock.
 	 *
-	 * @param lock Target rv32i_spinlock_t.
+	 * @param lock Target spinlock.
 	 *
-	 * @returns Upon successful completion, the rv32i_spinlock_t pointed to by
+	 * @returns Upon successful completion, the spinlock pointed to by
 	 * @p lock is locked and zero is returned. Upon failure, non-zero
 	 * is returned instead, and the lock is not acquired by the
 	 * caller.
@@ -92,9 +92,9 @@
 	}
 
 	/**
-	 * @brief Locks a rv32i_spinlock_t.
+	 * @brief Locks a spinlock.
 	 *
-	 * @param lock Target rv32i_spinlock_t.
+	 * @param lock Target spinlock.
 	 *
 	 * @todo Implement this function.
 	 */
@@ -102,13 +102,14 @@
 	{
 		while (rv32i_spinlock_trylock(lock))
 			/* noop */;
+
 		__sync_synchronize();
 	}
 
 	/**
-	 * @brief Unlocks a rv32i_spinlock_t.
+	 * @brief Unlocks a spinlock.
 	 *
-	 * @param lock Target rv32i_spinlock_t.
+	 * @param lock Target spinlock.
 	 *
 	 * @todo Implement this function.
 	 */

@@ -56,9 +56,9 @@
 	typedef uint32_t or1k_spinlock_t;
 
 	/**
-	 * @brief Initializes a or1k_spinlock_t.
+	 * @brief Initializes a spinlock.
 	 *
-	 * @param lock Target or1k_spinlock_t.
+	 * @param lock Target spinlock.
 	 */
 	static inline void or1k_spinlock_init(or1k_spinlock_t *lock)
 	{
@@ -67,11 +67,11 @@
 	}
 
 	/**
-	 * @brief Attempts to lock a or1k_spinlock_t.
+	 * @brief Attempts to lock a spinlock.
 	 *
-	 * @param lock Target or1k_spinlock_t.
+	 * @param lock Target spinlock.
 	 *
-	 * @returns Upon successful completion, the or1k_spinlock_t pointed to by
+	 * @returns Upon successful completion, the spinlock pointed to by
 	 * @p lock is locked and zero is returned. Upon failure, non-zero
 	 * is returned instead, and the lock is not acquired by the
 	 * caller.
@@ -88,29 +88,29 @@
 	}
 
 	/**
-	 * @brief Locks a or1k_spinlock_t.
+	 * @brief Locks a spinlock.
 	 *
-	 * @param lock Target or1k_spinlock_t.
+	 * @param lock Target spinlock.
 	 */
 	static inline void or1k_spinlock_lock(or1k_spinlock_t *lock)
 	{
 		while (or1k_spinlock_trylock(lock))
 			/* noop */;
-		
+
 		__sync_synchronize();
 	}
 
 	/**
-	 * @brief Unlocks a or1k_spinlock_t.
+	 * @brief Unlocks a spinlock.
 	 *
-	 * @param lock Target or1k_spinlock_t.
+	 * @param lock Target spinlock.
 	 */
 	static inline void or1k_spinlock_unlock(or1k_spinlock_t *lock)
 	{
 		__sync_synchronize();
 		*lock = OR1K_SPINLOCK_UNLOCKED;
 	}
-	
+
 #endif
 
 /**@}*/
