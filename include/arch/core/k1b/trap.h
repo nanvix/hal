@@ -38,6 +38,11 @@
 	#include <mOS_vcore_u.h>
 
 	/**
+	 * @brief Low-level trap dispatcher.
+	 */
+	EXTERN void _k1b_do_syscall(void);
+
+	/**
 	 * @brief Issues a system call with no arguments.
 	 *
 	 * @param syscall_nr System call number.

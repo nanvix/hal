@@ -33,32 +33,29 @@
  */
 /**@{*/
 
-	#include <arch/core/k1b/int.h>
 	#include <nanvix/const.h>
-	#include <mOS_vcore_u.h>
-	#include <vbsp.h>
 
-	#define K1B_NUM_HWINT 24
+	/**
+	 * @brief Length of IVT table.
+	 */
+	#define K1B_IVT_LENGTH 24
+
+#ifndef _ASM_FILE_
 
 	/**
 	 * @brief Hardware Interrupt handler.
 	 */
-	typedef it_handler_t k1b_hwint_handler_fn;
+	typedef void (*k1b_int_handler_fn)(int);
 
 	/**
 	 * @brief Software interrupt handler.
 	 */
-	typedef mOS_exception_handler_t k1b_swint_handler_fn;
+	typedef void (*k1b_swint_handler_fn)(void);
 
 	/**
 	 * @brief Exception handler.
 	 */
-	typedef mOS_exception_handler_t k1b_excp_handler_fn;
-
-	/**
-	 * @brief Hardware interrupt numbers.
-	 */
-	extern const k1b_hwint_id_t hwints[K1B_NUM_HWINT];
+	typedef void (*k1b_excp_handler_fn)(void);
 
 	/**
 	 * @brief Initializes the interrupt vector table.
@@ -68,10 +65,13 @@
 	 * @param excp_handler  Default exception handler.
 	 */
 	extern void k1b_ivt_setup(
-			k1b_hwint_handler_fn hwint_handler,
+			k1b_int_handler_fn hwint_handler,
 			k1b_swint_handler_fn swint_handler,
-			k1b_excp_handler_fn excp_handler
+			k1b_excp_handler_fn excp_handler,
+			void *estack
 	);
+
+#endif /* _ASM_FILE_ */
 
 /**@}*/
 

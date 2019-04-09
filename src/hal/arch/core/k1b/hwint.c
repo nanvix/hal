@@ -64,47 +64,42 @@ PRIVATE void (*k1b_handlers[K1B_NUM_INT])(int) = {
 };
 
 /**
- * The k1b_do_hwint() function dispatches a hardware interrupt that
+ * The k1b_do_int() function dispatches a hardware interrupt that
  * was triggered to a specific hardware interrupt handler. The ID of
  * hardware interrupt is used to index the table of hardware interrupt
  * handlers, and the context and the interrupted context pointed to by
  * ctx is currently unsed.
  */
-PUBLIC void k1b_do_hwint(k1b_hwint_id_t hwintid, struct context *ctx)
+PUBLIC void k1b_do_int(int intnum)
 {
-	int num = 0;
+	void (*handler)(int);
 
-	UNUSED(ctx);
-
-	/* Get interrupt number. */
-	for (int i = 0; i < K1B_NUM_INT; i++)
+	/* Unknown interrupt. */
+	if (UNLIKELY(intnum >= K1B_NUM_INT))
 	{
-		if (hwints[i] == hwintid)
-		{
-			num = i;
-			goto found;
-		}
+		kprintf("[hal] unknown interrupt source %d", intnum);
+		return;
 	}
 
-	return;
+	/* Nothing to do. */
+	if (UNLIKELY((handler = k1b_handlers[intnum]) == NULL))
+		return;
 
-found:
-
-	k1b_handlers[num](num);
+	handler(intnum);
 }
 
 /**
- * The k1b_hwint_handler_set() function sets the function pointed to
+ * The k1b_int_handler_set() function sets the function pointed to
  * by @p handler as the handler for the hardware interrupt whose
- * number is @p num.
+ * number is @p intnum.
  */
-PUBLIC int k1b_hwint_handler_set(int num, void (*handler)(int))
+PUBLIC int k1b_int_handler_set(int intnum, void (*handler)(int))
 {
 	/* Invalid interrupt number. */
-	if ((num < 0) || (num >= K1B_NUM_INT))
+	if ((intnum < 0) || (intnum >= K1B_NUM_INT))
 		return (-EINVAL);
 
-	k1b_handlers[num] = handler;
+	k1b_handlers[intnum] = handler;
 	k1b_dcache_inval();
 
 	return (0);

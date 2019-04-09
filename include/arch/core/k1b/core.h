@@ -41,8 +41,10 @@
 
 	/**
 	 * @brief Initializes the underlying core.
+	 *
+	 * @param stack Stack for interrupts, exceptions and traps.
 	 */
-	EXTERN void k1b_core_setup(void);
+	EXTERN void k1b_core_setup(void *stack);
 
 	/**
 	 * @brief Powers off the underlying core.

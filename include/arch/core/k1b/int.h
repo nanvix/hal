@@ -67,17 +67,11 @@
 #ifndef _ASM_FILE_
 
 	/**
-	 * @brief Hardware interrupt ID.
-	 */
-	typedef bsp_ev_src_e k1b_hwint_id_t;
-
-	/**
 	 * @brief Hardware interrupt dispatcher.
 	 *
-	 * @param hwintid ID of the hardware interrupt that was triggered.
-	 * @param ctx     Interrupted context.
+	 * @param intnum Number of the interrupt that was triggered.
 	 */
-	EXTERN void k1b_do_hwint(k1b_hwint_id_t hwintid, struct context *ctx);
+	EXTERN void k1b_do_int(int intnum);
 
 	/**
 	 * @brief Masks an interrupt.
@@ -100,22 +94,22 @@
 	EXTERN int k1b_int_unmask(int intnum);
 
 	/**
-	 * @brief Sets a handler for a hardware interrupt.
+	 * @brief Sets a handler for a interrupt.
 	 *
-	 * @param num     Number of the target hardware interrupt.
-	 * @param handler Hardware interrupt handler.
+	 * @param intnum  Number of the target interrupt.
+	 * @param handler Interrupt handler.
 	 *
 	 * @returns Upon successful completion, zero is returned. Upon
 	 * failure, a negative error code is returned instead.
 	 */
-	EXTERN int k1b_hwint_handler_set(int num, void (*handler)(int));
+	EXTERN int k1b_int_handler_set(int intnum, void (*handler)(int));
 
 	/**
 	 * @brief Enables interrupts.
 	 *
-	 * Enables all hardware interrupts in the underlying core.
+	 * Enables all interrupts in the underlying core.
 	 */
-	static inline void k1b_hwint_enable(void)
+	static inline void k1b_int_enable(void)
 	{
 		mOS_it_enable();
 	}
@@ -123,9 +117,9 @@
 	/**
 	 * @brief Disables interrupts.
 	 *
-	 * Disables all hardware interrupts in the underlying core.
+	 * Disables all interrupts in the underlying core.
 	 */
-	static inline void k1b_hwint_disable(void)
+	static inline void k1b_int_disable(void)
 	{
 		mOS_it_disable();
 	}
@@ -156,7 +150,7 @@
 	/**
 	 * @brief Number of hardware interrupts in the Kalray MPPA-256 target.
 	 */
-	#define _INTERRUPTS_NUM K1B_NUM_HWINT
+	#define _INTERRUPTS_NUM K1B_NUM_INT
 
 	/**
 	 * @name Hardware Interrupts
@@ -166,12 +160,14 @@
 	#define HAL_INT_CNOC    K1B_INT_CNOC   /*< Control NoC interrupt.        */
 	/**@}*/
 
+#ifndef _ASM_FILE_
+
 	/**
 	 * @see k1b_hwint_enable().
 	 */
 	static inline void interrupts_enable(void)
 	{
-		k1b_hwint_enable();
+		k1b_int_enable();
 	}
 
 	/**
@@ -179,7 +175,7 @@
 	 */
 	static inline void interrupts_disable(void)
 	{
-		k1b_hwint_disable();
+		k1b_int_disable();
 	}
 
 	/**
@@ -209,10 +205,12 @@
 	/**
 	 * @see k1b_hwint_handler_set().
 	 */
-	static inline int interrupt_set_handler(int num, void (*handler)(int))
+	static inline int interrupt_set_handler(int intnum, void (*handler)(int))
 	{
-		return (k1b_hwint_handler_set(num, handler));
+		return (k1b_int_handler_set(intnum, handler));
 	}
+
+#endif /* _ASM_FILE_ */
 
 /**@endcond*/
 

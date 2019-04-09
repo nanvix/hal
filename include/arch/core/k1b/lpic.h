@@ -26,10 +26,10 @@
 #define ARCH_CORE_K1B_LPIC_H_
 
 /**
- * @addtogroup k1b-core-pic PIC
+ * @addtogroup k1b-core-pic LPIC
  * @ingroup k1b-core
  *
- * @brief Programmble Interrupt Controller
+ * @brief Local Programmble Interrupt Controller (LPIC)
  */
 /**@{*/
 
@@ -115,6 +115,8 @@
 	#define K1B_IRQLVL_MASK_15 0xf /**< Mask for interrupt level 15. */
 	/**@}*/
 
+#ifndef _ASM_FILE_
+
 	/**
 	 * @brief Interrupt request line number.
 	 */
@@ -144,6 +146,8 @@
 	 * @brief Initializes the PIC.
 	 */
 	EXTERN void k1b_pic_setup(void);
+
+#endif /* _ASM_FILE_ */
 
 /**@}*/
 

@@ -33,6 +33,16 @@
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
 
+/**
+ * @brief Size of exception stack (in double words).
+ */
+#define EXCEPTION_STACK_SIZE K1B_PAGE_SIZE/sizeof(uint64_t)
+
+/**
+ * @brief Kernel stack.
+ */
+PRIVATE uint64_t excp_stacks[K1B_CLUSTER_NUM_CORES][EXCEPTION_STACK_SIZE] ALIGN(K1B_PAGE_SIZE);
+
 /* Import definitions. */
 EXTERN NORETURN void kmain(int, const char *[]);
 
@@ -158,7 +168,7 @@ PUBLIC void k1b_cluster_setup(void)
 {
 	kprintf("[hal] booting up cluster...");
 
-	k1b_core_setup();
+	k1b_core_setup(&excp_stacks[k1b_core_get_id()][EXCEPTION_STACK_SIZE]);
 	k1b_cluster_mem_setup();
 }
 

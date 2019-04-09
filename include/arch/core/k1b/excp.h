@@ -205,7 +205,7 @@
 	/**
 	 * @brief Low-level exception dispatcher.
 	 */
-	extern void _do_excp(void);
+	extern void _k1b_do_excp(void);
 
 	/**
 	 * @brief High-level exception dispatcher.

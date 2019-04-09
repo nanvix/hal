@@ -22,48 +22,74 @@
  * SOFTWARE.
  */
 
-#include <arch/cluster/k1b-cluster/cores.h>
+#include <arch/core/k1b/context.h>
+#include <arch/core/k1b/cache.h>
+#include <arch/core/k1b/int.h>
+#include <arch/core/k1b/ivt.h>
 #include <nanvix/const.h>
+#include <mOS_vcore_u.h>
+#include <vbsp.h>
 
 /**
- * @brief Size of exception stack (in double words).
+ * @brief High-level interrupt dispatcher.
  */
-#define EXCEPTION_STACK_SIZE K1B_PAGE_SIZE/sizeof(uint64_t)
+PRIVATE k1b_int_handler_fn _k1b_do_int = NULL;
 
 /**
- * @brief Kernel stack.
+ * @brief Interrupt vectors.
  */
-PRIVATE uint64_t excp_stacks[K1B_CLUSTER_NUM_CORES][EXCEPTION_STACK_SIZE] ALIGN(K1B_PAGE_SIZE);
-
-/**
- * Lookup table that maps hardware interrupt IDs into numbers.
- */
-PUBLIC const k1b_hwint_id_t hwints[K1B_NUM_HWINT] = {
-	BSP_IT_TIMER_0, /* Clock 0              */
-	BSP_IT_TIMER_1, /* Clock 1              */
-	BSP_IT_WDOG,    /* Watchdog Timer       */
-	BSP_IT_CN,      /* Control NoC          */
-	BSP_IT_RX,      /* Data NoC             */
-	BSP_IT_UC,      /* DMA                  */
-	BSP_IT_NE,      /* NoC Error            */
-	BSP_IT_WDOG_U,  /* Watchdog Timer Error */
-	BSP_IT_PE_0,    /* Remote Core 0        */
-	BSP_IT_PE_1,    /* Remote Core 1        */
-	BSP_IT_PE_2,    /* Remote Core 2        */
-	BSP_IT_PE_3,    /* Remote Core 3        */
-	BSP_IT_PE_4,    /* Remote Core 4        */
-	BSP_IT_PE_5,    /* Remote Core 5        */
-	BSP_IT_PE_6,    /* Remote Core 6        */
-	BSP_IT_PE_7,    /* Remote Core 7        */
-	BSP_IT_PE_8,    /* Remote Core 8        */
-	BSP_IT_PE_9,    /* Remote Core 9        */
-	BSP_IT_PE_10,   /* Remote Core 10       */
-	BSP_IT_PE_11,   /* Remote Core 11       */
-	BSP_IT_PE_12,   /* Remote Core 12       */
-	BSP_IT_PE_13,   /* Remote Core 14       */
-	BSP_IT_PE_14,   /* Remote Core 14       */
-	BSP_IT_PE_15,   /* Remote Core 15       */
+PRIVATE struct {
+	int intnum; /**< Interrupt Number          */
+	int hwint;  /**< Hardware Interrupt Number */
+} hwints[K1B_IVT_LENGTH] = {
+	{ BSP_IT_TIMER_0, K1B_INT_CLOCK0    }, /* Clock 0              */
+	{ BSP_IT_TIMER_1, K1B_INT_CLOCK1    }, /* Clock 1              */
+	{ BSP_IT_WDOG,    K1B_INT_TIMER     }, /* Watchdog Timer       */
+	{ BSP_IT_CN,      K1B_INT_CNOC      }, /* Control NoC          */
+	{ BSP_IT_RX,      K1B_INT_DNOC      }, /* Data NoC             */
+	{ BSP_IT_UC,      K1B_INT_DMA       }, /* DMA                  */
+	{ BSP_IT_NE,      K1B_INT_NOC_ERR   }, /* NoC Error            */
+	{ BSP_IT_WDOG_U,  K1B_INT_TIMER_ERR }, /* Watchdog Timer Error */
+	{ BSP_IT_PE_0,    K1B_INT_VIRT      }, /* Remote Core 0        */
+	{ BSP_IT_PE_1,    K1B_INT_VIRT      }, /* Remote Core 1        */
+	{ BSP_IT_PE_2,    K1B_INT_VIRT      }, /* Remote Core 2        */
+	{ BSP_IT_PE_3,    K1B_INT_VIRT      }, /* Remote Core 3        */
+	{ BSP_IT_PE_4,    K1B_INT_VIRT      }, /* Remote Core 4        */
+	{ BSP_IT_PE_5,    K1B_INT_VIRT      }, /* Remote Core 5        */
+	{ BSP_IT_PE_6,    K1B_INT_VIRT      }, /* Remote Core 6        */
+	{ BSP_IT_PE_7,    K1B_INT_VIRT      }, /* Remote Core 7        */
+	{ BSP_IT_PE_8,    K1B_INT_VIRT      }, /* Remote Core 8        */
+	{ BSP_IT_PE_9,    K1B_INT_VIRT      }, /* Remote Core 9        */
+	{ BSP_IT_PE_10,   K1B_INT_VIRT      }, /* Remote Core 10       */
+	{ BSP_IT_PE_11,   K1B_INT_VIRT      }, /* Remote Core 11       */
+	{ BSP_IT_PE_12,   K1B_INT_VIRT      }, /* Remote Core 12       */
+	{ BSP_IT_PE_13,   K1B_INT_VIRT      }, /* Remote Core 14       */
+	{ BSP_IT_PE_14,   K1B_INT_VIRT      }, /* Remote Core 14       */
+	{ BSP_IT_PE_15,   K1B_INT_VIRT      }, /* Remote Core 15       */
 };
+
+/**
+ * @brief Low-level interrupt dispatcher.
+ *
+ * @param intnum Interrupt number.
+ * @param ctx    Saved interrupted context.
+ *
+ * @author Pedro Henrique Penna
+ */
+PRIVATE void __k1b_do_int(int intnum, __k1_vcontext_t *ctx)
+{
+	UNUSED(ctx);
+
+	for (int i = 0; i < K1B_IVT_LENGTH; i++)
+	{
+		if (hwints[i].intnum == intnum)
+		{
+			if (LIKELY(_k1b_do_int != NULL))
+				_k1b_do_int(hwints[i].hwint);
+			return;	
+		}
+	}
+}
 
 /**
  * The k1b_ivt_setup() function initializes the interrupt vector table
@@ -73,22 +99,24 @@ PUBLIC const k1b_hwint_id_t hwints[K1B_NUM_HWINT] = {
  * exceptions, respectively.
  */
 PUBLIC void k1b_ivt_setup(
-	k1b_hwint_handler_fn hwint_handler,
+	k1b_int_handler_fn hwint_handler,
 	k1b_swint_handler_fn swint_handler,
-	k1b_excp_handler_fn excp_handler)
+	k1b_excp_handler_fn excp_handler,
+	void *stack)
 {
-	uint64_t *stack;
+	kprintf("[hal] exception stack at %x", stack);
 
-	for (int i = 0; i < K1B_NUM_HWINT; i++)
-		bsp_register_it(hwint_handler, hwints[i]);
+	/* Register dispatchers. */
+	_k1b_do_int = hwint_handler;
+	for (int i = 0; i < K1B_IVT_LENGTH; i++)
+		bsp_register_it(__k1b_do_int, hwints[i].intnum);
 	mOS_register_scall_handler(swint_handler);
 	mOS_register_trap_handler(excp_handler);
+	k1b_dcache_inval();
 
 	/* Setup shadow stack for exceptions. */
-	stack = &excp_stacks[k1b_core_get_id()][EXCEPTION_STACK_SIZE];
 	mOS_register_stack_handler(stack);
 	mOS_trap_enable_shadow_stack();
-	kprintf("[hal] exception stack at %x", stack);
 
 	k1b_pic_setup();
 }

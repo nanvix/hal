@@ -25,12 +25,10 @@
 #include <arch/core/k1b/excp.h>
 #include <arch/core/k1b/int.h>
 #include <arch/core/k1b/ivt.h>
+#include <arch/core/k1b/trap.h>
 #include <nanvix/const.h>
 #include <HAL/hal/board/boot_args.h>
 #include <mOS_vcore_u.h>
-
-/* Import definitions. */
-EXTERN void _do_syscall(int, int, int, int, int, int, int, int);
 
 /*============================================================================*
  * k1b_core_setup()                                                           *
@@ -41,14 +39,15 @@ EXTERN void _do_syscall(int, int, int, int, int, int, int, int);
  *
  * @author Pedro Henrique Penna
  */
-PUBLIC void k1b_core_setup(void)
+PUBLIC void k1b_core_setup(void *stack)
 {
 	kprintf("[hal] booting up core");
 
 	k1b_ivt_setup(
-		(k1b_hwint_handler_fn) k1b_do_hwint,
-		(k1b_swint_handler_fn) _do_syscall,
-		(k1b_excp_handler_fn) _do_excp
+		k1b_do_int,
+		_k1b_do_syscall,
+		_k1b_do_excp,
+		stack
 	);
 }
 
