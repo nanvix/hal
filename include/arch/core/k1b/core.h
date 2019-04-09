@@ -37,11 +37,6 @@
 	#include <mOS_vcore_u.h>
 	#include <nanvix/const.h>
 
-	/**
-	 * @brief Event line used for signals.
-	 */
-	#define K1B_EVENT_LINE 0
-
 #ifndef _ASM_FILE_
 
 	/**
@@ -64,44 +59,6 @@
 	static inline int k1b_core_get_id(void)
 	{
 		return (__k1_get_cpu_id());
-	}
-
-	/**
-	 * @brief Clears IPIs in the underlying core.
-	 */
-	static inline void k1b_core_clear(void)
-	{
-		mOS_pe_event_clear(K1B_EVENT_LINE);
-	}
-
-	/**
-	 * @brief Waits and clears IPIs in the underlying core.
-	 */
-	static inline void k1b_core_waitclear(void)
-	{
-		mOS_pe_event_waitclear(K1B_EVENT_LINE);
-	}
-
-	/**
-	 * @brief Sends a signal.
-	 *
-	 * The k1b_core_notify() function sends a signal to the core whose ID
-	 * equals to @p coreid.
-	 *
-	 * @param coreid ID of the target core.
-	 *
-	 * @bug No sanity check is performed in @p coreid.
-	 *
-	 * @author Pedro Henrique Penna
-	 */
-	static inline void k1b_core_notify(int coreid)
-	{
-		mOS_pe_notify(
-			1 << coreid,    /* Target cores.                            */
-			K1B_EVENT_LINE, /* Event line.                              */
-			1,              /* Notify an event? (I/O clusters only)     */
-			0               /* Notify an interrupt? (I/O clusters only) */
-		);
 	}
 
 #endif /* _ASM_FILE_ */
@@ -144,11 +101,8 @@
 	 * @name Exported Functions
 	 */
 	/**@{*/
-	#define __core_clear_fn     /**< core_clear()     */
 	#define __core_get_id_fn    /**< core_get_id()    */
-	#define __core_notify_fn    /**< core_notify()    */
 	#define __core_poweroff_fn  /**< core_poweroff()  */
-	#define __core_waitclear_fn /**< core_waitclear() */
 	/**@}*/
 
 #ifndef _ASM_FILE_
@@ -164,14 +118,6 @@
 	/**@}*/
 
 	/**
-	 * @see k1b_core_clear().
-	 */
-	static inline void core_clear(void)
-	{
-		k1b_core_clear();
-	}
-
-	/**
 	 * @see k1b_core_get_id().
 	 */
 	static inline int core_get_id(void)
@@ -180,27 +126,11 @@
 	}
 
 	/**
-	 * @see k1b_core_notify()
-	 */
-	static inline void core_notify(int coreid)
-	{
-		k1b_core_notify(coreid);
-	}
-
-	/**
 	 * @see k1b_core_poweroff().
 	 */
 	static inline void core_poweroff(void)
 	{
 		k1b_core_poweroff();
-	}
-
-	/**
-	 * @see k1b_core_waitclear().
-	 */
-	static inline void core_waitclear(void)
-	{
-		k1b_core_waitclear();
 	}
 
 #endif /* _ASM_FILE_ */
