@@ -48,111 +48,70 @@
 	#define OR1K_SPINLOCK_LOCKED   0x1 /**< Locked   */
 	/**@}*/
 
+#ifndef _ASM_FILE_
+
 	/**
 	 * @brief Spinlock.
 	 */
 	typedef uint32_t or1k_spinlock_t;
 
 	/**
-	 * @brief Initializes a or1k_spinlock_t.
+	 * @brief Initializes a spinlock.
 	 *
-	 * @param lock Target or1k_spinlock_t.
+	 * @param lock Target spinlock.
 	 */
 	static inline void or1k_spinlock_init(or1k_spinlock_t *lock)
 	{
-		register or1k_spinlock_t *lock_reg
-			asm("r5") = lock;
-
-		asm volatile
-		(
-			"l.sw 0(r5), r0"
-			:
-			: "r" (lock_reg)
-		);
+		*lock = OR1K_SPINLOCK_UNLOCKED;
+		__sync_synchronize();
 	}
 
 	/**
-	 * @brief Attempts to lock a or1k_spinlock_t.
+	 * @brief Attempts to lock a spinlock.
 	 *
-	 * @param lock Target or1k_spinlock_t.
+	 * @param lock Target spinlock.
 	 *
-	 * @returns Upon successful completion, the or1k_spinlock_t pointed to by
+	 * @returns Upon successful completion, the spinlock pointed to by
 	 * @p lock is locked and zero is returned. Upon failure, non-zero
 	 * is returned instead, and the lock is not acquired by the
 	 * caller.
 	 */
 	static inline int or1k_spinlock_trylock(or1k_spinlock_t *lock)
 	{
-		register or1k_spinlock_t *lock_reg
-			asm("r5") = lock;
-		register or1k_spinlock_t lock_value
-			asm("r7") = OR1K_SPINLOCK_UNLOCKED;
-		register unsigned locked
-			asm("r9") = 0;
-
-		/* First, atomically reads the lock. */
-		asm volatile
-		(
-			"l.lwa r7, 0(r5)"
-			: "=r" (lock_value)
-			: "r" (lock_reg)
+		return (
+			!__sync_bool_compare_and_swap(
+				lock,
+				OR1K_SPINLOCK_UNLOCKED,
+				OR1K_SPINLOCK_LOCKED
+			)
 		);
-
-		/* Lock already locked. */
-		if (lock_value == OR1K_SPINLOCK_LOCKED)
-			return (1);
-
-		/* Tries to lock. */
-		lock_value = OR1K_SPINLOCK_LOCKED;
-		asm volatile
-		(
-			"l.swa   0(r5),  r7\n"
-			"l.mfspr r9, r0, 0x11\n"  /* Supervisor Register. */
-			"l.andi  r9, r9, 0x200\n" /* Condition Flag.      */
-			: "=r" (locked)
-			: "r"  (lock_reg),
-			  "r"  (lock_value)
-		);
-
-		/* Check if lock was successful. */
-		if (locked)
-			return (0);
-		else
-			return (1);
 	}
 
 	/**
-	 * @brief Locks a or1k_spinlock_t.
+	 * @brief Locks a spinlock.
 	 *
-	 * @param lock Target or1k_spinlock_t.
+	 * @param lock Target spinlock.
 	 */
 	static inline void or1k_spinlock_lock(or1k_spinlock_t *lock)
 	{
 		while (or1k_spinlock_trylock(lock))
 			/* noop */;
+
+		__sync_synchronize();
 	}
 
 	/**
-	 * @brief Unlocks a or1k_spinlock_t.
+	 * @brief Unlocks a spinlock.
 	 *
-	 * @param lock Target or1k_spinlock_t.
+	 * @param lock Target spinlock.
 	 */
 	static inline void or1k_spinlock_unlock(or1k_spinlock_t *lock)
 	{
-		register or1k_spinlock_t *lock_reg
-			asm("r5") = lock;
-
-		asm volatile
-		(
-			"1:\n"
-			"	l.lwa r7, 0(r5)\n"
-			"	l.swa 0(r5), r0\n"
-			"	l.bnf 1b\n"
-			"	l.nop\n"
-			:
-			: "r" (lock_reg)
-		);
+		__sync_synchronize();
+		*lock = OR1K_SPINLOCK_UNLOCKED;
 	}
+
+#endif
 
 /**@}*/
 
