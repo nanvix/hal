@@ -22,30 +22,46 @@
  * SOFTWARE.
  */
 
-#define __NEED_HAL_CLUSTER
-#include <nanvix/hal/cluster.h>
+#include <arch/core/k1b/excp.h>
+#include <arch/core/k1b/int.h>
+#include <arch/core/k1b/ivt.h>
 #include <nanvix/const.h>
+#include <HAL/hal/board/boot_args.h>
+#include <mOS_vcore_u.h>
+
+/* Import definitions. */
+EXTERN void _do_syscall(int, int, int, int, int, int, int, int);
+
+/*============================================================================*
+ * k1b_core_setup()                                                           *
+ *============================================================================*/
 
 /**
- * @brief Cores table.
+ * @todo TODO provide a detailed description for this function.
+ *
+ * @author Pedro Henrique Penna
  */
-PUBLIC struct coreinfo ALIGN(K1B_CACHE_LINE_SIZE) cores[K1B_CLUSTER_NUM_CORES] = {
-	{ TRUE,  CORE_RUNNING,   0, NULL, K1B_SPINLOCK_UNLOCKED }, /* Master Core   */
-	{ FALSE, CORE_RESETTING, 0, NULL, K1B_SPINLOCK_LOCKED   }, /* Slave Core 1  */
-	{ FALSE, CORE_RESETTING, 0, NULL, K1B_SPINLOCK_LOCKED   }, /* Slave Core 2  */
-	{ FALSE, CORE_RESETTING, 0, NULL, K1B_SPINLOCK_LOCKED   }, /* Slave Core 3  */
-#if defined(__node__)
-	{ FALSE, CORE_RESETTING, 0, NULL, K1B_SPINLOCK_LOCKED   }, /* Slave Core 4  */
-	{ FALSE, CORE_RESETTING, 0, NULL, K1B_SPINLOCK_LOCKED   }, /* Slave Core 5  */
-	{ FALSE, CORE_RESETTING, 0, NULL, K1B_SPINLOCK_LOCKED   }, /* Slave Core 6  */
-	{ FALSE, CORE_RESETTING, 0, NULL, K1B_SPINLOCK_LOCKED   }, /* Slave Core 7  */
-	{ FALSE, CORE_RESETTING, 0, NULL, K1B_SPINLOCK_LOCKED   }, /* Slave Core 8  */
-	{ FALSE, CORE_RESETTING, 0, NULL, K1B_SPINLOCK_LOCKED   }, /* Slave Core 9  */
-	{ FALSE, CORE_RESETTING, 0, NULL, K1B_SPINLOCK_LOCKED   }, /* Slave Core 10 */
-	{ FALSE, CORE_RESETTING, 0, NULL, K1B_SPINLOCK_LOCKED   }, /* Slave Core 11 */
-	{ FALSE, CORE_RESETTING, 0, NULL, K1B_SPINLOCK_LOCKED   }, /* Slave Core 12 */
-	{ FALSE, CORE_RESETTING, 0, NULL, K1B_SPINLOCK_LOCKED   }, /* Slave Core 13 */
-	{ FALSE, CORE_RESETTING, 0, NULL, K1B_SPINLOCK_LOCKED   }, /* Slave Core 14 */
-	{ FALSE, CORE_RESETTING, 0, NULL, K1B_SPINLOCK_LOCKED   }, /* Slave Core 15 */
-#endif
-};
+PUBLIC void k1b_core_setup(void)
+{
+	kprintf("[hal] booting up core");
+
+	k1b_ivt_setup(
+		(k1b_hwint_handler_fn) k1b_do_hwint,
+		(k1b_swint_handler_fn) _do_syscall,
+		(k1b_excp_handler_fn) _do_excp
+	);
+}
+
+/*============================================================================*
+ * k1b_core_poweroff()                                                        *
+ *============================================================================*/
+
+/**
+ * @todo TODO provide a detailed description for this function.
+ *
+ * @author Pedro Henrique Penna
+ */
+PUBLIC void k1b_core_poweroff(void)
+{
+	mOS_exit(__k1_spawn_type() != __MPPA_MPPA_SPAWN, 0);
+}

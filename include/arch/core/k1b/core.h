@@ -34,8 +34,6 @@
 	#define __NEED_CORE_TYPES
 
 	#include <arch/core/k1b/types.h>
-	#include <arch/core/k1b/spinlock.h>
-	#include <HAL/hal/board/boot_args.h>
 	#include <mOS_vcore_u.h>
 	#include <nanvix/const.h>
 
@@ -44,27 +42,17 @@
 	 */
 	#define K1B_EVENT_LINE 0
 
-	/**
-	 * @brief Resets the underlying core.
-	 *
-	 * The k1b_core_reset() function resets execution instruction in
-	 * the underlying core by reseting the kernel stack to its initial
-	 * location and relaunching the k1b_slave_setup() function.
-	 *
-	 * @note This function does not return.
-	 * @note For the implementation of this function check out
-	 * assembly source files.
-	 *
-	 * @see k1b_slave_setup()
-	 *
-	 * @author Pedro Henrique Penna
-	 */
-	EXTERN NORETURN void _k1b_core_reset(void);
+#ifndef _ASM_FILE_
 
 	/**
 	 * @brief Initializes the underlying core.
 	 */
 	EXTERN void k1b_core_setup(void);
+
+	/**
+	 * @brief Powers off the underlying core.
+	 */
+	EXTERN void k1b_core_poweroff(void);
 
 	/**
 	 * @brief Gets the ID of the core.
@@ -116,13 +104,7 @@
 		);
 	}
 
-	/**
-	 * @brief Powers off the underlying core.
-	 */
-	static inline void k1b_core_poweroff(void)
-	{
-		mOS_exit(__k1_spawn_type() != __MPPA_MPPA_SPAWN, 0);
-	}
+#endif /* _ASM_FILE_ */
 
 /**@}*/
 
@@ -138,14 +120,14 @@
 	 * @brief Exported Constants
 	 */
 	/**@{*/
-	#define BYTE_BIT       K1B_BYTE_BIT       /**< @see BYTE_BIT       */
-	#define HWORD_BIT      K1B_HWORD_BIT      /**< @see HWORD_BIT      */
-	#define WORD_BIT       K1B_WORD_BIT       /**< @see WORD_BIT       */
-	#define DWORD_BIT      K1B_DWORD_BIT      /**< @see DWORD_BIT      */
-	#define BYTE_SIZE      K1B_SIZE_SIZE      /**< @see BYTE_SIZE      */
-	#define HWORD_SIZE     K1B_HWORD_SIZE     /**< @see HWORD_SIZE     */
-	#define WORD_SIZE      K1B_WORD_SIZE      /**< @see WORD_SIZE      */
-	#define DWORD_SIZE     K1B_DWORD_SIZE     /**< @see DWORD_SIZE     */
+	#define BYTE_BIT   K1B_BYTE_BIT    /**< @see BYTE_BIT   */
+	#define HWORD_BIT  K1B_HWORD_BIT   /**< @see HWORD_BIT  */
+	#define WORD_BIT   K1B_WORD_BIT    /**< @see WORD_BIT   */
+	#define DWORD_BIT  K1B_DWORD_BIT   /**< @see DWORD_BIT  */
+	#define BYTE_SIZE  K1B_SIZE_SIZE   /**< @see BYTE_SIZE  */
+	#define HWORD_SIZE K1B_HWORD_SIZE  /**< @see HWORD_SIZE */
+	#define WORD_SIZE  K1B_WORD_SIZE   /**< @see WORD_SIZE  */
+	#define DWORD_SIZE K1B_DWORD_SIZE  /**< @see DWORD_SIZE */
 	/**@}*/
 
 	/**
@@ -162,14 +144,14 @@
 	 * @name Exported Functions
 	 */
 	/**@{*/
-	#define ___core_reset_fn    /**< _core_reset()    */
 	#define __core_clear_fn     /**< core_clear()     */
 	#define __core_get_id_fn    /**< core_get_id()    */
 	#define __core_notify_fn    /**< core_notify()    */
 	#define __core_poweroff_fn  /**< core_poweroff()  */
-	#define __core_setup_fn     /**< core_setup()     */
 	#define __core_waitclear_fn /**< core_waitclear() */
 	/**@}*/
+
+#ifndef _ASM_FILE_
 
 	/**
 	 * @name Core Types
@@ -180,14 +162,6 @@
 	typedef k1b_word_t  word_t;  /**< Word        */
 	typedef k1b_dword_t dword_t; /**< Double Word */
 	/**@}*/
-
-	/**
-	 * @see _k1b_core_reset().
-	 */
-	static inline void _core_reset(void)
-	{
-		_k1b_core_reset();
-	}
 
 	/**
 	 * @see k1b_core_clear().
@@ -222,20 +196,14 @@
 	}
 
 	/**
-	 * @see k1b_core_setup()
-	 */
-	static inline void core_setup()
-	{
-		k1b_core_setup();
-	}
-
-	/**
 	 * @see k1b_core_waitclear().
 	 */
 	static inline void core_waitclear(void)
 	{
 		k1b_core_waitclear();
 	}
+
+#endif /* _ASM_FILE_ */
 
 /**@endcond*/
 

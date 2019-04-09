@@ -60,6 +60,30 @@
 	 */
 	#define K1B_CLUSTER_COREID_MASTER 0
 
+#ifndef _ASM_FILE_
+
+	/**
+	 * @brief Resets the underlying core.
+	 *
+	 * The k1b_core_reset() function resets execution instruction in
+	 * the underlying core by reseting the kernel stack to its initial
+	 * location and relaunching the k1b_slave_setup() function.
+	 *
+	 * @note This function does not return.
+	 * @note For the implementation of this function check out
+	 * assembly source files.
+	 *
+	 * @see k1b_slave_setup()
+	 *
+	 * @author Pedro Henrique Penna
+	 */
+	EXTERN NORETURN void _k1b_core_reset(void);
+
+	/**
+	 * @brief Initializes the underlying cluster.
+	 */
+	EXTERN void k1b_cluster_setup(void);
+
 	/**
 	 * @brief Gets the number of cores.
 	 *
@@ -73,6 +97,8 @@
 		return (K1B_CLUSTER_NUM_CORES);
 	}
 
+#endif /* _ASM_FILE_ */
+
 /**@}*/
 
 /*============================================================================*
@@ -84,10 +110,12 @@
  */
 
 	/**
-	 * @name Provided Functions
+	 * @name Exported Functions
 	 */
 	/**@{*/
-	#define __cluster_get_num_cores /**< cluster_get_num_cores() */
+	#define ___core_reset_fn           /**< _core_reset()           */
+	#define __core_setup_fn            /**< core_setup()            */
+	#define __cluster_get_num_cores_fn /**< cluster_get_num_cores() */
 	/**@}*/
 
 	/**
@@ -100,6 +128,16 @@
 	 */
 	#define COREID_MASTER K1B_CLUSTER_COREID_MASTER
 
+#ifndef _ASM_FILE_
+
+	/**
+	 * @see _k1b_core_reset().
+	 */
+	static inline void _core_reset(void)
+	{
+		_k1b_core_reset();
+	}
+
 	/**
 	 * @see k1b_cluster_get_num_cores().
 	 */
@@ -107,6 +145,16 @@
 	{
 		return (k1b_cluster_get_num_cores());
 	}
+
+	/**
+	 * @see k1b_core_setup()
+	 */
+	static inline void core_setup()
+	{
+		k1b_cluster_setup();
+	}
+
+#endif /* _ASM_FILE_ */
 
 /**@endcond*/
 
