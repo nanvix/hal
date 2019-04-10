@@ -115,9 +115,9 @@
 	/**
 	 * @brief High-level hardware interrupt dispatcher.
 	 *
-	 * @param num Interrupt request.
+	 * @param intnum Number of the interrupt.
 	 */
-	EXTERN void do_interrupt(int num);
+	EXTERN void do_interrupt(int intnum);
 
 	/**
 	 * @brief Disables all hardware interrupts.

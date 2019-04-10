@@ -131,11 +131,11 @@ PUBLIC int exception_unregister(int excpnum)
  *
  * @author Pedro Henrique Penna
  */
-PUBLIC void exception_forward(int num, const struct exception *excp, const struct context *ctx)
+PUBLIC void exception_forward(int excpnum, const struct exception *excp, const struct context *ctx)
 {
 	struct exception *_excp = (struct exception *) excp;
 
-	_excp->num = num;
+	_excp->num = excpnum;
 
 	kprintf("[hal] forwarding exception");
 	do_exception(_excp, ctx);
