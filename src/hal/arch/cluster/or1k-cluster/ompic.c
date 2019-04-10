@@ -22,8 +22,7 @@
  * SOFTWARE.
  */
 
-#include <arch/core/or1k/core.h>
-#include <arch/core/or1k/ompic.h>
+#include <nanvix/hal/core/interrupt.h>
 #include <arch/cluster/or1k-cluster/memory.h>
 #include <nanvix/const.h>
 #include <stdint.h>
@@ -90,5 +89,5 @@ PRIVATE void or1k_ompic_handle_ipi(int num)
 PUBLIC void or1k_ompic_init(void)
 {
 	/* IPI handler. */
-	or1k_hwint_handler_set(OR1K_INT_OMPIC, or1k_ompic_handle_ipi);
+	interrupt_register(OR1K_INT_OMPIC, or1k_ompic_handle_ipi);
 }

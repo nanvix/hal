@@ -25,6 +25,9 @@
 #ifndef ARCH_CORE_OR1K_INT_H_
 #define ARCH_CORE_OR1K_INT_H_
 
+	/* Must come first. */
+	#define __NEED_OR1K_PIC
+
 /**
  * @addtogroup or1k-core-int Hardware Interrupts
  * @ingroup or1k-core
@@ -33,18 +36,9 @@
  */
 /**@{*/
 
-	#define __NEED_OR1K_CONTEXT
-	#include <arch/core/or1k/context.h>
-
-	#define __NEED_OR1K_PIC
-	#include <arch/core/or1k/pic.h>
-
-#ifndef _ASM_FILE_
-
 	#include <arch/core/or1k/core.h>
+	#include <arch/core/or1k/pic.h>
 	#include <nanvix/const.h>
-
-#endif /* _ASM_FILE_ */
 
 #ifndef _ASM_FILE_
 
@@ -63,14 +57,12 @@
 	/**@}*/
 
 	/**
-	 * @brief High-level hardware interrupt dispatcher.
+	 * @brief Gets the next pending interrupt.
 	 *
-	 * @param num Number of triggered hardware interrupt.
-	 * @param ctx Interrupted execution context.
-	 *
-	 * @note This function is called from assembly code.
+	 * @returns The number of the next pending interrupt, or zero if
+	 * no interrupt is pending.
 	 */
-	EXTERN void or1k_do_hwint(int num, const struct context *ctx);
+	EXTERN int or1k_int_next(void);
 
 	/**
 	 * @brief Enables hardware interrupts.
@@ -78,7 +70,7 @@
 	 * The or1k_sti() function enables all hardware interrupts in the
 	 * underlying or1k core.
 	 */
-	static inline void or1k_hwint_enable(void)
+	static inline void or1k_int_enable(void)
 	{
 		or1k_mtspr(OR1K_SPR_SR, or1k_mfspr(OR1K_SPR_SR) | OR1K_SPR_SR_IEE
 			| OR1K_SPR_SR_TEE);
@@ -90,24 +82,13 @@
 	 * The or1k_cli() function disables all hardware interrupts in the
 	 * underlying or1k core.
 	 */
-	static inline void or1k_hwint_disable(void)
+	static inline void or1k_int_disable(void)
 	{
 		 or1k_mtspr(
 			OR1K_SPR_SR,
 			or1k_mfspr(OR1K_SPR_SR) & ~(OR1K_SPR_SR_IEE | OR1K_SPR_SR_TEE)
 		);
 	}
-
-	/**
-	 * @brief Sets a handler for a hardware interrupt.
-	 *
-	 * @param num     Number of the target hardware interrupt.
-	 * @param handler Hardware interrupt handler.
-	 *
-	 * @returns Upon successful completion, zero is returned. Upon
-	 * failure, a negative error code is returned instead.
-	 */
-	EXTERN int or1k_hwint_handler_set(int num, void (*handler)(int));
 
 #endif
 
@@ -122,50 +103,53 @@
  */
 
 	/**
-	 * @name Provided Interface
+	 * @name Exported Constants
 	 */
 	/**@{*/
-	#define __interrupts_disable    /**< interrupts_disable()    */
-	#define __interrupts_enable     /**< interrupts_enable()     */
-	#define __interrupt_set_handler /**< interrupt_set_handler() */
+	#define INTERRUPTS_NUM  OR1K_INT_NUM   /**< @ref OR1K_INT_NUM   */
+	#define INTERRUPT_CLOCK OR1K_INT_CLOCK /**< @ref OR1K_INT_CLOCK */
 	/**@}*/
 
 	/**
-	 * @brief Number of hardware interrupts.
-	 */
-	#define _INTERRUPTS_NUM OR1K_NUM_HWINT
-
-	/**
-	 * @name Hardware Interrupts
+	 * @name Exported Variables
 	 */
 	/**@{*/
-	#define INTERRUPT_CLOCK OR1K_INT_CLOCK /*< Programmable interrupt timer. */
+	#define __interrupt_handlers_var /**< @ref interrupt_handlers */
+	/**@}*/
+
+	/**
+	 * @name Exported Functions
+	 */
+	/**@{*/
+	#define __interrupts_disable_fn /**< @ref interrupts_disable() */
+	#define __interrupts_enable_fn  /**< @ref interrupts_enable()  */
+	#define __interrupt_next_fn     /**< @ref interrupt_next()     */
 	/**@}*/
 
 #ifndef _ASM_FILE_
 
 	/**
-	 * @see or1k_sti()
+	 * @see or1k_int_enable().
 	 */
 	static inline void interrupts_enable(void)
 	{
-		or1k_hwint_enable();
+		or1k_int_enable();
 	}
 
 	/**
-	 * @see or1k_cli()
+	 * @see or1k_int_disable().
 	 */
 	static inline void interrupts_disable(void)
 	{
-		or1k_hwint_disable();
+		or1k_int_disable();
 	}
 
 	/**
-	 * @see or1k_hwint_handler_set()
+	 * @see or1k_int_next().
 	 */
-	static inline int interrupt_set_handler(int num, void (*handler)(int))
+	static inline int interrupt_next(void)
 	{
-		return (or1k_hwint_handler_set(num, handler));
+		return (or1k_int_next());
 	}
 
 #endif /* _ASM_FILE_ */
