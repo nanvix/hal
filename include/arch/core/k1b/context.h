@@ -33,12 +33,9 @@
  */
 /**@{*/
 
-#ifndef _ASM_FILE_
-
 	#include <arch/core/k1b/core.h>
+	#include <nanvix/const.h>
 	#include <nanvix/klib.h>
-
-#endif /* _ASM_FILE_ */
 
 	/**
 	 * @brief Execution context size (in bytes).
@@ -128,34 +125,43 @@
 
 #ifndef _ASM_FILE_
 
-/**
- * @cond k1b
- */
+	/**
+	 * @cond k1b
+	 */
+
+		/**
+		 * Saved execution context upon interrupts and exceptions.
+		 */
+		struct context
+		{
+			k1b_word_t  r0,  r1,  r2,  r3,  r4,  r5,  r6,  r7; /**< General Purpose Registers  0 to  7 */
+			k1b_word_t  r8,  r9, r10, r11, r12, r13, r14, r15; /**< General Purpose Registers  8 to 15 */
+			k1b_word_t r16, r17, r18, r19, r20, r21, r22, r23; /**< General Purpose Registers 16 to 23 */
+			k1b_word_t r24, r25, r26, r27, r28, r29, r30, r31; /**< General Purpose Registers 24 to 31 */
+			k1b_word_t r32, r33, r34, r35, r36, r37, r38, r39; /**< General Purpose Registers 32 to 39 */
+			k1b_word_t r40, r41, r42, r43, r44, r45, r46, r47; /**< General Purpose Registers 40 to 47 */
+			k1b_word_t r48, r49, r50, r51, r52, r53, r54, r55; /**< General Purpose Registers 48 to 55 */
+			k1b_word_t r56, r57, r58, r59, r60, r61, r62, r63; /**< General Purpose Registers 56 to 63 */
+			k1b_word_t spc;                                    /**< Shadow Program Counter Register    */
+			k1b_word_t ra;                                     /**< Return Address Register            */
+			k1b_word_t cs;                                     /**< Compute Status Register            */
+			k1b_word_t ssp, sssp, ssssp;                       /**< Stack Pointer Registers            */
+			k1b_word_t lc;                                     /**< Loop Count Register                */
+			k1b_word_t ls;                                     /**< Loop Start Register                */
+			k1b_word_t le;                                     /**< Loop Exit Register                 */
+			k1b_word_t ps;                                     /**< Processing Status Register         */
+			k1b_word_t sps;                                    /**< Shadow Processing Status Register  */
+			k1b_byte_t RESERVED[4];                            /**< Required padding.                  */
+		} PACK;
+
+	/**@endcond*/
 
 	/**
-	 * Saved execution context upon interrupts and exceptions.
+	 * @brief Dumps context information.
+	 *
+	 * @param ctx Saved execution context.
 	 */
-	struct context
-	{
-		k1b_word_t  r0,  r1,  r2,  r3,  r4,  r5,  r6,  r7; /**< General Purpose Registers  0 to  7 */
-		k1b_word_t  r8,  r9, r10, r11, r12, r13, r14, r15; /**< General Purpose Registers  8 to 15 */
-		k1b_word_t r16, r17, r18, r19, r20, r21, r22, r23; /**< General Purpose Registers 16 to 23 */
-		k1b_word_t r24, r25, r26, r27, r28, r29, r30, r31; /**< General Purpose Registers 24 to 31 */
-		k1b_word_t r32, r33, r34, r35, r36, r37, r38, r39; /**< General Purpose Registers 32 to 39 */
-		k1b_word_t r40, r41, r42, r43, r44, r45, r46, r47; /**< General Purpose Registers 40 to 47 */
-		k1b_word_t r48, r49, r50, r51, r52, r53, r54, r55; /**< General Purpose Registers 48 to 55 */
-		k1b_word_t r56, r57, r58, r59, r60, r61, r62, r63; /**< General Purpose Registers 56 to 63 */
-		k1b_word_t spc;                                    /**< Shadow Program Counter Register    */
-		k1b_word_t ra;                                     /**< Return Address Register            */
-		k1b_word_t cs;                                     /**< Compute Status Register            */
-		k1b_word_t ssp, sssp, ssssp;                       /**< Stack Pointer Registers            */
-		k1b_word_t lc;                                     /**< Loop Count Register                */
-		k1b_word_t ls;                                     /**< Loop Start Register                */
-		k1b_word_t le;                                     /**< Loop Exit Register                 */
-		k1b_word_t ps;                                     /**< Processing Status Register         */
-		k1b_word_t sps;                                    /**< Shadow Processing Status Register  */
-		k1b_byte_t RESERVED[4];                            /**< Required padding.                  */
-	} __attribute__((packed));
+	EXTERN void k1b_context_dump(const struct context *ctx);
 
 	/**
 	 * @brief Gets the value of the stack pointer register.
@@ -204,8 +210,6 @@
 	{
 		ctx->spc = val;
 	}
-
-/**@endcond*/
 
 #endif /* _ASM_FILE_ */
 

@@ -34,8 +34,11 @@
 	#define __NEED_CORE_TYPES
 
 	#include <arch/core/k1b/types.h>
-	#include <mOS_vcore_u.h>
 	#include <nanvix/const.h>
+
+#ifndef _ASM_FILE_
+	#include <mOS_vcore_u.h>
+#endif /* _ASM_FILE_ */
 
 #ifndef _ASM_FILE_
 

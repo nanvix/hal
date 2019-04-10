@@ -86,7 +86,7 @@ PRIVATE void __k1b_do_int(int intnum, __k1_vcontext_t *ctx)
 		{
 			if (LIKELY(_k1b_do_int != NULL))
 				_k1b_do_int(hwints[i].hwint);
-			return;	
+			return;
 		}
 	}
 }

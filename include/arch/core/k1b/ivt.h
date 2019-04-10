@@ -63,12 +63,13 @@
 	 * @param hwint_handler Default hardware interrupt handler.
 	 * @param swint_handler Default software interrupt handler.
 	 * @param excp_handler  Default exception handler.
+	 * @param stack         Stack for interrupts, exceptions and traps.
 	 */
 	extern void k1b_ivt_setup(
 			k1b_int_handler_fn hwint_handler,
 			k1b_swint_handler_fn swint_handler,
 			k1b_excp_handler_fn excp_handler,
-			void *estack
+			void *stack
 	);
 
 #endif /* _ASM_FILE_ */
