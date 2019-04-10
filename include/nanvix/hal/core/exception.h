@@ -67,21 +67,23 @@
 	#error "struct exception not defined?"
 	#endif
 
+	/* Variables */
+	#ifndef __exceptions_var
+	#error "exceptions not defined?"
+	#endif
+
 	/* Functions */
-	#ifndef __exception_get_addr
+	#ifndef __exception_get_addr_fn
 	#error "exception_get_addr() not defined?"
 	#endif
-	#ifndef __exception_get_instr
+	#ifndef __exception_get_instr_fn
 	#error "exception_get_instr() not defined?"
 	#endif
-	#ifndef __exception_get_num
+	#ifndef __exception_get_num_fn
 	#error "exception_get_num() not defined?"
 	#endif
-	#ifndef __exception_set_handler
-	#error "exception_set_handler() not defined?"
-	#endif
-	#ifndef __exception_unset_handler
-	#error "exception_unset_handler() not defined?"
+	#ifndef __exception_dump_fn
+	#error "exception_dump() not defined?"
 	#endif
 
 #endif
@@ -112,6 +114,15 @@
 	typedef void (*exception_handler_t)(const struct exception *, const struct context *);
 
 	/**
+	 * @brief Information about exceptions.
+	 */
+	EXTERN struct exception_info
+	{
+		exception_handler_t handler; /**< Handler */
+		const char *name;            /**< Name    */
+	} exceptions[EXCEPTIONS_NUM];
+
+	/**
 	 * @brief Gets the number of an exception.
 	 *
 	 * @param excp Target exception information structure.
@@ -136,7 +147,14 @@
 	EXTERN vaddr_t exception_get_addr(const struct exception *excp);
 
 	/**
-	 * @brief Sets a handler for an exception.
+	 * @brief Dumps information about an exception.
+	 *
+	 * @param excp Exception information.
+	 */
+	EXTERN void exception_dump(const struct exception *excp);
+
+	/**
+	 * @brief Registers an exception handler.
 	 *
 	 * @param excpnum Number of the target exception.
 	 * @param handler Exception handler.
@@ -144,17 +162,30 @@
 	 * @returns Upon successful completion zero is returned. Upon
 	 * failure a negative error code is returned instead.
 	 */
-	EXTERN int exception_set_handler(int excpnum, exception_handler_t handler);
+	EXTERN int exception_register(int excpnum, exception_handler_t handler);
 
 	/**
-	 * @brief Unsets a handler for an exception.
+	 * @brief Unregisters an exception handler.
 	 *
 	 * @param excpnum Number of the target exception.
 	 *
 	 * @returns Upon successful completion zero is returned. Upon
 	 * failure a negative error code is returned instead.
 	 */
-	EXTERN int exception_unset_handler(int excpnum);
+	EXTERN int exception_unregister(int excpnum);
+
+	/**
+	 * @brief Forwards an exception.
+	 *
+	 * @param excpnum Number of the target exception.
+	 * @param excp    Exception to be forwarded.
+	 * @param ctx     Context information of the forwarded exception.
+	 */
+	EXTERN void exception_forward(
+		int excpnum,
+		const struct exception *excp,
+		const struct context *ctx
+	);
 
 /**@}*/
 
