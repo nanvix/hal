@@ -38,12 +38,7 @@
 /**@{*/
 
 	#include <arch/core/rv32i/core.h>
-
-#ifndef _ASM_FILE_
-
 	#include <nanvix/klib.h>
-
-#endif /* _ASM_FILE_ */
 
 	/**
 	 * @brief Execution context size (in bytes).
@@ -90,29 +85,38 @@
 
 #ifndef _ASM_FILE_
 
-/**
- * @cond rv32i
- */
+	/**
+	 * @cond rv32i
+	 */
+
+		/**
+		 * Saved execution context upon interrupts and exceptions.
+		 */
+		struct context
+		{
+			rv32i_word_t ra;                     /**< Return Address Register                  */
+			rv32i_word_t sp;                     /**< Stack Pointer Register                   */
+			rv32i_word_t gp;                     /**< Global Pointer Register                  */
+			rv32i_word_t tp;                     /**< Thread Pointer Register                  */
+			rv32i_word_t t0, t1, t2;             /**< Temporary Registers 0 to 2               */
+			rv32i_word_t fp;                     /**< Frame Pointer Register                   */
+			rv32i_word_t s1;                     /**< Saved Register 1                         */
+			rv32i_word_t a0, a1;                 /**< Function Argument/Return Value Registers */
+			rv32i_word_t a2, a3, a4, a5, a6, a7; /**< Function Argument Registers 2 to 7       */
+			rv32i_word_t s2, s3, s4, s5, s6;     /**< Saved Registers 2 to 6                   */
+			rv32i_word_t s7, s8, s9, s10, s11;   /**< Saved Registers 7 to 11                  */
+			rv32i_word_t t3, t4, t5, t6;         /**< Temporary Registers 3 to 6               */
+			rv32i_word_t pc;                     /**< Program Counter                          */
+		} PACK;
+
+	/**@endcond*/
 
 	/**
-	 * Saved execution context upon interrupts and exceptions.
+	 * @brief Dumps context information.
+	 *
+	 * @param ctx Saved execution context.
 	 */
-	struct context
-	{
-		rv32i_word_t ra;                     /**< Return Address Register                  */
-		rv32i_word_t sp;                     /**< Stack Pointer Register                   */
-		rv32i_word_t gp;                     /**< Global Pointer Register                  */
-		rv32i_word_t tp;                     /**< Thread Pointer Register                  */
-		rv32i_word_t t0, t1, t2;             /**< Temporary Registers 0 to 2               */
-		rv32i_word_t fp;                     /**< Frame Pointer Register                   */
-		rv32i_word_t s1;                     /**< Saved Register 1                         */
-		rv32i_word_t a0, a1;                 /**< Function Argument/Return Value Registers */
-		rv32i_word_t a2, a3, a4, a5, a6, a7; /**< Function Argument Registers 2 to 7       */
-		rv32i_word_t s2, s3, s4, s5, s6;     /**< Saved Registers 2 to 6                   */
-		rv32i_word_t s7, s8, s9, s10, s11;   /**< Saved Registers 7 to 11                  */
-		rv32i_word_t t3, t4, t5, t6;         /**< Temporary Registers 3 to 6               */
-		rv32i_word_t pc;                     /**< Program Counter                          */
-	} PACK;
+	EXTERN void rv32i_context_dump(const struct context *ctx);
 
 	/**
 	 * @brief Gets the value of the stack pointer register.
@@ -161,8 +165,6 @@
 	{
 		ctx->pc = val;
 	}
-
-/**@endcond*/
 
 #endif /* _ASM_FILE_ */
 
@@ -232,6 +234,14 @@
 	static inline void context_set_pc(struct context *ctx, word_t val)
 	{
 		rv32i_context_set_pc(ctx, val);
+	}
+
+	/**
+	 * @see rv32i_context_dump().
+	 */
+	static inline void context_dump(const struct context *ctx)
+	{
+		rv32i_context_dump(ctx);
 	}
 
 #endif /* _ASM_FILE_ */

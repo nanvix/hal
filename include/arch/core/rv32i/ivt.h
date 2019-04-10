@@ -48,11 +48,6 @@
 	 */
 	#define RV32I_INT_NUM 12
 
-	/**
-	 * @brief Number of exceptions.
-	 */
-	#define RV32I_EXCP_NUM 16
-
 #ifndef _ASM_FILE_
 
 	/**

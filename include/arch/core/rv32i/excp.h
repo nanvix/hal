@@ -25,6 +25,10 @@
 #ifndef ARCH_CORE_RV32I_EXCP_H_
 #define ARCH_CORE_RV32I_EXCP_H_
 
+	/* Must come first. */
+	#define __NEED_CORE_CONTEXT
+	#define __NEED_MEMORY_TYPES
+
 /**
  * @addtogroup rv32i-core-exception Exception
  * @ingroup rv32i-core
@@ -33,27 +37,19 @@
  */
 /**@{*/
 
-	/* Must come first. */
-	#define __NEED_CORE_IVT
-	#define __NEED_CORE_CONTEXT
-	#define __NEED_MEMORY_TYPES
-
 	#include <arch/core/rv32i/context.h>
-
-#ifndef _ASM_FILE_
-
-	#include <arch/core/rv32i/core.h>
-	#include <arch/core/rv32i/ivt.h>
 	#include <arch/core/rv32i/types.h>
 	#include <nanvix/const.h>
-	#include <stdint.h>
-
-#endif /* _ASM_FILE_ */
 
 	/**
 	 * @brief Exception information size (in bytes).
 	 */
 	#define RV32I_EXCP_SIZE 16
+
+	/**
+	 * @brief Number of exceptions.
+	 */
+	#define RV32I_EXCP_NUM 16
 
 	/**
 	 * @brief Number of virtual exceptions.
@@ -102,42 +98,47 @@
 	 * @see exception
 	 */
 	/**@{*/
-	#define RV32I_EXCP_ID     0 /**< Exception Identifier  */
+	#define RV32I_EXCP_NR     0 /**< Exception Identifier  */
 	#define RV32I_EXCP_ADDR   4 /**< Exception Address     */
 	#define RV32I_EXCP_INSTR  8 /**< Saved Program Counter */
 	/**@}*/
 
 #ifndef _ASM_FILE_
 
-/**
- * @cond rv32i
- */
-
 	/**
-	 * @brief Exception information.
+	 * @cond rv32i
 	 */
-	struct exception
-	{
-		rv32i_word_t id;         /**< Cause.                */
-		rv32i_word_t addr;        /**< Faulting address.     */
-		rv32i_word_t instr;       /**< Faulting instruction. */
-		rv32i_byte_t RESERVED[4]; /**< Required padding.     */
 
-	} PACK;
+		/**
+		 * @brief Exception information.
+		 */
+		struct exception
+		{
+			rv32i_word_t num;         /**< Cause.                */
+			rv32i_word_t addr;        /**< Faulting address.     */
+			rv32i_word_t instr;       /**< Faulting instruction. */
+			rv32i_byte_t RESERVED[4]; /**< Required padding.     */
 
-/**@endcond*/
+		} PACK;
 
-	/**
-	 * @brief Dumps all GPRs.
-	 *
-	 * @brief ctx  Saved execution context.
-	 */
-	EXTERN void rv32i_dump_all_gpr(const struct context *ctx);
+	/**@endcond*/
 
 	/**
 	 * @brief Exception handler.
 	 */
-	typedef void (*rv32i_exception_handler_fn)(const struct exception *, const struct context *);
+	typedef void (*rv32i_excp_handler_fn)(const struct exception *, const struct context *);
+
+	/**
+	 * @brief Dumps information about an exception.
+	 *
+	 * @param excp Exception information.
+	 */
+	EXTERN void rv32i_excp_dump(const struct exception *excp);
+
+	/**
+	 * @brief Low-level exception dispatcher.
+	 */
+	EXTERN void _rv32i_do_excp(void);
 
 	/**
 	 * @brief Gets the number of an exception.
@@ -155,7 +156,7 @@
 	 */
 	static inline int rv32i_excp_get_cause(const struct exception *excp)
 	{
-		return (excp->id);
+		return (excp->num);
 	}
 
 	/**
@@ -196,42 +197,6 @@
 		return (excp->instr);
 	}
 
-	/**
-	 * @brief Sets a handler for an exception.
-	 *
-	 * @param num     Number of the target exception.
-	 * @param handler Exception handler.
-	 *
-	 * @returns Upon successful completion zero is returned. Upon
-	 * failure a negative error code is returned instead.
-	 */
-	EXTERN int rv32i_excp_set_handler(int num, rv32i_exception_handler_fn handler);
-
-	/**
-	 * @brief Unsets a handler for an exception.
-	 *
-	 * @param num Number of the target exception.
-	 *
-	 * @returns Upon successful completion zero is returned. Upon
-	 * failure a negative error code is returned instead.
-	 */
-	EXTERN int rv32i_excp_unset_handler(int num);
-
-	/**
-	 * @brief Low-level exception dispatcher.
-	 */
-	EXTERN void _do_excp(void);
-
-	/**
-	 * @brief High-level exception dispatcher.
-	 *
-	 * @brief excp Exception information.
-	 * @brief ctx  Saved execution context.
-	 *
-	 * @note This function is called from assembly code.
-	 */
-	EXTERN void do_excp(const struct exception *excp, const struct context *ctx);
-
 #endif /* _ASM_FILE_ */
 
 /**@}*/
@@ -266,11 +231,17 @@
 	 * @name Exported Functions
 	 */
 	/**@{*/
-	#define __exception_get_addr      /**< @ref exception_get_addr()      */
-	#define __exception_get_instr     /**< @ref exception_get_instr()     */
-	#define __exception_get_num       /**< @ref exception_get_num()       */
-	#define __exception_set_handler   /**< @ref exception_set_handler()   */
-	#define __exception_unset_handler /**< @ref exception_unset_handler() */
+	#define __exception_get_addr_fn  /**< @ref exception_get_addr()  */
+	#define __exception_get_instr_fn /**< @ref exception_get_instr() */
+	#define __exception_get_num_fn   /**< @ref exception_get_num()   */
+	#define __exception_dump_fn      /**< @ref exception_dump()      */
+	/**@}*/
+
+	/**
+	 * @name Exported Variables
+	 */
+	/**@{*/
+	#define __exceptions_var /**< @ref exceptions */
 	/**@}*/
 
 #ifndef _ASM_FILE_
@@ -300,29 +271,12 @@
 	}
 
 	/**
-	 * @see rv32i_excp_set_handler().
+	 * @see rv32i_excp_dump().
 	 */
-	static inline int exception_set_handler(int num, rv32i_exception_handler_fn handler)
+	static inline void exception_dump(const struct exception *excp)
 	{
-		return (rv32i_excp_set_handler(num, handler));
+		rv32i_excp_dump(excp);
 	}
-
-	/**
-	 * @see rv32i_excp_unset_handler().
-	 */
-	static inline int exception_unset_handler(int num)
-	{
-		return (rv32i_excp_unset_handler(num));
-	}
-
-	/**
-	 * @brief Forwards an exception.
-	 *
-	 * @param num  Target exception.
-	 * @param excp Exception to be forwarded.
-	 * @param ctx  Context information of the forwarded exception.
-	 */
-	EXTERN void forward_excp(int num, const struct exception *excp, const struct context *ctx);
 
 #endif /* _ASM_FILE_ */
 

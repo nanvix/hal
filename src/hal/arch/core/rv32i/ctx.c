@@ -22,42 +22,28 @@
  * SOFTWARE.
  */
 
-#include <nanvix/hal/core/exception.h>
+/* Must come first. */
+#define __NEED_CORE_CONTEXT
+
+#include <arch/core/rv32i/context.h>
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
 
 /**
- * @cond rv32i
- *
- * Lookup table with information about exceptions.
- *
- * @endcond
- */
-PUBLIC struct exception_info exceptions[RV32I_EXCP_NUM_EXT] = {
-	{ NULL, "instruction address misaligned" },
-	{ NULL, "instruction access fault"       },
-	{ NULL, "illegal instruction"            },
-	{ NULL, "breakpoint"                     },
-	{ NULL, "load address misaligned"        },
-	{ NULL, "load access fault"              },
-	{ NULL, "store/amo address misaligned"   },
-	{ NULL, "store/amo access fault"         },
-	{ NULL, "environment call from u-mode"   },
-	{ NULL, "environment call from s-mode"   },
-	{ NULL, "reserved"                       },
-	{ NULL, "environment call from m-mode"   },
-	{ NULL, "instruction page fault"         },
-	{ NULL, "load page fault"                },
-	{ NULL, "reserved"                       },
-	{ NULL, "page fault"                     },
-	{ NULL, "page protection"                },
-	{ NULL, "general protection"             },
-};
-
-/**
  * @todo TODO provide a detailed description for this function.
+ *
+ * @author Pedro Henrique Penna
  */
-PUBLIC void rv32i_excp_dump(const struct exception *excp)
+PUBLIC void rv32i_context_dump(const struct context *ctx)
 {
-	kprintf("%s", exceptions[excp->num].name);
+	/* Dump general purpose registers. */
+	kprintf("[hal]  ra=%x   sp=%x   fp=%x",       ctx->ra, ctx->sp, ctx->fp);
+	kprintf("[hal]  gp=%x   tp=%x",               ctx->gp, ctx->tp);
+	kprintf("[hal]  a0=%x   a1=%x  s2=%x  a3=%x", ctx->a0, ctx->a1,  ctx->a2,  ctx->a3);
+	kprintf("[hal]  a4=%x   a5=%x  s6=%x  a7=%x", ctx->a4, ctx->a5,  ctx->a6,  ctx->a7);
+	kprintf("[hal]  t0=%x   t1=%x  t2=%x",        ctx->t0, ctx->t1,  ctx->t2);
+	kprintf("[hal]  t3=%x   t4=%x  t5=%x  t6=%x", ctx->t3, ctx->t4,  ctx->t5,  ctx->t6);
+	kprintf("[hal]  s1=%x   s2=%x  s3=%x  s4=%x", ctx->s1, ctx->s2,  ctx->s3,  ctx->s4);
+	kprintf("[hal]  s5=%x   s6=%x  s7=%x  s8=%x", ctx->s5, ctx->s6,  ctx->s7,  ctx->s8);
+	kprintf("[hal]  s9=%x  s10=%x s11=%x",        ctx->s9, ctx->s10, ctx->s11);
 }

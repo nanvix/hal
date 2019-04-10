@@ -179,7 +179,7 @@ PUBLIC NORETURN void rv32i_supervisor_enter(rv32i_word_t pc)
  */
 PUBLIC NORETURN void rv32i_do_mbad(const struct context *ctx)
 {
-	rv32i_dump_all_gpr(ctx);
+	rv32i_context_dump(ctx);
 	rv32i_dump_all_csr();
 
 	kprintf("[rv32i] bad exception");
@@ -193,7 +193,7 @@ PUBLIC NORETURN void rv32i_do_mbad(const struct context *ctx)
  */
 PUBLIC NORETURN void rv32i_do_mexcp(const struct context *ctx)
 {
-	rv32i_dump_all_gpr(ctx);
+	rv32i_context_dump(ctx);
 	rv32i_dump_all_csr();
 
 	kprintf("[rv32i] unhandled exception");
@@ -275,7 +275,7 @@ PUBLIC void rv32i_do_mcall(struct context *ctx)
  */
 PUBLIC void rv32i_do_mint(const struct context *ctx)
 {
-	rv32i_dump_all_gpr(ctx);
+	rv32i_context_dump(ctx);
 	rv32i_dump_all_csr();
 
 	kprintf("[rv32i] unhandled interrupt");
