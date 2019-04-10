@@ -139,7 +139,7 @@
 		unsigned readable   :  1; /**< Readable?    */
 		unsigned writable   :  1; /**< Writable?    */
 		unsigned executable :  1; /**< Executable?  */
-		unsigned            :  1; /**< Reserved     */
+		unsigned user       :  1; /**< User page?   */
 		unsigned global     :  1; /**< Global Page? */
 		unsigned            :  1; /**< Reserved     */
 		unsigned            :  1; /**< Reserved     */
@@ -499,6 +499,44 @@
 			return (-EINVAL);
 
 		return (pde->executable);
+	}
+
+	/**
+	 * @brief Sets/clears the user bit of a page.
+	 *
+	 * @param pde Page directory entry of target page.
+	 * @param set Set bit?
+	 *
+	 * @author Pedro Henrique Penna
+	 */
+	static inline int pde_user_set(struct pde *pde, int set)
+	{
+		/* Invalid PTE. */
+		if (pde == NULL)
+			return (-EINVAL);
+
+		pde->user = (set) ? 1 : 0;
+
+		return (0);
+	}
+
+	/**
+	 * @brief Asserts if the user bit of a page.
+	 *
+	 * @param pde Page directory entry of target page.
+	 *
+	 * @returns If the user bit of the target page, non zero is
+	 * returned. Otherwise, zero is returned instead.
+	 *
+	 * @author Pedro Henrique Penna
+	 */
+	static inline int pde_is_user(struct pde *pde)
+	{
+		/* Invalid PTE. */
+		if (pde == NULL)
+			return (-EINVAL);
+
+		return (pde->user);
 	}
 
 	/**
