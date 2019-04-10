@@ -22,12 +22,8 @@
  * SOFTWARE.
  */
 
-#ifndef ARCH_I486_INT_H_
-#define ARCH_I486_INT_H_
-
-/*============================================================================*
- *                             Interrupt Interface                            *
- *============================================================================*/
+#ifndef ARCH_CORE_I486_INT_H_
+#define ARCH_CORE_I486_INT_H_
 
 /**
  * @addtogroup i486-core-int Hardware Interrupts
@@ -39,27 +35,26 @@
 
 	#include <nanvix/const.h>
 	#include <arch/core/i486/pic.h>
-	#include <arch/core/i486/context.h>
 
 	/**
 	 * @name Hardware Interrupts for the IBM PC Target
 	 */
 	/**@{*/
-	#define I486_PC_INT_CLOCK    0 /*< Programmable interrupt timer.              */
-	#define I486_PC_INT_KEYBOARD 1 /*< Keyboard.                                  */
-	#define I486_PC_INT_COM2     3 /*< COM2.                                      */
-	#define I486_PC_INT_COM1     4 /*< COM1.                                      */
-	#define I486_PC_INT_LPT2     5 /*< LPT2.                                      */
-	#define I486_PC_INT_FLOPPY   6 /*< Floppy disk.                               */
-	#define I486_PC_INT_LPT1     7 /*< LPT1.                                      */
-	#define I486_PC_INT_CMOS     8 /*< CMOS real-time clock.                      */
-	#define I486_PC_INT_SCSI1    9 /*< Free for peripherals (legacy SCSI or NIC). */
-	#define I486_PC_INT_SCSI2   10 /*< Free for peripherals (legacy SCSI or NIC). */
-	#define I486_PC_INT_SCSI3   11 /*< Free for peripherals (legacy SCSI or NIC). */
-	#define I486_PC_INT_MOUSE   12 /*< PS2 mouse.                                 */
-	#define I486_PC_INT_COPROC  13 /*< FPU, coprocessor or inter-processor.       */
-	#define I486_PC_INT_ATA1    14 /*< Primary ATA hard disk.                     */
-	#define I486_PC_INT_ATA2    15 /*< Secondary ATA hard disk.                   */
+	#define I486_INT_CLOCK    0 /*< Programmable interrupt timer.              */
+	#define I486_INT_KEYBOARD 1 /*< Keyboard.                                  */
+	#define I486_INT_COM2     3 /*< COM2.                                      */
+	#define I486_INT_COM1     4 /*< COM1.                                      */
+	#define I486_INT_LPT2     5 /*< LPT2.                                      */
+	#define I486_INT_FLOPPY   6 /*< Floppy disk.                               */
+	#define I486_INT_LPT1     7 /*< LPT1.                                      */
+	#define I486_INT_CMOS     8 /*< CMOS real-time clock.                      */
+	#define I486_INT_SCSI1    9 /*< Free for peripherals (legacy SCSI or NIC). */
+	#define I486_INT_SCSI2   10 /*< Free for peripherals (legacy SCSI or NIC). */
+	#define I486_INT_SCSI3   11 /*< Free for peripherals (legacy SCSI or NIC). */
+	#define I486_INT_MOUSE   12 /*< PS2 mouse.                                 */
+	#define I486_INT_COPROC  13 /*< FPU, coprocessor or inter-processor.       */
+	#define I486_INT_ATA1    14 /*< Primary ATA hard disk.                     */
+	#define I486_INT_ATA2    15 /*< Secondary ATA hard disk.                   */
 	/**@}*/
 
 	/**
@@ -85,14 +80,15 @@
 	/**@}*/
 
 	/**
-	 * @brief High-level hardware interrupt dispatcher.
+	 * @brief Gets the next pending interrupt.
 	 *
-	 * @param num Number of triggered hardware interrupt.
-	 * @param ctx Interrupted execution context.
-	 *
-	 * @note This function is called from assembly code.
+	 * @returns The number of the next pending interrupt, or zero if
+	 * no interrupt is pending.
 	 */
-	EXTERN void i486_do_hwint(int num, const struct context *ctx);
+	static inline int i486_int_next(void)
+	{
+		return (0);
+	}
 
 	/**
 	 * @brief Enables hardware interrupts.
@@ -100,7 +96,7 @@
 	 * The i486_hwint_enable() function enables all hardware interrupts in the
 	 * underlying i486 core.
 	 */
-	static inline void i486_hwint_enable(void)
+	static inline void i486_int_enable(void)
 	{
 		 asm("sti");
 	}
@@ -111,26 +107,15 @@
 	 * The i486_hwint_disable() function disables all hardware interrupts in the
 	 * underlying i486 core.
 	 */
-	static inline void i486_hwint_disable(void)
+	static inline void i486_int_disable(void)
 	{
 		 asm("cli");
 	}
 
-	/**
-	 * @brief Sets a handler for a hardware interrupt.
-	 *
-	 * @param num     Number of the target hardware interrupt.
-	 * @param handler Hardware interrupt handler.
-	 *
-	 * @returns Upon successful completion, zero is returned. Upon
-	 * failure, a negative error code is returned instead.
-	 */
-	EXTERN int i486_hwint_handler_set(int num, void (*handler)(int));
-
 /**@}*/
 
 /*============================================================================*
- *                              Exported Interface                            *
+ * Exported Interface                                                         *
  *============================================================================*/
 
 /**
@@ -138,50 +123,53 @@
  */
 
 	/**
-	 * @name Provided Interface
+	 * @name Exported Constants
 	 */
 	/**@{*/
-	#define __interrupts_disable
-	#define __interrupts_enable
-	#define __interrupt_set_handler
+	#define INTERRUPTS_NUM  I486_INT_NUM   /**< @ref I486_INT_NUM   */
+	#define INTERRUPT_CLOCK I486_INT_CLOCK /**< @ref I486_INT_CLOCK */
 	/**@}*/
 
 	/**
-	 * @brief Number of hardware interrupts in the IBM PC target.
-	 */
-	#define _INTERRUPTS_NUM I486_NUM_HWINT
-
-	/**
-	 * @name Hardware Interrupts
+	 * @name Exported Variables
 	 */
 	/**@{*/
-	#define INTERRUPT_CLOCK I486_PC_INT_CLOCK /*< Programmable interrupt timer. */
+	#define __interrupt_handlers_var /**< @ref interrupt_handlers */
 	/**@}*/
 
 	/**
-	 * @see i486_hwint_enable()
+	 * @name Exported Functions
+	 */
+	/**@{*/
+	#define __interrupts_disable_fn /**< @ref interrupts_disable() */
+	#define __interrupts_enable_fn  /**< @ref interrupts_enable()  */
+	#define __interrupt_next_fn     /**< @ref interrupt_next()     */
+	/**@}*/
+
+	/**
+	 * @see i486_int_enable()
 	 */
 	static inline void interrupts_enable(void)
 	{
-		i486_hwint_enable();
+		i486_int_enable();
 	}
 
 	/**
-	 * @see i486_hwint_disable()
+	 * @see i486_int_disable()
 	 */
 	static inline void interrupts_disable(void)
 	{
-		i486_hwint_disable();
+		i486_int_disable();
 	}
 
 	/**
-	 * @see i486_hwint_handler_set().
+	 * @see i486_int_next().
 	 */
-	static inline int interrupt_set_handler(int num, void (*handler)(int))
+	static inline int interrupt_next(void)
 	{
-		return (i486_hwint_handler_set(num, handler));
+		return (i486_int_next());
 	}
 
 /**@endcond*/
 
-#endif /* ARCH_I486_INT_H_ */
+#endif /* ARCH_CORE_I486_INT_H_ */

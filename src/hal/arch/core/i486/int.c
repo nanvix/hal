@@ -22,58 +22,15 @@
  * SOFTWARE.
  */
 
-#include <arch/core/i486/context.h>
 #include <arch/core/i486/int.h>
 #include <nanvix/const.h>
-#include <nanvix/klib.h>
-#include <errno.h>
 
 /**
- * @brief Interrupt handlers.
+ * @brief interrupt handlers.
  */
-PRIVATE void (*i486_handlers[I486_NUM_HWINT])(int) = {
+PUBLIC void (*interrupt_handlers[I486_INT_NUM])(int) = {
 	NULL, NULL, NULL, NULL,
 	NULL, NULL, NULL, NULL,
 	NULL, NULL, NULL, NULL,
 	NULL, NULL, NULL, NULL
 };
-
-/**
- * @brief High-level hardware interrupt dispatcher.
- *
- * The do_hwint() function dispatches a hardware interrupt request
- * that was triggered to a previously-registered handler. If no
- * function was previously registered to handle the triggered hardware
- * interrupt request, this function returns immediately.
- *
- * @param num Interrupt request.
- * @param ctx Interrupted execution context.
- *
- * @note This function is called from assembly code.
- */
-PUBLIC void i486_do_hwint(int num, const struct context *ctx)
-{
-	UNUSED(ctx);
-
-	/* Nothing to do. */
-	if (i486_handlers[num] == NULL)
-		return;
-
-	i486_handlers[num](num);
-}
-
-/**
- * The i486_hwint_handler_set() function sets the function pointed to
- * by @p handler as the handler for the hardware interrupt whose
- * number is @p num.
- */
-PUBLIC int i486_hwint_handler_set(int num, void (*handler)(int))
-{
-	/* Invalid interrupt number. */
-	if ((num < 0) || (num >= I486_NUM_HWINT))
-		return (-EINVAL);
-
-	i486_handlers[num] = handler;
-
-	return (0);
-}

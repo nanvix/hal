@@ -69,7 +69,7 @@
 	/**
 	 * @brief Number of hardware interrupts in the i486 architecture.
 	 */
-	#define I486_NUM_HWINT 16
+	#define I486_INT_NUM 16
 
 	/**
 	 * @brief Number of interrupt levels.

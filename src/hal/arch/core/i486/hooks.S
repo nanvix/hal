@@ -253,10 +253,9 @@ i486_syscall:
 	_do_hwint\()\num:
 		i486_context_save %ebx
 		i486_pic_master_ack
-		pushl %ebx
 		pushl $(\num)
-		call i486_do_hwint
-		addl $(2*I486_WORD_SIZE), %esp
+		call do_interrupt
+		addl $I486_WORD_SIZE, %esp
 		i486_context_restore
 		iret
 .endm
@@ -268,10 +267,9 @@ i486_syscall:
 	_do_hwint\()\num:
 		i486_context_save %ebx
 		i486_pic_slave_ack
-		pushl %ebx
 		pushl $(\num)
-		call i486_do_hwint
-		addl $(2*I486_WORD_SIZE), %esp
+		call do_interrupt
+		addl $I486_WORD_SIZE, %esp
 		i486_context_restore
 		iret
 .endm
