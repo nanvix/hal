@@ -37,6 +37,24 @@ PRIVATE void (*handlers[RV32I_INT_NUM])(int) = {
 };
 
 /**
+ * Table of Interrupt Requests (IRQs).
+ */
+PUBLIC const int irqs[RV32I_INT_NUM] = {
+	RV32I_SIE_USIE, /* User Software Interrupt Enable       */
+	RV32I_SIE_SSIE, /* Supervisor Interrupt Enable          */
+	0,
+	0,
+	RV32I_SIE_UTIE, /* User Timer Interrupt Enable          */
+	RV32I_SIE_STIE, /* Supervisor Timer Interrupt Enable    */
+	0,
+	0,
+	RV32I_SIE_UEUE, /* User External Interrupt Enable       */
+	RV32I_SIE_SEIE, /* Supervisor External Interrupt Enable */
+	0,
+	0
+};
+
+/**
  * The do_int() function dispatches an interrupt request to a
  * previously-registered handler. If no function was previously
  * registered to handle the triggered hardware interrupt request, this
@@ -50,7 +68,7 @@ PUBLIC void rv32i_do_int(int num, const struct context *ctx)
 
 	UNUSED(ctx);
 
-	rv32i_pic_ack(num);
+	rv32i_int_ack(num);
 
 	/* Unknown interrupt. */
 	if (num >= RV32I_INT_NUM)

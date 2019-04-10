@@ -24,20 +24,10 @@
 
 /* Must come first. */
 #define _ASM_FILE_
-#define __NEED_CONTEXT
-#define __NEED_CORE_REGS
-#define __NEED_CORE_TYPES
 #define __RV32I_MACHINE_CODE
 
-
+#include <arch/cluster/riscv32-cluster/cores.h>
 #include <arch/core/rv32i/asm.h>
-#include <arch/core/rv32i/context.h>
-#include <arch/core/rv32i/types.h>
-#include <arch/core/rv32i/regs.h>
-
-#define RV32I_HARTS_NUM    4
-#define RV32I_STACK_SIZE   4096
-#define RV32I_STACK_SHIFT  10
 
 /* Exported symbols. */
 .global _do_start
@@ -65,27 +55,27 @@ _do_start:
     la   t0, rv32i_do_mtrap
     csrw mtvec, t0
 
-	/* Setup stack. */
-	csrr t0, mhartid
-    slli t0, t0, RV32I_STACK_SHIFT
-    la   sp, kstacks + RV32I_STACK_SIZE
-    add  sp, sp, t0
+	/* Reset stack. */
+	csrr  t0, mhartid
+	rv32i_core_stack_reset t0
 
     /* Halt slave harts. */
 	csrr t0, mhartid
-    bnez t0, halt
+    beqz t0, _do_start.master
 
-	/* Enter supervisor mode. */
-	la a0, _do_start.supervisor
-	call rv32i_machine_setup
+	/* Slave. */
+	_do_start.slave:
+		la    a0, 1f
+		call  rv32i_machine_slave_setup
+		1: j  riscv32_cluster_slave_setup
+		halt
 
-	/* Hopefully, we never get here. */
-	j halt
-
-_do_start.supervisor:
-	j rv32i_master_setup
-
-	j halt
+	/* Master. */
+	_do_start.master:
+		la    a0, 1f
+		call  rv32i_machine_master_setup
+		1: j  riscv32_cluster_master_setup
+		halt
 
 /*----------------------------------------------------------------------------*
  * Machine Interrupt Vector Table                                             *
@@ -105,12 +95,6 @@ rv32i_do_mtrap:
 	 * context structure.
 	 */
 	csrw mscratch, sp
-
-	/*
-	 * Raise privilege level
-	 * to machine mode.
-	 */
-	call rv32i_prv_raise
 
 	/*
 	 * Get reference to
@@ -154,33 +138,14 @@ rv32i_do_mtrap:
 	/* Return. */
 	rv32i_do_mtrap.out:
 
-		/*
-		 * Drop privilege level
-		 * to previous value.
-		 */
-		call rv32i_prv_drop
-
 		/* Restore all registers. */
 		csrr sp, mscratch
 		rv32i_context_restore
 
 		/*
-		 * Return from
-		 * where we came.
+		 * Return from where we came.
 		 */
 		mret
-
-/*----------------------------------------------------------------------------*
- * halt()                                                                     *
- *----------------------------------------------------------------------------*/
-
-/*
- * Halts instruction execution.
- */
-.align 4
-halt:
-    wfi
-    j   halt
 
 /*============================================================================*
  * DATA                                                                       *
@@ -214,4 +179,4 @@ mtrap_table:
 
 .align RV32I_WORD_SIZE
 kstacks:
-	.skip RV32I_STACK_SIZE * RV32I_HARTS_NUM
+	.skip RV32I_PAGE_SIZE * RISCV32_CLUSTER_NUM_CORES

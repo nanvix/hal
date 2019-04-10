@@ -23,25 +23,38 @@
  */
 
 /* Must come first. */
-#define __NEED_CORE_PIC
+#define _ASM_FILE_
+#define __NEED_CORE_TYPES
 
-#include <arch/core/rv32i/pic.h>
-#include <nanvix/const.h>
+#include <arch/core/rv32i/asm.h>
+#include <arch/core/rv32i/mmu.h>
+#include <arch/core/rv32i/types.h>
 
-/**
- * @brief Table of Interrupt Requests (IRQs).
+/* Exported symbols. */
+.global _riscv32_cluster_core_reset
+
+.section .text
+
+/*===========================================================================*
+ * _riscv32_cluster_core_reset()                                             *
+ *===========================================================================*/
+
+/*
+ * Resets the underlying core
  */
-PUBLIC const int irqs[RV32I_IRQ_NUM] = {
-	RV32I_SIE_USIE, /* User Software Interrupt Enable       */
-	RV32I_SIE_SSIE, /* Supervisor Interrupt Enable          */
-	0,
-	0,
-	RV32I_SIE_UTIE, /* User Timer Interrupt Enable          */
-	RV32I_SIE_STIE, /* Supervisor Timer Interrupt Enable    */
-	0,
-	0,
-	RV32I_SIE_UEUE, /* User External Interrupt Enable       */
-	RV32I_SIE_SEIE, /* Supervisor External Interrupt Enable */
-	0,
-	0
-};
+.align RV32I_WORD_SIZE
+_riscv32_cluster_core_reset:
+
+	/* Save coreid. */
+	csrw sscratch, a0
+
+	rv32i_clear_gprs
+
+	/* Reset stack. */
+	csrr  t0, sscratch
+	rv32i_core_stack_reset t0
+
+	/* Restart core. */
+	j     riscv32_cluster_slave_setup
+	halt
+

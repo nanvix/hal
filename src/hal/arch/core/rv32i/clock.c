@@ -43,6 +43,16 @@ PRIVATE uint64_t clock_delta = 0;
 PRIVATE uint64_t clock_delay = 0;
 
 /**
+ * @brief 64-bit timer register.
+ */
+PUBLIC uint64_t *rv32i_mtime = NULL;
+
+/**
+ * @brief 64-bit timer compare register.
+ */
+PUBLIC uint64_t *rv32i_mtimecmp = NULL;
+
+/**
  * @brief Calibrates the clock.
  *
  * @todo TODO provide a long description for this function.
@@ -82,7 +92,12 @@ PUBLIC void rv32i_clock_reset(void)
  *
  * @author Pedro Henrique Penna
  */
-PUBLIC void rv32i_clock_init(unsigned freq)
+PUBLIC void rv32i_clock_init(
+	uint64_t freq,
+	uint64_t timebase,
+	uint64_t *mtime,
+	uint64_t *mtimecmp
+)
 {
 	/* Nothing to do. */
 	if (initialized)
@@ -90,10 +105,12 @@ PUBLIC void rv32i_clock_init(unsigned freq)
 
 	kprintf("[hal] initializing the clock device...");
 
-	/* Initialize clock. */
-	clock_delta = MTIME_TIMEBASE/freq;
+	/* Setup memory mapped registers. */
+	rv32i_mtime = mtime;
+	rv32i_mtimecmp = mtimecmp;
 
 	/* Initialize clock. */
+	clock_delta = timebase/freq;
 	clock_delay = rv32i_clock_calibrate();
 	initialized = TRUE;
 

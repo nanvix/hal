@@ -33,37 +33,35 @@
  */
 /**@{*/
 
-	/* Must come first. */
-	#define __NEED_CORE_PIC
-	#define __NEED_CORE_TYPES
-
 	#include <arch/core/rv32i/mcall.h>
-	#include <arch/core/rv32i/pic.h>
-	#include <arch/core/rv32i/types.h>
-
-	/**
-	 * @brief Clock frequency (10 MHz)
-	 */
-	#define MTIME_TIMEBASE 10000000
-
-	/**
-	 * @brief Address of the mtime register.
-	 */
-	#define MTIME_ADDR (PIC_BASE + PIC_MTIME_OFFSET)
-
-	/**
-	 * @brief Address of the mtimecmp register.
-	 */
-	#define MTIMECMP_ADDR (PIC_BASE + PIC_MTIMECMP_OFFSET)
+	#include <stdint.h>
 
 #ifndef _ASM_FILE_
 
 	/**
+	 * @brief 64-bit timer register.
+	 */
+	extern uint64_t *rv32i_mtime;
+
+	/**
+	 * @brief 64-bit timer compare register.
+	 */
+	extern uint64_t *rv32i_mtimecmp;
+
+	/**
 	 * @brief Initializes the clock device.
 	 *
-	 * @param freq Clock frequency (in Hz).
+	 * @param freq     Clock frequency (in Hz).
+	 * @param timebase Clock time base.
+	 * @param mtime    Location of mtime register.
+	 * @param mtime    Location of mtimecmp register.
 	 */
-	extern void rv32i_clock_init(unsigned freq);
+	extern void rv32i_clock_init(
+		uint64_t freq,
+		uint64_t timebase,
+		uint64_t *mtime,
+		uint64_t *mtimecmp
+	);
 
 	/**
 	 * @brief Reset the clock.
@@ -80,8 +78,8 @@
 		uint32_t lo;
 		uint32_t hi;
 
-		hi = *(RV32I_WORD_PTR(MTIME_ADDR + RV32I_WORD_SIZE));
-		lo = *(RV32I_WORD_PTR(MTIME_ADDR));
+		hi = *((uint32_t *)(rv32i_mtime) + 1);
+		lo = *((uint32_t *)(rv32i_mtime));
 
 		return (((hi & 0xffffffffull) << 32) | (lo & 0xffffffffull));
 	}
@@ -96,8 +94,8 @@
 		uint32_t lo;
 		uint32_t hi;
 
-		hi = *(RV32I_WORD_PTR(MTIMECMP_ADDR + RV32I_WORD_SIZE));
-		lo = *(RV32I_WORD_PTR(MTIMECMP_ADDR));
+		hi = *((uint32_t *)(rv32i_mtimecmp) + 1);
+		lo = *((uint32_t *)(rv32i_mtimecmp));
 
 		return (((hi & 0xffffffffull) << 32) | (lo & 0xffffffffull));
 	}
@@ -109,10 +107,10 @@
 	 */
 	static inline void rv32i_mtimecmp_write(uint64_t time)
 	{
-		*((rv32i_word_t *)(MTIMECMP_ADDR + RV32I_WORD_SIZE)) = -1;
-		*((rv32i_word_t *)(MTIMECMP_ADDR)) = RV32I_WORD(time & -1);
-		*((rv32i_word_t *)(MTIMECMP_ADDR + RV32I_WORD_SIZE)) =
-			RV32I_WORD(time >> RV32I_WORD_BIT);
+		*((uint32_t *)(rv32i_mtimecmp) + 1) = 0xffffffff;
+		*((uint32_t *)(rv32i_mtimecmp)) = (uint32_t)(time & 0xffffffff);
+		*((uint32_t *)(rv32i_mtimecmp) + 1) =
+			(uint32_t)((time & 0xffffffff00000000ull) >> 32);
 
 		rv32i_mcall_timer_ack();
 	}
@@ -133,19 +131,10 @@
 	 * @name Provided Interface
 	 */
 	/**@{*/
-	#define __clock_init_fn   /**< clock_init() */
 	#define __clock_reset_fn /**< clock_reset() */
 	/**@}*/
 
 #ifndef _ASM_FILE_
-
-	/**
-	 * @see clock_init().
-	 */
-	static inline void clock_init(unsigned freq)
-	{
-		rv32i_clock_init(freq);
-	}
 
 	/**
 	 * @see clock_reset().

@@ -65,6 +65,8 @@
  * OF SUCH DAMAGE.
  */
 
+#ifndef _ASM_FILE_
+
 #ifdef _NEED_LOCALE_T
 #ifndef _LOCALE_T
 #define _LOCALE_T
@@ -173,3 +175,4 @@
 #endif
 #endif
 
+#endif

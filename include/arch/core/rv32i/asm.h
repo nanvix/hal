@@ -33,6 +33,7 @@
 	#define __NEED_CONTEXT
 
 	#include <arch/core/rv32i/context.h>
+	#include <arch/core/rv32i/mmu.h>
 
 /*============================================================================*
  * Regiser Aliases                                                            *
@@ -44,6 +45,18 @@
 	/**@{*/
 	#define fp s0 /**< Stack Pointer Register */
 	/**@}*/
+
+/*============================================================================*
+ * Pseudo Instructions                                                        *
+ *============================================================================*/
+
+	/*
+	 * Halts instruction execution.
+	 */
+	.macro halt
+		1:  wfi
+			j 1b
+	.endm
 
 /*============================================================================*
  * Procedure Linkage                                                          *
@@ -284,6 +297,20 @@
 		ori x21, x0, 0; ori x22, x0, 0; ori x23, x0, 0; ori x24, x0, 0;
 		ori x25, x0, 0; ori x26, x0, 0; ori x27, x0, 0; ori x28, x0, 0;
 		ori x29, x0, 0; ori x30, x0, 0; ori x31, x0, 0;
+
+	.endm
+
+	/*
+	 * Resets the stack.
+	 * - coreid ID of the calling core
+	 */
+	.macro rv32i_core_stack_reset coreid
+
+		mv    t0, \coreid
+		slli  t0, t0, RV32I_PAGE_SHIFT
+		la    sp, kstacks + RV32I_PAGE_SIZE
+		add   sp, sp, t0
+		mv    fp, sp
 
 	.endm
 

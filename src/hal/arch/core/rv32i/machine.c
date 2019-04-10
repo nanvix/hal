@@ -22,52 +22,86 @@
  * SOFTWARE.
  */
 
-/* Must come first. */
-#define __NEED_CORE_TYPES
-
 #include <arch/cluster/riscv32-cluster/memory.h>
-#include <arch/core/rv32i/core.h>
-#include <arch/core/rv32i/clock.h>
-#include <arch/core/rv32i/excp.h>
-#include <arch/core/rv32i/int.h>
-#include <arch/core/rv32i/types.h>
+#include <arch/cluster/riscv32-cluster/cores.h>
 #include <arch/stdout/16550a.h>
 #include <nanvix/const.h>
 #include <errno.h>
 
 /**
- * Current privilege level.
+ * @brief Startup fence.
  */
-PUBLIC int rv32i_curr_prv = RV32I_PRV_M;
+PRIVATE struct
+{
+	int master_alive;
+	rv32i_spinlock_t lock;
+} fence = { FALSE , RV32I_SPINLOCK_UNLOCKED};
 
 /**
- * @brief Raises privilege level.
- *
- * The rv32i_prv_raise() raises the current privilege level to machine
- * mode.
- *
- * @author Pedro Henrique Penna
+ * @brief Releases the startup fence.
  */
-PUBLIC void rv32i_prv_raise(void)
+PRIVATE void rv32i_fence_release(void)
 {
-	rv32i_curr_prv = RV32I_PRV_M;
+	rv32i_spinlock_lock(&fence.lock);
+		fence.master_alive = TRUE;
+	rv32i_spinlock_unlock(&fence.lock);
 }
 
 /**
- * @brief Drops privilege level.
- *
- * The rv32i_prv_raise() drops the current privilege level to the
- * previous privilege level, which is stored in the mpp field of the
- * mstatus register.
+ * @brief Waits on the startup fence.
+ */
+PRIVATE void rv32i_fence_wait(void)
+{
+	while (TRUE)
+	{
+		rv32i_spinlock_lock(&fence.lock);
+
+			/* Fence is released. */
+			if (fence.master_alive)
+			{
+				rv32i_spinlock_unlock(&fence.lock);
+				break;
+			}
+
+			noop();
+		rv32i_spinlock_unlock(&fence.lock);
+	}
+}
+
+/**
+ * @todo: FIXME comment this function.
  *
  * @author Pedro Henrique Penna
  */
-PUBLIC void rv32i_prv_drop(void)
+PRIVATE void rv32i_dump_all_csr(void)
 {
-	rv32i_word_t mstatus;
-
-	mstatus = rv32i_mstatus_read();
-	rv32i_curr_prv = BITS_GET(mstatus, RV32I_MSTATUS_MPP);
+	kprintf("[hal]  mstatus=%x      mie=%x     mip=%x",
+		rv32i_mstatus_read(),
+		rv32i_mie_read(),
+		rv32i_mip_read()
+	);
+	kprintf("[hal]  sstatus=%x      sie=%x     sip=%x",
+		rv32i_sstatus_read(),
+		rv32i_sie_read(),
+		rv32i_sip_read()
+	);
+	kprintf("[hal]    mtvec=%x   mcause=%x   mtval=%x",
+	rv32i_mhartid_read(),
+		rv32i_mcause_read(),
+		rv32i_mtval_read()
+	);
+	kprintf("[hal]    stvec=%x   scause=%x   stval=%x",
+		rv32i_stvec_read(),
+		rv32i_scause_read(),
+		rv32i_stval_read()
+	);
+	kprintf("[hal]     mepc=%x",
+		rv32i_mepc_read()
+	);
+	kprintf("[hal]     sepc=%x    satp=%x",
+		rv32i_sepc_read(),
+		rv32i_satp_read()
+	);
 }
 
 /**
@@ -101,7 +135,6 @@ PRIVATE NORETURN void rv32i_supervisor_enter(rv32i_word_t pc)
 	rv32i_mstatus_write(mstatus);
 
 	/* Set target program counter. */
-	rv32i_prv_drop();
 	rv32i_mepc_write(pc);
 
 	rv32i_mret();
@@ -316,7 +349,7 @@ PRIVATE void rv32i_machine_delegate_traps(void)
  *
  * @param pc Target program counter.
  */
-PUBLIC NORETURN void rv32i_machine_setup(rv32i_word_t pc)
+PUBLIC NORETURN void rv32i_machine_master_setup(rv32i_word_t pc)
 {
 	rv32i_word_t mie;
 
@@ -329,6 +362,8 @@ PUBLIC NORETURN void rv32i_machine_setup(rv32i_word_t pc)
 	 */
 	uart_16550a_init();
 
+	rv32i_fence_release();
+
 	/* Enable machine IRQs. */
 	mie = rv32i_mie_read();
 	mie = BITS_SET(mie, RV32I_MIE_MSIE, 1);
@@ -337,6 +372,29 @@ PUBLIC NORETURN void rv32i_machine_setup(rv32i_word_t pc)
 	rv32i_mie_write(mie);
 
 	rv32i_machine_delegate_traps();
+
+	rv32i_supervisor_enter(pc);
+}
+
+/**
+ * @brief Initializes machine mode.
+ *
+ * @param pc Target program counter.
+ */
+PUBLIC NORETURN void rv32i_machine_slave_setup(rv32i_word_t pc)
+{
+	rv32i_word_t mie;
+
+	/* Enable machine IRQs. */
+	mie = rv32i_mie_read();
+	mie = BITS_SET(mie, RV32I_MIE_MSIE, 0);
+	mie = BITS_SET(mie, RV32I_MIE_MTIE, 0);
+	mie = BITS_SET(mie, RV32I_MIE_MEIE, 0);
+	rv32i_mie_write(mie);
+
+	rv32i_machine_delegate_traps();
+
+	rv32i_fence_wait();
 
 	rv32i_supervisor_enter(pc);
 }

@@ -39,12 +39,7 @@
 	/* Must come first. */
 	#define __NEED_CLUSTER_MEMMAP
 
-#ifndef _ASM_FILE
-
 	#include <nanvix/const.h>
-
-#endif /* _ASM_FILE_ */
-
 	#include <arch/cluster/riscv32-cluster/memmap.h>
 
 	/**

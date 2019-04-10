@@ -40,6 +40,7 @@
  */
 /**@{*/
 
+	#include <arch/cluster/riscv32-cluster/clock.h>
 	#include <arch/cluster/riscv32-cluster/cores.h>
 	#include <arch/cluster/riscv32-cluster/memory.h>
 

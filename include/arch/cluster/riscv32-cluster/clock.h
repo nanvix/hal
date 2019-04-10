@@ -22,52 +22,66 @@
  * SOFTWARE.
  */
 
-#include <arch/cluster/riscv32-cluster/memory.h>
-#include <nanvix/const.h>
-#include <nanvix/klib.h>
+#ifndef ARCH_CLUSTER_CLUSTER_RISCV32_CLUSTER_CLOCK_H_
+#define ARCH_CLUSTER_CLUSTER_RISCV32_CLUSTER_CLOCK_H_
 
-/* Import definitions. */
-EXTERN NORETURN void kmain(int, const char *[]);
-EXTERN void rv32i_do_strap(void);
+	/* Cluster Interface Implementation */
+	#include <arch/cluster/riscv32-cluster/_riscv32-cluster.h>
+
+/**
+ * @addtogroup rscv32-cluster-clock Clock
+ * @ingroup riscv32-cluster
+ *
+ * @brief 64-bit Timer
+ */
+/**@{*/
+
+	/* Must come first. */
+	#define __NEED_CLUSTER_CLINT
+
+	#include <arch/cluster/riscv32-cluster/clint.h>
+	#include <stdint.h>
+
+	/**
+	 * @brief Clock frequency (10 MHz)
+	 */
+	#define RISCV32_CLUSTER_TIMEBASE 10000000
+
+/**@}*/
 
 /*============================================================================*
- * rv32i_core_setup()                                                         *
+ * Exported Interface                                                         *
  *============================================================================*/
 
 /**
- * The rv32i_core_setup() function initializes all architectural
- * structures of the underlying core.
- *
- * @author Pedro Henrique Penna
+ * @cond riscv32_smp
  */
-PUBLIC void rv32i_core_setup(void)
-{
-	kprintf("[hal] booting up master core...");
 
-	rv32i_ivt_setup(&rv32i_do_strap);
+	/**
+	 * @name Exported Functions
+	 */
+	/**@{*/
+	#define __clock_init_fn   /**< clock_init() */
+	/**@}*/
 
-	riscv32_cluster_mem_setup();
-}
+#ifndef _ASM_FILE_
 
-/*============================================================================*
- * rv32i_master_setup()                                                       *
- *============================================================================*/
+	/**
+	 * @see clock_init().
+	 */
+	static inline void clock_init(unsigned freq)
+	{
+		rv32i_clock_init(
+			freq,
+			RISCV32_CLUSTER_TIMEBASE,
+			(uint64_t *) RISCV32_CLUSTER_CLINT_MTIME_BASE,
+			(uint64_t *) RISCV32_CLUSTER_CLINT_MTIMECMP_BASE
+		);
+	}
 
-/**
- * @brief Initializes the master core.
- *
- * The rv32i_master_setup() function initializes the underlying
- * master core. It setups the stack and then call the kernel
- * main function.
- *
- * @note This function does not return.
- *
- * @author Pedro Henrique Penna
- */
-PUBLIC NORETURN void rv32i_master_setup(void)
-{
-	/* Core setup. */
-	rv32i_core_setup();
+#endif
 
-	kmain(0, NULL);
-}
+/**@endcond*/
+
+#endif /* ARCH_CLUSTER_CLUSTER_RISCV32_CLUSTER_CLOCK */
+

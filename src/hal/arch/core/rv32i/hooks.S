@@ -63,7 +63,6 @@ rv32i_do_strap:
 	csrr s1, sscratch
 
 	/* Parse trap. */
-	bug:
 	csrr  s2, scause
 	li    t0, RV32I_SCAUSE_INT
 	and   t0, s2, t0

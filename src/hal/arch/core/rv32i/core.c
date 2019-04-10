@@ -22,64 +22,49 @@
  * SOFTWARE.
  */
 
-#include <nanvix/hal/hal.h>
+/* Must come first. */
+#define __NEED_IVT
+
+#include <arch/core/rv32i/ivt.h>
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
-#include <nanvix/const.h>
-#include "test.h"
+
+/* Import definitions. */
+EXTERN void rv32i_do_strap(void);
+
+/*============================================================================*
+ * rv32i_core_poweroff()                                                      *
+ *============================================================================*/
 
 /**
- * @brief Clock frequency (in Hz).
+ * The rv32i_core_poweroff() function powers off the underlying core.
+ * Afeter powering off a core, instruction execution cannot be
+ * resumed.
+ *
+ * @author Davidson Francis
  */
-#define CLOCK_FREQ 100
-
-/**
- * @brief Dummy main function.
- */
-PUBLIC int main(int argc, const char **argv)
+PUBLIC NORETURN void rv32i_core_poweroff(void)
 {
-	UNUSED(argc);
-	UNUSED(argv);
-
 	while (TRUE)
-		noop();
+		/* noop(). */;
+
+	UNREACHABLE();
 }
 
+/*============================================================================*
+ * rv32i_core_setup()                                                         *
+ *============================================================================*/
+
 /**
- * @brief Initializes the kernel.
+ * The rv32i_core_setup() function initializes all architectural
+ * structures of the underlying core. It setups the Interrupt Vector
+ * Table (IVT) and the Memory Management Unit (MMU) tables.
+ *
+ * @author Pedro Henrique Penna
  */
-PUBLIC void kmain(int argc, const char *argv[])
+PUBLIC void rv32i_core_setup(void)
 {
-	UNUSED(argc);
-	UNUSED(argv);
+	kprintf("[hal] booting up core...");
 
-	/*
-	 * Initializes the HAL. Must come
-	 * before everything else.
-	 */
-	hal_init();
-
-	clock_init(CLOCK_FREQ);
-
-	test_exception();
-	test_interrupt();
-	test_mmu();
-	test_tlb();
-#if (CLUSTER_IS_MULTICORE)
-	test_core();
-#endif
-
-#if !defined(__rv32i__)
-	test_trap();
-	test_upcall();
-
-#endif
-
-#if (TARGET_HAS_SYNC)
-	test_sync();
-#endif
-
-	kprintf("[hal] halting...");
-
-	main(0, NULL);
+	rv32i_ivt_setup(&rv32i_do_strap);
 }

@@ -43,20 +43,21 @@
 	#include <nanvix/const.h>
 
 	/**
-	 * @brief Current privilege level.
+	 * @brief Initializes the underlying core.
 	 */
-	EXTERN int rv32i_curr_prv;
+	EXTERN void rv32i_core_setup(void);
+
+	/**
+	 * @brief Powers off the underlying core.
+	 */
+	EXTERN NORETURN void rv32i_core_poweroff(void);
 
 	/**
 	 * @see Gets the ID of the underlying core.
 	 */
 	static inline int rv32i_core_get_id(void)
 	{
-		return (
-			(rv32i_curr_prv == RV32I_PRV_M) ?
-				rv32i_mhartid_read() :
-				rv32i_mcall_csr_read(RV32I_CSR_MHARTID)
-		);
+		return (rv32i_mcall_csr_read(RV32I_CSR_MHARTID));
 	}
 
 #endif /* _ASM_FILE_ */
@@ -99,13 +100,8 @@
 	 * @name Exported Functions
 	 */
 	/**@{*/
-	#define ___core_reset_fn    /**< _core_reset()    */
-	#define __core_clear_fn     /**< core_clear()     */
 	#define __core_get_id_fn    /**< core_get_id()    */
-	#define __core_notify_fn    /**< core_notify()    */
 	#define __core_poweroff_fn  /**< core_poweroff()  */
-	#define __core_setup_fn     /**< core_setup()     */
-	#define __core_waitclear_fn /**< core_waitclear() */
 	/**@}*/
 
 #ifndef _ASM_FILE_
@@ -126,6 +122,14 @@
 	static inline int core_get_id(void)
 	{
 		return (rv32i_core_get_id());
+	}
+
+	/**
+	 * @see rv32i_core_poweroff().
+	 */
+	static inline void core_poweroff(void)
+	{
+		rv32i_core_poweroff();
 	}
 
 #endif /* _ASM_FILE_ */

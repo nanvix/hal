@@ -52,7 +52,7 @@ case "$TARGET" in
 			-kernel bin/test-driver \
 			-m 128M                 \
 			-mem-prealloc           \
-			-smp 1
+			-smp 5
 		;;
 	*)
         echo "error: unsupported target"
