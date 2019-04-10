@@ -33,9 +33,8 @@
  */
 /**@{*/
 
-	/* External dependencies. */
-	#include <HAL/hal/hal_ext.h>
 	#include <arch/core/k1b/cache.h>
+	#include <arch/core/k1b/mOS.h>
 	#include <stdint.h>
 
 	/**

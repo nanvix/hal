@@ -31,7 +31,7 @@
 #include <arch/core/k1b/excp.h>
 #include <arch/core/k1b/asm.h>
 #include <arch/core/k1b/upcall.h>
-#include <mOS_common_types_s_c.h>
+#include <arch/core/k1b/mOS.h>
 
 .global _k1b_do_syscall
 .global _k1b_do_excp

@@ -23,8 +23,8 @@
  */
 
 #include <arch/core/k1b/lpic.h>
+#include <arch/core/k1b/mOS.h>
 #include <nanvix/const.h>
-#include <mOS_vcore_u.h>
 #include <errno.h>
 #include <stdint.h>
 

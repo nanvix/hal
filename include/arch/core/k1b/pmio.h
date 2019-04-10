@@ -33,7 +33,7 @@
  */
 /**@{*/
 
-	#include <mOS_vcore_u.h>
+	#include <arch/core/k1b/mOS.h>
 	#include <stdint.h>
 
 	/**

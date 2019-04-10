@@ -26,10 +26,6 @@
 #define __NEED_HAL_CLUSTER
 
 #include <nanvix/hal/cluster.h>
-#include <HAL/hal/core/legacy.h>
-#include <HAL/hal/board/boot_args.h>
-#include <mOS_common_types_c.h>
-#include <mOS_vcore_u.h>
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
 
@@ -71,32 +67,6 @@ PUBLIC struct coreinfo ALIGN(K1B_CACHE_LINE_SIZE) cores[K1B_CLUSTER_NUM_CORES] =
 };
 
 /*============================================================================*
- * k1b_stack_setup()                                                          *
- *============================================================================*/
-
-/**
- * @brief Setups the stack.
- *
- * The k1b_stack_setup() function setups the stack of the underlying
- * core by reseting the stack pointer register to the location defined
- * in the link scripts.
- *
- * It would be safier to do this in asembly code, early in boot.
- * However, we are relying on VBSP and we cannot do so. Thus, we make
- * this function inline and call it as early as possible. Hopefully,
- * it will work.
- *
- * @author Pedro Henrique Penna
- */
-PRIVATE inline void k1b_stack_setup(void)
-{
-	__k1_uint8_t *stack_base;
-
-	stack_base = __k1_tls_pe_base_address(k1b_core_get_id());
-	__k1_setup_tls_pe(stack_base);
-}
-
-/*============================================================================*
  * k1b_cluster_master_setup()                                                 *
  *============================================================================*/
 
@@ -116,8 +86,6 @@ PRIVATE NORETURN void k1b_cluster_master_setup(void)
 {
 	k1_boot_args_t args;
 
-	k1b_stack_setup();
-
 	get_k1_boot_args(&args);
 
 	k1b_cluster_setup();
@@ -126,7 +94,7 @@ PRIVATE NORETURN void k1b_cluster_master_setup(void)
 }
 
 /*============================================================================*
- * k1b_cluster_slave_setup()                                                          *
+ * k1b_cluster_slave_setup()                                                  *
  *============================================================================*/
 
 /**
@@ -146,8 +114,6 @@ PRIVATE NORETURN void k1b_cluster_master_setup(void)
  */
 PUBLIC NORETURN void k1b_cluster_slave_setup(void)
 {
-	k1b_stack_setup();
-
 	while (TRUE)
 	{
 		core_idle();

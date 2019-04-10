@@ -24,11 +24,10 @@
 
 /* Must come first. */
 #define _ASM_FILE_
+#define __NEED_CORE_TYPES
 
 #include <arch/core/k1b/asm.h>
 #include <arch/core/k1b/upcall.h>
-
-#define __NEED_CORE_TYPES
 #include <arch/core/k1b/types.h>
 
 .global k1b_upcall_ret

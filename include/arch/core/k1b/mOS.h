@@ -22,31 +22,33 @@
  * SOFTWARE.
  */
 
-#include <nanvix/const.h>
-#include <nanvix/klib.h>
-#include <arch/core/k1b/mOS.h>
+#ifndef ARCH_CORE_K1B_MOS_H_
+#define ARCH_CORE_K1B_MOS_H_
 
 /**
- * @brief JTAG Write system call.
- */
-#define __NR_jtag_write 4094
-
-#define K1B_BUFSIZE 32
-
-/**
- * @brief Writes data to the JTAG device.
+ * @addtogroup k1b-core-mos mOS
+ * @ingroup k1b-core
  *
- * @param buf Buffer.
- * @param n   Number of bytes to write.
+ * @brief Kalray mOS Hypervisor
  */
-void hal_jtag_write(const uint8_t *buf, size_t n)
-{
-	size_t k;
-	char jtag_buf[K1B_BUFSIZE];
+/**@{*/
 
-	k = (n > K1B_BUFSIZE) ? K1B_BUFSIZE : n;
+	#include <mOS_common_types_s_c.h>
 
-	kmemcpy(jtag_buf, (const char *)buf, k);
+#ifndef _ASM_FILE_
 
-	__k1_club_syscall2(__NR_jtag_write, (unsigned) jtag_buf, k);
-}
+	#include <HAL/hal/board/boot_args.h>
+	#include <HAL/hal/hal_ext.h>
+	#include <mOS_segment_manager_u.h>
+	#include <mOS_common_types_c.h>
+	#include <mOS_vcore_u.h>
+	#include <mOS_mailbox_u.h>
+	#include <mppa_routing.h>
+	#include <mppa_noc.h>
+	#include <vbsp.h>
+
+#endif /* _ASM_FILE_ */
+
+/**@}*/
+
+#endif /* ARCH_CORE_K1B_MOS_H_ */

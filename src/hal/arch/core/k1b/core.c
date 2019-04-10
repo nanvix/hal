@@ -25,10 +25,9 @@
 #include <arch/core/k1b/excp.h>
 #include <arch/core/k1b/int.h>
 #include <arch/core/k1b/ivt.h>
+#include <arch/core/k1b/mOS.h>
 #include <arch/core/k1b/trap.h>
 #include <nanvix/const.h>
-#include <HAL/hal/board/boot_args.h>
-#include <mOS_vcore_u.h>
 
 /*============================================================================*
  * k1b_core_setup()                                                           *

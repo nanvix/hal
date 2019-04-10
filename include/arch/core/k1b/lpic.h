@@ -33,8 +33,8 @@
  */
 /**@{*/
 
+	#include <arch/core/k1b/mOS.h>
 	#include <nanvix/const.h>
-	#include <mOS_vcore_u.h>
 
 	/**
 	 * @brief Number of interrupt request lines.

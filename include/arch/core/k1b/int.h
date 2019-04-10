@@ -35,8 +35,7 @@
 
 	#include <arch/core/k1b/lpic.h>
 	#include <arch/core/k1b/context.h>
-	#include <mOS_vcore_u.h>
-	#include <vbsp.h>
+	#include <arch/core/k1b/mOS.h>
 
 	/**
 	 * @brief Number of interrupts.

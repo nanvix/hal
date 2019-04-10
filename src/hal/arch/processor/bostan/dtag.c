@@ -26,10 +26,6 @@
 #include <nanvix/hal/hal.h>
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
-#include <mOS_vcore_u.h>
-#include <mOS_mailbox_u.h>
-#include <mppa_noc.h>
-#include <mppa_routing.h>
 #include <errno.h>
 
 /**

@@ -25,6 +25,9 @@
 #ifndef ARCH_CORE_K1B_TRAP_H_
 #define ARCH_CORE_K1B_TRAP_H_
 
+	/* Must come first. */
+	#define __NEED_CORE_TYPES
+
 /**
  * @addtogroup k1b-core-trap Trap
  * @ingroup k1b-core
@@ -33,9 +36,8 @@
  */
 /**@{*/
 
-	#define __NEED_CORE_TYPES
 	#include <arch/core/k1b/types.h>
-	#include <mOS_vcore_u.h>
+	#include <arch/core/k1b/mOS.h>
 
 	/**
 	 * @brief Low-level trap dispatcher.
