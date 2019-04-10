@@ -24,7 +24,6 @@
 
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
-#include <arch/core/i486/pic.h>
 #include <arch/core/i486/excp.h>
 #include <arch/core/i486/gdt.h>
 #include <arch/core/i486/idt.h>
@@ -77,9 +76,6 @@ PUBLIC void idt_setup(void)
 	/* Blank IDT and IDT pointer. */
 	kmemset(idt, 0, sizeof(idt));
 	kmemset(&idtptr, 0, IDTPTR_SIZE);
-
-	/* Re-initialize PIC. */
-	i486_pic_setup(0x20, 0x28);
 
 	/* Set software interrupts (exceptions). */
 	set_idte(0, (unsigned)_i486_do_excp0, KERNEL_CS, 0x8, IDT_INT32);

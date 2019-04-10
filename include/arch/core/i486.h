@@ -35,7 +35,6 @@
 	#endif
 
 	#include <arch/core/i486/clock.h>
-	#include <arch/core/i486/pic.h>
 	#include <arch/core/i486/cache.h>
 	#include <arch/core/i486/core.h>
 	#include <arch/core/i486/excp.h>

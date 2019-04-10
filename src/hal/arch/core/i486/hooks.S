@@ -24,8 +24,9 @@
 
 /* Must come first. */
 #define _ASM_FILE_
+#define __NEED_CORE_LPIC
 
-#include <arch/core/i486/pic.h>
+#include <arch/core/i486/lpic.h>
 #include <arch/core/i486/asm.h>
 #include <arch/core/i486/context.h>
 #include <arch/core/i486/core.h>
@@ -222,11 +223,11 @@ i486_syscall:
  *============================================================================*/
 
 /*
- * Acknowledges an interrupt to the master PIC.
+ * Acknowledges an interrupt to the master I486_LPIC.
  */
 .macro i486_pic_master_ack
 	movb $0x20, %al
-	outb %al, $PIC_CTRL_MASTER
+	outb %al, $I486_LPIC_CTRL_MASTER
 .endm
 
 /*============================================================================*
@@ -234,12 +235,12 @@ i486_syscall:
  *============================================================================*/
 
 /*
- * Acknowledges an interrupt to the slave PIC.
+ * Acknowledges an interrupt to the slave I486_LPIC.
  */
 .macro i486_pic_slave_ack
 	movb $0x20, %al
-	outb %al, $PIC_CTRL_MASTER
-	outb %al, $PIC_CTRL_SLAVE
+	outb %al, $I486_LPIC_CTRL_MASTER
+	outb %al, $I486_LPIC_CTRL_SLAVE
 .endm
 
 /*============================================================================*
