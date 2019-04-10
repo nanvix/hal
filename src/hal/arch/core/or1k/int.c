@@ -34,25 +34,3 @@
 PUBLIC void (*interrupt_handlers[OR1K_INT_NUM])(int) = {
 	NULL, NULL, NULL
 };
-
-/**
- * @todo TODO provide a detailed description for this function.
- *
- * @author Davidson Francis
- */
-PUBLIC int or1k_int_next(void)
-{
-	unsigned picsr;
-	int bit;
-
-	bit   = 0;
-	picsr = or1k_mfspr(OR1K_SPR_PICSR);
-
-	while (!(picsr & 1) && bit < 32)
-	{
-		picsr >>= 1;
-		bit++;
-	}
-
-	return ( (!picsr) ? 0 : bit );
-}
