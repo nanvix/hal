@@ -28,14 +28,6 @@
 #include <errno.h>
 
 /**
- * @brief Hardware interrupts table.
- */
-PRIVATE struct
-{
-	int handled; /**< Handled? */
-} interrupts[INTERRUPTS_NUM];
-
-/**
  * @brief Clock handler.
  */
 PRIVATE interrupt_handler_t clock_handler = NULL;
@@ -74,6 +66,43 @@ PRIVATE void do_clock(int num)
 }
 
 /**
+ * The do_interrupt() function dispatches a hardware interrupt request
+ * that was triggered to a previously-registered handler. If no
+ * function was previously registered to handle the triggered hardware
+ * interrupt request, this function returns immediately.
+ *
+ * @note This function is called from assembly code.
+ *
+ * @author Pedro Henrique Penna
+ */
+PUBLIC void do_interrupt(int intnum)
+{
+	interrupt_ack(intnum);
+
+	/* Nothing to do. */
+	if (interrupt_handlers[intnum] == NULL)
+		return;
+
+	interrupt_handlers[intnum](intnum);
+
+	/*
+	 * Lets also check for external interrupt, if
+	 * there's any pending, handle.
+	 */
+	while ((intnum = interrupt_next()) != 0)
+	{
+		/* ack. */
+		interrupt_ack(intnum);
+
+		/* Nothing to do. */
+		if (interrupt_handlers[intnum] == NULL)
+			return;
+
+		interrupt_handlers[intnum](intnum);
+	}
+}
+
+/**
  * The interrupt_register() function registers @p handler as the
  * handler function for the interrupt whose number is @p num. If a
  * handler function was previously registered with this number, the
@@ -85,21 +114,24 @@ PUBLIC int interrupt_register(int num, interrupt_handler_t handler)
 	if ((num < 0) || (num >= INTERRUPTS_NUM))
 		return (-EINVAL);
 
-	/* Handler function already registered. */
-	if (interrupts[num].handled)
-		return (-EBUSY);
-
-	interrupts[num].handled = TRUE;
-	dcache_invalidate();
-
 	if (num != INTERRUPT_CLOCK)
-		interrupt_set_handler(num, handler);
+	{
+		/* Handler function already registered. */
+		if (interrupt_handlers[num] != default_handler)
+			return (-EBUSY);
+
+		interrupt_handlers[num] = handler;
+	}
 	else
 	{
+		/* Handler function already registered. */
+		if (clock_handler != default_handler)
+			return (-EBUSY);
+
 		clock_handler = handler;
-		interrupt_set_handler(num, do_clock);
 	}
 
+	dcache_invalidate();
 	interrupt_unmask(num);
 
 	kprintf("[hal] interrupt handler registered for irq %d", num);
@@ -119,21 +151,24 @@ PUBLIC int interrupt_unregister(int num)
 	if ((num < 0) || (num >= INTERRUPTS_NUM))
 		return (-EINVAL);
 
-	/* No handler function is registered. */
-	if (!interrupts[num].handled)
-		return (-EINVAL);
-
-	interrupts[num].handled = FALSE;
-	dcache_invalidate();
-
 	if (num != INTERRUPT_CLOCK)
-		interrupt_set_handler(num, default_handler);
+	{
+		/* No handler function is registered. */
+		if (interrupt_handlers[num] == default_handler)
+			return (-EINVAL);
+
+		interrupt_handlers[num] = default_handler;
+	}
 	else
 	{
+		/* No handler function is registered. */
+		if (clock_handler == default_handler)
+			return (-EINVAL);
+
 		clock_handler = default_handler;
-		interrupt_set_handler(num, do_clock);
 	}
 
+		dcache_invalidate();
 	interrupt_mask(num);
 
 	kprintf("[hal] interrupt handler unregistered for irq %d", num);
@@ -155,12 +190,11 @@ PUBLIC void interrupt_setup(void)
 
 		handler = (i == INTERRUPT_CLOCK) ? do_clock : default_handler;
 
-		interrupts[i].handled = FALSE;
-		dcache_invalidate();
-
-		interrupt_set_handler(i, handler);
+		interrupt_handlers[i] = handler;
 	}
 
 	clock_handler = default_handler;
+
+	dcache_invalidate();
 }
 
