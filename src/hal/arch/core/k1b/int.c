@@ -33,7 +33,7 @@
 /**
  * Lookup table for interrupt request lines of hardware interrupts.
  */
-PRIVATE k1b_irq_t k1b_irqs[K1B_INT_NUM] = {
+PRIVATE int k1b_irqs[K1B_INT_NUM] = {
 	K1B_IRQ_0,
 	K1B_IRQ_1,
 	K1B_IRQ_2,

@@ -118,11 +118,6 @@
 #ifndef _ASM_FILE_
 
 	/**
-	 * @brief Interrupt request line number.
-	 */
-	typedef mOS_vcore_it_lines_e k1b_irq_t;
-
-	/**
 	 * @brief Masks an interrupt.
 	 *
 	 * @param irq Number of the target interrupt.
