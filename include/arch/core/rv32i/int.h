@@ -72,17 +72,6 @@
 	extern const int irqs[RV32I_INT_NUM];
 
 	/**
-	 * @brief Sets a handler for a interrupt.
-	 *
-	 * @param num     Number of the target interrupt.
-	 * @param handler Hardware interrupt handler.
-	 *
-	 * @returns Upon successful completion, zero is returned. Upon
-	 * failure, a negative error code is returned instead.
-	 */
-	extern int rv32i_int_handler_set(int num, void (*handler)(int));
-
-	/**
 	 * @brief Enables interrupts.
 	 *
 	 * The rv32i_int_enable() enables all interrupts in the underlying
@@ -257,19 +246,26 @@
 	 * @name Exported Constants
 	 */
 	/**@{*/
-	#define _INTERRUPTS_NUM RV32I_INT_NUM          /**< @ref RV32I_INT_NUM          */
+	#define INTERRUPTS_NUM RV32I_INT_NUM           /**< @ref RV32I_INT_NUM          */
 	#define INTERRUPT_CLOCK RV32I_INT_TIMER_KERNEL /**< @ref RV32I_INT_TIMER_KERNEL */
+	/**@}*/
+
+	/**
+	 * @name Exported Variables
+	 */
+	/**@{*/
+	#define __interrupt_handlers_var /**< @ref interrupt_handlers */
 	/**@}*/
 
 	/**
 	 * @name Exported Functions
 	 */
 	/**@{*/
-	#define __interrupts_disable    /**< interrupts_disable()    */
-	#define __interrupts_enable     /**< interrupts_enable()     */
-	#define __interrupt_set_handler /**< interrupt_set_handler() */
-	#define __interrupt_mask        /**< interrupt_mask()        */
-	#define __interrupt_unmask      /**< interrupt_unmask()      */
+	#define __interrupts_disable_fn /**< @ref interrupts_disable() */
+	#define __interrupts_enable_fn  /**< @ref interrupts_enable()  */
+	#define __interrupt_next_fn     /**< @ref interrupt_next()     */
+	#define __interrupt_mask        /**< interrupt_mask()          */
+	#define __interrupt_unmask      /**< interrupt_unmask()        */
 	/**@}*/
 
 #ifndef _ASM_FILE_
@@ -291,11 +287,11 @@
 	}
 
 	/**
-	 * @see rv32i_int_handler_set().
+	 * @see rv32i_int_ack().
 	 */
-	static inline int interrupt_set_handler(int num, void (*handler)(int))
+	static inline int interrupt_ack(int irqnum)
 	{
-		return (rv32i_int_handler_set(num, handler));
+		return (rv32i_int_ack(irqnum));
 	}
 
 	/**
@@ -312,6 +308,14 @@
 	static inline int interrupt_unmask(int irqnum)
 	{
 		return (rv32i_int_unmask(irqnum));
+	}
+
+	/**
+	 * @see rv32i_int_next().
+	 */
+	static inline int interrupt_next(void)
+	{
+		return (0);
 	}
 
 #endif

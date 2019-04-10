@@ -149,7 +149,7 @@ rv32i_do_strap:
 		 */
 		andi a0, s2, RV32I_SCAUSE_CAUSE  # int intnum
 		mv   a1, s1                      # struct context *ctx
-		call rv32i_do_int
+		call do_interrupt
 
 	rv32i_do_strap.ret:
 

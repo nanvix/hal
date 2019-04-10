@@ -30,7 +30,7 @@
 /**
  * @brief Interrupt handlers.
  */
-PRIVATE void (*handlers[RV32I_INT_NUM])(int) = {
+PUBLIC void (*interrupt_handlers[RV32I_INT_NUM])(int) = {
 	NULL, NULL, NULL, NULL,
 	NULL, NULL, NULL, NULL,
 	NULL, NULL, NULL, NULL,
@@ -53,49 +53,3 @@ PUBLIC const int irqs[RV32I_INT_NUM] = {
 	0,
 	0
 };
-
-/**
- * The do_int() function dispatches an interrupt request to a
- * previously-registered handler. If no function was previously
- * registered to handle the triggered hardware interrupt request, this
- * function returns immediately.
- *
- * @note This function is called from assembly code.
- */
-PUBLIC void rv32i_do_int(int num, const struct context *ctx)
-{
-	void (*handler)(int);
-
-	UNUSED(ctx);
-
-	rv32i_int_ack(num);
-
-	/* Unknown interrupt. */
-	if (num >= RV32I_INT_NUM)
-	{
-		kprintf("[hal] unknown interrupt source %d", num);
-		return;
-	}
-
-	/* Nothing to do. */
-	if ((handler = handlers[num]) == NULL)
-		return;
-
-	handler(num);
-}
-
-/**
- * The rv32i_int_handler_set() function sets the function pointed to
- * by @p handler as the handler for the hardware interrupt whose
- * number is @p num.
- */
-PUBLIC int rv32i_int_handler_set(int num, void (*handler)(int))
-{
-	/* Invalid interrupt number. */
-	if ((num < 0) || (num >= RV32I_INT_NUM))
-		return (-EINVAL);
-
-	handlers[num] = handler;
-
-	return (0);
-}
