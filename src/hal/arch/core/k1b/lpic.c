@@ -22,6 +22,9 @@
  * SOFTWARE.
  */
 
+/* Must come first. */
+#define __NEED_CORE_LPIC
+
 #include <arch/core/k1b/lpic.h>
 #include <arch/core/k1b/mOS.h>
 #include <nanvix/const.h>

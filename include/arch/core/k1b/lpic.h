@@ -25,6 +25,10 @@
 #ifndef ARCH_CORE_K1B_LPIC_H_
 #define ARCH_CORE_K1B_LPIC_H_
 
+	#ifndef __NEED_CORE_LPIC
+		#error "do not include this file"
+	#endif
+
 /**
  * @addtogroup k1b-core-pic LPIC
  * @ingroup k1b-core
