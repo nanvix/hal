@@ -33,6 +33,8 @@
  */
 /**@{*/
 
+	#include <nanvix/const.h>
+
 	/**
 	 * @brief Size of and IDT entry (in bytes).
 	 */
@@ -59,7 +61,33 @@
 	#define IDT_TRAP32 0xf /**< 32-bit trap gate.      */
 	/**@}*/
 
-	#include <nanvix/const.h>
+	/**
+	 * @name Software Interrupt Hooks
+	 */
+	/**@{*/
+	EXTERN void _i486_do_excp0(void);  /**< Division-by-Zero Error      */
+	EXTERN void _i486_do_excp1(void);  /**< Debug Exception             */
+	EXTERN void _i486_do_excp2(void);  /**< Non-Maskable Interrupt      */
+	EXTERN void _i486_do_excp3(void);  /**< Breakpoint Exception        */
+	EXTERN void _i486_do_excp4(void);  /**< Overflow Exception          */
+	EXTERN void _i486_do_excp5(void);  /**< Bounds Check Exception      */
+	EXTERN void _i486_do_excp6(void);  /**< Invalid Opcode Exception    */
+	EXTERN void _i486_do_excp7(void);  /**< Coprocessor Not Available   */
+	EXTERN void _i486_do_excp8(void);  /**< Double Fault                */
+	EXTERN void _i486_do_excp9(void);  /**< Coprocessor Segment Overrun */
+	EXTERN void _i486_do_excp10(void); /**< Invalid TSS                 */
+	EXTERN void _i486_do_excp11(void); /**< Segment Not Present         */
+	EXTERN void _i486_do_excp12(void); /**< Stack Segment Fault         */
+	EXTERN void _i486_do_excp13(void); /**< General Protection Fault    */
+	EXTERN void _i486_do_excp14(void); /**< Page Fault                  */
+	EXTERN void _i486_do_excp15(void); /**< Reserved                    */
+	EXTERN void _i486_do_excp16(void); /**< Floating Point Exception    */
+	EXTERN void _i486_do_excp17(void); /**< Alignment Check Exception   */
+	EXTERN void _i486_do_excp18(void); /**< Machine Check Exception     */
+	EXTERN void _i486_do_excp19(void); /**< SMID Unit Exception         */
+	EXTERN void _i486_do_excp20(void); /**< Virtual Exception           */
+	EXTERN void _i486_do_excp30(void); /**< Security Exception.         */
+	/**@}*/
 
 	/**
 	 * @brief Interrupt descriptor table entry.

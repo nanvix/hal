@@ -89,9 +89,16 @@
         i486_word_t gs, fs, es, ds;                    /**< Segment Registers         */
         i486_word_t edi, esi, ebp, edx, ecx, ebx, eax; /**< General Purpose Registers */
         i486_word_t eip, cs, eflags, useresp, ss;      /**< Special Registers         */
-	} __attribute__((packed));
+	} PACK;
 
 /**@endcond*/
+
+	/**
+	 * @brief Dumps information about a saved execution context.
+	 *
+	 * @param ctx Saved exception context.
+	 */
+	EXTERN void i486_ctx_dump(const struct context *ctx);
 
 	/**
 	 * @brief Gets the value of the stack pointer register.
@@ -207,6 +214,14 @@
 	static inline void context_set_pc(struct context *ctx, word_t val)
 	{
 		i486_context_set_pc(ctx, val);
+	}
+
+	/**
+	 * @see i486_ctx_dump().
+	 */
+	static inline void context_dump(const struct context *ctx)
+	{
+		i486_ctx_dump(ctx);
 	}
 
 #endif /* _ASM_FILE_ */

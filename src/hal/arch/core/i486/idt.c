@@ -82,27 +82,27 @@ PUBLIC void idt_setup(void)
 	i486_pic_setup(0x20, 0x28);
 
 	/* Set software interrupts (exceptions). */
-	set_idte(0, (unsigned)_do_excp0, KERNEL_CS, 0x8, IDT_INT32);
-	set_idte(1, (unsigned)_do_excp1, KERNEL_CS, 0x8, IDT_INT32);
-	set_idte(2, (unsigned)_do_excp2, KERNEL_CS, 0x8, IDT_INT32);
-	set_idte(3, (unsigned)_do_excp3, KERNEL_CS, 0x8, IDT_INT32);
-	set_idte(4, (unsigned)_do_excp4, KERNEL_CS, 0x8, IDT_INT32);
-	set_idte(5, (unsigned)_do_excp5, KERNEL_CS, 0x8, IDT_INT32);
-	set_idte(6, (unsigned)_do_excp6, KERNEL_CS, 0x8, IDT_INT32);
-	set_idte(7, (unsigned)_do_excp7, KERNEL_CS, 0x8, IDT_INT32);
-	set_idte(8, (unsigned)_do_excp8, KERNEL_CS, 0x8, IDT_INT32);
-	set_idte(9, (unsigned)_do_excp9, KERNEL_CS, 0x8, IDT_INT32);
-	set_idte(10, (unsigned)_do_excp10, KERNEL_CS, 0x8, IDT_INT32);
-	set_idte(11, (unsigned)_do_excp11, KERNEL_CS, 0x8, IDT_INT32);
-	set_idte(12, (unsigned)_do_excp12, KERNEL_CS, 0x8, IDT_INT32);
-	set_idte(13, (unsigned)_do_excp13, KERNEL_CS, 0x8, IDT_INT32);
-	set_idte(14, (unsigned)_do_excp14, KERNEL_CS, 0x8, IDT_INT32);
-	set_idte(15, (unsigned)_do_excp15, KERNEL_CS, 0x8, IDT_INT32);
-	set_idte(16, (unsigned)_do_excp16, KERNEL_CS, 0x8, IDT_INT32);
+	set_idte(0, (unsigned)_i486_do_excp0, KERNEL_CS, 0x8, IDT_INT32);
+	set_idte(1, (unsigned)_i486_do_excp1, KERNEL_CS, 0x8, IDT_INT32);
+	set_idte(2, (unsigned)_i486_do_excp2, KERNEL_CS, 0x8, IDT_INT32);
+	set_idte(3, (unsigned)_i486_do_excp3, KERNEL_CS, 0x8, IDT_INT32);
+	set_idte(4, (unsigned)_i486_do_excp4, KERNEL_CS, 0x8, IDT_INT32);
+	set_idte(5, (unsigned)_i486_do_excp5, KERNEL_CS, 0x8, IDT_INT32);
+	set_idte(6, (unsigned)_i486_do_excp6, KERNEL_CS, 0x8, IDT_INT32);
+	set_idte(7, (unsigned)_i486_do_excp7, KERNEL_CS, 0x8, IDT_INT32);
+	set_idte(8, (unsigned)_i486_do_excp8, KERNEL_CS, 0x8, IDT_INT32);
+	set_idte(9, (unsigned)_i486_do_excp9, KERNEL_CS, 0x8, IDT_INT32);
+	set_idte(10, (unsigned)_i486_do_excp10, KERNEL_CS, 0x8, IDT_INT32);
+	set_idte(11, (unsigned)_i486_do_excp11, KERNEL_CS, 0x8, IDT_INT32);
+	set_idte(12, (unsigned)_i486_do_excp12, KERNEL_CS, 0x8, IDT_INT32);
+	set_idte(13, (unsigned)_i486_do_excp13, KERNEL_CS, 0x8, IDT_INT32);
+	set_idte(14, (unsigned)_i486_do_excp14, KERNEL_CS, 0x8, IDT_INT32);
+	set_idte(15, (unsigned)_i486_do_excp15, KERNEL_CS, 0x8, IDT_INT32);
+	set_idte(16, (unsigned)_i486_do_excp16, KERNEL_CS, 0x8, IDT_INT32);
 	for (int i = 21; i < 30; i++)
-		set_idte(i, (unsigned)_do_excp15, KERNEL_CS, 0x8, IDT_INT32);
-	set_idte(30, (unsigned)_do_excp30, KERNEL_CS, 0x8, IDT_INT32);
-	set_idte(31, (unsigned)_do_excp15, KERNEL_CS, 0x8, IDT_INT32);
+		set_idte(i, (unsigned)_i486_do_excp15, KERNEL_CS, 0x8, IDT_INT32);
+	set_idte(30, (unsigned)_i486_do_excp30, KERNEL_CS, 0x8, IDT_INT32);
+	set_idte(31, (unsigned)_i486_do_excp15, KERNEL_CS, 0x8, IDT_INT32);
 
 	/* Set hardware interrupts. */
 	set_idte(32, (unsigned)_do_hwint0, KERNEL_CS, 0x8, IDT_INT32);

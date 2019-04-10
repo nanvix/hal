@@ -22,45 +22,22 @@
  * SOFTWARE.
  */
 
-#include <nanvix/hal/core/exception.h>
+#include <arch/core/i486/context.h>
+#include <arch/core/i486/excp.h>
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
 
 /**
- * @cond i486
- *
- * Lookup table with information about exceptions.
- *
- * @endcond
- */
-PUBLIC struct exception_info exceptions[I486_EXCP_NUM] = {
-	{ NULL, "division-by-zero error"        },
-	{ NULL, "debug exception"               },
-	{ NULL, "non-maskable interrupt"        },
-	{ NULL, "breakpoint exception"          },
-	{ NULL, "overflow exception"            },
-	{ NULL, "bounds check exception"        },
-	{ NULL, "invalid opcode exception"      },
-	{ NULL, "coprocessor not available"     },
-	{ NULL, "double fault"                  },
-	{ NULL, "coprocessor segment overrun"   },
-	{ NULL, "invalid task state segment"    },
-	{ NULL, "segment not present"           },
-	{ NULL, "static segment fault"          },
-	{ NULL, "general protection fault"      },
-	{ NULL, "page fault"                    },
-	{ NULL, "floating point unit exception" },
-	{ NULL, "alignment check"               },
-	{ NULL, "machine exception"             },
-	{ NULL, "smid unit exception"           },
-	{ NULL, "virtual exception"             },
-	{ NULL, "security exception"            },
-};
-
-/**
  * @todo TODO provide a detailed description for this function.
+ *
+ * @uthor Pedro Henrique Penna
  */
-PUBLIC void i486_excp_dump(const struct exception *excp)
+PUBLIC void i486_ctx_dump(const struct context *ctx)
 {
-	kprintf("%s", exceptions[excp->num].name);
+	kprintf("[i486] eax=%x ebx=%x ecx=%x edx=%x", ctx->eax, ctx->ebx, ctx->ecx, ctx->edx);
+	kprintf("[i486] esi=%x edi=%x ebp=%x esp=%x", ctx->esi, ctx->edi, ctx->ebp, ctx->useresp);
+	kprintf("[i486]  cs=%x  ds=%x  ss=%x", 0xff & ctx->cs, 0xff & ctx->ds, 0xff & ctx->ss);
+	kprintf("[i486]  es=%x  fs=%x  gs=%x", 0xff & ctx->es, 0xff & ctx->fs, 0xff & ctx->gs);
+	kprintf("[i486] eip=%x eflags=%x", ctx->eip, ctx->eflags);
 }
+
