@@ -22,6 +22,7 @@
  * SOFTWARE.
  */
 
+#include <nanvix/hal/core/interrupt.h>
 #include <arch/core/k1b/excp.h>
 #include <arch/core/k1b/int.h>
 #include <arch/core/k1b/ivt.h>
@@ -43,7 +44,7 @@ PUBLIC void k1b_core_setup(void *stack)
 	kprintf("[hal] booting up core");
 
 	k1b_ivt_setup(
-		k1b_do_int,
+		do_interrupt,
 		_k1b_do_syscall,
 		_k1b_do_excp,
 		stack

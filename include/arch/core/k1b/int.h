@@ -40,7 +40,7 @@
 	/**
 	 * @brief Number of interrupts.
 	 */
-	#define K1B_NUM_INT K1B_IRQ_NUM
+	#define K1B_INT_NUM K1B_IRQ_NUM
 
 	/**
 	 * @name Hardware Interrupts for Kalray MPPA-256 Target
@@ -66,13 +66,6 @@
 #ifndef _ASM_FILE_
 
 	/**
-	 * @brief Hardware interrupt dispatcher.
-	 *
-	 * @param intnum Number of the interrupt that was triggered.
-	 */
-	EXTERN void k1b_do_int(int intnum);
-
-	/**
 	 * @brief Masks an interrupt.
 	 *
 	 * @param intnum Number of the target interrupt.
@@ -92,16 +85,6 @@
 	 */
 	EXTERN int k1b_int_unmask(int intnum);
 
-	/**
-	 * @brief Sets a handler for a interrupt.
-	 *
-	 * @param intnum  Number of the target interrupt.
-	 * @param handler Interrupt handler.
-	 *
-	 * @returns Upon successful completion, zero is returned. Upon
-	 * failure, a negative error code is returned instead.
-	 */
-	EXTERN int k1b_int_handler_set(int intnum, void (*handler)(int));
 
 	/**
 	 * @brief Enables interrupts.
@@ -136,27 +119,28 @@
  */
 
 	/**
-	 * @name Exported Functions
+	 * @name Exported Constants
 	 */
 	/**@{*/
-	#define __interrupts_disable
-	#define __interrupts_enable
-	#define __interrupt_set_handler
-	#define __interrupt_mask
-	#define __interrupt_unmask
+	#define INTERRUPTS_NUM  K1B_INT_NUM    /**< @ref K1b_INT_NUM    */
+	#define INTERRUPT_CLOCK K1B_INT_CLOCK0 /**< @ref K1B_INT_CLOCK0 */
+	#define HAL_INT_CNOC    K1B_INT_CNOC   /**< @ref K1B_INT_CNOC   */
 	/**@}*/
 
 	/**
-	 * @brief Number of hardware interrupts in the Kalray MPPA-256 target.
-	 */
-	#define _INTERRUPTS_NUM K1B_NUM_INT
-
-	/**
-	 * @name Hardware Interrupts
+	 * @name Exported Variables
 	 */
 	/**@{*/
-	#define INTERRUPT_CLOCK K1B_INT_CLOCK0 /*< Programmable interrupt timer. */
-	#define HAL_INT_CNOC    K1B_INT_CNOC   /*< Control NoC interrupt.        */
+	#define __interrupt_handlers_var /**< @ref interrupt_handlers */
+	/**@}*/
+
+	/**
+	 * @name Exported Functions
+	 */
+	/**@{*/
+	#define __interrupts_disable_fn /**< @ref interrupts_disable() */
+	#define __interrupts_enable_fn  /**< @ref interrupts_enable()  */
+	#define __interrupt_next_fn     /**< @ref interrupt_next()     */
 	/**@}*/
 
 #ifndef _ASM_FILE_
@@ -202,11 +186,11 @@
 	}
 
 	/**
-	 * @see k1b_hwint_handler_set().
+	 * @see k1b_int_next()
 	 */
-	static inline int interrupt_set_handler(int intnum, void (*handler)(int))
+	static inline int interrupt_next(void)
 	{
-		return (k1b_int_handler_set(intnum, handler));
+		return (0);
 	}
 
 #endif /* _ASM_FILE_ */
