@@ -281,6 +281,14 @@
 		k1b_context_set_pc(ctx, val);
 	}
 
+	/**
+	 * @see k1b_context_dump().
+	 */
+	static inline void context_dump(const struct context *ctx)
+	{
+		k1b_context_dump(ctx);
+	}
+
 #endif /* _ASM_FILE_ */
 
 /**@endcond*/

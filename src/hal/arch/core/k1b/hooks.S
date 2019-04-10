@@ -212,21 +212,21 @@ _k1b_do_excp:
 	 * Save exception information
 	 * in the current stack.
 	 */
-	add  $sp, $sp, -K1B_EXCEPTION_SIZE
+	add  $sp, $sp, -K1B_EXCP_SIZE
 	;;
 	lw  $r5 = MOS_VC_REG_PS[$r2]
 	;;
 	srl $r4 = $r5, 28                 /* Exception code. */
 	;;
-	sw  K1B_EXCEPTION_NUM[$sp], $r4
+	sw  K1B_EXCP_NR[$sp], $r4
 	;;
 	lw  $r4 = MOS_VC_REG_EA[$r2]      /* Exception address. */
 	;;
-	sw K1B_EXCEPTION_EA[$sp], $r4
+	sw K1B_EXCP_EA[$sp], $r4
 	;;
 	lw  $r4 = MOS_VC_REG_SPC[$r2]     /* Instruction address. */
 	;;
-	sw K1B_EXCEPTION_SPC[$sp], $r4
+	sw K1B_EXCP_SPC[$sp], $r4
 	;;
 
 	/*
@@ -242,7 +242,7 @@ _k1b_do_excp:
 	 */
 	redzone_alloc
 	;;
-	call do_excp
+	call do_exception
 	;;
 	redzone_free
 	;;
@@ -251,7 +251,7 @@ _k1b_do_excp:
 	 * Wipe out exception information
 	 * from current stack.
 	 */
-	add $sp, $sp, K1B_EXCEPTION_SIZE
+	add $sp, $sp, K1B_EXCP_SIZE
 	;;
 
 	_scoreboard_get $r2 $r3

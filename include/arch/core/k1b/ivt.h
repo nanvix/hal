@@ -53,11 +53,6 @@
 	typedef void (*k1b_swint_handler_fn)(void);
 
 	/**
-	 * @brief Exception handler.
-	 */
-	typedef void (*k1b_excp_handler_fn)(void);
-
-	/**
 	 * @brief Initializes the interrupt vector table.
 	 *
 	 * @param hwint_handler Default hardware interrupt handler.
@@ -68,7 +63,7 @@
 	extern void k1b_ivt_setup(
 			k1b_int_handler_fn hwint_handler,
 			k1b_swint_handler_fn swint_handler,
-			k1b_excp_handler_fn excp_handler,
+			void (*excp_handler)(void),
 			void *stack
 	);
 
