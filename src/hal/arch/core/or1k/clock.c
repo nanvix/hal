@@ -28,6 +28,42 @@
 #include <arch/core/or1k/core.h>
 
 /**
+ * @brief Was the clock device initialized?
+ */
+PRIVATE int initialized = FALSE;
+
+/**
+ * @brief Clock delta
+ */
+PRIVATE uint32_t clock_delta = 0;
+
+/**
+ * @brief Clock delay.
+ */
+PRIVATE uint32_t clock_delay = 0;
+
+/**
+ * @brief Calibrates the clock.
+ *
+ * Since the timer frequency is sensible to the proper instruction
+ * execution, the or1k_clock_calibrate gets the minimal overhead
+ * between two reads, in order to adjust the timer value to a more
+ * stable value.
+ *
+ *
+ * @author Davidson Francis
+ */
+PRIVATE uint32_t or1k_clock_calibrate(void)
+{
+	uint32_t t0, t1;
+
+	t0 = or1k_mfspr(OR1K_SPR_TTCR);
+	t1 = or1k_mfspr(OR1K_SPR_TTCR);
+
+	return (t1 - t0);
+}
+
+/**
  * The or1k_clock_reset() function acknoledges the clock interrupt and
  * resets the clock counter.
  */
@@ -38,7 +74,7 @@ PUBLIC void or1k_clock_reset(void)
 
 	/* Reenable timer. */
 	or1k_mtspr(OR1K_SPR_TTMR, OR1K_SPR_TTMR_SR | OR1K_SPR_TTMR_IE |
-		OR1K_CPU_FREQUENCY);
+		(clock_delta + clock_delay));
 
 	/* Reset counter. */
 	or1k_mtspr(OR1K_SPR_TTCR, 0);
@@ -52,18 +88,41 @@ PUBLIC void or1k_clock_reset(void)
 PUBLIC void or1k_clock_init(unsigned freq)
 {
 	unsigned upr;  /* Unit Present Register. */
-	unsigned rate; /* Timer rate.            */
 
 	UNUSED(freq);
+	
+	/* Nothing to do. */
+	if (initialized)
+		return;
 
+	/* Checks if Timer available. */
 	upr = or1k_mfspr(OR1K_SPR_UPR);
 	if (!(upr & OR1K_SPR_UPR_TTP))
 		while (1);
 
 	/* Clock rate. */
-	rate = OR1K_CPU_FREQUENCY;
+	clock_delta = OR1K_CPU_FREQUENCY;
+	
+	/* 
+	 * Clock calibrate.
+	 *
+	 * Since the timer is disabled by default, its necessary to
+	 * temporarily enable the timer (with interrupts disabled)
+	 * to get the minimal timer variation between two consecutive
+	 * reads.
+	 */
+	or1k_mtspr(OR1K_SPR_TTMR, OR1K_SPR_TTMR_SR | clock_delta);
+	or1k_mtspr(OR1K_SPR_TTCR, 0);	
+	clock_delay = or1k_clock_calibrate();
+	initialized = TRUE;
+	
+	/* Print some info. */
+	kprintf("[hal] clock delay is %d ticks", clock_delay);
+	kprintf("[hal] clock delta is %d ticks", clock_delta);
 
-	/* Ensures that the clock is disabled. */
-	or1k_mtspr(OR1K_SPR_TTMR, OR1K_SPR_TTMR_SR | OR1K_SPR_TTMR_IE | rate);
-	or1k_mtspr(OR1K_SPR_TTCR, 0);
+	/*
+	 * Reset the clock for the first
+	 * time, so that it starts working.
+	 */
+	or1k_clock_reset();
 }
