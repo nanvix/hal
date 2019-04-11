@@ -34,15 +34,61 @@
 #define CLOCK_FREQ 100
 
 /**
+ * @brief Launches unit tests on Core AL.
+ */
+PRIVATE void test_core_al(void)
+{
+	test_exception();
+	test_interrupt();
+	test_mmu();
+	test_tlb();
+#if !defined(__rv32gc__)
+	test_trap();
+	test_upcall();
+#endif
+}
+
+/**
+ * @brief Launches unit tests on Cluster AL.
+ */
+PRIVATE void test_cluster_al(void)
+{
+#if (CLUSTER_IS_MULTICORE)
+	test_core();
+#endif
+}
+
+/**
+ * @brief Launches unit tests on Processor AL.
+ */
+PRIVATE void test_processor_al(void)
+{
+#if (TARGET_HAS_SYNC)
+	test_sync();
+#endif
+}
+
+/**
+ * @brief Launches unit tests on Target AL.
+ */
+PRIVATE void test_target_al(void)
+{
+}
+
+/**
  * @brief Dummy main function.
  */
-PUBLIC int main(int argc, const char **argv)
+PUBLIC int main(int argc, const char *argv[])
 {
 	UNUSED(argc);
 	UNUSED(argv);
 
-	while (TRUE)
-		noop();
+	/* Halt. */
+	kprintf("[hal] halting...");
+	while (TRUE);
+		/* noop. */
+
+	return (0);
 }
 
 /**
@@ -61,25 +107,11 @@ PUBLIC void kmain(int argc, const char *argv[])
 
 	clock_init(CLOCK_FREQ);
 
-	test_exception();
-	test_interrupt();
-	test_mmu();
-	test_tlb();
-#if (CLUSTER_IS_MULTICORE)
-	test_core();
-#endif
+	/* Run unit tests. */
+	test_core_al();
+	test_cluster_al();
+	test_processor_al();
+	test_target_al();
 
-#if !defined(__rv32gc__)
-	test_trap();
-	test_upcall();
-
-#endif
-
-#if (TARGET_HAS_SYNC)
-	test_sync();
-#endif
-
-	kprintf("[hal] halting...");
-
-	main(0, NULL);
+	main(argc, argv);
 }
