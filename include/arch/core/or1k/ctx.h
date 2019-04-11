@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 
-#ifndef ARCH_CORE_OR1K_CONTEXT_H_
-#define ARCH_CORE_OR1K_CONTEXT_H_
+#ifndef ARCH_CORE_OR1K_CTX_H_
+#define ARCH_CORE_OR1K_CTX_H_
 
 	#ifndef __NEED_CORE_CONTEXT
 		#error "do not include this file"
@@ -246,4 +246,4 @@
 
 /**@endcond*/
 
-#endif /* ARCH_CORE_OR1K_CONTEXT_H_ */
+#endif /* ARCH_CORE_OR1K_CTX_H_ */

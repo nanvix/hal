@@ -28,7 +28,7 @@
 	/* Must come first. */
 	#define __NEED_CORE_TYPES
 	#define __NEED_MEMORY_TYPES
-	#define __NEED_OR1K_CONTEXT
+	#define __NEED_CORE_CONTEXT
 
 /**
  * @addtogroup or1k-core-exception Exception
@@ -38,7 +38,7 @@
  */
 /**@{*/
 
-	#include <arch/core/or1k/context.h>
+	#include <arch/core/or1k/ctx.h>
 	#include <arch/core/or1k/types.h>
 	#include <nanvix/const.h>
 	#include <nanvix/klib.h>

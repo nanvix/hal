@@ -29,8 +29,12 @@
 		#error "do not include this header in C files"
 	#endif
 
+	/* Must come first. */
+	#define __NEED_OR1K_REGS
+	#define __NEED_CORE_CONTEXT
+
 	#include <arch/core/or1k/regs.h>
-	#include <arch/core/or1k/context.h>
+	#include <arch/core/or1k/ctx.h>
 
 /*============================================================================*
  * Register Aliases                                                           *
