@@ -23,7 +23,7 @@
 # Tweak toolchain.
 export LDFLAGS  += -L $(LINKERDIR)/ -T link.ld
 
-ASM_SRC = $(wildcard arch/or1k.S)
+ASM_SRC = $(wildcard core/arch/or1k.S)
 
 # Object Files
 OBJ = $(C_SRC:.c=.o) \
