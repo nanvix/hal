@@ -25,6 +25,12 @@
 #ifndef ARCH_CORE_RV32I_INT_H_
 #define ARCH_CORE_RV32I_INT_H_
 
+	/* Must come first. */
+	#define __NEED_CORE_LPIC
+	#define __NEED_CORE_REGS
+	#define __NEED_CORE_TYPES
+	#define __NEED_CORE_CONTEXT
+
 /**
  * @addtogroup rv32i-core-int Interrupts
  * @ingroup rv32i-core
@@ -33,43 +39,33 @@
  */
 /**@{*/
 
-	/* Must come first. */
-	#define __NEED_CORE_IVT
-	#define __NEED_CORE_CONTEXT
-	#define __NEED_CORE_REGS
-	#define __NEED_CORE_TYPES
-
 	#include <arch/core/rv32i/context.h>
-	#include <arch/core/rv32i/ivt.h>
+	#include <arch/core/rv32i/lpic.h>
 	#include <arch/core/rv32i/mcall.h>
 	#include <arch/core/rv32i/regs.h>
 	#include <arch/core/rv32i/types.h>
-	#include <errno.h>
+
+	/**
+	 * @brief Number of interrupts.
+	 */
+	#define RV32I_INT_NUM RV32I_IRQ_NUM
 
 	/**
 	 * @name Interrupts
 	 */
 	/**@{*/
-	#define RV32I_INT_SWINT_USER       0 /**< User Software Interrupt       */
-	#define RV32I_INT_SWINT_KERNEL     1 /**< Supervisor Software Interrupt */
-	#define RV32I_INT_SWINT_RESERVED   2 /**< Reserved                      */
-	#define RV32I_INT_SWINT_MACHINE    3 /**< Machine Software Interrupt    */
-	#define RV32I_INT_TIMER_USER       4 /**< User Timer Interrupt          */
-	#define RV32I_INT_TIMER_KERNEL     5 /**< Supervisor Timer Interrupt    */
-	#define RV32I_INT_TIMER_RESERVED   6 /**< Reserved                      */
-	#define RV32I_INT_TIMER_MACHINE    7 /**< Machine Timer Interrupt       */
-	#define RV32I_INT_EXTERN_USER      8 /**< User External Interrupt       */
-	#define RV32I_INT_EXTERN_KERNEL    9 /**< Supervisor External Interrupt */
-	#define RV32I_INT_EXTERN_RESERVED 10 /**< Reserved                      */
-	#define RV32I_INT_EXTERN_MACHINE  11 /**< Machine External Interrupt    */
+	#define RV32I_INT_SWINT_USER      RV32I_IRQ_UEVENT  /**< User Software Interrupt       */
+	#define RV32I_INT_SWINT_KERNEL    RV32I_IRQ_SEVENT  /**< Supervisor Software Interrupt */
+	#define RV32I_INT_SWINT_MACHINE   RV32I_IRQ_HEVENT  /**< Machine Software Interrupt    */
+	#define RV32I_INT_TIMER_USER      RV32I_IRQ_UTIMER  /**< User Timer Interrupt          */
+	#define RV32I_INT_TIMER_KERNEL    RV32I_IRQ_STIMER  /**< Supervisor Timer Interrupt    */
+	#define RV32I_INT_TIMER_MACHINE   RV32I_IRQ_HTIMER  /**< Machine Timer Interrupt       */
+	#define RV32I_INT_EXTERN_USER     RV32I_IRQ_UEXTERN /**< User External Interrupt       */
+	#define RV32I_INT_EXTERN_KERNEL   RV32I_IRQ_SEXTERN /**< Supervisor External Interrupt */
+	#define RV32I_INT_EXTERN_MACHINE  RV32I_IRQ_HEXTERN /**< Machine External Interrupt    */
 	/**@}*/
 
 #ifndef _ASM_FILE_
-
-	/**
-	 * Table of Interrupt Requests (IRQs).
-	 */
-	extern const int irqs[RV32I_INT_NUM];
 
 	/**
 	 * @brief Enables interrupts.
@@ -93,7 +89,8 @@
 	/**
 	 * @brief Disables interrupts.
 	 *
-	 * Disables all interrupts in the underlying core.
+	 * The rv32i_int_disable() disables all interrupts in the rv32i
+	 * underlying core.
 	 */
 	static inline void rv32i_int_disable(void)
 	{
@@ -117,119 +114,6 @@
 		asm volatile ("wfi");
 	}
 
-	/**
-	 * @brief Unmasks an interrupt.
-	 *
-	 * @param irqnum Number of target interrupt request.
-	 *
-	 * @returns Upon successful completion, zero is returned. Upon
-	 * failure, a negative error code is returned instead.
-	 *
-	 * @author Pedro Henrique Penna
-	 */
-	static inline int rv32i_int_unmask(int irqnum)
-	{
-		rv32i_word_t sie;
-
-		/* Invalid interrupt number. */
-		if ((irqnum < 0) || (irqnum >= RV32I_INT_NUM))
-			return (-EINVAL);
-
-		asm volatile (
-			"csrrs %0, sie, %1"
-			: "=r"(sie)
-			: "r"(irqs[irqnum])
-		);
-
-		return (0);
-	}
-
-	/**
-	 * @brief Masks an interrupt.
-	 *
-	 * @param irqnum Number of the target interrupt request.
-	 *
-	 * @returns Upon successful completion, zero is returned. Upon
-	 * failure, a negative error code is returned instead.
-	 *
-	 * @author Pedro Henrique Penna
-	 */
-	static inline int rv32i_int_mask(int irqnum)
-	{
-		rv32i_word_t sie;
-
-		/* Invalid interrupt number. */
-		if ((irqnum < 0) || (irqnum >= RV32I_INT_NUM))
-			return (-EINVAL);
-
-		asm volatile (
-			"csrrc %0, sie, %1"
-			: "=r"(sie)
-			: "r"(irqs[irqnum])
-		);
-
-		return (0);
-	}
-
-	/**
-	 * @brief Acknowledges an interrupt.
-	 *
-	 * @param irqnum Number of the target interrupt request.
-	 *
-	 * @returns Upon successful completion, zero is returned. Upon
-	 * failure, a negative error code is returned instead.
-	 *
-	 * @author Pedro Henrique Penna
-	 */
-	static inline int rv32i_int_ack(int irqnum)
-	{
-		rv32i_word_t sie;
-
-		/* Invalid interrupt number. */
-		if ((irqnum < 0) || (irqnum >= RV32I_INT_NUM))
-			return (-EINVAL);
-
-		asm volatile (
-			"csrrc %0, sip, %1"
-			: "=r"(sie)
-			: "r"(irqs[irqnum])
-		);
-
-		return (0);
-	}
-
-	/**
-	 * @brief Unmasks all interrupts.
-	 *
-	 * the rv32i_int_unmask_all() unmasks all interrupt request lines
-	 * in the underlying rv32i core.
-	 *
-	 * @author Pedro Henrique Penna
-	 *
-	 * @todo FIXME we should do this atomically.
-	 */
-	static inline void rv32i_int_unmask_all(void)
-	{
-		for (int i = 0; i < RV32I_INT_NUM; i++)
-			rv32i_int_unmask(i);
-	}
-
-	/**
-	 * @brief Masks all interrupts.
-	 *
-	 * the rv32i_int_mask_all() masks all interrupts request lines in
-	 * the underlying rv32i core.
-	 *
-	 * @author Pedro Henrique Penna
-	 *
-	 * @todo FIXME we should do this atomically.
-	 */
-	static inline void rv32i_int_mask_all(void)
-	{
-		for (int i = 0; i < RV32I_INT_NUM; i++)
-			rv32i_int_unmask(i);
-	}
-
 #endif
 
 /**@}*/
@@ -246,7 +130,7 @@
 	 * @name Exported Constants
 	 */
 	/**@{*/
-	#define INTERRUPTS_NUM RV32I_INT_NUM           /**< @ref RV32I_INT_NUM          */
+	#define INTERRUPTS_NUM  RV32I_INT_NUM          /**< @ref RV32I_INT_NUM          */
 	#define INTERRUPT_CLOCK RV32I_INT_TIMER_KERNEL /**< @ref RV32I_INT_TIMER_KERNEL */
 	/**@}*/
 
@@ -264,8 +148,9 @@
 	#define __interrupts_disable_fn /**< @ref interrupts_disable() */
 	#define __interrupts_enable_fn  /**< @ref interrupts_enable()  */
 	#define __interrupt_next_fn     /**< @ref interrupt_next()     */
-	#define __interrupt_mask        /**< interrupt_mask()          */
-	#define __interrupt_unmask      /**< interrupt_unmask()        */
+	#define __interrupt_mask_fn     /**< @ref interrupt_mask()     */
+	#define __interrupt_unmask_fn   /**< @ref interrupt_unmask()   */
+	#define __interrupt_ack_fn      /**< @ref interrupt_ack()      */
 	/**@}*/
 
 #ifndef _ASM_FILE_
@@ -287,27 +172,27 @@
 	}
 
 	/**
-	 * @see rv32i_int_ack().
-	 */
-	static inline int interrupt_ack(int irqnum)
-	{
-		return (rv32i_int_ack(irqnum));
-	}
-
-	/**
 	 * @see rv32i_int_mask().
 	 */
-	static inline int interrupt_mask(int irqnum)
+	static inline int interrupt_mask(int irq)
 	{
-		return (rv32i_int_mask(irqnum));
+		return (rv32i_pic_mask(irq));
 	}
 
 	/**
 	 * @see rv32i_int_unmask().
 	 */
-	static inline int interrupt_unmask(int irqnum)
+	static inline int interrupt_unmask(int irq)
 	{
-		return (rv32i_int_unmask(irqnum));
+		return (rv32i_pic_unmask(irq));
+	}
+
+	/**
+	 * @see rv32i_int_ack().
+	 */
+	static inline void interrupt_ack(int irq)
+	{
+		rv32i_pic_ack(irq);
 	}
 
 	/**

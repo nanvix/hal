@@ -25,6 +25,13 @@
 #ifndef ARCH_CORE_RV32I_IVT_H_
 #define ARCH_CORE_RV32I_IVT_H_
 
+	#ifndef __NEED_CORE_IVT
+		#error "do not include this file"
+	#endif
+
+	/* Must come first. */
+	#define __NEED_CORE_TYPES
+
 /**
  * @addtogroup rv32i-core-ivt IVT
  * @ingroup rv32i-core
@@ -33,20 +40,8 @@
  */
 /**@{*/
 
-	#ifndef __NEED_CORE_IVT
-		#error "do not include this file"
-	#endif
-
-	/* Must come first. */
-	#define __NEED_CORE_TYPES
-
 	#include <arch/core/rv32i/types.h>
-	#include <nanvix/cc.h>
-
-	/**
-	 * @brief Number of interrupts.
-	 */
-	#define RV32I_INT_NUM 12
+	#include <nanvix/const.h>
 
 #ifndef _ASM_FILE_
 

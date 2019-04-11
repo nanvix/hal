@@ -35,21 +35,3 @@ PUBLIC void (*interrupt_handlers[RV32I_INT_NUM])(int) = {
 	NULL, NULL, NULL, NULL,
 	NULL, NULL, NULL, NULL,
 };
-
-/**
- * Table of Interrupt Requests (IRQs).
- */
-PUBLIC const int irqs[RV32I_INT_NUM] = {
-	RV32I_SIE_USIE, /* User Software Interrupt Enable       */
-	RV32I_SIE_SSIE, /* Supervisor Interrupt Enable          */
-	0,
-	0,
-	RV32I_SIE_UTIE, /* User Timer Interrupt Enable          */
-	RV32I_SIE_STIE, /* Supervisor Timer Interrupt Enable    */
-	0,
-	0,
-	RV32I_SIE_UEUE, /* User External Interrupt Enable       */
-	RV32I_SIE_SEIE, /* Supervisor External Interrupt Enable */
-	0,
-	0
-};
