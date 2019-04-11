@@ -22,64 +22,16 @@
  * SOFTWARE.
  */
 
-#include <nanvix/hal/hal.h>
+#include <arch/core/rv32gc/int.h>
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
-#include <nanvix/const.h>
-#include "test.h"
+#include <errno.h>
 
 /**
- * @brief Clock frequency (in Hz).
+ * @brief Interrupt handlers.
  */
-#define CLOCK_FREQ 100
-
-/**
- * @brief Dummy main function.
- */
-PUBLIC int main(int argc, const char **argv)
-{
-	UNUSED(argc);
-	UNUSED(argv);
-
-	while (TRUE)
-		noop();
-}
-
-/**
- * @brief Initializes the kernel.
- */
-PUBLIC void kmain(int argc, const char *argv[])
-{
-	UNUSED(argc);
-	UNUSED(argv);
-
-	/*
-	 * Initializes the HAL. Must come
-	 * before everything else.
-	 */
-	hal_init();
-
-	clock_init(CLOCK_FREQ);
-
-	test_exception();
-	test_interrupt();
-	test_mmu();
-	test_tlb();
-#if (CLUSTER_IS_MULTICORE)
-	test_core();
-#endif
-
-#if !defined(__rv32gc__)
-	test_trap();
-	test_upcall();
-
-#endif
-
-#if (TARGET_HAS_SYNC)
-	test_sync();
-#endif
-
-	kprintf("[hal] halting...");
-
-	main(0, NULL);
-}
+PUBLIC void (*interrupt_handlers[RV32GC_INT_NUM])(int) = {
+	NULL, NULL, NULL, NULL,
+	NULL, NULL, NULL, NULL,
+	NULL, NULL, NULL, NULL,
+};

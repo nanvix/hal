@@ -25,8 +25,8 @@
 #ifndef _CLUSTER_RISCV32_CLUSTER_H_
 #define _CLUSTER_RISCV32_CLUSTER_H_
 
-	#define __NEED_CORE_RV32I
-	#include <arch/core/rv32i.h>
+	#define __NEED_CORE_RV32GC
+	#include <arch/core/rv32gc.h>
 
 #endif /* _CLUSTER_RISCV32_CLUSTER_H_ */
 

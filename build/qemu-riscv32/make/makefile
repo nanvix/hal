@@ -47,11 +47,11 @@ export CFLAGS += -nostdlib -nostdinc
 export CFLAGS += -ansi -pedantic-errors
 export CFLAGS += -Wstack-usage=4096
 export CFLAGS += -D __HAS_HW_DIVISION
-export CFAGS  += -march=rv32imac -mabi=ilp32
+export CFAGS  += -march=rv32imafdc -mabi=ilp32
 export CFLAGS += -mcmodel=medany
 
 # Linker Options
-export LDFLAGS   = -march=rv32imac -mabi=ilp32 -mcmodel=medany
+export LDFLAGS   = -march=rv32imafdc -mabi=ilp32 -mcmodel=medany
 export LDFLAGS  += -nostdlib -nostdinc -Wl,--nmagic -Wl,--gc-sections
 
 #===============================================================================

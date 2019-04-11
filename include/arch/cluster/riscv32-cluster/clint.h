@@ -104,7 +104,7 @@
 
 		/* Raise IPI. */
 		riscv32_cluster_msip[coreid] = 1;
-		rv32i_cache_inval();
+		rv32gc_cache_inval();
 
 		return (0);
 	}
@@ -125,8 +125,8 @@
 
 		/* Raise IPI. */
 		riscv32_cluster_msip[coreid] = 0;
-		rv32i_mcall_ipi_ack();
-		rv32i_cache_inval();
+		rv32gc_mcall_ipi_ack();
+		rv32gc_cache_inval();
 
 		return (0);
 	}

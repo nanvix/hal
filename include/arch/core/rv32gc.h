@@ -22,66 +22,48 @@
  * SOFTWARE.
  */
 
-#ifndef ARCH_CLUSTER_CLUSTER_RISCV32_CLUSTER_CLOCK_H_
-#define ARCH_CLUSTER_CLUSTER_RISCV32_CLUSTER_CLOCK_H_
-
-	/* Cluster Interface Implementation */
-	#include <arch/cluster/riscv32-cluster/_riscv32-cluster.h>
-
-/**
- * @addtogroup rscv32-cluster-clock Clock
- * @ingroup riscv32-cluster
- *
- * @brief 64-bit Timer
- */
-/**@{*/
-
-	/* Must come first. */
-	#define __NEED_CLUSTER_CLINT
-
-	#include <arch/cluster/riscv32-cluster/clint.h>
-	#include <stdint.h>
+#ifndef ARCH_CORE_RV32GC_H_
+#define ARCH_CORE_RV32GC_H_
 
 	/**
-	 * @brief Clock frequency (10 MHz)
+	 * @addtogroup rv32gc-core RV32GC Core
+	 * @ingroup cores
 	 */
-	#define RISCV32_CLUSTER_TIMEBASE 10000000
 
-/**@}*/
+	#ifndef __NEED_CORE_RV32GC
+		#error "rv32gc core not required"
+	#endif
 
-/*============================================================================*
- * Exported Interface                                                         *
- *============================================================================*/
+	#include <arch/core/rv32gc/cache.h>
+	#include <arch/core/rv32gc/clock.h>
+	#include <arch/core/rv32gc/core.h>
+	#include <arch/core/rv32gc/excp.h>
+	#include <arch/core/rv32gc/int.h>
+	#include <arch/core/rv32gc/mmu.h>
+	#include <arch/core/rv32gc/spinlock.h>
+	#include <arch/core/rv32gc/tlb.h>
+	#include <arch/core/rv32gc/trap.h>
+
+	#ifdef __NEED_CORE_MACHINE
+		#include <arch/core/rv32gc/machine.h>
+	#endif
 
 /**
- * @cond riscv32_smp
+ * @cond rv32gc
  */
 
 	/**
-	 * @name Exported Functions
+	 * @name Core Features
 	 */
 	/**@{*/
-	#define __clock_init_fn   /**< clock_init() */
+	#define CORE_HAS_ATOMICS      1 /**< Has Atomic Instructions?    */
+	#define CORE_HAS_PMIO         0 /**< Has Programmed I/O?         */
+	#define CORE_HAS_TLB_HW       1 /**< Has Hardware-Managed TLB?   */
+	#define CORE_HAS_CACHE_HW     0 /**< Has Hardware-Managed Cache? */
+	#define CORE_IS_LITTLE_ENDIAN 1 /**< Is Little Endian?           */
 	/**@}*/
-
-#ifndef _ASM_FILE_
-
-	/**
-	 * @see clock_init().
-	 */
-	static inline void clock_init(unsigned freq)
-	{
-		rv32gc_clock_init(
-			freq,
-			RISCV32_CLUSTER_TIMEBASE,
-			(uint64_t *) RISCV32_CLUSTER_CLINT_MTIME_BASE,
-			(uint64_t *) RISCV32_CLUSTER_CLINT_MTIMECMP_BASE
-		);
-	}
-
-#endif
 
 /**@endcond*/
 
-#endif /* ARCH_CLUSTER_CLUSTER_RISCV32_CLUSTER_CLOCK */
+#endif /* ARCH_CORE_RV32GC_H_ */
 

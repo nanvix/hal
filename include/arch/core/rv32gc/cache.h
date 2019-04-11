@@ -22,30 +22,42 @@
  * SOFTWARE.
  */
 
-#ifndef ARCH_CLUSTER_CLUSTER_RISCV32_CLUSTER_CLOCK_H_
-#define ARCH_CLUSTER_CLUSTER_RISCV32_CLUSTER_CLOCK_H_
-
-	/* Cluster Interface Implementation */
-	#include <arch/cluster/riscv32-cluster/_riscv32-cluster.h>
+#ifndef ARCH_CORE_RV32GC_CACHE_H_
+#define ARCH_CORE_RV32GC_CACHE_H_
 
 /**
- * @addtogroup rscv32-cluster-clock Clock
- * @ingroup riscv32-cluster
+ * @addtogroup rv32gc-core-cache Cache
+ * @ingroup rv32gc-core
  *
- * @brief 64-bit Timer
+ * @brief Memory Cache
  */
 /**@{*/
 
-	/* Must come first. */
-	#define __NEED_CLUSTER_CLINT
-
-	#include <arch/cluster/riscv32-cluster/clint.h>
-	#include <stdint.h>
+	#include <nanvix/cc.h>
 
 	/**
-	 * @brief Clock frequency (10 MHz)
+	 * @brief L1 Cache line shift.
 	 */
-	#define RISCV32_CLUSTER_TIMEBASE 10000000
+	#define RV32GC_CACHE_LINE_SHIFT 6
+
+	/**
+	 * @brief L1 Cache line size (in bytes).
+	 */
+	#define RV32GC_CACHE_LINE_SIZE (1 << RV32GC_CACHE_LINE_SHIFT)
+
+#ifndef _ASM_FILE_
+
+	/**
+	 * @brief Flushes the data and instruction caches.
+	 *
+	 * @note This function flushes the whole cache.
+	 */
+	static inline void rv32gc_cache_inval(void)
+	{
+		asm volatile ("fence.i" ::: "memory");
+	}
+
+#endif
 
 /**@}*/
 
@@ -54,34 +66,42 @@
  *============================================================================*/
 
 /**
- * @cond riscv32_smp
+ * @cond rv32gc
  */
 
 	/**
-	 * @name Exported Functions
+	 * @name Provided Interface
 	 */
 	/**@{*/
-	#define __clock_init_fn   /**< clock_init() */
+	#define __dcache_invalidate_fn /**< dcache_invalidate() */
+	#define __icache_invalidate_fn /**< icache_invalidate() */
 	/**@}*/
+
+	/**
+	 * @see RV32GC_CACHE_LINE_SIZE.
+	 */
+	#define CACHE_LINE_SIZE RV32GC_CACHE_LINE_SIZE
 
 #ifndef _ASM_FILE_
 
 	/**
-	 * @see clock_init().
+	 * @see rv32gc_dcache_inval().
 	 */
-	static inline void clock_init(unsigned freq)
+	static inline void dcache_invalidate(void)
 	{
-		rv32gc_clock_init(
-			freq,
-			RISCV32_CLUSTER_TIMEBASE,
-			(uint64_t *) RISCV32_CLUSTER_CLINT_MTIME_BASE,
-			(uint64_t *) RISCV32_CLUSTER_CLINT_MTIMECMP_BASE
-		);
+		rv32gc_cache_inval();
+	}
+
+	/**
+	 * @see rv32gc_icache_inval().
+	 */
+	static inline void icache_invalidate(void)
+	{
+		rv32gc_cache_inval();
 	}
 
 #endif
 
 /**@endcond*/
 
-#endif /* ARCH_CLUSTER_CLUSTER_RISCV32_CLUSTER_CLOCK */
-
+#endif /* ARCH_CORE_RV32GC_CACHE_H_ */

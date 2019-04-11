@@ -22,64 +22,28 @@
  * SOFTWARE.
  */
 
-#include <nanvix/hal/hal.h>
+/* Must come first. */
+#define __NEED_CORE_CONTEXT
+
+#include <arch/core/rv32gc/ctx.h>
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
-#include <nanvix/const.h>
-#include "test.h"
 
 /**
- * @brief Clock frequency (in Hz).
+ * @todo TODO provide a detailed description for this function.
+ *
+ * @author Pedro Henrique Penna
  */
-#define CLOCK_FREQ 100
-
-/**
- * @brief Dummy main function.
- */
-PUBLIC int main(int argc, const char **argv)
+PUBLIC void rv32gc_context_dump(const struct context *ctx)
 {
-	UNUSED(argc);
-	UNUSED(argv);
-
-	while (TRUE)
-		noop();
-}
-
-/**
- * @brief Initializes the kernel.
- */
-PUBLIC void kmain(int argc, const char *argv[])
-{
-	UNUSED(argc);
-	UNUSED(argv);
-
-	/*
-	 * Initializes the HAL. Must come
-	 * before everything else.
-	 */
-	hal_init();
-
-	clock_init(CLOCK_FREQ);
-
-	test_exception();
-	test_interrupt();
-	test_mmu();
-	test_tlb();
-#if (CLUSTER_IS_MULTICORE)
-	test_core();
-#endif
-
-#if !defined(__rv32gc__)
-	test_trap();
-	test_upcall();
-
-#endif
-
-#if (TARGET_HAS_SYNC)
-	test_sync();
-#endif
-
-	kprintf("[hal] halting...");
-
-	main(0, NULL);
+	/* Dump general purpose registers. */
+	kprintf("[hal]  ra=%x   sp=%x   fp=%x",       ctx->ra, ctx->sp, ctx->fp);
+	kprintf("[hal]  gp=%x   tp=%x",               ctx->gp, ctx->tp);
+	kprintf("[hal]  a0=%x   a1=%x  s2=%x  a3=%x", ctx->a0, ctx->a1,  ctx->a2,  ctx->a3);
+	kprintf("[hal]  a4=%x   a5=%x  s6=%x  a7=%x", ctx->a4, ctx->a5,  ctx->a6,  ctx->a7);
+	kprintf("[hal]  t0=%x   t1=%x  t2=%x",        ctx->t0, ctx->t1,  ctx->t2);
+	kprintf("[hal]  t3=%x   t4=%x  t5=%x  t6=%x", ctx->t3, ctx->t4,  ctx->t5,  ctx->t6);
+	kprintf("[hal]  s1=%x   s2=%x  s3=%x  s4=%x", ctx->s1, ctx->s2,  ctx->s3,  ctx->s4);
+	kprintf("[hal]  s5=%x   s6=%x  s7=%x  s8=%x", ctx->s5, ctx->s6,  ctx->s7,  ctx->s8);
+	kprintf("[hal]  s9=%x  s10=%x s11=%x",        ctx->s9, ctx->s10, ctx->s11);
 }

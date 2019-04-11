@@ -33,13 +33,13 @@
  */
 #define TEST_EXCEPTION_DESTRUCTIVE 0
 
-#if defined(__rv32i__)
+#if defined(__rv32gc__)
 
 	/**
 	 * @brief Triggers an invalid instruction exception.
 	 *
 	 * The trigger_exception() function triggers an invalid
-	 * instruction exception in the rv32i core. It does so by writing
+	 * instruction exception in the rv32gc core. It does so by writing
 	 * a random value into the mhartid special function register.
 	 * Hopefully, if the core is compliant to the standards this is
 	 * not allowed.
