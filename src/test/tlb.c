@@ -366,7 +366,7 @@ PRIVATE struct test tlb_fault_tests[] = {
 PUBLIC void test_tlb(void)
 {
 	/* Test not applicable. */
-#ifdef TLB_HARDWARE
+#if (CORE_HAS_TLB_HW)
 		return;
 #endif
 

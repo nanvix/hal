@@ -138,28 +138,30 @@
 		(((pn)  & 0xffffULL) << 44)   \
 	)
 
-/**
- * @cond k1b
- */
+#ifndef _ASM_FILE_
 
 	/**
-	 * @brief TLB entry.
+	 * @cond k1b
 	 */
-	struct tlbe
-	{
-		unsigned status       :  2; /**< Entry Status (ES)          */
-		unsigned cache_policy :  2; /**< Cache Policy (CP)          */
-		unsigned protection   :  4; /**< Protection Attributes (PA) */
-		unsigned addr_ext     :  4; /**< Address  Extension (AE)    */
-		unsigned frame        : 20; /**< Frame Number (FN)          */
-		unsigned addrspace    :  9; /**< Address Space Number (ANS) */
-		unsigned              :  1; /**< Reserved                   */
-		unsigned global       :  1; /**< Global Page Indicator (G)  */
-		unsigned size         :  1; /**< Page Size (S)              */
-		unsigned page         : 20; /**< Page Number (PN)           */
-	} __attribute__((packed));
 
-/**@endcond*/
+		/**
+		 * @brief TLB entry.
+		 */
+		struct tlbe
+		{
+			unsigned status       :  2; /**< Entry Status (ES)          */
+			unsigned cache_policy :  2; /**< Cache Policy (CP)          */
+			unsigned protection   :  4; /**< Protection Attributes (PA) */
+			unsigned addr_ext     :  4; /**< Address  Extension (AE)    */
+			unsigned frame        : 20; /**< Frame Number (FN)          */
+			unsigned addrspace    :  9; /**< Address Space Number (ANS) */
+			unsigned              :  1; /**< Reserved                   */
+			unsigned global       :  1; /**< Global Page Indicator (G)  */
+			unsigned size         :  1; /**< Page Size (S)              */
+			unsigned page         : 20; /**< Page Number (PN)           */
+		} PACK;
+
+	/**@endcond*/
 
 	/**
 	 * @brief Gets the virtual address of a page.
@@ -305,6 +307,8 @@
 	 */
 	extern void k1b_tlb_init(void);
 
+#endif /* _ASM_FILE_ */
+
 /**@}*/
 
 /*============================================================================*
@@ -314,11 +318,6 @@
 /**
  * @cond k1b
  */
-
-	/**
-	 * @brief Software-managed TLB.
-	 */
-	#define TLB_SOFTWARE
 
 	/**
 	 * @brief Provided Interface

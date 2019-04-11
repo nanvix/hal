@@ -25,6 +25,9 @@
 #ifndef ARCH_CORE_OR1K_TLB_H_
 #define ARCH_CORE_OR1K_TLB_H_
 
+	/* Must come first. */
+	#define __NEED_MEMORY_TYPES
+
 /**
  * @addtogroup or1k-core-tlb TLB
  * @ingroup or1k-core
@@ -33,7 +36,6 @@
  */
 /**@{*/
 
-	#define __NEED_MEMORY_TYPES
 	#include <arch/core/or1k/types.h>
 	#include <arch/core/or1k/mmu.h>
 	#include <errno.h>
@@ -243,11 +245,6 @@
 /**
  * @cond or1k
  */
-
-	/**
-	 * @brief Hardware-managed TLB.
-	 */
-	#define TLB_SOFTWARE
 
 	/**
 	 * @name Provided Interface

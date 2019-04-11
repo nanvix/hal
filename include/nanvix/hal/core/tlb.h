@@ -34,10 +34,6 @@
 
 #ifdef __INTERFACE_CHECK
 
-	#if (!defined(TLB_SOFTWARE) && !defined (TLB_HARDWARE))
-		#error "who manages the TLB?"
-	#endif
-
 	/*
 	 * Required interface for software- and hardware-managed TLBs.
 	 */
@@ -48,7 +44,7 @@
 	/*
 	 * Required interface for software-managed TLBs.
 	 */
-	#ifdef TLB_SOFTWARE
+	#if (!CORE_HAS_TLB_HW)
 
 		/* Constants. */
 		#ifndef TLB_INSTRUCTION
@@ -115,7 +111,7 @@
 	 */
 	#define PADDR(x) ((paddr_t) (x))
 
-#if defined(TLB_HARDWARE)
+#if (CORE_HAS_TLB_HW)
 
 	/**
 	 * @name TLB Types
@@ -162,7 +158,7 @@
 	 * that matches the virtual address @p vaddr is returned. If no
 	 * TLB entry matches @p vaddr, @p NULL is returned instead.
 	 */
-#if !((defined(TLB_HARDWARE) && !defined(__tlb_lookup_vaddr)))
+#if (!CORE_HAS_TLB_HW)
 	EXTERN const struct tlbe *tlb_lookup_vaddr(int tlb_type, vaddr_t vaddr);
 #else
 	static const struct tlbe *tlb_lookup_vaddr(int tlb_type, vaddr_t vaddr)
@@ -184,7 +180,7 @@
 	 * that matches the physical address @p paddr is returned. If no
 	 * TLB entry matches @p paddr, @p NULL is returned instead.
 	 */
-#if !((defined(TLB_HARDWARE) && !defined(__tlb_lookup_paddr_fn)))
+#if (!CORE_HAS_TLB_HW)
 	EXTERN const struct tlbe *tlb_lookup_paddr(int tlb_type, paddr_t paddr);
 #else
 	static const struct tlbe *tlb_lookup_paddr(int tlb_type, paddr_t paddr)
@@ -206,7 +202,7 @@
 	 * @returns Upon successful completion, zero is returned. Upon
 	 * failure, a negative error code is returned instead.
 	 */
-#if !((defined(TLB_HARDWARE) && !defined(__tlb_write_fn)))
+#if (!CORE_HAS_TLB_HW)
 	EXTERN int tlb_write(int tlb_type, vaddr_t vaddr, paddr_t paddr);
 #else
 	static inline int tlb_write(int tlb_type, vaddr_t vaddr, paddr_t paddr)
@@ -228,7 +224,7 @@
 	 * @returns Upon successful completion, zero is returned. Upon
 	 * failure, a negative error code is returned instead.
 	 */
-#if !((defined(TLB_HARDWARE) && !defined(__tlb_inval_fn)))
+#if (!CORE_HAS_TLB_HW)
 	EXTERN int tlb_inval(int tlb_type, vaddr_t vaddr);
 #else
 	static inline int tlb_inval(int tlb_type, vaddr_t vaddr)
