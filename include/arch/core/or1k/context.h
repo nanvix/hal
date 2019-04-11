@@ -25,6 +25,10 @@
 #ifndef ARCH_CORE_OR1K_CONTEXT_H_
 #define ARCH_CORE_OR1K_CONTEXT_H_
 
+	#ifndef __NEED_CORE_CONTEXT
+		#error "do not include this file"
+	#endif
+
 /**
  * @addtogroup or1k-core-context Context
  * @ingroup or1k-core

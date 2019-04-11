@@ -42,7 +42,7 @@
 	#define __NEED_CORE_CONTEXT
 	#define __NEED_CORE_TYPES
 
-	#include <arch/core/rv32i/context.h>
+	#include <arch/core/rv32i/ctx.h>
 	#include <arch/core/rv32i/types.h>
 	#include <nanvix/const.h>
 
