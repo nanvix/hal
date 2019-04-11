@@ -22,69 +22,81 @@
  * SOFTWARE.
  */
 
-#ifndef ARCH_CORE_RV32I_IVT_H_
-#define ARCH_CORE_RV32I_IVT_H_
+
+#ifndef ARCH_CORE_RV32I_MACHINE_H_
+#define ARCH_CORE_RV32I_MACHINE_H_
 
 /**
- * @addtogroup rv32i-core-ivt IVT
+ * @addtogroup rv32i-core-machine Machine
  * @ingroup rv32i-core
  *
- * @brief Interrupt Vector Table
+ * @brief Machine Interface
  */
 /**@{*/
 
-	#ifndef __NEED_CORE_IVT
+	#ifndef __NEED_CORE_MACHINE
 		#error "do not include this file"
 	#endif
 
 	/* Must come first. */
+	#define __NEED_CORE_CONTEXT
 	#define __NEED_CORE_TYPES
 
+	#include <arch/core/rv32i/context.h>
 	#include <arch/core/rv32i/types.h>
-	#include <nanvix/cc.h>
-
-	/**
-	 * @brief Number of interrupts.
-	 */
-	#define RV32I_INT_NUM 12
-
-	/**
-	 * @brief Number of exceptions.
-	 */
-	#define RV32I_EXCP_NUM 16
+	#include <nanvix/const.h>
 
 #ifndef _ASM_FILE_
 
 	/**
-	 * @brief Event handler.
+	 * @brief Dumps all CSRs.
 	 */
-	typedef void (*rv32i_handler_fn)(void);
+	EXTERN void rv32i_dump_all_csr(void);
 
 	/**
-	 * @brief Set ups the interrupt vector table.
+	 * @brief Enters supervisor mode.
 	 *
-	 * @param do_event Event handler.
-	 *
-	 * @note We assume a direct vector table.
+	 * @param pc Target program counter.
 	 */
-	static inline void rv32i_mtvec_set(rv32i_handler_fn do_event)
-	{
-		asm volatile (
-			"csrw mtvec, %0;"
-			:
-			: "r" (RV32I_WORD(do_event))
-		);
-	}
+	EXTERN NORETURN void rv32i_supervisor_enter(rv32i_word_t pc);
 
 	/**
-	 * @brief Initializes the interrupt vector table.
-	 *
-	 * @param do_trap Trap handler.
+	 * @brief Handles a bad machine exception.
 	 */
-	extern void rv32i_ivt_setup(rv32i_handler_fn do_trap);
+	EXTERN NORETURN void rv32i_do_mbad(const struct context *ctx);
 
-#endif
+	/**
+	 * @brief Handles machine calls.
+	 *
+	 * @param ctx Interrupted context
+	 */
+	EXTERN void rv32i_do_mcall(struct context *ctx);
+
+	/**
+	 * @brief Handles machine exceptions.
+	 *
+	 * @param ctx Interrupted context
+	 */
+	EXTERN NORETURN void rv32i_do_mexcp(const struct context *ctx);
+
+	/**
+	 * @brief Handles machine interrupts.
+	 *
+	 * @param ctx Interrupted context.
+	 */
+	EXTERN void rv32i_do_mint(const struct context *ctx);
+
+	/**
+	 * @brief Delegates traps to loower-privilege levels.
+	 *
+	 * @bug FIXME check if supervisor mode is supported.
+	 *
+	 * @author Pedro Henrique Penna
+	 */
+	EXTERN void rv32i_machine_delegate_traps(void);
+
+#endif /* _ASM_FILE_ */
 
 /**@}*/
 
-#endif /* ARCH_CORE_RV32I_IVT_H_ */
+#endif /* ARCH_CORE_RV32I_MACHINE_H_ */

@@ -22,69 +22,15 @@
  * SOFTWARE.
  */
 
-#ifndef ARCH_CORE_RV32I_IVT_H_
-#define ARCH_CORE_RV32I_IVT_H_
+/* Must come first. */
+#define __NEED_CLUSTER_CLINT
+
+#include <arch/cluster/riscv32-cluster/clint.h>
+#include <nanvix/const.h>
 
 /**
- * @addtogroup rv32i-core-ivt IVT
- * @ingroup rv32i-core
- *
- * @brief Interrupt Vector Table
+ * Machine Software Interrupt Pending Register (msip).
  */
-/**@{*/
+PUBLIC volatile uint32_t *riscv32_cluster_msip =
+	(volatile uint32_t *) RISCV32_CLUSTER_CLINT_MSIP_BASE;
 
-	#ifndef __NEED_CORE_IVT
-		#error "do not include this file"
-	#endif
-
-	/* Must come first. */
-	#define __NEED_CORE_TYPES
-
-	#include <arch/core/rv32i/types.h>
-	#include <nanvix/cc.h>
-
-	/**
-	 * @brief Number of interrupts.
-	 */
-	#define RV32I_INT_NUM 12
-
-	/**
-	 * @brief Number of exceptions.
-	 */
-	#define RV32I_EXCP_NUM 16
-
-#ifndef _ASM_FILE_
-
-	/**
-	 * @brief Event handler.
-	 */
-	typedef void (*rv32i_handler_fn)(void);
-
-	/**
-	 * @brief Set ups the interrupt vector table.
-	 *
-	 * @param do_event Event handler.
-	 *
-	 * @note We assume a direct vector table.
-	 */
-	static inline void rv32i_mtvec_set(rv32i_handler_fn do_event)
-	{
-		asm volatile (
-			"csrw mtvec, %0;"
-			:
-			: "r" (RV32I_WORD(do_event))
-		);
-	}
-
-	/**
-	 * @brief Initializes the interrupt vector table.
-	 *
-	 * @param do_trap Trap handler.
-	 */
-	extern void rv32i_ivt_setup(rv32i_handler_fn do_trap);
-
-#endif
-
-/**@}*/
-
-#endif /* ARCH_CORE_RV32I_IVT_H_ */

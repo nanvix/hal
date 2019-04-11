@@ -25,9 +25,9 @@
 #ifndef ARCH_CORE_RV32I_CONTEXT_H_
 #define ARCH_CORE_RV32I_CONTEXT_H_
 
-#if (!defined(__NEED_CONTEXT))
-	#error "do not include this file"
-#endif
+	#ifndef __NEED_CORE_CONTEXT
+		#error "do not include this file"
+	#endif
 
 /**
  * @addtogroup rv32i-core-context Context

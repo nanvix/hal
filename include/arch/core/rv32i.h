@@ -44,6 +44,10 @@
 	#include <arch/core/rv32i/tlb.h>
 	#include <arch/core/rv32i/trap.h>
 
+	#ifdef __NEED_CORE_MACHINE
+		#include <arch/core/rv32i/machine.h>
+	#endif
+
 /**
  * @cond rv32i
  */

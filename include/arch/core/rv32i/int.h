@@ -34,8 +34,8 @@
 /**@{*/
 
 	/* Must come first. */
-	#define __NEED_IVT
-	#define __NEED_CONTEXT
+	#define __NEED_CORE_IVT
+	#define __NEED_CORE_CONTEXT
 	#define __NEED_CORE_REGS
 	#define __NEED_CORE_TYPES
 
@@ -118,6 +118,14 @@
 				: "r"
 				(RV32I_SSTATUS_SIE)
 		);
+	}
+
+	/**
+	 * @brief Waits for an interrupt.
+	 */
+	static inline void rv32i_int_wait(void)
+	{
+		asm volatile ("wfi");
 	}
 
 	/**

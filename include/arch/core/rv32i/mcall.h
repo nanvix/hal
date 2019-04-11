@@ -48,6 +48,7 @@
 	#define RV32I_MCALL_TIMER_ACK      4 /**< rv32i_mcall_timer_ack()   */
 	#define RV32I_MCALL_MINT_ENABLE    5 /**< rv32i_mcall_int_enable()  */
 	#define RV32I_MCALL_MINT_DISABLE   6 /**< rv32i_mcall_int_disable() */
+	#define RV32I_MCALL_IPI_ACK        7 /**< rv32i_mcall_ipi_ack()     */
 	/**@}*/
 
 #ifndef _ASM_FILE_
@@ -189,6 +190,14 @@
 	static inline void rv32i_mcall_timer_ack(void)
 	{
 		rv32i_mcall0(RV32I_MCALL_TIMER_ACK);
+	}
+
+	/**
+	 * @brief Acknowledges an IPI.
+	 */
+	static inline void rv32i_mcall_ipi_ack(void)
+	{
+		rv32i_mcall0(RV32I_MCALL_IPI_ACK);
 	}
 
 #endif /* _ASM_FILE_ */

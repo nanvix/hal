@@ -55,7 +55,7 @@ PRIVATE void default_handler(int num)
 	UNUSED(num);
 
 	/* Too many spurious interrupts. */
-	if (spurious >= INTERRUPT_SPURIOUS_THRESHOLD)
+	if (++spurious >= INTERRUPT_SPURIOUS_THRESHOLD)
 		kprintf("[hal] spurious interrupt %d", num);
 
 	noop();
