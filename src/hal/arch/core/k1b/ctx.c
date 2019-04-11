@@ -22,7 +22,10 @@
  * SOFTWARE.
  */
 
-#include <arch/core/k1b/context.h>
+/* Must come first. */
+#define __NEED_CORE_CONTEXT
+
+#include <arch/core/k1b/ctx.h>
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
 

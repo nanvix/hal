@@ -25,9 +25,10 @@
 /* Must come first. */
 #define _ASM_FILE_
 #define __NEED_CORE_TYPES
+#define __NEED_CORE_CONTEXT
 
 #include <arch/core/k1b/types.h>
-#include <arch/core/k1b/context.h>
+#include <arch/core/k1b/ctx.h>
 #include <arch/core/k1b/excp.h>
 #include <arch/core/k1b/asm.h>
 #include <arch/core/k1b/upcall.h>

@@ -31,9 +31,10 @@
 
 	/* Must come first. */
 	#define __NEED_CORE_TYPES
+	#define __NEED_CORE_CONTEXT
 
 	#include <arch/core/k1b/types.h>
-	#include <arch/core/k1b/context.h>
+	#include <arch/core/k1b/ctx.h>
 
 	/**
 	 * @name Aliases for Registers

@@ -22,7 +22,10 @@
  * SOFTWARE.
  */
 
-#include <arch/core/k1b/context.h>
+/* Must come first. */
+#define __NEED_CORE_CONTEXT
+
+#include <arch/core/k1b/ctx.h>
 #include <arch/core/k1b/cache.h>
 #include <arch/core/k1b/int.h>
 #include <arch/core/k1b/ivt.h>
