@@ -56,16 +56,16 @@
 	#ifndef __interrupts_enable_fn
 	#error "interrupts_enable() not defined?"
 	#endif
-	#ifndef __interrupt_mask
+	#ifndef __interrupt_mask_fn
 	#error "interrupt_mask() not defined?"
 	#endif
-	#ifndef __interrupt_unmask
+	#ifndef __interrupt_unmask_fn
 	#error "interrupt_unmask() not defined?"
 	#endif
 	#ifndef __interrupt_next_fn
 	#error "interrupt_next() not defined?"
 	#endif
-	#ifndef __interrupt_ack
+	#ifndef __interrupt_ack_fn
 	#error "interrupt_ack() not defined?"
 	#endif
 
