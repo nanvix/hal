@@ -22,8 +22,12 @@
  * SOFTWARE.
  */
 
-#ifndef ARCH_I486_CONTEXT_H_
-#define ARCH_I486_CONTEXT_H_
+#ifndef ARCH_CORE_I486_CTX_H_
+#define ARCH_CORE_I486_CTX_H_
+
+	#ifndef __NEED_CORE_CONTEXT
+		#error "do not include this file"
+	#endif
 
 /**
  * @addtogroup i486-core-context Context
@@ -32,11 +36,7 @@
  * @brief Execution Context Interface
  */
 
-#ifndef _ASM_FILE_
-
 	#include <arch/core/i486/core.h>
-
-#endif /* _ASM_FILE_ */
 
 	/**
 	 * @brief Hardware-saved execution context size (in bytes).
@@ -228,4 +228,4 @@
 
 /**@endcond*/
 
-#endif /* ARCH_I486_CONTEXT_H_ */
+#endif /* ARCH_CORE_I486_CTX_H_ */

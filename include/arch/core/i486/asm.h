@@ -29,7 +29,10 @@
 		#error "do not include this header in C files"
 	#endif
 
-	#include <arch/core/i486/context.h>
+	/* Must come first. */
+	#define __NEED_CORE_CONTEXT
+
+	#include <arch/core/i486/ctx.h>
 
 /*============================================================================*
  * Procedure Linkage                                                          *

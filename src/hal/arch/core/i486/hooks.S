@@ -28,7 +28,7 @@
 
 #include <arch/core/i486/lpic.h>
 #include <arch/core/i486/asm.h>
-#include <arch/core/i486/context.h>
+#include <arch/core/i486/ctx.h>
 #include <arch/core/i486/core.h>
 #include <arch/core/i486/excp.h>
 #include <arch/core/i486/gdt.h>
