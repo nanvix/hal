@@ -41,7 +41,6 @@
 /**@{*/
 
 	#include <arch/cluster/or1k-cluster/cores.h>
-	#include <arch/cluster/or1k-cluster/event.h>
 	#include <arch/cluster/or1k-cluster/memory.h>
 
 	/**
@@ -51,6 +50,7 @@
 	#define CLUSTER_IS_MULTICORE  1 /**< Multicore Cluster */
 	#define CLUSTER_IS_IO         1 /**< I/O Cluster       */
 	#define CLUSTER_IS_COMPUTE    0 /**< Compute Cluster   */
+	#define CLUSTER_HAS_EVENTS    0 /**< Event Support?    */
 	/**@}*/
 
 /**@}*/

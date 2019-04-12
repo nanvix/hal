@@ -68,12 +68,12 @@ PUBLIC void core_idle(void)
 				break;
 			}
 
-			core_clear();
+			event_drop();
 
 		dcache_invalidate();
 		spinlock_unlock(&cores[coreid].lock);
 
-		core_waitclear();
+		event_wait();
 	}
 }
 
@@ -113,12 +113,12 @@ PUBLIC void core_sleep(void)
 			}
 
 			cores[coreid].state = CORE_SLEEPING;
-			core_clear();
+			event_drop();
 
 		dcache_invalidate();
 		spinlock_unlock(&cores[coreid].lock);
 
-		core_waitclear();
+		event_wait();
 	}
 }
 
@@ -157,7 +157,7 @@ PUBLIC int core_wakeup(int coreid)
 
 		/* Wakeup target core. */
 		cores[coreid].wakeups++;
-		core_notify(coreid);
+		event_notify(coreid);
 
 	dcache_invalidate();
 	spinlock_unlock(&cores[coreid].lock);
@@ -216,7 +216,7 @@ again:
 		cores[coreid].wakeups = 0;
 		dcache_invalidate();
 
-		core_notify(coreid);
+		event_notify(coreid);
 
 		spinlock_unlock(&cores[coreid].lock);
 		return (0);

@@ -32,6 +32,7 @@
 	/* Cluster Interface Implementation */
 	#include <nanvix/hal/cluster/_cluster.h>
 
+	#include <nanvix/hal/cluster/event.h>
 	#include <nanvix/hal/cluster/memory.h>
 	#include <nanvix/hal/cluster/mmio.h>
 	#include <nanvix/const.h>
@@ -54,6 +55,9 @@
 	#endif
 	#if (CLUSTER_IS_IO == CLUSTER_IS_COMPUTE)
 	#error "ambiguous cluster type!"
+	#endif
+	#ifndef CLUSTER_HAS_EVENTS
+	#error "are events natively supported by this cluster?"
 	#endif
 
 	/* Constants */

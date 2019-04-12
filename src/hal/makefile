@@ -27,6 +27,7 @@ C_SRC = $(wildcard *.c)                             \
         $(wildcard arch/processor/$(PROCESSOR)/*.c) \
         $(wildcard arch/target/$(TARGET)/*.c)       \
         $(wildcard core/*.c)                        \
+        $(wildcard cluster/*.c)                     \
         $(wildcard klib/*.c)                        \
         $(wildcard stdout/klog.c)
 

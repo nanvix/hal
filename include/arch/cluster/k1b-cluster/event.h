@@ -92,9 +92,9 @@
 	 * @name Exported Functions
 	 */
 	/**@{*/
-	#define __core_clear_fn     /**< core_clear()     */
-	#define __core_notify_fn    /**< core_notify()    */
-	#define __core_waitclear_fn /**< core_waitclear() */
+	#define __event_notify_fn /**< event_notify() */
+	#define __event_wait_fn   /**< event_wait()   */
+	#define __event_drop_fn   /**< event_drop()   */
 	/**@}*/
 
 #ifndef _ASM_FILE_
@@ -102,7 +102,7 @@
 	/**
 	 * @see k1b_cluster_event_drop().
 	 */
-	static inline void core_clear(void)
+	static inline void event_drop(void)
 	{
 		k1b_cluster_event_drop();
 	}
@@ -110,7 +110,7 @@
 	/**
 	 * @see k1b_cluster_event_notify().
 	 */
-	static inline void core_notify(int coreid)
+	static inline void event_notify(int coreid)
 	{
 		k1b_cluster_event_notify(coreid);
 	}
@@ -118,7 +118,7 @@
 	/**
 	 * @see k1b_cluster_event_wait().
 	 */
-	static inline void core_waitclear(void)
+	static inline void event_wait(void)
 	{
 		k1b_cluster_event_wait();
 	}

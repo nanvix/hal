@@ -29,20 +29,22 @@
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
 
+#if (!CLUSTER_HAS_EVENTS)
+
 /**
  * @brief Table of events.
  */
 PRIVATE struct
 {
 	unsigned pending;     /**< Pending Events  */
-	or1k_spinlock_t lock; /**< Event Line Lock */
-} events[OR1K_CLUSTER_NUM_CORES] ALIGN(OR1K_CACHE_LINE_SIZE) = {
-	{ 0, OR1K_SPINLOCK_UNLOCKED }, /* Master Core  */
-	{ 0, OR1K_SPINLOCK_UNLOCKED }, /* Slave Core 1 */
+	spinlock_t lock; /**< Event Line Lock */
+} events[CORES_NUM] ALIGN(CACHE_LINE_SIZE) = {
+	{ 0, SPINLOCK_UNLOCKED }, /* Master Core  */
+	{ 0, SPINLOCK_UNLOCKED }, /* Slave Core 1 */
 };
 
 /*============================================================================*
- * or1k_cluster_event_wait()                                                  *
+ * event_wait()                                                               *
  *============================================================================*/
 
 /**
@@ -50,19 +52,19 @@ PRIVATE struct
  *
  * @author Davidson Francis
  */
-PUBLIC inline void or1k_cluster_event_notify(int coreid)
+PUBLIC void event_notify(int coreid)
 {
-	int mycoreid = or1k_core_get_id();
+	int mycoreid = core_get_id();
 
-	or1k_spinlock_lock(&events[coreid].lock);
+	spinlock_lock(&events[coreid].lock);
 
 		events[coreid].pending |= (1 << mycoreid);
 
-	or1k_spinlock_unlock(&events[coreid].lock);
+	spinlock_unlock(&events[coreid].lock);
 }
 
 /*============================================================================*
- * or1k_cluster_event_wait()                                                  *
+ * event_wait()                                                               *
  *============================================================================*/
 
 /**
@@ -70,19 +72,19 @@ PUBLIC inline void or1k_cluster_event_notify(int coreid)
  *
  * @author Davidson Francis
  */
-PUBLIC void or1k_cluster_event_drop(void)
+PUBLIC void event_drop(void)
 {
-	int mycoreid = or1k_core_get_id();
+	int mycoreid = core_get_id();
 
-	or1k_spinlock_lock(&events[mycoreid].lock);
+	spinlock_lock(&events[mycoreid].lock);
 
 		events[mycoreid].pending = 0;
 
-	or1k_spinlock_unlock(&events[mycoreid].lock);
+	spinlock_unlock(&events[mycoreid].lock);
 }
 
 /*============================================================================*
- * or1k_cluster_event_wait()                                                  *
+ * event_wait()                                                               *
  *============================================================================*/
 
 /**
@@ -90,22 +92,22 @@ PUBLIC void or1k_cluster_event_drop(void)
  *
  * @author Davidson Francis
  */
-PUBLIC void or1k_cluster_event_wait(void)
+PUBLIC void event_wait(void)
 {
-	int mycoreid = or1k_core_get_id();
+	int mycoreid = core_get_id();
 
 	while (TRUE)
 	{
-		or1k_spinlock_lock(&events[mycoreid].lock);
+		spinlock_lock(&events[mycoreid].lock);
 
 			if (events[mycoreid].pending)
 				break;
 
-		or1k_spinlock_unlock(&events[mycoreid].lock);
+		spinlock_unlock(&events[mycoreid].lock);
 	}
 
 		/* Clear event. */
-		for (int i = 0; i < OR1K_CLUSTER_NUM_CORES; i++)
+		for (int i = 0; i < CORES_NUM; i++)
 		{
 			if (events[mycoreid].lock & (1 << i))
 			{
@@ -114,5 +116,7 @@ PUBLIC void or1k_cluster_event_wait(void)
 			}
 		}
 
-	or1k_spinlock_unlock(&events[mycoreid].lock);
+	spinlock_unlock(&events[mycoreid].lock);
 }
+
+#endif /* !CLUSTER_HAS_EVENTS */

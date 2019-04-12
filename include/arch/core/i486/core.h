@@ -25,6 +25,9 @@
 #ifndef ARCH_I486_CORE_H_
 #define ARCH_I486_CORE_H_
 
+	/* Must Come first. */
+	#define __NEED_CORE_TYPES
+
 /**
  * @addtogroup i486-core-core Core
  * @ingroup i486-core
@@ -33,14 +36,11 @@
  */
 /**@{*/
 
-	#define __NEED_CORE_TYPES
 	#include <arch/core/i486/types.h>
-
-#ifndef _ASM_FILE_
-
-	#include <arch/core/i486/spinlock.h>
 	#include <nanvix/const.h>
 	#include <stdint.h>
+
+#ifndef _ASM_FILE_
 
 	/**
 	 * @brief Gets the ID of the core.
@@ -94,13 +94,10 @@
 	 * @name Exported Functions
 	 */
 	/**@{*/
-	#define ___core_reset_fn    /**< _core_reset()    */
-	#define __core_clear_fn     /**< core_clear()     */
-	#define __core_get_id_fn    /**< core_get_id()    */
-	#define __core_notify_fn    /**< core_notify()    */
-	#define __core_poweroff_fn  /**< core_poweroff()  */
-	#define __core_setup_fn     /**< core_setup()     */
-	#define __core_waitclear_fn /**< core_waitclear() */
+	#define ___core_reset_fn   /**< _core_reset()   */
+	#define __core_get_id_fn   /**< core_get_id()   */
+	#define __core_poweroff_fn /**< core_poweroff() */
+	#define __core_setup_fn    /**< core_setup()    */
 	/**@}*/
 
 #ifndef _ASM_FILE_
@@ -123,26 +120,11 @@
 	}
 
 	/**
-	 * @todo Implement this function.
-	 */
-	static inline void core_clear(void)
-	{
-	}
-
-	/**
 	 * @see i486_core_get_id().
 	 */
 	static inline int core_get_id(void)
 	{
 		return (i486_core_get_id());
-	}
-
-	/**
-	 * @todo Implement this function.
-	 */
-	static inline void core_notify(int coreid)
-	{
-		((void) coreid);
 	}
 
 	/**
@@ -156,13 +138,6 @@
 	 * @todo Implement this function.
 	 */
 	static inline void core_setup()
-	{
-	}
-
-	/**
-	 * @todo Implement this function.
-	 */
-	static inline void core_waitclear(void)
 	{
 	}
 
