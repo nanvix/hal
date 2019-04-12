@@ -38,6 +38,9 @@
 	#define __NEED_MEMORY_TYPES
 	#include <arch/core/or1k/types.h>
 
+	#define __NEED_OR1K_REGS
+	#include <arch/core/or1k/regs.h>
+
 	#include <nanvix/klib.h>
 	#include <errno.h>
 	#include <stdint.h>
@@ -106,6 +109,38 @@
 #ifndef _ASM_FILE_
 
 	/**
+	 * @brief Page directory entry.
+	 */
+	struct pde
+	{
+		unsigned frame      : 22; /* Frame number.          */
+		unsigned last       :  1; /* Last PTE.              */
+		unsigned ppi        :  3; /* Page protection index. */
+		unsigned dirty      :  1; /* Dirty?                 */
+		unsigned accessed   :  1; /* Accessed?              */
+		unsigned wom        :  1; /* Weakly-Ordered Memory. */
+		unsigned wbc        :  1; /* Write-Back Cache.      */
+		unsigned present    :  1; /* Present in memory.     */
+		unsigned cc         :  1; /* Cache Coherency.       */
+	};
+
+	/**
+	 * @brief Page table entry.
+	 */
+	struct pte
+	{
+		unsigned frame      : 22; /* Frame number.          */
+		unsigned last       :  1; /* Last PTE.              */
+		unsigned ppi        :  3; /* Page protection index. */
+		unsigned dirty      :  1; /* Dirty?                 */
+		unsigned accessed   :  1; /* Accessed?              */
+		unsigned wom        :  1; /* Weakly-Ordered Memory. */
+		unsigned wbc        :  1; /* Write-Back Cache.      */
+		unsigned present    :  1; /* Present in memory.     */
+		unsigned cc         :  1; /* Cache Coherency.       */
+	};
+
+	/**
 	 * @brief Initializes the MMU.
 	 */
 	EXTERN void or1k_mmu_setup(void);
@@ -114,6 +149,52 @@
 	 * @brief Enables the MMU.
 	 */
 	EXTERN void or1k_enable_mmu(void);
+
+	/**
+	 * @brief Maps a page.
+	 *
+	 * @param pgtab Target page table.
+	 * @param paddr Physical address of the target page frame.
+	 * @param vaddr Virtual address of the target page.
+	 * @param w     Writable page?
+	 * @param x     Executable page?
+	 *
+	 * @returns Upon successful completion, zero is returned. Upon
+	 * failure, a negative error code is returned instead.
+	 */
+	EXTERN int or1k_page_map(struct pte *pgtab, paddr_t paddr, vaddr_t vaddr, int w, int x);
+
+	/**
+	 * @brief Maps a huge page.
+	 *
+	 * @param pgtab Target page directory.
+	 * @param paddr Physical address of the target huge page frame.
+	 * @param vaddr Virtual address of the target huge page.
+	 * @param w     Writable huge page?
+	 * @param x     Executable huge page?
+	 *
+	 * @returns Upon successful completion, zero is returned. Upon
+	 * failure, a negative error code is returned instead.
+	 */
+	EXTERN int or1k_huge_page_map(struct pte *pgdir, paddr_t paddr, vaddr_t vaddr, int w, int x);
+
+	/**
+	 * @brief Maps a page table.
+	 *
+	 * @param pgdir Target page directory.
+	 * @param paddr Physical address of the target page table frame.
+	 * @param vaddr Virtual address of the target page table.
+	 *
+	 * @returns Upon successful completion, zero is returned. Upon
+	 * failure, a negative error code is returned instead.
+	 */
+	EXTERN int or1k_pgtab_map(struct pde *pgdir, paddr_t paddr, vaddr_t vaddr);
+
+	/**
+	 * Kernel code and data addresses.
+	 */
+	EXTERN unsigned KSTART_CODE;
+	EXTERN unsigned KSTART_DATA;
 
 #endif /* _ASM_FILE_ */
 
@@ -192,49 +273,6 @@
 	/**@}*/
 
 #ifndef _ASM_FILE_
-
-	/**
-	 * @brief Frame number.
-	 */
-	typedef uint32_t frame_t;
-
-	/**
-	 * @brief Page directory entry.
-	 */
-	struct pde
-	{
-		unsigned frame      : 22; /* Frame number.          */
-		unsigned last       :  1; /* Last PTE.              */
-		unsigned ppi        :  3; /* Page protection index. */
-		unsigned dirty      :  1; /* Dirty?                 */
-		unsigned accessed   :  1; /* Accessed?              */
-		unsigned wom        :  1; /* Weakly-Ordered Memory. */
-		unsigned wbc        :  1; /* Write-Back Cache.      */
-		unsigned present    :  1; /* Present in memory.     */
-		unsigned cc         :  1; /* Cache Coherency.       */
-	};
-
-	/**
-	 * @brief Page table entry.
-	 */
-	struct pte
-	{
-		unsigned frame      : 22; /* Frame number.          */
-		unsigned last       :  1; /* Last PTE.              */
-		unsigned ppi        :  3; /* Page protection index. */
-		unsigned dirty      :  1; /* Dirty?                 */
-		unsigned accessed   :  1; /* Accessed?              */
-		unsigned wom        :  1; /* Weakly-Ordered Memory. */
-		unsigned wbc        :  1; /* Write-Back Cache.      */
-		unsigned present    :  1; /* Present in memory.     */
-		unsigned cc         :  1; /* Cache Coherency.       */
-	};
-
-	/**
-	 * Kernel code and data addresses.
-	 */
-	EXTERN unsigned KSTART_CODE;
-	EXTERN unsigned KSTART_DATA;
 
 	/**
 	 * @brief Clears a page directory entry.
@@ -320,6 +358,40 @@
 	}
 
 	/**
+	 * @brief Sets/clears the user bit of a page.
+	 *
+	 * @param pde Page directory entry of target page.
+	 * @param set Set bit?
+	 */
+	static inline int pde_read_set(struct pde *pde, int set)
+	{
+		/* Invalid PDE. */
+		if (pde == NULL)
+			return (-EINVAL);
+
+		pde->ppi = (set) ? (OR1K_PT_PPI_USR_RD >> OR1K_PT_PPI_OFFSET) : 0;
+
+		return (0);
+	}
+
+	/**
+	 * @brief Asserts if the read bit of a page table is set.
+	 *
+	 * @param pde Page directory entry of target page table.
+	 *
+	 * @returns If the read bit of the target page table is set, non
+	 * zero is returned. Otherwise, zero is returned instead.
+	 */
+	static inline int pde_is_readable(struct pde *pde)
+	{
+		/* Invalid PDE. */
+		if (pde == NULL)
+			return (-EINVAL);
+
+		return (pde->ppi & (OR1K_PT_PPI_USR_RD >> OR1K_PT_PPI_OFFSET));
+	}
+
+	/**
 	 * @brief Sets/clears the write bit of a page table.
 	 *
 	 * @param pde Page directory entry of target page table.
@@ -352,6 +424,40 @@
 			return (-EINVAL);
 
 		return (pde->ppi == (OR1K_PT_PPI_USR_RDWR >> OR1K_PT_PPI_OFFSET));
+	}
+
+	/**
+	 * @brief Sets/clears the exec bit of a page table.
+	 *
+	 * @param pde Page directory entry of target page table.
+	 * @param set Set bit?
+	 */
+	static inline int pde_exec_set(struct pde *pde, int set)
+	{
+		/* Invalid PDE. */
+		if (pde == NULL)
+			return (-EINVAL);
+
+		pde->ppi = (set) ? (OR1K_PT_PPI_SPV_EX >> OR1K_PT_PPI_OFFSET) : 0;
+
+		return (0);
+	}
+
+	/**
+	 * @brief Asserts if the exec bit of a page table is set.
+	 *
+	 * @param pde Page directory entry of target page table.
+	 *
+	 * @returns If the exec bit of the target page table is set, non
+	 * zero is returned. Otherwise, zero is returned instead.
+	 */
+	static inline int pde_is_exec(struct pde *pde)
+	{
+		/* Invalid PDE. */
+		if (pde == NULL)
+			return (-EINVAL);
+
+		return (pde->ppi & (OR1K_PT_PPI_SPV_EX >> OR1K_PT_PPI_OFFSET));
 	}
 
 	/**
@@ -474,6 +580,40 @@
 	}
 
 	/**
+	 * @brief Sets/clears the read bit of a page.
+	 *
+	 * @param pte Page table entry of target page.
+	 * @param set Set bit?
+	 */
+	static inline int pte_read_set(struct pte *pte, int set)
+	{
+		/* Invalid PTE. */
+		if (pte == NULL)
+			return (-EINVAL);
+
+		pte->ppi = (set) ? (OR1K_PT_PPI_USR_RD >> OR1K_PT_PPI_OFFSET) : 0;
+
+		return (0);
+	}
+
+	/**
+	 * @brief Asserts if the read bit of a page is set.
+	 *
+	 * @param pte Page table entry of target page.
+	 *
+	 * @returns If the read bit of the target page is set, non
+	 * zero is returned. Otherwise, zero is returned instead.
+	 */
+	static inline int pte_is_readable(struct pte *pte)
+	{
+		/* Invalid PTE. */
+		if (pte == NULL)
+			return (-EINVAL);
+
+		return (pte->ppi & (OR1K_PT_PPI_USR_RD >> OR1K_PT_PPI_OFFSET));
+	}
+
+	/**
 	 * @brief Sets/clears the write bit of a page.
 	 *
 	 * @param pte Page table entry of target page.
@@ -506,6 +646,42 @@
 			return (-EINVAL);
 
 		return (pte->ppi == (OR1K_PT_PPI_USR_RDWR >> OR1K_PT_PPI_OFFSET));
+	}
+
+	/**
+	 * @brief Sets/clears the exec bit of a page.
+	 *
+	 * @param pte Page table entry of target page.
+	 * @param set Set bit?
+	 */
+	static inline int pte_exec_set(struct pte *pte, int set)
+	{
+		/* Invalid PTE. */
+		if (pte == NULL)
+			return (-EINVAL);
+
+		pte->ppi = (set) ? ((OR1K_PT_PPI_USR_RD | OR1K_PT_PPI_USR_EX |
+			OR1K_PT_PPI_SPV_EX) >> OR1K_PT_PPI_OFFSET) : 0;
+
+		return (0);
+	}
+
+	/**
+	 * @brief Asserts if the exec bit of a page is set.
+	 *
+	 * @param pde Page table entry of target page.
+	 *
+	 * @returns If the exec bit of the target page is set, non
+	 * zero is returned. Otherwise, zero is returned instead.
+	 */
+	static inline int pte_is_exec(struct pte *pte)
+	{
+		/* Invalid PTE. */
+		if (pte == NULL)
+			return (-EINVAL);
+
+		return (pte->ppi & ((OR1K_PT_PPI_USR_EX | OR1K_PT_PPI_SPV_EX)
+			>> OR1K_PT_PPI_OFFSET));
 	}
 
 	/**
