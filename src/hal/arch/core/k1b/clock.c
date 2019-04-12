@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 
+#include <arch/core/k1b/mOS.h>
 #include <nanvix/const.h>
-#include <vbsp.h>
 
 /**
  * The k1b_clock_init() function initializes the clock driver in the

@@ -33,54 +33,19 @@
  */
 /**@{*/
 
+	#include <nanvix/const.h>
+
+#ifndef _ASM_FILE_
+
 	/**
 	 * @brief Initializes the clock driver in the k1b architecture.
 	 *
 	 * @param freq Target frequency for the clock device.
 	 */
-	extern void k1b_clock_init(unsigned freq);
+	EXTERN void k1b_clock_init(unsigned freq);
 
-	/**
-	 * @brief Resets the clock device.
-	 */
-	static inline void k1b_clock_reset(void)
-	{
-	}
+#endif /* !_ASM_FILE_ */
 
 /**@}*/
-
-/*============================================================================*
- * Exported Interface                                                         *
- *============================================================================*/
-
-/**
- * @cond k1b
- */
-
-	/**
-	 * @name Exported Functions
-	 */
-	/**@{*/
-	#define __clock_init_fn  /**< clock_init()  */
-	#define __clock_reset_fn /**< clock_reset() */
-	/**@}*/
-
-	/**
-	 * @see k1b_clock_init().
-	 */
-	static inline void clock_init(unsigned freq)
-	{
-		k1b_clock_init(freq);
-	}
-
-	/**
-	 * @see k1b_clock_reset().
-	 */
-	static inline void clock_reset(void)
-	{
-		k1b_clock_reset();
-	}
-
-/**@endcond*/
 
 #endif /* ARCH_CORE_K1B_CLOCK */

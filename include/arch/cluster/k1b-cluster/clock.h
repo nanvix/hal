@@ -22,48 +22,54 @@
  * SOFTWARE.
  */
 
-#ifndef CLUSTER_K1B_CLUSTER_H_
-#define CLUSTER_K1B_CLUSTER_H_
-
-	#ifndef __NEED_CLUSTER_K1B
-		#error "bad cluster configuration?"
-	#endif
+#ifndef ARCH_CLUSTER_K1B_CLUSTER_CLOCK_H_
+#define ARCH_CLUSTER_K1B_CLUSTER_CLOCK_H_
 
 	/* Cluster Interface Implementation */
 	#include <arch/cluster/k1b-cluster/_k1b-cluster.h>
+
+/**
+ * @addtogroup k1b-cluster-timer Timer
+ * @ingroup k1b-cluster
+ *
+ * @brief Programmable Timer Interface
+ */
+/**@{*/
 
 /*============================================================================*
  * Exported Interface                                                         *
  *============================================================================*/
 
 /**
- * @addtogroup k1b-cluster Bostan Cluster
- * @ingroup clusters
- *
- * @brief Bostan Cluster
+ * @cond k1b_cluster
  */
-/**@{*/
-
-	#include <arch/cluster/k1b-cluster/cores.h>
-	#include <arch/cluster/k1b-cluster/clock.h>
-	#include <arch/cluster/k1b-cluster/event.h>
-	#include <arch/cluster/k1b-cluster/memory.h>
 
 	/**
-	 * @name Provided Features
+	 * @name Exported Functions
 	 */
 	/**@{*/
-	#define CLUSTER_IS_MULTICORE   1 /**< Multicore Cluster */
-	#ifdef __k1io__
-		#define CLUSTER_IS_IO      1 /**< I/O Cluster       */
-		#define CLUSTER_IS_COMPUTE 0 /**< Compute Cluster   */
-	#else
-		#define CLUSTER_IS_IO      0 /**< I/O Cluster       */
-		#define CLUSTER_IS_COMPUTE 1 /**< Compute Cluster   */
-	#endif
-	#define CLUSTER_HAS_EVENTS     1 /**< Event Support?    */
+	#define __clock_init_fn  /**< clock_init()  */
+	#define __clock_reset_fn /**< clock_reset() */
 	/**@}*/
+
+	/**
+	 * @see k1b_clock_init().
+	 */
+	static inline void clock_init(unsigned freq)
+	{
+		k1b_clock_init(freq);
+	}
+
+	/**
+	 * Dummy function
+	 */
+	static inline void clock_reset(void)
+	{
+		/* noop */
+	}
+
+/**@endcond*/
 
 /**@}*/
 
-#endif /* CLUSTER_K1B_CLUSTER_H_ */
+#endif /* ARCH_CLUSTER_K1B_CLUSTER_CLOCK */
