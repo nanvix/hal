@@ -36,45 +36,21 @@
  */
 /**@{*/
 
-	#include <mOS_vcore_u.h>
 	#include <nanvix/const.h>
 
 	/**
-	 * @brief Event line used for signals.
+	 * @brief Event line used for events.
 	 */
 	#define K1B_EVENT_LINE 0
 
 #ifndef _ASM_FILE_
 
 	/**
-	 * @brief Clears IPIs in the underlying core.
-	 */
-	static inline void k1b_core_clear(void)
-	{
-		mOS_pe_event_clear(K1B_EVENT_LINE);
-	}
-
-	/**
-	 * @brief Waits and clears IPIs in the underlying core.
-	 */
-	static inline void k1b_core_waitclear(void)
-	{
-		mOS_pe_event_waitclear(K1B_EVENT_LINE);
-	}
-
-	/**
-	 * @brief Sends a signal.
-	 *
-	 * The k1b_core_notify() function sends a signal to the core whose ID
-	 * equals to @p coreid.
-	 *
-	 * @param coreid ID of the target core.
-	 *
-	 * @bug No sanity check is performed in @p coreid.
+	 * @brief Notifies a local core about an event.
 	 *
 	 * @author Pedro Henrique Penna
 	 */
-	static inline void k1b_core_notify(int coreid)
+	static inline void k1b_cluster_event_notify(int coreid)
 	{
 		mOS_pe_notify(
 			1 << coreid,    /* Target cores.                            */
@@ -82,6 +58,22 @@
 			1,              /* Notify an event? (I/O clusters only)     */
 			0               /* Notify an interrupt? (I/O clusters only) */
 		);
+	}
+
+	/**
+	 * @brief Waits for an event.
+	 */
+	static inline void k1b_cluster_event_wait(void)
+	{
+		mOS_pe_event_waitclear(K1B_EVENT_LINE);
+	}
+
+	/**
+	 * @brief Drops any pending events in the local core.
+	 */
+	static inline void k1b_cluster_event_drop(void)
+	{
+		mOS_pe_event_clear(K1B_EVENT_LINE);
 	}
 
 #endif /* _ASM_FILE_ */
@@ -108,27 +100,27 @@
 #ifndef _ASM_FILE_
 
 	/**
-	 * @see k1b_core_clear().
+	 * @see k1b_cluster_event_drop().
 	 */
 	static inline void core_clear(void)
 	{
-		k1b_core_clear();
+		k1b_cluster_event_drop();
 	}
 
 	/**
-	 * @see k1b_core_notify().
+	 * @see k1b_cluster_event_notify().
 	 */
 	static inline void core_notify(int coreid)
 	{
-		k1b_core_notify(coreid);
+		k1b_cluster_event_notify(coreid);
 	}
 
 	/**
-	 * @see k1b_core_waitclear().
+	 * @see k1b_cluster_event_wait().
 	 */
 	static inline void core_waitclear(void)
 	{
-		k1b_core_waitclear();
+		k1b_cluster_event_wait();
 	}
 
 #endif /* _ASM_FILE_ */
