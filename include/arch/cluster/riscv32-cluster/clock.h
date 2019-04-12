@@ -47,8 +47,6 @@
 	 */
 	#define RISCV32_CLUSTER_TIMEBASE 10000000
 
-/**@}*/
-
 /*============================================================================*
  * Exported Interface                                                         *
  *============================================================================*/
@@ -62,6 +60,7 @@
 	 */
 	/**@{*/
 	#define __clock_init_fn   /**< clock_init() */
+	#define __clock_reset_fn /**< clock_reset() */
 	/**@}*/
 
 #ifndef _ASM_FILE_
@@ -79,9 +78,19 @@
 		);
 	}
 
+	/**
+	 * @see rv32gc_clock_reset().
+	 */
+	static inline void clock_reset(void)
+	{
+		rv32gc_clock_reset();
+	}
+
 #endif
 
 /**@endcond*/
+
+/**@}*/
 
 #endif /* ARCH_CLUSTER_CLUSTER_RISCV32_CLUSTER_CLOCK */
 

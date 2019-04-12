@@ -33,20 +33,10 @@
  */
 /**@{*/
 
-	#include <arch/core/rv32gc/mcall.h>
+	#include <nanvix/const.h>
 	#include <stdint.h>
 
 #ifndef _ASM_FILE_
-
-	/**
-	 * @brief 64-bit timer register.
-	 */
-	extern uint64_t *rv32gc_mtime;
-
-	/**
-	 * @brief 64-bit timer compare register.
-	 */
-	extern uint64_t *rv32gc_mtimecmp;
 
 	/**
 	 * @brief Initializes the clock device.
@@ -56,7 +46,7 @@
 	 * @param mtime    Location of mtime register.
 	 * @param mtime    Location of mtimecmp register.
 	 */
-	extern void rv32gc_clock_init(
+	EXTERN void rv32gc_clock_init(
 		uint64_t freq,
 		uint64_t timebase,
 		uint64_t *mtime,
@@ -64,88 +54,12 @@
 	);
 
 	/**
-	 * @brief Reset the clock.
+	 * @brief Resets the clock device.
 	 */
-	extern void rv32gc_clock_reset(void);
-
-	/**
-	 * @brief Reads the mtime register.
-	 *
-	 * @returns The value of the mtime register.
-	 */
-	static inline uint64_t rv32gc_mtime_read(void)
-	{
-		uint32_t lo;
-		uint32_t hi;
-
-		hi = *((uint32_t *)(rv32gc_mtime) + 1);
-		lo = *((uint32_t *)(rv32gc_mtime));
-
-		return (((hi & 0xffffffffull) << 32) | (lo & 0xffffffffull));
-	}
-
-	/**
-	 * @brief Reads the mtimecmp register.
-	 *
-	 * @returns The value of the mtimecmp register.
-	 */
-	static inline uint64_t rv32gc_mtimecmp_read(void)
-	{
-		uint32_t lo;
-		uint32_t hi;
-
-		hi = *((uint32_t *)(rv32gc_mtimecmp) + 1);
-		lo = *((uint32_t *)(rv32gc_mtimecmp));
-
-		return (((hi & 0xffffffffull) << 32) | (lo & 0xffffffffull));
-	}
-
-	/**
-	 * @brief Writes to the mtimecmp register.
-	 *
-	 * @param time Value to write.
-	 */
-	static inline void rv32gc_mtimecmp_write(uint64_t time)
-	{
-		*((uint32_t *)(rv32gc_mtimecmp) + 1) = 0xffffffff;
-		*((uint32_t *)(rv32gc_mtimecmp)) = (uint32_t)(time & 0xffffffff);
-		*((uint32_t *)(rv32gc_mtimecmp) + 1) =
-			(uint32_t)((time & 0xffffffff00000000ull) >> 32);
-
-		rv32gc_mcall_timer_ack();
-	}
+	EXTERN void rv32gc_clock_reset(void);
 
 #endif
 
 /**@}*/
-
-/*============================================================================*
- * Exported Interface                                                         *
- *============================================================================*/
-
-/**
- * @cond rv32gc
- */
-
-	/**
-	 * @name Provided Interface
-	 */
-	/**@{*/
-	#define __clock_reset_fn /**< clock_reset() */
-	/**@}*/
-
-#ifndef _ASM_FILE_
-
-	/**
-	 * @see clock_reset().
-	 */
-	static inline void clock_reset(void)
-	{
-		rv32gc_clock_reset();
-	}
-
-#endif
-
-/**@endcond*/
 
 #endif /* ARCH_CORE_RV32GC_CLOCK */
