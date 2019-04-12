@@ -23,9 +23,9 @@
  */
 
 #include <arch/core/or1k/int.h>
+#include <arch/core/or1k/core.h>
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
-#include <nanvix/hal/core/clock.h>
 #include <errno.h>
 
 /**

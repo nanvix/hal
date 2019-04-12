@@ -22,11 +22,11 @@
  * SOFTWARE.
  */
 
-#ifndef NANVIX_HAL_CLOCK_H_
-#define NANVIX_HAL_CLOCK_H_
+#ifndef NANVIX_HAL_CLUSTER_CLOCK_H_
+#define NANVIX_HAL_CLUSTER_CLOCK_H_
 
 	/* Core Interface Implementation */
-	#include <nanvix/hal/core/_core.h>
+	#include <nanvix/hal/cluster/_cluster.h>
 
 	#include <nanvix/const.h>
 
@@ -77,5 +77,5 @@
 
 /**@}*/
 
-#endif /* NANVIX_HAL_CLOCK_H_ */
+#endif /* NANVIX_HAL_CLUSTER_CLOCK_H_ */
 

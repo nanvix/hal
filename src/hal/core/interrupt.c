@@ -22,7 +22,10 @@
  * SOFTWARE.
  */
 
-#include <nanvix/hal/core/interrupt.h>
+/* Must come first. */
+#define __NEED_HAL_CLUSTER
+
+#include <nanvix/hal/cluster.h>
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
 #include <errno.h>

@@ -33,7 +33,6 @@
 	#include <nanvix/hal/core/_core.h>
 
 	#include <nanvix/hal/core/cache.h>
-	#include <nanvix/hal/core/clock.h>
 	#include <nanvix/hal/core/context.h>
 	#include <nanvix/hal/core/exception.h>
 	#include <nanvix/hal/core/interrupt.h>

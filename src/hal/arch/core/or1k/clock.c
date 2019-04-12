@@ -22,10 +22,10 @@
  * SOFTWARE.
  */
 
+#include <arch/core/or1k/core.h>
+#include <arch/core/or1k/clock.h>
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
-#include <nanvix/hal/core/clock.h>
-#include <arch/core/or1k/core.h>
 
 /**
  * @brief Was the clock device initialized?
