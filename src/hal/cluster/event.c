@@ -34,14 +34,11 @@
 /**
  * @brief Table of events.
  */
-PRIVATE struct
+EXTERN struct
 {
-	unsigned pending;     /**< Pending Events  */
-	spinlock_t lock; /**< Event Line Lock */
-} events[CORES_NUM] ALIGN(CACHE_LINE_SIZE) = {
-	{ 0, SPINLOCK_UNLOCKED }, /* Master Core  */
-	{ 0, SPINLOCK_UNLOCKED }, /* Slave Core 1 */
-};
+	unsigned pending; /**< Pending Events  */
+	spinlock_t lock;  /**< Event Line Lock */
+} events[CORES_NUM];
 
 /*============================================================================*
  * event_wait()                                                               *
