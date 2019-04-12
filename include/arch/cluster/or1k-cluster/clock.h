@@ -22,38 +22,56 @@
  * SOFTWARE.
  */
 
-#ifndef CLUSTER_OR1K_CLUSTER_H_
-#define CLUSTER_OR1K_CLUSTER_H_
-
-	#ifndef __NEED_CLUSTER_OR1K
-		#error "bad cluster configuration?"
-	#endif
+#ifndef ARCH_CLUSTER_OR1K_CLUSTER_CLOCK_H_
+#define ARCH_CLUSTER_OR1K_CLUSTER_CLOCK_H_
 
 	/* Cluster Interface Implementation */
 	#include <arch/cluster/or1k-cluster/_or1k-cluster.h>
 
 /**
- * @addtogroup or1k-cluster OpenRISC Cluster
- * @ingroup clusters
+ * @addtogroup or1k-core-clock Clock
+ * @ingroup or1k-core
  *
- * @brief OpenRISC Cluster
+ * @brief Integrated Clock Device
  */
 /**@{*/
 
-	#include <arch/cluster/or1k-cluster/clock.h>
-	#include <arch/cluster/or1k-cluster/cores.h>
-	#include <arch/cluster/or1k-cluster/memory.h>
+	#include <nanvix/const.h>
+
+/*============================================================================*
+ * Exported Interface                                                         *
+ *============================================================================*/
+
+/**
+ * @cond or1k
+ */
 
 	/**
-	 * @name Provided Features
+	 * @name Exported Functions
 	 */
 	/**@{*/
-	#define CLUSTER_IS_MULTICORE  1 /**< Multicore Cluster */
-	#define CLUSTER_IS_IO         1 /**< I/O Cluster       */
-	#define CLUSTER_IS_COMPUTE    0 /**< Compute Cluster   */
-	#define CLUSTER_HAS_EVENTS    0 /**< Event Support?    */
+	#define __clock_init_fn  /**< clock_init()  */
+	#define __clock_reset_fn /**< clock_reset() */
 	/**@}*/
+
+	/**
+	 * @see or1k_clock_init().
+	 */
+	static inline void clock_init(unsigned freq)
+	{
+		or1k_clock_init(freq);
+	}
+
+	/**
+	 * @see or1k_clock_reset().
+	 */
+	static inline void clock_reset(void)
+	{
+		or1k_clock_reset();
+	}
+
+/**@endcond*/
 
 /**@}*/
 
-#endif /* CLUSTER_OR1K_CLUSTER_H_ */
+#endif /* ARCH_CLUSTER_OR1K_CLUSTER_CLOCK */

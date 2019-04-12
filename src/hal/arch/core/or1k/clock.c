@@ -90,7 +90,7 @@ PUBLIC void or1k_clock_init(unsigned freq)
 	unsigned upr;  /* Unit Present Register. */
 
 	UNUSED(freq);
-	
+
 	/* Nothing to do. */
 	if (initialized)
 		return;
@@ -102,7 +102,7 @@ PUBLIC void or1k_clock_init(unsigned freq)
 
 	/* Clock rate. */
 	clock_delta = OR1K_CPU_FREQUENCY;
-	
+
 	/* 
 	 * Clock calibrate.
 	 *
@@ -112,10 +112,10 @@ PUBLIC void or1k_clock_init(unsigned freq)
 	 * reads.
 	 */
 	or1k_mtspr(OR1K_SPR_TTMR, OR1K_SPR_TTMR_SR | clock_delta);
-	or1k_mtspr(OR1K_SPR_TTCR, 0);	
+	or1k_mtspr(OR1K_SPR_TTCR, 0);
 	clock_delay = or1k_clock_calibrate();
 	initialized = TRUE;
-	
+
 	/* Print some info. */
 	kprintf("[hal] clock delay is %d ticks", clock_delay);
 	kprintf("[hal] clock delta is %d ticks", clock_delta);
