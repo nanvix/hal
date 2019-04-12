@@ -36,10 +36,6 @@
  */
 /**@{*/
 
-	/* Must come first. */
-	#define __NEED_CLUSTER_EVENT
-
-	#include <arch/cluster/riscv32-cluster/event.h>
 	#include <nanvix/const.h>
 
 	/**

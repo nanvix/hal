@@ -52,7 +52,7 @@ PRIVATE int volatile events[RISCV32_CLUSTER_NUM_CORES] ALIGN(RV32GC_CACHE_LINE_S
 };
 
 /*============================================================================*
- * riscv32_cluster_event_send()                                               *
+ * riscv32_cluster_do_ipi()                                                   *
  *============================================================================*/
 
 /**
@@ -73,13 +73,13 @@ PUBLIC void riscv32_cluster_do_ipi(const struct context *ctx)
 }
 
 /*============================================================================*
- * riscv32_cluster_event_send()                                               *
+ * riscv32_cluster_event_notify()                                             *
  *============================================================================*/
 
 /**
  * @todo TODO provide a detailed description of this function.
  */
-PUBLIC int riscv32_cluster_event_send(int coreid)
+PUBLIC int riscv32_cluster_event_notify(int coreid)
 {
 	int mycoreid;
 
@@ -105,25 +105,25 @@ PUBLIC int riscv32_cluster_event_send(int coreid)
 }
 
 /*============================================================================*
- * riscv32_cluster_event_ack()                                                *
+ * riscv32_cluster_event_drop()                                               *
  *============================================================================*/
 
 /**
  * @todo TODO provide a detailed description of this function.
  */
-PUBLIC int riscv32_cluster_event_ack(void)
+PUBLIC int riscv32_cluster_event_drop(void)
 {
 	return (0);
 }
 
 /*============================================================================*
- * rv32gc_core_waitclear()                                                      *
+ * rv32gc_event_wait()                                                        *
  *============================================================================*/
 
 /**
  * @todo TODO provide a detailed description of this function.
  */
-PUBLIC int riscv32_cluster_event_waitclear(void)
+PUBLIC int riscv32_cluster_event_wait(void)
 {
 	int mycoreid = rv32gc_core_get_id();
 
