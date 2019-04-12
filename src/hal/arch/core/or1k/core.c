@@ -22,55 +22,30 @@
  * SOFTWARE.
  */
 
-#define __NEED_HAL_CLUSTER
-#include <nanvix/hal/cluster.h>
+/* Must come first. */
+#define __NEED_CORE_LPIC
+#define __NEED_OR1K_REGS
+
+#include <arch/core/or1k/regs.h>
+#include <arch/core/or1k/lpic.h>
+#include <arch/core/or1k/mmu.h>
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
 
-PUBLIC int pending_ipis[OR1K_CLUSTER_NUM_CORES] = {0};
-
-/**
- * @brief Cores table.
- */
-PUBLIC struct coreinfo  ALIGN(OR1K_CACHE_LINE_SIZE) cores[OR1K_CLUSTER_NUM_CORES] = {
-	{ TRUE,  CORE_RUNNING,   0, NULL, OR1K_SPINLOCK_LOCKED }, /* Master Core   */
-	{ FALSE, CORE_RESETTING, 0, NULL, OR1K_SPINLOCK_LOCKED }, /* Slave Core 1  */
-};
-
 /*============================================================================*
- * or1k_core_waitclear()                                                      *
+ * or1k_core_setup()                                                          *
  *============================================================================*/
 
 /**
- * @brief Wait and clears the current IPIs pending of the underlying core.
- *
- * @author Davidson Francis
+ * Initializes the core components for or1k.
  */
-PUBLIC void or1k_core_waitclear(void)
+PUBLIC void or1k_core_setup(void)
 {
-	int mycoreid = or1k_core_get_id();
+	/* Enable MMU. */
+	or1k_mmu_setup();
 
-	while (TRUE)
-	{
-		or1k_spinlock_lock(&cores[mycoreid].lock);
-
-			if (pending_ipis[mycoreid])
-				break;
-
-		or1k_spinlock_unlock(&cores[mycoreid].lock);
-	}
-
-		/* Clear IPI. */
-		for (int i = 0; i < OR1K_CLUSTER_NUM_CORES; i++)
-		{
-			if (pending_ipis[mycoreid] & (1 << i))
-			{
-				pending_ipis[mycoreid] &= ~(1 << i);
-				break;
-			}
-		}
-
-	or1k_spinlock_unlock(&cores[mycoreid].lock);
+	/* Enable interrupts. */
+	or1k_mtspr(OR1K_SPR_SR, or1k_mfspr(OR1K_SPR_SR) | OR1K_SPR_SR_IEE);
 }
 
 /*============================================================================*

@@ -25,31 +25,22 @@
 #ifndef ARCH_CORE_OR1K_CORE_H_
 #define ARCH_CORE_OR1K_CORE_H_
 
+	/* Must Come first. */
 	#define __NEED_OR1K_REGS
-	#include <arch/core/or1k/regs.h>
-
 	#define __NEED_CORE_TYPES
-	#include <arch/core/or1k/types.h>
 
 /**
  * @addtogroup or1k-core
  */
 /**@{*/
 
-#ifndef _ASM_FILE_
-
+	#include <arch/core/or1k/regs.h>
 	#include <arch/core/or1k/spinlock.h>
+	#include <arch/core/or1k/types.h>
 	#include <nanvix/const.h>
 	#include <stdint.h>
 
-#endif /* _ASM_FILE_ */
-
 #ifndef _ASM_FILE_
-
-	/**
-	 * @brief Pending IPIs.
-	 */
-	EXTERN int pending_ipis[];
 
 	/**
 	 * @brief Powers off the underlying core.
@@ -60,13 +51,6 @@
 	 * @brief Initializes the underlying core.
 	 */
 	EXTERN void or1k_core_setup(void);
-
-	/**
-	 * @brief Wait and clears the current IPIs pending of the underlying core.
-	 *
-	 * @author Davidson Francis
-	 */
-	EXTERN void or1k_core_waitclear(void);
 
 	/**
 	 * @brief Gets the ID of the core.
@@ -80,45 +64,6 @@
 		return (or1k_mfspr(OR1K_SPR_COREID));
 	}
 
-	/**
-	 * @brief Clears the current IPIs pending of the underlying core.
-	 *
-	 * @author Davidson Francis
-	 */
-	static inline void or1k_core_clear(void)
-	{
-		int mycoreid = or1k_core_get_id();
-
-		/*
-		 * Although pending_ipis should only be used
-		 * within a critical section, this is already
-		 * done by the caller function, hence, there's
-		 * no need to do locks here.
-		 */
-
-		/* Clear pending IPIs in the current core. */
-		pending_ipis[mycoreid] = 0;
-	}
-
-	/**
-	 * @brief Sends a signal.
-	 *
-	 * The or1k_core_notify() function sends a signal to the core whose ID
-	 * equals to @p coreid.
-	 *
-	 * @param coreid ID of the target core.
-	 *
-	 * @bug No sanity check is performed in @p coreid.
-	 *
-	 * @author Davidson Francis
-	 */
-	static inline inline void or1k_core_notify(int coreid)
-	{
-		int mycoreid = or1k_core_get_id();
-
-		/* Set the pending IPI flag. */
-		pending_ipis[coreid] |= (1 << mycoreid);
-	}
 
 #endif /* _ASM_FILE_ */
 
@@ -160,13 +105,10 @@
 	 * @name Exported Functions
 	 */
 	/**@{*/
-	#define ___core_reset_fn    /**< _core_reset()    */
-	#define __core_clear_fn     /**< core_clear()     */
-	#define __core_get_id_fn    /**< core_get_id()    */
-	#define __core_notify_fn    /**< core_notify()    */
-	#define __core_poweroff_fn  /**< core_poweroff()  */
-	#define __core_setup_fn     /**< core_setup()     */
-	#define __core_waitclear_fn /**< core_waitclear() */
+	#define ___core_reset_fn   /**< _core_reset()   */
+	#define __core_get_id_fn   /**< core_get_id()   */
+	#define __core_poweroff_fn /**< core_poweroff() */
+	#define __core_setup_fn    /**< core_setup()    */
 	/**@}*/
 
 #ifndef _ASM_FILE_
@@ -182,14 +124,6 @@
 	/**@}*/
 
 	/**
-	 * @see or1k_core_clear().
-	 */
-	static inline void core_clear(void)
-	{
-		or1k_core_clear();
-	}
-
-	/**
 	 * @see or1k_core_get_id().
 	 */
 	static inline int core_get_id(void)
@@ -198,27 +132,11 @@
 	}
 
 	/**
-	 * @see or1k_core_notify().
-	 */
-	static inline void core_notify(int coreid)
-	{
-		or1k_core_notify(coreid);
-	}
-
-	/**
 	 * @see or1k_core_poweroff().
 	 */
 	static inline void core_poweroff(void)
 	{
 		or1k_core_poweroff();
-	}
-
-	/**
-	 * @see or1k_core_waitclear().
-	 */
-	static inline void core_waitclear(void)
-	{
-		or1k_core_waitclear();
 	}
 
 #endif /* _ASM_FILE_ */
