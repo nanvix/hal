@@ -49,6 +49,18 @@
 #ifndef _ASM_FILE_
 
 	/**
+	 * @brief Resets the underlying cluster
+	 *
+	 * @param coreid ID of target core.
+	 */
+	EXTERN NORETURN void _or1k_cluster_core_reset(int coreid);
+
+	/**
+	 * @brief Initializes the underlying cluster.
+	 */
+	EXTERN void or1k_cluster_setup(void);
+
+	/**
 	 * @brief Gets the number of cores.
 	 *
 	 * The or1k_cluster_cluster_get_num_cores() gets the number of cores in the
@@ -77,6 +89,8 @@
 	 * @name Provided Functions
 	 */
 	/**@{*/
+	#define __core_get_id_fn        /**< core_get_id()           */
+	#define __core_setup_fn         /**< core_setup()            */
 	#define __cluster_get_num_cores /**< cluster_get_num_cores() */
 	/**@}*/
 
@@ -93,11 +107,27 @@
 #ifndef _ASM_FILE_
 
 	/**
+	 * @see _rv32i_core_reset().
+	 */
+	static inline void _core_reset(void)
+	{
+		_or1k_cluster_core_reset(or1k_core_get_id());
+	}
+
+	/**
 	 * @see or1k_cluster_cluster_get_num_cores()
 	 */
 	static inline int cluster_get_num_cores(void)
 	{
 		return (or1k_cluster_cluster_get_num_cores());
+	}
+
+	/**
+	 * @see or1k_core_setup().
+	 */
+	static inline void core_setup(void)
+	{
+		or1k_cluster_setup();
 	}
 
 #endif /* _ASM_FILE_ */
