@@ -35,10 +35,6 @@
 	#include <arch/processor/bostan/_bostan.h>
 
 	#include <arch/processor/bostan/noc/tag.h>
-	#include <mOS_vcore_u.h>
-	#include <mOS_mailbox_u.h>
-	#include <mppa_noc.h>
-	#include <mppa_routing.h>
 
 /*============================================================================*
  * Constants                                                                  *

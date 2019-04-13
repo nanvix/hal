@@ -35,7 +35,6 @@
 	#include <arch/processor/bostan/_bostan.h>
 
 	#include <arch/processor/bostan/noc/dma.h>
-	#include <mOS_vcore_u.h>
 
 /*============================================================================*
  * Node Interface                                                             *

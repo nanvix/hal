@@ -66,7 +66,7 @@ _k1b_core_reset:
 	/* Restart core. */
 	redzone_alloc
 	;;
-	call k1b_slave_setup
+	call k1b_cluster_slave_setup
 	;;
 
 	/* Never gets here. */

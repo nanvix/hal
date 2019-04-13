@@ -22,58 +22,33 @@
  * SOFTWARE.
  */
 
-#include <arch/core/k1b/pic.h>
-#include <nanvix/const.h>
+#ifndef ARCH_CORE_K1B_MOS_H_
+#define ARCH_CORE_K1B_MOS_H_
 
 /**
- * Lookup table for masks of interrupt levels.
+ * @addtogroup k1b-core-mos mOS
+ * @ingroup k1b-core
+ *
+ * @brief Kalray mOS Hypervisor
  */
-PUBLIC uint32_t intlvl_masks[K1B_NUM_INTLVL] = {
-	K1B_INTLVL_MASK_0,
-	K1B_INTLVL_MASK_1,
-	K1B_INTLVL_MASK_2,
-	K1B_INTLVL_MASK_3,
-	K1B_INTLVL_MASK_4,
-	K1B_INTLVL_MASK_5,
-	K1B_INTLVL_MASK_6,
-	K1B_INTLVL_MASK_7,
-	K1B_INTLVL_MASK_8,
-	K1B_INTLVL_MASK_9,
-	K1B_INTLVL_MASK_10,
-	K1B_INTLVL_MASK_11,
-	K1B_INTLVL_MASK_12,
-	K1B_INTLVL_MASK_13,
-	K1B_INTLVL_MASK_14,
-	K1B_INTLVL_MASK_15
-};
+/**@{*/
 
-/**
- * Lookup table for interrupt request lines of hardware interrupts.
- */
-PUBLIC k1b_irq_t k1b_irqs[K1B_NUM_IRQ] = {
-	K1B_IRQ_0,
-	K1B_IRQ_1,
-	K1B_IRQ_2,
-	K1B_IRQ_3,
-	K1B_IRQ_4,
-	K1B_IRQ_5,
-	K1B_IRQ_6,
-	K1B_IRQ_7,
-	K1B_IRQ_8,
-	K1B_IRQ_9,
-#ifdef __k1io__
-	K1B_IRQ_10,
-	K1B_IRQ_11,
-	K1B_IRQ_12
-#endif
-};
+	#include <mOS_common_types_s_c.h>
 
-/**
- * Current interrupt mask of the underlying k1b core.
- */
-PUBLIC uint32_t currmask = K1B_INTLVL_MASK_5;
+#ifndef _ASM_FILE_
 
-/**
- * Current interrupt level of the underlying k1b core.
- */
-PUBLIC int currlevel = K1B_INTLVL_0;
+	#include <HAL/hal/board/boot_args.h>
+	#include <HAL/hal/hal_ext.h>
+	#include <mOS_segment_manager_u.h>
+	#include <mOS_common_types_c.h>
+	#include <mOS_vcore_u.h>
+	#include <mOS_mailbox_u.h>
+	#include <mppa_routing.h>
+	#include <mppa_noc.h>
+	#include <vbsp.h>
+
+#endif /* _ASM_FILE_ */
+
+/**@}*/
+
+#endif /* ARCH_CORE_K1B_MOS_H_ */

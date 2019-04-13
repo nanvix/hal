@@ -34,9 +34,8 @@
 /**@{*/
 
 	#include <arch/core/k1b/mmu.h>
+	#include <arch/core/k1b/mOS.h>
 	#include <nanvix/klib.h>
-	#include <mOS_vcore_u.h>
-	#include <mOS_segment_manager_u.h>
 	#include <errno.h>
 
 	/**

@@ -31,10 +31,10 @@
 #include <arch/core/k1b/excp.h>
 #include <arch/core/k1b/asm.h>
 #include <arch/core/k1b/upcall.h>
-#include <mOS_common_types_s_c.h>
+#include <arch/core/k1b/mOS.h>
 
-.global _do_syscall
-.global _do_excp
+.global _k1b_do_syscall
+.global _k1b_do_excp
 
 .section .text
 
@@ -65,7 +65,7 @@
  * System call hook.
  */
 .align 8
-_do_syscall:
+_k1b_do_syscall:
 
 	cb.nez $r7, _do_syscall.continue
 	;;
@@ -139,7 +139,7 @@ _do_syscall:
  * Exception hook.
  */
 .align 8
-_do_excp:
+_k1b_do_excp:
 
 	_do_prologue
 	;;

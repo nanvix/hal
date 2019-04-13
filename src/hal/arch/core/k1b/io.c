@@ -24,7 +24,7 @@
 
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
-#include <vbsp.h>
+#include <arch/core/k1b/mOS.h>
 
 /**
  * @brief JTAG Write system call.

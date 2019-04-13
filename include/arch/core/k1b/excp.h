@@ -25,23 +25,22 @@
 #ifndef ARCH_CORE_K1B_EXCP_H_
 #define ARCH_CORE_K1B_EXCP_H_
 
+	/* Must come first. */
+	#define __NEED_CORE_TYPES
+	#define __NEED_MEMORY_TYPES
+
 /**
  * @addtogroup k1b-core-exception Exception
  * @ingroup k1b-core
  *
- * @brief Exceptions
+ * @brief Exception Interface
  */
 /**@{*/
 
-#ifndef _ASM_FILE_
-
-	#define __NEED_MEMORY_TYPES
-	#include <arch/core/k1b/types.h>
-
 	#include <arch/core/k1b/context.h>
+	#include <arch/core/k1b/types.h>
+	#include <nanvix/const.h>
 	#include <nanvix/klib.h>
-
-#endif
 
 	/**
 	 * @brief Exception information size (in bytes).
@@ -102,27 +101,63 @@
 
 #ifndef _ASM_FILE_
 
-/**
- * @cond k1b
- */
-
 	/**
-	 * Exception information.
+	 * @cond k1b
 	 */
-	struct exception
-	{
-		k1b_word_t num;         /**< Exception number.      */
-		k1b_word_t ea;          /**< Exception address.     */
-		k1b_word_t spc;         /**< Saved program counter. */
-		k1b_byte_t RESERVED[4]; /**< Required padding.      */
-	} __attribute__((packed));
 
-/**@endcond*/
+		/**
+		 * Exception information.
+		 */
+		struct exception
+		{
+			k1b_word_t num;         /**< Exception number.      */
+			k1b_word_t ea;          /**< Exception address.     */
+			k1b_word_t spc;         /**< Saved program counter. */
+			k1b_byte_t RESERVED[4]; /**< Required padding.      */
+		} PACK;
+
+	/**@endcond*/
 
 	/**
 	 * @brief Exception handler.
 	 */
 	typedef void (*k1b_exception_handler_fn)(const struct exception *, const struct context *);
+
+	/**
+	 * @brief Sets a handler for an exception.
+	 *
+	 * @param num     Number of the target exception.
+	 * @param handler Exception handler.
+	 *
+	 * @returns Upon successful completion zero is returned. Upon
+	 * failure a negative error code is returned instead.
+	 */
+	EXTERN int k1b_excp_set_handler(int num, k1b_exception_handler_fn handler);
+
+	/**
+	 * @brief Unsets a handler for an exception.
+	 *
+	 * @param num Number of the target exception.
+	 *
+	 * @returns Upon successful completion zero is returned. Upon
+	 * failure a negative error code is returned instead.
+	 */
+	EXTERN int k1b_excp_unset_handler(int num);
+
+	/**
+	 * @brief Low-level exception dispatcher.
+	 */
+	EXTERN void _k1b_do_excp(void);
+
+	/**
+	 * @brief High-level exception dispatcher.
+	 *
+	 * @brief excp Exception information.
+	 * @brief ctx  Saved execution context.
+	 *
+	 * @note This function is called from assembly code.
+	 */
+	EXTERN void k1b_do_excp(const struct exception *excp, const struct context *ctx);
 
 	/**
 	 * @brief Gets the number of an exception.
@@ -181,45 +216,9 @@
 		return (excp->spc);
 	}
 
-	/**
-	 * @brief Sets a handler for an exception.
-	 *
-	 * @param num     Number of the target exception.
-	 * @param handler Exception handler.
-	 *
-	 * @returns Upon successful completion zero is returned. Upon
-	 * failure a negative error code is returned instead.
-	 */
-	extern int k1b_excp_set_handler(int num, k1b_exception_handler_fn handler);
-
-	/**
-	 * @brief Unsets a handler for an exception.
-	 *
-	 * @param num Number of the target exception.
-	 *
-	 * @returns Upon successful completion zero is returned. Upon
-	 * failure a negative error code is returned instead.
-	 */
-	extern int k1b_excp_unset_handler(int num);
-
-	/**
-	 * @brief Low-level exception dispatcher.
-	 */
-	extern void _do_excp(void);
-
-	/**
-	 * @brief High-level exception dispatcher.
-	 *
-	 * @brief excp Exception information.
-	 * @brief ctx  Saved execution context.
-	 *
-	 * @note This function is called from assembly code.
-	 */
-	extern void do_excp(const struct exception *excp, const struct context *ctx);
-
 /**@}*/
 
-#endif
+#endif /* _ASM_FILE_ */
 
 /*============================================================================*
  * Exported Interface                                                         *
@@ -270,7 +269,7 @@
 	 * @param excp Exception to be forwarded.
 	 * @param ctx  Context information of the forwarded exception.
 	 */
-	extern void forward_excp(int num, const struct exception *excp, const struct context *ctx);
+	EXTERN void forward_excp(int num, const struct exception *excp, const struct context *ctx);
 
 	/**
 	 * @see k1b_excp_get_num().

@@ -34,37 +34,22 @@
 	#define __NEED_CORE_TYPES
 
 	#include <arch/core/k1b/types.h>
-	#include <arch/core/k1b/spinlock.h>
-	#include <HAL/hal/board/boot_args.h>
-	#include <mOS_vcore_u.h>
+	#include <arch/core/k1b/mOS.h>
 	#include <nanvix/const.h>
 
-	/**
-	 * @brief Event line used for signals.
-	 */
-	#define K1B_EVENT_LINE 0
-
-	/**
-	 * @brief Resets the underlying core.
-	 *
-	 * The k1b_core_reset() function resets execution instruction in
-	 * the underlying core by reseting the kernel stack to its initial
-	 * location and relaunching the k1b_slave_setup() function.
-	 *
-	 * @note This function does not return.
-	 * @note For the implementation of this function check out
-	 * assembly source files.
-	 *
-	 * @see k1b_slave_setup()
-	 *
-	 * @author Pedro Henrique Penna
-	 */
-	EXTERN NORETURN void _k1b_core_reset(void);
+#ifndef _ASM_FILE_
 
 	/**
 	 * @brief Initializes the underlying core.
+	 *
+	 * @param stack Stack for interrupts, exceptions and traps.
 	 */
-	EXTERN void k1b_core_setup(void);
+	EXTERN void k1b_core_setup(void *stack);
+
+	/**
+	 * @brief Powers off the underlying core.
+	 */
+	EXTERN void k1b_core_poweroff(void);
 
 	/**
 	 * @brief Gets the ID of the core.
@@ -78,51 +63,7 @@
 		return (__k1_get_cpu_id());
 	}
 
-	/**
-	 * @brief Clears IPIs in the underlying core.
-	 */
-	static inline void k1b_core_clear(void)
-	{
-		mOS_pe_event_clear(K1B_EVENT_LINE);
-	}
-
-	/**
-	 * @brief Waits and clears IPIs in the underlying core.
-	 */
-	static inline void k1b_core_waitclear(void)
-	{
-		mOS_pe_event_waitclear(K1B_EVENT_LINE);
-	}
-
-	/**
-	 * @brief Sends a signal.
-	 *
-	 * The k1b_core_notify() function sends a signal to the core whose ID
-	 * equals to @p coreid.
-	 *
-	 * @param coreid ID of the target core.
-	 *
-	 * @bug No sanity check is performed in @p coreid.
-	 *
-	 * @author Pedro Henrique Penna
-	 */
-	static inline void k1b_core_notify(int coreid)
-	{
-		mOS_pe_notify(
-			1 << coreid,    /* Target cores.                            */
-			K1B_EVENT_LINE, /* Event line.                              */
-			1,              /* Notify an event? (I/O clusters only)     */
-			0               /* Notify an interrupt? (I/O clusters only) */
-		);
-	}
-
-	/**
-	 * @brief Powers off the underlying core.
-	 */
-	static inline void k1b_core_poweroff(void)
-	{
-		mOS_exit(__k1_spawn_type() != __MPPA_MPPA_SPAWN, 0);
-	}
+#endif /* _ASM_FILE_ */
 
 /**@}*/
 
@@ -138,14 +79,14 @@
 	 * @brief Exported Constants
 	 */
 	/**@{*/
-	#define BYTE_BIT       K1B_BYTE_BIT       /**< @see BYTE_BIT       */
-	#define HWORD_BIT      K1B_HWORD_BIT      /**< @see HWORD_BIT      */
-	#define WORD_BIT       K1B_WORD_BIT       /**< @see WORD_BIT       */
-	#define DWORD_BIT      K1B_DWORD_BIT      /**< @see DWORD_BIT      */
-	#define BYTE_SIZE      K1B_SIZE_SIZE      /**< @see BYTE_SIZE      */
-	#define HWORD_SIZE     K1B_HWORD_SIZE     /**< @see HWORD_SIZE     */
-	#define WORD_SIZE      K1B_WORD_SIZE      /**< @see WORD_SIZE      */
-	#define DWORD_SIZE     K1B_DWORD_SIZE     /**< @see DWORD_SIZE     */
+	#define BYTE_BIT   K1B_BYTE_BIT    /**< @see BYTE_BIT   */
+	#define HWORD_BIT  K1B_HWORD_BIT   /**< @see HWORD_BIT  */
+	#define WORD_BIT   K1B_WORD_BIT    /**< @see WORD_BIT   */
+	#define DWORD_BIT  K1B_DWORD_BIT   /**< @see DWORD_BIT  */
+	#define BYTE_SIZE  K1B_SIZE_SIZE   /**< @see BYTE_SIZE  */
+	#define HWORD_SIZE K1B_HWORD_SIZE  /**< @see HWORD_SIZE */
+	#define WORD_SIZE  K1B_WORD_SIZE   /**< @see WORD_SIZE  */
+	#define DWORD_SIZE K1B_DWORD_SIZE  /**< @see DWORD_SIZE */
 	/**@}*/
 
 	/**
@@ -162,14 +103,11 @@
 	 * @name Exported Functions
 	 */
 	/**@{*/
-	#define ___core_reset_fn    /**< _core_reset()    */
-	#define __core_clear_fn     /**< core_clear()     */
 	#define __core_get_id_fn    /**< core_get_id()    */
-	#define __core_notify_fn    /**< core_notify()    */
 	#define __core_poweroff_fn  /**< core_poweroff()  */
-	#define __core_setup_fn     /**< core_setup()     */
-	#define __core_waitclear_fn /**< core_waitclear() */
 	/**@}*/
+
+#ifndef _ASM_FILE_
 
 	/**
 	 * @name Core Types
@@ -182,35 +120,11 @@
 	/**@}*/
 
 	/**
-	 * @see _k1b_core_reset().
-	 */
-	static inline void _core_reset(void)
-	{
-		_k1b_core_reset();
-	}
-
-	/**
-	 * @see k1b_core_clear().
-	 */
-	static inline void core_clear(void)
-	{
-		k1b_core_clear();
-	}
-
-	/**
 	 * @see k1b_core_get_id().
 	 */
 	static inline int core_get_id(void)
 	{
 		return (k1b_core_get_id());
-	}
-
-	/**
-	 * @see k1b_core_notify()
-	 */
-	static inline void core_notify(int coreid)
-	{
-		k1b_core_notify(coreid);
 	}
 
 	/**
@@ -221,21 +135,7 @@
 		k1b_core_poweroff();
 	}
 
-	/**
-	 * @see k1b_core_setup()
-	 */
-	static inline void core_setup()
-	{
-		k1b_core_setup();
-	}
-
-	/**
-	 * @see k1b_core_waitclear().
-	 */
-	static inline void core_waitclear(void)
-	{
-		k1b_core_waitclear();
-	}
+#endif /* _ASM_FILE_ */
 
 /**@endcond*/
 

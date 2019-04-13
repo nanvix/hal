@@ -24,6 +24,7 @@
 
 #ifndef NANVIX_KLIB_H_
 #define NANVIX_KLIB_H_
+#ifndef _ASM_FILE_
 
 	#include <nanvix/const.h>
 	#include <stdarg.h>
@@ -254,4 +255,5 @@
 
 /**@}*/
 
+#endif /* _ASM_FILE_ */
 #endif /* NANVIX_KLIB_H_ */

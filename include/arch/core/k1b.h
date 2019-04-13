@@ -40,8 +40,10 @@
 	#include <arch/core/k1b/excp.h>
 	#include <arch/core/k1b/int.h>
 	#include <arch/core/k1b/mmu.h>
+	#include <arch/core/k1b/mOS.h>
 	#include <arch/core/k1b/pmio.h>
-	#include <arch/core/k1b/pic.h>
+	#include <arch/core/k1b/lpic.h>
+	#include <arch/core/k1b/ivt.h>
 	#include <arch/core/k1b/spinlock.h>
 	#include <arch/core/k1b/tlb.h>
 	#include <arch/core/k1b/trap.h>

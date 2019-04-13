@@ -31,60 +31,108 @@
 #include <errno.h>
 
 /**
- * @brief Interrupt handlers.
+ * Lookup table for interrupt request lines of hardware interrupts.
  */
-PRIVATE void (*k1b_handlers[K1B_NUM_HWINT])(int) = {
-	NULL, NULL, NULL, NULL,
-	NULL, NULL, NULL, NULL,
-	NULL, NULL, NULL, NULL,
-	NULL, NULL, NULL, NULL,
-	NULL, NULL, NULL, NULL,
-	NULL, NULL, NULL, NULL
+PRIVATE k1b_irq_t k1b_irqs[K1B_NUM_INT] = {
+	K1B_IRQ_0,
+	K1B_IRQ_1,
+	K1B_IRQ_2,
+	K1B_IRQ_3,
+	K1B_IRQ_4,
+	K1B_IRQ_5,
+	K1B_IRQ_6,
+	K1B_IRQ_7,
+	K1B_IRQ_8,
+	K1B_IRQ_9,
+#ifdef __k1io__
+	K1B_IRQ_10,
+	K1B_IRQ_11,
+	K1B_IRQ_12
+#endif
 };
 
 /**
- * The k1b_do_hwint() function dispatches a hardware interrupt that
+ * @brief Interrupt handlers.
+ */
+PRIVATE void (*k1b_handlers[K1B_NUM_INT])(int) = {
+	NULL, NULL, NULL,
+	NULL, NULL, NULL,
+	NULL, NULL, NULL,
+#ifdef __k1io__
+	NULL, NULL, NULL
+#endif
+};
+
+/**
+ * The k1b_do_int() function dispatches a hardware interrupt that
  * was triggered to a specific hardware interrupt handler. The ID of
  * hardware interrupt is used to index the table of hardware interrupt
  * handlers, and the context and the interrupted context pointed to by
  * ctx is currently unsed.
  */
-PUBLIC void k1b_do_hwint(k1b_hwint_id_t hwintid, struct context *ctx)
+PUBLIC void k1b_do_int(int intnum)
 {
-	int num = 0;
+	void (*handler)(int);
 
-	UNUSED(ctx);
-
-	/* Get interrupt number. */
-	for (int i = 0; i < K1B_NUM_HWINT; i++)
+	/* Unknown interrupt. */
+	if (UNLIKELY(intnum >= K1B_NUM_INT))
 	{
-		if (hwints[i] == hwintid)
-		{
-			num = i;
-			goto found;
-		}
+		kprintf("[hal] unknown interrupt source %d", intnum);
+		return;
 	}
 
-	return;
+	/* Nothing to do. */
+	if (UNLIKELY((handler = k1b_handlers[intnum]) == NULL))
+		return;
 
-found:
-
-	k1b_handlers[num](num);
+	handler(intnum);
 }
 
 /**
- * The k1b_hwint_handler_set() function sets the function pointed to
+ * The k1b_int_handler_set() function sets the function pointed to
  * by @p handler as the handler for the hardware interrupt whose
- * number is @p num.
+ * number is @p intnum.
  */
-PUBLIC int k1b_hwint_handler_set(int num, void (*handler)(int))
+PUBLIC int k1b_int_handler_set(int intnum, void (*handler)(int))
 {
 	/* Invalid interrupt number. */
-	if ((num < 0) || (num >= K1B_NUM_HWINT))
+	if ((intnum < 0) || (intnum >= K1B_NUM_INT))
 		return (-EINVAL);
 
-	k1b_handlers[num] = handler;
+	k1b_handlers[intnum] = handler;
 	k1b_dcache_inval();
+
+	return (0);
+}
+
+/**
+ * @todo TODO provide a detailed description for this function.
+ *
+ * @author Pedro Henrique Penna
+ */
+PUBLIC int k1b_int_mask(int intnum)
+{
+	/* Invalid interrupt number. */
+	if ((intnum < 0) || (intnum >= K1B_NUM_INT))
+		return (-EINVAL);
+
+	k1b_pic_mask(k1b_irqs[intnum]);
+
+	return (0);
+}
+
+/**
+ * @todo TODO provide a detailed description for this function.
+ *
+ * @author Pedro Henrique Penna
+ */
+PUBLIC int k1b_int_unmask(int intnum)
+{
+	/* Invalid interrupt number. */
+	if ((intnum < 0) || (intnum >= K1B_NUM_INT))
+		return (-EINVAL);
+
+	k1b_pic_unmask(k1b_irqs[intnum]);
 
 	return (0);
 }
