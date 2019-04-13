@@ -110,6 +110,15 @@
 	#define __MEMORY_TYPES
 
 		/**
+		 * @name Casters for Memory Types
+		 */
+		/**@{*/
+		#define OR1K_PADDR(x) ((paddr_t)(x)) /**< To Physical Address */
+		#define OR1K_VADDR(x) ((vaddr_t)(x)) /**< To Virtual Address  */
+		#define OR1K_FRAME(x) ((frame_t)(x)) /**< To Frame Number     */
+		/**@}*/
+
+		/**
 		 * @brief Virtual address.
 		 */
 		typedef uint32_t vaddr_t;
@@ -118,6 +127,11 @@
 		 * @brief Physical address.
 		 */
 		typedef uint32_t paddr_t;
+
+		/**
+		 * @brief Frame number.
+		 */
+		typedef uint32_t frame_t;
 
 	#endif
 	#endif
