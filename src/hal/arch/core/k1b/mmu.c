@@ -22,54 +22,49 @@
  * SOFTWARE.
  */
 
-/* Must come first. */
-#define _ASM_FILE_
+#include <arch/core/k1b/mmu.h>
+#include <nanvix/const.h>
+#include <errno.h>
 
-#include <arch/core/k1b/asm.h>
-#include <arch/cluster/k1b-cluster/memory.h>
-
-.global _k1b_core_reset
-
-.section .text
-
-/*===========================================================================*
- * k1b_core_reset()                                                          *
- *===========================================================================*/
-
-/*
- * Resets the underlying core.
+/**
+ * @todo TODO provide a detailed description for this function.
+ *
+ * @author Pedro Henrique Penna
  */
-.align 8
-_k1b_core_reset:
+PUBLIC int k1b_page_map(struct pte *pgtab, paddr_t paddr, vaddr_t vaddr, int w)
+{
+	int idx;
 
-	k1b_clear_gprs
-	;;
+	/* Invalid page table. */
+	if (UNLIKELY(pgtab == NULL))
+		return (-EINVAL);
 
-	/* Get core id. */
-	get   $r2, $pi
-	;;
-	extfz $r1, $r2, 15, 11
-	;;
+	idx = pte_idx_get(vaddr);
 
-	/* Setup kernel stack. */
-	mulwdl $r0 = $r1, K1B_CLUSTER_KSTACK_SIZE
-	;;
-	make   $r1 = K1B_CLUSTER_KSTACK_BASE_VIRT
-	;;
-	lw     $r2 = 0[$r1]
-	;;
-	add    $r1 = $r2, -8
-	;;
-	sbf    $sp = $r0, $r1
-	;;
+	pgtab[idx].present = 1;
+	pgtab[idx].writable = (w) ? 1 : 0;
+	pgtab[idx].frame = K1B_FRAME(paddr >> K1B_PAGE_SHIFT);
 
-	/* Restart core. */
-	redzone_alloc
-	;;
-	call k1b_slave_setup
-	;;
+	return (0);
+}
 
-	/* Never gets here. */
-	k1b_core_reset.halt:
-		goto k1b_core_reset.halt
-		;;
+/**
+ * @todo TODO provide a detailed description for this function.
+ *
+ * @author Pedro Henrique Penna
+ */
+PUBLIC int k1b_pgtab_map(struct pde *pgdir, paddr_t paddr, vaddr_t vaddr)
+{
+	int idx;
+
+	/* Invalid page directory. */
+	if (UNLIKELY(pgdir == NULL))
+		return (-EINVAL);
+
+	idx = pde_idx_get(vaddr);
+
+	pgdir[idx].present = 1;
+	pgdir[idx].frame = K1B_FRAME(paddr >> K1B_PAGE_SHIFT);
+
+	return (0);
+}
