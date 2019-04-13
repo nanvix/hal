@@ -71,6 +71,27 @@
 	/**@}*/
 
 	/**
+	 * @brief Length of virtual addresses.
+	 *
+	 * Number of bits in a virtual address.
+	 */
+	#define OR1K_VADDR_LENGTH 32
+
+	/**
+	 * @brief Page Directory length.
+	 *
+	 * Number of Page Directory Entries (PDEs) per Page Directory.
+	 */
+	#define OR1K_PGDIR_LENGTH (1 << (OR1K_VADDR_LENGTH - OR1K_PGTAB_SHIFT))
+
+	/**
+	 * @brief Page Table length.
+	 *
+	 * Number of Page Table Entries (PTEs) per Page Table.
+	 */
+	#define OR1K_PGTAB_LENGTH (1 << (OR1K_PGTAB_SHIFT - OR1K_PAGE_SHIFT))
+
+	/**
 	 * Page table entry constants.
 	 */
 	#define OR1K_PT_CC  0x1         /* Cache Coherency.       */

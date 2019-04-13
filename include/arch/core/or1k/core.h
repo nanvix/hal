@@ -57,23 +57,6 @@
 	EXTERN void or1k_core_poweroff(void);
 
 	/**
-	 * @brief Resets the underlying core.
-	 *
-	 * The or1k_core_reset() function resets execution instruction in
-	 * the underlying core by reseting the kernel stack to its initial
-	 * location and relaunching the or1k_slave_setup() function.
-	 *
-	 * @note This function does not return.
-	 * @note For the implementation of this function check out
-	 * assembly source files.
-	 *
-	 * @see or1k_slave_setup()
-	 *
-	 * @author Davidson Francis
-	 */
-	EXTERN void _or1k_core_reset(void);
-
-	/**
 	 * @brief Initializes the underlying core.
 	 */
 	EXTERN void or1k_core_setup(void);
@@ -199,14 +182,6 @@
 	/**@}*/
 
 	/**
-	 * @see _or1k_core_reset().
-	 */
-	static inline void _core_reset(void)
-	{
-		_or1k_core_reset();
-	}
-
-	/**
 	 * @see or1k_core_clear().
 	 */
 	static inline void core_clear(void)
@@ -236,14 +211,6 @@
 	static inline void core_poweroff(void)
 	{
 		or1k_core_poweroff();
-	}
-
-	/**
-	 * @see or1k_core_setup().
-	 */
-	static inline void core_setup(void)
-	{
-		or1k_core_setup();
 	}
 
 	/**

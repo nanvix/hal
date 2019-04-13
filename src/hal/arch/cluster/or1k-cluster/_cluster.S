@@ -25,44 +25,39 @@
 /* Must come first. */
 #define _ASM_FILE_
 #define __NEED_OR1K_REGS
+#define __NEED_CORE_TYPES
 
-#include <arch/core/or1k/asm.h>
 #include <arch/core/or1k/core.h>
 #include <arch/core/or1k/mmu.h>
+#include <arch/core/or1k/types.h>
+#include <arch/core/or1k/asm.h>
 
 /* Exported symbols. */
-.global _or1k_core_reset
+.global _or1k_cluster_core_reset
 .global core.kstack
 
 .section .text
 
 /*===========================================================================*
- * _or1k_core_reset()                                                        *
+ * _or1k_cluster_core_reset()                                                *
  *===========================================================================*/
 
 /*
  * Resets the underlying core.
  */
-_or1k_core_reset:
+_or1k_cluster_core_reset:
+
+	/* Save coreid. */
+	OR1K_EXCEPTION_STORE_GPR3
+
 	/* Clear GPRs. */
 	or1k_clear_gprs
 
-	/* Get core id. */
-	OR1K_LOAD_SYMBOL_2_GPR(r1, core.kstack)
-	l.mfspr r3, r0, OR1K_SPR_COREID
-	l.addi  r3, r3, 1
-
-	/* Setup kernel stack. */
-	l.slli  r3, r3, OR1K_PAGE_SHIFT
-	l.add   r1, r1, r3
-	l.addi  r1, r1, -OR1K_WORD_SIZE  /* Stack pointer. */
-	l.or    r2, r1, r0               /* Frame pointer. */
+	/* Reset stack. */
+	OR1K_EXCEPTION_LOAD_GPR3(r3)
+	or1k_core_stack_reset r3
 
 	/* Restart core. */
-	l.j or1k_slave_setup
+	l.j or1k_cluster_slave_setup
 	l.nop
-
-	/* Never gets here. */
-	_or1k_core_reset.halt:
-		l.j _or1k_core_reset.halt
-		l.nop
+	halt

@@ -32,6 +32,10 @@
 	#include <arch/core/or1k/regs.h>
 	#include <arch/core/or1k/context.h>
 
+/*============================================================================*
+ * Register Aliases                                                           *
+ *============================================================================*/
+
 	/**
 	 * @name Aliases for Registers
 	 */
@@ -39,6 +43,27 @@
 	#define sp r1 /**< Stack Pointer Pointer        */
 	#define bp r2 /**< Stack Base Pointer Register  */
 	/**@}*/
+
+/*============================================================================*
+ * Pseudo Instructions                                                        *
+ *============================================================================*/
+
+	/*
+	 * Unconditional jump with delay slot.
+	 */
+	.macro jump N
+		l.j \N
+		l.nop
+	.endm
+
+	/*
+	 * Halts instruction execution.
+	 */
+	.macro halt
+		1:
+			l.j 1b
+			l.nop
+	.endm
 
 /*============================================================================*
  * Red Zone                                                                   *
@@ -296,6 +321,28 @@
 	.endm
 
 /*============================================================================*
+ * Stack Operations                                                           *
+ *============================================================================*/
+
+	/*
+	 * Pushes a 32-bit register onto the stack.
+	 *   - reg Target register.
+	 */
+	.macro or1k_pushw reg
+		l.addi sp, sp, -OR1K_WORD_SIZE
+		l.sw 0(sp), \reg
+	.endm
+
+	/*
+	 * Pops a 32-bit register from the stack.
+	 *   - reg Target register.
+	 */
+	.macro or1k_popw reg
+		l.lwz \reg, 0(sp)
+		l.addi sp, sp, OR1K_WORD_SIZE
+	.endm
+
+/*============================================================================*
  * Misc                                                                       *
  *============================================================================*/
 
@@ -316,33 +363,19 @@
 	.endm
 
 	/*
-	 * Unconditional jump with delay slot.
+	 * Resets the stack.
+	 * - coreid ID of the calling core
 	 */
-	.macro jump N
-		l.j \N
-		l.nop
-	.endm
+	.macro or1k_core_stack_reset coreid
 
-/*============================================================================*
- * Stack Operations                                                           *
- *============================================================================*/
+		OR1K_LOAD_SYMBOL_2_GPR(r1, core.kstack)
+		l.or   r3, r0, \coreid
+		l.addi r3, r3, 1
+		l.slli r3, r3, OR1K_PAGE_SHIFT
+		l.add  r1, r1, r3
+		l.addi r1, r1, -OR1K_WORD_SIZE /* Stack pointer. */
+		l.or   r2, r1, r0              /* Frame pointer. */
 
-	/*
-	 * Pushes a 32-bit register onto the stack.
-	 *   - rA Target register.
-	 */
-	.macro pushw rA
-		l.addi sp, sp, -4
-		l.sw 0(sp), \rA
-	.endm
-
-	/*
-	 * Pops a 32-bit register from the stack.
-	 *   - rA Target register.
-	 */
-	.macro popw rA
-		l.lwz \rA, 0(sp)
-		l.addi sp, sp, 4
 	.endm
 
 #endif /* ARCH_CORE_OR1K_ASM_H_ */

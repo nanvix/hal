@@ -31,10 +31,53 @@
 EXTERN NORETURN void kmain(int, const char *[]);
 
 /**
+ * @brief Startup fence.
+ */
+PRIVATE struct
+{
+	int master_alive;
+	or1k_spinlock_t lock;
+} fence = { FALSE , OR1K_SPINLOCK_UNLOCKED};
+
+/**
+ * @brief Releases the startup fence.
+ */
+PRIVATE void or1k_fence_release(void)
+{
+	or1k_spinlock_lock(&fence.lock);
+		fence.master_alive = TRUE;
+	or1k_spinlock_unlock(&fence.lock);
+}
+
+/**
+ * @brief Waits on the startup fence.
+ */
+PRIVATE void or1k_fence_wait(void)
+{
+	while (TRUE)
+	{
+		or1k_spinlock_lock(&fence.lock);
+
+			/* Fence is released. */
+			if (fence.master_alive)
+			{
+				or1k_spinlock_unlock(&fence.lock);
+				break;
+			}
+
+			noop();
+		or1k_spinlock_unlock(&fence.lock);
+	}
+}
+
+/**
  * Initializes the core components for or1k.
  */
-PUBLIC void or1k_core_setup(void)
+PUBLIC void or1k_cluster_setup(void)
 {
+	/* Configure Memory Layout. */
+	or1k_cluster_mem_setup();
+
 	/* Enable MMU. */
 	or1k_mmu_setup();
 
@@ -46,6 +89,8 @@ PUBLIC void or1k_core_setup(void)
 
 	/* Enable interrupts. */
 	or1k_mtspr(OR1K_SPR_SR, or1k_mfspr(OR1K_SPR_SR) | OR1K_SPR_SR_IEE);
+
+	or1k_fence_release();
 }
 
 /**
@@ -62,8 +107,10 @@ PUBLIC void or1k_core_setup(void)
  *
  * @author Davidson Francis
  */
-PUBLIC NORETURN void or1k_slave_setup(void)
+PUBLIC NORETURN void or1k_cluster_slave_setup(void)
 {
+	or1k_fence_wait();
+
 	/* Initial TLB. */
 	or1k_tlb_init();
 
@@ -86,18 +133,18 @@ PUBLIC NORETURN void or1k_slave_setup(void)
 /**
  * @brief Initializes the master core.
  *
- * The or1k_master_setup() function initializes the underlying
- * master core. It setups the stack and then call the kernel
- * main function.
+ * The or1k_cluster_master_setup() function initializes the underlying
+ * master core. It setups the stack and then call the kernel main
+ * function.
  *
  * @note This function does not return.
  *
  * @author Davidson Francis
  */
-PUBLIC NORETURN void or1k_master_setup(void)
+PUBLIC NORETURN void or1k_cluster_master_setup(void)
 {
 	/* Core setup. */
-	or1k_core_setup();
+	or1k_cluster_setup();
 
 	/* Kernel main. */
 	kmain(0, NULL);

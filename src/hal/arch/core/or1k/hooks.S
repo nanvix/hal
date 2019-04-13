@@ -299,6 +299,5 @@ _syscall:
  */
 
 _do_start:
-	or1k_clear_gprs
 	l.jal start
 	l.nop
