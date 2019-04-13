@@ -30,59 +30,9 @@
 #include <arch/cluster/or1k-cluster/cores.h>
 
 /* Exported symbols. */
-.globl or1k_kernel_pgtab
-.globl or1k_kpool_pgtab
-.globl dtlb_table
-.globl itlb_table
 .globl core.kstack
-.globl ompic_pgtab
-.globl uart_pgtab
 
 .section .data
-/*----------------------------------------------------------------------------*
- * or1k_kernel_pgtab                                                          *
- *----------------------------------------------------------------------------*/
-
-/**
- * @brief Page table for kernel code and data.
- */
-.align OR1K_PAGE_SIZE
-or1k_kernel_pgtab:
-	.fill OR1K_PAGE_SIZE/OR1K_PTE_SIZE, OR1K_PTE_SIZE, 0
-
-/*----------------------------------------------------------------------------*
- * or1k_kpool_pgtab                                                           *
- *----------------------------------------------------------------------------*/
-
-/**
- * @brief Page table for kernel page pool.
- */
-.align OR1K_PAGE_SIZE
-or1k_kpool_pgtab:
-	.fill OR1K_PAGE_SIZE/OR1K_PTE_SIZE, OR1K_PTE_SIZE, 0
-
-/*----------------------------------------------------------------------------*
- * dtlb                                                                       *
- *----------------------------------------------------------------------------*/
-
-/**
- * @brief dtlb entries
- */
-.align OR1K_PAGE_SIZE
-dtlb_table:
-	.fill 64, OR1K_WORD_SIZE, 0
-
-/*----------------------------------------------------------------------------*
- * itlb                                                                       *
- *----------------------------------------------------------------------------*/
-
-/**
- * @brief itlb entries
- */
-.align OR1K_PAGE_SIZE
-itlb_table:
-	.fill 64, OR1K_WORD_SIZE, 0
-
 /*----------------------------------------------------------------------------*
  * core.kstack                                                                *
  *----------------------------------------------------------------------------*/
@@ -93,25 +43,3 @@ itlb_table:
 .align OR1K_PAGE_SIZE
 core.kstack:
 	.fill (OR1K_PAGE_SIZE/OR1K_PTE_SIZE)*OR1K_CLUSTER_NUM_CORES, OR1K_PTE_SIZE, 0
-
-/*----------------------------------------------------------------------------*
- * ompic_pgtab                                                                *
- *----------------------------------------------------------------------------*/
-
-/*
- * OMPIC page table.
- */
-.align PAGE_SIZE
-ompic_pgtab:
-	.fill OR1K_PAGE_SIZE/OR1K_PTE_SIZE, OR1K_PTE_SIZE, 0
-
-/*----------------------------------------------------------------------------*
- * uart_pgtab                                                                 *
- *----------------------------------------------------------------------------*/
-
-/*
- * uart8250 page table.
- */
-.align PAGE_SIZE
-uart_pgtab:
-	.fill OR1K_PAGE_SIZE/OR1K_PTE_SIZE, OR1K_PTE_SIZE, 0
