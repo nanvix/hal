@@ -25,7 +25,7 @@ export CURDIR=`pwd`
 export WORKDIR=$CURDIR/tools/dev/toolchain/riscv32
 export PREFIX=$WORKDIR
 export TARGET=riscv32-elf
-export COMMIT=5496efdf2da08a74689640051fe854bf634202ab
+export COMMIT=1fed470a3a0b59405887c8e0cc2e253f1f7b6643
 
 # Retrieve the number of processor cores
 NCORES=`grep -c ^processor /proc/cpuinfo`
