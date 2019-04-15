@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright(c) 2011-2020 The Maintainers of Nanvix
+ * Copyright(c) 2011-2019 The Maintainers of Nanvix
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,59 +22,40 @@
  * SOFTWARE.
  */
 
-#ifndef _NANVIX_HAL_CORE_CORE_H_
-#define _NANVIX_HAL_CORE_CORE_H_
+#ifndef ARCH_CORE_RI5CY_H_
+#define ARCH_CORE_RI5CY_H_
 
 	/**
-	 * @defgroup cores Cores
+	 * @addtogroup ri5cy-core RI5CY Core
+	 * @ingroup cores
 	 */
 
-	#if (defined(__k1b__))
-
-		#undef  __NEED_CORE_K1B
-		#define __NEED_CORE_K1B
-		#include <arch/core/k1b.h>
-
-	#elif (defined(__x86__))
-
-		#undef  __NEED_CORE_I486
-		#define __NEED_CORE_I486
-		#include <arch/core/i486.h>
-
-	#elif (defined(__or1200__))
-
-		#undef  __NEED_CORE_OR1K
-		#define __NEED_CORE_OR1K
-		#include <arch/core/or1k.h>
-
-	#elif (defined(__mor1kx__))
-
-		#undef  __NEED_CORE_MOR1KX
-		#define __NEED_CORE_MOR1KX
-		#include <arch/core/mor1kx.h>
-
-	#elif (defined(__rv32gc__))
-
-		#undef  __NEED_CORE_RV32GC
-		#define __NEED_CORE_RV32GC
-		#include <arch/core/rv32gc.h>
-
-	#elif (defined(__linux64_core__))
-
-		#undef  __NEED_CORE_LINUX64
-		#define __NEED_CORE_LINUX64
-		#include <arch/core/linux64.h>
-
-	#elif (defined(__ri5cy__))
-
-		#undef  __NEED_CORE_RI5CY
-		#define __NEED_CORE_RI5CY
-		#include <arch/core/ri5cy.h>
-
-	#else
-
-		#error "unkonwn core"
-
+	#ifndef __NEED_CORE_RI5CY
+		#error "r5scy core not required"
 	#endif
 
-#endif /* _NANVIX_HAL_CORE_CORE_H_ */
+	#ifdef _ASM_FILE_
+	#include <arch/core/ri5cy/asm.h>
+	#endif
+
+	#include <arch/core/ri5cy/core.h>
+
+/**
+ * @cond ri5cy
+ */
+
+	/**
+	 * @name Core Features
+	 */
+	/**@{*/
+	#define CORE_HAS_ATOMICS      1 /**< Has Atomic Instructions?    */
+	#define CORE_HAS_PMIO         0 /**< Has Programmed I/O?         */
+	#define CORE_HAS_TLB_HW       1 /**< Has Hardware-Managed TLB?   */
+	#define CORE_HAS_CACHE_HW     0 /**< Has Hardware-Managed Cache? */
+	#define CORE_IS_LITTLE_ENDIAN 1 /**< Is Little Endian?           */
+	/**@}*/
+
+/**@endcond*/
+
+#endif /* ARCH_CORE_RI5CY_H_ */
+

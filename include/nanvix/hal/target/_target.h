@@ -65,6 +65,12 @@
 		#define __NEED_TARGET_UNIX64
 		#include <arch/target/unix64/unix64.h>
 
+	#elif (defined(__gvsoc_bigpulp__))
+
+		#undef  __NEED_TARGET_GVSOC_BIGPULP
+		#define __NEED_TARGET_GVSOC_BIGPULP
+		#include <arch/target/gvsoc/bigpulp.h>
+
 	#else
 
 		#error "unknown target"

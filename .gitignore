@@ -26,6 +26,12 @@ tags
 *.clangd/
 *.vscode/
 
+# PULP
+*.d
+*.log
+*.txt
+stimuli/
+
 # Barelib Headers
 include/machine/_default_types.h
 include/nanvix/barelib.h

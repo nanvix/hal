@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright(c) 2011-2020 The Maintainers of Nanvix
+ * Copyright(c) 2011-2019 The Maintainers of Nanvix
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,59 +22,33 @@
  * SOFTWARE.
  */
 
-#ifndef _NANVIX_HAL_CORE_CORE_H_
-#define _NANVIX_HAL_CORE_CORE_H_
+#ifndef ARCH_CORE_RI5CY_ASM_H_
+#define ARCH_CORE_RI5CY_ASM_H_
+
+	#include <arch/core/rv32gc/asm.h>
+
+	.macro ri5cy_clear_gprs
+		rv32gc_clear_gprs
+	.endm
 
 	/**
-	 * @defgroup cores Cores
+	 * @brief Resets the stack of a core.
+	 *
+	 * @param base      Base stack address.
+	 * @param size_log2 Size of the stack log2.
+	 * @param coreid    ID of the target core.
+	 *
+	 * @note This macro thrashes t0.
+	 * @note This macro changes the value of the sp and fp registers.
 	 */
+	.macro ri5cy_stack_reset base, size_log2, coreid
 
-	#if (defined(__k1b__))
+		mv    t0, \coreid
+		slli  t0, t0, \size_log2
+		la    sp, \base + 1 << \size_log2
+		add   sp, sp, t0
+		mv    fp, sp
 
-		#undef  __NEED_CORE_K1B
-		#define __NEED_CORE_K1B
-		#include <arch/core/k1b.h>
+	.endm
 
-	#elif (defined(__x86__))
-
-		#undef  __NEED_CORE_I486
-		#define __NEED_CORE_I486
-		#include <arch/core/i486.h>
-
-	#elif (defined(__or1200__))
-
-		#undef  __NEED_CORE_OR1K
-		#define __NEED_CORE_OR1K
-		#include <arch/core/or1k.h>
-
-	#elif (defined(__mor1kx__))
-
-		#undef  __NEED_CORE_MOR1KX
-		#define __NEED_CORE_MOR1KX
-		#include <arch/core/mor1kx.h>
-
-	#elif (defined(__rv32gc__))
-
-		#undef  __NEED_CORE_RV32GC
-		#define __NEED_CORE_RV32GC
-		#include <arch/core/rv32gc.h>
-
-	#elif (defined(__linux64_core__))
-
-		#undef  __NEED_CORE_LINUX64
-		#define __NEED_CORE_LINUX64
-		#include <arch/core/linux64.h>
-
-	#elif (defined(__ri5cy__))
-
-		#undef  __NEED_CORE_RI5CY
-		#define __NEED_CORE_RI5CY
-		#include <arch/core/ri5cy.h>
-
-	#else
-
-		#error "unkonwn core"
-
-	#endif
-
-#endif /* _NANVIX_HAL_CORE_CORE_H_ */
+#endif /* ARCH_CORE_RI5CY_ASM_H_ */

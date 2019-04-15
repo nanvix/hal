@@ -65,6 +65,12 @@
 		#define __NEED_PROCESSOR_LINUX64
 		#include <arch/processor/linux64.h>
 
+	#elif (defined(__bigpulp__))
+
+		#undef  __NEED_PROCESSOR_BIGPULP
+		#define __NEED_PROCESSOR_BIGPULP
+		#include <arch/processor/bigpulp.h>
+
 	#else
 
 		#error "unkonwn processor"

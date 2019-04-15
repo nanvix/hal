@@ -65,6 +65,12 @@
 		#define __NEED_CLUSTER_LINUX64
 		#include <arch/cluster/linux64-cluster.h>
 
+	#elif (defined(__wolfe__))
+
+		#undef  __NEED_CLUSTER_WOLFE
+		#define __NEED_CLUSTER_WOLFE
+		#include <arch/cluster/wolfe.h>
+
 	#else
 
 		#error "unkonwn cluster"
