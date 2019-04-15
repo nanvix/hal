@@ -51,7 +51,7 @@
 	/**
 	 * @brief Number of hardware interrupts in the or1k architecture.
 	 */
-	#define OR1K_NUM_HWINT 3
+	#define OR1K_INT_NUM 3
 
 	/**
 	 * @brief Number of interrupt levels.
@@ -167,7 +167,7 @@
 	static inline int or1k_pic_mask(int intnum)
 	{
 		/* Invalid interrupt number. */
-		if ((intnum < 0) || (intnum >= OR1K_NUM_HWINT))
+		if ((intnum < 0) || (intnum >= OR1K_INT_NUM))
 			return (-EINVAL);
 
 		if (intnum == OR1K_INT_CLOCK)
@@ -189,7 +189,7 @@
 	static inline int or1k_pic_unmask(int intnum)
 	{
 		/* Invalid interrupt number. */
-		if ((intnum < 0) || (intnum >= OR1K_NUM_HWINT))
+		if ((intnum < 0) || (intnum >= OR1K_INT_NUM))
 			return (-EINVAL);
 
 		if (intnum == OR1K_INT_CLOCK)

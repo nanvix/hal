@@ -71,7 +71,7 @@ PUBLIC int i486_pic_mask(int intnum)
 	uint16_t newmask;
 
 	/* Invalid interrupt number. */
-	if ((intnum < 0) || (intnum >= I486_NUM_HWINT))
+	if ((intnum < 0) || (intnum >= I486_INT_NUM))
 		return (-EINVAL);
 
 	if (intnum < 8)
@@ -109,7 +109,7 @@ PUBLIC int i486_pic_unmask(int intnum)
 	uint16_t newmask;
 
 	/* Invalid interrupt number. */
-	if ((intnum < 0) || (intnum >= I486_NUM_HWINT))
+	if ((intnum < 0) || (intnum >= I486_INT_NUM))
 		return (-EINVAL);
 
 	if (intnum < 8)

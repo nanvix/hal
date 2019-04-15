@@ -35,8 +35,8 @@
 #ifdef __INTERFACE_CHECK
 
 	/* Constants */
-	#ifndef _INTERRUPTS_NUM
-	#error "_INTERRUPTS_NUM not defined"
+	#ifndef INTERRUPTS_NUM
+	#error "INTERRUPTS_NUM not defined"
 	#endif
 
 	/* Structures & Types */
@@ -44,11 +44,16 @@
 	#error "struct context not defined?"
 	#endif
 
+	/* Variables */
+	#ifndef __interrupt_handlers_var
+	#error "interrupts_handlers[] not defined?"
+	#endif
+
 	/* Functions */
-	#ifndef __interrupts_disable
+	#ifndef __interrupts_disable_fn
 	#error "interrupts_disable() not defined?"
 	#endif
-	#ifndef __interrupts_enable
+	#ifndef __interrupts_enable_fn
 	#error "interrupts_enable() not defined?"
 	#endif
 	#ifndef __interrupt_mask
@@ -57,14 +62,11 @@
 	#ifndef __interrupt_unmask
 	#error "interrupt_unmask() not defined?"
 	#endif
+	#ifndef __interrupt_next_fn
+	#error "interrupt_next() not defined?"
+	#endif
 	#ifndef __interrupt_ack
 	#error "interrupt_ack() not defined?"
-	#endif
-	#ifndef __interrupt_set_handler
-	#error "interrupt_set_handler() not defined?"
-	#endif
-	#ifndef __interrupt_level_set
-	#error "interrupt_level_set() not defined?"
 	#endif
 
 #endif
@@ -84,11 +86,6 @@
 	#include <nanvix/const.h>
 
 	/**
-	 * @brief Number of hardware interrupts.
-	 */
-	#define INTERRUPTS_NUM _INTERRUPTS_NUM
-
-	/**
 	 * @brief Threshold for spurious interrupts.
 	 *
 	 * INTERRUPT_SPURIOUS_THRESHOLD states the number of spurious
@@ -101,6 +98,26 @@
 	 * @brief Hardware interrupt handler.
 	 */
 	typedef void (*interrupt_handler_t)(int);
+
+	/**
+	 * @brief interrupt handlers.
+	 */
+	EXTERN void (*interrupt_handlers[INTERRUPTS_NUM])(int);
+
+	/**
+	 * @brief Gets the next pending interrupt.
+	 *
+	 * @returns The number of the next pending interrupt, or zero if
+	 * no interrupt is pending.
+	 */
+	EXTERN int interrupt_next(void);
+
+	/**
+	 * @brief High-level hardware interrupt dispatcher.
+	 *
+	 * @param num Interrupt request.
+	 */
+	EXTERN void do_interrupt(int num);
 
 	/**
 	 * @brief Disables all hardware interrupts.

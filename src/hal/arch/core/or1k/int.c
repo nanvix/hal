@@ -22,34 +22,37 @@
  * SOFTWARE.
  */
 
-#include <arch/core/rv32i/int.h>
+#include <arch/core/or1k/int.h>
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
+#include <nanvix/hal/core/clock.h>
 #include <errno.h>
 
 /**
  * @brief Interrupt handlers.
  */
-PUBLIC void (*interrupt_handlers[RV32I_INT_NUM])(int) = {
-	NULL, NULL, NULL, NULL,
-	NULL, NULL, NULL, NULL,
-	NULL, NULL, NULL, NULL,
+PUBLIC void (*interrupt_handlers[OR1K_INT_NUM])(int) = {
+	NULL, NULL, NULL
 };
 
 /**
- * Table of Interrupt Requests (IRQs).
+ * @todo TODO provide a detailed description for this function.
+ *
+ * @author Davidson Francis
  */
-PUBLIC const int irqs[RV32I_INT_NUM] = {
-	RV32I_SIE_USIE, /* User Software Interrupt Enable       */
-	RV32I_SIE_SSIE, /* Supervisor Interrupt Enable          */
-	0,
-	0,
-	RV32I_SIE_UTIE, /* User Timer Interrupt Enable          */
-	RV32I_SIE_STIE, /* Supervisor Timer Interrupt Enable    */
-	0,
-	0,
-	RV32I_SIE_UEUE, /* User External Interrupt Enable       */
-	RV32I_SIE_SEIE, /* Supervisor External Interrupt Enable */
-	0,
-	0
-};
+PUBLIC int or1k_int_next(void)
+{
+	unsigned picsr;
+	int bit;
+
+	bit   = 0;
+	picsr = or1k_mfspr(OR1K_SPR_PICSR);
+
+	while (!(picsr & 1) && bit < 32)
+	{
+		picsr >>= 1;
+		bit++;
+	}
+
+	return ( (!picsr) ? 0 : bit );
+}

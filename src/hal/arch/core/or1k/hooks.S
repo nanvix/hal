@@ -215,7 +215,7 @@ _do_hwint:
 	/*
 	 * Call interrupt handler.
 	 */
-	l.jal or1k_do_hwint
+	l.jal do_interrupt
 	l.nop
 
 	/*
