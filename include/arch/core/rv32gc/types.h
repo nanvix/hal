@@ -40,8 +40,8 @@
 /**@{*/
 
 #ifdef __NEED_CORE_TYPES
-#ifndef __CORE_CONSTANTS
-#define __CORE_CONSTANTS
+#ifndef __RV32GC_CORE_CONSTANTS
+#define __RV32GC_CORE_CONSTANTS
 
 	/**
 	 * @name Bit-Length of Core Types
@@ -77,7 +77,7 @@
 	#define RV32GC_DWORD_PTR(x)  ((rv32gc_dword_t *)(x)) /**< To Double Word Pointer */
 	/**@}*/
 
-#endif
+#endif /* __RV32GC_CORE_CONSTANTS */
 #endif
 
 /**@}*/
@@ -88,8 +88,8 @@
 /**@{*/
 
 #ifdef __NEED_MEMORY_TYPES
-#ifndef __MEMORY_CONSTANTS
-#define __MEMORY_CONSTANTS
+#ifndef __RV32GC_MEMORY_CONSTANTS
+#define __RV32GC_MEMORY_CONSTANTS
 
 	/**
 	 * @name Bit-Length of Memory Types
@@ -107,7 +107,7 @@
 	#define RV32GC_VADDR_BYTE 4 /**< Virtual Address  */
 	/**@}*/
 
-#endif
+#endif /* __RV32GC_MEMORY_CONSTANTS */
 #endif
 
 /**@}*/
@@ -120,8 +120,8 @@
 	/**@{*/
 
 	#ifdef __NEED_MEMORY_TYPES
-	#ifndef __MEMORY_TYPES
-	#define __MEMORY_TYPES
+	#ifndef __RV32GC_MEMORY_TYPES
+	#define __RV32GC_MEMORY_TYPES
 
 		/**
 		 * @name Casters for Memory Types
@@ -147,7 +147,7 @@
 		 */
 		typedef uint32_t frame_t;
 
-	#endif
+	#endif /* __RV32GC_MEMORY_TYPES */
 	#endif
 
 	/**@}*/
@@ -158,8 +158,8 @@
 	/**@{*/
 
 	#ifdef __NEED_CORE_TYPES
-	#ifndef __CORE_TYPES
-	#define __CORE_TYPES
+	#ifndef __RV32GC_CORE_TYPES
+	#define __RV32GC_CORE_TYPES
 
 		/**
 		 * @brief Makes a double word.
@@ -213,7 +213,7 @@
 		typedef uint64_t rv32gc_dword_t; /**< Double Word */
 		/**@}*/
 
-	#endif
+	#endif /* __RV32GC_CORE_TYPES */
 	#endif
 
 	/**@}*/
