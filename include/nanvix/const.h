@@ -56,11 +56,16 @@
 	/**@}*/
 
 	/**
+	 * @brief Boolean types.
+	 */
+	#include <stdbool.h>
+
+	/**
 	 * @name Logical Constants
 	 */
 	/**@{*/
-	#define FALSE 0 /**< False. */
-	#define TRUE  1 /**< True.  */
+	#define FALSE false /**< False. */
+	#define TRUE  true  /**< True.  */
 	/**@}*/
 
 	#define __need_size_t
