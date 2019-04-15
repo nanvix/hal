@@ -86,20 +86,20 @@
  * specific addresses.
  */
 
-_do_handler 0x100, _do_start, OR1K_EXCEPTION_RESET               /* Reset.                  */
-_do_handler 0x200, _do_excp,  OR1K_EXCEPTION_BUSERROR            /* Bus error.              */
-_do_handler 0x300, _do_excp,  OR1K_EXCEPTION_PAGE_FAULT          /* Data page fault.        */
-_do_handler 0x400, _do_excp,  OR1K_EXCEPTION_PAGE_FAULT          /* Instruction page fault. */
-_do_handler 0x500, _do_hwint, OR1K_INT_CLOCK                     /* Tick timer.             */
-_do_handler 0x600, _do_excp,  OR1K_EXCEPTION_ALIGNMENT           /* Alignment.              */
-_do_handler 0x700, _do_excp,  OR1K_EXCEPTION_ILLEGAL_INSTRUCTION /* Illegal Instruction.    */
-_do_handler 0x800, _do_hwint, OR1K_INT_EXTERNAL                  /* External Interrupt.     */
-_do_handler 0x900, _do_excp,  OR1K_EXCEPTION_DTLB_FAULT          /* DTLB Fault.             */
-_do_handler 0xa00, _do_excp,  OR1K_EXCEPTION_ITLB_FAULT          /* ITLB Fault.             */
-_do_handler 0xb00, _do_excp,  OR1K_EXCEPTION_RANGE               /* Range.                  */
-_do_handler 0xc00, _syscall,  0                                  /* Syscall.                */
-_do_handler 0xd00, _do_excp,  OR1K_EXCEPTION_FLOAT_POINT         /* Floating point.         */
-_do_handler 0xe00, _do_excp,  OR1K_EXCEPTION_TRAP                /* Trap.                   */
+_do_handler 0x100, _do_start, OR1K_EXCP_RESET               /* Reset.                  */
+_do_handler 0x200, _do_excp,  OR1K_EXCP_BUSERROR            /* Bus error.              */
+_do_handler 0x300, _do_excp,  OR1K_EXCP_PAGE_FAULT          /* Data page fault.        */
+_do_handler 0x400, _do_excp,  OR1K_EXCP_PAGE_FAULT          /* Instruction page fault. */
+_do_handler 0x500, _do_hwint, OR1K_INT_CLOCK                /* Tick timer.             */
+_do_handler 0x600, _do_excp,  OR1K_EXCP_ALIGNMENT           /* Alignment.              */
+_do_handler 0x700, _do_excp,  OR1K_EXCP_ILLEGAL_INSTRUCTION /* Illegal Instruction.    */
+_do_handler 0x800, _do_hwint, OR1K_INT_EXTERNAL             /* External Interrupt.     */
+_do_handler 0x900, _do_excp,  OR1K_EXCP_DTLB_FAULT          /* DTLB Fault.             */
+_do_handler 0xa00, _do_excp,  OR1K_EXCP_ITLB_FAULT          /* ITLB Fault.             */
+_do_handler 0xb00, _do_excp,  OR1K_EXCP_RANGE               /* Range.                  */
+_do_handler 0xc00, _syscall,  0                             /* Syscall.                */
+_do_handler 0xd00, _do_excp,  OR1K_EXCP_FLOAT_POINT         /* Floating point.         */
+_do_handler 0xe00, _do_excp,  OR1K_EXCP_TRAP                /* Trap.                   */
 
 /*===========================================================================*
  * _do_excp()                                                                *
@@ -133,14 +133,14 @@ _do_excp:
 	 * Save exception information
 	 * in the current stack.
 	 */
-	l.addi sp, sp, -OR1K_EXCEPTION_SIZE
-	l.sw OR1K_EXCEPTION_NUM (sp), r6
+	l.addi sp, sp, -OR1K_EXCP_SIZE
+	l.sw OR1K_EXCP_NR (sp), r6
 
 	l.mfspr r3, r0, OR1K_SPR_EEAR_BASE
-	l.sw OR1K_EXCEPTION_EEAR(sp), r3
+	l.sw OR1K_EXCP_EEAR(sp), r3
 
 	l.mfspr r3, r0, OR1K_SPR_EPCR_BASE
-	l.sw OR1K_EXCEPTION_EPCR(sp), r3
+	l.sw OR1K_EXCP_EPCR(sp), r3
 
 	/*
 	 * Save a reference to exception information
@@ -155,14 +155,14 @@ _do_excp:
 	/*
 	 * Call exception dispatcher.
 	 */
-	l.jal do_excp
+	l.jal do_exception
 	l.nop
 
 	/*
 	 * Wipe out exception information
 	 * from current stack.
 	 */
-	l.addi sp, sp, OR1K_EXCEPTION_SIZE
+	l.addi sp, sp, OR1K_EXCP_SIZE
 
 	/*
 	 * Restore saved execution context.

@@ -22,42 +22,22 @@
  * SOFTWARE.
  */
 
-#include <nanvix/hal/core/exception.h>
+#include <arch/core/i486/context.h>
+#include <arch/core/i486/excp.h>
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
 
 /**
- * @cond rv32i
- *
- * Lookup table with information about exceptions.
- *
- * @endcond
- */
-PUBLIC struct exception_info exceptions[RV32I_EXCP_NUM_EXT] = {
-	{ NULL, "instruction address misaligned" },
-	{ NULL, "instruction access fault"       },
-	{ NULL, "illegal instruction"            },
-	{ NULL, "breakpoint"                     },
-	{ NULL, "load address misaligned"        },
-	{ NULL, "load access fault"              },
-	{ NULL, "store/amo address misaligned"   },
-	{ NULL, "store/amo access fault"         },
-	{ NULL, "environment call from u-mode"   },
-	{ NULL, "environment call from s-mode"   },
-	{ NULL, "reserved"                       },
-	{ NULL, "environment call from m-mode"   },
-	{ NULL, "instruction page fault"         },
-	{ NULL, "load page fault"                },
-	{ NULL, "reserved"                       },
-	{ NULL, "page fault"                     },
-	{ NULL, "page protection"                },
-	{ NULL, "general protection"             },
-};
-
-/**
  * @todo TODO provide a detailed description for this function.
+ *
+ * @uthor Pedro Henrique Penna
  */
-PUBLIC void rv32i_excp_dump(const struct exception *excp)
+PUBLIC void i486_ctx_dump(const struct context *ctx)
 {
-	kprintf("%s", exceptions[excp->num].name);
+	kprintf("[i486] eax=%x ebx=%x ecx=%x edx=%x", ctx->eax, ctx->ebx, ctx->ecx, ctx->edx);
+	kprintf("[i486] esi=%x edi=%x ebp=%x esp=%x", ctx->esi, ctx->edi, ctx->ebp, ctx->useresp);
+	kprintf("[i486]  cs=%x  ds=%x  ss=%x", 0xff & ctx->cs, 0xff & ctx->ds, 0xff & ctx->ss);
+	kprintf("[i486]  es=%x  fs=%x  gs=%x", 0xff & ctx->es, 0xff & ctx->fs, 0xff & ctx->gs);
+	kprintf("[i486] eip=%x eflags=%x", ctx->eip, ctx->eflags);
 }
+

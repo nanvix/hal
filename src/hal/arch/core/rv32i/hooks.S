@@ -86,7 +86,7 @@ rv32i_do_strap:
 		 * information structure.
 		 */
 		andi  t0, s2, RV32I_SCAUSE_CAUSE
-		sw    t0, RV32I_EXCP_ID(sp)
+		sw    t0, RV32I_EXCP_NR(sp)
 		csrr  t0, stval
 		sw    t0, RV32I_EXCP_ADDR(sp)
 		csrr  t0, sepc
@@ -98,7 +98,7 @@ rv32i_do_strap:
 		 */
 		mv   a0, sp           # struct exception *excp
 		mv   a1, s1           # struct context *ctx
-		call rv32i_do_excp
+		call do_exception
 
 		/*
 		 * Wipe out exception

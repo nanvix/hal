@@ -101,7 +101,7 @@ PRIVATE void __k1b_do_int(int intnum, __k1_vcontext_t *ctx)
 PUBLIC void k1b_ivt_setup(
 	k1b_int_handler_fn hwint_handler,
 	k1b_swint_handler_fn swint_handler,
-	k1b_excp_handler_fn excp_handler,
+	void (*excp_handler)(void),
 	void *stack)
 {
 	kprintf("[hal] exception stack at %x", stack);

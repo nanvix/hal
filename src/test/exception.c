@@ -99,8 +99,8 @@ PRIVATE void dummy_handler(
  */
 PRIVATE void test_exception_set_unset_handler(void)
 {
-	KASSERT(exception_set_handler(EXCEPTION_PAGE_FAULT, dummy_handler) == 0);
-	KASSERT(exception_unset_handler(EXCEPTION_PAGE_FAULT) == 0);
+	KASSERT(exception_register(EXCEPTION_PAGE_FAULT, dummy_handler) == 0);
+	KASSERT(exception_unregister(EXCEPTION_PAGE_FAULT) == 0);
 }
 
 /*----------------------------------------------------------------------------*
@@ -143,10 +143,10 @@ PRIVATE struct test exception_api_tests[] = {
 /**
  * Fault Injection test: Set a Handler for an Invalid Exception
  */
-PRIVATE void test_exception_set_handler_inval(void)
+PRIVATE void test_exception_register_inval(void)
 {
-	KASSERT(exception_set_handler(-1, dummy_handler) == -EINVAL);
-	KASSERT(exception_set_handler(EXCEPTIONS_NUM + 1, dummy_handler) == -EINVAL);
+	KASSERT(exception_register(-1, dummy_handler) == -EINVAL);
+	KASSERT(exception_register(EXCEPTIONS_NUM + 1, dummy_handler) == -EINVAL);
 }
 
 /*----------------------------------------------------------------------------*
@@ -156,11 +156,11 @@ PRIVATE void test_exception_set_handler_inval(void)
 /**
  * Fault Injection test: Set a Handler for a Bad Exception
  */
-PRIVATE void test_exception_set_handler_bad(void)
+PRIVATE void test_exception_register_bad(void)
 {
-	KASSERT(exception_set_handler(EXCEPTION_PAGE_FAULT, dummy_handler) == 0);
-	KASSERT(exception_set_handler(EXCEPTION_PAGE_FAULT, dummy_handler) == -EBUSY);
-	KASSERT(exception_unset_handler(EXCEPTION_PAGE_FAULT) == 0);
+	KASSERT(exception_register(EXCEPTION_PAGE_FAULT, dummy_handler) == 0);
+	KASSERT(exception_register(EXCEPTION_PAGE_FAULT, dummy_handler) == -EBUSY);
+	KASSERT(exception_unregister(EXCEPTION_PAGE_FAULT) == 0);
 }
 
 /*----------------------------------------------------------------------------*
@@ -170,10 +170,10 @@ PRIVATE void test_exception_set_handler_bad(void)
 /**
  * Fault Injection test: Unset a Handler for an Invalid Exception
  */
-PRIVATE void test_exception_unset_handler_inval(void)
+PRIVATE void test_exception_unregister_inval(void)
 {
-	KASSERT(exception_unset_handler(-1) == -EINVAL);
-	KASSERT(exception_unset_handler(EXCEPTIONS_NUM + 1) == -EINVAL);
+	KASSERT(exception_unregister(-1) == -EINVAL);
+	KASSERT(exception_unregister(EXCEPTIONS_NUM + 1) == -EINVAL);
 }
 
 /*----------------------------------------------------------------------------*
@@ -183,9 +183,9 @@ PRIVATE void test_exception_unset_handler_inval(void)
 /**
  * Fault Injection test: Unset a Handler for a Bad Exception
  */
-PRIVATE void test_exception_unset_handler_bad(void)
+PRIVATE void test_exception_unregister_bad(void)
 {
-	KASSERT(exception_unset_handler(EXCEPTION_PAGE_FAULT) == -EINVAL);
+	KASSERT(exception_unregister(EXCEPTION_PAGE_FAULT) == -EINVAL);
 }
 
 /*----------------------------------------------------------------------------*
@@ -196,11 +196,11 @@ PRIVATE void test_exception_unset_handler_bad(void)
  * @brief Unit tests.
  */
 PRIVATE struct test exception_fault_tests[] = {
-	{ test_exception_set_handler_inval,   "set handler for invalid exception"   },
-	{ test_exception_set_handler_bad,     "set handler for bad exception"       },
-	{ test_exception_unset_handler_inval, "unset handler for invalid exception" },
-	{ test_exception_unset_handler_bad,   "unset handler for bad exception"     },
-	{ NULL,                                NULL                                 },
+	{ test_exception_register_inval,   "set handler for invalid exception"   },
+	{ test_exception_register_bad,     "set handler for bad exception"       },
+	{ test_exception_unregister_inval, "unset handler for invalid exception" },
+	{ test_exception_unregister_bad,   "unset handler for bad exception"     },
+	{ NULL,                             NULL                                 },
 };
 
 /*============================================================================*

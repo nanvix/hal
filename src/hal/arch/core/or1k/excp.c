@@ -22,159 +22,34 @@
  * SOFTWARE.
  */
 
-#include <arch/core/or1k/excp.h>
-#include <arch/core/or1k/cache.h>
-#include <arch/core/or1k/mmu.h>
-#include <arch/core/or1k/tlb.h>
+#include <nanvix/hal/core/exception.h>
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
-#include <errno.h>
 
 /**
- * @brief Information about exceptions.
+ * @cond or1k
  *
  * Lookup table with information about exceptions.
+ *
+ * @endcond
  */
-PRIVATE const struct
-{
-	int code;           /**< Code.          */
-	const char *errmsg; /**< Error message. */
-} exceptions[OR1K_NUM_EXCEPTIONS] = {
-	{ OR1K_EXCEPTION_RESET,                 "reset exception"           },
-	{ OR1K_EXCEPTION_BUSERROR,              "bus error"                 },
-	{ OR1K_EXCEPTION_PAGE_FAULT,            "page fault"                },
-	{ OR1K_EXCEPTION_ALIGNMENT,             "alignment check exception" },
-	{ OR1K_EXCEPTION_ILLEGAL_INSTRUCTION,   "illegal instruction"       },
-	{ OR1K_EXCEPTION_DTLB_FAULT,            "data tlb fault"            },
-	{ OR1K_EXCEPTION_ITLB_FAULT,            "instruction tlb fault"     },
-	{ OR1K_EXCEPTION_RANGE,                 "data out of range"         },
-	{ OR1K_EXCEPTION_FLOAT_POINT,           "float point exception"     },
-	{ OR1K_EXCEPTION_TRAP,                  "trap exception"            }
+PUBLIC struct exception_info exceptions[OR1K_EXCP_NUM] = {
+	{ NULL, "reset exception"           },
+	{ NULL, "bus error"                 },
+	{ NULL, "page fault"                },
+	{ NULL, "alignment check exception" },
+	{ NULL, "illegal instruction"       },
+	{ NULL, "data tlb fault"            },
+	{ NULL, "instruction tlb fault"     },
+	{ NULL, "data out of range"         },
+	{ NULL, "float point exception"     },
+	{ NULL, "trap exception"            }
 };
 
 /**
- * @brief Exception handlers.
- *
- * Lookup table with registered exception handlers.
+ * @todo TODO provide a detailed description for this function.
  */
-PRIVATE or1k_exception_handler_fn or1k_excp_handlers[OR1K_NUM_EXCEPTIONS] = {
-	NULL, NULL, NULL, NULL,
-	NULL, NULL, NULL, NULL,
-	NULL, NULL
-};
-
-/**
- * @brief Handles an unhandled exception.
- *
- * @brief excp Exception information.
- * @brief ctx  Saved execution context.
- *
- * The do_generic_excp() function handles the unhandled exception. It
- * dumps as much information as possible about the state of the
- * underlying core and then it panics the kernel.
- *
- * @author Davidson Francis
- */
-PRIVATE void do_generic_excp(const struct exception *excp, const struct context *ctx)
+PUBLIC void or1k_excp_dump(const struct exception *excp)
 {
-	/* Dump general purpose registers. */
-	kprintf("[or1k]  r0=%x  r1=%x  r2=%x  r3=%x", ctx->r0,  ctx->r1,  ctx->r2,  ctx->r3);
-	kprintf("[or1k]  r4=%x  r5=%x  r6=%x  r7=%x", ctx->r4,  ctx->r5,  ctx->r6,  ctx->r7);
-	kprintf("[or1k]  r8=%x  r9=%x r10=%x r11=%x", ctx->r8,  ctx->r9,  ctx->r10, ctx->r11);
-	kprintf("[or1k] r12=%x r13=%x r14=%x r15=%x", ctx->r12, ctx->r13, ctx->r14, ctx->r15);
-	kprintf("[or1k] r16=%x r17=%x r18=%x r19=%x", ctx->r16, ctx->r17, ctx->r18, ctx->r19);
-	kprintf("[or1k] r20=%x r21=%x r22=%x r23=%x", ctx->r20, ctx->r21, ctx->r22, ctx->r23);
-	kprintf("[or1k] r24=%x r25=%x r26=%x r27=%x", ctx->r24, ctx->r25, ctx->r26, ctx->r27);
-	kprintf("[or1k] r28=%x r29=%x r30=%x r31=%x", ctx->r28, ctx->r29, ctx->r30, ctx->r31);
-
-	/* Dump special function registers. */
-	kprintf("[or1k] epcr=%x  eear=%x  esr=%x", ctx->epcr, ctx->eear, ctx->esr);
-
-	kpanic("unhandled %s exception at %x\n", exceptions[excp->num].errmsg, excp->eear);
-}
-
-/**
- * The do_excp() function dispatches an exception to the registered
- * exception handler.
- *
- * @author Davidson Francis
- */
-PUBLIC void do_excp(const struct exception *excp, const struct context *ctx)
-{
-	/* Unknown exception. */
-	if (excp->num >= OR1K_NUM_EXCEPTIONS)
-		kpanic("unknown exception %x\n", excp->num);
-
-	/* Unhandled exception. */
-	if (or1k_excp_handlers[excp->num] == NULL)
-		do_generic_excp(excp, ctx);
-
-	or1k_excp_handlers[excp->num](excp, ctx);
-}
-
-/**
- * @todo Document this function.
- */
-PUBLIC void forward_excp(int num, const struct exception *excp, const struct context *ctx)
-{
-	struct exception *_excp = (struct exception *)excp;
-
-	_excp->num = num;
-
-	do_excp(_excp, ctx);
-}
-
-/**
- * The or1k_excp_set_handler() function sets a handler function for
- * the exception @p num.
- *
- * @author Davidson Francis
- */
-PUBLIC int or1k_excp_set_handler(int num, or1k_exception_handler_fn handler)
-{
-	/* Invalid exception number. */
-	if ((num < 0) || (num > OR1K_NUM_EXCEPTIONS))
-	{
-		kprintf("[hal] invalid exception number");
-		return (-EINVAL);
-	}
-
-	/* Invalid handler. */
-	if (handler == NULL)
-	{
-		kprintf("[hal] invalid exception handler");
-		return (-EINVAL);
-	}
-
-	/* Bad exception number. */
-	if (or1k_excp_handlers[num] != NULL)
-		return (-EBUSY);
-
-	or1k_excp_handlers[num] = handler;
-
-	return (0);
-}
-
-/**
- * The or1k_excp_unset_handler() function unsets a handler function
- * for the exception @p num.
- *
- * @author Pedro Henrique Penna
- */
-PUBLIC int or1k_excp_unset_handler(int num)
-{
-	/* Invalid exception number. */
-	if ((num < 0) || (num > OR1K_NUM_EXCEPTIONS))
-	{
-		kprintf("[hal] invalid exception number");
-		return (-EINVAL);
-	}
-
-	/* Bad exception number. */
-	if (or1k_excp_handlers[num] == NULL)
-		return (-EINVAL);
-
-	or1k_excp_handlers[num] = NULL;
-
-	return (0);
+	kprintf("%s", exceptions[excp->num].name);
 }

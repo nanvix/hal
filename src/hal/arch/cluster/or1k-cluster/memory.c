@@ -24,6 +24,8 @@
 
 #include <arch/cluster/or1k-cluster/memory.h>
 #include <arch/cluster/or1k-cluster/cores.h>
+#include <nanvix/hal/core/exception.h>
+#include <nanvix/klib.h>
 #include <nanvix/const.h>
 
 /**
@@ -114,8 +116,6 @@ PRIVATE void or1k_do_tlb_fault(
 	struct pde *pde;   /* Working page directory entry.   */
 	struct pte *pgtab; /* Working page table.             */
 
-	UNUSED(ctx);
-
 	/* Get page address of faulting address. */
 	vaddr = or1k_excp_get_addr(excp);
 	vaddr &= OR1K_PAGE_MASK;
@@ -123,17 +123,23 @@ PRIVATE void or1k_do_tlb_fault(
 	/* Lookup PDE. */
 	pde = pde_get(root_pgdir, vaddr);
 	if (!pde_is_present(pde))
+	{
+		or1k_context_dump(ctx);
 		kpanic("[hal] page fault at %x", exception_get_addr(excp));
+	}
 
 	/* Lookup PTE. */
 	pgtab = (struct pte *)(pde_frame_get(pde) << OR1K_PAGE_SHIFT);
 	pte = pte_get(pgtab, vaddr);
 	if (!pte_is_present(pte))
+	{
+		or1k_context_dump(ctx);
 		kpanic("[hal] page fault at %x", exception_get_addr(excp));
+	}
 
 	/* Writing mapping to TLB. */
 	paddr = pte_frame_get(pte) << OR1K_PAGE_SHIFT;
-	tlb = (excp->num == OR1K_EXCEPTION_ITLB_FAULT) ?
+	tlb = (excp->num == OR1K_EXCP_ITLB_FAULT) ?
 		OR1K_TLB_INSTRUCTION : OR1K_TLB_DATA;
 	if (or1k_tlb_write(tlb, vaddr, paddr) < 0)
 		kpanic("[hal] cannot write to tlb");
@@ -156,8 +162,8 @@ PUBLIC void or1k_enable_mmu(void)
 PUBLIC void or1k_mmu_setup(void)
 {
 	/* TLB Handler. */
-	exception_set_handler(EXCEPTION_DTLB_FAULT, or1k_do_tlb_fault);
-	exception_set_handler(EXCEPTION_ITLB_FAULT, or1k_do_tlb_fault);
+	exception_register(EXCEPTION_DTLB_FAULT, or1k_do_tlb_fault);
+	exception_register(EXCEPTION_ITLB_FAULT, or1k_do_tlb_fault);
 
 	/* Initial TLB. */
 	or1k_tlb_init();

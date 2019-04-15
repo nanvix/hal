@@ -33,11 +33,8 @@
  */
 /**@{*/
 
-#ifndef _ASM_FILE_
-
 	#include <arch/core/or1k/core.h>
-
-#endif /* _ASM_FILE_ */
+	#include <nanvix/klib.h>
 
 	/**
 	 * @brief Execution context size (in bytes).
@@ -87,26 +84,33 @@
 
 #ifndef _ASM_FILE_
 
-/**
- * @cond or1k
- */
+	/**
+	 * @cond or1k
+	 */
+
+		/**
+		 * Saved execution context.
+		 */
+		struct context
+		{
+			or1k_word_t  r0,  r1,  r2,  r3,  r4,  r5,  r6,  r7; /**< General Purpose Registers  0 to  7 */
+			or1k_word_t  r8,  r9, r10, r11, r12, r13, r14, r15; /**< General Purpose Registers  8 to 15 */
+			or1k_word_t r16, r17, r18, r19, r20, r21, r22, r23; /**< General Purpose Registers 16 to 23 */
+			or1k_word_t r24, r25, r26, r27, r28, r29, r30, r31; /**< General Purpose Registers 24 to 31 */
+			or1k_word_t epcr;                                   /**< Shadow Program Counter Register    */
+			or1k_word_t eear;                                   /**< Shadow Effective Address Register  */
+			or1k_word_t  esr;                                   /**< Shadow Status Register             */
+			or1k_byte_t RESERVED[4];                            /**< Required padding                   */
+		} PACK;
+
+	/**@endcond*/
 
 	/**
-	 * Saved execution context.
+	 * @brief Dumps context information.
+	 *
+	 * @param ctx Saved execution context.
 	 */
-	struct context
-	{
-		or1k_word_t  r0,  r1,  r2,  r3,  r4,  r5,  r6,  r7; /**< General Purpose Registers  0 to  7 */
-		or1k_word_t  r8,  r9, r10, r11, r12, r13, r14, r15; /**< General Purpose Registers  8 to 15 */
-		or1k_word_t r16, r17, r18, r19, r20, r21, r22, r23; /**< General Purpose Registers 16 to 23 */
-		or1k_word_t r24, r25, r26, r27, r28, r29, r30, r31; /**< General Purpose Registers 24 to 31 */
-		or1k_word_t epcr;                                   /**< Shadow Program Counter Register    */
-		or1k_word_t eear;                                   /**< Shadow Effective Address Register  */
-		or1k_word_t  esr;                                   /**< Shadow Status Register             */
-		or1k_byte_t RESERVED[4];                            /**< Required padding                   */
-	} __attribute__((packed));
-
-/**@endcond*/
+	EXTERN void or1k_context_dump(const struct context *ctx);
 
 	/**
 	 * @brief Gets the value of the stack pointer register.
@@ -224,6 +228,14 @@
 	static inline void context_set_pc(struct context *ctx, word_t val)
 	{
 		or1k_context_set_pc(ctx, val);
+	}
+
+	/**
+	 * @see or1k_context_dump().
+	 */
+	static inline void context_dump(const struct context *ctx)
+	{
+		or1k_context_dump(ctx);
 	}
 
 #endif /* _ASM_FILE_ */
