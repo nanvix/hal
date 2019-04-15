@@ -29,6 +29,9 @@
 		#error "do not include this file"
 	#endif
 
+	/* Must come first. */
+	#define __NEED_CORE_TYPES
+
 /**
  * @addtogroup rv32gc-core-context Context
  * @ingroup rv32gc-core
@@ -37,7 +40,7 @@
  */
 /**@{*/
 
-	#include <arch/core/rv32gc/core.h>
+	#include <arch/core/rv32gc/types.h>
 	#include <nanvix/klib.h>
 
 	/**
@@ -207,7 +210,7 @@
 	/**
 	 * @see rv32gc_context_get_sp().
 	 */
-	static inline word_t context_get_sp(const struct context *ctx)
+	static inline rv32gc_word_t context_get_sp(const struct context *ctx)
 	{
 		return (rv32gc_context_get_sp(ctx));
 	}
@@ -215,7 +218,7 @@
 	/**
 	 * @see rv32gc_context_get_pc().
 	 */
-	static inline word_t context_get_pc(const struct context *ctx)
+	static inline rv32gc_word_t context_get_pc(const struct context *ctx)
 	{
 		return (rv32gc_context_get_pc(ctx));
 	}
@@ -223,7 +226,7 @@
 	/**
 	 * @see rv32gc_context_set_sp().
 	 */
-	static inline void context_set_sp(struct context *ctx, word_t val)
+	static inline void context_set_sp(struct context *ctx, rv32gc_word_t val)
 	{
 		rv32gc_context_set_sp(ctx, val);
 	}
@@ -231,7 +234,7 @@
 	/**
 	 * @see rv32gc_context_set_pc().
 	 */
-	static inline void context_set_pc(struct context *ctx, word_t val)
+	static inline void context_set_pc(struct context *ctx, rv32gc_word_t val)
 	{
 		rv32gc_context_set_pc(ctx, val);
 	}

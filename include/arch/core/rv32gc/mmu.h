@@ -37,10 +37,8 @@
 	#define __NEED_MEMORY_TYPES
 
 	#include <arch/core/rv32gc/types.h>
-#ifndef _ASM_FILE_
 	#include <nanvix/klib.h>
 	#include <errno.h>
-#endif
 
 	/**
 	 * @name Page Shifts and Masks
