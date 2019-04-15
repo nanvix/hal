@@ -127,25 +127,19 @@
 		 * @name Casters for Memory Types
 		 */
 		/**@{*/
-		#define RV32GC_PADDR(x) ((paddr_t)(x)) /**< To Physical Address */
-		#define RV32GC_VADDR(x) ((vaddr_t)(x)) /**< To Virtual Address  */
-		#define RV32GC_FRAME(x) ((frame_t)(x)) /**< To Frame Number     */
+		#define RV32GC_PADDR(x) ((rv32gc_paddr_t)(x)) /**< To Physical Address */
+		#define RV32GC_VADDR(x) ((rv32gc_vaddr_t)(x)) /**< To Virtual Address  */
+		#define RV32GC_FRAME(x) ((rv32gc_frame_t)(x)) /**< To Frame Number     */
 		/**@}*/
 
 		/**
-		 * @brief Virtual address.
+		 * @name Memory Types
 		 */
-		typedef uint32_t vaddr_t;
-
-		/**
-		 * @brief Physical address.
-		 */
-		typedef uint32_t paddr_t;
-
-		/**
-		 * @brief Frame number.
-		 */
-		typedef uint32_t frame_t;
+		/**@{*/
+		typedef uint32_t rv32gc_paddr_t; /**< Physical Address */
+		typedef uint32_t rv32gc_frame_t; /**< Frame Number     */
+		typedef uint32_t rv32gc_vaddr_t; /**< Virtual Address  */
+		/**@}*/
 
 	#endif /* __RV32GC_MEMORY_TYPES */
 	#endif

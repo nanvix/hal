@@ -27,6 +27,7 @@
 
 	/* Must come first. */
 	#define __NEED_CORE_CONTEXT
+	#define __NEED_CORE_TYPES
 	#define __NEED_MEMORY_TYPES
 
 /**
@@ -173,7 +174,7 @@
 	 *
 	 * @author Pedro Henrique Penna
 	 */
-	static inline vaddr_t rv32gc_excp_get_addr(const struct exception *excp)
+	static inline rv32gc_vaddr_t rv32gc_excp_get_addr(const struct exception *excp)
 	{
 		return (excp->addr);
 	}
@@ -192,7 +193,7 @@
 	 *
 	 * @author Pedro Henrique Penna
 	 */
-	static inline vaddr_t rv32gc_excp_get_isntr(const struct exception *excp)
+	static inline rv32gc_vaddr_t rv32gc_excp_get_isntr(const struct exception *excp)
 	{
 		return (excp->instr);
 	}
@@ -257,7 +258,7 @@
 	/**
 	 * @see rv32gc_excp_get_addr().
 	 */
-	static inline vaddr_t exception_get_addr(const struct exception *excp)
+	static inline rv32gc_vaddr_t exception_get_addr(const struct exception *excp)
 	{
 		return (rv32gc_excp_get_addr(excp));
 	}
