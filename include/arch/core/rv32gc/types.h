@@ -162,17 +162,17 @@
 	#define __RV32GC_CORE_TYPES
 
 		/**
-		 * @brief Makes a double word.
+		 * @brief Makes a half word.
 		 *
-		 * @param a High word.
-		 * @param b Low word.
+		 * @param a High byte.
+		 * @param b Low byte.
 		 *
-		 * @returns A dobule word.
+		 * @param A half word.
 		 */
-		#define RV32GC_MAKE_DWORD(a,b)                             \
-		RV32GC_DWORD(                                              \
-			((RV32GC_WORD(a) & 0xffffffffULL) << RV32GC_WORD_BIT) | \
-			((RV32GC_WORD(b) & 0xffffffffULL))                     \
+		#define RV32GC_MAKE_HWORD(a,b)                     \
+		RV32GC_HWORD(                                      \
+			((RV32GC_BYTE(a) & 0xff) << RV32GC_BYTE_BIT) | \
+			((RV32GC_BYTE(b) & 0xff))                      \
 		)
 
 		/**
@@ -183,24 +183,24 @@
 		 *
 		 * @param A word.
 		 */
-		#define RV32GC_MAKE_WORD(a,b)                         \
-		RV32GC_WORD(                                          \
+		#define RV32GC_MAKE_WORD(a,b)                          \
+		RV32GC_WORD(                                           \
 			((RV32GC_HWORD(a) & 0xffff) << RV32GC_HWORD_BIT) | \
-			((RV32GC_HWORD(b) & 0xffff))                      \
+			((RV32GC_HWORD(b) & 0xffff))                       \
 		)
 
 		/**
-		 * @brief Makes a half word.
+		 * @brief Makes a double word.
 		 *
-		 * @param a High byte.
-		 * @param b Low byte.
+		 * @param a High word.
+		 * @param b Low word.
 		 *
-		 * @param A half word.
+		 * @returns A dobule word.
 		 */
-		#define RV32GC_MAKE_HWORD(a,b)                    \
-		RV32GC_HWORD(                                     \
-			((RV32GC_BYTE(a) & 0xff) << RV32GC_BYTE_BIT) | \
-			((RV32GC_BYTE(b) & 0xff))                     \
+		#define RV32GC_MAKE_DWORD(a,b)                              \
+		RV32GC_DWORD(                                               \
+			((RV32GC_WORD(a) & 0xffffffffULL) << RV32GC_WORD_BIT) | \
+			((RV32GC_WORD(b) & 0xffffffffULL))                      \
 		)
 
 		/**
