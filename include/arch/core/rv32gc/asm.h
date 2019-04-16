@@ -63,55 +63,55 @@
  *============================================================================*/
 
 	/**
-	 * @brief Number of preserved registers.
+	 * @brief Number of saved registers.
 	 */
-	#define RV32GC_PRESERVED_REGS_NUM 12
+	#define RV32GC_SAVED_REGS_NUM 12
 
 	/**
-	 * @brief Stack frame size for slow call.
+	 * @brief Callee stack frame size.
 	 */
-	#define RV32GC_SLOW_CALL_FRAME_SIZE \
-		(RV32GC_PRESERVED_REGS_NUM*RV32GC_WORD_SIZE)
+	#define RV32GC_CALLEE_FRAME_SIZE \
+		(RV32GC_SAVED_REGS_NUM*RV32GC_WORD_SIZE)
 
 	/**
-	* @brief Offsets to Stack Frame
-	*/
+	 * @brief Offsets to Callee Stack Frame
+	 */
 	/**@{*/
-	#define RV32GC_FRAME_FP   0*RV32GC_WORD_SIZE /**< Frame Pointer Register */
-	#define RV32GC_FRAME_S1   1*RV32GC_WORD_SIZE /**< Saved Register  1      */
-	#define RV32GC_FRAME_S2   2*RV32GC_WORD_SIZE /**< Saved Register  2      */
-	#define RV32GC_FRAME_S3   3*RV32GC_WORD_SIZE /**< Saved Register  3      */
-	#define RV32GC_FRAME_S4   4*RV32GC_WORD_SIZE /**< Saved Register  4      */
-	#define RV32GC_FRAME_S5   5*RV32GC_WORD_SIZE /**< Saved Register  5      */
-	#define RV32GC_FRAME_S6   6*RV32GC_WORD_SIZE /**< Saved Register  6      */
-	#define RV32GC_FRAME_S7   7*RV32GC_WORD_SIZE /**< Saved Register  7      */
-	#define RV32GC_FRAME_S8   8*RV32GC_WORD_SIZE /**< Saved Register  8      */
-	#define RV32GC_FRAME_S9   9*RV32GC_WORD_SIZE /**< Saved Register  9      */
-	#define RV32GC_FRAME_S10 10*RV32GC_WORD_SIZE /**< Saved Register 10      */
-	#define RV32GC_FRAME_S11 11*RV32GC_WORD_SIZE /**< Saved Register 11      */
+	#define RV32GC_CALLE_FRAME_FP   0*RV32GC_WORD_SIZE /**< Saved Register  0 */
+	#define RV32GC_CALLE_FRAME_S1   1*RV32GC_WORD_SIZE /**< Saved Register  1 */
+	#define RV32GC_CALLE_FRAME_S2   2*RV32GC_WORD_SIZE /**< Saved Register  2 */
+	#define RV32GC_CALLE_FRAME_S3   3*RV32GC_WORD_SIZE /**< Saved Register  3 */
+	#define RV32GC_CALLE_FRAME_S4   4*RV32GC_WORD_SIZE /**< Saved Register  4 */
+	#define RV32GC_CALLE_FRAME_S5   5*RV32GC_WORD_SIZE /**< Saved Register  5 */
+	#define RV32GC_CALLE_FRAME_S6   6*RV32GC_WORD_SIZE /**< Saved Register  6 */
+	#define RV32GC_CALLE_FRAME_S7   7*RV32GC_WORD_SIZE /**< Saved Register  7 */
+	#define RV32GC_CALLE_FRAME_S8   8*RV32GC_WORD_SIZE /**< Saved Register  8 */
+	#define RV32GC_CALLE_FRAME_S9   9*RV32GC_WORD_SIZE /**< Saved Register  9 */
+	#define RV32GC_CALLE_FRAME_S10 10*RV32GC_WORD_SIZE /**< Saved Register 10 */
+	#define RV32GC_CALLE_FRAME_S11 11*RV32GC_WORD_SIZE /**< Saved Register 11 */
 	/**@}*/
 
 	/*
-	 * @brief Saves preserved registers in the stack.
+	 * @brief Saves saved registers in the stack.
 	 */
-	.macro rv32gc_do_prologue_slow
+	.macro rv32gc_do_prologue
 
 		/* Allocate stack frame. */
-		addi sp, sp, -RV32GC_SLOW_CALL_FRAME_SIZE
+		addi sp, sp, -RV32GC_CALLEE_FRAME_SIZE
 
-		/* Save preserved registers. */
-		sw fp,  RV32GC_FRAME_FP(sp)
-		sw s1,  RV32GC_FRAME_S1(sp)
-		sw s2,  RV32GC_FRAME_S2(sp)
-		sw s3,  RV32GC_FRAME_S3(sp)
-		sw s4,  RV32GC_FRAME_S4(sp)
-		sw s5,  RV32GC_FRAME_S5(sp)
-		sw s6,  RV32GC_FRAME_S6(sp)
-		sw s7,  RV32GC_FRAME_S7(sp)
-		sw s8,  RV32GC_FRAME_S8(sp)
-		sw s9,  RV32GC_FRAME_S9(sp)
-		sw s10, RV32GC_FRAME_S10(sp)
-		sw s11, RV32GC_FRAME_S11(sp)
+		/* Save saved registers. */
+		sw fp,  RV32GC_CALLE_FRAME_FP(sp)
+		sw s1,  RV32GC_CALLE_FRAME_S1(sp)
+		sw s2,  RV32GC_CALLE_FRAME_S2(sp)
+		sw s3,  RV32GC_CALLE_FRAME_S3(sp)
+		sw s4,  RV32GC_CALLE_FRAME_S4(sp)
+		sw s5,  RV32GC_CALLE_FRAME_S5(sp)
+		sw s6,  RV32GC_CALLE_FRAME_S6(sp)
+		sw s7,  RV32GC_CALLE_FRAME_S7(sp)
+		sw s8,  RV32GC_CALLE_FRAME_S8(sp)
+		sw s9,  RV32GC_CALLE_FRAME_S9(sp)
+		sw s10, RV32GC_CALLE_FRAME_S10(sp)
+		sw s11, RV32GC_CALLE_FRAME_S11(sp)
 
 		/* Save stack frame. */
 		mv fp, sp
@@ -119,29 +119,29 @@
 	.endm
 
 	/*
-	 * @brief Restores preserved registers from the stack.
+	 * @brief Restores saved registers from the stack.
 	 */
-	.macro rv32gc_do_epilogue_slow
+	.macro rv32gc_do_epilogue
 
 		/* Restore stack frame. */
 		mv sp, fp
 
-		/* Restore preserved registers. */
-		lw fp,  RV32GC_FRAME_FP(sp)
-		lw s1,  RV32GC_FRAME_S1(sp)
-		lw s2,  RV32GC_FRAME_S2(sp)
-		lw s3,  RV32GC_FRAME_S3(sp)
-		lw s4,  RV32GC_FRAME_S4(sp)
-		lw s5,  RV32GC_FRAME_S5(sp)
-		lw s6,  RV32GC_FRAME_S6(sp)
-		lw s7,  RV32GC_FRAME_S7(sp)
-		lw s8,  RV32GC_FRAME_S8(sp)
-		lw s9,  RV32GC_FRAME_S9(sp)
-		lw s10, RV32GC_FRAME_S10(sp)
-		lw s11, RV32GC_FRAME_S11(sp)
+		/* Restore saved registers. */
+		lw fp,  RV32GC_CALLE_FRAME_FP(sp)
+		lw s1,  RV32GC_CALLE_FRAME_S1(sp)
+		lw s2,  RV32GC_CALLE_FRAME_S2(sp)
+		lw s3,  RV32GC_CALLE_FRAME_S3(sp)
+		lw s4,  RV32GC_CALLE_FRAME_S4(sp)
+		lw s5,  RV32GC_CALLE_FRAME_S5(sp)
+		lw s6,  RV32GC_CALLE_FRAME_S6(sp)
+		lw s7,  RV32GC_CALLE_FRAME_S7(sp)
+		lw s8,  RV32GC_CALLE_FRAME_S8(sp)
+		lw s9,  RV32GC_CALLE_FRAME_S9(sp)
+		lw s10, RV32GC_CALLE_FRAME_S10(sp)
+		lw s11, RV32GC_CALLE_FRAME_S11(sp)
 
 		/* Wipe out stack frame. */
-		addi sp, sp, RV32GC_SLOW_CALL_FRAME_SIZE
+		addi sp, sp, RV32GC_CALLEE_FRAME_SIZE
 
 	.endm
 
@@ -219,7 +219,7 @@
 	#endif
 
 		/*
-		 * Save all GPRs, but the
+		 * Restore all GPRs, but the
 		 * Stack Pointer (SP).
 		 */
 		lw  x1, RV32GC_CONTEXT_RA(sp)
