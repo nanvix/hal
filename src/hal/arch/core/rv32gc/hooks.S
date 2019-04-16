@@ -33,6 +33,12 @@
 #include <arch/core/rv32gc/types.h>
 #include <arch/core/rv32gc/regs.h>
 
+.global rv32gc_kcall0
+.global rv32gc_kcall1
+.global rv32gc_kcall2
+.global rv32gc_kcall3
+.global rv32gc_kcall4
+.global rv32gc_kcall5
 .global rv32gc_do_strap
 
 .section .text,"ax",@progbits
@@ -164,3 +170,70 @@ rv32gc_do_strap:
 
 		/* Return from event. */
 		sret
+
+/*----------------------------------------------------------------------------*
+ * _rv32gc_do_kcall                                                           *
+ *----------------------------------------------------------------------------*/
+
+#ifndef HAS_USER_MODE
+
+//
+// Kernel call hook.
+//
+.macro rv32gc_kcall, num
+	.align RV32GC_WORD_SIZE
+	rv32gc_kcall\()\num:
+		rv32gc_do_fn_call _rv32gc_do_kcall
+		ret
+.endm
+
+rv32gc_kcall 0 // Kernel call with no arguments.
+rv32gc_kcall 1 // Kernel call with one argument.
+rv32gc_kcall 2 // Kernel call with two arguments.
+rv32gc_kcall 3 // Kernel call with three arguments.
+rv32gc_kcall 4 // Kernel call with four arguments.
+rv32gc_kcall 5 // Kernel call with five arguments.
+
+//
+// Low-level kernel call dispatcher.
+//
+.align RV32GC_WORD_SIZE
+_rv32gc_do_kcall:
+
+	// User mode is not supported, then
+	// simulate an ECALL instruction
+	// by push the value of RA onto
+	// the stack.
+	addi  sp, sp, -RV32GC_WORD_SIZE
+	sw    ra, 0(sp)
+
+	// Save the execution context
+	// in the current stack.
+	rv32gc_context_save
+
+	// Get kernel call parameters.
+	lw  a5, RV32GC_CONTEXT_A0(sp) /* System Call Number */
+	lw  a0, RV32GC_CONTEXT_A1(sp) /* Argument 0         */
+	lw  a1, RV32GC_CONTEXT_A2(sp) /* Argument 1         */
+	lw  a2, RV32GC_CONTEXT_A3(sp) /* Argument 2         */
+	lw  a3, RV32GC_CONTEXT_A4(sp) /* Argument 3         */
+	lw  a4, RV32GC_CONTEXT_A5(sp) /* Argument 4         */
+
+	// Forward kernel call
+	// to high-level dispatcher.
+	call  do_syscall
+
+	// Copy return value to user stack.
+	sw  a0, RV32GC_CONTEXT_A0(sp)
+
+	// Return from kernel call.
+	_rv32gc_do_kcall.out:
+
+		rv32gc_context_restore
+
+		// Wipe out face ECALL.
+		addi sp, sp, RV32GC_WORD_SIZE
+
+		ret
+
+#endif
