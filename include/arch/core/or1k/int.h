@@ -26,7 +26,7 @@
 #define ARCH_CORE_OR1K_INT_H_
 
 	/* Must come first. */
-	#define __NEED_OR1K_PIC
+	#define __NEED_CORE_LPIC
 
 /**
  * @addtogroup or1k-core-int Hardware Interrupts
@@ -37,8 +37,23 @@
 /**@{*/
 
 	#include <arch/core/or1k/core.h>
-	#include <arch/core/or1k/pic.h>
+	#include <arch/core/or1k/lpic.h>
 	#include <nanvix/const.h>
+
+	/**
+	 * @brief Number of interrupts.
+	 */
+	#define OR1K_INT_NUM OR1K_IRQ_NUM
+
+	/**
+	 * @name Hardware Interrupts
+	 */
+	/**@{*/
+	#define OR1K_INT_CLOCK    OR1K_IRQ_CLOCK /*< Tmer.               */
+	#define OR1K_INT_OMPIC    OR1K_IRQ_OMPIC /*< OMPIC.              */
+	#define OR1K_INT_COM1     OR1K_IRQ_COM1  /*< COM1.               */
+	#define OR1K_INT_EXTERNAL OR1K_IRQ_EXT   /*< External interrupt. */
+	/**@}*/
 
 #ifndef _ASM_FILE_
 
@@ -57,18 +72,10 @@
 	/**@}*/
 
 	/**
-	 * @brief Gets the next pending interrupt.
-	 *
-	 * @returns The number of the next pending interrupt, or zero if
-	 * no interrupt is pending.
-	 */
-	EXTERN int or1k_int_next(void);
-
-	/**
 	 * @brief Enables hardware interrupts.
 	 *
-	 * The or1k_sti() function enables all hardware interrupts in the
-	 * underlying or1k core.
+	 * The or1k_int_enable() function enables all hardware interrupts
+	 * in the underlying or1k core.
 	 */
 	static inline void or1k_int_enable(void)
 	{
@@ -79,8 +86,8 @@
 	/**
 	 * @brief Disables hardware interrupts.
 	 *
-	 * The or1k_cli() function disables all hardware interrupts in the
-	 * underlying or1k core.
+	 * The or1k_int_disable() function disables all hardware
+	 * interrupts in the underlying or1k core.
 	 */
 	static inline void or1k_int_disable(void)
 	{
@@ -124,6 +131,9 @@
 	#define __interrupts_disable_fn /**< @ref interrupts_disable() */
 	#define __interrupts_enable_fn  /**< @ref interrupts_enable()  */
 	#define __interrupt_next_fn     /**< @ref interrupt_next()     */
+	#define __interrupt_mask_fn     /**< @ref interrupt_mask()     */
+	#define __interrupt_unmask_fn   /**< @ref interrupt_unmask()   */
+	#define __interrupt_ack_fn      /**< @ref interrupt_ack()      */
 	/**@}*/
 
 #ifndef _ASM_FILE_
@@ -145,11 +155,35 @@
 	}
 
 	/**
-	 * @see or1k_int_next().
+	 * @see or1k_pic_mask()
+	 */
+	static inline int interrupt_mask(int intnum)
+	{
+		return (or1k_pic_mask(intnum));
+	}
+
+	/**
+	 * @see or1k_pic_unmask()
+	 */
+	static inline int interrupt_unmask(int intnum)
+	{
+		return (or1k_pic_unmask(intnum));
+	}
+
+	/**
+	 * @see or1k_pic_ack()
+	 */
+	static inline void interrupt_ack(int intnum)
+	{
+		or1k_pic_ack(intnum);
+	}
+
+	/**
+	 * @see or1k_pic_next().
 	 */
 	static inline int interrupt_next(void)
 	{
-		return (or1k_int_next());
+		return (or1k_pic_next());
 	}
 
 #endif /* _ASM_FILE_ */

@@ -25,6 +25,9 @@
 #ifndef ARCH_CORE_I486_INT_H_
 #define ARCH_CORE_I486_INT_H_
 
+	/* Must come first. */
+	#define __NEED_CORE_LPIC
+
 /**
  * @addtogroup i486-core-int Hardware Interrupts
  * @ingroup i486-core
@@ -33,8 +36,13 @@
  */
 /**@{*/
 
+	#include <arch/core/i486/lpic.h>
 	#include <nanvix/const.h>
-	#include <arch/core/i486/pic.h>
+
+	/**
+	 * @brief Number of interrupts.
+	 */
+	#define I486_INT_NUM I486_IRQ_NUM
 
 	/**
 	 * @name Hardware Interrupts for the IBM PC Target
@@ -56,6 +64,8 @@
 	#define I486_INT_ATA1    14 /*< Primary ATA hard disk.                     */
 	#define I486_INT_ATA2    15 /*< Secondary ATA hard disk.                   */
 	/**@}*/
+
+#ifndef _ASM_FILE_
 
 	/**
 	 * @name Hardware Interrupt Hooks
@@ -80,17 +90,6 @@
 	/**@}*/
 
 	/**
-	 * @brief Gets the next pending interrupt.
-	 *
-	 * @returns The number of the next pending interrupt, or zero if
-	 * no interrupt is pending.
-	 */
-	static inline int i486_int_next(void)
-	{
-		return (0);
-	}
-
-	/**
 	 * @brief Enables hardware interrupts.
 	 *
 	 * The i486_hwint_enable() function enables all hardware interrupts in the
@@ -111,6 +110,8 @@
 	{
 		 asm("cli");
 	}
+
+#endif /* _ASM_FILE_ */
 
 /**@}*/
 
@@ -144,7 +145,12 @@
 	#define __interrupts_disable_fn /**< @ref interrupts_disable() */
 	#define __interrupts_enable_fn  /**< @ref interrupts_enable()  */
 	#define __interrupt_next_fn     /**< @ref interrupt_next()     */
+	#define __interrupt_mask_fn     /**< @ref interrupt_mask()     */
+	#define __interrupt_unmask_fn   /**< @ref interrupt_unmask()   */
+	#define __interrupt_ack_fn      /**< @ref interrupt_ack()      */
 	/**@}*/
+
+#ifndef _ASM_FILE_
 
 	/**
 	 * @see i486_int_enable()
@@ -161,14 +167,39 @@
 	{
 		i486_int_disable();
 	}
+	/**
+	 * @see i486_lpic_mask().
+	 */
+	static inline int interrupt_mask(int intnum)
+	{
+		return (i486_lpic_mask(intnum));
+	}
 
 	/**
-	 * @see i486_int_next().
+	 * @see i486_lpic_unmask().
+	 */
+	static inline int interrupt_unmask(int intnum)
+	{
+		return (i486_lpic_unmask(intnum));
+	}
+
+	/**
+	 * @see i486_lpic_ack().
+	 */
+	static inline void interrupt_ack(int intnum)
+	{
+		i486_lpic_ack(intnum);
+	}
+
+	/**
+	 * @see i486_lpic_next().
 	 */
 	static inline int interrupt_next(void)
 	{
-		return (i486_int_next());
+		return (i486_lpic_next());
 	}
+
+#endif /* _ASM_FILE_ */
 
 /**@endcond*/
 

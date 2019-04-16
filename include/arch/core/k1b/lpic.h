@@ -25,6 +25,10 @@
 #ifndef ARCH_CORE_K1B_LPIC_H_
 #define ARCH_CORE_K1B_LPIC_H_
 
+	#ifndef __NEED_CORE_LPIC
+		#error "do not include this file"
+	#endif
+
 /**
  * @addtogroup k1b-core-pic LPIC
  * @ingroup k1b-core
@@ -116,11 +120,6 @@
 	/**@}*/
 
 #ifndef _ASM_FILE_
-
-	/**
-	 * @brief Interrupt request line number.
-	 */
-	typedef mOS_vcore_it_lines_e k1b_irq_t;
 
 	/**
 	 * @brief Masks an interrupt.

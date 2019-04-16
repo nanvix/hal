@@ -25,6 +25,7 @@
 #include <nanvix/const.h>
 #include <arch/core/i486/gdt.h>
 #include <arch/core/i486/idt.h>
+#include <arch/core/i486/int.h>
 #include <arch/core/i486/tss.h>
 
 /**
@@ -34,5 +35,6 @@ PUBLIC void i486_core_setup(void)
 {
 	gdt_setup();
 	tss_setup();
+	i486_lpic_setup(0x20, 0x28);
 	idt_setup();
 }

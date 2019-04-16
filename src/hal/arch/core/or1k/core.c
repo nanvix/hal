@@ -87,7 +87,7 @@ PUBLIC void or1k_core_waitclear(void)
 PUBLIC void or1k_core_poweroff(void)
 {
 	/* Disable all interrupts. */
-	or1k_pic_lvl_set(OR1K_INTLVL_0);
+	or1k_pic_lvl_set(OR1K_IRQLVL_0);
 
 	/* If Power Management Present. */
 	if (or1k_mfspr(OR1K_SPR_UPR) & OR1K_SPR_UPR_PMP)

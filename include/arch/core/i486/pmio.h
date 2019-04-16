@@ -33,8 +33,11 @@
  */
 /**@{*/
 
+	#include <nanvix/const.h>
 	#include <sys/types.h>
 	#include <stdint.h>
+
+#ifndef _ASM_FILE_
 
 	/**
 	 * @brief Writes 8 bits to an I/O port.
@@ -73,6 +76,8 @@
 		}
 	}
 
+#endif /* _ASM_FILE_ */
+
 /**@}*/
 
 /*============================================================================*
@@ -91,6 +96,8 @@
 	#define __output8s_fn /**< i486_output8s() */
 	#define __iowait_fn   /**< iowait()        */
 	/**@}*/
+
+#ifndef _ASM_FILE_
 
 	/**
 	 * @see i486_output8().
@@ -117,6 +124,8 @@
 
 		i486_iowait();
 	}
+
+#endif /* _ASM_FILE_ */
 
 /**@endcond*/
 

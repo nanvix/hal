@@ -25,6 +25,9 @@
 #ifndef ARCH_CORE_K1B_INT_H_
 #define ARCH_CORE_K1B_INT_H_
 
+	/* Must come first. */
+	#define __NEED_CORE_LPIC
+
 /**
  * @addtogroup k1b-core-int Interrupts
  * @ingroup k1b-core

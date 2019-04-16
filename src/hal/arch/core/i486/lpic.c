@@ -22,9 +22,11 @@
  * SOFTWARE.
  */
 
-#include <nanvix/const.h>
-#include <arch/core/i486/pic.h>
+#define __NEED_CORE_LPIC
+
+#include <arch/core/i486/lpic.h>
 #include <arch/core/i486/pmio.h>
+#include <nanvix/const.h>
 #include <errno.h>
 #include <stdint.h>
 
@@ -33,13 +35,13 @@
  *
  * Lookup table for masks of interrupt levels.
  */
-PRIVATE uint16_t intlvl_masks[I486_NUM_INTLVL] = {
-	I486_INTLVL_MASK_0,
-	I486_INTLVL_MASK_1,
-	I486_INTLVL_MASK_2,
-	I486_INTLVL_MASK_3,
-	I486_INTLVL_MASK_4,
-	I486_INTLVL_MASK_5,
+PRIVATE uint16_t intlvl_masks[I486_NUM_IRQLVL] = {
+	I486_IRQLVL_MASK_0,
+	I486_IRQLVL_MASK_1,
+	I486_IRQLVL_MASK_2,
+	I486_IRQLVL_MASK_3,
+	I486_IRQLVL_MASK_4,
+	I486_IRQLVL_MASK_5,
 };
 
 /**
@@ -47,43 +49,43 @@ PRIVATE uint16_t intlvl_masks[I486_NUM_INTLVL] = {
  *
  * Current interrupt level of the underlying i486 core.
  */
-PRIVATE int currlevel = I486_INTLVL_5;
+PRIVATE int currlevel = I486_IRQLVL_5;
 
 /**
  * @brief Current interrupt mask.
  *
  * Current interrupt mask of the underlying i486 core.
  */
-PRIVATE uint16_t currmask = I486_INTLVL_MASK_5;
+PRIVATE uint16_t currmask = I486_IRQLVL_MASK_5;
 
 /*============================================================================*
- * i486_pic_mask()                                                            *
+ * i486_lpic_mask()                                                           *
  *============================================================================*/
 
 /**
- * The i486_pic_mask() function masks the interrupt request line in
- * which the interrupt @p intnum is hooked up.
+ * The i486_lpic_mask() function masks the interrupt request line in
+ * which the interrupt @p irq is hooked up.
  */
-PUBLIC int i486_pic_mask(int intnum)
+PUBLIC int i486_lpic_mask(int irq)
 {
 	uint16_t port;
 	uint8_t value;
 	uint16_t newmask;
 
 	/* Invalid interrupt number. */
-	if ((intnum < 0) || (intnum >= I486_INT_NUM))
+	if ((irq < 0) || (irq >= I486_IRQ_NUM))
 		return (-EINVAL);
 
-	if (intnum < 8)
+	if (irq < 8)
 	{
-		port = PIC_DATA_MASTER;
-		newmask = currmask | (1 << intnum);
+		port = I486_LPIC_DATA_MASTER;
+		newmask = currmask | (1 << irq);
 		value = newmask & 0xff;
 	}
 	else
 	{
-		port = PIC_DATA_SLAVE;
-		newmask = currmask | (1 << intnum);
+		port = I486_LPIC_DATA_SLAVE;
+		newmask = currmask | (1 << irq);
 		value = (newmask >> 8) & 0xff;
 	}
 
@@ -95,33 +97,33 @@ PUBLIC int i486_pic_mask(int intnum)
 }
 
 /*============================================================================*
- * i486_pic_unmask()                                                          *
+ * i486_lpic_unmask()                                                         *
  *============================================================================*/
 
 /**
- * The i486_pic_unmask() function unmasks the interrupt request line
- * in which the interrupt @p intnum is hooked up.
+ * The i486_lpic_unmask() function unmasks the interrupt request line
+ * in which the interrupt @p irq is hooked up.
  */
-PUBLIC int i486_pic_unmask(int intnum)
+PUBLIC int i486_lpic_unmask(int irq)
 {
 	uint16_t port;
 	uint8_t value;
 	uint16_t newmask;
 
 	/* Invalid interrupt number. */
-	if ((intnum < 0) || (intnum >= I486_INT_NUM))
+	if ((irq < 0) || (irq >= I486_IRQ_NUM))
 		return (-EINVAL);
 
-	if (intnum < 8)
+	if (irq < 8)
 	{
-		port = PIC_DATA_MASTER;
-		newmask = currmask & ~(1 << intnum);
+		port = I486_LPIC_DATA_MASTER;
+		newmask = currmask & ~(1 << irq);
 		value = newmask & 0xff;
 	}
 	else
 	{
-		port = PIC_DATA_SLAVE;
-		newmask = currmask & ~(1 << intnum);
+		port = I486_LPIC_DATA_SLAVE;
+		newmask = currmask & ~(1 << irq);
 		value = (newmask >> 8) & 0xff;
 	}
 
@@ -133,22 +135,22 @@ PUBLIC int i486_pic_unmask(int intnum)
 }
 
 /*============================================================================*
- * i486_pic_lvl_set()                                                         *
+ * i486_lpic_lvl_set()                                                        *
  *============================================================================*/
 
 /**
- * The i486_pic_set() function sets the interrupt level of the calling
+ * The i486_lpic_set() function sets the interrupt level of the calling
  * core to @p newlevel. The old interrupt level is returned.
  */
-PUBLIC int i486_pic_lvl_set(int newlevel)
+PUBLIC int i486_lpic_lvl_set(int newlevel)
 {
 	int oldlevel;
 	uint16_t mask;
 
 	mask = intlvl_masks[newlevel];
 
-	i486_output8(PIC_DATA_MASTER, mask & 0xff);
-	i486_output8(PIC_DATA_SLAVE, mask >> 8);
+	i486_output8(I486_LPIC_DATA_MASTER, mask & 0xff);
+	i486_output8(I486_LPIC_DATA_SLAVE, mask >> 8);
 
 	currmask = mask;
 	oldlevel = currlevel;
@@ -158,48 +160,54 @@ PUBLIC int i486_pic_lvl_set(int newlevel)
 }
 
 /*============================================================================*
- * i486_pic_setup()                                                           *
+ * i486_lpic_setup()                                                          *
  *============================================================================*/
 
 /**
  *
- * The i486_pic_setup() function initializes the programmble interrupt
+ * The i486_lpic_setup() function initializes the programmble interrupt
  * controler of the i486 core. Upon completion, it drops the interrupt
  * level to the slowest ones, so that all interrupt lines are enabled.
  */
-PUBLIC void i486_pic_setup(uint8_t offset1, uint8_t offset2)
+PUBLIC void i486_lpic_setup(uint8_t offset1, uint8_t offset2)
 {
 	/*
 	 * Starts initialization sequence
 	 * in cascade mode.
 	 */
-	i486_output8(PIC_CTRL_MASTER, 0x11);
+	i486_output8(
+		I486_LPIC_CTRL_MASTER,
+		I486_LPIC_ICW1_INIT | I486_LPIC_ICW1_ICW4
+	);
 	i486_iowait();
-	i486_output8(PIC_CTRL_SLAVE, 0x11);
+	i486_output8(
+		I486_LPIC_CTRL_SLAVE,
+		I486_LPIC_ICW1_INIT | I486_LPIC_ICW1_ICW4
+	);
 	i486_iowait();
 
 	/* Send new vector offset. */
-	i486_output8(PIC_DATA_MASTER, offset1);
+	i486_output8(I486_LPIC_DATA_MASTER, offset1);
 	i486_iowait();
-	i486_output8(PIC_DATA_SLAVE, offset2);
+	i486_output8(I486_LPIC_DATA_SLAVE, offset2);
 	i486_iowait();
 
 	/*
 	 * Tell the master that there is a slave
-	 * PIC hired up at IRQ line 2 and tell
-	 * the slave PIC that it is the second PIC.
+	 * LPIC hired up at IRQ line 2 and tell
+	 * the slave LPIC that it is the second LPIC.
 	 */
-	i486_output8(PIC_DATA_MASTER, 0x04);
+	i486_output8(I486_LPIC_DATA_MASTER, 0x04);
 	i486_iowait();
-	i486_output8(PIC_DATA_SLAVE, 0x02);
+	i486_output8(I486_LPIC_DATA_SLAVE, 0x02);
 	i486_iowait();
 
 	/* Set 8086 mode. */
-	i486_output8(PIC_DATA_MASTER, 0x01);
+	i486_output8(I486_LPIC_DATA_MASTER, I486_LPIC_ICW4_8086);
 	i486_iowait();
-	i486_output8(PIC_DATA_SLAVE, 0x01);
+	i486_output8(I486_LPIC_DATA_SLAVE, I486_LPIC_ICW4_8086);
 	i486_iowait();
 
 	/* Clears interrupt mask. */
-	i486_pic_lvl_set(I486_INTLVL_0);
+	i486_lpic_lvl_set(I486_IRQLVL_0);
 }
