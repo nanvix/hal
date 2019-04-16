@@ -63,6 +63,93 @@
  *============================================================================*/
 
 	/**
+	 * @brief Number of scratch registers.
+	 */
+	#define RV32GC_SCRATCH_REGS_NUM 17
+
+	/**
+	 * @brief Caller stack frame size.
+	 */
+	#define RV32GC_CALLER_FRAME_SIZE \
+		(RV32GC_SCRATCH_REGS_NUM*RV32GC_WORD_SIZE)
+
+	/**
+	 * @brief Offsets to Caller Stack Frame
+	 */
+	/**@{*/
+	#define RV32GC_CALLER_FRAME_RA   0*RV32GC_WORD_SIZE /**< Scratch Register  0 */
+	#define RV32GC_CALLER_FRAME_GP   1*RV32GC_WORD_SIZE /**< Scratch Register  1 */
+	#define RV32GC_CALLER_FRAME_TP   2*RV32GC_WORD_SIZE /**< Scratch Register  2 */
+	#define RV32GC_CALLER_FRAME_T0   3*RV32GC_WORD_SIZE /**< Scratch Register  3 */
+	#define RV32GC_CALLER_FRAME_T1   4*RV32GC_WORD_SIZE /**< Scratch Register  4 */
+	#define RV32GC_CALLER_FRAME_T2   5*RV32GC_WORD_SIZE /**< Scratch Register  5 */
+	#define RV32GC_CALLER_FRAME_T3   6*RV32GC_WORD_SIZE /**< Scratch Register  6 */
+	#define RV32GC_CALLER_FRAME_T4   7*RV32GC_WORD_SIZE /**< Scratch Register  7 */
+	#define RV32GC_CALLER_FRAME_T5   8*RV32GC_WORD_SIZE /**< Scratch Register  8 */
+	#define RV32GC_CALLER_FRAME_T6   9*RV32GC_WORD_SIZE /**< Scratch Register  9 */
+	#define RV32GC_CALLER_FRAME_A1  10*RV32GC_WORD_SIZE /**< Scratch Register 10 */
+	#define RV32GC_CALLER_FRAME_A2  11*RV32GC_WORD_SIZE /**< Scratch Register 11 */
+	#define RV32GC_CALLER_FRAME_A3  12*RV32GC_WORD_SIZE /**< Scratch Register 12 */
+	#define RV32GC_CALLER_FRAME_A4  13*RV32GC_WORD_SIZE /**< Scratch Register 13 */
+	#define RV32GC_CALLER_FRAME_A5  14*RV32GC_WORD_SIZE /**< Scratch Register 14 */
+	#define RV32GC_CALLER_FRAME_A6  15*RV32GC_WORD_SIZE /**< Scratch Register 15 */
+	#define RV32GC_CALLER_FRAME_A7  16*RV32GC_WORD_SIZE /**< Scratch Register 16 */
+	/**@}*/
+
+	.macro rv32gc_do_fn_call_save function
+		add  sp, sp, -RV32GC_CALLER_FRAME_SIZE
+
+		sw  ra, RV32GC_CALLER_FRAME_RA(sp)
+		sw  gp, RV32GC_CALLER_FRAME_GP(sp)
+		sw  tp, RV32GC_CALLER_FRAME_TP(sp)
+		sw  t0, RV32GC_CALLER_FRAME_T0(sp)
+		sw  t1, RV32GC_CALLER_FRAME_T1(sp)
+		sw  t2, RV32GC_CALLER_FRAME_T2(sp)
+		sw  t3, RV32GC_CALLER_FRAME_T3(sp)
+		sw  t4, RV32GC_CALLER_FRAME_T4(sp)
+		sw  t5, RV32GC_CALLER_FRAME_T5(sp)
+		sw  t6, RV32GC_CALLER_FRAME_T6(sp)
+		sw  a1, RV32GC_CALLER_FRAME_A1(sp)
+		sw  a2, RV32GC_CALLER_FRAME_A2(sp)
+		sw  a3, RV32GC_CALLER_FRAME_A3(sp)
+		sw  a4, RV32GC_CALLER_FRAME_A4(sp)
+		sw  a5, RV32GC_CALLER_FRAME_A5(sp)
+		sw  a6, RV32GC_CALLER_FRAME_A6(sp)
+		sw  a7, RV32GC_CALLER_FRAME_A7(sp)
+	.endm
+
+	.macro rv32gc_do_fn_call_restore function
+
+		lw  ra, RV32GC_CALLER_FRAME_RA(sp)
+		lw  gp, RV32GC_CALLER_FRAME_GP(sp)
+		lw  tp, RV32GC_CALLER_FRAME_TP(sp)
+		lw  t0, RV32GC_CALLER_FRAME_T0(sp)
+		lw  t1, RV32GC_CALLER_FRAME_T1(sp)
+		lw  t2, RV32GC_CALLER_FRAME_T2(sp)
+		lw  t3, RV32GC_CALLER_FRAME_T3(sp)
+		lw  t4, RV32GC_CALLER_FRAME_T4(sp)
+		lw  t5, RV32GC_CALLER_FRAME_T5(sp)
+		lw  t6, RV32GC_CALLER_FRAME_T6(sp)
+		lw  a1, RV32GC_CALLER_FRAME_A1(sp)
+		lw  a2, RV32GC_CALLER_FRAME_A2(sp)
+		lw  a3, RV32GC_CALLER_FRAME_A3(sp)
+		lw  a4, RV32GC_CALLER_FRAME_A4(sp)
+		lw  a5, RV32GC_CALLER_FRAME_A5(sp)
+		lw  a6, RV32GC_CALLER_FRAME_A6(sp)
+		lw  a7, RV32GC_CALLER_FRAME_A7(sp)
+
+		add  sp, sp, RV32GC_CALLER_FRAME_SIZE
+	.endm
+
+	.macro rv32gc_do_fn_call function
+		rv32gc_do_fn_call_save
+
+		call \function
+
+		rv32gc_do_fn_call_restore
+	.endm
+
+	/**
 	 * @brief Number of saved registers.
 	 */
 	#define RV32GC_SAVED_REGS_NUM 12
