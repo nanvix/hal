@@ -111,9 +111,12 @@ rv32gc_do_strap:
 	/* Kernel call. */
 	rv32gc_do_strap.scall:
 
+
+#ifdef RISCV_HAS_UMODE
+
 		/*
 		 * Get system call parameters.
-		 *  Note that the system call
+		 * Note that the system call
 		 * number is the last  paramenter.
 		 */
 		lw a5, RV32GC_CONTEXT_A0(fp) /* System Call Number */
@@ -139,6 +142,8 @@ rv32gc_do_strap:
 		sw t0, RV32GC_CONTEXT_PC(fp)
 
 		j rv32gc_do_strap.ret
+
+#endif
 
 	/* Interrupt. */
 	rv32gc_do_strap.sint:
