@@ -22,49 +22,42 @@
  * SOFTWARE.
  */
 
-#ifndef ARCH_CORE_RV32GC_H_
-#define ARCH_CORE_RV32GC_H_
+/* Must come first. */
+#define _ASM_FILE_
+#define __NEED_CORE_TYPES
 
-	/**
-	 * @addtogroup rv32gc-core RV32GC Core
-	 * @ingroup cores
-	 */
+#include <arch/core/rv32gc/asm.h>
+#include <arch/core/rv32gc/upcall.h>
+#include <arch/core/rv32gc/types.h>
 
-	#ifndef __NEED_CORE_RV32GC
-		#error "rv32gc core not required"
-	#endif
+.global rv32gc_upcall_ret
 
-	#include <arch/core/rv32gc/cache.h>
-	#include <arch/core/rv32gc/clock.h>
-	#include <arch/core/rv32gc/core.h>
-	#include <arch/core/rv32gc/excp.h>
-	#include <arch/core/rv32gc/int.h>
-	#include <arch/core/rv32gc/mmu.h>
-	#include <arch/core/rv32gc/spinlock.h>
-	#include <arch/core/rv32gc/tlb.h>
-	#include <arch/core/rv32gc/trap.h>
-	#include <arch/core/rv32gc/upcall.h>
+.section .text
 
-	#ifdef __NEED_CORE_MACHINE
-		#include <arch/core/rv32gc/machine.h>
-	#endif
+/*===========================================================================*
+ * rv32gc_upcall_ret()                                                       *
+ *===========================================================================*/
 
-/**
- * @cond rv32gc
- */
+//
+// Returns from an upcal
+//
+.align RV32GC_WORD_SIZE
+rv32gc_upcall_ret:
 
-	/**
-	 * @name Core Features
-	 */
-	/**@{*/
-	#define CORE_HAS_ATOMICS      1 /**< Has Atomic Instructions?    */
-	#define CORE_HAS_PMIO         0 /**< Has Programmed I/O?         */
-	#define CORE_HAS_TLB_HW       1 /**< Has Hardware-Managed TLB?   */
-	#define CORE_HAS_CACHE_HW     0 /**< Has Hardware-Managed Cache? */
-	#define CORE_IS_LITTLE_ENDIAN 1 /**< Is Little Endian?           */
-	/**@}*/
+	// Call target function
+	lw    t0, 0(sp)
+	addi  a0, sp, 2*RV32GC_WORD_SIZE
 
-/**@endcond*/
+	rv32gc_do_fn_call_save
+	jalr  t0
+	rv32gc_do_fn_call_restore
 
-#endif /* ARCH_CORE_RV32GC_H_ */
+	// Wipe out argument.
+	lw    t0, RV32GC_WORD_SIZE(sp)    // arg
+	addi  t0, t0, 2*RV32GC_WORD_SIZE  // argsize + fn
+	add   sp, sp, t0
 
+	// Call special syscall
+	li  a0, RV32GC_NR_upcall_ret
+	mv  a1, sp
+	j   _rv32gc_do_kcall
