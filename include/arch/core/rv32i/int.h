@@ -39,7 +39,7 @@
  */
 /**@{*/
 
-	#include <arch/core/rv32i/context.h>
+	#include <arch/core/rv32i/ctx.h>
 	#include <arch/core/rv32i/lpic.h>
 	#include <arch/core/rv32i/mcall.h>
 	#include <arch/core/rv32i/regs.h>

@@ -28,6 +28,7 @@
 	/* Must come first. */
 	#define __NEED_CORE_TYPES
 	#define __NEED_MEMORY_TYPES
+	#define __NEED_CORE_CONTEXT
 
 /**
  * @addtogroup i486-core-exception Exception
@@ -37,7 +38,7 @@
  */
 /**@{*/
 
-	#include <arch/core/i486/context.h>
+	#include <arch/core/i486/ctx.h>
 	#include <arch/core/i486/types.h>
 	#include <arch/core/i486/mmu.h>
 	#include <nanvix/const.h>

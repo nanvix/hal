@@ -22,8 +22,9 @@
  * SOFTWARE.
  */
 
-#include <arch/core/i486/context.h>
-#include <arch/core/i486/excp.h>
+#define __NEED_CORE_CONTEXT
+
+#include <arch/core/i486/ctx.h>
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
 

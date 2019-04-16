@@ -27,6 +27,7 @@
 
 	/* Must come first. */
 	#define __NEED_CORE_LPIC
+	#define __NEED_CORE_CONTEXT
 
 /**
  * @addtogroup k1b-core-int Interrupts
@@ -37,7 +38,7 @@
 /**@{*/
 
 	#include <arch/core/k1b/lpic.h>
-	#include <arch/core/k1b/context.h>
+	#include <arch/core/k1b/ctx.h>
 	#include <arch/core/k1b/mOS.h>
 
 	/**

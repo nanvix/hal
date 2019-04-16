@@ -23,7 +23,6 @@
  */
 
 #include <arch/core/k1b/cache.h>
-#include <arch/core/k1b/context.h>
 #include <arch/core/k1b/int.h>
 #include <arch/core/k1b/ivt.h>
 #include <nanvix/const.h>

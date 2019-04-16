@@ -32,7 +32,7 @@
 	/* Must come first. */
 	#define __NEED_CORE_CONTEXT
 
-	#include <arch/core/rv32i/context.h>
+	#include <arch/core/rv32i/ctx.h>
 	#include <arch/core/rv32i/mmu.h>
 
 /*============================================================================*

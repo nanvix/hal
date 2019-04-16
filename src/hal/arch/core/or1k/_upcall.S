@@ -24,12 +24,10 @@
 
 /* Must come first. */
 #define _ASM_FILE_
-#define __NEED_OR1K_REGS
 #define __NEED_CORE_TYPES
 
 #include <arch/core/or1k/asm.h>
 #include <arch/core/or1k/upcall.h>
-
 #include <arch/core/or1k/types.h>
 
 .global or1k_upcall_ret
