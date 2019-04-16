@@ -74,7 +74,7 @@ PUBLIC int do_syscall(
 {
 
 #if (TEST_TRAP_VERBOSE)
-	kprintf("syscall() nr=%x");
+	kprintf("syscall() nr=%x", syscall_nr);
 	kprintf("syscall() arg0=%x arg1=%x", arg0, arg1);
 	kprintf("syscall() arg2=%x arg3=%x", arg2, arg3);
 	kprintf("syscall() arg4=%x", arg4);
