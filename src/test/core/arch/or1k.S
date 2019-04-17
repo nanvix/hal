@@ -60,7 +60,7 @@ _upcall_issue_ret:
 	/* Switch back to real stack. */
 	OR1K_LOAD_SYMBOL_2_GPR(r4, saved_sp)
 	l.lwz sp, 0(r4)
-	
+
 	_do_epilogue_slow     // Restore all preserved
 	                      // registers.
 

@@ -23,14 +23,8 @@
 # Tweak toolchain.
 export LDFLAGS  += -L $(LINKERDIR)/ -T link.ld
 
-# Override Sources
-C_SRC = $(wildcard main.c)      \
-        $(wildcard exception.c) \
-        $(wildcard interrupt.c) \
-        $(wildcard mmu.c) \
-        $(wildcard tlb.c) \
-        $(wildcard core.c) \
-        $(wildcard syscalls.c)
+# Filter C Source List
+C_SRC := $(filter-out core/upcall.c, $(C_SRC))
 
 # Object Files
 OBJ = $(C_SRC:.c=.o) \

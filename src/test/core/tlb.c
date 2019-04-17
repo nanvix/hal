@@ -26,7 +26,7 @@
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
 #include <errno.h>
-#include "test.h"
+#include "../test.h"
 
 /**
  * @brief Run destructive tests?

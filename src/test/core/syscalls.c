@@ -25,7 +25,7 @@
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
 #include <nanvix/hal/core/trap.h>
-#include "test.h"
+#include "../test.h"
 
 /**
  * @brief Launch verbose tests?

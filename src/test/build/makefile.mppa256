@@ -27,7 +27,9 @@ else
 	export LDFLAGS  += -L $(LINKERDIR)/k1bio/ -T link.ld
 endif
 
-ASM_SRC = $(wildcard arch/k1b.S)
+C_SRC += $(wildcard processor/*.c)
+
+ASM_SRC = $(wildcard core/arch/k1b.S)
 
 # Object Files
 OBJ = $(ASM_SRC:.S=.$(CLUSTER)-$(CLUSTER_VARIANT).o) \
