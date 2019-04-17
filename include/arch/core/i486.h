@@ -58,6 +58,7 @@
 	#define CORE_HAS_PMIO         1 /**< Has Programmed I/O?         */
 	#define CORE_HAS_TLB_HW       1 /**< Has Hardware-Managed TLB?   */
 	#define CORE_HAS_CACHE_HW     1 /**< Has Hardware-Managed Cache? */
+	#define CORE_HAS_HUGE_PAGES   0 /**< Are Huge Pages Supported?   */
 	#define CORE_IS_LITTLE_ENDIAN 1 /**< Is Little Endian?           */
 	/**@}*/
 

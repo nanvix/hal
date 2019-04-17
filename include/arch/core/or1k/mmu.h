@@ -25,6 +25,10 @@
 #ifndef ARCH_CORE_OR1K_MMU_H_
 #define ARCH_CORE_OR1K_MMU_H_
 
+	/* Must come first. */
+	#define __NEED_MEMORY_TYPES
+	#define __NEED_OR1K_REGS
+
 /**
  * @addtogroup or1k-core-mmu MMU
  * @ingroup or1k-core
@@ -33,19 +37,11 @@
  */
 /**@{*/
 
-#ifndef _ASM_FILE_
-
-	#define __NEED_MEMORY_TYPES
 	#include <arch/core/or1k/types.h>
-
-	#define __NEED_OR1K_REGS
 	#include <arch/core/or1k/regs.h>
-
 	#include <nanvix/klib.h>
 	#include <errno.h>
 	#include <stdint.h>
-
-#endif /* _ASM_FILE_ */
 
 	/**
 	 * @name Page Shifts and Masks
@@ -290,7 +286,10 @@
 	#define __pte_present_set_fn /**< pte_present_set() */
 	#define __pte_user_set_fn    /**< pte_user_set()    */
 	#define __pte_write_set_fn   /**< pte_write_set()   */
-	#define __mmu_is_enabled_fn  /**< mmu_is_enabled()  */
+	#define __mmu_page_map_fn      /**< mmu_page_map()      */
+	#define __mmu_huge_page_map_fn /**< mmu_huge_page_map() */
+	#define __mmu_pgtab_map_fn     /**< mmu_pgtab_map()     */
+	#define __mmu_is_enabled_fn    /**< mmu_is_enabled()    */
 	/**@}*/
 
 #ifndef _ASM_FILE_
@@ -797,6 +796,30 @@
 			return (NULL);
 
 		return (&pgtab[pte_idx_get(vaddr)]);
+	}
+
+	/**
+	 * @see or1k_page_map().
+	 */
+	static inline int mmu_page_map(struct pte *pgtab, paddr_t paddr, vaddr_t vaddr, int w, int x)
+	{
+		return (or1k_page_map(pgtab, paddr, vaddr, w, x));
+	}
+
+	/**
+	 * @see or1k_huge_page_map().
+	 */
+	static inline int mmu_huge_page_map(struct pte *pgdir, paddr_t paddr, vaddr_t vaddr, int w, int x)
+	{
+		return (or1k_huge_page_map(pgdir, paddr, vaddr, w, x));
+	}
+
+	/**
+	 * @see or1k_pgtab_map().
+	 */
+	static inline int mmu_pgtab_map(struct pde *pgdir, paddr_t paddr, vaddr_t vaddr)
+	{
+		return (or1k_pgtab_map(pgdir, paddr, vaddr));
 	}
 
 	/**

@@ -149,6 +149,17 @@
 	#ifndef __pte_write_set_fn
 	#error "pte_write_set() not defined?"
 	#endif
+	#ifndef __mmu_page_map_fn
+	#error "mmu_page_map() not defined?"
+	#endif
+	#if (CORE_HAS_HUGE_PAGES)
+		#ifndef __mmu_huge_page_map_fn
+		#error "mmu_huge_page_map() not defined?"
+		#endif
+	#endif
+	#ifndef __mmu_pgtab_map_fn
+	#error "mmu_pgtab_map() not defined?"
+	#endif
 	#ifndef __mmu_is_enabled_fn
 	#error "mmu_is_enabled() not defined?"
 	#endif
@@ -183,7 +194,47 @@
 	EXTERN struct pte *kpool_pgtab;
 
 	/**
-	 * @brief Searches for a page belonging to a
+	 * @brief Maps a page.
+	 *
+	 * @param pgtab Target page table.
+	 * @param paddr Physical address of the target page frame.
+	 * @param vaddr Virtual address of the target page.
+	 * @param w     Writable page?
+	 * @param x     Executable page?
+	 *
+	 * @returns Upon successful completion, zero is returned. Upon
+	 * failure, a negative error code is returned instead.
+	 */
+	EXTERN int mmu_page_map(struct pte *pgtab, paddr_t paddr, vaddr_t vaddr, int w, int x);
+
+	/**
+	 * @brief Maps a huge page.
+	 *
+	 * @param pgtab Target page directory.
+	 * @param paddr Physical address of the target huge page frame.
+	 * @param vaddr Virtual address of the target huge page.
+	 * @param w     Writable huge page?
+	 * @param x     Executable huge page?
+	 *
+	 * @returns Upon successful completion, zero is returned. Upon
+	 * failure, a negative error code is returned instead.
+	 */
+	EXTERN int mmu_huge_page_map(struct pte *pgdir, paddr_t paddr, vaddr_t vaddr, int w, int x);
+
+	/**
+	 * @brief Maps a page table.
+	 *
+	 * @param pgdir Target page directory.
+	 * @param paddr Physical address of the target page table frame.
+	 * @param vaddr Virtual address of the target page table.
+	 *
+	 * @returns Upon successful completion, zero is returned. Upon
+	 * failure, a negative error code is returned instead.
+	 */
+	EXTERN int mmu_pgtab_map(struct pde *pgdir, paddr_t paddr, vaddr_t vaddr);
+
+	/**
+	 * @brief Searches for a page belonging to a 
 	 * given physical address.
 	 */
 	EXTERN void* mmu_page_walk(paddr_t paddr);

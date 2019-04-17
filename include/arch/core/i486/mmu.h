@@ -192,6 +192,8 @@
 	#define __pte_present_set_fn /**< pte_present_set() */
 	#define __pte_user_set_fn    /**< pte_user_set()    */
 	#define __pte_write_set_fn   /**< pte_write_set()   */
+	#define __mmu_page_map_fn    /**< mmu_page_map()    */
+	#define __mmu_pgtab_map_fn   /**< mmu_pgtab_map()   */
 	#define __mmu_is_enabled_fn  /**< mmu_is_enabled()  */
 	/**@}*/
 
@@ -608,6 +610,24 @@
 			return (NULL);
 
 		return (&pgtab[pte_idx_get(vaddr)]);
+	}
+
+	/**
+	 * @see i486_page_map().
+	 */
+	static inline int mmu_page_map(struct pte *pgtab, paddr_t paddr, vaddr_t vaddr, int w, int x)
+	{
+		UNUSED(x);
+
+		return (i486_page_map(pgtab, paddr, vaddr, w));
+	}
+
+	/**
+	 * @see i486_pgtab_map().
+	 */
+	static inline int mmu_pgtab_map(struct pde *pgdir, paddr_t paddr, vaddr_t vaddr)
+	{
+		return (i486_pgtab_map(pgdir, paddr, vaddr));
 	}
 
 	/**
