@@ -44,6 +44,11 @@
 	#define volatile __volatile__ /**< Volatile Symbol */
 	/**@}*/
 
+	/**
+	 * @brief ANSI Extension
+	 */
+	#define EXTENSION __extension__
+
 /*============================================================================*
  * Function Attributes                                                        *
  *============================================================================*/
