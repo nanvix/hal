@@ -25,6 +25,9 @@
 #ifndef ARCH_CORE_RV32I_TLB_H_
 #define ARCH_CORE_RV32I_TLB_H_
 
+	/* Must come first. */
+	#define __NEED_CORE_TYPES
+
 /**
  * @addtogroup rv32i-core-tlb TLB
  * @ingroup rv32i-core
@@ -33,15 +36,7 @@
  */
 /**@{*/
 
-	/* Must come first. */
-	#define __NEED_CORE_TYPES
-
 	#include <arch/core/rv32i/types.h>
-
-	/**
-	 * @brief Hardware-managed TLB.
-	 */
-	#define TLB_HARDWARE
 
 #ifndef _ASM_FILE_
 

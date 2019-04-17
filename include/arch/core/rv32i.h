@@ -52,9 +52,16 @@
  * @cond rv32i
  */
 
-	/* Feature Declaration */
-	#define CORE_SUPPORTS_PMIO    0
-	#define CORE_IS_LITTLE_ENDIAN 1
+	/**
+	 * @name Core Features
+	 */
+	/**@{*/
+	#define CORE_HAS_ATOMICS      1 /**< Has Atomic Instructions?    */
+	#define CORE_HAS_PMIO         0 /**< Has Programmed I/O?         */
+	#define CORE_HAS_TLB_HW       1 /**< Has Hardware-Managed TLB?   */
+	#define CORE_HAS_CACHE_HW     0 /**< Has Hardware-Managed Cache? */
+	#define CORE_IS_LITTLE_ENDIAN 1 /**< Is Little Endian?           */
+	/**@}*/
 
 /**@endcond*/
 

@@ -50,7 +50,7 @@
 	#ifndef EXCEPTION_PAGE_PROTECTION
 	#error "EXCEPTION_PAGE_PROTECTION not defined"
 	#endif
-	#ifdef TLB_SOFTWARE
+	#if (!CORE_HAS_TLB_HW)
 		#ifndef EXCEPTION_DTLB_FAULT
 		#error "EXCEPTION_DTLB_FAULT not defined"
 		#endif

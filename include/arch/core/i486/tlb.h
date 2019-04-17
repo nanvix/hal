@@ -34,16 +34,13 @@
 /**@{*/
 
 	/**
-	 * @brief Hardware-managed TLB.
-	 */
-	#define TLB_HARDWARE
-
-	/**
 	 * @name Provided Interface
 	 */
 	/**@{*/
 	#define __tlb_flush_fn /**< tlb_flush() */
 	/**@}*/
+
+#ifndef _ASM_FILE_
 
 	/**
 	 * @brief Flushes changes in the TLB.
@@ -76,6 +73,8 @@
 		return (i486_tlb_flush());
 	}
 
+#endif /* _ASM_FILE_ */
+
 /**@}*/
-	
+
 #endif /* ARCH_I486_TLB_H_ */
