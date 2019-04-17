@@ -55,16 +55,16 @@ distclean: distclean-hal distclean-test
 
 # User-level testing units.
 test: hal
-	$(MAKE) -C test
+	@$(MAKE) -C test
 
 # Builds the hal.
 hal:
-	$(MAKE) -C hal all
+	@$(MAKE) -C hal all
 
 # Cleans hal compilation files.
 distclean-hal:
-	$(MAKE) -C hal clean
+	@$(MAKE) -C hal clean
 
 # Cleans user-level testing units compilation files.
 distclean-test:
-	$(MAKE) -C test clean
+	@$(MAKE) -C test clean

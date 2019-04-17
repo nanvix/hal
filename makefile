@@ -78,21 +78,22 @@ image: | hal hal-target
 
 # Builds Nanvix.
 hal:
-	mkdir -p $(BINDIR)
-	mkdir -p $(LIBDIR)
+	@mkdir -p $(BINDIR)
+	@mkdir -p $(LIBDIR)
 
 # Builds HAL.
 hal-target:
-	$(MAKE) -C $(SRCDIR) -f build/processor/makefile.$(PROCESSOR) all
+	@$(MAKE) -C $(SRCDIR) -f build/processor/makefile.$(PROCESSOR) all
 
 # Cleans everything.
 distclean: distclean-target
-	rm -rf $(IMAGE)
-	rm -rf $(BINDIR) $(LIBDIR)
+	@rm -rf $(IMAGE)
+	@rm -rf $(BINDIR) $(LIBDIR)
+	@find $(SRCDIR) -name "*.o" -exec rm -rf {} \;	
 
 # Cleans compilation files.
 distclean-target:
-	$(MAKE) -C $(SRCDIR) -f build/processor/makefile.$(PROCESSOR) distclean
+	@$(MAKE) -C $(SRCDIR) -f build/processor/makefile.$(PROCESSOR) distclean
 
 # Install
 install: $(ARTIFACTS) | hal hal-target

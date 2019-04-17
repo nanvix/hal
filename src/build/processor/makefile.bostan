@@ -37,16 +37,16 @@ distclean: distclean-k1bdp distclean-k1bio
 
 # Builds for Compute Cluster.
 all-k1bdp:
-	$(MAKE) -C $(SRCDIR) -f build/cluster/makefile.k1bdp all
+	@$(MAKE) -C $(SRCDIR) -f build/cluster/makefile.k1bdp all
 
 # Builds IO Cluster.
 all-k1bio:
-	$(MAKE) -C $(SRCDIR) -f build/cluster/makefile.k1bio all
+	@$(MAKE) -C $(SRCDIR) -f build/cluster/makefile.k1bio all
 
 # Cleans compilation files for Compute Cluster.
 distclean-k1bdp:
-	$(MAKE) -C $(SRCDIR) -f build/cluster/makefile.k1bdp distclean
+	@$(MAKE) -C $(SRCDIR) -f build/cluster/makefile.k1bdp distclean
 
 # Cleans compilation files for IO Cluster.
 distclean-k1bio:
-	$(MAKE) -C $(SRCDIR) -f build/cluster/makefile.k1bio distclean
+	@$(MAKE) -C $(SRCDIR) -f build/cluster/makefile.k1bio distclean

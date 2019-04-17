@@ -34,7 +34,7 @@
  * Interface Implementation Checking                                          *
  *============================================================================*/
 
-#ifdef __INTERFACE_CHECK
+#if defined(__INTERFACE_CHECK) || defined(__INTERFACE_CHECK_CLOCK)
 
 	/* Constants */
 	#ifndef INTERRUPT_CLOCK
