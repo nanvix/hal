@@ -22,64 +22,28 @@
  * SOFTWARE.
  */
 
-#include <nanvix/hal/hal.h>
-#include <nanvix/const.h>
-#include <nanvix/klib.h>
-#include <nanvix/const.h>
-#include "test.h"
+#ifndef ARCH_CORE_RV32GC_REGS_H_
+#define ARCH_CORE_RV32GC_REGS_H_
+
+	#ifndef __NEED_CORE_REGS
+		#error "do not include this file"
+	#endif
 
 /**
- * @brief Clock frequency (in Hz).
+ * @addtogroup rv32gc-core-regs CSRs
+ * @ingroup rv32gc-core
+ *
+ * @brief Control and Status Registers (CSRs)
  */
-#define CLOCK_FREQ 100
+/**@{*/
 
-/**
- * @brief Dummy main function.
- */
-PUBLIC int main(int argc, const char **argv)
-{
-	UNUSED(argc);
-	UNUSED(argv);
+	/* Must come first. */
+	#define __NEED_CORE_MREGS
+	#define __NEED_CORE_SREGS
 
-	while (TRUE)
-		noop();
-}
+	#include <arch/core/rv32gc/sregs.h>
+	#include <arch/core/rv32gc/mregs.h>
 
-/**
- * @brief Initializes the kernel.
- */
-PUBLIC void kmain(int argc, const char *argv[])
-{
-	UNUSED(argc);
-	UNUSED(argv);
+/**@}*/
 
-	/*
-	 * Initializes the HAL. Must come
-	 * before everything else.
-	 */
-	hal_init();
-
-	clock_init(CLOCK_FREQ);
-
-	test_exception();
-	test_interrupt();
-	test_mmu();
-	test_tlb();
-#if (CLUSTER_IS_MULTICORE)
-	test_core();
-#endif
-
-#if !defined(__rv32gc__)
-	test_trap();
-	test_upcall();
-
-#endif
-
-#if (TARGET_HAS_SYNC)
-	test_sync();
-#endif
-
-	kprintf("[hal] halting...");
-
-	main(0, NULL);
-}
+#endif /* ARCH_CORE_RV32GC_REGS_H_ */

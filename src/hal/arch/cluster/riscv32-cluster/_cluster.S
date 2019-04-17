@@ -26,9 +26,9 @@
 #define _ASM_FILE_
 #define __NEED_CORE_TYPES
 
-#include <arch/core/rv32i/asm.h>
-#include <arch/core/rv32i/mmu.h>
-#include <arch/core/rv32i/types.h>
+#include <arch/core/rv32gc/asm.h>
+#include <arch/core/rv32gc/mmu.h>
+#include <arch/core/rv32gc/types.h>
 
 /* Exported symbols. */
 .global _riscv32_cluster_core_reset
@@ -42,17 +42,17 @@
 /*
  * Resets the underlying core
  */
-.align RV32I_WORD_SIZE
+.align RV32GC_WORD_SIZE
 _riscv32_cluster_core_reset:
 
 	/* Save coreid. */
 	csrw sscratch, a0
 
-	rv32i_clear_gprs
+	rv32gc_clear_gprs
 
 	/* Reset stack. */
 	csrr  t0, sscratch
-	rv32i_core_stack_reset t0
+	rv32gc_core_stack_reset t0
 
 	/* Restart core. */
 	j     riscv32_cluster_slave_setup

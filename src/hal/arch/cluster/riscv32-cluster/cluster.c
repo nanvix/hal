@@ -33,12 +33,12 @@ EXTERN NORETURN void kmain(int, const char *[]);
 /**
  * @brief Cores table.
  */
-PUBLIC struct coreinfo ALIGN(RV32I_CACHE_LINE_SIZE) cores[RISCV32_CLUSTER_NUM_CORES] = {
-	{ TRUE,  CORE_RUNNING,   0, NULL, RV32I_SPINLOCK_UNLOCKED }, /* Master Core   */
-	{ FALSE, CORE_RESETTING, 0, NULL, RV32I_SPINLOCK_LOCKED   }, /* Slave Core 1  */
-	{ FALSE, CORE_RESETTING, 0, NULL, RV32I_SPINLOCK_LOCKED   }, /* Slave Core 2  */
-	{ FALSE, CORE_RESETTING, 0, NULL, RV32I_SPINLOCK_LOCKED   }, /* Slave Core 3  */
-	{ FALSE, CORE_RESETTING, 0, NULL, RV32I_SPINLOCK_LOCKED   }, /* Slave Core 4  */
+PUBLIC struct coreinfo ALIGN(RV32GC_CACHE_LINE_SIZE) cores[RISCV32_CLUSTER_NUM_CORES] = {
+	{ TRUE,  CORE_RUNNING,   0, NULL, RV32GC_SPINLOCK_UNLOCKED }, /* Master Core   */
+	{ FALSE, CORE_RESETTING, 0, NULL, RV32GC_SPINLOCK_LOCKED   }, /* Slave Core 1  */
+	{ FALSE, CORE_RESETTING, 0, NULL, RV32GC_SPINLOCK_LOCKED   }, /* Slave Core 2  */
+	{ FALSE, CORE_RESETTING, 0, NULL, RV32GC_SPINLOCK_LOCKED   }, /* Slave Core 3  */
+	{ FALSE, CORE_RESETTING, 0, NULL, RV32GC_SPINLOCK_LOCKED   }, /* Slave Core 4  */
 };
 
 /*============================================================================*
@@ -53,25 +53,25 @@ PUBLIC struct coreinfo ALIGN(RV32I_CACHE_LINE_SIZE) cores[RISCV32_CLUSTER_NUM_CO
 PUBLIC void riscv32_cluster_setup(void)
 {
 	kprintf("[hal] booting up cluster...");
-	rv32i_core_setup();
+	rv32gc_core_setup();
 	riscv32_cluster_mem_setup();
 }
 
 /*============================================================================*
- * rv32i_slave_setup()                                                        *
+ * rv32gc_slave_setup()                                                        *
  *============================================================================*/
 
 /**
  * @brief Initializes a slave core.
  *
- * The rv32i_slave_setup() function initializes the underlying slave
+ * The rv32gc_slave_setup() function initializes the underlying slave
  * core.  It setups the stack and then call the kernel main function.
  * Architectural structures are initialized by the master core and
  * registered later on, when the slave core is started effectively.
  *
  * @note This function does not return.
  *
- * @see rv32i_core_setup() and rv32i_master_setup().
+ * @see rv32gc_core_setup() and rv32gc_master_setup().
  *
  * @author Pedro Henrique Penna
  */
@@ -85,13 +85,13 @@ PUBLIC NORETURN void riscv32_cluster_slave_setup(void)
 }
 
 /*============================================================================*
- * rv32i_master_setup()                                                       *
+ * rv32gc_master_setup()                                                       *
  *============================================================================*/
 
 /**
  * @brief Initializes the master core.
  *
- * The rv32i_master_setup() function initializes the underlying
+ * The rv32gc_master_setup() function initializes the underlying
  * master core. It setups the stack and then call the kernel
  * main function.
  *

@@ -53,11 +53,11 @@
 		#define __NEED_CORE_OR1K
 		#include <arch/core/mor1kx.h>
 
-	#elif (defined(__rv32i__))
+	#elif (defined(__rv32gc__))
 
-		#undef  __NEED_CORE_RV32I
-		#define __NEED_CORE_RV32I
-		#include <arch/core/rv32i.h>
+		#undef  __NEED_CORE_RV32GC
+		#define __NEED_CORE_RV32GC
+		#include <arch/core/rv32gc.h>
 
 	#else
 

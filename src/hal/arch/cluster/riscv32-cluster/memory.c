@@ -56,12 +56,12 @@ PRIVATE struct memory_region riscv32_cluster_mem_layout[RISCV32_CLUSTER_MEM_REGI
 /**
  * @brief Root page directory.
  */
-PRIVATE struct pde riscv32_cluster_root_pgdir[RV32I_PGDIR_LENGTH] ALIGN(PAGE_SIZE);
+PRIVATE struct pde riscv32_cluster_root_pgdir[RV32GC_PGDIR_LENGTH] ALIGN(PAGE_SIZE);
 
 /**
  * @brief Root page tables.
  */
-PRIVATE struct pte riscv32_cluster_root_pgtabs[RISCV32_CLUSTER_MEM_REGIONS][RV32I_PGTAB_LENGTH] ALIGN(PAGE_SIZE);
+PRIVATE struct pte riscv32_cluster_root_pgtabs[RISCV32_CLUSTER_MEM_REGIONS][RV32GC_PGTAB_LENGTH] ALIGN(PAGE_SIZE);
 
 /**
  * Alias to root page directory.
@@ -134,27 +134,27 @@ PRIVATE void riscv32_cluster_mem_info(void)
 PRIVATE void riscv32_cluster_mem_check_align(void)
 {
 	/* These should be aligned at page boundaries. */
-	if (RISCV32_CLUSTER_PIC_BASE_VIRT & (RV32I_PAGE_SIZE - 1))
+	if (RISCV32_CLUSTER_PIC_BASE_VIRT & (RV32GC_PAGE_SIZE - 1))
 		kpanic("pic base address misaligned");
-	if (RISCV32_CLUSTER_PIC_END_VIRT & (RV32I_PAGE_SIZE - 1))
+	if (RISCV32_CLUSTER_PIC_END_VIRT & (RV32GC_PAGE_SIZE - 1))
 		kpanic("pic end address misaligned");
-	if (RISCV32_CLUSTER_UART_BASE_VIRT & (RV32I_PAGE_SIZE - 1))
+	if (RISCV32_CLUSTER_UART_BASE_VIRT & (RV32GC_PAGE_SIZE - 1))
 		kpanic("uart base address misaligned");
-	if (RISCV32_CLUSTER_UART_END_VIRT & (RV32I_PAGE_SIZE - 1))
+	if (RISCV32_CLUSTER_UART_END_VIRT & (RV32GC_PAGE_SIZE - 1))
 		kpanic("uart end address misaligned");
 
 	/* These should be aligned at page table boundaries. */
-	if (RISCV32_CLUSTER_KERNEL_BASE_VIRT & (RV32I_PGTAB_SIZE - 1))
+	if (RISCV32_CLUSTER_KERNEL_BASE_VIRT & (RV32GC_PGTAB_SIZE - 1))
 		kpanic("kernel base address misaligned");
-	if (RISCV32_CLUSTER_KERNEL_END_VIRT & (RV32I_PGTAB_SIZE - 1))
+	if (RISCV32_CLUSTER_KERNEL_END_VIRT & (RV32GC_PGTAB_SIZE - 1))
 		kpanic("kernel end address misaligned");
-	if (RISCV32_CLUSTER_KPOOL_BASE_VIRT & (RV32I_PGTAB_SIZE - 1))
+	if (RISCV32_CLUSTER_KPOOL_BASE_VIRT & (RV32GC_PGTAB_SIZE - 1))
 		kpanic("kernel pool base address misaligned");
-	if (RISCV32_CLUSTER_KPOOL_END_VIRT & (RV32I_PGTAB_SIZE - 1))
+	if (RISCV32_CLUSTER_KPOOL_END_VIRT & (RV32GC_PGTAB_SIZE - 1))
 		kpanic("kernel pool end address misaligned");
-	if (RISCV32_CLUSTER_USER_BASE_VIRT & (RV32I_PGTAB_SIZE - 1))
+	if (RISCV32_CLUSTER_USER_BASE_VIRT & (RV32GC_PGTAB_SIZE - 1))
 		kpanic("user base address misaligned");
-	if (RISCV32_CLUSTER_USER_END_VIRT & (RV32I_PGTAB_SIZE - 1))
+	if (RISCV32_CLUSTER_USER_END_VIRT & (RV32GC_PGTAB_SIZE - 1))
 		kpanic("user end address misaligned");
 }
 
@@ -207,7 +207,7 @@ PRIVATE void riscv32_cluster_mem_check_layout(void)
 PRIVATE void riscv32_cluster_mem_map(void)
 {
 	/* Clean root page directory. */
-	for (int i = 0; i < RV32I_PGDIR_LENGTH; i++)
+	for (int i = 0; i < RV32GC_PGDIR_LENGTH; i++)
 		pde_clear(&riscv32_cluster_root_pgdir[i]);
 
 	/* Build root address space. */
@@ -224,21 +224,21 @@ PRIVATE void riscv32_cluster_mem_map(void)
 		/* Map underlying pages. */
 		for (j = pbase, k = vbase;
 			 k < (pbase + size);
-			 j += RV32I_PAGE_SIZE, k += RV32I_PAGE_SIZE)
+			 j += RV32GC_PAGE_SIZE, k += RV32GC_PAGE_SIZE)
 		{
-			rv32i_page_map(riscv32_cluster_root_pgtabs[i], j, k, w, x);
+			rv32gc_page_map(riscv32_cluster_root_pgtabs[i], j, k, w, x);
 		}
 
 		/* Map underlying page table. */
-		rv32i_pgtab_map(
+		rv32gc_pgtab_map(
 				riscv32_cluster_root_pgdir,
-				RV32I_PADDR(riscv32_cluster_root_pgtabs[i]),
+				RV32GC_PADDR(riscv32_cluster_root_pgtabs[i]),
 				vbase
 		);
 	}
 
 	/* Load virtual address space and enable MMU. */
-	rv32i_tlb_load(RV32I_PADDR(riscv32_cluster_root_pgdir));
+	rv32gc_tlb_load(RV32GC_PADDR(riscv32_cluster_root_pgdir));
 }
 
 /*============================================================================*
@@ -246,7 +246,7 @@ PRIVATE void riscv32_cluster_mem_map(void)
  *============================================================================*/
 
 /**
- * The rv32i_cluster_mem_setup() function initializes the Memory
+ * The rv32gc_cluster_mem_setup() function initializes the Memory
  * Interface of the underlying RISC-V 32-Bit Cluster.
  *
  * @author Pedro Henrique Penna
@@ -255,7 +255,7 @@ PUBLIC void riscv32_cluster_mem_setup(void)
 {
 	int coreid;
 
-	coreid = rv32i_core_get_id();
+	coreid = rv32gc_core_get_id();
 
 	kprintf("[hal] initializing memory layout...");
 

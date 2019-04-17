@@ -22,66 +22,49 @@
  * SOFTWARE.
  */
 
-#ifndef ARCH_CLUSTER_CLUSTER_RISCV32_CLUSTER_CLOCK_H_
-#define ARCH_CLUSTER_CLUSTER_RISCV32_CLUSTER_CLOCK_H_
+/* Must come first. */
+#define __NEED_CORE_IVT
 
-	/* Cluster Interface Implementation */
-	#include <arch/cluster/riscv32-cluster/_riscv32-cluster.h>
+#include <arch/core/rv32gc/ivt.h>
+#include <nanvix/const.h>
+#include <nanvix/klib.h>
 
-/**
- * @addtogroup rscv32-cluster-clock Clock
- * @ingroup riscv32-cluster
- *
- * @brief 64-bit Timer
- */
-/**@{*/
-
-	/* Must come first. */
-	#define __NEED_CLUSTER_CLINT
-
-	#include <arch/cluster/riscv32-cluster/clint.h>
-	#include <stdint.h>
-
-	/**
-	 * @brief Clock frequency (10 MHz)
-	 */
-	#define RISCV32_CLUSTER_TIMEBASE 10000000
-
-/**@}*/
+/* Import definitions. */
+EXTERN void rv32gc_do_strap(void);
 
 /*============================================================================*
- * Exported Interface                                                         *
+ * rv32gc_core_poweroff()                                                      *
  *============================================================================*/
 
 /**
- * @cond riscv32_smp
+ * The rv32gc_core_poweroff() function powers off the underlying core.
+ * Afeter powering off a core, instruction execution cannot be
+ * resumed.
+ *
+ * @author Davidson Francis
  */
+PUBLIC NORETURN void rv32gc_core_poweroff(void)
+{
+	while (TRUE)
+		/* noop(). */;
 
-	/**
-	 * @name Exported Functions
-	 */
-	/**@{*/
-	#define __clock_init_fn   /**< clock_init() */
-	/**@}*/
+	UNREACHABLE();
+}
 
-#ifndef _ASM_FILE_
+/*============================================================================*
+ * rv32gc_core_setup()                                                         *
+ *============================================================================*/
 
-	/**
-	 * @see clock_init().
-	 */
-	static inline void clock_init(unsigned freq)
-	{
-		rv32gc_clock_init(
-			freq,
-			RISCV32_CLUSTER_TIMEBASE,
-			(uint64_t *) RISCV32_CLUSTER_CLINT_MTIME_BASE,
-			(uint64_t *) RISCV32_CLUSTER_CLINT_MTIMECMP_BASE
-		);
-	}
+/**
+ * The rv32gc_core_setup() function initializes all architectural
+ * structures of the underlying core. It setups the Interrupt Vector
+ * Table (IVT) and the Memory Management Unit (MMU) tables.
+ *
+ * @author Pedro Henrique Penna
+ */
+PUBLIC void rv32gc_core_setup(void)
+{
+	kprintf("[hal] booting up core...");
 
-#endif
-
-/**@endcond*/
-
-#endif /* ARCH_CLUSTER_CLUSTER_RISCV32_CLUSTER_CLOCK */
-
+	rv32gc_ivt_setup(&rv32gc_do_strap);
+}

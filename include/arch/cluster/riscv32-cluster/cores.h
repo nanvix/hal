@@ -113,11 +113,11 @@
 #ifndef _ASM_FILE_
 
 	/**
-	 * @see _rv32i_core_reset().
+	 * @see _rv32gc_core_reset().
 	 */
 	static inline void _core_reset(void)
 	{
-		_riscv32_cluster_core_reset(rv32i_core_get_id());
+		_riscv32_cluster_core_reset(rv32gc_core_get_id());
 	}
 
 	/**
@@ -129,7 +129,7 @@
 	}
 
 	/**
-	 * @see rv32i_core_setup().
+	 * @see rv32gc_core_setup().
 	 */
 	static inline void core_setup(void)
 	{

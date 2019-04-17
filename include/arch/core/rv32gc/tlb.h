@@ -22,66 +22,85 @@
  * SOFTWARE.
  */
 
-#ifndef ARCH_CLUSTER_CLUSTER_RISCV32_CLUSTER_CLOCK_H_
-#define ARCH_CLUSTER_CLUSTER_RISCV32_CLUSTER_CLOCK_H_
+#ifndef ARCH_CORE_RV32GC_TLB_H_
+#define ARCH_CORE_RV32GC_TLB_H_
 
-	/* Cluster Interface Implementation */
-	#include <arch/cluster/riscv32-cluster/_riscv32-cluster.h>
+	/* Must come first. */
+	#define __NEED_CORE_TYPES
 
 /**
- * @addtogroup rscv32-cluster-clock Clock
- * @ingroup riscv32-cluster
+ * @addtogroup rv32gc-core-tlb TLB
+ * @ingroup rv32gc-core
  *
- * @brief 64-bit Timer
+ * @brief Translation Lookaside Buffer
  */
 /**@{*/
 
-	/* Must come first. */
-	#define __NEED_CLUSTER_CLINT
+	#include <arch/core/rv32gc/types.h>
 
-	#include <arch/cluster/riscv32-cluster/clint.h>
-	#include <stdint.h>
+#ifndef _ASM_FILE_
 
 	/**
-	 * @brief Clock frequency (10 MHz)
+	 * @brief Flushes changes in the TLB.
+	 *
+	 * The rv32gc_tlb_flush() function flushes the changes made to the
+	 * TLB of the underlying rv32gc core.
+	 *
+	 * @returns This function always returns zero.
+	 *
+	 * @todo XXX We can supply address ranges to a higher performance.
 	 */
-	#define RISCV32_CLUSTER_TIMEBASE 10000000
+	static inline int rv32gc_tlb_flush(void)
+	{
+		asm volatile ("sfence.vma");
 
-/**@}*/
+		return (0);
+	}
+
+	/**
+	 * @brief Loads the TLB
+	 *
+	 * The rv32gc_tlb_flush() function loads the hardware TLB of the
+	 * underlying core with the page directory pointed to by @p pgdir.
+	 *
+	 * @returns This function always returns zero.
+	 */
+	static inline int rv32gc_tlb_load(paddr_t pgdir)
+	{
+		rv32gc_word_t satp;
+
+		satp = RV32_SATP_MODE_SV32 | (pgdir >> RV32GC_PAGE_SHIFT);
+
+		rv32gc_satp_write(satp);
+
+		return (0);
+	}
+
+#endif /* _ASM_FILE_ */
 
 /*============================================================================*
  * Exported Interface                                                         *
  *============================================================================*/
 
-/**
- * @cond riscv32_smp
- */
-
 	/**
 	 * @name Exported Functions
 	 */
 	/**@{*/
-	#define __clock_init_fn   /**< clock_init() */
+	#define __tlb_flush_fn /**< tlb_flush() */
 	/**@}*/
 
 #ifndef _ASM_FILE_
 
 	/**
-	 * @see clock_init().
+	 * @see rv32gc_tlb_flush().
 	 */
-	static inline void clock_init(unsigned freq)
+	static inline int tlb_flush(void)
 	{
-		rv32gc_clock_init(
-			freq,
-			RISCV32_CLUSTER_TIMEBASE,
-			(uint64_t *) RISCV32_CLUSTER_CLINT_MTIME_BASE,
-			(uint64_t *) RISCV32_CLUSTER_CLINT_MTIMECMP_BASE
-		);
+		return (rv32gc_tlb_flush());
 	}
 
-#endif
+#endif /* _ASM_FILE_ */
 
-/**@endcond*/
+/**@}*/
 
-#endif /* ARCH_CLUSTER_CLUSTER_RISCV32_CLUSTER_CLOCK */
-
+#endif /* ARCH_CORE_RV32GC_TLB_H_ */

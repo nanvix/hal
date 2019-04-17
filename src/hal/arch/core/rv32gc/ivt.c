@@ -22,64 +22,21 @@
  * SOFTWARE.
  */
 
-#include <nanvix/hal/hal.h>
+/* Must come first. */
+#define __NEED_CORE_IVT
+#define __NEED_CORE_REGS
+#define __NEED_CORE_TYPES
+
+#include <arch/core/rv32gc/ivt.h>
+#include <arch/core/rv32gc/regs.h>
+#include <arch/core/rv32gc/types.h>
 #include <nanvix/const.h>
-#include <nanvix/klib.h>
-#include <nanvix/const.h>
-#include "test.h"
 
 /**
- * @brief Clock frequency (in Hz).
+ * The rv32gc_ivt_setup() function initializes the interrupt vector
+ * table in the rv32gc core.
  */
-#define CLOCK_FREQ 100
-
-/**
- * @brief Dummy main function.
- */
-PUBLIC int main(int argc, const char **argv)
+PUBLIC void rv32gc_ivt_setup(void (*do_trap)(void))
 {
-	UNUSED(argc);
-	UNUSED(argv);
-
-	while (TRUE)
-		noop();
-}
-
-/**
- * @brief Initializes the kernel.
- */
-PUBLIC void kmain(int argc, const char *argv[])
-{
-	UNUSED(argc);
-	UNUSED(argv);
-
-	/*
-	 * Initializes the HAL. Must come
-	 * before everything else.
-	 */
-	hal_init();
-
-	clock_init(CLOCK_FREQ);
-
-	test_exception();
-	test_interrupt();
-	test_mmu();
-	test_tlb();
-#if (CLUSTER_IS_MULTICORE)
-	test_core();
-#endif
-
-#if !defined(__rv32gc__)
-	test_trap();
-	test_upcall();
-
-#endif
-
-#if (TARGET_HAS_SYNC)
-	test_sync();
-#endif
-
-	kprintf("[hal] halting...");
-
-	main(0, NULL);
+	rv32gc_stvec_write(RV32GC_WORD(do_trap));
 }

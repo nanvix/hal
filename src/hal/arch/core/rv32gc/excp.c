@@ -22,64 +22,42 @@
  * SOFTWARE.
  */
 
-#include <nanvix/hal/hal.h>
+#include <nanvix/hal/core/exception.h>
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
-#include <nanvix/const.h>
-#include "test.h"
 
 /**
- * @brief Clock frequency (in Hz).
+ * @cond rv32gc
+ *
+ * Lookup table with information about exceptions.
+ *
+ * @endcond
  */
-#define CLOCK_FREQ 100
+PUBLIC struct exception_info exceptions[RV32GC_EXCP_NUM_EXT] = {
+	{ NULL, "instruction address misaligned" },
+	{ NULL, "instruction access fault"       },
+	{ NULL, "illegal instruction"            },
+	{ NULL, "breakpoint"                     },
+	{ NULL, "load address misaligned"        },
+	{ NULL, "load access fault"              },
+	{ NULL, "store/amo address misaligned"   },
+	{ NULL, "store/amo access fault"         },
+	{ NULL, "environment call from u-mode"   },
+	{ NULL, "environment call from s-mode"   },
+	{ NULL, "reserved"                       },
+	{ NULL, "environment call from m-mode"   },
+	{ NULL, "instruction page fault"         },
+	{ NULL, "load page fault"                },
+	{ NULL, "reserved"                       },
+	{ NULL, "page fault"                     },
+	{ NULL, "page protection"                },
+	{ NULL, "general protection"             },
+};
 
 /**
- * @brief Dummy main function.
+ * @todo TODO provide a detailed description for this function.
  */
-PUBLIC int main(int argc, const char **argv)
+PUBLIC void rv32gc_excp_dump(const struct exception *excp)
 {
-	UNUSED(argc);
-	UNUSED(argv);
-
-	while (TRUE)
-		noop();
-}
-
-/**
- * @brief Initializes the kernel.
- */
-PUBLIC void kmain(int argc, const char *argv[])
-{
-	UNUSED(argc);
-	UNUSED(argv);
-
-	/*
-	 * Initializes the HAL. Must come
-	 * before everything else.
-	 */
-	hal_init();
-
-	clock_init(CLOCK_FREQ);
-
-	test_exception();
-	test_interrupt();
-	test_mmu();
-	test_tlb();
-#if (CLUSTER_IS_MULTICORE)
-	test_core();
-#endif
-
-#if !defined(__rv32gc__)
-	test_trap();
-	test_upcall();
-
-#endif
-
-#if (TARGET_HAS_SYNC)
-	test_sync();
-#endif
-
-	kprintf("[hal] halting...");
-
-	main(0, NULL);
+	kprintf("%s", exceptions[excp->num].name);
 }

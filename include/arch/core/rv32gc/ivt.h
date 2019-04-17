@@ -22,64 +22,59 @@
  * SOFTWARE.
  */
 
-#include <nanvix/hal/hal.h>
-#include <nanvix/const.h>
-#include <nanvix/klib.h>
-#include <nanvix/const.h>
-#include "test.h"
+#ifndef ARCH_CORE_RV32GC_IVT_H_
+#define ARCH_CORE_RV32GC_IVT_H_
+
+	#ifndef __NEED_CORE_IVT
+		#error "do not include this file"
+	#endif
+
+	/* Must come first. */
+	#define __NEED_CORE_TYPES
 
 /**
- * @brief Clock frequency (in Hz).
+ * @addtogroup rv32gc-core-ivt IVT
+ * @ingroup rv32gc-core
+ *
+ * @brief Interrupt Vector Table
  */
-#define CLOCK_FREQ 100
+/**@{*/
 
-/**
- * @brief Dummy main function.
- */
-PUBLIC int main(int argc, const char **argv)
-{
-	UNUSED(argc);
-	UNUSED(argv);
+	#include <arch/core/rv32gc/types.h>
+	#include <nanvix/const.h>
 
-	while (TRUE)
-		noop();
-}
+#ifndef _ASM_FILE_
 
-/**
- * @brief Initializes the kernel.
- */
-PUBLIC void kmain(int argc, const char *argv[])
-{
-	UNUSED(argc);
-	UNUSED(argv);
-
-	/*
-	 * Initializes the HAL. Must come
-	 * before everything else.
+	/**
+	 * @brief Event handler.
 	 */
-	hal_init();
+	typedef void (*rv32gc_handler_fn)(void);
 
-	clock_init(CLOCK_FREQ);
+	/**
+	 * @brief Set ups the interrupt vector table.
+	 *
+	 * @param do_event Event handler.
+	 *
+	 * @note We assume a direct vector table.
+	 */
+	static inline void rv32gc_mtvec_set(rv32gc_handler_fn do_event)
+	{
+		asm volatile (
+			"csrw mtvec, %0;"
+			:
+			: "r" (RV32GC_WORD(do_event))
+		);
+	}
 
-	test_exception();
-	test_interrupt();
-	test_mmu();
-	test_tlb();
-#if (CLUSTER_IS_MULTICORE)
-	test_core();
+	/**
+	 * @brief Initializes the interrupt vector table.
+	 *
+	 * @param do_trap Trap handler.
+	 */
+	extern void rv32gc_ivt_setup(rv32gc_handler_fn do_trap);
+
 #endif
 
-#if !defined(__rv32gc__)
-	test_trap();
-	test_upcall();
+/**@}*/
 
-#endif
-
-#if (TARGET_HAS_SYNC)
-	test_sync();
-#endif
-
-	kprintf("[hal] halting...");
-
-	main(0, NULL);
-}
+#endif /* ARCH_CORE_RV32GC_IVT_H_ */

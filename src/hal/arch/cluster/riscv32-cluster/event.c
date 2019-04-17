@@ -32,18 +32,18 @@
 /**
  * @brief Table of locks.
  */
-PRIVATE rv32i_spinlock_t locks[RISCV32_CLUSTER_NUM_CORES] = {
-	RV32I_SPINLOCK_UNLOCKED, /* Master Core  */
-	RV32I_SPINLOCK_UNLOCKED, /* Slave Core 1 */
-	RV32I_SPINLOCK_UNLOCKED, /* Slave Core 2 */
-	RV32I_SPINLOCK_UNLOCKED, /* Slave Core 3 */
-	RV32I_SPINLOCK_UNLOCKED, /* Slave Core 4 */
+PRIVATE rv32gc_spinlock_t locks[RISCV32_CLUSTER_NUM_CORES] = {
+	RV32GC_SPINLOCK_UNLOCKED, /* Master Core  */
+	RV32GC_SPINLOCK_UNLOCKED, /* Slave Core 1 */
+	RV32GC_SPINLOCK_UNLOCKED, /* Slave Core 2 */
+	RV32GC_SPINLOCK_UNLOCKED, /* Slave Core 3 */
+	RV32GC_SPINLOCK_UNLOCKED, /* Slave Core 4 */
 };
 
 /**
  * Table of pending events.
  */
-PRIVATE int volatile events[RISCV32_CLUSTER_NUM_CORES] ALIGN(RV32I_CACHE_LINE_SIZE) = {
+PRIVATE int volatile events[RISCV32_CLUSTER_NUM_CORES] ALIGN(RV32GC_CACHE_LINE_SIZE) = {
 	0, /* Master Core  */
 	0, /* Slave Core 1 */
 	0, /* Slave Core 2 */
@@ -62,12 +62,12 @@ PRIVATE int volatile events[RISCV32_CLUSTER_NUM_CORES] ALIGN(RV32I_CACHE_LINE_SI
  */
 PUBLIC void riscv32_cluster_do_ipi(const struct context *ctx)
 {
-	rv32i_word_t mie;
+	rv32gc_word_t mie;
 
 	/* Clear Machine IPI. */
-	mie = rv32i_mie_read();
-	mie = BITS_SET(mie, RV32I_MIE_MSIE, 0);
-	rv32i_mie_write(mie);
+	mie = rv32gc_mie_read();
+	mie = BITS_SET(mie, RV32GC_MIE_MSIE, 0);
+	rv32gc_mie_write(mie);
 
 	UNUSED(ctx);
 }
@@ -87,19 +87,19 @@ PUBLIC int riscv32_cluster_event_send(int coreid)
 	if (UNLIKELY(coreid < 0))
 		return (-EINVAL);
 
-	mycoreid = rv32i_core_get_id();
+	mycoreid = rv32gc_core_get_id();
 
 	/* Bad core. */
 	if (UNLIKELY(coreid == mycoreid))
 		return (-EINVAL);
 
-	rv32i_spinlock_lock(&locks[coreid]);
+	rv32gc_spinlock_lock(&locks[coreid]);
 
 		/* Set the pending IPI flag. */
 		events[coreid] |= (1 << mycoreid);
 		riscv32_cluster_ipi_send(coreid);
 
-	rv32i_spinlock_unlock(&locks[coreid]);
+	rv32gc_spinlock_unlock(&locks[coreid]);
 
 	return (0);
 }
@@ -117,7 +117,7 @@ PUBLIC int riscv32_cluster_event_ack(void)
 }
 
 /*============================================================================*
- * rv32i_core_waitclear()                                                      *
+ * rv32gc_core_waitclear()                                                      *
  *============================================================================*/
 
 /**
@@ -125,11 +125,11 @@ PUBLIC int riscv32_cluster_event_ack(void)
  */
 PUBLIC int riscv32_cluster_event_waitclear(void)
 {
-	int mycoreid = rv32i_core_get_id();
+	int mycoreid = rv32gc_core_get_id();
 
 	while (TRUE)
 	{
-		rv32i_spinlock_lock(&locks[mycoreid]);
+		rv32gc_spinlock_lock(&locks[mycoreid]);
 
 			if (events[mycoreid])
 			{
@@ -137,9 +137,9 @@ PUBLIC int riscv32_cluster_event_waitclear(void)
 				break;
 			}
 
-		rv32i_spinlock_unlock(&locks[mycoreid]);
+		rv32gc_spinlock_unlock(&locks[mycoreid]);
 
-		rv32i_int_wait();
+		rv32gc_int_wait();
 	}
 
 		/* Clear IPI. */
@@ -152,7 +152,7 @@ PUBLIC int riscv32_cluster_event_waitclear(void)
 			}
 		}
 
-	rv32i_spinlock_unlock(&locks[mycoreid]);
+	rv32gc_spinlock_unlock(&locks[mycoreid]);
 
 	return (0);
 }

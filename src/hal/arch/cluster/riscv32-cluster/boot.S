@@ -24,10 +24,10 @@
 
 /* Must come first. */
 #define _ASM_FILE_
-#define __RV32I_MACHINE_CODE
+#define __RV32GC_MACHINE_CODE
 
 #include <arch/cluster/riscv32-cluster/cores.h>
-#include <arch/core/rv32i/asm.h>
+#include <arch/core/rv32gc/asm.h>
 
 /* Exported symbols. */
 .global _do_start
@@ -46,18 +46,18 @@
 /*
  * Entry point.
  */
-.align RV32I_WORD_SIZE
+.align RV32GC_WORD_SIZE
 _do_start:
 
-	rv32i_clear_gprs
+	rv32gc_clear_gprs
 
 	/* Setup trap vector. */
-    la   t0, rv32i_do_mtrap
+    la   t0, rv32gc_do_mtrap
     csrw mtvec, t0
 
 	/* Reset stack. */
 	csrr  t0, mhartid
-	rv32i_core_stack_reset t0
+	rv32gc_core_stack_reset t0
 
     /* Halt slave harts. */
 	csrr t0, mhartid
@@ -66,14 +66,14 @@ _do_start:
 	/* Slave. */
 	_do_start.slave:
 		la    a0, 1f
-		call  rv32i_machine_slave_setup
+		call  rv32gc_machine_slave_setup
 		1: j  riscv32_cluster_slave_setup
 		halt
 
 	/* Master. */
 	_do_start.master:
 		la    a0, 1f
-		call  rv32i_machine_master_setup
+		call  rv32gc_machine_master_setup
 		1: j  riscv32_cluster_master_setup
 		halt
 
@@ -84,11 +84,11 @@ _do_start:
 /*
  * Low-level dispatcher for machine interrupts and exceptions.
  */
-.align RV32I_WORD_SIZE
-rv32i_do_mtrap:
+.align RV32GC_WORD_SIZE
+rv32gc_do_mtrap:
 
 	/* Save all registers. */
-	rv32i_context_save
+	rv32gc_context_save
 
 	/*
 	 * Save pointer to
@@ -104,57 +104,57 @@ rv32i_do_mtrap:
 
 	/* Parse trap cause. */
 	csrr  t0, mcause
-	li    t1, RV32I_MCAUSE_INT
+	li    t1, RV32GC_MCAUSE_INT
 	and   t1, t0, t1
-	bnez  t1, rv32i_do_mtrap.mint
+	bnez  t1, rv32gc_do_mtrap.mint
 
 	/* Exceptions and machine calls. */
-	rv32i_do_mtrap.mexcp:
-		li    t1, RV32I_MCAUSE_CAUSE
+	rv32gc_do_mtrap.mexcp:
+		li    t1, RV32GC_MCAUSE_CAUSE
 		and   t1, t0, t1             # t1 = cause
 		slli  t1, t1, 2              # t1 = cause*sizeof(uintptr_t)
 		la    t2, mtrap_table        # t2 = mtrap_table
 		add   t1, t1, t2
 		lw    t1, 0(t1)              # t1 = mtrap_table[cause]
 		jalr  t1
-		j     rv32i_do_mtrap.out
+		j     rv32gc_do_mtrap.out
 
 	/* Interrupts. */
-	rv32i_do_mtrap.mint:
+	rv32gc_do_mtrap.mint:
 
 		/* Parse interrupt number. */
-		li    t1, RV32I_MCAUSE_CAUSE
+		li    t1, RV32GC_MCAUSE_CAUSE
 		and   t1, t0, t1             # t1 = cause
 
 		/* Timer interrupt? */
-		rv32i_do_mtrap.timer:
-			li    t2, RV32I_MCAUSE_MTI
-			bne   t1, t2, rv32i_do_mtrap.ipi
-			li    t1, RV32I_MIE_MTIE
+		rv32gc_do_mtrap.timer:
+			li    t2, RV32GC_MCAUSE_MTI
+			bne   t1, t2, rv32gc_do_mtrap.ipi
+			li    t1, RV32GC_MIE_MTIE
 			csrc  mie, t1
-			li    t1, RV32I_MIP_MTIP
+			li    t1, RV32GC_MIP_MTIP
 			csrc  mip, t1
-			li    t1, RV32I_MIP_STIP
+			li    t1, RV32GC_MIP_STIP
 			csrs  sip, t1
-			j     rv32i_do_mtrap.out
+			j     rv32gc_do_mtrap.out
 
 		/* IPI */
-		rv32i_do_mtrap.ipi:
-			li    t2, RV32I_MCAUSE_MSI
-			bne   t1, t2, rv32i_do_mtrap.mint.bad
+		rv32gc_do_mtrap.ipi:
+			li    t2, RV32GC_MCAUSE_MSI
+			bne   t1, t2, rv32gc_do_mtrap.mint.bad
 			call  riscv32_cluster_do_ipi
-			j     rv32i_do_mtrap.out
+			j     rv32gc_do_mtrap.out
 
 		/* Unkown Interrupt */
-		rv32i_do_mtrap.mint.bad:
-			call  rv32i_do_mint
+		rv32gc_do_mtrap.mint.bad:
+			call  rv32gc_do_mint
 
 	/* Return. */
-	rv32i_do_mtrap.out:
+	rv32gc_do_mtrap.out:
 
 		/* Restore all registers. */
 		csrr sp, mscratch
-		rv32i_context_restore
+		rv32gc_context_restore
 
 		/*
 		 * Return from where we came.
@@ -168,22 +168,22 @@ rv32i_do_mtrap:
 .section .data
 
 mtrap_table:
-	.word rv32i_do_mexcp /**< Instruction Address Misaligned        */
-	.word rv32i_do_mexcp /**< Instruction Access Fault              */
-	.word rv32i_do_mexcp /**< Illegal Instruction                   */
-	.word rv32i_do_mexcp /**< Breakpoint                            */
-	.word rv32i_do_mexcp /**< Load Address Misaligned               */
-	.word rv32i_do_mexcp /**< Load Access Fault                     */
-	.word rv32i_do_mexcp /**< Store/AMO Address Misaligned          */
-	.word rv32i_do_mexcp /**< Store/AMO Access Fault                */
-	.word rv32i_do_mcall /**< Environment Call from User Mode       */
-	.word rv32i_do_mcall /**< Environment Call from Supervisor Mode */
-	.word rv32i_do_mbad  /**< Reserved                              */
-	.word rv32i_do_mcall /**< Environment Call from Machine Mode    */
-	.word rv32i_do_mexcp /**< Instruction Page Fault                */
-	.word rv32i_do_mexcp /**< Load Page Fault                       */
-	.word rv32i_do_mbad  /**< Reserved                              */
-	.word rv32i_do_mexcp /**< Store/AMO Page Fault                  */
+	.word rv32gc_do_mexcp /**< Instruction Address Misaligned        */
+	.word rv32gc_do_mexcp /**< Instruction Access Fault              */
+	.word rv32gc_do_mexcp /**< Illegal Instruction                   */
+	.word rv32gc_do_mexcp /**< Breakpoint                            */
+	.word rv32gc_do_mexcp /**< Load Address Misaligned               */
+	.word rv32gc_do_mexcp /**< Load Access Fault                     */
+	.word rv32gc_do_mexcp /**< Store/AMO Address Misaligned          */
+	.word rv32gc_do_mexcp /**< Store/AMO Access Fault                */
+	.word rv32gc_do_mcall /**< Environment Call from User Mode       */
+	.word rv32gc_do_mcall /**< Environment Call from Supervisor Mode */
+	.word rv32gc_do_mbad  /**< Reserved                              */
+	.word rv32gc_do_mcall /**< Environment Call from Machine Mode    */
+	.word rv32gc_do_mexcp /**< Instruction Page Fault                */
+	.word rv32gc_do_mexcp /**< Load Page Fault                       */
+	.word rv32gc_do_mbad  /**< Reserved                              */
+	.word rv32gc_do_mexcp /**< Store/AMO Page Fault                  */
 
 /*============================================================================*
  * BSS                                                                        *
@@ -191,6 +191,6 @@ mtrap_table:
 
 .section .bss,"aw",@nobits
 
-.align RV32I_WORD_SIZE
+.align RV32GC_WORD_SIZE
 kstacks:
-	.skip RV32I_PAGE_SIZE * RISCV32_CLUSTER_NUM_CORES
+	.skip RV32GC_PAGE_SIZE * RISCV32_CLUSTER_NUM_CORES
