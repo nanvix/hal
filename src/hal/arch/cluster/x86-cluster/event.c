@@ -22,41 +22,23 @@
  * SOFTWARE.
  */
 
-#ifndef ARCH_CLUSTER_X86_CLUSTER_H_
-#define ARCH_CLUSTER_X86_CLUSTER_H_
+/* Must come first. */
+#define __NEED_HAL_CLUSTER
 
-	#ifndef __NEED_CLUSTER_X86
-		#error "bad cluster configuration?"
-	#endif
-
-	/* Cluster Interface Implementation */
-	#include <arch/cluster/x86-cluster/_x86-cluster.h>
-
-/*============================================================================*
- * Exported Interface                                                         *
- *============================================================================*/
+#include <nanvix/hal/cluster.h>
+#include <nanvix/const.h>
 
 /**
- * @addtogroup x86-cluster x86 Cluster
- * @ingroup clusters
+ * @cond x86_cluster
  *
- * @brief x86 Cluster
+ * Table of events
+ *
+ * @endcond
  */
-/**@{*/
-
-	#include <arch/cluster/x86-cluster/cores.h>
-	#include <arch/cluster/x86-cluster/memory.h>
-
-	/**
-	 * @name Provided Features
-	 */
-	/**@{*/
-	#define CLUSTER_IS_MULTICORE  0 /**< Multicore Cluster */
-	#define CLUSTER_IS_IO         1 /**< I/O Cluster       */
-	#define CLUSTER_IS_COMPUTE    0 /**< Compute Cluster   */
-	#define CLUSTER_HAS_EVENTS    0 /**< Event Support?    */
-	/**@}*/
-
-/**@}*/
-
-#endif /* ARCH_CLUSTER_X86_CLUSTER_H_ */
+PUBLIC struct
+{
+	unsigned pending;
+	i486_spinlock_t lock;
+} events[X86_CLUSTER_NUM_CORES] ALIGN(I486_CACHE_LINE_SIZE) = {
+	{ 0, I486_SPINLOCK_UNLOCKED }, /* Master Core  */
+};

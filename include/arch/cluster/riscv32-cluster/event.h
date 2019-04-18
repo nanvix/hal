@@ -41,21 +41,16 @@
 #ifndef _ASM_FILE_
 
 	/**
-	 * @brief Sends an event.
+	 * @brief Notifies a local core about an event.
 	 *
 	 * @param coreid ID of target core.
 	 */
-	EXTERN int riscv32_cluster_event_send(int coreid);
-
-	/**
-	 * @brief Acknowledges en event.
-	 */
-	EXTERN int riscv32_cluster_event_ack(void);
+	EXTERN int riscv32_cluster_event_notify(int coreid);
 
 	/**
 	 * @brief Waits for an event.
 	 */
-	EXTERN int riscv32_cluster_event_waitclear(void);
+	EXTERN int riscv32_cluster_event_wait(void);
 
 #endif /* _ASM_FILE_ */
 
@@ -73,35 +68,35 @@
 	 * @name Exported Functions
 	 */
 	/**@{*/
-	#define __core_clear_fn     /**< core_clear()     */
-	#define __core_notify_fn    /**< core_notify()    */
-	#define __core_waitclear_fn /**< core_waitclear() */
+	#define __event_drop_fn   /**< event_drop()   */
+	#define __event_notify_fn /**< event_notify() */
+	#define __event_wait_fn   /**< event_wait()   */
 	/**@}*/
 
 #ifndef _ASM_FILE_
 
 	/**
-	 * @see riscv32_cluster_event_ack().
+	 * @see riscv32_cluster_event_notify()
 	 */
-	static inline void core_clear(void)
+	static inline void event_notify(int coreid)
 	{
-		riscv32_cluster_event_ack();
+		riscv32_cluster_event_notify(coreid);
 	}
 
 	/**
-	 * @see riscv32_cluster_event_send()
+	 * @see riscv32_cluster_event_wait().
 	 */
-	static inline void core_notify(int coreid)
+	static inline void event_wait(void)
 	{
-		riscv32_cluster_event_send(coreid);
+		riscv32_cluster_event_wait();
 	}
 
 	/**
-	 * @see riscv32_cluster_event_waitclear().
+	 * Dummy function.
 	 */
-	static inline void core_waitclear(void)
+	static inline void event_drop(void)
 	{
-		riscv32_cluster_event_waitclear();
+		 /* noop */
 	}
 
 #endif /* _ASM_FILE_ */

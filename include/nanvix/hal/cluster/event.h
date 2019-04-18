@@ -22,41 +22,61 @@
  * SOFTWARE.
  */
 
-#ifndef ARCH_CLUSTER_X86_CLUSTER_H_
-#define ARCH_CLUSTER_X86_CLUSTER_H_
-
-	#ifndef __NEED_CLUSTER_X86
-		#error "bad cluster configuration?"
-	#endif
+#ifndef NANVIX_HAL_CLUSTER_EVENT_H_
+#define NANVIX_HAL_CLUSTER_EVENT_H_
 
 	/* Cluster Interface Implementation */
-	#include <arch/cluster/x86-cluster/_x86-cluster.h>
+	#include <nanvix/hal/cluster/_cluster.h>
 
 /*============================================================================*
- * Exported Interface                                                         *
+ * Interface Implementation Checking                                          *
+ *============================================================================*/
+
+#if (defined(__INTERFACE_CLUSTER_CHECK_EVENT) && (CLUSTER_HAS_EVENTS))
+
+	/* Functions */
+	#ifndef __event_drop_fn
+	#error "event_drop() not defined?"
+	#endif
+	#ifndef __event_notify_fn
+	#error "event_notify() not defined?"
+	#endif
+	#ifndef __event_wait_fn
+	#error "event_wait() not defined?"
+	#endif
+
+#endif
+
+/*============================================================================*
+ * Event Interface                                                            *
  *============================================================================*/
 
 /**
- * @addtogroup x86-cluster x86 Cluster
- * @ingroup clusters
+ * @defgroup kernel-hal-cluster-event Event
+ * @ingroup kernel-hal-cluster
  *
- * @brief x86 Cluster
+ * @brief Event Interface
  */
 /**@{*/
 
-	#include <arch/cluster/x86-cluster/cores.h>
-	#include <arch/cluster/x86-cluster/memory.h>
+	/**
+	 * @brief Notifies a local core about an event.
+	 *
+	 * @param coreid ID of target core.
+	 */
+	EXTERN void event_notify(int coreid);
 
 	/**
-	 * @name Provided Features
+	 * @brief Waits for an event.
 	 */
-	/**@{*/
-	#define CLUSTER_IS_MULTICORE  0 /**< Multicore Cluster */
-	#define CLUSTER_IS_IO         1 /**< I/O Cluster       */
-	#define CLUSTER_IS_COMPUTE    0 /**< Compute Cluster   */
-	#define CLUSTER_HAS_EVENTS    0 /**< Event Support?    */
-	/**@}*/
+	EXTERN void event_wait(void);
+
+	/**
+	 * @brief Drops any pending events in the local core.
+	 */
+	EXTERN void event_drop(void);
 
 /**@}*/
 
-#endif /* ARCH_CLUSTER_X86_CLUSTER_H_ */
+#endif /* NANVIX_HAL_CLUSTER_EVENT_H_ */
+

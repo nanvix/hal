@@ -22,13 +22,23 @@
  * SOFTWARE.
  */
 
+/* Must come first. */
 #define __NEED_HAL_CLUSTER
+
 #include <nanvix/hal/cluster.h>
-#include <nanvix/klib.h>
 #include <nanvix/const.h>
+#include <nanvix/klib.h>
 
 /* Import definitions. */
 EXTERN NORETURN void kmain(int, const char *[]);
+
+/**
+ * @brief Cores table.
+ */
+PUBLIC struct coreinfo  ALIGN(OR1K_CACHE_LINE_SIZE) cores[OR1K_CLUSTER_NUM_CORES] = {
+	{ TRUE,  CORE_RUNNING,   0, NULL, OR1K_SPINLOCK_LOCKED }, /* Master Core   */
+	{ FALSE, CORE_RESETTING, 0, NULL, OR1K_SPINLOCK_LOCKED }, /* Slave Core 1  */
+};
 
 /**
  * @brief Startup fence.
@@ -70,28 +80,38 @@ PRIVATE void or1k_fence_wait(void)
 	}
 }
 
+/*============================================================================*
+ * or1k_cluster_master_setup()                                                 *
+ *============================================================================*/
+
 /**
- * Initializes the core components for or1k.
+ * @brief Initializes the master core.
+ *
+ * The or1k_master_setup() function initializes the underlying
+ * master core. It setups the stack and then call the kernel
+ * main function.
+ *
+ * @note This function does not return.
+ *
+ * @author Davidson Francis
  */
-PUBLIC void or1k_cluster_setup(void)
+PUBLIC NORETURN void or1k_cluster_master_setup(void)
 {
-	/* Configure Memory Layout. */
-	or1k_cluster_mem_setup();
-
-	/* Enable MMU. */
-	or1k_mmu_setup();
-
-	/* Configure OMPIC. */
-	or1k_ompic_init();
-
-	/* Enable OMPIC interrupts. */
-	or1k_pic_unmask(OR1K_INT_OMPIC);
+	/* Core setup. */
+	or1k_cluster_setup();
 
 	/* Enable interrupts. */
 	or1k_mtspr(OR1K_SPR_SR, or1k_mfspr(OR1K_SPR_SR) | OR1K_SPR_SR_IEE);
 
 	or1k_fence_release();
+
+	/* Kernel main. */
+	kmain(0, NULL);
 }
+
+/*============================================================================*
+ * or1k_cluster_slave_setup()                                                  *
+ *============================================================================*/
 
 /**
  * @brief Initializes a slave core.
@@ -130,22 +150,33 @@ PUBLIC NORETURN void or1k_cluster_slave_setup(void)
 	}
 }
 
-/**
- * @brief Initializes the master core.
- *
- * The or1k_cluster_master_setup() function initializes the underlying
- * master core. It setups the stack and then call the kernel main
- * function.
- *
- * @note This function does not return.
- *
- * @author Davidson Francis
- */
-PUBLIC NORETURN void or1k_cluster_master_setup(void)
-{
-	/* Core setup. */
-	or1k_cluster_setup();
+/*============================================================================*
+ * or1k_cluster_setup()                                                        *
+ *============================================================================*/
 
-	/* Kernel main. */
-	kmain(0, NULL);
+/**
+ * @todo TODO provide a detailed description for this function.
+ *
+ * @author Pedro Henrique Penna, Davidson Francis
+ */
+PUBLIC void or1k_cluster_setup(void)
+{
+	kprintf("[hal] booting up cluster...");
+
+	/* Configure Memory Layout. */
+	or1k_cluster_mem_setup();
+
+	/* Enable MMU. */
+	or1k_mmu_setup();
+
+	/* Configure OMPIC. */
+	or1k_ompic_init();
+
+	/* Enable OMPIC interrupts. */
+	or1k_pic_unmask(OR1K_INT_OMPIC);
+
+	/* Enable interrupts. */
+	or1k_mtspr(OR1K_SPR_SR, or1k_mfspr(OR1K_SPR_SR) | OR1K_SPR_SR_IEE);
+
+	or1k_fence_release();
 }

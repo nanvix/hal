@@ -97,23 +97,14 @@
 	#ifndef ___core_reset_fn
 	#error "_core_reset() not defined?"
 	#endif
-	#ifndef __core_clear_fn
-	#error "core_clear() not defined?"
-	#endif
 	#ifndef __core_get_id_fn
 	#error "core_get_id() not defined?"
-	#endif
-	#ifndef __core_notify_fn
-	#error "core_notify() not defined?"
 	#endif
 	#ifndef __core_poweroff_fn
 	#error "core_poweroff() not defined?"
 	#endif
 	#ifndef __core_setup_fn
 	#error "core_setup() not defined?"
-	#endif
-	#ifndef __core_waitclear_fn
-	#error "core_waitclear() not defined?"
 	#endif
 
 #endif
@@ -159,13 +150,6 @@
 	EXTERN struct coreinfo cores[];
 
 	/**
-	 * @brief Clears the current IPIs pending of the underlying core.
-	 *
-	 * @author Davidson Francis
-	 */
-	EXTERN void core_clear(void);
-
-	/**
 	 * @brief Gets the ID of the underlying core.
 	 *
 	 * @returns The ID of the underlying core.
@@ -176,13 +160,6 @@
 	 * @brief Suspends execution until a start signal is received.
 	 */
 	EXTERN void core_idle(void);
-
-	/**
-	 * @brief Sends a signal.
-	 *
-	 * @param coreid ID of the target core.
-	 */
-	EXTERN void core_notify(int coreid);
 
 	/**
 	 * @brief Powers off the underlying core.
@@ -221,11 +198,6 @@
 	 * non-zero value.
 	 */
 	EXTERN int core_start(int coreid, void (*start)(void));
-
-	/**
-	 * @brief Wait and clears the current IPIs pending of the underlying core.
-	 */
-	EXTERN void core_waitclear(void);
 
 	/**
 	 * @brief Wakes up a core.
