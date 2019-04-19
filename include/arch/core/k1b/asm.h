@@ -75,14 +75,9 @@
  *============================================================================*/
 
 	/**
-	 * @brief Size of a stack frame (in bytes).
-	 */
-	#define FAST_CALL_STACK_FRAME_SIZE 16
-
-	/**
 	 * @brief Stack frame size for slow call.
 	 */
-	#define SLOW_CALL_STACK_FRAME_SIZE 80
+	#define CALL_STACK_FRAME_SIZE 80
 
 	/**
 	* @brief Offsets to Stack Frame
@@ -103,86 +98,14 @@
 	/**@}*/
 
 	/*
-	 * @brief Enters a procedure.
-	 *
-	 * The _do_prologue() macro allocates a new stack frame for the
-	 * caller procedure and saves the BP and RA registers in it.
-	 *
-	 * @note Preserved registers are intentionally not saved to reduce
-	 * overhead.
-	 */
-	.macro _do_prologue
-
-		/* Allocate a stack frame. */
-		add $sp, $sp, -FAST_CALL_STACK_FRAME_SIZE
-		;;
-
-		/* Save r0 + r1 registers. */
-		sd 8[$sp], $p0
-		;;
-
-		/*
-		 * Save RA + BP registers.
-		 * Note that temporarily we use
-		 * BP as a scratch register.
-		 */
-		sw STACK_FRAME_BP[$sp], $bp
-		;;
-		get $bp, $ra
-		;;
-		sw STACK_FRAME_RA[$sp], $bp
-		;;
-
-		/* Change stack frame. */
-		copy $bp, $sp
-		;;
-
-	.endm
-
-	/*
-	 * @brief Exits a procedure.
-	 *
-	 * The _do_epilogue() macro restores previous values of the BP and
-	 * RA registers and wipes out the current stack frame of the
-	 * caller procedure.
-	 */
-	.macro _do_epilogue
-
-		/* Restore stack frame. */
-		copy $sp, $bp
-		;;
-
-		/*
-		 * Restore BP + RA registers.
-		 * Note  that temporarily we use
-		 * BP as a scratch register.
-		 */
-		lw  $bp, STACK_FRAME_RA[$sp]
-		;;
-		set $ra, $bp
-		;;
-		lw  $bp, STACK_FRAME_BP[$sp]
-		;;
-
-		/* Restore r0 + r1 registers. */
-		ld $p0, 8[$sp]
-		;;
-
-		/* Wipe out stack frame. */
-		add $sp, $sp, FAST_CALL_STACK_FRAME_SIZE
-		;;
-
-	.endm
-
-	/*
 	 * @brief Saves preserved registers.
 	 *
 	 * @param s0 Scratch register to use.
 	 */
-	.macro _do_prologue_slow
+	.macro _do_prologue
 
 		/* Allocate stack frame. */
-		add $sp, $sp, -SLOW_CALL_STACK_FRAME_SIZE
+		add $sp, $sp, -CALL_STACK_FRAME_SIZE
 		;;
 
 		/* Save registers preserved registers. */
@@ -230,7 +153,7 @@
 	 *
 	 * @param s0 Scratch register to use.
 	 */
-	.macro _do_epilogue_slow
+	.macro _do_epilogue
 
 		/* Restore stack frame. */
 		copy $sp, $bp
@@ -271,7 +194,7 @@
 		;;
 
 		/* Wipe out stack frame. */
-		add $sp, $sp, SLOW_CALL_STACK_FRAME_SIZE
+		add $sp, $sp, CALL_STACK_FRAME_SIZE
 		;;
 
 	.endm

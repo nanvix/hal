@@ -99,7 +99,7 @@ _k1b_do_syscall:
 	_do_syscall.continue:
 
 		/* Save preserved registers. */
-		_do_prologue_slow
+		_do_prologue
 		;;
 
 		/* mOS supports trap calls with 8 arguments, and thus the trap
@@ -122,7 +122,7 @@ _k1b_do_syscall:
 		;;
 
 		/* Restore preserved registers. */
-		_do_epilogue_slow
+		_do_epilogue
 		;;
 
 	_do_syscall.out:
@@ -141,9 +141,6 @@ _k1b_do_syscall:
  */
 .align 8
 _k1b_do_excp:
-
-	_do_prologue
-	;;
 
 	/*
 	 * Save execution context
@@ -264,9 +261,6 @@ _k1b_do_excp:
 	 * Restore saved execution context.
 	 */
 	k1b_context_restore
-	;;
-
-	_do_epilogue
 	;;
 
 	/* Restore exception context. */
