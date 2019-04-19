@@ -151,16 +151,6 @@ _k1b_do_excp:
 	 */
 	k1b_context_save
 	;;
-	ld  $p0 = 8[$bp]            /* r0 + r1 */
-	;;
-	sd  K1B_CONTEXT_R0[$sp], $p0
-	;;
-	ld  $p2 = 0[$bp]            /* ra + bp */
-	;;
-	sw  K1B_CONTEXT_RA[$sp], $r2
-	;;
-	sw  K1B_CONTEXT_R13[$sp], $r3
-	;;
 
 	/*
 	 * Save a reference to execution context
