@@ -116,7 +116,7 @@
 #endif
 
 #ifdef __need_wchar_t
-#ifndef _wchar_t	
+#ifndef _wchar_t
 #define _wchar_t
 
 	/**
@@ -129,7 +129,7 @@
 
 
 #ifdef __need_wint_t
-#ifndef _wint_t	
+#ifndef _wint_t
 #define _wint_t
 
 	/**
@@ -156,7 +156,7 @@
 #ifdef _NEED_WSTATUS
 #ifndef _WSTATUS
 #define _WSTATUS
-	
+
 	#define WEXITSTATUS(status) \
 		(status & 0xff)         \
 
@@ -165,7 +165,7 @@
 
     #define WIFSIGNALED(status) \
 		((status >> 9) & 1)     \
-		
+
 	#define WIFSTOPPED(status) \
 		(((status) >> 10) & 1) \
 

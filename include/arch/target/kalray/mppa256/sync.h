@@ -110,7 +110,7 @@
 	 * @param nodes  IDs of target NoC nodes.
 	 * @param nnodes Number of target NoC nodes.
 	 * @param type   Type of synchronization point.
-	 * 
+	 *
 	 * @return Zero if send signal correctly and non zero otherwise.
 	 */
 	EXTERN int mppa256_sync_signal(int syncid, const int *nodes, int nnodes, int type);

@@ -89,7 +89,7 @@ hal-target:
 distclean: distclean-target
 	@rm -rf $(IMAGE)
 	@rm -rf $(BINDIR) $(LIBDIR)
-	@find $(SRCDIR) -name "*.o" -exec rm -rf {} \;	
+	@find $(SRCDIR) -name "*.o" -exec rm -rf {} \;
 
 # Cleans compilation files.
 distclean-target:

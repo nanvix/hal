@@ -119,7 +119,7 @@ PUBLIC int or1k_huge_page_map(struct pte *pgdir, paddr_t paddr, vaddr_t vaddr, i
 }
 
 /**
- * @brief For a given page directory, virtual and physical addresses, maps a 
+ * @brief For a given page directory, virtual and physical addresses, maps a
  * specified page table into a page directory entry.
  *
  * @param pgdir Page table to be used.
@@ -137,7 +137,7 @@ PUBLIC int or1k_pgtab_map(struct pde *pgdir, paddr_t paddr, vaddr_t vaddr)
 		return (-EINVAL);
 
 	idx = pde_idx_get(vaddr);
-	
+
 	pgdir[idx].cc = 1;
 	pgdir[idx].present = 1;
 	pgdir[idx].wbc = 1;

@@ -35,10 +35,10 @@
 PUBLIC size_t kstrlen(const char *str)
 {
 	const char *p;
-	
+
 	/* Count the number of characters. */
 	for (p = str; *p != '\0'; p++)
 		noop();
-	
+
 	return (p - str);
 }

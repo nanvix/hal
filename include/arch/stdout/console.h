@@ -50,7 +50,7 @@
 	#define LIGHT_MAGNETA 0x0d
 	#define LIGHT_BROWN   0x0e
 	#define WHITE         0x0f
-	
+
 	/**
 	 * @name Video Specifications (Text Mode)
 	 */
@@ -59,7 +59,7 @@
 	#define VIDEO_WIDTH      80 /**< Video width.          */
 	#define VIDEO_HIGH       25 /**< Video high.           */
 	/**@}*/
-	
+
 	/**
 	 * @name Video Registers
 	 */
@@ -67,7 +67,7 @@
 	#define VIDEO_CRTL_REG 0x3d4 /**< Video control register. */
 	#define VIDEO_DATA_REG 0x3d5 /**< Video data register.    */
 	/**@}*/
-		
+
 	/**
 	 * @name Offset to Video Control Registers
 	 */

@@ -52,11 +52,11 @@ PRIVATE void set_gdte
 	/* Set segment base address. */
 	gdt[n].base_low = (base & 0xffffff);
 	gdt[n].base_high = (base >> 24) & 0xff;
-	
+
 	/* Set segment limit. */
 	gdt[n].limit_low = (limit & 0xffff);
 	gdt[n].limit_high = (limit >> 16) & 0xf;
-	
+
 	/* Set granularity and access. */
 	gdt[n].granularity = granularity;
 	gdt[n].access = access;
@@ -74,7 +74,7 @@ PUBLIC void gdt_setup(void)
 	/* Blank GDT and GDT pointer. */
 	kmemset(gdt, 0, sizeof(gdt));
 	kmemset(&gdtptr, 0, GDTPTR_SIZE);
-	
+
 	/* Set GDT entries. */
 	set_gdte(GDT_NULL, 0, 0x00000, 0x0, 0x00);
 	set_gdte(GDT_CODE_DPL0, 0, 0xfffff, 0xc, 0x9a);
@@ -82,11 +82,11 @@ PUBLIC void gdt_setup(void)
 	set_gdte(GDT_CODE_DPL3, 0, 0xfffff, 0xc, 0xfa);
 	set_gdte(GDT_DATA_DPL3, 0, 0xfffff, 0xc, 0xf2);
 	set_gdte(GDT_TSS, (unsigned) &tss, (unsigned)&tss + TSS_SIZE, 0x0, 0xe9);
-	
+
 	/* Set GDT pointer. */
 	gdtptr.size = sizeof(gdt) - 1;
 	gdtptr.ptr = (unsigned) gdt;
-	
+
 	/* Flush GDT. */
 	gdt_flush(&gdtptr);
 }

@@ -35,7 +35,7 @@
 .section .text
 
 /*
- * Issue an Upcall 
+ * Issue an Upcall
  */
 .align 8
 _upcall_issue:

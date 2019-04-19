@@ -28,31 +28,31 @@
 #ifndef _ASM_FILE_
 
 	#include <stdint.h>
-	
+
 	/* Used for system times in clock ticks. */
 	typedef int clock_t;
 
 	/* Used for device IDs. */
 	typedef unsigned dev_t;
-	
+
 	/* Used for disk addresses. */
 	typedef unsigned daddr_t;
-	
+
 	/* Used as a general identifier. */
 	typedef int id_t;
-	
+
 	/* Used for some file attributes. */
 	typedef int gid_t;
-	
+
 	/* Used for some file attributes. */
 	typedef int mode_t;
-	
+
 	/* Used for file sizes. */
 	typedef signed off_t;
 
 	/* Used for process IDs and process group IDs. */
 	typedef signed pid_t;
-	
+
 	/* Used for time in seconds. */
 	typedef signed time_t;
 
@@ -65,10 +65,10 @@
 	#define __need_size_t
 	#define __need_ssize_t
 	#include <decl.h>
-	
+
 	/* Used for user IDs. */
 	typedef int uid_t;
-	
+
 #endif /* _ASM_FILE */
 
 #endif /* TYPES_H_ */
