@@ -174,7 +174,7 @@
 	 * @returns Upon successful completion, zero is returned. Upon
 	 * failure, a negative error code is returned instead.
 	 */
-	EXTERN int rv32gc_page_map(struct pte *pgtab, paddr_t paddr, vaddr_t vaddr, int w, int x);
+	EXTERN int rv32gc_page_map(struct pte *pgtab, rv32gc_paddr_t paddr, rv32gc_vaddr_t vaddr, int w, int x);
 
 	/**
 	 * @brief Maps a huge page.
@@ -188,7 +188,7 @@
 	 * @returns Upon successful completion, zero is returned. Upon
 	 * failure, a negative error code is returned instead.
 	 */
-	EXTERN int rv32gc_huge_page_map(struct pte *pgdir, paddr_t paddr, vaddr_t vaddr, int w, int x);
+	EXTERN int rv32gc_huge_page_map(struct pte *pgdir, rv32gc_paddr_t paddr, rv32gc_vaddr_t vaddr, int w, int x);
 
 	/**
 	 * @brief Maps a page table.
@@ -200,7 +200,7 @@
 	 * @returns Upon successful completion, zero is returned. Upon
 	 * failure, a negative error code is returned instead.
 	 */
-	EXTERN int rv32gc_pgtab_map(struct pde *pgdir, paddr_t paddr, vaddr_t vaddr);
+	EXTERN int rv32gc_pgtab_map(struct pde *pgdir, rv32gc_paddr_t paddr, rv32gc_vaddr_t vaddr);
 
 #endif /* _ASM_FILE_ */
 
@@ -279,6 +279,15 @@
 	/**@}*/
 
 #ifndef _ASM_FILE_
+
+	/**
+	 * @name Memory Types
+	 */
+	/**@{*/
+	typedef rv32gc_paddr_t paddr_t; /**< Physical Address */
+	typedef rv32gc_frame_t frame_t; /**< Frame Number     */
+	typedef rv32gc_vaddr_t vaddr_t; /**< Virtual Address  */
+	/**@}*/
 
 	/**
 	 * @brief Clears a page directory entry.
@@ -785,7 +794,7 @@
 	 *
 	 * @author Pedro Henrique Penna
 	 */
-	static inline unsigned pte_idx_get(vaddr_t vaddr)
+	static inline unsigned pte_idx_get(rv32gc_vaddr_t vaddr)
 	{
 		return (RV32GC_PTE_IDX(RV32GC_VADDR(vaddr)));
 	}
@@ -800,7 +809,7 @@
 	 *
 	 * @author Pedro Henrique Penna
 	 */
-	static inline unsigned pde_idx_get(vaddr_t vaddr)
+	static inline unsigned pde_idx_get(rv32gc_vaddr_t vaddr)
 	{
 		return (RV32GC_PDE_IDX(RV32GC_VADDR(vaddr)));
 	}
@@ -815,7 +824,7 @@
 	 *
 	 * @author Pedro Henrique Penna
 	 */
-	static inline struct pde *pde_get(struct pde *pgdir, vaddr_t vaddr)
+	static inline struct pde *pde_get(struct pde *pgdir, rv32gc_vaddr_t vaddr)
 	{
 		/* Invalid page directory. */
 		if (pgdir == NULL)
@@ -834,7 +843,7 @@
 	 *
 	 * @author Pedro Henrique Penna
 	 */
-	static inline struct pte *pte_get(struct pte *pgtab, vaddr_t vaddr)
+	static inline struct pte *pte_get(struct pte *pgtab, rv32gc_vaddr_t vaddr)
 	{
 		/* Invalid page table. */
 		if (pgtab == NULL)
