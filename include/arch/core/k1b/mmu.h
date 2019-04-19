@@ -652,7 +652,7 @@
 
 		return (&pgtab[pte_idx_get(vaddr)]);
 	}
-	
+
 	/**
 	 * @brief Checks if the MMU is enabled.
 	 *

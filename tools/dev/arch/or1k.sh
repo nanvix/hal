@@ -25,7 +25,7 @@ export CURDIR=`pwd`
 export WORKDIR=$CURDIR/tools/dev/toolchain/or1k
 export PREFIX=$WORKDIR
 export TARGET=or1k-elf
-export COMMIT=7bb98e7d6f4f2b636e5d1ddb87645ca6ccfdde98
+export COMMIT=5b661a015490505201e21284914a169bcdad877e
 
 # Retrieve the number of processor cores
 NCORES=`grep -c ^processor /proc/cpuinfo`

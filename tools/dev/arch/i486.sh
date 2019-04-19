@@ -25,7 +25,7 @@ export CURDIR=`pwd`
 export WORKDIR=$CURDIR/tools/dev/toolchain/i486
 export PREFIX=$WORKDIR
 export TARGET=i486-elf
-export COMMIT=a28342821bf8784fd03abbe577eae64b805cc1f9
+export COMMIT=43a94d5511bc158033075f4efa63ba109fd64bc9
 
 # Retrieve the number of processor cores
 NCORES=`grep -c ^processor /proc/cpuinfo`

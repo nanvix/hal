@@ -406,7 +406,7 @@ PUBLIC int mppa256_sync_signal(int syncid, const int *nodes, int nnodes, int typ
 
 	if (bostan_nodes_convert(_nodes, nodes, nnodes) < 0)
 		return (-EINVAL);
-	
+
 	interface = UNDERLYING_TX_INTERFACE(syncid);
 	clusterid = bostan_cluster_get_id();
 

@@ -51,7 +51,7 @@ PRIVATE int resource_dumb_alloc(const struct resource_pool *pool)
 	for (int i = 0; i < n; i++)
 	{
 		struct resource *resource;
-			
+
 		resource = (struct resource *)(&base[i*size]);
 
 		/* Found. */
@@ -84,7 +84,7 @@ PRIVATE void resource_dumb_free(const struct resource_pool *pool, int id)
 	char *base = (char *) pool->resources;
 	size_t size = pool->resource_size;
 	struct resource *resource;
-			
+
 	resource = (struct resource *)(&base[id*size]);
 
 	resource_set_unused(resource);

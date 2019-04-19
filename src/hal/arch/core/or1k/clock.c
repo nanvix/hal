@@ -103,7 +103,7 @@ PUBLIC void or1k_clock_init(unsigned freq)
 	/* Clock rate. */
 	clock_delta = OR1K_CPU_FREQUENCY;
 
-	/* 
+	/*
 	 * Clock calibrate.
 	 *
 	 * Since the timer is disabled by default, its necessary to
