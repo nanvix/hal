@@ -146,7 +146,7 @@
 		#define K1B_CLUSTER_HYPER_HIGH_BASE_VIRT 0x001f8000       /**< High Hypervisor Base */
 		#define K1B_CLUSTER_HYPER_HIGH_END_VIRT  0x00200000       /**< High Hypervisor End  */
 	#endif
-	#define K1B_CLUSTER_USTACK_BASE_VIRT K1B_CLUSTER_HYPER_HIGH_BASE_VIRT /**< User Stack           */
+	#define K1B_CLUSTER_USTACK_BASE_VIRT K1B_CLUSTER_HYPER_HIGH_BASE_VIRT /**< User Stack */
 #ifndef _ASM_FILE_
 	extern const vaddr_t K1B_CLUSTER_KERNEL_BASE_VIRT;            /**< Kernel Base          */
 	extern const vaddr_t K1B_CLUSTER_KERNEL_END_VIRT;             /**< Kernel End           */
@@ -156,6 +156,8 @@
 	extern const vaddr_t K1B_CLUSTER_USER_BASE_VIRT;              /**< User Base            */
 	extern const vaddr_t K1B_CLUSTER_USER_END_VIRT;               /**< User End             */
 #endif
+	#define K1B_CLUSTER_USER_BASE_VIRT 0x80000000                 /**< User Base            */
+	#define K1B_CLUSTER_USER_END_VIRT  0xf0000000                 /**< User End             */
 	/**@}*/
 
 #ifndef _ASM_FILE_
