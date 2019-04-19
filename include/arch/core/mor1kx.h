@@ -40,8 +40,7 @@
 	#include <arch/core/or1k/excp.h>
 	#include <arch/core/or1k/int.h>
 	#include <arch/core/or1k/mmu.h>
-	#include <arch/core/or1k/ompic.h>
-	#include <arch/core/or1k/pic.h>
+	#include <arch/core/or1k/lpic.h>
 	#include <arch/core/or1k/spinlock.h>
 	#include <arch/core/or1k/tlb.h>
 	#include <arch/core/or1k/trap.h>

@@ -42,7 +42,6 @@ _upcall_issue:
 	_do_prologue_slow      // Save all preserved registers since
 	                       // they may be used by the HAL.
 
-bug0:
 	leal saved_sp, %eax
 	movl %esp, (%eax)
 
@@ -60,7 +59,6 @@ bug0:
 	jmp i486_upcall_ret
 
 _upcall_issue_ret:
-bug1:
 
 	/* Switch back to real stack. */
 	leal saved_sp, %eax

@@ -66,12 +66,12 @@
 	#define I486_LPIC_ICW1_SINGLE     0x02 /**< Single (Cascade) mode       */
 	#define I486_LPIC_ICW1_INTERVAL4  0x04 /**< Call Address Interval 4 (8) */
 	#define I486_LPIC_ICW1_LEVEL      0x08 /**< Level triggered (edge) mode */
-	#define I486_LPIC_ICW1_INIT	      0x10 /**< Initialization Required     */
-	#define I486_LPIC_ICW4_8086	      0x01 /**< 8086/88 (MCS-80/85) Mode    */
-	#define I486_LPIC_ICW4_AUTO	      0x02 /**< Auto EOI                    */
+	#define I486_LPIC_ICW1_INIT       0x10 /**< Initialization Required     */
+	#define I486_LPIC_ICW4_8086       0x01 /**< 8086/88 (MCS-80/85) Mode    */
+	#define I486_LPIC_ICW4_AUTO       0x02 /**< Auto EOI                    */
 	#define I486_LPIC_ICW4_BUF_SLAVE  0x08 /**< Buffered Mode/Slave         */
 	#define I486_LPIC_ICW4_BUF_MASTER 0x0C /**< Buffered Mode/Master        */
-	#define I486_LPIC_ICW4_SFNM	      0x10 /**< Special Fully Nested (not)  */
+	#define I486_LPIC_ICW4_SFNM       0x10 /**< Special Fully Nested (not)  */
 	/**@}*/
 
 	/**
