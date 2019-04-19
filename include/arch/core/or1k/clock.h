@@ -37,8 +37,12 @@
 
 	/**
 	 * @brief Estimated CPU frequency (in Hz), 20Mhz/30Hz.
+	 *
+	 * @todo TODO move this to Cluster AL.
 	 */
 	#define OR1K_CPU_FREQUENCY 666666
+
+#ifndef _ASM_FILE_
 
 	/**
 	 * @brief Initializes the clock driver in the or1k architecture.
@@ -52,40 +56,8 @@
 	 */
 	EXTERN void or1k_clock_reset(void);
 
+#endif /* !_ASM_FILE_ */
+
 /**@}*/
-
-/*============================================================================*
- * Exported Interface                                                         *
- *============================================================================*/
-
-/**
- * @cond or1k
- */
-
-	/**
-	 * @name Exported Functions
-	 */
-	/**@{*/
-	#define __clock_init_fn  /**< clock_init()  */
-	#define __clock_reset_fn /**< clock_reset() */
-	/**@}*/
-
-	/**
-	 * @see or1k_clock_init().
-	 */
-	static inline void clock_init(unsigned freq)
-	{
-		or1k_clock_init(freq);
-	}
-
-	/**
-	 * @see or1k_clock_reset().
-	 */
-	static inline void clock_reset(void)
-	{
-		or1k_clock_reset();
-	}
-
-/**@endcond*/
 
 #endif /* ARCH_CORE_OR1K_CLOCK */

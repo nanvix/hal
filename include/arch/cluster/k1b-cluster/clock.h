@@ -22,15 +22,54 @@
  * SOFTWARE.
  */
 
-#include <arch/core/or1k/int.h>
-#include <arch/core/or1k/core.h>
-#include <nanvix/const.h>
-#include <nanvix/klib.h>
-#include <errno.h>
+#ifndef ARCH_CLUSTER_K1B_CLUSTER_CLOCK_H_
+#define ARCH_CLUSTER_K1B_CLUSTER_CLOCK_H_
+
+	/* Cluster Interface Implementation */
+	#include <arch/cluster/k1b-cluster/_k1b-cluster.h>
 
 /**
- * @brief Interrupt handlers.
+ * @addtogroup k1b-cluster-timer Timer
+ * @ingroup k1b-cluster
+ *
+ * @brief Programmable Timer Interface
  */
-PUBLIC void (*interrupt_handlers[OR1K_INT_NUM])(int) = {
-	NULL, NULL, NULL
-};
+/**@{*/
+
+/*============================================================================*
+ * Exported Interface                                                         *
+ *============================================================================*/
+
+/**
+ * @cond k1b_cluster
+ */
+
+	/**
+	 * @name Exported Functions
+	 */
+	/**@{*/
+	#define __clock_init_fn  /**< clock_init()  */
+	#define __clock_reset_fn /**< clock_reset() */
+	/**@}*/
+
+	/**
+	 * @see k1b_clock_init().
+	 */
+	static inline void clock_init(unsigned freq)
+	{
+		k1b_clock_init(freq);
+	}
+
+	/**
+	 * Dummy function
+	 */
+	static inline void clock_reset(void)
+	{
+		/* noop */
+	}
+
+/**@endcond*/
+
+/**@}*/
+
+#endif /* ARCH_CLUSTER_K1B_CLUSTER_CLOCK */

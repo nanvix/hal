@@ -22,48 +22,60 @@
  * SOFTWARE.
  */
 
-#ifndef CLUSTER_K1B_CLUSTER_H_
-#define CLUSTER_K1B_CLUSTER_H_
+#ifndef NANVIX_HAL_CLUSTER_CLOCK_H_
+#define NANVIX_HAL_CLUSTER_CLOCK_H_
 
-	#ifndef __NEED_CLUSTER_K1B
-		#error "bad cluster configuration?"
-	#endif
+	/* Core Interface Implementation */
+	#include <nanvix/hal/cluster/_cluster.h>
 
-	/* Cluster Interface Implementation */
-	#include <arch/cluster/k1b-cluster/_k1b-cluster.h>
+	#include <nanvix/const.h>
 
 /*============================================================================*
- * Exported Interface                                                         *
+ * Interface Implementation Checking                                          *
+ *============================================================================*/
+
+#if defined(__INTERFACE_CHECK) || defined(__INTERFACE_CHECK_CLOCK)
+
+	/* Constants */
+	#ifndef INTERRUPT_CLOCK
+	#error "INTERRUPT_CLOCK not defined"
+	#endif
+
+	/* Functions */
+	#ifndef __clock_init_fn
+	#error "clock_init() not defined?"
+	#endif
+	#ifndef __clock_reset_fn
+	#error "clock_reset() not defined?"
+	#endif
+
+#endif
+
+/*============================================================================*
+ * Clock Device Interface                                                     *
  *============================================================================*/
 
 /**
- * @addtogroup k1b-cluster Bostan Cluster
- * @ingroup clusters
+ * @addtogroup kernel-hal-core-clock Clock
+ * @ingroup kernel-hal-core
  *
- * @brief Bostan Cluster
+ * @brief Clock Device Interface HAL Interface
  */
 /**@{*/
 
-	#include <arch/cluster/k1b-cluster/cores.h>
-	#include <arch/cluster/k1b-cluster/clock.h>
-	#include <arch/cluster/k1b-cluster/event.h>
-	#include <arch/cluster/k1b-cluster/memory.h>
+	/**
+	 * @brief Initializes the clock device
+	 *
+	 * @param freq Frequency for the clock device.
+	 */
+	EXTERN void clock_init(unsigned freq);
 
 	/**
-	 * @name Provided Features
+	 * @brief Resets the timer of the clock device.
 	 */
-	/**@{*/
-	#define CLUSTER_IS_MULTICORE   1 /**< Multicore Cluster */
-	#ifdef __k1io__
-		#define CLUSTER_IS_IO      1 /**< I/O Cluster       */
-		#define CLUSTER_IS_COMPUTE 0 /**< Compute Cluster   */
-	#else
-		#define CLUSTER_IS_IO      0 /**< I/O Cluster       */
-		#define CLUSTER_IS_COMPUTE 1 /**< Compute Cluster   */
-	#endif
-	#define CLUSTER_HAS_EVENTS     1 /**< Event Support?    */
-	/**@}*/
+	EXTERN void clock_reset(void);
 
 /**@}*/
 
-#endif /* CLUSTER_K1B_CLUSTER_H_ */
+#endif /* NANVIX_HAL_CLUSTER_CLOCK_H_ */
+

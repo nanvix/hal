@@ -23,6 +23,7 @@
  */
 
 #include <arch/core/rv32gc/clock.h>
+#include <arch/core/rv32gc/mcall.h>
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
 #include <stdint.h>
@@ -45,12 +46,59 @@ PRIVATE uint64_t clock_delay = 0;
 /**
  * @brief 64-bit timer register.
  */
-PUBLIC uint64_t *rv32gc_mtime = NULL;
+PRIVATE uint64_t *rv32gc_mtime = NULL;
 
 /**
  * @brief 64-bit timer compare register.
  */
-PUBLIC uint64_t *rv32gc_mtimecmp = NULL;
+PRIVATE uint64_t *rv32gc_mtimecmp = NULL;
+
+/**
+ * @brief Reads the mtime register.
+ *
+ * @returns The value of the mtime register.
+ */
+PRIVATE uint64_t rv32gc_mtime_read(void)
+{
+	uint32_t lo;
+	uint32_t hi;
+
+	hi = *((uint32_t *)(rv32gc_mtime) + 1);
+	lo = *((uint32_t *)(rv32gc_mtime));
+
+	return (((hi & 0xffffffffull) << 32) | (lo & 0xffffffffull));
+}
+
+/**
+ * @brief Reads the mtimecmp register.
+ *
+ * @returns The value of the mtimecmp register.
+ */
+PRIVATE uint64_t rv32gc_mtimecmp_read(void)
+{
+	uint32_t lo;
+	uint32_t hi;
+
+	hi = *((uint32_t *)(rv32gc_mtimecmp) + 1);
+	lo = *((uint32_t *)(rv32gc_mtimecmp));
+
+	return (((hi & 0xffffffffull) << 32) | (lo & 0xffffffffull));
+}
+
+/**
+ * @brief Writes to the mtimecmp register.
+ *
+ * @param time Value to write.
+ */
+PRIVATE void rv32gc_mtimecmp_write(uint64_t time)
+{
+	*((uint32_t *)(rv32gc_mtimecmp) + 1) = 0xffffffff;
+	*((uint32_t *)(rv32gc_mtimecmp)) = (uint32_t)(time & 0xffffffff);
+	*((uint32_t *)(rv32gc_mtimecmp) + 1) =
+		(uint32_t)((time & 0xffffffff00000000ull) >> 32);
+
+	rv32gc_mcall_timer_ack();
+}
 
 /**
  * @brief Calibrates the clock.

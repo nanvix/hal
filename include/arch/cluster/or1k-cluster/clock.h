@@ -22,60 +22,56 @@
  * SOFTWARE.
  */
 
-#ifndef NANVIX_HAL_CLOCK_H_
-#define NANVIX_HAL_CLOCK_H_
+#ifndef ARCH_CLUSTER_OR1K_CLUSTER_CLOCK_H_
+#define ARCH_CLUSTER_OR1K_CLUSTER_CLOCK_H_
 
-	/* Core Interface Implementation */
-	#include <nanvix/hal/core/_core.h>
+	/* Cluster Interface Implementation */
+	#include <arch/cluster/or1k-cluster/_or1k-cluster.h>
+
+/**
+ * @addtogroup or1k-core-clock Clock
+ * @ingroup or1k-core
+ *
+ * @brief Integrated Clock Device
+ */
+/**@{*/
 
 	#include <nanvix/const.h>
 
 /*============================================================================*
- * Interface Implementation Checking                                          *
- *============================================================================*/
-
-#if defined(__INTERFACE_CHECK) || defined(__INTERFACE_CHECK_CLOCK)
-
-	/* Constants */
-	#ifndef INTERRUPT_CLOCK
-	#error "INTERRUPT_CLOCK not defined"
-	#endif
-
-	/* Functions */
-	#ifndef __clock_init_fn
-	#error "clock_init() not defined?"
-	#endif
-	#ifndef __clock_reset_fn
-	#error "clock_reset() not defined?"
-	#endif
-
-#endif
-
-/*============================================================================*
- * Clock Device Interface                                                     *
+ * Exported Interface                                                         *
  *============================================================================*/
 
 /**
- * @addtogroup kernel-hal-core-clock Clock
- * @ingroup kernel-hal-core
- *
- * @brief Clock Device Interface HAL Interface
+ * @cond or1k
  */
-/**@{*/
 
 	/**
-	 * @brief Initializes the clock device
-	 *
-	 * @param freq Frequency for the clock device.
+	 * @name Exported Functions
 	 */
-	EXTERN void clock_init(unsigned freq);
+	/**@{*/
+	#define __clock_init_fn  /**< clock_init()  */
+	#define __clock_reset_fn /**< clock_reset() */
+	/**@}*/
 
 	/**
-	 * @brief Resets the timer of the clock device.
+	 * @see or1k_clock_init().
 	 */
-	EXTERN void clock_reset(void);
+	static inline void clock_init(unsigned freq)
+	{
+		or1k_clock_init(freq);
+	}
+
+	/**
+	 * @see or1k_clock_reset().
+	 */
+	static inline void clock_reset(void)
+	{
+		or1k_clock_reset();
+	}
+
+/**@endcond*/
 
 /**@}*/
 
-#endif /* NANVIX_HAL_CLOCK_H_ */
-
+#endif /* ARCH_CLUSTER_OR1K_CLUSTER_CLOCK */
