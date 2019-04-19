@@ -48,38 +48,11 @@ see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
 #ifndef STDARG_H_
 #define STDARG_H_
 
-#if defined(__x86__)
-
-    typedef char* va_list;
-
-    #define __va_rounded_size(TYPE)  \
-      (((sizeof (TYPE) + sizeof (int) - 1) / sizeof (int)) * sizeof (int))
-
-    #define va_start(AP, LASTARG) \
-        (AP = ((char *) &(LASTARG) + __va_rounded_size (LASTARG)))
-
-    void va_end (va_list);
-    #define va_end(AP)
-
-    #define va_arg(AP, TYPE)                        \
-      (AP += __va_rounded_size (TYPE),              \
-      *((TYPE *) (AP - __va_rounded_size (TYPE))))  \
-
-    #ifdef __need___va_list
-    #ifndef __VALIST
-    #define __VALIST char*
-    #endif
-    #endif
-
-#elif (defined(__openrisc__) || defined(__optimsoc__) || defined(__k1b__) || defined(__riscv32__))
-
 	#define va_start(v,l) __builtin_va_start(v,l)
 	#define va_end(v)     __builtin_va_end(v)
 	#define va_arg(v,l)   __builtin_va_arg(v,l)
-	#define va_copy(v,l)   __builtin_va_copy(v,l)
+	#define va_copy(v,l)  __builtin_va_copy(v,l)
 
 	typedef __builtin_va_list va_list;
-
-#endif
 
 #endif /* STDARG_H_ */
