@@ -110,6 +110,15 @@
 	#define __MEMORY_TYPES
 
 		/**
+		 * @name Casters for Memory Types
+		 */
+		/**@{*/
+		#define I486_PADDR(x) ((paddr_t)(x)) /**< To Physical Address */
+		#define I486_VADDR(x) ((vaddr_t)(x)) /**< To Virtual Address  */
+		#define I486_FRAME(x) ((frame_t)(x)) /**< To Frame Number     */
+		/**@}*/
+
+		/**
 		 * @brief Virtual address.
 		 */
 		typedef uint32_t vaddr_t;
