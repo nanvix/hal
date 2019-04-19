@@ -25,9 +25,12 @@
 /* Must come first. */
 #define __NEED_CORE_CONTEXT
 #define __NEED_CORE_TYPES
+#define __NEED_CORE_REGS
 
 #include <arch/core/rv32gc/ctx.h>
 #include <arch/core/rv32gc/excp.h>
+#include <arch/core/rv32gc/regs.h>
+#include <arch/core/rv32gc/mcall.h>
 #include <arch/core/rv32gc/types.h>
 #include <nanvix/const.h>
 #include <nanvix/klib.h>

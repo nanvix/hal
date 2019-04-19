@@ -29,18 +29,17 @@
 	#define __NEED_CORE_TYPES
 	#define __NEED_CORE_REGS
 
-	#include <arch/core/rv32gc/regs.h>
-	#include <arch/core/rv32gc/types.h>
-	#include <arch/core/rv32gc/mcall.h>
-
 /**
  * @addtogroup rv32gc-core
  */
 /**@{*/
 
-#ifndef _ASM_FILE_
-
+	#include <arch/core/rv32gc/regs.h>
+	#include <arch/core/rv32gc/types.h>
+	#include <arch/core/rv32gc/mcall.h>
 	#include <nanvix/const.h>
+
+#ifndef _ASM_FILE_
 
 	/**
 	 * @brief Initializes the underlying core.

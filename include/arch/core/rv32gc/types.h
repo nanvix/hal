@@ -40,8 +40,8 @@
 /**@{*/
 
 #ifdef __NEED_CORE_TYPES
-#ifndef __CORE_CONSTANTS
-#define __CORE_CONSTANTS
+#ifndef __RV32GC_CORE_CONSTANTS
+#define __RV32GC_CORE_CONSTANTS
 
 	/**
 	 * @name Bit-Length of Core Types
@@ -77,7 +77,7 @@
 	#define RV32GC_DWORD_PTR(x)  ((rv32gc_dword_t *)(x)) /**< To Double Word Pointer */
 	/**@}*/
 
-#endif
+#endif /* __RV32GC_CORE_CONSTANTS */
 #endif
 
 /**@}*/
@@ -88,8 +88,8 @@
 /**@{*/
 
 #ifdef __NEED_MEMORY_TYPES
-#ifndef __MEMORY_CONSTANTS
-#define __MEMORY_CONSTANTS
+#ifndef __RV32GC_MEMORY_CONSTANTS
+#define __RV32GC_MEMORY_CONSTANTS
 
 	/**
 	 * @name Bit-Length of Memory Types
@@ -107,7 +107,7 @@
 	#define RV32GC_VADDR_BYTE 4 /**< Virtual Address  */
 	/**@}*/
 
-#endif
+#endif /* __RV32GC_MEMORY_CONSTANTS */
 #endif
 
 /**@}*/
@@ -120,8 +120,8 @@
 	/**@{*/
 
 	#ifdef __NEED_MEMORY_TYPES
-	#ifndef __MEMORY_TYPES
-	#define __MEMORY_TYPES
+	#ifndef __RV32GC_MEMORY_TYPES
+	#define __RV32GC_MEMORY_TYPES
 
 		/**
 		 * @name Casters for Memory Types
@@ -147,7 +147,7 @@
 		 */
 		typedef uint32_t frame_t;
 
-	#endif
+	#endif /* __RV32GC_MEMORY_TYPES */
 	#endif
 
 	/**@}*/
@@ -158,21 +158,21 @@
 	/**@{*/
 
 	#ifdef __NEED_CORE_TYPES
-	#ifndef __CORE_TYPES
-	#define __CORE_TYPES
+	#ifndef __RV32GC_CORE_TYPES
+	#define __RV32GC_CORE_TYPES
 
 		/**
-		 * @brief Makes a double word.
+		 * @brief Makes a half word.
 		 *
-		 * @param a High word.
-		 * @param b Low word.
+		 * @param a High byte.
+		 * @param b Low byte.
 		 *
-		 * @returns A dobule word.
+		 * @param A half word.
 		 */
-		#define RV32GC_MAKE_DWORD(a,b)                             \
-		RV32GC_DWORD(                                              \
-			((RV32GC_WORD(a) & 0xffffffffULL) << RV32GC_WORD_BIT) | \
-			((RV32GC_WORD(b) & 0xffffffffULL))                     \
+		#define RV32GC_MAKE_HWORD(a,b)                     \
+		RV32GC_HWORD(                                      \
+			((RV32GC_BYTE(a) & 0xff) << RV32GC_BYTE_BIT) | \
+			((RV32GC_BYTE(b) & 0xff))                      \
 		)
 
 		/**
@@ -183,24 +183,24 @@
 		 *
 		 * @param A word.
 		 */
-		#define RV32GC_MAKE_WORD(a,b)                         \
-		RV32GC_WORD(                                          \
+		#define RV32GC_MAKE_WORD(a,b)                          \
+		RV32GC_WORD(                                           \
 			((RV32GC_HWORD(a) & 0xffff) << RV32GC_HWORD_BIT) | \
-			((RV32GC_HWORD(b) & 0xffff))                      \
+			((RV32GC_HWORD(b) & 0xffff))                       \
 		)
 
 		/**
-		 * @brief Makes a half word.
+		 * @brief Makes a double word.
 		 *
-		 * @param a High byte.
-		 * @param b Low byte.
+		 * @param a High word.
+		 * @param b Low word.
 		 *
-		 * @param A half word.
+		 * @returns A dobule word.
 		 */
-		#define RV32GC_MAKE_HWORD(a,b)                    \
-		RV32GC_HWORD(                                     \
-			((RV32GC_BYTE(a) & 0xff) << RV32GC_BYTE_BIT) | \
-			((RV32GC_BYTE(b) & 0xff))                     \
+		#define RV32GC_MAKE_DWORD(a,b)                              \
+		RV32GC_DWORD(                                               \
+			((RV32GC_WORD(a) & 0xffffffffULL) << RV32GC_WORD_BIT) | \
+			((RV32GC_WORD(b) & 0xffffffffULL))                      \
 		)
 
 		/**
@@ -213,7 +213,7 @@
 		typedef uint64_t rv32gc_dword_t; /**< Double Word */
 		/**@}*/
 
-	#endif
+	#endif /* __RV32GC_CORE_TYPES */
 	#endif
 
 	/**@}*/
