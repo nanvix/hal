@@ -32,10 +32,13 @@
 
 	#include <nanvix/const.h>
 
+#ifdef __NANVIX_HAL
+
 	/**
 	 * @brief Size of log (in bytes).
 	 */
 	#define HAL_LOG_SIZE 512
+
 
 	/**
 	 * @brief Setups the HAL log.
@@ -49,6 +52,8 @@
 	 * @param n   Number of characters to write.
 	 */
 	EXTERN void hal_log_write(const char *, size_t);
+
+#endif /* __NANVIX_HAL */
 
 /**@}*/
 

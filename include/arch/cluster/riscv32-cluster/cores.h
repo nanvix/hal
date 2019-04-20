@@ -125,6 +125,8 @@
 		return (riscv32_cluster_get_num_cores());
 	}
 
+#ifdef __NANVIX_HAL
+
 	/**
 	 * @see rv32gc_core_setup().
 	 */
@@ -132,6 +134,8 @@
 	{
 		riscv32_cluster_setup();
 	}
+
+#endif /* __NANVIX_HAL */
 
 #endif /* _ASM_FILE_ */
 

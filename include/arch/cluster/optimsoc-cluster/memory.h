@@ -116,10 +116,14 @@
 
 #ifndef _ASM_FILE_
 
+#ifdef __NANVIX_HAL
+
 	/**
 	 * @brief Initializes the Memory Interface.
 	 */
 	EXTERN void optimsoc_cluster_mem_setup(void);
+
+#endif /* NANVIX_HAL */
 
 #endif /* !_ASM_FILE_ */
 

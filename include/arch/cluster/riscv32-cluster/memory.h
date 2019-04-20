@@ -110,10 +110,14 @@
 	EXTERN unsigned char __BSS_END;         /**< BSS End         */
 	/**@}*/
 
+#ifdef __NANVIX_HAL
+
 	/**
 	 * @brief Initializes the Memory Interface.
 	 */
 	EXTERN void riscv32_cluster_mem_setup(void);
+
+#endif /* __NANVIX_HAL */
 
 #endif /* _ASM_FILE_ */
 

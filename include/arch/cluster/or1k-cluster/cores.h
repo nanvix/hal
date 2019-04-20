@@ -126,6 +126,8 @@
 		return (or1k_cluster_cluster_get_num_cores());
 	}
 
+#ifdef __NANVIX_HAL
+
 	/**
 	 * @see or1k_core_setup().
 	 */
@@ -133,6 +135,8 @@
 	{
 		or1k_cluster_setup();
 	}
+
+#endif /* __NANVIX_HAL */
 
 #endif /* _ASM_FILE_ */
 

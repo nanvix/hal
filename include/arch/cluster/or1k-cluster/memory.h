@@ -122,10 +122,14 @@
 
 #ifndef _ASM_FILE_
 
+#ifdef __NANVIX_HAL
+
 	/**
 	 * @brief Initializes the Memory Interface.
 	 */
 	EXTERN void or1k_cluster_mem_setup(void);
+
+#endif /* __NANVIX_HAL */
 
 #endif /* _ASM_FILE_ */
 
