@@ -25,6 +25,9 @@
 #ifndef ARCH_CORE_OR1K_CACHE_H_
 #define ARCH_CORE_OR1K_CACHE_H_
 
+	/* Must come first. */
+	#define __NEED_OR1K_REGS
+
 /**
  * @addtogroup or1k-core-cache Cache
  * @ingroup or1k-core
@@ -33,12 +36,7 @@
  */
 /**@{*/
 
-#ifndef _ASM_FILE_
-
-	#define __NEED_OR1K_REGS
 	#include <arch/core/or1k/regs.h>
-
-#endif /* _ASM_FILE_ */
 
 	/**
 	 * @brief Cache line size (in bytes).
@@ -46,6 +44,8 @@
 	 * @todo Check this.
 	 */
 	#define OR1K_CACHE_LINE_SIZE 64
+
+#ifndef _ASM_FILE_
 
 	/**
 	 * @brief Invalidates the data cache.
@@ -56,6 +56,8 @@
 	{
 		or1k_mtspr(OR1K_SPR_DCBIR, 0);
 	}
+
+#endif /* _ASM_FILE_ */
 
 /**@}*/
 
@@ -79,6 +81,8 @@
 	 */
 	#define CACHE_LINE_SIZE OR1K_CACHE_LINE_SIZE
 
+#ifndef _ASM_FILE_
+
 	/**
 	 * @see or1k_dcache_inval().
 	 */
@@ -86,6 +90,8 @@
 	{
 		or1k_dcache_inval();
 	}
+
+#endif /* !_ASM_FILE_ */
 
 /**@endcond*/
 

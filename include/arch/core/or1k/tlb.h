@@ -125,6 +125,8 @@
 	#define OR1K_ITLBE_UXE 2 /**< User Execute Enable       */
 	/**@}*/
 
+#ifndef _ASM_FILE_
+
 	/**
 	 * @brief TLB entry.
 	 */
@@ -236,6 +238,8 @@
 	 */
 	EXTERN void or1k_tlb_init(void);
 
+#endif /* _ASM_FILE_ */
+
 /**@}*/
 
 /*============================================================================*
@@ -275,6 +279,8 @@
 	#define TLB_INSTRUCTION OR1K_TLB_INSTRUCTION /**< Instruction TLB */
 	#define TLB_DATA        OR1K_TLB_DATA        /**< Data TLB        */
 	/**@}*/
+
+#ifndef _ASM_FILE_
 
 	/**
 	 * @see or1k_tlbe_vaddr_get().
@@ -347,6 +353,8 @@
 	{
 		return (or1k_tlb_flush());
 	}
+
+#endif /* _ASM_FILE_ */
 
 /**@endcond*/
 

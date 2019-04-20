@@ -488,6 +488,6 @@
 		);
 	}
 
-#endif
+#endif /* !_ASM_FILE_ */
 
 #endif	/* ARCH_CORE_OR1K_REGS_H_ */
