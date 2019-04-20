@@ -42,8 +42,8 @@ PRIVATE void test_core_al(void)
 	test_interrupt();
 	test_mmu();
 	test_tlb();
-#if !defined(__rv32gc__)
 	test_trap();
+#if !defined(__rv32gc__)
 	test_upcall();
 #endif
 }
