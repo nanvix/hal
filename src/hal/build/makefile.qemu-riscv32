@@ -23,16 +23,6 @@
 # Tweak toolchain.
 export LDFLAGS  += -L $(LINKERDIR)/ -T link.ld
 
-# Override Sources
-C_SRC = $(wildcard arch/core/$(CORE)/*.c)       \
-        $(wildcard arch/cluster/$(CLUSTER)/*.c) \
-        $(wildcard klib/*.c)                    \
-		$(wildcard core/*.c)                  \
-        $(wildcard *.c)
-
-ASM_SRC = $(wildcard arch/core/$(CORE)/*.S)       \
-          $(wildcard arch/cluster/$(CLUSTER)/*.S)
-
 # C Source Files
 C_SRC += $(wildcard stdout/16550a.c)
 
