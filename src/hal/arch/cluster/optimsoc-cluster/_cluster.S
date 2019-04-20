@@ -22,11 +22,39 @@
  * SOFTWARE.
  */
 
-#ifndef _PROCESSOR_OPTIMSOC_OPTIMSOC_H_
-#define _PROCESSOR_OPTIMSOC_OPTIMSOC_H_
+/* Must come first. */
+#define _ASM_FILE_
+#define __NEED_CLUSTER_OPTIMSOC
 
-	#undef  __NEED_CLUSTER_OPTIMSOC
-	#define __NEED_CLUSTER_OPTIMSOC
-	#include <arch/cluster/optimsoc-cluster.h>
+#include <arch/cluster/optimsoc-cluster.h>
+#include <arch/core/or1k/asm.h>
 
-#endif /* _PROCESSOR_OPTIMSOC_OPTIMSOC_H_ */
+/* Exported symbols. */
+.global _optimsoc_cluster_core_reset
+.global core.kstack
+
+.section .text
+
+/*===========================================================================*
+ * _optimsoc_cluster_core_reset()                                            *
+ *===========================================================================*/
+
+/*
+ * Resets the underlying core.
+ */
+_optimsoc_cluster_core_reset:
+
+	/* Save coreid. */
+	OR1K_EXCEPTION_STORE_GPR3
+
+	/* Clear GPRs. */
+	or1k_clear_gprs
+
+	/* Reset stack. */
+	OR1K_EXCEPTION_LOAD_GPR3(r3)
+	or1k_core_stack_reset r3
+
+	/* Restart core. */
+	l.j optimsoc_cluster_slave_setup
+	l.nop
+	halt

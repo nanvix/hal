@@ -22,11 +22,24 @@
  * SOFTWARE.
  */
 
-#ifndef _PROCESSOR_OPTIMSOC_OPTIMSOC_H_
-#define _PROCESSOR_OPTIMSOC_OPTIMSOC_H_
+/* Must come first. */
+#define _ASM_FILE_
+#define __NEED_CLUSTER_OPTIMSOC
 
-	#undef  __NEED_CLUSTER_OPTIMSOC
-	#define __NEED_CLUSTER_OPTIMSOC
-	#include <arch/cluster/optimsoc-cluster.h>
+#include <arch/cluster/optimsoc-cluster.h>
+#include <arch/core/or1k/asm.h>
 
-#endif /* _PROCESSOR_OPTIMSOC_OPTIMSOC_H_ */
+/* Exported symbols. */
+.globl core.kstack
+
+.section .data
+/*----------------------------------------------------------------------------*
+ * core.kstack                                                                *
+ *----------------------------------------------------------------------------*/
+
+/**
+ * @brief Kernel stack for all cores.
+ */
+.align OR1K_PAGE_SIZE
+core.kstack:
+	.fill (OR1K_PAGE_SIZE/OR1K_PTE_SIZE)*OR1K_CLUSTER_NUM_CORES, OR1K_PTE_SIZE, 0

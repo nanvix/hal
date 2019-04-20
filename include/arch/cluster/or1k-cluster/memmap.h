@@ -25,6 +25,10 @@
 #ifndef CLUSTER_OR1K_CLUSTER_MEMMAP_H_
 #define CLUSTER_OR1K_CLUSTER_MEMMAP_H_
 
+	#ifndef __or1k_cluster__
+		#error "wrong cluter included!"
+	#endif
+
 	#ifndef __NEED_CLUSTER_MEMMAP
 		#error "do not include this file"
 	#endif

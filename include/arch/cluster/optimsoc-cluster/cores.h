@@ -22,19 +22,19 @@
  * SOFTWARE.
  */
 
-#ifndef ARCH_CLUSTER_OR1K_CLUSTER_CORES_H_
-#define ARCH_CLUSTER_OR1K_CLUSTER_CORES_H_
+#ifndef ARCH_CLUSTER_OPTIMSOC_CLUSTER_CORES_H_
+#define ARCH_CLUSTER_OPTIMSOC_CLUSTER_CORES_H_
 
-	#ifndef __or1k_cluster__
+	#ifndef __optimsoc_cluster__
 		#error "wrong cluter included!"
 	#endif
 
 	/* Cluster Interface Implementation */
-	#include <arch/cluster/or1k-cluster/_or1k-cluster.h>
+	#include <arch/cluster/optimsoc-cluster/_optimsoc-cluster.h>
 
 /**
- * @addtogroup or1k-cluster-cpu Cores
- * @ingroup or1k-cluster
+ * @addtogroup optimsoc-cluster-cpu Cores
+ * @ingroup optimsoc-cluster
  *
  * @brief Cores
  */
@@ -43,12 +43,13 @@
 	/**
 	 * @brief Number of cores in a cluster.
 	 */
-	#define OR1K_CLUSTER_NUM_CORES 2
+	#define OPTIMSOC_CLUSTER_NUM_CORES 4
+	#define OR1K_CLUSTER_NUM_CORES OPTIMSOC_CLUSTER_NUM_CORES
 
 	/**
 	 * @brief ID of the master core.
 	 */
-	#define OR1K_CLUSTER_COREID_MASTER 0
+	#define OPTIMSOC_CLUSTER_COREID_MASTER 0
 
 #ifndef _ASM_FILE_
 
@@ -57,27 +58,27 @@
 	 *
 	 * @param coreid ID of target core.
 	 */
-	EXTERN NORETURN void _or1k_cluster_core_reset(int coreid);
+	EXTERN NORETURN void _optimsoc_cluster_core_reset(int coreid);
 
 	/**
 	 * @brief Initializes the underlying cluster.
 	 */
-	EXTERN void or1k_cluster_setup(void);
+	EXTERN void optimsoc_cluster_setup(void);
 
 	/**
 	 * @brief Gets the number of cores.
 	 *
-	 * The or1k_cluster_cluster_get_num_cores() gets the number of cores in the
-	 * underlying or1k processor.
+	 * The optimsoc_cluster_cluster_get_num_cores() gets the number of cores in the
+	 * underlying optimsoc processor.
 	 *
 	 * @returns The the number of cores in the underlying processor.
 	 */
-	static inline int or1k_cluster_cluster_get_num_cores(void)
+	static inline int optimsoc_cluster_cluster_get_num_cores(void)
 	{
-		return (OR1K_CLUSTER_NUM_CORES);
+		return (OPTIMSOC_CLUSTER_NUM_CORES);
 	}
 
-#endif /* _ASM_FILE_ */
+#endif /* !_ASM_FILE_ */
 
 /**@}*/
 
@@ -86,7 +87,7 @@
  *============================================================================*/
 
 /**
- * @cond or1k_cluster
+ * @cond optimsoc_cluster
  */
 
 	/**
@@ -101,41 +102,41 @@
 	/**
 	 * @brief Number of cores in a cluster.
 	 */
-	#define CORES_NUM OR1K_CLUSTER_NUM_CORES
+	#define CORES_NUM OPTIMSOC_CLUSTER_NUM_CORES
 
 	/**
 	 * @brief ID of the master core.
 	 */
-	#define COREID_MASTER OR1K_CLUSTER_COREID_MASTER
+	#define COREID_MASTER OPTIMSOC_CLUSTER_COREID_MASTER
 
 #ifndef _ASM_FILE_
 
 	/**
-	 * @see _rv32i_core_reset().
+	 * @see _or1k_cluster_core_reset().
 	 */
 	static inline void _core_reset(void)
 	{
-		_or1k_cluster_core_reset(or1k_core_get_id());
+		_optimsoc_cluster_core_reset(or1k_core_get_id());
 	}
 
 	/**
-	 * @see or1k_cluster_cluster_get_num_cores()
+	 * @see optimsoc_cluster_cluster_get_num_cores()
 	 */
 	static inline int cluster_get_num_cores(void)
 	{
-		return (or1k_cluster_cluster_get_num_cores());
+		return (optimsoc_cluster_cluster_get_num_cores());
 	}
 
 	/**
-	 * @see or1k_core_setup().
+	 * @see optimsoc_cluster_setup().
 	 */
 	static inline void core_setup(void)
 	{
-		or1k_cluster_setup();
+		optimsoc_cluster_setup();
 	}
 
-#endif /* _ASM_FILE_ */
+#endif /* !_ASM_FILE_ */
 
 /**@endcond*/
 
-#endif /* ARCH_CLUSTER_OR1K_CLUSTER_CORES_H_ */
+#endif /* ARCH_CLUSTER_OPTIMSOC_CLUSTER_CORES_H_ */

@@ -25,6 +25,9 @@
 #ifndef ARCH_CORE_OR1K_TRAP_H_
 #define ARCH_CORE_OR1K_TRAP_H_
 
+	/* Must come first. */
+	#define __NEED_CORE_TYPES
+
 /**
  * @addtogroup or1k-core-trap Trap
  * @ingroup or1k-core
@@ -33,8 +36,9 @@
  */
 /**@{*/
 
-	#define __NEED_CORE_TYPES
 	#include <arch/core/or1k/types.h>
+
+#ifndef _ASM_FILE_
 
 	/**
 	 * @brief Issues a system call with no arguments.
@@ -238,6 +242,8 @@
 	 */
 	EXTERN void or1k_syscall(void);
 
+#endif /* !_ASM_FILE_ */
+
 /**@}*/
 
 /*============================================================================*
@@ -259,6 +265,8 @@
 	#define __syscall4_fn /**< or1k_syscall4() */
 	#define __syscall5_fn /**< or1k_syscall5() */
 	/**@}*/
+
+#ifndef _ASM_FILE_
 
 	/**
 	 * @see or1k_syscall_0()
@@ -364,6 +372,8 @@
 			)
 		);
 	}
+
+#endif /* !_ASM_FILE_ */
 
 /**@endcond*/
 

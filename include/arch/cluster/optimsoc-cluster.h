@@ -22,11 +22,38 @@
  * SOFTWARE.
  */
 
-#ifndef _PROCESSOR_OPTIMSOC_OPTIMSOC_H_
-#define _PROCESSOR_OPTIMSOC_OPTIMSOC_H_
+#ifndef CLUSTER_OPTIMSOC_CLUSTER_H_
+#define CLUSTER_OPTIMSOC_CLUSTER_H_
 
-	#undef  __NEED_CLUSTER_OPTIMSOC
-	#define __NEED_CLUSTER_OPTIMSOC
-	#include <arch/cluster/optimsoc-cluster.h>
+	#ifndef __NEED_CLUSTER_OPTIMSOC
+		#error "bad cluster configuration?"
+	#endif
 
-#endif /* _PROCESSOR_OPTIMSOC_OPTIMSOC_H_ */
+	/* Cluster Interface Implementation */
+	#include <arch/cluster/optimsoc-cluster/_optimsoc-cluster.h>
+
+/**
+ * @addtogroup optimsoc-cluster OpenRISC Cluster
+ * @ingroup clusters
+ *
+ * @brief OpenRISC Cluster
+ */
+/**@{*/
+
+	#include <arch/cluster/optimsoc-cluster/clock.h>
+	#include <arch/cluster/optimsoc-cluster/cores.h>
+	#include <arch/cluster/optimsoc-cluster/memory.h>
+
+	/**
+	 * @name Provided Features
+	 */
+	/**@{*/
+	#define CLUSTER_IS_MULTICORE  1 /**< Multicore Cluster */
+	#define CLUSTER_IS_IO         1 /**< I/O Cluster       */
+	#define CLUSTER_IS_COMPUTE    0 /**< Compute Cluster   */
+	#define CLUSTER_HAS_EVENTS    0 /**< Event Support?    */
+	/**@}*/
+
+/**@}*/
+
+#endif /* CLUSTER_OPTIMSOC_CLUSTER_H_ */

@@ -40,6 +40,8 @@
 	 */
 	#define OR1K_CPU_FREQUENCY 1666666
 
+#ifndef _ASM_FILE_
+
 	/**
 	 * @brief Initializes the clock driver in the or1k architecture.
 	 *
@@ -51,6 +53,8 @@
 	 * @brief Resets the clock device.
 	 */
 	EXTERN void or1k_clock_reset(void);
+
+#endif /* !_ASM_FILE_ */
 
 /**@}*/
 

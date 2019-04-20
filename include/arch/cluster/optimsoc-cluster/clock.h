@@ -22,11 +22,60 @@
  * SOFTWARE.
  */
 
-#ifndef _PROCESSOR_OPTIMSOC_OPTIMSOC_H_
-#define _PROCESSOR_OPTIMSOC_OPTIMSOC_H_
+#ifndef ARCH_CLUSTER_OPTIMSOC_CLUSTER_CLOCK_H_
+#define ARCH_CLUSTER_OPTIMSOC_CLUSTER_CLOCK_H_
 
-	#undef  __NEED_CLUSTER_OPTIMSOC
-	#define __NEED_CLUSTER_OPTIMSOC
-	#include <arch/cluster/optimsoc-cluster.h>
+	/* Cluster Interface Implementation */
+	#include <arch/cluster/optimsoc-cluster/_optimsoc-cluster.h>
 
-#endif /* _PROCESSOR_OPTIMSOC_OPTIMSOC_H_ */
+/**
+ * @addtogroup optimsoc-cluster-clock Clock
+ * @ingroup optimsoc-cluster
+ *
+ * @brief Integrated Clock Device
+ */
+/**@{*/
+
+	#include <nanvix/const.h>
+
+/**@}*/
+
+/*============================================================================*
+ * Exported Interface                                                         *
+ *============================================================================*/
+
+/**
+ * @optimsoc_cluster
+ */
+
+	/**
+	 * @name Exported Functions
+	 */
+	/**@{*/
+	#define __clock_init_fn  /**< clock_init()  */
+	#define __clock_reset_fn /**< clock_reset() */
+	/**@}*/
+
+#ifndef _ASM_FILE_
+
+	/**
+	 * @see or1k_clock_init().
+	 */
+	static inline void clock_init(unsigned freq)
+	{
+		or1k_clock_init(freq);
+	}
+
+	/**
+	 * @see or1k_clock_reset().
+	 */
+	static inline void clock_reset(void)
+	{
+		or1k_clock_reset();
+	}
+
+#endif /* !_ASM_FILE_ */
+
+/**@endcond*/
+
+#endif /* ARCH_CLUSTER_OR1K_CLUSTER_CLOCK */

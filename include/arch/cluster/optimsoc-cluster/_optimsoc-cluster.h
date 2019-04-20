@@ -22,11 +22,12 @@
  * SOFTWARE.
  */
 
-#ifndef _PROCESSOR_OPTIMSOC_OPTIMSOC_H_
-#define _PROCESSOR_OPTIMSOC_OPTIMSOC_H_
+#ifndef _CLUSTER_OPTIMSOC_CLUSTER_H_
+#define _CLUSTER_OPTIMSOC_CLUSTER_H_
 
-	#undef  __NEED_CLUSTER_OPTIMSOC
-	#define __NEED_CLUSTER_OPTIMSOC
-	#include <arch/cluster/optimsoc-cluster.h>
+	#undef  __NEED_CORE_MOR1KX
+	#define __NEED_CORE_MOR1KX
 
-#endif /* _PROCESSOR_OPTIMSOC_OPTIMSOC_H_ */
+	#include <arch/core/mor1kx.h>
+
+#endif /* _CLUSTER_OPTIMSOC_CLUSTER_H_ */

@@ -22,77 +22,55 @@
  * SOFTWARE.
  */
 
-#ifndef ARCH_CORE_OR1K_CACHE_H_
-#define ARCH_CORE_OR1K_CACHE_H_
+/* Must come first. */
+#define _ASM_FILE_
+#define __NEED_CLUSTER_OPTIMSOC
 
-	/* Must come first. */
-	#define __NEED_OR1K_REGS
+#include <arch/cluster/optimsoc-cluster.h>
+#include <arch/core/or1k/asm.h>
 
-/**
- * @addtogroup or1k-core-cache Cache
- * @ingroup or1k-core
- *
- * @brief Memory Cache
- */
-/**@{*/
-
-	#include <arch/core/or1k/regs.h>
-
-	/**
-	 * @brief Cache line size (in bytes).
-	 *
-	 * @todo Check this.
-	 */
-	#define OR1K_CACHE_LINE_SIZE 64
-
-#ifndef _ASM_FILE_
-
-	/**
-	 * @brief Invalidates the data cache.
-	 *
-	 * @note The or1k target features cache coherency.
-	 */
-	static inline void or1k_dcache_inval(void)
-	{
-		or1k_mtspr(OR1K_SPR_DCBIR, 0);
-	}
-
-#endif /* _ASM_FILE_ */
-
-/**@}*/
+/* Exported symbols. */
+.globl start
+.globl core.kstack
 
 /*============================================================================*
- * Exported Interface                                                         *
+ *                              bootstrap section                             *
  *============================================================================*/
 
-/**
- * @cond or1k
+.section .bootstrap,"ax",@progbits
+
+/*----------------------------------------------------------------------------*
+ * start()                                                                    *
+ *----------------------------------------------------------------------------*/
+
+/*
+ * Kernel entry point.
  */
+start:
 
-	/**
-	 * @name Provided Interface
-	 */
-	/**@{*/
-	#define __dcache_invalidate_fn /**< dcache_invalidate() */
-	/**@}*/
+	or1k_clear_gprs
 
-	/**
-	 * @see OR1K_CACHE_LINE_SIZE.
-	 */
-	#define CACHE_LINE_SIZE OR1K_CACHE_LINE_SIZE
+	/* Supervisor mode. */
+	l.ori	r1, r0, 0x1
+	l.mtspr	r0, r1, OR1K_SPR_SR
 
-#ifndef _ASM_FILE_
+	/* Reset stack. */
+	l.mfspr r3, r0, OR1K_SPR_COREID
+	or1k_core_stack_reset r3
 
-	/**
-	 * @see or1k_dcache_inval().
-	 */
-	static inline void dcache_invalidate(void)
-	{
-		or1k_dcache_inval();
-	}
+	l.mfspr r3, r0, OR1K_SPR_COREID
+	l.sfeqi r3, 0
+	l.bf start.master
+	l.nop
 
-#endif /* !_ASM_FILE_ */
+	/* Slave. */
+	start.slave:
+		l.jal optimsoc_cluster_slave_setup
+		l.nop
+		halt
 
-/**@endcond*/
-
-#endif /* ARCH_CORE_OR1K_CACHE_H_ */
+	/* Master. */
+	start.master:
+		l.jal optimsoc_cluster_master_setup
+		l.nop
+		halt

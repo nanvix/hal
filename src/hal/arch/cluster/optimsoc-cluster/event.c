@@ -22,11 +22,26 @@
  * SOFTWARE.
  */
 
-#ifndef _PROCESSOR_OPTIMSOC_OPTIMSOC_H_
-#define _PROCESSOR_OPTIMSOC_OPTIMSOC_H_
+/* Must come first. */
+#define __NEED_HAL_CLUSTER
 
-	#undef  __NEED_CLUSTER_OPTIMSOC
-	#define __NEED_CLUSTER_OPTIMSOC
-	#include <arch/cluster/optimsoc-cluster.h>
+#include <nanvix/hal/cluster.h>
+#include <nanvix/const.h>
 
-#endif /* _PROCESSOR_OPTIMSOC_OPTIMSOC_H_ */
+/**
+ * @cond or1k_cluster
+ *
+ * Table of events
+ *
+ * @endcond
+ */
+PUBLIC struct
+{
+	unsigned pending;
+	or1k_spinlock_t lock;
+} events[OPTIMSOC_CLUSTER_NUM_CORES] ALIGN(OR1K_CACHE_LINE_SIZE) = {
+	{ 0, OR1K_SPINLOCK_UNLOCKED }, /* Master Core  */
+	{ 0, OR1K_SPINLOCK_UNLOCKED }, /* Slave Core 1 */
+	{ 0, OR1K_SPINLOCK_UNLOCKED }, /* Slave Core 2 */
+	{ 0, OR1K_SPINLOCK_UNLOCKED }, /* Slave Core 3 */
+};

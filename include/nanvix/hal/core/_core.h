@@ -49,8 +49,8 @@
 
 	#elif (defined(__mor1kx__))
 
-		#undef  __NEED_CORE_OR1K
-		#define __NEED_CORE_OR1K
+		#undef  __NEED_CORE_MOR1KX
+		#define __NEED_CORE_MOR1KX
 		#include <arch/core/mor1kx.h>
 
 	#elif (defined(__rv32gc__))

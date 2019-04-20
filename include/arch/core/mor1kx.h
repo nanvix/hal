@@ -22,16 +22,16 @@
  * SOFTWARE.
  */
 
-#ifndef CORE_OR1K_H_
-#define CORE_OR1K_H_
+#ifndef ARCH_CORE_MOR1KX_H_
+#define ARCH_CORE_MOR1KX_H_
 
 	/**
 	 * @addtogroup or1k-core OpenRISC Core
 	 * @ingroup cores
 	 */
 
-	#ifndef __NEED_CORE_OR1K
-		#error "or1k core not required"
+	#ifndef __NEED_CORE_MOR1KX
+		#error "mor1kx core not required"
 	#endif
 
 	#include <arch/core/or1k/cache.h>
@@ -47,7 +47,7 @@
 	#include <arch/core/or1k/upcall.h>
 
 /**
- * @cond or1k
+ * @cond mor1kx
  */
 
 	/**
@@ -63,5 +63,5 @@
 
 /**@endcond*/
 
-#endif /* CORE_OR1K_H_ */
+#endif /* ARCH_CORE_MOR1KX_H_ */
 

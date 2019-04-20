@@ -47,6 +47,12 @@
 		#define __NEED_CLUSTER_OR1K
 		#include <arch/cluster/or1k-cluster.h>
 
+	#elif (defined(__optimsoc_cluster__))
+
+		#undef  __NEED_CLUSTER_OPTIMSOC
+		#define __NEED_CLUSTER_OPTIMSOC
+		#include <arch/cluster/optimsoc-cluster.h>
+
 	#elif (defined(__riscv32_cluster__))
 
 		#undef  __NEED_CLUSTER_RISCV32

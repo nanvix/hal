@@ -22,11 +22,46 @@
  * SOFTWARE.
  */
 
-#ifndef _PROCESSOR_OPTIMSOC_OPTIMSOC_H_
-#define _PROCESSOR_OPTIMSOC_OPTIMSOC_H_
+#ifndef ARCH_CLUSTER_OPTIMSOC_CLUSTER_MEMMAP_H_
+#define ARCH_CLUSTER_OPTIMSOC_CLUSTER_MEMMAP_H_
 
-	#undef  __NEED_CLUSTER_OPTIMSOC
-	#define __NEED_CLUSTER_OPTIMSOC
-	#include <arch/cluster/optimsoc-cluster.h>
+	#ifndef __NEED_CLUSTER_MEMMAP
+		#error "do not include this file"
+	#endif
 
-#endif /* _PROCESSOR_OPTIMSOC_OPTIMSOC_H_ */
+	/* Cluster Interface Implementation */
+	#include <arch/cluster/optimsoc-cluster/_optimsoc-cluster.h>
+
+/**
+ * @addtogroup optimsoc-cluster-memmap Memory Map
+ * @ingroup optimsoc-cluster
+ *
+ * @brief Physical Memory Map
+ */
+/**@{*/
+
+	/**
+	 * @name Physical Memory Layout
+	 */
+	/**@{*/
+	#define OPTIMSOC_CLUSTER_OMPIC_BASE_PHYS 0x98000000 /**< OMPIC Base */
+	#define OPTIMSOC_CLUSTER_OMPIC_END_PHYS  0x98010000 /**< OMPIC End */
+	#define OPTIMSOC_CLUSTER_DRAM_BASE_PHYS  0x00000000 /**< DRAM Base */
+	#define OPTIMSOC_CLUSTER_DRAM_END_PHYS   0x08000000 /**< DRAM End  */
+	/**@}*/
+
+	/**
+	 * @brief DRAM brief (in bytes).
+	 */
+	#define OPTIMSOC_CLUSTER_DRAM_SIZE \
+		(OPTIMSOC_CLUSTER_DRAM_END_PHYS - OPTIMSOC_CLUSTER_DRAM_BASE_PHYS)
+
+	/**
+	 * @brief OMPIC brief (in bytes).
+	 */
+	#define OPTIMSOC_CLUSTER_OMPIC_MEM_SIZE \
+		(OPTIMSOC_CLUSTER_OMPIC_END_PHYS - OPTIMSOC_CLUSTER_OMPIC_BASE_PHYS)
+
+/**@}*/
+
+#endif /* CLUSTER_OPTIMSOC_CLUSTER_MEMMAP_H_ */
