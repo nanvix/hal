@@ -30,6 +30,10 @@
 
 #ifndef _ASM_FILE_
 
+	#ifndef __or1k_cluster__
+		#error "wrong cluter included!"
+	#endif
+
 	#if (defined(__or1200__))
 		#include <arch/core/or1k.h>
 	#elif (defined(__mor1kx__))

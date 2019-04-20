@@ -25,6 +25,10 @@
 #ifndef ARCH_CLUSTER_OR1K_CLUSTER_CORES_H_
 #define ARCH_CLUSTER_OR1K_CLUSTER_CORES_H_
 
+	#ifndef __or1k_cluster__
+		#error "wrong cluter included!"
+	#endif
+
 	/* Cluster Interface Implementation */
 	#include <arch/cluster/or1k-cluster/_or1k-cluster.h>
 

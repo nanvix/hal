@@ -25,10 +25,6 @@
 #ifndef ARCH_CLUSTER_OPTIMSOC_CLUSTER_CLOCK_H_
 #define ARCH_CLUSTER_OPTIMSOC_CLUSTER_CLOCK_H_
 
-	#ifndef __optimsoc_cluster__
-		#error "wrong cluter included!"
-	#endif
-
 
 	/* Cluster Interface Implementation */
 	#include <arch/cluster/optimsoc-cluster/_optimsoc-cluster.h>

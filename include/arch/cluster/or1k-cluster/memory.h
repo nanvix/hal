@@ -25,6 +25,10 @@
 #ifndef CLUSTER_OR1K_CLUSTER_MEMORY_H_
 #define CLUSTER_OR1K_CLUSTER_MEMORY_H_
 
+	#ifndef __or1k_cluster__
+		#error "wrong cluter included!"
+	#endif
+
 	/* Cluster Interface Implementation */
 	#include <arch/cluster/or1k-cluster/_or1k-cluster.h>
 
