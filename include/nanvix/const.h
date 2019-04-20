@@ -25,6 +25,12 @@
 #ifndef NANVIX_CONST_H_
 #define NANVIX_CONST_H_
 
+	/* Must come first. */
+	#define __need_size_t
+	#define __need_ssize_t
+	#define __need_NULL
+	#define __NEED_CC
+
 /**
  * @defgroup kernel Nanvix Kernel
  */
@@ -37,6 +43,7 @@
 
 	#include <nanvix/cc.h>
 	#include <stdbool.h>
+	#include <decl.h>
 
 	/**
 	 * @name Scope Constants
@@ -55,11 +62,6 @@
 	#define MB (KB*KB)    /**< Megabyte */
 	#define GB (KB*KB*KB) /**< Gigabyte */
 	/**@}*/
-
-	#define __need_size_t
-	#define __need_ssize_t
-	#define __need_NULL
-	#include <decl.h>
 
 /**@}*/
 
