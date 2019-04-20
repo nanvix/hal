@@ -96,7 +96,7 @@
 	 * @brief Makes code unreachable.
 	 */
 	#define UNREACHABLE() \
-		{ while(TRUE) ; __builtin_unreachable(); }
+		{ while(1) ; __builtin_unreachable(); }
 
 	/**
 	 * @brief Declares something to be unused.

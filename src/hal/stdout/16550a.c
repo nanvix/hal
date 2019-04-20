@@ -40,7 +40,7 @@ PRIVATE volatile uint8_t *uart = (uint8_t *)UART_ADDR;
 /**
  * @brief Was the device was initialized?
  */
-PRIVATE int initialized = 0;
+PRIVATE bool initialized = false;
 
 /**
  * Writes into serial port.
@@ -102,5 +102,5 @@ void uart_16550a_init(void)
     uart[UART_LCR] = UART_LCR_PODD | UART_LCR_8BIT;
 
 	/* Device initialized. */
-	initialized = 1;
+	initialized = true;
 }

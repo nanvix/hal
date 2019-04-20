@@ -36,6 +36,7 @@
 /**@{*/
 
 	#include <nanvix/cc.h>
+	#include <stdbool.h>
 
 	/**
 	 * @name Scope Constants
@@ -53,19 +54,6 @@
 	#define KB 1024       /**< Kilobyte */
 	#define MB (KB*KB)    /**< Megabyte */
 	#define GB (KB*KB*KB) /**< Gigabyte */
-	/**@}*/
-
-	/**
-	 * @brief Boolean types.
-	 */
-	#include <stdbool.h>
-
-	/**
-	 * @name Logical Constants
-	 */
-	/**@{*/
-	#define FALSE false /**< False. */
-	#define TRUE  true  /**< True.  */
 	/**@}*/
 
 	#define __need_size_t

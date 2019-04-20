@@ -121,7 +121,7 @@ PRIVATE void test_core_start_slave(void)
 	 * @note: If for some reason the slave core not start,
 	 * the master core will hang forever.
 	 */
-	while (TRUE)
+	while (true)
 	{
 		dcache_invalidate();
 
@@ -195,7 +195,7 @@ PRIVATE void test_core_suspend_resume_master(void)
 	 * counter that is able to prevent a core from sleeping if
 	 * it has already received a wakeup signal.
 	 */
-	while (TRUE)
+	while (true)
 	{
 		dcache_invalidate();
 
@@ -209,7 +209,7 @@ PRIVATE void test_core_suspend_resume_master(void)
 	/*
 	 * Wait for the slave wake up.
 	 */
-	while (TRUE)
+	while (true)
 	{
 		dcache_invalidate();
 
@@ -273,7 +273,7 @@ PRIVATE void test_core_stop_execution_slave(void)
 	 * reason the slave core not start, the master core will hang
 	 * forever.
 	 */
-	while (TRUE)
+	while (true)
 	{
 		dcache_invalidate();
 
@@ -295,7 +295,7 @@ PRIVATE void test_core_stop_execution_slave(void)
 	 * if for some reason the slave core not start, the master core
 	 * will hang forever.
 	 */
-	while (TRUE)
+	while (true)
 	{
 		dcache_invalidate();
 
@@ -360,7 +360,7 @@ PRIVATE void test_core_start_execution_first_slave_entry(void)
 	 * @note: If for some reason the slave core not start,
 	 * the master core will hang forever.
 	 */
-	while (TRUE)
+	while (true)
 	{
 		dcache_invalidate();
 
@@ -410,7 +410,7 @@ PRIVATE void test_core_start_execution_slave(void)
 	 * @note: If for some reason the slave core not start,
 	 * the master core will hang forever.
 	 */
-	while (TRUE)
+	while (true)
 	{
 		dcache_invalidate();
 
@@ -483,7 +483,7 @@ PRIVATE void test_core_suspend_start_slave_entry(void)
 	 * counter that is able to prevent a core from sleeping if
 	 * it has already received a wakeup signal.
 	 */
-	while (TRUE)
+	while (true)
 	{
 		dcache_invalidate();
 
@@ -497,7 +497,7 @@ PRIVATE void test_core_suspend_start_slave_entry(void)
 	/*
 	 * Wait for the slave wake up.
 	 */
-	while (TRUE)
+	while (true)
 	{
 		dcache_invalidate();
 
@@ -538,7 +538,7 @@ PRIVATE void test_core_suspend_resume_slave(void)
 	/*
 	 * Wait for the first slave wake up.
 	 */
-	while (TRUE)
+	while (true)
 	{
 		dcache_invalidate();
 

@@ -54,6 +54,6 @@ PUBLIC void kpanic(const char *fmt, ...)
 	interrupts_disable();
 
 	/* Stay here, forever. */
-	while (TRUE)
+	while (true)
 		noop();
 }

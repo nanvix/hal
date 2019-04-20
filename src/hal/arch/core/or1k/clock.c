@@ -29,7 +29,7 @@
 /**
  * @brief Was the clock device initialized?
  */
-PRIVATE int initialized = FALSE;
+PRIVATE bool initialized = false;
 
 /**
  * @brief Clock delta
@@ -111,7 +111,7 @@ PUBLIC void or1k_clock_init(unsigned freq)
 	or1k_mtspr(OR1K_SPR_TTMR, OR1K_SPR_TTMR_SR | clock_delta);
 	or1k_mtspr(OR1K_SPR_TTCR, 0);
 	clock_delay = or1k_clock_calibrate();
-	initialized = TRUE;
+	initialized = true;
 
 	/* Print some info. */
 	kprintf("[hal] clock delay is %d ticks", clock_delay);

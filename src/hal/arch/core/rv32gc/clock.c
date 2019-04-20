@@ -31,7 +31,7 @@
 /**
  * @brief Was the clock device initialized?
  */
-PRIVATE int initialized = FALSE;
+PRIVATE bool initialized = false;
 
 /**
  * @brief Clock delta
@@ -160,7 +160,7 @@ PUBLIC void rv32gc_clock_init(
 	/* Initialize clock. */
 	clock_delta = timebase/freq;
 	clock_delay = rv32gc_clock_calibrate();
-	initialized = TRUE;
+	initialized = true;
 
 	/* Print some info. */
 	kprintf("[hal] clock delay is %d ticks", clock_delay);

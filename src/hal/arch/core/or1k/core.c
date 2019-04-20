@@ -69,7 +69,7 @@ PUBLIC void or1k_core_poweroff(void)
 		or1k_mtspr(OR1K_SPR_PMR, OR1K_SPR_PMR_DME);
 	else
 	{
-		while (TRUE)
+		while (true)
 			/* noop(). */;
 	}
 }

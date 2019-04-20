@@ -36,8 +36,8 @@ EXTERN NORETURN void kmain(int, const char *[]);
  * @brief Cores table.
  */
 PUBLIC struct coreinfo  ALIGN(OR1K_CACHE_LINE_SIZE) cores[OR1K_CLUSTER_NUM_CORES] = {
-	{ TRUE,  CORE_RUNNING,   0, NULL, OR1K_SPINLOCK_LOCKED }, /* Master Core   */
-	{ FALSE, CORE_RESETTING, 0, NULL, OR1K_SPINLOCK_LOCKED }, /* Slave Core 1  */
+	{ true,  CORE_RUNNING,   0, NULL, OR1K_SPINLOCK_LOCKED }, /* Master Core   */
+	{ false, CORE_RESETTING, 0, NULL, OR1K_SPINLOCK_LOCKED }, /* Slave Core 1  */
 };
 
 /**
@@ -45,9 +45,9 @@ PUBLIC struct coreinfo  ALIGN(OR1K_CACHE_LINE_SIZE) cores[OR1K_CLUSTER_NUM_CORES
  */
 PRIVATE struct
 {
-	int master_alive;
+	bool master_alive;
 	or1k_spinlock_t lock;
-} fence = { FALSE , OR1K_SPINLOCK_UNLOCKED};
+} fence = { false , OR1K_SPINLOCK_UNLOCKED};
 
 /**
  * @brief Releases the startup fence.
@@ -55,7 +55,7 @@ PRIVATE struct
 PRIVATE void or1k_fence_release(void)
 {
 	or1k_spinlock_lock(&fence.lock);
-		fence.master_alive = TRUE;
+		fence.master_alive = true;
 	or1k_spinlock_unlock(&fence.lock);
 }
 
@@ -64,7 +64,7 @@ PRIVATE void or1k_fence_release(void)
  */
 PRIVATE void or1k_fence_wait(void)
 {
-	while (TRUE)
+	while (true)
 	{
 		or1k_spinlock_lock(&fence.lock);
 
@@ -143,7 +143,7 @@ PUBLIC NORETURN void or1k_cluster_slave_setup(void)
 	/* Enable interrupts. */
 	or1k_mtspr(OR1K_SPR_SR, or1k_mfspr(OR1K_SPR_SR) | OR1K_SPR_SR_IEE);
 
-	while (TRUE)
+	while (true)
 	{
 		core_idle();
 		core_run();

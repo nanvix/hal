@@ -47,20 +47,20 @@
  */
 struct memory_region
 {
-	paddr_t pbase;  /**< Base physical address. */
-	vaddr_t vbase;  /**< Base virtual address.  */
-	size_t size;    /**< Size.                  */
-	int writable;   /**< Writable?              */
-	int executable; /**< Executable?            */
+	paddr_t pbase;   /**< Base physical address. */
+	vaddr_t vbase;   /**< Base virtual address.  */
+	size_t size;     /**< Size.                  */
+	bool writable;   /**< Writable?              */
+	bool executable; /**< Executable?            */
 };
 
 /**
  * @brief Memory layout.
  */
 PRIVATE struct memory_region optimsoc_cluster_mem_layout[OPTIMSOC_CLUSTER_MEM_REGIONS] = {
-	{ OPTIMSOC_CLUSTER_KERNEL_BASE_PHYS, OPTIMSOC_CLUSTER_KERNEL_BASE_VIRT, OPTIMSOC_CLUSTER_KMEM_SIZE,      TRUE, TRUE  },
-	{ OPTIMSOC_CLUSTER_KPOOL_BASE_PHYS,  OPTIMSOC_CLUSTER_KPOOL_BASE_VIRT,  OPTIMSOC_CLUSTER_KPOOL_SIZE,     TRUE, FALSE },
-	{ OPTIMSOC_CLUSTER_OMPIC_BASE_PHYS,  OPTIMSOC_CLUSTER_OMPIC_BASE_VIRT,  OPTIMSOC_CLUSTER_OMPIC_MEM_SIZE, TRUE, FALSE },
+	{ OPTIMSOC_CLUSTER_KERNEL_BASE_PHYS, OPTIMSOC_CLUSTER_KERNEL_BASE_VIRT, OPTIMSOC_CLUSTER_KMEM_SIZE,      true, true  },
+	{ OPTIMSOC_CLUSTER_KPOOL_BASE_PHYS,  OPTIMSOC_CLUSTER_KPOOL_BASE_VIRT,  OPTIMSOC_CLUSTER_KPOOL_SIZE,     true, false },
+	{ OPTIMSOC_CLUSTER_OMPIC_BASE_PHYS,  OPTIMSOC_CLUSTER_OMPIC_BASE_VIRT,  OPTIMSOC_CLUSTER_OMPIC_MEM_SIZE, true, false },
 };
 
 /**

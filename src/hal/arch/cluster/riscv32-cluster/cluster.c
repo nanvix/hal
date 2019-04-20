@@ -34,11 +34,11 @@ EXTERN NORETURN void kmain(int, const char *[]);
  * @brief Cores table.
  */
 PUBLIC struct coreinfo ALIGN(RV32GC_CACHE_LINE_SIZE) cores[RISCV32_CLUSTER_NUM_CORES] = {
-	{ TRUE,  CORE_RUNNING,   0, NULL, RV32GC_SPINLOCK_UNLOCKED }, /* Master Core   */
-	{ FALSE, CORE_RESETTING, 0, NULL, RV32GC_SPINLOCK_LOCKED   }, /* Slave Core 1  */
-	{ FALSE, CORE_RESETTING, 0, NULL, RV32GC_SPINLOCK_LOCKED   }, /* Slave Core 2  */
-	{ FALSE, CORE_RESETTING, 0, NULL, RV32GC_SPINLOCK_LOCKED   }, /* Slave Core 3  */
-	{ FALSE, CORE_RESETTING, 0, NULL, RV32GC_SPINLOCK_LOCKED   }, /* Slave Core 4  */
+	{ true,  CORE_RUNNING,   0, NULL, RV32GC_SPINLOCK_UNLOCKED }, /* Master Core   */
+	{ false, CORE_RESETTING, 0, NULL, RV32GC_SPINLOCK_LOCKED   }, /* Slave Core 1  */
+	{ false, CORE_RESETTING, 0, NULL, RV32GC_SPINLOCK_LOCKED   }, /* Slave Core 2  */
+	{ false, CORE_RESETTING, 0, NULL, RV32GC_SPINLOCK_LOCKED   }, /* Slave Core 3  */
+	{ false, CORE_RESETTING, 0, NULL, RV32GC_SPINLOCK_LOCKED   }, /* Slave Core 4  */
 };
 
 /*============================================================================*
@@ -77,7 +77,7 @@ PUBLIC void riscv32_cluster_setup(void)
  */
 PUBLIC NORETURN void riscv32_cluster_slave_setup(void)
 {
-	while (TRUE)
+	while (true)
 	{
 		core_idle();
 		core_run();
