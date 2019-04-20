@@ -31,15 +31,18 @@ DISTRO=`cat /etc/os-release | grep "^ID="`
 # Parse distribution.
 case "$DISTRO" in
     *"ubuntu"*|*"debian"*)
-        apt-get install -y  \
-			build-essential \
-			bison           \
-			flex            \
-			libncurses5-dev \
-			libpixman-1-dev \
-			libsdl2-dev     \
-			libtool         \
-			texinfo         \
+        apt-get install -y   \
+			build-essential  \
+			bison            \
+			flex             \
+			libncurses5-dev  \
+			libncursesw5-dev \
+			libpixman-1-dev  \
+			libsdl2-dev      \
+			doxygen          \
+			graphviz         \
+			libtool          \
+			texinfo          \
 			zlib1g-dev
         ;;
     *"arch"*)
