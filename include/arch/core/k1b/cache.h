@@ -45,6 +45,8 @@
 		#define K1B_CACHE_LINE_SIZE 64
 	#endif
 
+#ifndef _ASM_FILE_
+
 	/**
 	 * @brief Invalidates the data cache.
 	 *
@@ -59,6 +61,8 @@
 		__builtin_k1_fence();
 		__builtin_k1_dinval();
 	}
+
+#endif /* !_ASM_FILE_ */
 
 /**@}*/
 
@@ -82,6 +86,8 @@
 	 */
 	#define CACHE_LINE_SIZE K1B_CACHE_LINE_SIZE
 
+#ifndef _ASM_FILE_
+
 	/**
 	 * @see k1b_dcache_inval().
 	 */
@@ -89,6 +95,8 @@
 	{
 		k1b_dcache_inval();
 	}
+
+#endif /* _ASM_FILE_ */
 
 /**@endcond*/
 

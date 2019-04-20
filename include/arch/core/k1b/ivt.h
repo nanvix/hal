@@ -67,7 +67,7 @@
 			void *stack
 	);
 
-#endif /* _ASM_FILE_ */
+#endif /* !_ASM_FILE_ */
 
 /**@}*/
 

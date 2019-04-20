@@ -45,7 +45,7 @@
 	 */
 	extern void k1b_upcall_ret(void);
 
-#endif
+#endif /* !_ASM_FILE_ */
 
 /**@}*/
 
@@ -83,7 +83,7 @@
 	 */
 	#define upcall_ret k1b_upcall_ret
 
-#endif
+#endif /* !_ASM_FILE_ */
 
 /**@endcond*/
 

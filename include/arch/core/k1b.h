@@ -49,6 +49,10 @@
 	#include <arch/core/k1b/trap.h>
 	#include <arch/core/k1b/upcall.h>
 
+	#ifdef _ASM_FILE_
+		#include <arch/core/k1b/asm.h>
+	#endif
+
 /**
  * @cond k1b
  */

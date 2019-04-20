@@ -25,7 +25,6 @@
 /* Must come first. */
 #define _ASM_FILE_
 
-#include <arch/core/k1b/asm.h>
 #include <arch/cluster/k1b-cluster/memory.h>
 
 .global _k1b_core_reset
