@@ -28,13 +28,11 @@
 	/* Target Interface Implementation */
 	#include <nanvix/hal/target/_target.h>
 
-	#include <nanvix/klib.h>
-
 /*============================================================================*
  * Interface Implementation Checking                                          *
  *============================================================================*/
 
-#ifdef __INTERFACE_CHECK
+#if defined(__INTERFACE_CHECK) || defined(__INTERFACE_CHECK_TARGET_AL) || defined(__INTERFACE_CHECK_SYNC)
 
 	/* Feature Checking */
 	#ifndef TARGET_HAS_SYNC
@@ -101,6 +99,8 @@
  * @brief Target Standard Output HAL Interface
  */
 /**@{*/
+
+	#include <nanvix/klib.h>
 
 	/**
 	 * @brief Allocates and configures the receiving side of the synchronization point.

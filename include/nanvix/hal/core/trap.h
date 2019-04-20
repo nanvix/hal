@@ -32,7 +32,7 @@
  * Interface Implementation Checking                                          *
  *============================================================================*/
 
-#if defined(__INTERFACE_CHECK) || defined(__INTERFACE_CHECK_TRAP)
+#if defined(__INTERFACE_CHECK) || defined(__INTERFACE_CHECK_CORE_AL) || defined(__INTERFACE_CHECK_TRAP)
 
 	/* Functions. */
 	#ifndef __syscall0_fn

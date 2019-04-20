@@ -32,7 +32,7 @@
  * Interface Implementation Checking                                          *
  *============================================================================*/
 
-#if defined(__INTERFACE_CHECK) || defined(__INTERFACE_CHECK_PMIO)
+#if defined(__INTERFACE_CHECK) || defined(__INTERFACE_CHECK_CORE_AL) || defined(__INTERFACE_CHECK_PMIO)
 
 	/* Feature Checking */
 	#ifndef CORE_HAS_PMIO

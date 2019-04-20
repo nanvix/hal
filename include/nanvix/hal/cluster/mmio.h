@@ -28,8 +28,6 @@
 	/* Cluster Interface Implementation */
 	#include <nanvix/hal/cluster/_cluster.h>
 
-	#include <nanvix/const.h>
-
 /*============================================================================*
  * MMIO Interface                                                             *
  *============================================================================*/
@@ -42,23 +40,25 @@
  */
 /**@{*/
 
-/**
- * @brief Gets the equivalent address accordingly with
- * the current state of the MMU.
- *
- * @param paddr Target virtual physical address.
- *
- * @returns If mmu is enabled, returns the equivalent
- * virtual address, otherwise, returns the same physical
- * address.
- */
-static inline void* mmio_get(paddr_t paddr)
-{
-	if (mmu_is_enabled())
-		return (mmu_page_walk(paddr));
-	else
-		return ((void*)paddr);
-}
+	#include <nanvix/const.h>
+
+	/**
+	 * @brief Gets the equivalent address accordingly with
+	 * the current state of the MMU.
+	 *
+	 * @param paddr Target virtual physical address.
+	 *
+	 * @returns If mmu is enabled, returns the equivalent
+	 * virtual address, otherwise, returns the same physical
+	 * address.
+	 */
+	static inline void* mmio_get(paddr_t paddr)
+	{
+		if (mmu_is_enabled())
+			return (mmu_page_walk(paddr));
+		else
+			return ((void*)paddr);
+	}
 
 /**@}*/
 

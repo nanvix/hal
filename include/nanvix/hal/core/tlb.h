@@ -32,7 +32,7 @@
  * Interface Implementation Checking                                          *
  *============================================================================*/
 
-#if defined(__INTERFACE_CHECK) || defined(__INTERFACE_CHECK_TLB)
+#if defined(__INTERFACE_CHECK) || defined(__INTERFACE_CHECK_CORE_AL) || defined(__INTERFACE_CHECK_TLB)
 
 	/*
 	 * Required interface for software- and hardware-managed TLBs.

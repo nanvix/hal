@@ -28,13 +28,11 @@
 	/* Processor Interface Implementation */
 	#include <nanvix/hal/processor/_processor.h>
 
-	#include <nanvix/klib.h>
-
 /*============================================================================*
  * Interface Implementation Checking                                          *
  *============================================================================*/
 
-#ifdef __INTERFACE_CHECK
+#if defined(__INTERFACE_CHECK) || defined(__INTERFACE_CHECK_PROCESSOR_AL) || defined(__INTERFACE_CHECK_NOC)
 
 	/* Feature Checking */
 	#ifndef PROCESSOR_HAS_NOC
@@ -100,6 +98,8 @@
  * @brief Processor NoC HAL Interface
  */
 /**@{*/
+
+	#include <nanvix/klib.h>
 
 	/**
 	 * @brief Asserts whether a NoC node is attached to IO cluster 0.

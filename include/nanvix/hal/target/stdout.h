@@ -28,14 +28,11 @@
 	/* Target Interface Implementation */
 	#include <nanvix/hal/target/_target.h>
 
-	#include <nanvix/const.h>
-	#include <nanvix/klib.h>
-
 /*============================================================================*
  * Interface Implementation Checking                                          *
  *============================================================================*/
 
-#ifdef __INTERFACE_CHECK
+#if defined(__INTERFACE_CHECK) || defined(__INTERFACE_CHECK_TARGET_AL) || defined(__INTERFACE_CHECK_STDOUT)
 
 	/* Feature Checking */
 	#ifndef TARGET_HAS_STDOUT
@@ -68,6 +65,9 @@
  * @brief Target Standard Output HAL Interface
  */
 /**@{*/
+
+	#include <nanvix/const.h>
+	#include <nanvix/klib.h>
 
 	/**
 	 * @brief Initializes the standard output device.
