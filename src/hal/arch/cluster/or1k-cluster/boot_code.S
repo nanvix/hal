@@ -28,9 +28,6 @@
 #define __NEED_CORE_TYPES
 
 #include <arch/cluster/or1k-cluster/cores.h>
-#include <arch/core/or1k/mmu.h>
-#include <arch/core/or1k/types.h>
-#include <arch/core/or1k/asm.h>
 
 /* Exported symbols. */
 .globl start
