@@ -145,6 +145,9 @@
 	#define __interrupts_disable_fn /**< @ref interrupts_disable() */
 	#define __interrupts_enable_fn  /**< @ref interrupts_enable()  */
 	#define __interrupt_next_fn     /**< @ref interrupt_next()     */
+	#define __interrupt_mask_fn     /**< @ref interrupt_mask()     */
+	#define __interrupt_unmask_fn   /**< @ref interrupt_unmask()   */
+	#define __interrupt_ack_fn      /**< @ref interrupt_ack()      */
 	/**@}*/
 
 #ifndef _ASM_FILE_

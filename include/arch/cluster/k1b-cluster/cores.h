@@ -113,9 +113,10 @@
 	 * @name Exported Functions
 	 */
 	/**@{*/
-	#define ___core_reset_fn           /**< _core_reset()           */
-	#define __core_setup_fn            /**< core_setup()            */
-	#define __cluster_get_num_cores_fn /**< cluster_get_num_cores() */
+	#define ___core_reset_fn        /**< core_get_id()           */
+	#define __core_get_id_fn        /**< core_get_id()           */
+	#define __core_setup_fn         /**< core_setup()            */
+	#define __cluster_get_num_cores /**< cluster_get_num_cores() */
 	/**@}*/
 
 	/**
