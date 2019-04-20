@@ -45,20 +45,36 @@ OBJ = $(ASM_SRC:.S=.o) \
 
 # Builds All Object Files
 all: $(OBJ)
-	@echo [AR] $(OBJ)
+ifeq ($(VERBOSE), no)
+	@echo [AR] $(LIBDIR)/$(LIBKERNEL)
 	@$(AR) $(ARFLAGS) $(LIBDIR)/$(LIBKERNEL) $(OBJ)
+else
+	$(AR) $(ARFLAGS) $(LIBDIR)/$(LIBKERNEL) $(OBJ)
+endif
 
 # Cleans All Object Files
 clean:
+ifeq ($(VERBOSE), no)
 	@echo [CLEAN] $(LIBDIR)/$(LIBKERNEL) $(OBJ)
 	@rm -rf $(LIBDIR)/$(LIBKERNEL) $(OBJ)
+else
+	rm -rf $(LIBDIR)/$(LIBKERNEL) $(OBJ)
+endif
 
 # Builds a C Source file
 %.o: %.c
+ifeq ($(VERBOSE), no)
 	@echo [CC] $@
 	@$(CC) $(CFLAGS) $< -c -o $@
+else
+	$(CC) $(CFLAGS) $< -c -o $@
+endif
 
 # Builds an ASM Source File
 %.o: %.S
+ifeq ($(VERBOSE), no)
 	@echo [AS] $@
 	@$(CC) $(CFLAGS) $< -c -o $@
+else
+	$(CC) $(CFLAGS) $< -c -o $@
+endif

@@ -31,20 +31,36 @@ OBJ = $(C_SRC:.c=.o) \
 
 # Builds object files for i486 PC target.
 all: $(OBJ)
+ifeq ($(VERBOSE), no)
 	@echo [LD] $(OBJ)
 	@$(CC) $(CFLAGS) $(LDFLAGS) $(OBJ) -o $(BINDIR)/$(EXECBIN) -Wl,--whole-archive $(LIBS)
+else
+	$(CC) $(CFLAGS) $(LDFLAGS) $(OBJ) -o $(BINDIR)/$(EXECBIN) -Wl,--whole-archive $(LIBS)
+endif
 
 # Cleans all object files.
 clean:
+ifeq ($(VERBOSE), no)
 	@echo [CLEAN] $(BINDIR)/$(EXECBIN) $(OBJ)
 	@rm -rf $(BINDIR)/$(EXECBIN) $(OBJ)
+else
+	rm -rf $(BINDIR)/$(EXECBIN) $(OBJ)
+endif
 
 # Builds a C Source file
 %.o: %.c
+ifeq ($(VERBOSE), no)
 	@echo [CC] $@
 	@$(CC) $(CFLAGS) $< -c -o $@
+else
+	$(CC) $(CFLAGS) $< -c -o $@
+endif
 
 # Builds an ASM Source File
 %.o: %.S
+ifeq ($(VERBOSE), no)
 	@echo [AS] $@
 	@$(CC) $(CFLAGS) $< -c -o $@
+else
+	$(CC) $(CFLAGS) $< -c -o $@
+endif

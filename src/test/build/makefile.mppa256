@@ -37,20 +37,36 @@ OBJ = $(ASM_SRC:.S=.$(CLUSTER)-$(CLUSTER_VARIANT).o) \
 
 # Builds object files for MPPA-256 target.
 mppa256: $(OBJ)
+ifeq ($(VERBOSE), no)
 	@echo [LD] $(OBJ)
 	@$(CC) $(CFLAGS) $(LDFLAGS) $(OBJ) -o $(BINDIR)/$(EXECBIN) -Wl,--whole-archive $(LIBS_OURS) -Wl,--no-whole-archive $(LIBS_THEIRS)
+else
+	$(CC) $(CFLAGS) $(LDFLAGS) $(OBJ) -o $(BINDIR)/$(EXECBIN) -Wl,--whole-archive $(LIBS_OURS) -Wl,--no-whole-archive $(LIBS_THEIRS)
+endif
 
 # Cleans all object files.
 clean:
+ifeq ($(VERBOSE), no)
 	@echo [CLEAN] $(BINDIR)/$(EXECBIN) $(OBJ)
 	@rm -rf $(BINDIR)/$(EXECBIN) $(OBJ)
+else
+	rm -rf $(BINDIR)/$(EXECBIN) $(OBJ)
+endif
 
 # Builds a C Source file
 %.$(CLUSTER)-$(CLUSTER_VARIANT).o: %.c
+ifeq ($(VERBOSE), no)
 	@echo [AS] $@
 	@$(CC) $(CFLAGS) $< -c -o $@
+else
+	$(CC) $(CFLAGS) $< -c -o $@
+endif
 
 # Builds an ASM Source File
 %.$(CLUSTER)-$(CLUSTER_VARIANT).o: %.S
+ifeq ($(VERBOSE), no)
 	@echo [CC] $@
 	@$(CC) $(CFLAGS) $< -c -o $@
+else
+	$(CC) $(CFLAGS) $< -c -o $@
+endif
