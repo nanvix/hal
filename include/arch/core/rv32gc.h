@@ -49,6 +49,10 @@
 		#include <arch/core/rv32gc/machine.h>
 	#endif
 
+	#ifdef _ASM_FILE_
+		#include <arch/core/rv32gc/asm.h>
+	#endif
+
 /**
  * @cond rv32gc
  */

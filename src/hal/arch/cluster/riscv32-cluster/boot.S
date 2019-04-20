@@ -27,7 +27,6 @@
 #define __RV32GC_MACHINE_CODE
 
 #include <arch/cluster/riscv32-cluster/cores.h>
-#include <arch/core/rv32gc/asm.h>
 
 /* Exported symbols. */
 .global _do_start
