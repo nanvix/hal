@@ -110,8 +110,14 @@
 	#ifndef __pde_is_user_fn
 	#error "pde_is_user() not defined?"
 	#endif
+	#ifndef __pde_is_read_fn
+	#error "pde_is_read() not defined?"
+	#endif
 	#ifndef __pde_is_write_fn
 	#error "pde_is_write() not defined?"
+	#endif
+	#ifndef __pde_is_exec_fn
+	#error "pde_is_exec() not defined?"
 	#endif
 	#ifndef __pde_present_set_fn
 	#error "pde_present_set() not defined?"
@@ -119,8 +125,14 @@
 	#ifndef __pde_user_set_fn
 	#error "pde_user_set() not defined?"
 	#endif
+	#ifndef __pde_read_set_fn
+	#error "pde_read_set() not defined?"
+	#endif
 	#ifndef __pde_write_set_fn
 	#error "pde_write_set() not defined?"
+	#endif
+	#ifndef __pde_exec_set_fn
+	#error "pde_exec_set() not defined?"
 	#endif
 	#ifndef __pte_clear_fn
 	#error "pte_clear() not defined?"
@@ -137,8 +149,14 @@
 	#ifndef __pte_is_user_fn
 	#error "pte_is_user() not defined?"
 	#endif
+	#ifndef __pte_is_read_fn
+	#error "pte_is_read() not defined?"
+	#endif
 	#ifndef __pte_is_write_fn
 	#error "pte_is_write() not defined?"
+	#endif
+	#ifndef __pte_is_exec_fn
+	#error "pte_is_exec() not defined?"
 	#endif
 	#ifndef __pte_present_set_fn
 	#error "pte_present_set() not defined?"
@@ -146,8 +164,14 @@
 	#ifndef __pte_user_set_fn
 	#error "pte_user_set() not defined?"
 	#endif
+	#ifndef __pte_read_set_fn
+	#error "pte_read_set() not defined?"
+	#endif
 	#ifndef __pte_write_set_fn
 	#error "pte_write_set() not defined?"
+	#endif
+	#ifndef __pte_exec_set_fn
+	#error "pte_exec_set() not defined?"
 	#endif
 	#ifndef __mmu_page_map_fn
 	#error "mmu_page_map() not defined?"
