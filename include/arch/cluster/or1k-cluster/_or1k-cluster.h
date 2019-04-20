@@ -28,21 +28,7 @@
 	#undef  __NEED_CORE_OR1K
 	#define __NEED_CORE_OR1K
 
-#ifndef _ASM_FILE_
-
-	#ifndef __or1k_cluster__
-		#error "wrong cluter included!"
-	#endif
-
-	#if (defined(__or1200__))
-		#include <arch/core/or1k.h>
-	#elif (defined(__mor1kx__))
-		#include <arch/core/mor1kx.h>
-	#else
-		#error "unkonwn core"
-	#endif
-
-#endif
+	#include <arch/core/or1k.h>
 
 #endif /* _CLUSTER_OR1K_CLUSTER_H_ */
 

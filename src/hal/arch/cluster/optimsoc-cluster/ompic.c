@@ -23,7 +23,7 @@
  */
 
 #include <nanvix/hal/core/interrupt.h>
-#include <arch/cluster/or1k-cluster/memory.h>
+#include <arch/cluster/optimsoc-cluster/memory.h>
 #include <nanvix/const.h>
 #include <stdint.h>
 
@@ -61,8 +61,8 @@ PUBLIC void or1k_ompic_send_ipi(uint32_t dstcore, uint16_t data)
 	coreid = or1k_core_get_id();
 
 	/* Send IPI. */
-	or1k_ompic_writereg(OR1K_OMPIC_CTRL(coreid), OR1K_OMPIC_CTRL_IRQ_GEN |
-		OR1K_OMPIC_CTRL_DST(dstcore)| OR1K_OMPIC_DATA(data));
+	or1k_ompic_writereg(OPTIMSOC_OMPIC_CTRL(coreid), OPTIMSOC_OMPIC_CTRL_IRQ_GEN |
+		OPTIMSOC_OMPIC_CTRL_DST(dstcore)| OPTIMSOC_OMPIC_DATA(data));
 }
 
 /*
@@ -80,7 +80,7 @@ PRIVATE void or1k_ompic_handle_ipi(int num)
 	coreid = or1k_core_get_id();
 
 	/* ACK IPI. */
-	or1k_ompic_writereg(OR1K_OMPIC_CTRL(coreid), OR1K_OMPIC_CTRL_IRQ_ACK);
+	or1k_ompic_writereg(OPTIMSOC_OMPIC_CTRL(coreid), OPTIMSOC_OMPIC_CTRL_IRQ_ACK);
 }
 
 /*

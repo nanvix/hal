@@ -25,13 +25,12 @@
 #ifndef ARCH_CLUSTER_OPTIMSOC_CLUSTER_CLOCK_H_
 #define ARCH_CLUSTER_OPTIMSOC_CLUSTER_CLOCK_H_
 
-
 	/* Cluster Interface Implementation */
 	#include <arch/cluster/optimsoc-cluster/_optimsoc-cluster.h>
 
 /**
- * @addtogroup or1k-core-clock Clock
- * @ingroup or1k-core
+ * @addtogroup optimsoc-cluster-clock Clock
+ * @ingroup optimsoc-cluster
  *
  * @brief Integrated Clock Device
  */
@@ -39,12 +38,14 @@
 
 	#include <nanvix/const.h>
 
+/**@}*/
+
 /*============================================================================*
  * Exported Interface                                                         *
  *============================================================================*/
 
 /**
- * @cond or1k
+ * @optimsoc_cluster
  */
 
 	/**
@@ -54,6 +55,8 @@
 	#define __clock_init_fn  /**< clock_init()  */
 	#define __clock_reset_fn /**< clock_reset() */
 	/**@}*/
+
+#ifndef _ASM_FILE_
 
 	/**
 	 * @see or1k_clock_init().
@@ -71,8 +74,8 @@
 		or1k_clock_reset();
 	}
 
-/**@endcond*/
+#endif /* !_ASM_FILE_ */
 
-/**@}*/
+/**@endcond*/
 
 #endif /* ARCH_CLUSTER_OR1K_CLUSTER_CLOCK */

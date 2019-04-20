@@ -78,7 +78,7 @@
 		return (OPTIMSOC_CLUSTER_NUM_CORES);
 	}
 
-#endif /* _ASM_FILE_ */
+#endif /* !_ASM_FILE_ */
 
 /**@}*/
 
@@ -135,7 +135,7 @@
 		optimsoc_cluster_setup();
 	}
 
-#endif /* _ASM_FILE_ */
+#endif /* !_ASM_FILE_ */
 
 /**@endcond*/
 

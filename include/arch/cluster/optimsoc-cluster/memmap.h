@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 
-#ifndef CLUSTER_OPTIMSOC_CLUSTER_MEMMAP_H_
-#define CLUSTER_OPTIMSOC_CLUSTER_MEMMAP_H_
+#ifndef ARCH_CLUSTER_OPTIMSOC_CLUSTER_MEMMAP_H_
+#define ARCH_CLUSTER_OPTIMSOC_CLUSTER_MEMMAP_H_
 
 	#ifndef __NEED_CLUSTER_MEMMAP
 		#error "do not include this file"
@@ -33,10 +33,10 @@
 	#include <arch/cluster/optimsoc-cluster/_optimsoc-cluster.h>
 
 /**
- * @addtogroup optimsoc_cluster-cluster-memmap Memory Map
- * @ingroup optimsoc_cluster-cluster
+ * @addtogroup optimsoc-cluster-memmap Memory Map
+ * @ingroup optimsoc-cluster
  *
- * @brief Physical memory map.
+ * @brief Physical Memory Map
  */
 /**@{*/
 

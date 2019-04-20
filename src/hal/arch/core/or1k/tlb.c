@@ -22,8 +22,7 @@
  * SOFTWARE.
  */
 
-#include <arch/cluster/or1k-cluster/cores.h>
-#include <arch/cluster/or1k-cluster/memory.h>
+#include <nanvix/hal/hal.h>
 #include <nanvix/const.h>
 
 /**
@@ -370,12 +369,10 @@ PUBLIC int or1k_tlb_write(int tlb_type, vaddr_t vaddr, paddr_t paddr)
  */
 PUBLIC int or1k_tlb_inval(int tlb_type, vaddr_t vaddr)
 {
-	struct tlbe_value tlbev; /* TLB Entry value. */
-	int idx;                 /* TLB Index.       */
-	int coreid;              /* Core ID.         */
+	int idx;     /* TLB Index.       */
+	int coreid;  /* Core ID.         */
 
 	idx = (vaddr >> PAGE_SHIFT) & (OR1K_TLB_LENGTH - 1);
-	tlbev.u.value = 0;
 	coreid = or1k_core_get_id();
 
 	/*
@@ -384,14 +381,14 @@ PUBLIC int or1k_tlb_inval(int tlb_type, vaddr_t vaddr)
 	 */
 	if (tlb_type == OR1K_TLB_INSTRUCTION)
 	{
-		kmemcpy(&tlb[coreid].itlb[idx], &tlbev.u.tlbe, OR1K_TLBE_SIZE);
+		kmemset(&tlb[coreid].itlb[idx], 0, OR1K_TLBE_SIZE);
 		or1k_mtspr(OR1K_SPR_ITLBMR_BASE(0) | idx, 0);
 	}
 
 	/* Data. */
 	else
 	{
-		kmemcpy(&tlb[coreid].dtlb[idx], &tlbev.u.tlbe, OR1K_TLBE_SIZE);
+		kmemset(&tlb[coreid].dtlb[idx], 0, OR1K_TLBE_SIZE);
 		or1k_mtspr(OR1K_SPR_DTLBMR_BASE(0) | idx, 0);
 	}
 

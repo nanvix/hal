@@ -24,10 +24,10 @@
 
 /* Must come first. */
 #define _ASM_FILE_
+#define __NEED_CLUSTER_OPTIMSOC
 
-#include <arch/core/or1k/core.h>
-#include <arch/core/or1k/mmu.h>
-#include <arch/cluster/or1k-cluster/cores.h>
+#include <arch/cluster/optimsoc-cluster.h>
+#include <arch/core/or1k/asm.h>
 
 /* Exported symbols. */
 .globl core.kstack

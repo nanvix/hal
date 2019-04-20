@@ -22,25 +22,25 @@
  * SOFTWARE.
  */
 
-#ifndef CLUSTER_OPTIMSOC_CLUSTER_MEMORY_H_
-#define CLUSTER_OPTIMSOC_CLUSTER_MEMORY_H_
+#ifndef ARCH_CLUSTER_OPTIMSOC_CLUSTER_MEMORY_H_
+#define ARCH_CLUSTER_OPTIMSOC_CLUSTER_MEMORY_H_
 
 	/* Cluster Interface Implementation */
 	#include <arch/cluster/optimsoc-cluster/_optimsoc-cluster.h>
+
+	/* Must come first. */
+	#define __NEED_CLUSTER_MEMMAP
 
 /**
  * @addtogroup optimsoc-cluster-mem Memory
  * @ingroup optimsoc-cluster
  *
- * @brief Memory System
+ * @brief Memory Interface
  */
 /**@{*/
 
-	/* Must come first. */
-	#define __NEED_CLUSTER_MEMMAP
-
-	#include <nanvix/const.h>
 	#include <arch/cluster/optimsoc-cluster/memmap.h>
+	#include <nanvix/const.h>
 
 	/**
 	 * @name Physical Memory Layout
@@ -80,19 +80,19 @@
 	 * @brief Kernel memory size (in bytes).
 	 */
 	#define OPTIMSOC_CLUSTER_KMEM_SIZE \
-		(OPTIMSOC_CLUSTER_KERNEL_END_VIRT - OPTIMSOC_CLUSTER_KERNEL_BASE_VIRT)
+		(OPTIMSOC_CLUSTER_KERNEL_END_PHYS - OPTIMSOC_CLUSTER_KERNEL_BASE_PHYS)
 
 	/**
 	 * @brief Kernel page pool size (in bytes).
 	 */
 	#define OPTIMSOC_CLUSTER_KPOOL_SIZE \
-		(OPTIMSOC_CLUSTER_KPOOL_END_VIRT - OPTIMSOC_CLUSTER_KPOOL_BASE_VIRT)
+		(OPTIMSOC_CLUSTER_KPOOL_END_PHYS - OPTIMSOC_CLUSTER_KPOOL_BASE_PHYS)
 
 	/**
 	 * @brief User memory size (in bytes).
 	 */
 	#define OPTIMSOC_CLUSTER_UMEM_SIZE \
-		(OPTIMSOC_CLUSTER_USER_END_VIRT - OPTIMSOC_CLUSTER_USER_BASE_VIRT)
+		(OPTIMSOC_CLUSTER_USER_END_PHYS - OPTIMSOC_CLUSTER_USER_BASE_PHYS)
 
 	/**
 	 * @brief Kernel stack size (in bytes).
@@ -100,7 +100,7 @@
 	#define OPTIMSOC_CLUSTER_KSTACK_SIZE OPTIMSOC_PAGE_SIZE
 
 	/**
-	 * OMPIC Registers and flags.
+	 * @brief OMPIC Registers and flags.
 	 */
 	/**@{*/
 	#define OPTIMSOC_OMPIC_CPUBYTES	        8
@@ -121,7 +121,7 @@
 	 */
 	EXTERN void optimsoc_cluster_mem_setup(void);
 
-#endif /* _ASM_FILE_ */
+#endif /* !_ASM_FILE_ */
 
 /**@}*/
 
