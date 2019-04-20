@@ -42,12 +42,12 @@ export LD = $(TOOLCHAIN_DIR)/or1k-elf-ld
 export AR = $(TOOLCHAIN_DIR)/or1k-elf-ar
 
 # Compiler Options
-export CFLAGS   = -D __qemu_openrisc__ -D__openrisc__
-export CFLAGS  += -nostdlib -nostdinc
-export CFLAGS  += -ansi -pedantic-errors
-export CFLAGS  += -Wstack-usage=4096
-export CFLAGS  += -D __HAS_HW_DIVISION
-export CFLAGS  += -D __INTERFACE_CHECK
+export CFLAGS  = -D __qemu_openrisc__ -D__openrisc__
+export CFLAGS += -nostdlib -nostdinc
+export CFLAGS += -ansi -pedantic-errors
+export CFLAGS += -Wstack-usage=4096
+export CFLAGS += -D __HAS_HW_DIVISION
+export CFLAGS += -D __INTERFACE_CHECK
 
 # Linker Options
 export LDFLAGS  =
