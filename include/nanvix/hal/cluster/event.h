@@ -36,9 +36,6 @@
 #if defined(__INTERFACE_CHECK) || defined(__INTERFACE_CHECK_CLUSTER_AL) || defined(__INTERFACE_CHECK_EVENT)
 
 	/* Functions */
-	#ifndef __event_drop_fn
-	#error "event_drop() not defined?"
-	#endif
 	#ifndef __event_notify_fn
 	#error "event_notify() not defined?"
 	#endif
@@ -76,7 +73,14 @@
 	/**
 	 * @brief Drops any pending events in the local core.
 	 */
+#if (!CLUSTER_HAS_EVENTS)
 	EXTERN void event_drop(void);
+#else
+	static inline void event_drop(void)
+	{
+		/* noop. */
+	}
+#endif
 
 /**@}*/
 
