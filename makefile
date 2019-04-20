@@ -73,15 +73,15 @@ export IMAGE = hal-debug.img
 all: image
 
 # Runs Unit Tests in all clusters
-run: | distclean image
+run: | image
 	bash $(TOOLSDIR)/utils/nanvix-run.sh $(IMAGE) $(BINDIR)/$(EXECBIN) $(TARGET) all --no-debug
 
 # Runs Unit Tests in IO Cluster.
-run-iocluster: | distclean image
+run-iocluster: | image
 	bash $(TOOLSDIR)/utils/nanvix-run.sh $(IMAGE) $(BINDIR)/$(EXECBIN) $(TARGET) iocluster --no-debug
 
 # Runs Unit Tests in Compute Cluster.
-run-ccluster: | distclean image
+run-ccluster: | image
 	bash $(TOOLSDIR)/utils/nanvix-run.sh $(IMAGE) $(BINDIR)/$(EXECBIN) $(TARGET) ccluster --no-debug
 
 # Runs Unit Tests in all clusters in debug mode.
@@ -97,21 +97,21 @@ debug-ccluster: | image
 	bash $(TOOLSDIR)/utils/nanvix-run.sh $(IMAGE) $(BINDIR)/$(EXECBIN) $(TARGET) ccluster --debug
 
 # Builds image.
-image: | hal hal-target
+image: hal-target
 	bash $(TOOLSDIR)/image/build-image.sh $(BINDIR) $(IMAGE)
 
-# Builds Nanvix.
-hal:
+# Make directories
+make-dirs:
 	@mkdir -p $(BINDIR)
 	@mkdir -p $(LIBDIR)
 
 # Builds HAL.
-hal-target:
+hal-target: make-dirs
 	@$(MAKE) -C $(SRCDIR) -f build/processor/makefile.$(PROCESSOR) all
 
 # Cleans everything.
 distclean: distclean-target
-	@rm -rf $(IMAGE)
+	@rm -rf $(IMAGE) $(BINDIR)/$(EXECBIN)
 	@rm -rf $(BINDIR) $(LIBDIR)
 	@find $(SRCDIR) -name "*.o" -exec rm -rf {} \;
 
@@ -120,7 +120,7 @@ distclean-target:
 	@$(MAKE) -C $(SRCDIR) -f build/processor/makefile.$(PROCESSOR) distclean
 
 # Install
-install: $(ARTIFACTS) | hal hal-target
+install: $(ARTIFACTS) | hal-target
 	mkdir -p $(PREFIX)/include/
 	cp -r include/arch/                    $(PREFIX)/include/arch/
 	mkdir -p $(PREFIX)/include/grub/
