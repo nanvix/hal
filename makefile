@@ -72,6 +72,30 @@ export IMAGE = hal-debug.img
 # Builds everything.
 all: image
 
+# Runs Unit Tests in all clusters
+run: | distclean image
+	bash $(TOOLSDIR)/utils/nanvix-run.sh $(IMAGE) $(BINDIR)/$(EXECBIN) $(TARGET) all --no-debug
+
+# Runs Unit Tests in IO Cluster.
+run-iocluster: | distclean image
+	bash $(TOOLSDIR)/utils/nanvix-run.sh $(IMAGE) $(BINDIR)/$(EXECBIN) $(TARGET) iocluster --no-debug
+
+# Runs Unit Tests in Compute Cluster.
+run-ccluster: | distclean image
+	bash $(TOOLSDIR)/utils/nanvix-run.sh $(IMAGE) $(BINDIR)/$(EXECBIN) $(TARGET) ccluster --no-debug
+
+# Runs Unit Tests in all clusters in debug mode.
+debug: | image
+	bash $(TOOLSDIR)/utils/nanvix-run.sh $(IMAGE) $(BINDIR)/$(EXECBIN) $(TARGET) all --debug
+
+# Runs Unit Tests in IO Cluster in debug mode.
+debug-iocluster: | image
+	bash $(TOOLSDIR)/utils/nanvix-run.sh $(IMAGE) $(BINDIR)/$(EXECBIN) $(TARGET) iocluster --debug
+
+# Runs Unit Tests in Compute Cluster in debug mode.
+debug-ccluster: | image
+	bash $(TOOLSDIR)/utils/nanvix-run.sh $(IMAGE) $(BINDIR)/$(EXECBIN) $(TARGET) ccluster --debug
+
 # Builds image.
 image: | hal hal-target
 	bash $(TOOLSDIR)/image/build-image.sh $(BINDIR) $(IMAGE)
