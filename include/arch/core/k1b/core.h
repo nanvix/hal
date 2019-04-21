@@ -76,27 +76,27 @@
  */
 
 	/**
-	 * @brief Exported Constants
+	 * @name Exported Constants
 	 */
 	/**@{*/
-	#define BYTE_BIT   K1B_BYTE_BIT    /**< @see BYTE_BIT   */
-	#define HWORD_BIT  K1B_HWORD_BIT   /**< @see HWORD_BIT  */
-	#define WORD_BIT   K1B_WORD_BIT    /**< @see WORD_BIT   */
-	#define DWORD_BIT  K1B_DWORD_BIT   /**< @see DWORD_BIT  */
-	#define BYTE_SIZE  K1B_SIZE_SIZE   /**< @see BYTE_SIZE  */
-	#define HWORD_SIZE K1B_HWORD_SIZE  /**< @see HWORD_SIZE */
-	#define WORD_SIZE  K1B_WORD_SIZE   /**< @see WORD_SIZE  */
-	#define DWORD_SIZE K1B_DWORD_SIZE  /**< @see DWORD_SIZE */
+	#define BYTE_BIT   K1B_BYTE_BIT    /**< @ref BYTE_BIT   */
+	#define HWORD_BIT  K1B_HWORD_BIT   /**< @ref HWORD_BIT  */
+	#define WORD_BIT   K1B_WORD_BIT    /**< @ref WORD_BIT   */
+	#define DWORD_BIT  K1B_DWORD_BIT   /**< @ref DWORD_BIT  */
+	#define BYTE_SIZE  K1B_SIZE_SIZE   /**< @ref BYTE_SIZE  */
+	#define HWORD_SIZE K1B_HWORD_SIZE  /**< @ref HWORD_SIZE */
+	#define WORD_SIZE  K1B_WORD_SIZE   /**< @ref WORD_SIZE  */
+	#define DWORD_SIZE K1B_DWORD_SIZE  /**< @ref DWORD_SIZE */
 	/**@}*/
 
 	/**
-	 * @brief Exported Types
+	 * @name Exported Types
 	 */
 	/**@{*/
-	#define __byte_t  /**< @see byte_t  */
-	#define __hword_t /**< @see hword_t */
-	#define __word_t  /**< @see word_t  */
-	#define __dword_t /**< @see dword_t */
+	#define __byte_t  /**< @ref byte_t  */
+	#define __hword_t /**< @ref hword_t */
+	#define __word_t  /**< @ref word_t  */
+	#define __dword_t /**< @ref dword_t */
 	/**@}*/
 
 	/**

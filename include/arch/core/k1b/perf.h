@@ -190,13 +190,6 @@
 	/**@}*/
 
 	/**
-	 * @name Exported Variables
-	 */
-	/**@{*/
-	#define __perf_events_var /**< @ref perf_events[] */
-	/**@}*/
-
-	/**
 	 * @name Exported Functions
 	 */
 	/**@{*/
