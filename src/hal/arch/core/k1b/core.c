@@ -27,6 +27,7 @@
 #include <arch/core/k1b/int.h>
 #include <arch/core/k1b/ivt.h>
 #include <arch/core/k1b/mOS.h>
+#include <arch/core/k1b/perf.h>
 #include <arch/core/k1b/trap.h>
 #include <nanvix/const.h>
 
@@ -42,6 +43,8 @@
 PUBLIC void k1b_core_setup(void *stack)
 {
 	kprintf("[hal] booting up core");
+
+	k1b_perf_setup();
 
 	k1b_ivt_setup(
 		do_interrupt,
