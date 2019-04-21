@@ -84,4 +84,9 @@
 	 */
 	EXTERN void test_cluster_cores(void);
 
+	/*
+	 * @brief Test driver for Performance Monitor Interface.
+	 */
+	EXTERN void test_perf(void);
+
 #endif /* _HAL_TEST_H_ */

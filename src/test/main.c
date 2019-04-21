@@ -45,6 +45,9 @@ PRIVATE void test_core_al(void)
 	test_tlb();
 	test_trap();
 	test_upcall();
+#if (CORE_HAS_PERF)
+	test_perf();
+#endif
 }
 
 /**
