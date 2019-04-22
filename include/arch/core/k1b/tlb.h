@@ -125,17 +125,17 @@
 	 * @brief Static initializer for a TLB entry.
 	 *
 	 */
-	#define K1B_TLBE_INITIALIZER(pn,s,g,asn,fn,ae,pa,cp,es) \
-	(                              \
-		(((es)  & 0x3ULL)    <<  0) | \
-		(((cp)  & 0x3ULL)    <<  2) | \
-		(((pa)  & 0xfULL)    <<  4) | \
-		(((ae)  & 0xfULL)    <<  8) | \
-		(((fn)  & 0xffffULL) << 12) | \
-		(((asn) & 0x1ffULL)  << 32) | \
-		(((g)   & 0x1ULL)    << 42) | \
-		(((s)   & 0x1ULL)    << 43) | \
-		(((pn)  & 0xffffULL) << 44)   \
+	#define K1B_TLBE_INITIALIZER(pn, s, g, ans, fn, ae, pa, cp, es) \
+	(                                  \
+		(((es)  & 0x3ULL)     <<  0) | \
+		(((cp)  & 0x3ULL)     <<  2) | \
+		(((pa)  & 0xfULL)     <<  4) | \
+		(((ae)  & 0xfULL)     <<  8) | \
+		(((fn)  & 0xfffffULL) << 12) | \
+		(((ans) & 0x1ffULL)   << 32) | \
+		(((g)   & 0x1ULL)     << 42) | \
+		(((s)   & 0x1ULL)     << 43) | \
+		(((pn)  & 0xfffffULL) << 44)   \
 	)
 
 #ifndef _ASM_FILE_
