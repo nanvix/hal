@@ -39,6 +39,7 @@
 .global rv32gc_kcall3
 .global rv32gc_kcall4
 .global rv32gc_kcall5
+.global _rv32gc_do_kcall
 .global rv32gc_do_strap
 
 .section .text,"ax",@progbits
@@ -200,39 +201,53 @@ rv32gc_kcall 5 // Kernel call with five arguments.
 .align RV32GC_WORD_SIZE
 _rv32gc_do_kcall:
 
-	// User mode is not supported, then
-	// simulate an ECALL instruction
-	// by push the value of RA onto
-	// the stack.
-	addi  sp, sp, -RV32GC_WORD_SIZE
-	sw    ra, 0(sp)
+	beqz a0, _rv32gc_do_kcall.upcall
 
-	// Save the execution context
-	// in the current stack.
-	rv32gc_context_save
+		// User mode is not supported, then
+		// simulate an ECALL instruction
+		// by pushing the value of RA onto
+		// the stack.
+		addi  sp, sp, -RV32GC_WORD_SIZE
+		sw    ra, 0(sp)
 
-	// Get kernel call parameters.
-	lw  a5, RV32GC_CONTEXT_A0(sp) /* System Call Number */
-	lw  a0, RV32GC_CONTEXT_A1(sp) /* Argument 0         */
-	lw  a1, RV32GC_CONTEXT_A2(sp) /* Argument 1         */
-	lw  a2, RV32GC_CONTEXT_A3(sp) /* Argument 2         */
-	lw  a3, RV32GC_CONTEXT_A4(sp) /* Argument 3         */
-	lw  a4, RV32GC_CONTEXT_A5(sp) /* Argument 4         */
+		// Save the execution context
+		// in the current stack.
+		rv32gc_context_save
 
-	// Forward kernel call
-	// to high-level dispatcher.
-	call  do_syscall
+		// Get kernel call parameters.
+		lw  a5, RV32GC_CONTEXT_A0(sp) /* System Call Number */
+		lw  a0, RV32GC_CONTEXT_A1(sp) /* Argument 0         */
+		lw  a1, RV32GC_CONTEXT_A2(sp) /* Argument 1         */
+		lw  a2, RV32GC_CONTEXT_A3(sp) /* Argument 2         */
+		lw  a3, RV32GC_CONTEXT_A4(sp) /* Argument 3         */
+		lw  a4, RV32GC_CONTEXT_A5(sp) /* Argument 4         */
 
-	// Copy return value to user stack.
-	sw  a0, RV32GC_CONTEXT_A0(sp)
+		// Forward kernel call
+		// to high-level dispatcher.
+		call  do_syscall
 
-	// Return from kernel call.
-	_rv32gc_do_kcall.out:
+		// Copy return value to user stack.
+		sw  a0, RV32GC_CONTEXT_A0(sp)
 
 		rv32gc_context_restore
 
-		// Wipe out face ECALL.
+		// Wipe out fake ECALL.
 		addi sp, sp, RV32GC_WORD_SIZE
+
+		ret
+
+	_rv32gc_do_kcall.upcall:
+
+		// Restore stack pointer.
+		mv  sp, a1
+
+		// User mode is not supported, then
+		// use RA as return address, rather
+		// than SPC.
+		lw  t0, RV32GC_CONTEXT_PC(sp)
+		sw  t0, RV32GC_CONTEXT_RA(sp)
+
+		rv32gc_context_restore
 
 		ret
 

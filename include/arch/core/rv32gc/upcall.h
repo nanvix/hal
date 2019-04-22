@@ -22,49 +22,70 @@
  * SOFTWARE.
  */
 
-#ifndef ARCH_CORE_RV32GC_H_
-#define ARCH_CORE_RV32GC_H_
+#ifndef ARCH_CORE_RV32GC_UPCALL_H_
+#define ARCH_CORE_RV32GC_UPCALL_H_
+
+/**
+ * @addtogroup rv32gc-core-upcall Upcall
+ * @ingroup rv32gc-core
+ *
+ * @brief Upcall Interface
+ */
+/**@{*/
 
 	/**
-	 * @addtogroup rv32gc-core RV32GC Core
-	 * @ingroup cores
+	 * @brief System call number for upcall_ret().
 	 */
+	#define RV32GC_NR_upcall_ret 0
 
-	#ifndef __NEED_CORE_RV32GC
-		#error "rv32gc core not required"
-	#endif
+#ifndef _ASM_FILE_
 
-	#include <arch/core/rv32gc/cache.h>
-	#include <arch/core/rv32gc/clock.h>
-	#include <arch/core/rv32gc/core.h>
-	#include <arch/core/rv32gc/excp.h>
-	#include <arch/core/rv32gc/int.h>
-	#include <arch/core/rv32gc/mmu.h>
-	#include <arch/core/rv32gc/spinlock.h>
-	#include <arch/core/rv32gc/tlb.h>
-	#include <arch/core/rv32gc/trap.h>
-	#include <arch/core/rv32gc/upcall.h>
+	/**
+	 * @brief Returns from an upcall.
+	 */
+	extern void rv32gc_upcall_ret(void);
 
-	#ifdef __NEED_CORE_MACHINE
-		#include <arch/core/rv32gc/machine.h>
-	#endif
+#endif
+
+/**@}*/
+
+/*============================================================================*
+ * Exported Interface                                                         *
+ *============================================================================*/
 
 /**
  * @cond rv32gc
  */
 
 	/**
-	 * @name Core Features
+	 * @name Exported Constants
 	 */
 	/**@{*/
-	#define CORE_HAS_ATOMICS      1 /**< Has Atomic Instructions?    */
-	#define CORE_HAS_PMIO         0 /**< Has Programmed I/O?         */
-	#define CORE_HAS_TLB_HW       1 /**< Has Hardware-Managed TLB?   */
-	#define CORE_HAS_CACHE_HW     0 /**< Has Hardware-Managed Cache? */
-	#define CORE_IS_LITTLE_ENDIAN 1 /**< Is Little Endian?           */
+	#define NR_upcall_ret RV32GC_NR_upcall_ret /**< @see NR_upcall_ret */
 	/**@}*/
+
+	/**
+	 * @name Exported Functions
+	 */
+	/**@{*/
+	#define __upcall_ret_fn /**< upcall_ret() */
+	/**@}*/
+
+#ifndef _ASM_FILE_
+
+	/**
+	 * @brief Alias for rv32gc_upcall_ret()
+	 *
+	 * @see rv32gc_upcall_ret().
+	 *
+	 * @note This should be an alias, otherwise the compiler may mess
+	 * up with the stack that we have crafted carefully.
+	 */
+	#define upcall_ret rv32gc_upcall_ret
+
+#endif
 
 /**@endcond*/
 
-#endif /* ARCH_CORE_RV32GC_H_ */
+#endif /* ARCH_CORE_RV32GC_UPCALL_H_ */
 

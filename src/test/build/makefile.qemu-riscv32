@@ -23,8 +23,8 @@
 # Tweak toolchain.
 export LDFLAGS  += -L $(LINKERDIR)/ -T link.ld
 
-# Filter C Source List
-C_SRC := $(filter-out core/upcall.c, $(C_SRC))
+# Assembly Source Files
+ASM_SRC = $(wildcard core/arch/rv32gc.S)
 
 # Object Files
 OBJ = $(C_SRC:.c=.o) \

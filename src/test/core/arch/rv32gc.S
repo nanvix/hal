@@ -22,49 +22,49 @@
  * SOFTWARE.
  */
 
-#ifndef ARCH_CORE_RV32GC_H_
-#define ARCH_CORE_RV32GC_H_
+/* Must come first. */
+#define _ASM_FILE_
 
-	/**
-	 * @addtogroup rv32gc-core RV32GC Core
-	 * @ingroup cores
-	 */
+#include <arch/core/rv32gc/asm.h>
 
-	#ifndef __NEED_CORE_RV32GC
-		#error "rv32gc core not required"
-	#endif
+.globl _upcall_issue
+.globl _upcall_issue_ret
 
-	#include <arch/core/rv32gc/cache.h>
-	#include <arch/core/rv32gc/clock.h>
-	#include <arch/core/rv32gc/core.h>
-	#include <arch/core/rv32gc/excp.h>
-	#include <arch/core/rv32gc/int.h>
-	#include <arch/core/rv32gc/mmu.h>
-	#include <arch/core/rv32gc/spinlock.h>
-	#include <arch/core/rv32gc/tlb.h>
-	#include <arch/core/rv32gc/trap.h>
-	#include <arch/core/rv32gc/upcall.h>
+.section .text
 
-	#ifdef __NEED_CORE_MACHINE
-		#include <arch/core/rv32gc/machine.h>
-	#endif
+//
+// Issues an upcall.
+//
+.align 4
+_upcall_issue:
 
-/**
- * @cond rv32gc
- */
+	// Save return address.
+	rv32gc_pushw ra
 
-	/**
-	 * @name Core Features
-	 */
-	/**@{*/
-	#define CORE_HAS_ATOMICS      1 /**< Has Atomic Instructions?    */
-	#define CORE_HAS_PMIO         0 /**< Has Programmed I/O?         */
-	#define CORE_HAS_TLB_HW       1 /**< Has Hardware-Managed TLB?   */
-	#define CORE_HAS_CACHE_HW     0 /**< Has Hardware-Managed Cache? */
-	#define CORE_IS_LITTLE_ENDIAN 1 /**< Is Little Endian?           */
-	/**@}*/
+	rv32gc_do_prologue  // Save all preserved registers since
+	                    // they may be used by the HAL.
 
-/**@endcond*/
+	// Save pointer to real stack.
+	la  t0, saved_sp
+	sw  sp, 0(t0)
 
-#endif /* ARCH_CORE_RV32GC_H_ */
+	// Switch to fake stack.
+	sw  sp, 16 + RV32GC_CONTEXT_SP(a0)
+	sw  fp, 16 + RV32GC_CONTEXT_FP(a0)
+	mv  sp, a0
 
+	// Return from upcall.
+	j rv32gc_upcall_ret
+
+_upcall_issue_ret:
+
+	// Switch back to real stack.
+	la  t0, saved_sp
+	lw  fp, 0(t0)
+
+	rv32gc_do_epilogue   // Restore all preserved registers.
+
+	// Restore return address.
+	rv32gc_popw ra
+
+	ret
