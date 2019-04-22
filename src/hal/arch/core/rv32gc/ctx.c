@@ -24,8 +24,10 @@
 
 /* Must come first. */
 #define __NEED_CORE_CONTEXT
+#define __NEED_CORE_REGS
 
 #include <arch/core/rv32gc/ctx.h>
+#include <arch/core/rv32gc/regs.h>
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
 
@@ -46,4 +48,19 @@ PUBLIC void rv32gc_context_dump(const struct context *ctx)
 	kprintf("[hal]  s1=%x   s2=%x  s3=%x  s4=%x", ctx->s1, ctx->s2,  ctx->s3,  ctx->s4);
 	kprintf("[hal]  s5=%x   s6=%x  s7=%x  s8=%x", ctx->s5, ctx->s6,  ctx->s7,  ctx->s8);
 	kprintf("[hal]  s9=%x  s10=%x s11=%x",        ctx->s9, ctx->s10, ctx->s11);
+
+	kprintf("[hal]  sstatus=%x      sie=%x     sip=%x",
+		rv32gc_sstatus_read(),
+		rv32gc_sie_read(),
+		rv32gc_sip_read()
+	);
+	kprintf("[hal]    stvec=%x   scause=%x   stval=%x",
+		rv32gc_stvec_read(),
+		rv32gc_scause_read(),
+		rv32gc_stval_read()
+	);
+	kprintf("[hal]     sepc=%x    satp=%x",
+		rv32gc_sepc_read(),
+		rv32gc_satp_read()
+	);
 }

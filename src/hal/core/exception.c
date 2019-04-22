@@ -92,10 +92,19 @@ PUBLIC int exception_register(int excpnum, exception_handler_t handler)
 
 	/* Bad exception number. */
 	if (exceptions[excpnum].handler != NULL)
+	{
+		kprintf("[hal] exception handler already registered for %s",
+			exceptions[excpnum].name
+		);
 		return (-EBUSY);
+	}
 
 	exceptions[excpnum].handler = handler;
 	dcache_invalidate();
+
+	kprintf("[hal] exception handler registered for %s",
+		exceptions[excpnum].name
+	);
 
 	return (0);
 }
