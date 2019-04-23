@@ -222,6 +222,16 @@
 	#define KASSERT(x) kassert(x, "kassert() failed")
 
 	/**
+	 * @brief Returns the length of an array.
+	 *
+	 * @param x Target array.
+	 *
+	 * @returns The length of the array @p x.
+	 */
+	#define ARRAY_LENGTH(x) \
+		(sizeof(x)/sizeof((x)[0]))
+
+	/**
 	 * @brief Asserts if a number is within a range.
 	 *
 	 * @param x Number.
