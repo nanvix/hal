@@ -42,11 +42,11 @@ export LD = $(TOOLCHAIN_DIR)/or1k-elf-ld
 export AR = $(TOOLCHAIN_DIR)/or1k-elf-ar
 
 # Compiler Options
-export CFLAGS   = -D __optimsoc__ -D__optimsoc4__
-export CFLAGS  += -nostdlib -nostdinc
-export CFLAGS  += -ansi -pedantic-errors
-export CFLAGS  += -Wstack-usage=4096
-export CFLAGS  += -D __INTERFACE_CHECK
+export CFLAGS  = -D __optimsoc__ -D__optimsoc4__
+export CFLAGS += -nostdlib -nostdinc
+export CFLAGS += -ansi -pedantic-errors
+export CFLAGS += -Wstack-usage=4096
+export CFLAGS += -D __INTERFACE_CHECK
 
 # Linker Options
 export LDFLAGS  =

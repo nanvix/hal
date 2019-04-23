@@ -43,22 +43,13 @@ export AR = $(TOOLCHAIN_DIR)/riscv32-elf-ar
 
 # Compiler Options
 export CFLAGS  = -D __qemu_riscv32__ -D__riscv32__
+export CFAGS  += -march=rv32imafdc -mabi=ilp32
+export CFLAGS += -mcmodel=medany
 export CFLAGS += -nostdlib -nostdinc
 export CFLAGS += -ansi -pedantic-errors
 export CFLAGS += -Wstack-usage=4096
 export CFLAGS += -D __HAS_HW_DIVISION
-export CFAGS  += -march=rv32imafdc -mabi=ilp32
-export CFLAGS += -mcmodel=medany
-export CFLAGS  += -D __INTERFACE_CHECK_CACHE
-export CFLAGS  += -D __INTERFACE_CHECK_CLOCK
-export CFLAGS  += -D __INTERFACE_CHECK_CONTEXT
-export CFLAGS  += -D __INTERFACE_CHECK_EXCEPTION
-export CFLAGS  += -D __INTERFACE_CHECK_INTERRUPT
-export CFLAGS  += -D __INTERFACE_CHECK_MMU
-export CFLAGS  += -D __INTERFACE_CHECK_PMIO
-export CFLAGS  += -D __INTERFACE_CHECK_SPINLOCK
-export CFLAGS  += -D __INTERFACE_CHECK_TLB
-export CFLAGS  += -D __INTERFACE_CHECK_TRAP
+export CFLAGS += -D __INTERFACE_CHECK
 
 # Linker Options
 export LDFLAGS   = -march=rv32imafdc -mabi=ilp32 -mcmodel=medany
