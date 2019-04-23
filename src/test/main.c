@@ -53,6 +53,7 @@ PRIVATE void test_cluster_al(void)
 {
 #if (CLUSTER_IS_MULTICORE)
 	test_core();
+	test_cluster_cores();
 #endif
 }
 
