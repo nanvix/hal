@@ -47,6 +47,11 @@
  */
 
 	/**
+	 * @brief Estimated CPU frequency (in Hz), 20Mhz.
+	 */
+	#define OR1K_CPU_FREQUENCY 20000000
+
+	/**
 	 * @name Exported Functions
 	 */
 	/**@{*/

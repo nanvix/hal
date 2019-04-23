@@ -49,6 +49,11 @@
  */
 
 	/**
+	 * @brief Estimated CPU frequency (in Hz), 50Mhz.
+	 */
+	#define OR1K_CPU_FREQUENCY 50000000
+
+	/**
 	 * @name Exported Functions
 	 */
 	/**@{*/
@@ -78,4 +83,4 @@
 
 /**@endcond*/
 
-#endif /* ARCH_CLUSTER_OR1K_CLUSTER_CLOCK */
+#endif /* ARCH_CLUSTER_OPTIMSOC_CLUSTER_CLOCK */
