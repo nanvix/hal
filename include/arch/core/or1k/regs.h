@@ -48,7 +48,7 @@
 		#error "do not include this file"
 	#endif
 
-	#include <nanvix/cc.h>
+	#include <nanvix/const.h>
 
 	/**
 	 * @brief Shadow registers support, not all architectures have,

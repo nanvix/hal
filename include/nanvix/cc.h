@@ -25,6 +25,10 @@
 #ifndef NANVIX_CC_H_
 #define NANVIX_CC_H_
 
+	#ifndef __NEED_CC
+		#error "include <nanvix/const.h> instead"
+	#endif
+
 /**
  * @addtogroup kernel-constants-cc C Compiler Extensions
  * @ingroup kernel-consts

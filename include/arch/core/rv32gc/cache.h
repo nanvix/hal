@@ -33,7 +33,7 @@
  */
 /**@{*/
 
-	#include <nanvix/cc.h>
+	#include <nanvix/const.h>
 
 	/**
 	 * @brief L1 Cache line shift.
