@@ -25,6 +25,9 @@
 #ifndef ARCH_I486_MMU_H_
 #define ARCH_I486_MMU_H_
 
+	/* Must comme first. */
+	#define __NEED_MEMORY_TYPES
+
 /**
  * @addtogroup i486-core-mmu MMU
  * @ingroup i486-core
@@ -33,14 +36,9 @@
  */
 /**@{*/
 
-	/* Must comme first. */
-	#define __NEED_MEMORY_TYPES
-
 	#include <arch/core/i486/types.h>
-#ifndef _ASM_FILE_
 	#include <nanvix/klib.h>
 	#include <errno.h>
-#endif
 
 	/**
 	 * @name Page Shifts and Masks
@@ -61,6 +59,67 @@
 	#define I486_PTE_SIZE   4                       /**< Page Table Entry Size     */
 	#define I486_PDE_SIZE   4                       /**< Page Directory Entry Size */
 	/**@}*/
+
+#ifndef _ASM_FILE_
+
+	/**
+	 * @brief Page directory entry.
+	 */
+	struct pde
+	{
+		unsigned present  :  1; /**< Present in memory? */
+		unsigned writable :  1; /**< Writable page?     */
+		unsigned user     :  1; /**< User page?         */
+		unsigned          :  2; /**< Reserved.          */
+		unsigned accessed :  1; /**< Accessed?          */
+		unsigned dirty    :  1; /**< Dirty?             */
+		unsigned          :  2; /**< Reserved.          */
+		unsigned          :  3; /**< Unused.            */
+		unsigned frame    : 20; /**< Frame number.      */
+	};
+
+	/**
+	 * @brief Page table entry.
+	 */
+	struct pte
+	{
+		unsigned present  :  1; /**< Present in memory? */
+		unsigned writable :  1; /**< Writable page?     */
+		unsigned user     :  1; /**< User page?         */
+		unsigned          :  2; /**< Reserved.          */
+		unsigned accessed :  1; /**< Accessed?          */
+		unsigned dirty    :  1; /**< Dirty?             */
+		unsigned          :  2; /**< Reserved.          */
+		unsigned          :  3; /**< Unused.            */
+		unsigned frame    : 20; /**< Frame number.      */
+	};
+
+	/**
+	 * @brief Maps a page.
+	 *
+	 * @param pgtab Target page table.
+	 * @param paddr Physical address of the target page frame.
+	 * @param vaddr Virtual address of the target page.
+	 * @param w     Writable page?
+	 *
+	 * @returns Upon successful completion, zero is returned. Upon
+	 * failure, a negative error code is returned instead.
+	 */
+	EXTERN int i486_page_map(struct pte *pgtab, paddr_t paddr, vaddr_t vaddr, int w);
+
+	/**
+	 * @brief Maps a page table.
+	 *
+	 * @param pgdir Target page directory.
+	 * @param paddr Physical address of the target page table frame.
+	 * @param vaddr Virtual address of the target page table.
+	 *
+	 * @returns Upon successful completion, zero is returned. Upon
+	 * failure, a negative error code is returned instead.
+	 */
+	EXTERN int i486_pgtab_map(struct pde *pgdir, paddr_t paddr, vaddr_t vaddr);
+
+#endif /* !_ASM_FILE_ */
 
 /**@}*/
 
@@ -142,38 +201,6 @@
 	 * @brief Frame number.
 	 */
 	typedef uint32_t frame_t;
-
-	/**
-	 * @brief Page directory entry.
-	 */
-	struct pde
-	{
-		unsigned present  :  1; /**< Present in memory? */
-		unsigned writable :  1; /**< Writable page?     */
-		unsigned user     :  1; /**< User page?         */
-		unsigned          :  2; /**< Reserved.          */
-		unsigned accessed :  1; /**< Accessed?          */
-		unsigned dirty    :  1; /**< Dirty?             */
-		unsigned          :  2; /**< Reserved.          */
-		unsigned          :  3; /**< Unused.            */
-		unsigned frame    : 20; /**< Frame number.      */
-	};
-
-	/**
-	 * @brief Page table entry.
-	 */
-	struct pte
-	{
-		unsigned present  :  1; /**< Present in memory? */
-		unsigned writable :  1; /**< Writable page?     */
-		unsigned user     :  1; /**< User page?         */
-		unsigned          :  2; /**< Reserved.          */
-		unsigned accessed :  1; /**< Accessed?          */
-		unsigned dirty    :  1; /**< Dirty?             */
-		unsigned          :  2; /**< Reserved.          */
-		unsigned          :  3; /**< Unused.            */
-		unsigned frame    : 20; /**< Frame number.      */
-	};
 
 	/**
 	 * @brief Clears a page directory entry.
