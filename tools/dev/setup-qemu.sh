@@ -21,7 +21,7 @@
 # SOFTWARE.
 
 # QEMU Version
-export QEMU_VERSION=2.12.0
+export QEMU_VERSION=3.1.0
 
 # Working Directory
 export CURDIR=`pwd`
@@ -40,7 +40,7 @@ wget "http://wiki.qemu-project.org/download/qemu-$QEMU_VERSION.tar.bz2"
 # Build qemu
 tar -xjvf qemu-$QEMU_VERSION.tar.bz2
 cd qemu-$QEMU_VERSION
-./configure --target-list=i386-softmmu,or1k-softmmu,riscv32-softmmu,riscv64-softmmu --enable-sdl --enable-curses
+./configure --target-list=i386-softmmu,or1k-softmmu,riscv32-softmmu --enable-sdl --enable-curses
 make -j $NCORES all
 make install
 
