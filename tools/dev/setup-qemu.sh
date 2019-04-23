@@ -20,12 +20,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+# Build and install variables.
+export CURDIR=`pwd`
+export WORKDIR=$CURDIR/tools/dev/toolchain/qemu
+export PREFIX=$WORKDIR
+
 # QEMU Version
 export QEMU_VERSION=3.1.0
-
-# Working Directory
-export CURDIR=`pwd`
-export WORKDIR=$CURDIR/nanvix-toolchain
 
 # Number of Cores
 NCORES=`grep -c "^processor" /proc/cpuinfo`
@@ -34,16 +35,21 @@ NCORES=`grep -c "^processor" /proc/cpuinfo`
 mkdir -p $WORKDIR
 cd $WORKDIR
 
-# Get qemu.
+# Get QEMU.
 wget "http://wiki.qemu-project.org/download/qemu-$QEMU_VERSION.tar.bz2"
+tar -xjvf qemu-$QEMU_VERSION.tar.bz2
+rm -f qemu-$QEMU_VERSION.tar.bz2
 
 # Build qemu
-tar -xjvf qemu-$QEMU_VERSION.tar.bz2
 cd qemu-$QEMU_VERSION
-./configure --target-list=i386-softmmu,or1k-softmmu,riscv32-softmmu --enable-sdl --enable-curses
+./configure --prefix=$PREFIX --target-list=i386-softmmu,or1k-softmmu,riscv32-softmmu --enable-sdl --enable-curses
 make -j $NCORES all
 make install
 
 # Cleans files.
-cd $WORKDIR/..
-rm -R -f $WORKDIR
+cd $WORKDIR
+rm -rf qemu-$QEMU_VERSION
+
+echo "==============================================================================="
+echo "QEMU $QEMU_VERSION installed in $PREFIX"
+echo "==============================================================================="
