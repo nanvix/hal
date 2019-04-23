@@ -45,7 +45,7 @@
 	/**
 	 * @brief Powers off the underlying core.
 	 */
-	EXTERN void or1k_core_poweroff(void);
+	EXTERN NORETURN void or1k_core_poweroff(void);
 
 	/**
 	 * @brief Initializes the underlying core.
@@ -134,7 +134,7 @@
 	/**
 	 * @see or1k_core_poweroff().
 	 */
-	static inline void core_poweroff(void)
+	static inline NORETURN void core_poweroff(void)
 	{
 		or1k_core_poweroff();
 	}
