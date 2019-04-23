@@ -35,13 +35,6 @@
 
 	#include <nanvix/const.h>
 
-	/**
-	 * @brief Estimated CPU frequency (in Hz), 20Mhz/30Hz.
-	 *
-	 * @todo TODO move this to Cluster AL.
-	 */
-	#define OR1K_CPU_FREQUENCY 666666
-
 #ifndef _ASM_FILE_
 
 	/**

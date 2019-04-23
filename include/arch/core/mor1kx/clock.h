@@ -35,11 +35,6 @@
 
 	#include <nanvix/const.h>
 
-	/**
-	 * @brief Estimated CPU frequency (in Hz), 50Mhz/30Hz.
-	 */
-	#define OR1K_CPU_FREQUENCY 1666666
-
 #ifndef _ASM_FILE_
 
 	/**
