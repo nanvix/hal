@@ -32,15 +32,15 @@ export VERBOSE ?= no
 #===============================================================================
 
 # Directories
-export BINDIR    = $(CURDIR)/bin
-export BUILDDIR  = $(CURDIR)/build
-export LINKERDIR = $(BUILDDIR)/$(TARGET)/linker
-export MAKEDIR   = $(BUILDDIR)/$(TARGET)/make
-export DOCDIR    = $(CURDIR)/doc
-export INCDIR    = $(CURDIR)/include
-export LIBDIR    = $(CURDIR)/lib
-export SRCDIR    = $(CURDIR)/src
-export TOOLSDIR  = $(CURDIR)/tools
+export BINDIR    := $(CURDIR)/bin
+export BUILDDIR  := $(CURDIR)/build
+export LINKERDIR := $(BUILDDIR)/$(TARGET)/linker
+export MAKEDIR   := $(BUILDDIR)/$(TARGET)/make
+export DOCDIR    := $(CURDIR)/doc
+export INCDIR    := $(CURDIR)/include
+export LIBDIR    := $(CURDIR)/lib
+export SRCDIR    := $(CURDIR)/src
+export TOOLSDIR  := $(CURDIR)/tools
 
 #===============================================================================
 
@@ -49,24 +49,7 @@ include $(MAKEDIR)/makefile
 
 #===============================================================================
 
-export ARTIFACTS =  include/arch/
-export ARTIFACTS += include/arch/stdout/8250.h
-export ARTIFACTS += include/arch/stdout/console.h
-export ARTIFACTS += include/arch/stdout/jtag.h
-export ARTIFACTS += include/grub/mboot.h
-export ARTIFACTS += include/machine/_default_types.h
-export ARTIFACTS += include/nanvix/hal/
-export ARTIFACTS += include/nanvix/const.h
-export ARTIFACTS += include/nanvix/klib.h
-export ARTIFACTS += include/nanvix/hal/log.h
-export ARTIFACTS += include/sys/_intsup.h
-export ARTIFACTS += include/sys/features.h
-export ARTIFACTS += include/sys/types.h
-export ARTIFACTS += include/decl.h
-export ARTIFACTS += include/errno.h
-export ARTIFACTS += include/stdarg.h
-export ARTIFACTS += include/stddef.h
-export ARTIFACTS += include/stdint.h
+export ARTIFACTS := $(shell find $(INCDIR) -name *.h -type f)
 
 #===============================================================================
 
@@ -127,32 +110,42 @@ distclean-target:
 	@$(MAKE) -C $(SRCDIR) -f build/processor/makefile.$(PROCESSOR) distclean
 
 # Install
-install: $(ARTIFACTS) | hal-target
-	mkdir -p $(PREFIX)/include/
-	cp -r include/arch/                    $(PREFIX)/include/arch/
-	mkdir -p $(PREFIX)/include/grub/
-	cp -r include/grub/mboot.h             $(PREFIX)/include/grub/
-	mkdir -p $(PREFIX)/include/machine/
-	cp -r include/machine/_default_types.h $(PREFIX)/include/machine/
-	mkdir -p $(PREFIX)/include/nanvix/
-	cp -r include/nanvix/hal/              $(PREFIX)/include/nanvix/
-	cp -r include/nanvix/hal/log.h $(PREFIX)/include/nanvix/hal/
-	cp -r include/nanvix/const.h $(PREFIX)/include/nanvix/
-	cp -r include/nanvix/klib.h $(PREFIX)/include/nanvix/
-	mkdir -p $(PREFIX)/include/sys/
-	cp -r include/sys/_intsup.h $(PREFIX)/include/sys/
-	cp -r include/sys/features.h $(PREFIX)/include/sys/
-	cp -r include/sys/types.h $(PREFIX)/include/sys/
-	cp -r include/decl.h $(PREFIX)/include/
-	cp -r include/errno.h $(PREFIX)/include/
-	cp -r include/stdarg.h $(PREFIX)/include/
-	cp -r include/stddef.h $(PREFIX)/include/
-	cp -r include/stdint.h $(PREFIX)/include/
-	cp -r lib/ $(PREFIX)/
+install: | hal-target copy-artifacts
+	@mkdir -p $(PREFIX)/lib
+	@cp -f $(LIBDIR)/libhal*.a $(PREFIX)/lib
+	@echo [CP] $(LIBDIR)/libhal*.a
+	@echo "==============================================================================="
+	@echo "Nanvix HAL Successfully Installed into $(PREFIX)"
+	@echo "==============================================================================="
 
 # Uninstall
-uninstall:
-	cd $(PREFIX) && rm -rf $(ARTIFACTS)
+uninstall: | distclean delete-artifacts
+	@rm -f $(PREFIX)/lib/libhal*.a
+	@echo [RM] $(PREFIX)/lib/libhal*.a
+	@echo "==============================================================================="
+	@echo "Nanvix HAL Successfully Uninstalled from $(PREFIX)"
+	@echo "==============================================================================="
+
+# Copies All Artifacts
+copy-artifacts: $(patsubst $(CURDIR)/%, copy/%, $(ARTIFACTS))
+
+# Copy a Single Artifact
+copy/%: %
+	$(eval file := $(<F))
+	$(eval dir := $(<D))
+	@echo [CP] $(dir)/$(file)
+	@mkdir -p $(PREFIX)/$(dir)
+	@cp -f $< $(PREFIX)/$(dir)/$(file)
+	@chmod 444 $(PREFIX)/$(dir)/$(file)
+
+# Deletes All Artifacts
+delete-artifacts: $(patsubst $(CURDIR)/%, delete/%, $(ARTIFACTS))
+
+# Deletes a Single Artifact
+delete/%:
+	$(eval file := $(patsubst delete/%, %, $@))
+	@echo [RM] $(file)
+	@rm -f $(PREFIX)/$(file)
 
 # Builds documentation.
 documentation:
