@@ -171,7 +171,7 @@
 	/**
 	 * @brief Powers off the underlying core.
 	 */
-	EXTERN void core_poweroff(void);
+	EXTERN NORETURN void core_poweroff(void);
 
 	/**
 	 * @brief Reset the underlying core.
