@@ -126,7 +126,7 @@
 	/**
 	 * @see rv32gc_core_poweroff().
 	 */
-	static inline void core_poweroff(void)
+	static inline NORETURN void core_poweroff(void)
 	{
 		rv32gc_core_poweroff();
 	}
