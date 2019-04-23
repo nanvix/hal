@@ -212,6 +212,8 @@
 	}
 #endif
 
+#ifdef __NANVIX_HAL
+
 	/**
 	 * @brief Converts a nodes list.
 	 *
@@ -232,6 +234,8 @@
 		return (0);
 	}
 #endif
+
+#endif /* __NANVIX_HAL */
 
 /**@}*/
 

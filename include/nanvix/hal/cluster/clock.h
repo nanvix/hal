@@ -70,10 +70,14 @@
 	 */
 	EXTERN void clock_init(unsigned freq);
 
+#ifdef __NANVIX_HAL
+
 	/**
 	 * @brief Resets the timer of the clock device.
 	 */
 	EXTERN void clock_reset(void);
+
+#endif /* __NANVIX_HAL */
 
 /**@}*/
 

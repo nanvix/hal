@@ -113,6 +113,9 @@
 	 */
 	typedef void (*exception_handler_t)(const struct exception *, const struct context *);
 
+
+#ifdef __NANVIX_HAL
+
 	/**
 	 * @brief Information about exceptions.
 	 */
@@ -121,6 +124,8 @@
 		exception_handler_t handler; /**< Handler */
 		const char *name;            /**< Name    */
 	} exceptions[EXCEPTIONS_NUM];
+
+#endif /* __NANVIX_HAL */
 
 	/**
 	 * @brief Gets the number of an exception.

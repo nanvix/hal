@@ -123,6 +123,8 @@
 
 #endif
 
+#ifndef __NANVIX_HAL
+
 	/**
 	 * @brief TLB entry.
 	 */
@@ -191,6 +193,8 @@
 		return (NULL);
 	}
 #endif
+
+#endif /* __NANVIX_HAL */
 
 	/**
 	 * @brief Encodes a virtual address into the TLB.

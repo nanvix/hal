@@ -69,6 +69,8 @@
 	#include <nanvix/const.h>
 	#include <nanvix/klib.h>
 
+#ifdef __NANVIX_HAL
+
 	/**
 	 * @brief Initializes the standard output device.
 	 */
@@ -79,6 +81,8 @@
 	{
 	}
 #endif
+
+#endif /* __NANVIX_HAL */
 
 	/**
 	 * @brief Writes to the standard output device.

@@ -120,6 +120,8 @@
  */
 /**@{*/
 
+#ifdef __NANVIX_HAL
+
 	/**
 	 * @name States of a Core
 	 */
@@ -148,6 +150,8 @@
 	 */
 	EXTERN struct coreinfo cores[];
 
+#endif /* __NANVIX_HAL */
+
 	/**
 	 * @brief Gets the ID of the underlying core.
 	 *
@@ -155,10 +159,14 @@
 	 */
 	EXTERN int core_get_id(void);
 
+#ifdef __NANVIX_HAL
+
 	/**
 	 * @brief Suspends execution until a start signal is received.
 	 */
 	EXTERN void core_idle(void);
+
+#endif /* __NANVIX_HAL */
 
 	/**
 	 * @brief Powers off the underlying core.

@@ -86,6 +86,8 @@
 	 */
 	#define COREID_MASTER X86_CLUSTER_COREID_MASTER
 
+#ifdef __NANVIX_HAL
+
 	/**
 	 * @see x86_cluster_cluster_get_num_cores()
 	 */
@@ -93,6 +95,8 @@
 	{
 		return (x86_cluster_cluster_get_num_cores());
 	}
+
+#endif /* __NANVIX_HAL */
 
 /**@endcond*/
 

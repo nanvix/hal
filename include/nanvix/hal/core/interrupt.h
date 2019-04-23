@@ -99,6 +99,8 @@
 	 */
 	typedef void (*interrupt_handler_t)(int);
 
+#ifdef __NANVIX_HAL
+
 	/**
 	 * @brief interrupt handlers.
 	 */
@@ -118,6 +120,8 @@
 	 * @param intnum Number of the interrupt.
 	 */
 	EXTERN void do_interrupt(int intnum);
+
+#endif /* __NANVIX_HAL */
 
 	/**
 	 * @brief Disables all hardware interrupts.
@@ -150,10 +154,14 @@
 	 */
 	EXTERN int interrupt_unregister(int num);
 
+#ifdef __NANVIX_HAL
+
 	/**
 	 * @brief Setups hardware interrupts.
 	 */
 	EXTERN void interrupt_setup(void);
+
+#endif /* __NANVIX_HAL */
 
 /**@}*/
 

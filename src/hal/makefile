@@ -20,6 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+export CFLAGS  += -D __NANVIX_HAL
+
 # C Source Files
 C_SRC = $(wildcard *.c)                             \
         $(wildcard arch/core/$(CORE)/*.c)           \
