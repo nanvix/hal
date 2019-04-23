@@ -86,19 +86,19 @@
 	 * @brief Kernel memory size (in bytes).
 	 */
 	#define OR1K_CLUSTER_KMEM_SIZE \
-		(OR1K_CLUSTER_KERNEL_END_VIRT - OR1K_CLUSTER_KERNEL_BASE_VIRT)
+		(OR1K_CLUSTER_KERNEL_END_PHYS - OR1K_CLUSTER_KERNEL_BASE_PHYS)
 
 	/**
 	 * @brief Kernel page pool size (in bytes).
 	 */
 	#define OR1K_CLUSTER_KPOOL_SIZE \
-		(OR1K_CLUSTER_KPOOL_END_VIRT - OR1K_CLUSTER_KPOOL_BASE_VIRT)
+		(OR1K_CLUSTER_KPOOL_END_PHYS - OR1K_CLUSTER_KPOOL_BASE_PHYS)
 
 	/**
 	 * @brief User memory size (in bytes).
 	 */
 	#define OR1K_CLUSTER_UMEM_SIZE \
-		(OR1K_CLUSTER_USER_END_VIRT - OR1K_CLUSTER_USER_BASE_VIRT)
+		(OR1K_CLUSTER_USER_END_PHYS - OR1K_CLUSTER_USER_BASE_PHYS)
 
 	/**
 	 * @brief Kernel stack size (in bytes).
