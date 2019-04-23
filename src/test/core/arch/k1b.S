@@ -38,8 +38,8 @@
  */
 .align 8
 _upcall_issue:
-	_do_prologue_slow      # Save all preserved registers since
-	;;                     # they may be used by the HAL.
+	_do_prologue      # Save all preserved registers since
+	;;                # they may be used by the HAL.
 
 	make $r1, saved_sp
 	;;
@@ -64,8 +64,8 @@ _upcall_issue_ret:
 	lw  $bp, 0[$r1]
 	;;
 
-	_do_epilogue_slow     # Restore all preserved
-	;;                    # registers.
+	_do_epilogue     # Restore all preserved
+	;;               # registers.
 
 	ret
 	;;
