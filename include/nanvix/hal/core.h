@@ -136,7 +136,7 @@
 	 */
 	struct coreinfo
 	{
-		int initialized;     /**< Initialized?      */
+		bool initialized;    /**< Initialized?      */
 		int state;           /**< State.            */
 		int wakeups;         /**< Wakeup signals.   */
 		void (*start)(void); /**< Starting routine. */

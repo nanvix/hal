@@ -47,21 +47,21 @@
  */
 struct memory_region
 {
-	paddr_t pbase;  /**< Base physical address. */
-	vaddr_t vbase;  /**< Base virtual address.  */
-	size_t size;    /**< Size.                  */
-	int writable;   /**< Writable?              */
-	int executable; /**< Executable?            */
+	paddr_t pbase;    /**< Base physical address. */
+	vaddr_t vbase;    /**< Base virtual address.  */
+	size_t size;      /**< Size.                  */
+	bool writable;    /**< Writable?              */
+	bool  executable; /**< Executable?            */
 };
 
 /**
  * @brief Memory layout.
  */
 PRIVATE struct memory_region or1k_cluster_mem_layout[OR1K_CLUSTER_MEM_REGIONS] = {
-	{ OR1K_CLUSTER_KERNEL_BASE_PHYS, OR1K_CLUSTER_KERNEL_BASE_VIRT, OR1K_CLUSTER_KMEM_SIZE,      TRUE, TRUE  },
-	{ OR1K_CLUSTER_KPOOL_BASE_PHYS,  OR1K_CLUSTER_KPOOL_BASE_VIRT,  OR1K_CLUSTER_KPOOL_SIZE,     TRUE, FALSE },
-	{ OR1K_CLUSTER_UART_BASE_PHYS,   OR1K_CLUSTER_UART_BASE_VIRT,   OR1K_CLUSTER_UART_MEM_SIZE,  TRUE, FALSE },
-	{ OR1K_CLUSTER_OMPIC_BASE_PHYS,  OR1K_CLUSTER_OMPIC_BASE_VIRT,  OR1K_CLUSTER_OMPIC_MEM_SIZE, TRUE, FALSE },
+	{ OR1K_CLUSTER_KERNEL_BASE_PHYS, OR1K_CLUSTER_KERNEL_BASE_VIRT, OR1K_CLUSTER_KMEM_SIZE,      true, true  },
+	{ OR1K_CLUSTER_KPOOL_BASE_PHYS,  OR1K_CLUSTER_KPOOL_BASE_VIRT,  OR1K_CLUSTER_KPOOL_SIZE,     true, false },
+	{ OR1K_CLUSTER_UART_BASE_PHYS,   OR1K_CLUSTER_UART_BASE_VIRT,   OR1K_CLUSTER_UART_MEM_SIZE,  true, false },
+	{ OR1K_CLUSTER_OMPIC_BASE_PHYS,  OR1K_CLUSTER_OMPIC_BASE_VIRT,  OR1K_CLUSTER_OMPIC_MEM_SIZE, true, false },
 };
 
 /**

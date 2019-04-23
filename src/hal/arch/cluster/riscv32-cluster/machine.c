@@ -36,9 +36,9 @@
  */
 PRIVATE struct
 {
-	int master_alive;
+	bool master_alive;
 	rv32gc_spinlock_t lock;
-} fence = { FALSE , RV32GC_SPINLOCK_UNLOCKED};
+} fence = { false , RV32GC_SPINLOCK_UNLOCKED};
 
 /**
  * @brief Releases the startup fence.
@@ -46,7 +46,7 @@ PRIVATE struct
 PRIVATE void rv32gc_fence_release(void)
 {
 	rv32gc_spinlock_lock(&fence.lock);
-		fence.master_alive = TRUE;
+		fence.master_alive = true;
 	rv32gc_spinlock_unlock(&fence.lock);
 }
 
@@ -55,7 +55,7 @@ PRIVATE void rv32gc_fence_release(void)
  */
 PRIVATE void rv32gc_fence_wait(void)
 {
-	while (TRUE)
+	while (true)
 	{
 		rv32gc_spinlock_lock(&fence.lock);
 

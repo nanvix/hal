@@ -115,7 +115,7 @@ PUBLIC int riscv32_cluster_event_wait(void)
 {
 	int mycoreid = rv32gc_core_get_id();
 
-	while (TRUE)
+	while (true)
 	{
 		rv32gc_spinlock_lock(&locks[mycoreid]);
 

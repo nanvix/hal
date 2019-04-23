@@ -93,7 +93,7 @@ PUBLIC void event_wait(void)
 {
 	int mycoreid = core_get_id();
 
-	while (TRUE)
+	while (true)
 	{
 		spinlock_lock(&events[mycoreid].lock);
 

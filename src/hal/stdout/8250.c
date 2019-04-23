@@ -29,7 +29,7 @@
 /**
  * @brief Flag that indicates if the device was initialized.
  */
-PRIVATE int uart8250_initialized = 0;
+PRIVATE bool uart8250_initialized = false;
 
 /**
  * Writes into serial port.
@@ -97,5 +97,5 @@ PUBLIC void uart8250_init(void)
 	uart8250[IER] = 0;
 
 	/* Device initialized. */
-	uart8250_initialized = 1;
+	uart8250_initialized = true;
 }

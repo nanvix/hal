@@ -39,7 +39,7 @@ struct memory_region
 	paddr_t pbase; /**< Base physical address. */
 	vaddr_t vbase; /**< Base virtual address.  */
 	size_t size;   /**< Size.                  */
-	int writable;  /**< Writable?              */
+	bool writable; /**< Writable?              */
 };
 
 /*
@@ -227,10 +227,10 @@ PRIVATE void k1b_cluster_mem_check_layout(void)
 PRIVATE void k1b_cluster_mem_map(void)
 {
 	struct memory_region k1b_cluster_mem_layout[K1B_CLUSTER_MEM_REGIONS] = {
-		{ K1B_CLUSTER_HYPER_LOW_BASE_PHYS,  K1B_CLUSTER_HYPER_LOW_BASE_VIRT,  K1B_CLUSTER_HYPER_SIZE, FALSE },
-		{ K1B_CLUSTER_HYPER_HIGH_BASE_PHYS, K1B_CLUSTER_HYPER_HIGH_BASE_VIRT, K1B_CLUSTER_HYPER_SIZE, FALSE },
-		{ K1B_CLUSTER_KERNEL_BASE_PHYS,     K1B_CLUSTER_KERNEL_BASE_VIRT,     K1B_CLUSTER_KMEM_SIZE,  TRUE  },
-		{ K1B_CLUSTER_KPOOL_BASE_PHYS,      K1B_CLUSTER_KPOOL_BASE_VIRT,      K1B_CLUSTER_KPOOL_SIZE, TRUE  },
+		{ K1B_CLUSTER_HYPER_LOW_BASE_PHYS,  K1B_CLUSTER_HYPER_LOW_BASE_VIRT,  K1B_CLUSTER_HYPER_SIZE, false },
+		{ K1B_CLUSTER_HYPER_HIGH_BASE_PHYS, K1B_CLUSTER_HYPER_HIGH_BASE_VIRT, K1B_CLUSTER_HYPER_SIZE, false },
+		{ K1B_CLUSTER_KERNEL_BASE_PHYS,     K1B_CLUSTER_KERNEL_BASE_VIRT,     K1B_CLUSTER_KMEM_SIZE,  true  },
+		{ K1B_CLUSTER_KPOOL_BASE_PHYS,      K1B_CLUSTER_KPOOL_BASE_VIRT,      K1B_CLUSTER_KPOOL_SIZE, true  },
 	};
 
 	/* Clean root page table. */

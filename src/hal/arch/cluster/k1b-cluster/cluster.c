@@ -46,23 +46,23 @@ EXTERN NORETURN void kmain(int, const char *[]);
  * @brief Cores table.
  */
 PUBLIC struct coreinfo ALIGN(K1B_CACHE_LINE_SIZE) cores[K1B_CLUSTER_NUM_CORES] = {
-	{ TRUE,  CORE_RUNNING,   0, NULL, K1B_SPINLOCK_UNLOCKED }, /* Master Core   */
-	{ FALSE, CORE_RESETTING, 0, NULL, K1B_SPINLOCK_LOCKED   }, /* Slave Core 1  */
-	{ FALSE, CORE_RESETTING, 0, NULL, K1B_SPINLOCK_LOCKED   }, /* Slave Core 2  */
-	{ FALSE, CORE_RESETTING, 0, NULL, K1B_SPINLOCK_LOCKED   }, /* Slave Core 3  */
+	{ true,  CORE_RUNNING,   0, NULL, K1B_SPINLOCK_UNLOCKED }, /* Master Core   */
+	{ false, CORE_RESETTING, 0, NULL, K1B_SPINLOCK_LOCKED   }, /* Slave Core 1  */
+	{ false, CORE_RESETTING, 0, NULL, K1B_SPINLOCK_LOCKED   }, /* Slave Core 2  */
+	{ false, CORE_RESETTING, 0, NULL, K1B_SPINLOCK_LOCKED   }, /* Slave Core 3  */
 #if defined(__node__)
-	{ FALSE, CORE_RESETTING, 0, NULL, K1B_SPINLOCK_LOCKED   }, /* Slave Core 4  */
-	{ FALSE, CORE_RESETTING, 0, NULL, K1B_SPINLOCK_LOCKED   }, /* Slave Core 5  */
-	{ FALSE, CORE_RESETTING, 0, NULL, K1B_SPINLOCK_LOCKED   }, /* Slave Core 6  */
-	{ FALSE, CORE_RESETTING, 0, NULL, K1B_SPINLOCK_LOCKED   }, /* Slave Core 7  */
-	{ FALSE, CORE_RESETTING, 0, NULL, K1B_SPINLOCK_LOCKED   }, /* Slave Core 8  */
-	{ FALSE, CORE_RESETTING, 0, NULL, K1B_SPINLOCK_LOCKED   }, /* Slave Core 9  */
-	{ FALSE, CORE_RESETTING, 0, NULL, K1B_SPINLOCK_LOCKED   }, /* Slave Core 10 */
-	{ FALSE, CORE_RESETTING, 0, NULL, K1B_SPINLOCK_LOCKED   }, /* Slave Core 11 */
-	{ FALSE, CORE_RESETTING, 0, NULL, K1B_SPINLOCK_LOCKED   }, /* Slave Core 12 */
-	{ FALSE, CORE_RESETTING, 0, NULL, K1B_SPINLOCK_LOCKED   }, /* Slave Core 13 */
-	{ FALSE, CORE_RESETTING, 0, NULL, K1B_SPINLOCK_LOCKED   }, /* Slave Core 14 */
-	{ FALSE, CORE_RESETTING, 0, NULL, K1B_SPINLOCK_LOCKED   }, /* Slave Core 15 */
+	{ false, CORE_RESETTING, 0, NULL, K1B_SPINLOCK_LOCKED   }, /* Slave Core 4  */
+	{ false, CORE_RESETTING, 0, NULL, K1B_SPINLOCK_LOCKED   }, /* Slave Core 5  */
+	{ false, CORE_RESETTING, 0, NULL, K1B_SPINLOCK_LOCKED   }, /* Slave Core 6  */
+	{ false, CORE_RESETTING, 0, NULL, K1B_SPINLOCK_LOCKED   }, /* Slave Core 7  */
+	{ false, CORE_RESETTING, 0, NULL, K1B_SPINLOCK_LOCKED   }, /* Slave Core 8  */
+	{ false, CORE_RESETTING, 0, NULL, K1B_SPINLOCK_LOCKED   }, /* Slave Core 9  */
+	{ false, CORE_RESETTING, 0, NULL, K1B_SPINLOCK_LOCKED   }, /* Slave Core 10 */
+	{ false, CORE_RESETTING, 0, NULL, K1B_SPINLOCK_LOCKED   }, /* Slave Core 11 */
+	{ false, CORE_RESETTING, 0, NULL, K1B_SPINLOCK_LOCKED   }, /* Slave Core 12 */
+	{ false, CORE_RESETTING, 0, NULL, K1B_SPINLOCK_LOCKED   }, /* Slave Core 13 */
+	{ false, CORE_RESETTING, 0, NULL, K1B_SPINLOCK_LOCKED   }, /* Slave Core 14 */
+	{ false, CORE_RESETTING, 0, NULL, K1B_SPINLOCK_LOCKED   }, /* Slave Core 15 */
 #endif
 };
 
@@ -114,7 +114,7 @@ PRIVATE NORETURN void k1b_cluster_master_setup(void)
  */
 PUBLIC NORETURN void k1b_cluster_slave_setup(void)
 {
-	while (TRUE)
+	while (true)
 	{
 		core_idle();
 		core_run();

@@ -83,8 +83,8 @@ PUBLIC int main(int argc, const char *argv[])
 
 	/* Halt. */
 	kprintf("[hal] halting...");
-	while (TRUE);
-		/* noop. */
+	while (true)
+		/* noop. */;
 
 	return (0);
 }

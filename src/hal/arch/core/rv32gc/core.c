@@ -45,7 +45,7 @@ EXTERN void rv32gc_do_strap(void);
  */
 PUBLIC NORETURN void rv32gc_core_poweroff(void)
 {
-	while (TRUE)
+	while (true)
 		/* noop(). */;
 
 	UNREACHABLE();

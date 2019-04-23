@@ -56,7 +56,7 @@ PUBLIC void core_idle(void)
 	dcache_invalidate();
 	spinlock_unlock(&cores[coreid].lock);
 
-	while (TRUE)
+	while (true)
 	{
 		spinlock_lock(&cores[coreid].lock);
 		dcache_invalidate();
@@ -95,7 +95,7 @@ PUBLIC void core_sleep(void)
 {
 	int coreid = core_get_id();
 
-	while (TRUE)
+	while (true)
 	{
 		spinlock_lock(&cores[coreid].lock);
 		dcache_invalidate();
@@ -252,7 +252,7 @@ PUBLIC void core_run(void)
 		if (!cores[coreid].initialized)
 		{
 			core_setup();
-			cores[coreid].initialized = TRUE;
+			cores[coreid].initialized = true;
 			dcache_invalidate();
 		}
 

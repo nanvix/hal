@@ -36,21 +36,21 @@
  */
 struct memory_region
 {
-	paddr_t pbase;  /**< Base physical address. */
-	vaddr_t vbase;  /**< Base virtual address.  */
-	size_t size;    /**< Size.                  */
-	int writable;   /**< Writable?              */
-	int executable; /**< Executable?            */
+	paddr_t pbase;   /**< Base physical address. */
+	vaddr_t vbase;   /**< Base virtual address.  */
+	size_t size;     /**< Size.                  */
+	bool writable;   /**< Writable?              */
+	bool executable; /**< Executable?            */
 };
 
 /**
  * @brief Memory layout.
  */
 PRIVATE struct memory_region riscv32_cluster_mem_layout[RISCV32_CLUSTER_MEM_REGIONS] = {
-	{ RISCV32_CLUSTER_KERNEL_BASE_PHYS, RISCV32_CLUSTER_KERNEL_BASE_VIRT,  RISCV32_CLUSTER_KMEM_SIZE,     TRUE, TRUE  },
-	{ RISCV32_CLUSTER_KPOOL_BASE_PHYS,  RISCV32_CLUSTER_KPOOL_BASE_VIRT,   RISCV32_CLUSTER_KPOOL_SIZE,    TRUE, FALSE },
-	{ RISCV32_CLUSTER_PIC_BASE_PHYS,    RISCV32_CLUSTER_PIC_BASE_VIRT,     RISCV32_CLUSTER_PIC_MEM_SIZE,  TRUE, FALSE },
-	{ RISCV32_CLUSTER_UART_BASE_PHYS,   RISCV32_CLUSTER_UART_BASE_VIRT,    RISCV32_CLUSTER_UART_MEM_SIZE, TRUE, FALSE },
+	{ RISCV32_CLUSTER_KERNEL_BASE_PHYS, RISCV32_CLUSTER_KERNEL_BASE_VIRT,  RISCV32_CLUSTER_KMEM_SIZE,     true, true  },
+	{ RISCV32_CLUSTER_KPOOL_BASE_PHYS,  RISCV32_CLUSTER_KPOOL_BASE_VIRT,   RISCV32_CLUSTER_KPOOL_SIZE,    true, false },
+	{ RISCV32_CLUSTER_PIC_BASE_PHYS,    RISCV32_CLUSTER_PIC_BASE_VIRT,     RISCV32_CLUSTER_PIC_MEM_SIZE,  true, false },
+	{ RISCV32_CLUSTER_UART_BASE_PHYS,   RISCV32_CLUSTER_UART_BASE_VIRT,    RISCV32_CLUSTER_UART_MEM_SIZE, true, false },
 };
 
 /**
