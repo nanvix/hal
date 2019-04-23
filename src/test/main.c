@@ -38,6 +38,7 @@
  */
 PRIVATE void test_core_al(void)
 {
+	test_core();
 	test_exception();
 	test_interrupt();
 	test_mmu();
@@ -52,7 +53,6 @@ PRIVATE void test_core_al(void)
 PRIVATE void test_cluster_al(void)
 {
 #if (CLUSTER_IS_MULTICORE)
-	test_core();
 	test_cluster_cores();
 #endif
 }
@@ -82,18 +82,13 @@ PUBLIC int main(int argc, const char *argv[])
 	UNUSED(argc);
 	UNUSED(argv);
 
-	/* Halt. */
-	kprintf("[hal] halting...");
-	while (true)
-		/* noop. */;
-
 	return (0);
 }
 
 /**
  * @brief Initializes the kernel.
  */
-PUBLIC void kmain(int argc, const char *argv[])
+PUBLIC NORETURN void kmain(int argc, const char *argv[])
 {
 	UNUSED(argc);
 	UNUSED(argv);
@@ -112,5 +107,7 @@ PUBLIC void kmain(int argc, const char *argv[])
 	test_processor_al();
 	test_target_al();
 
-	main(argc, argv);
+	core_poweroff();
+
+	UNREACHABLE();
 }
