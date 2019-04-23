@@ -28,13 +28,11 @@
 	/* Core Interface Implementation */
 	#include <nanvix/hal/cluster/_cluster.h>
 
-	#include <nanvix/const.h>
-
 /*============================================================================*
  * Interface Implementation Checking                                          *
  *============================================================================*/
 
-#if defined(__INTERFACE_CHECK) || defined(__INTERFACE_CHECK_CLOCK)
+#if defined(__INTERFACE_CHECK) || defined(__INTERFACE_CHECK_CLUSTER_AL) || defined(__INTERFACE_CHECK_CLOCK)
 
 	/* Constants */
 	#ifndef INTERRUPT_CLOCK
@@ -62,6 +60,8 @@
  * @brief Clock Device Interface HAL Interface
  */
 /**@{*/
+
+	#include <nanvix/const.h>
 
 	/**
 	 * @brief Initializes the clock device

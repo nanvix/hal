@@ -32,7 +32,8 @@
  * Interface Implementation Checking                                          *
  *============================================================================*/
 
-#if (defined(__INTERFACE_CLUSTER_CHECK_EVENT) && (CLUSTER_HAS_EVENTS))
+#if (CLUSTER_HAS_EVENTS)
+#if defined(__INTERFACE_CHECK) || defined(__INTERFACE_CHECK_CLUSTER_AL) || defined(__INTERFACE_CHECK_EVENT)
 
 	/* Functions */
 	#ifndef __event_drop_fn
@@ -45,6 +46,7 @@
 	#error "event_wait() not defined?"
 	#endif
 
+#endif
 #endif
 
 /*============================================================================*

@@ -28,13 +28,11 @@
 	/* Processor Interface Implementation */
 	#include <nanvix/hal/processor/_processor.h>
 
-	#include <nanvix/klib.h>
-
 /*============================================================================*
  * Interface Implementation Checking                                          *
  *============================================================================*/
 
-#ifdef __INTERFACE_CHECK
+#if defined(__INTERFACE_CHECK) || defined(__INTERFACE_CHECK_PROCESSOR_AL) || defined(__INTERFACE_CHECK_CLUSTERS)
 
 	/* Feature Checking */
 	#ifndef PROCESSOR_IS_MULTICLUSTER
@@ -84,6 +82,8 @@
  * @brief Processor Clusters HAL Interface
  */
 /**@{*/
+
+	#include <nanvix/klib.h>
 
 	/**
 	 * @brief Gets the ID of the underlying cluster.

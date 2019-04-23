@@ -28,11 +28,11 @@
 	/* Target Interface Implementation */
 	#include <nanvix/hal/target/_target.h>
 
-	#include <nanvix/klib.h>
-
 /*============================================================================*
  * Interface Implementation Checking                                          *
  *============================================================================*/
+
+#if defined(__INTERFACE_CHECK) || defined(__INTERFACE_CHECK_TARGET_AL) || defined(__INTERFACE_CHECK_MAILBOX)
 
 	/* Feature Checking */
 	#ifndef TARGET_HAS_MAILBOX
@@ -79,6 +79,8 @@
 
 	#endif
 
+#endif
+
 /*============================================================================*
  * Provided Interface                                                         *
  *============================================================================*/
@@ -90,6 +92,8 @@
  * @brief Target Standard Output HAL Interface
  */
 /**@{*/
+
+	#include <nanvix/klib.h>
 
 	/**
 	 * @brief Creates a mailbox.
