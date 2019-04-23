@@ -94,13 +94,11 @@ PUBLIC const paddr_t K1B_CLUSTER_KSTACK_BASE_PHYS  = K1B_PADDR(&_user_stack_star
  * Virtual Memory Layout
  */
 /**{*/
-PUBLIC const vaddr_t K1B_CLUSTER_KERNEL_BASE_VIRT  = K1B_CLUSTER_HYPER_LOW_END_VIRT;                                     /* Kernel Base        */
-PUBLIC const vaddr_t K1B_CLUSTER_KERNEL_END_VIRT   = K1B_VADDR(&_kend);                                                  /* Kernel End         */
-PUBLIC const vaddr_t K1B_CLUSTER_KPOOL_BASE_VIRT   = K1B_VADDR(&_kend);                                                  /* Kernel Pool Base   */
-PUBLIC const vaddr_t K1B_CLUSTER_KPOOL_END_VIRT    = K1B_VADDR(&_kend) + K1B_CLUSTER_KPOOL_SIZE;                         /* Kernel Pool End    */
-PUBLIC const vaddr_t K1B_CLUSTER_USER_BASE_VIRT    = K1B_VADDR(&_kend) + K1B_CLUSTER_KPOOL_SIZE;                         /* User Base          */
-PUBLIC const vaddr_t K1B_CLUSTER_USER_END_VIRT     = K1B_VADDR(&_kend) + K1B_CLUSTER_KPOOL_SIZE + K1B_CLUSTER_UMEM_SIZE; /* User End           */
-PUBLIC const vaddr_t K1B_CLUSTER_KSTACK_BASE_VIRT  = K1B_VADDR(&_user_stack_start);                                      /* Kernel Stack Base  */
+PUBLIC const vaddr_t K1B_CLUSTER_KERNEL_BASE_VIRT  = K1B_CLUSTER_HYPER_LOW_END_VIRT;             /* Kernel Base        */
+PUBLIC const vaddr_t K1B_CLUSTER_KERNEL_END_VIRT   = K1B_VADDR(&_kend);                          /* Kernel End         */
+PUBLIC const vaddr_t K1B_CLUSTER_KPOOL_BASE_VIRT   = K1B_VADDR(&_kend);                          /* Kernel Pool Base   */
+PUBLIC const vaddr_t K1B_CLUSTER_KPOOL_END_VIRT    = K1B_VADDR(&_kend) + K1B_CLUSTER_KPOOL_SIZE; /* Kernel Pool End    */
+PUBLIC const vaddr_t K1B_CLUSTER_KSTACK_BASE_VIRT  = K1B_VADDR(&_user_stack_start);              /* Kernel Stack Base  */
 /**@}*/
 
 /**
