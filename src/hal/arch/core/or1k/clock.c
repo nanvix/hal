@@ -22,8 +22,7 @@
  * SOFTWARE.
  */
 
-#include <arch/core/or1k/core.h>
-#include <arch/core/or1k/clock.h>
+#include <nanvix/hal/hal.h>
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
 
@@ -89,8 +88,6 @@ PUBLIC void or1k_clock_init(unsigned freq)
 {
 	unsigned upr;  /* Unit Present Register. */
 
-	UNUSED(freq);
-
 	/* Nothing to do. */
 	if (initialized)
 		return;
@@ -101,7 +98,7 @@ PUBLIC void or1k_clock_init(unsigned freq)
 		while (1);
 
 	/* Clock rate. */
-	clock_delta = OR1K_CPU_FREQUENCY;
+	clock_delta = (OR1K_CPU_FREQUENCY/freq);
 
 	/*
 	 * Clock calibrate.
