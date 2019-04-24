@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 
-#ifndef ARCH_CORE_OR1K_OMPIC_H_
-#define ARCH_CORE_OR1K_OMPIC_H_
+#ifndef CLUSTER_OR1K_CLUSTER_OMPIC_H_
+#define CLUSTER_OR1K_CLUSTER_OMPIC_H_
 
 	#include <nanvix/const.h>
 	#include <stdint.h>
@@ -36,4 +36,4 @@
 
 #endif /* _ASM_FILE_ */
 
-#endif /* ARCH_CORE_OR1K_OMPIC_H_ */
+#endif /* CLUSTER_OR1K_CLUSTER_OMPIC_H_ */

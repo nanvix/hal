@@ -25,7 +25,6 @@
 /* Must come first. */
 #define __NEED_HAL_CLUSTER
 
-#include <arch/core/or1k/ompic.h>
 #include <nanvix/hal/cluster.h>
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
