@@ -242,72 +242,7 @@
 		return (0);
 	}
 
-	/**
-	 * @brief Writes a TLB entry.
-	 *
-	 * @param vaddr      Target virtual address.
-	 * @param paddr      Target physical address.
-	 * @param shift      Page shift.
-	 * @param way        Target set-associative way.
-	 * @param protection Protection attributes.
-	 */
-	extern int k1b_tlb_write(
-			vaddr_t vaddr,
-			paddr_t paddr,
-			unsigned shift,
-			unsigned way,
-			unsigned protection
-	);
-
-	/**
-	 * @brief Invalidates a TLB entry.
-	 *
-	 * @param vaddr Target virtual address.
-	 * @param shift Page shift.
-	 * @param way   Target set-associative way.
-	 */
-	extern int k1b_tlb_inval(vaddr_t vaddr, unsigned shift, unsigned way);
-
-	/**
-	 * @brief Dumps a TLB entry.
-	 *
-	 * @param idx Index of target entry in the TLB.
-	 */
-	extern void k1b_tlbe_dump(int idx);
-
-	/**
-	 * @brief Lookups a TLB entry by virtual address.
-	 *
-	 * @param vaddr Target virtual address.
-	 *
-	 * @returns Upon successful completion, a pointer to the TLB entry
-	 * that matches the virtual address @p vaddr is returned. If no
-	 * entry that meets this criteria is found, @p NULL is returned.
-	 */
-	extern const struct tlbe *k1b_tlb_lookup_vaddr(vaddr_t vaddr);
-
-	/**
-	 * @brief Lookups a TLB entry by physical address.
-	 *
-	 * @param paddr Target physical address.
-	 *
-	 * @returns Upon successful completion, a pointer to the TLB entry
-	 * that matches the physical address @p paddr is returned. If no
-	 * entry that meets this criteria is found, @p NULL is returned.
-	 */
-	extern const struct tlbe *k1b_tlb_lookup_paddr(paddr_t paddr);
-
-	/**
-	 * @brief Flushes the TLB.
-	 */
-	extern int k1b_tlb_flush(void);
-
-	/**
-	 * @brief Initializes the TLB.
-	 */
-	extern void k1b_tlb_init(void);
-
-#endif /* !_ASM_FILE_ */
+#endif /* _ASM_FILE_ */
 
 /**@}*/
 
@@ -326,11 +261,6 @@
 	#define __tlbe_st             /**< TLB Entry           */
 	#define __tlbe_vaddr_get_fn   /**< tlbe_vaddr_get()    */
 	#define __tlbe_paddr_get_fn   /**< tlbe_paddr_get()    */
-	#define __tlb_lookup_vaddr_fn /**< tlbe_lookup_vaddr() */
-	#define __tlb_lookup_paddr_fn /**< tlbe_lookup()       */
-	#define __tlb_write_fn        /**< tlb_write()         */
-	#define __tlb_inval_fn        /**< tlb_inval()         */
-	#define __tlb_flush_fn        /**< tlb_flush()         */
 	/**@}*/
 
 	/**
@@ -368,62 +298,6 @@
 	static inline paddr_t tlbe_paddr_get(const struct tlbe *tlbe)
 	{
 		return (k1b_tlbe_paddr_get(tlbe));
-	}
-
-	/**
-	 * @see k1b_tlb_lookup_vaddr().
-	 */
-	static inline const struct tlbe *tlb_lookup_vaddr(int tlb_type, vaddr_t vaddr)
-	{
-		/* Invalid TLB type. */
-		if ((tlb_type != K1B_TLB_INSTRUCTION) && (tlb_type != K1B_TLB_DATA))
-			return (NULL);
-
-		return (k1b_tlb_lookup_vaddr(vaddr));
-	}
-
-	/**
-	 * @see k1b_tlb_lookup_paddr().
-	 */
-	static inline const struct tlbe *tlb_lookup_paddr(int tlb_type, paddr_t paddr)
-	{
-		/* Invalid TLB type. */
-		if ((tlb_type != K1B_TLB_INSTRUCTION) && (tlb_type != K1B_TLB_DATA))
-			return (NULL);
-
-		return (k1b_tlb_lookup_paddr(paddr));
-	}
-
-	/**
-	 * @see k1b_tlb_write()
-	 */
-	static inline int tlb_write(int tlb_type, vaddr_t vaddr, paddr_t paddr)
-	{
-		/* Invalid TLB type. */
-		if ((tlb_type != K1B_TLB_INSTRUCTION) && (tlb_type != K1B_TLB_DATA))
-			return (-EINVAL);
-
-		return (k1b_tlb_write(vaddr, paddr, 12, 0, K1B_TLBE_PROT_RW));
-	}
-
-	/**
-	 * @see k1b_tlb_inval()
-	 */
-	static inline int tlb_inval(int tlb_type, vaddr_t vaddr)
-	{
-		/* Invalid TLB type. */
-		if ((tlb_type != K1B_TLB_INSTRUCTION) && (tlb_type != K1B_TLB_DATA))
-			return (-EINVAL);
-
-		return (k1b_tlb_inval(vaddr, 12, 0));
-	}
-
-	/**
-	 * @see k1b_tlb_flush().
-	 */
-	static inline int tlb_flush(void)
-	{
-		return (k1b_tlb_flush());
 	}
 
 #endif /* !_ASM_FILE_ */
