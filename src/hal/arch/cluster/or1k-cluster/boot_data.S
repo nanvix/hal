@@ -25,8 +25,6 @@
 /* Must come first. */
 #define _ASM_FILE_
 
-#include <arch/core/or1k/core.h>
-#include <arch/core/or1k/mmu.h>
 #include <arch/cluster/or1k-cluster/cores.h>
 
 /* Exported symbols. */

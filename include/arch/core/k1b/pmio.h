@@ -36,6 +36,8 @@
 	#include <arch/core/k1b/mOS.h>
 	#include <stdint.h>
 
+#ifndef _ASM_FILE_
+
 	/**
 	 * @brief Writes 8 bits to an I/O port.
 	 *
@@ -63,6 +65,8 @@
 		__k1_club_syscall2(port, (unsigned) str, len);
 	}
 
+#endif /* !_ASM_FILE_ */
+
 /**@}*/
 
 /*============================================================================*
@@ -81,6 +85,8 @@
 	#define __output8s_fn /**< k1b_output8s() */
 	#define __iowait_fn   /**< iowait()       */
 	/**@}*/
+
+#ifndef _ASM_FILE_
 
 	/**
 	 * @see k1b_output8().
@@ -105,6 +111,8 @@
 	{
 		((void) port);
 	}
+
+#endif /* !_ASM_FILE_ */
 
 /**@endcond*/
 

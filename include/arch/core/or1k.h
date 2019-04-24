@@ -46,6 +46,10 @@
 	#include <arch/core/or1k/trap.h>
 	#include <arch/core/or1k/upcall.h>
 
+	#ifdef _ASM_FILE_
+		#include <arch/core/or1k/asm.h>
+	#endif
+
 /**
  * @cond or1k
  */

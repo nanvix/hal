@@ -46,6 +46,10 @@
 	#include <arch/core/i486/trap.h>
 	#include <arch/core/i486/upcall.h>
 
+	#ifdef _ASM_FILE_
+		#include <arch/core/i486/asm.h>
+	#endif
+
 /**
  * @cond i486
  */

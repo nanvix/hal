@@ -45,6 +45,8 @@
 	#define K1B_SPINLOCK_LOCKED   0x0ULL /**< Locked   */
 	/**@}*/
 
+#ifndef _ASM_FILE_
+
 	/**
 	 * @brief Spinlock.
 	 */
@@ -98,6 +100,8 @@
 		__builtin_k1_sdu(lock, K1B_SPINLOCK_UNLOCKED);
 	}
 
+#endif /* !_ASM_FILE */
+
 /**@}*/
 
 /*============================================================================*
@@ -120,17 +124,19 @@
 	/**@}*/
 
 	/**
-	 * @see k1b_spinlock_t
-	 */
-	typedef k1b_spinlock_t spinlock_t;
-
-	/**
 	 * @name Spinlock State
 	 */
 	/**@{*/
 	#define SPINLOCK_UNLOCKED K1B_SPINLOCK_UNLOCKED /**< @see K1B_SPINLOCK_UNLOCKED */
 	#define SPINLOCK_LOCKED   K1B_SPINLOCK_LOCKED   /**< @see K1B_SPINLOCK_LOCKED   */
 	/**@}*/
+
+#ifndef _ASM_FILE_
+
+	/**
+	 * @see k1b_spinlock_t
+	 */
+	typedef k1b_spinlock_t spinlock_t;
 
 	/**
 	 * @see k1b_spinlock_init().
@@ -174,6 +180,8 @@
 	{
 		k1b_spinlock_unlock(lock);
 	}
+
+#endif /* !_ASM_FILE_ */
 
 /**@endcond*/
 

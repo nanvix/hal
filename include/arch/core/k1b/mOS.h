@@ -47,7 +47,7 @@
 	#include <mppa_noc.h>
 	#include <vbsp.h>
 
-#endif /* _ASM_FILE_ */
+#endif /* !_ASM_FILE_ */
 
 /**@}*/
 

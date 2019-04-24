@@ -27,7 +27,6 @@
 #define __NEED_CLUSTER_OPTIMSOC
 
 #include <arch/cluster/optimsoc-cluster.h>
-#include <arch/core/or1k/asm.h>
 
 /* Exported symbols. */
 .globl core.kstack

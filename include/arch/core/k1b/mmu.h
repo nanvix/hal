@@ -261,6 +261,8 @@
 	#define __mmu_is_enabled_fn    /**< mmu_is_enabled()    */
 	/**@}*/
 
+#ifndef _ASM_FILE_
+
 	/**
 	 * @brief Clears a page directory entry.
 	 *
@@ -850,6 +852,8 @@
 	{
 		return (1);
 	}
+
+#endif /* !_ASM_FILE_ */
 
 /**@endcond**/
 

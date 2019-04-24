@@ -39,6 +39,8 @@
 	#include <arch/core/k1b/types.h>
 	#include <arch/core/k1b/mOS.h>
 
+#ifndef _ASM_FILE_
+
 	/**
 	 * @brief Low-level trap dispatcher.
 	 */
@@ -205,6 +207,8 @@
 	 */
 	EXTERN void k1b_syscall(void);
 
+#endif /* !_ASM_FILE_ */
+
 /**@}*/
 
 /*============================================================================*
@@ -226,6 +230,8 @@
 	#define __syscall4_fn /**< k1b_syscall4() */
 	#define __syscall5_fn /**< k1b_syscall5() */
 	/**@}*/
+
+#ifndef _ASM_FILE_
 
 	/**
 	 * @see k1b_syscall_0()
@@ -331,6 +337,8 @@
 			)
 		);
 	}
+
+#endif /* !_ASM_FILE_ */
 
 /**@endcond*/
 

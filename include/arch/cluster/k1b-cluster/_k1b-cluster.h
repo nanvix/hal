@@ -26,9 +26,6 @@
 #define _CLUSTER_K1B_CLUSTER_H_
 
 	#define __NEED_CORE_K1B
-
-#ifndef _ASM_FILE_
 	#include <arch/core/k1b.h>
-#endif
 
 #endif /* _CLUSTER_K1B_CLUSTER_H_ */

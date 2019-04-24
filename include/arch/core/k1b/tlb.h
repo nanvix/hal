@@ -307,7 +307,7 @@
 	 */
 	extern void k1b_tlb_init(void);
 
-#endif /* _ASM_FILE_ */
+#endif /* !_ASM_FILE_ */
 
 /**@}*/
 
@@ -351,6 +351,8 @@
 	#define TLB_INSTRUCTION K1B_TLB_INSTRUCTION /**< Instruction TLB */
 	#define TLB_DATA        K1B_TLB_DATA        /**< Data TLB        */
 	/**@}*/
+
+#ifndef _ASM_FILE_
 
 	/**
 	 * @see k1b_tlbe_vaddr_get().
@@ -423,6 +425,8 @@
 	{
 		return (k1b_tlb_flush());
 	}
+
+#endif /* !_ASM_FILE_ */
 
 /**@endcond*/
 

@@ -45,6 +45,8 @@
 	#define SECTION_BINDESC __attribute__((section(".locked.binaries"))) /**< Binary descriptor section. */
 	/**@}*/
 
+#ifndef _ASM_FILE_
+
 	/**
 	 * @name Binary Symbols
 	 */
@@ -63,6 +65,8 @@
 	extern int _scoreboard_offset; /**< Scoreboard offset.      */
 	extern int _kend;              /**< Kernel end address.     */
 	/**@}*/
+
+#endif /* _ASM_FILE_ */
 
 /**@}*/
 
