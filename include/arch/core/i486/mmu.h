@@ -172,27 +172,37 @@
 	 * @brief Exported Functions
 	 */
 	/**@{*/
-	#define __pde_clear_fn       /**< pde_clear()       */
-	#define __pde_frame_get_fn   /**< pde_frame_get()   */
-	#define __pde_frame_set_fn   /**< pde_frame_set()   */
-	#define __pde_get_fn         /**< pde_get()         */
-	#define __pde_is_present_fn  /**< pde_is_present()  */
-	#define __pde_is_user_fn     /**< pde_is_user()     */
-	#define __pde_is_write_fn    /**< pde_is_write()    */
-	#define __pde_present_set_fn /**< pde_present_set() */
-	#define __pde_user_set_fn    /**< pde_user_set()    */
-	#define __pde_write_set_fn   /**< pde_write_set()   */
-	#define __pte_clear_fn       /**< pte_clear()       */
-	#define __pte_frame_get_fn   /**< pte_frame_get()   */
-	#define __pte_frame_set_fn   /**< pte_frame_set()   */
-	#define __pte_get_fn         /**< pte_get()         */
-	#define __pte_is_present_fn  /**< pte_is_present()  */
-	#define __pte_is_user_fn     /**< pte_is_user()     */
-	#define __pte_is_write_fn    /**< pte_is_write()    */
-	#define __pte_present_set_fn /**< pte_present_set() */
-	#define __pte_user_set_fn    /**< pte_user_set()    */
-	#define __pte_write_set_fn   /**< pte_write_set()   */
-	#define __mmu_is_enabled_fn  /**< mmu_is_enabled()  */
+	#define __pde_clear_fn         /**< pde_clear()         */
+	#define __pde_frame_get_fn     /**< pde_frame_get()     */
+	#define __pde_frame_set_fn     /**< pde_frame_set()     */
+	#define __pde_get_fn           /**< pde_get()           */
+	#define __pde_is_present_fn    /**< pde_is_present()    */
+	#define __pde_is_user_fn       /**< pde_is_user()       */
+	#define __pde_is_read_fn       /**< pde_is_read()       */
+	#define __pde_is_write_fn      /**< pde_is_write()      */
+	#define __pde_is_exec_fn       /**< pde_is_exec()       */
+	#define __pde_present_set_fn   /**< pde_present_set()   */
+	#define __pde_user_set_fn      /**< pde_user_set()      */
+	#define __pde_read_set_fn      /**< pde_read_set()      */
+	#define __pde_write_set_fn     /**< pde_write_set()     */
+	#define __pde_exec_set_fn      /**< pde_exec_set()      */
+	#define __pte_clear_fn         /**< pte_clear()         */
+	#define __pte_frame_get_fn     /**< pte_frame_get()     */
+	#define __pte_frame_set_fn     /**< pte_frame_set()     */
+	#define __pte_get_fn           /**< pte_get()           */
+	#define __pte_is_present_fn    /**< pte_is_present()    */
+	#define __pte_is_user_fn       /**< pte_is_user()       */
+	#define __pte_is_read_fn       /**< pte_is_read()       */
+	#define __pte_is_write_fn      /**< pte_is_write()      */
+	#define __pte_is_exec_fn       /**< pte_is_exec()       */
+	#define __pte_present_set_fn   /**< pte_present_set()   */
+	#define __pte_user_set_fn      /**< pte_user_set()      */
+	#define __pte_read_set_fn      /**< pte_read_set()      */
+	#define __pte_write_set_fn     /**< pte_write_set()     */
+	#define __pte_exec_set_fn      /**< pte_exec_set()      */
+	#define __mmu_page_map_fn      /**< mmu_page_map()      */
+	#define __mmu_pgtab_map_fn     /**< mmu_pgtab_map()     */
+	#define __mmu_is_enabled_fn    /**< mmu_is_enabled()    */
 	/**@}*/
 
 #ifndef _ASM_FILE_
@@ -296,6 +306,45 @@
 	}
 
 	/**
+	 * @brief Sets/clears the read bit of a page table.
+	 *
+	 * @param pde Page directory entry of target page table.
+	 * @param set Set bit?
+	 *
+	 * @author Pedro Henrique Penna
+	 */
+	static inline int pde_read_set(struct pde *pde, int set)
+	{
+		/* Invalid PDE. */
+		if (pde == NULL)
+			return (-EINVAL);
+
+		UNUSED(pde);
+		UNUSED(set);
+
+		return (0);
+	}
+
+	/**
+	 * @brief Asserts if the read bit of a page table is set.
+	 *
+	 * @param pde Page directory entry of target page table.
+	 *
+	 * @returns If the read bit of the target page table is set, non
+	 * zero is returned. Otherwise, zero is returned instead.
+	 *
+	 * @author Pedro Henrique Penna
+	 */
+	static inline int pde_is_read(struct pde *pde)
+	{
+		/* Invalid PDE. */
+		if (pde == NULL)
+			return (-EINVAL);
+
+		return (1);
+	}
+
+	/**
 	 * @brief Sets/clears the write bit of a page table.
 	 *
 	 * @param pde Page directory entry of target page table.
@@ -331,6 +380,45 @@
 			return (-EINVAL);
 
 		return (pde->writable);
+	}
+
+	/**
+	 * @brief Sets/clears the exec bit of a page table.
+	 *
+	 * @param pde Page directory entry of target page table.
+	 * @param set Set bit?
+	 *
+	 * @author Pedro Henrique Penna
+	 */
+	static inline int pde_exec_set(struct pde *pde, int set)
+	{
+		/* Invalid PDE. */
+		if (pde == NULL)
+			return (-EINVAL);
+
+		UNUSED(pde);
+		UNUSED(set);
+
+		return (0);
+	}
+
+	/**
+	 * @brief Asserts if the exec bit of a page table is set.
+	 *
+	 * @param pde Page directory entry of target page table.
+	 *
+	 * @returns If the exec bit of the target page table is set, non
+	 * zero is returned. Otherwise, zero is returned instead.
+	 *
+	 * @author Pedro Henrique Penna
+	 */
+	static inline int pde_is_exec(struct pde *pde)
+	{
+		/* Invalid PDE. */
+		if (pde == NULL)
+			return (-EINVAL);
+
+		return (1);
 	}
 
 	/**
@@ -465,6 +553,45 @@
 	}
 
 	/**
+	 * @brief Sets/clears the read bit of a page.
+	 *
+	 * @param pte Page table entry of target page.
+	 * @param set Set bit?
+	 *
+	 * @author Pedro Henrique Penna
+	 */
+	static inline int pte_read_set(struct pte *pte, int set)
+	{
+		/* Invalid PTE. */
+		if (pte == NULL)
+			return (-EINVAL);
+
+		UNUSED(pte);
+		UNUSED(set);
+
+		return (0);
+	}
+
+	/**
+	 * @brief Asserts if the read bit of a page.
+	 *
+	 * @param pte Page table entry of target page.
+	 *
+	 * @returns If the read bit of the target page, non zero is
+	 * returned. Otherwise, zero is returned instead.
+	 *
+	 * @author Pedro Henrique Penna
+	 */
+	static inline int pte_is_read(struct pte *pte)
+	{
+		/* Invalid PTE. */
+		if (pte == NULL)
+			return (-EINVAL);
+
+		return (1);
+	}
+
+	/**
 	 * @brief Sets/clears the write bit of a page.
 	 *
 	 * @param pte Page table entry of target page.
@@ -500,8 +627,45 @@
 			return (-EINVAL);
 
 		return (pte->writable);
+	}
+
+	/**
+	 * @brief Sets/clears the exec bit of a page.
+	 *
+	 * @param pte Page table entry of target page.
+	 * @param set Set bit?
+	 *
+	 * @author Pedro Henrique Penna
+	 */
+	static inline int pte_exec_set(struct pte *pte, int set)
+	{
+		/* Invalid PTE. */
+		if (pte == NULL)
+			return (-EINVAL);
+
+		UNUSED(pte);
+		UNUSED(set);
 
 		return (0);
+	}
+
+	/**
+	 * @brief Asserts if the exec bit of a page.
+	 *
+	 * @param pte Page table entry of target page.
+	 *
+	 * @returns If the exec bit of the target page, non zero is
+	 * returned. Otherwise, zero is returned instead.
+	 *
+	 * @author Pedro Henrique Penna
+	 */
+	static inline int pte_is_exec(struct pte *pte)
+	{
+		/* Invalid PTE. */
+		if (pte == NULL)
+			return (-EINVAL);
+
+		return (1);
 	}
 
 	/**
@@ -608,6 +772,24 @@
 			return (NULL);
 
 		return (&pgtab[pte_idx_get(vaddr)]);
+	}
+
+	/**
+	 * @see i486_page_map().
+	 */
+	static inline int mmu_page_map(struct pte *pgtab, paddr_t paddr, vaddr_t vaddr, int w, int x)
+	{
+		UNUSED(x);
+
+		return (i486_page_map(pgtab, paddr, vaddr, w));
+	}
+
+	/**
+	 * @see i486_pgtab_map().
+	 */
+	static inline int mmu_pgtab_map(struct pde *pgdir, paddr_t paddr, vaddr_t vaddr)
+	{
+		return (i486_pgtab_map(pgdir, paddr, vaddr));
 	}
 
 	/**
