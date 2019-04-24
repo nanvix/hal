@@ -68,14 +68,6 @@
 		mOS_pe_event_waitclear(K1B_EVENT_LINE);
 	}
 
-	/**
-	 * @brief Drops any pending events in the local core.
-	 */
-	static inline void k1b_cluster_event_drop(void)
-	{
-		mOS_pe_event_clear(K1B_EVENT_LINE);
-	}
-
 #endif /* _ASM_FILE_ */
 
 /**@}*/
@@ -94,18 +86,9 @@
 	/**@{*/
 	#define __event_notify_fn /**< event_notify() */
 	#define __event_wait_fn   /**< event_wait()   */
-	#define __event_drop_fn   /**< event_drop()   */
 	/**@}*/
 
 #ifndef _ASM_FILE_
-
-	/**
-	 * @see k1b_cluster_event_drop().
-	 */
-	static inline void event_drop(void)
-	{
-		k1b_cluster_event_drop();
-	}
 
 	/**
 	 * @see k1b_cluster_event_notify().

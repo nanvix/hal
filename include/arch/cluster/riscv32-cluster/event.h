@@ -68,7 +68,6 @@
 	 * @name Exported Functions
 	 */
 	/**@{*/
-	#define __event_drop_fn   /**< event_drop()   */
 	#define __event_notify_fn /**< event_notify() */
 	#define __event_wait_fn   /**< event_wait()   */
 	/**@}*/
@@ -89,14 +88,6 @@
 	static inline void event_wait(void)
 	{
 		riscv32_cluster_event_wait();
-	}
-
-	/**
-	 * Dummy function.
-	 */
-	static inline void event_drop(void)
-	{
-		 /* noop */
 	}
 
 #endif /* _ASM_FILE_ */
