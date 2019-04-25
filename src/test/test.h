@@ -79,4 +79,9 @@
 	 */
 	EXTERN void test_mmu(void);
 
+	/**
+	 * @brief Test driver for the Cores Interface of the Cluster AL.
+	 */
+	EXTERN void test_cluster_cores(void);
+
 #endif /* _HAL_TEST_H_ */
