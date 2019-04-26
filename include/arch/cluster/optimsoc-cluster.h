@@ -43,6 +43,7 @@
 	#include <arch/cluster/optimsoc-cluster/clock.h>
 	#include <arch/cluster/optimsoc-cluster/cores.h>
 	#include <arch/cluster/optimsoc-cluster/memory.h>
+	#include <arch/cluster/optimsoc-cluster/ompic.h>
 
 	/**
 	 * @name Provided Features

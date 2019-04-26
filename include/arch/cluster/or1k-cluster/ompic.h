@@ -22,50 +22,19 @@
  * SOFTWARE.
  */
 
-#ifndef CORE_OR1K_H_
-#define CORE_OR1K_H_
+#ifndef CLUSTER_OR1K_CLUSTER_OMPIC_H_
+#define CLUSTER_OR1K_CLUSTER_OMPIC_H_
 
-	/**
-	 * @addtogroup or1k-core OpenRISC Core
-	 * @ingroup cores
-	 */
+	#include <arch/cluster/or1k-cluster/_or1k-cluster.h>
+	#include <nanvix/const.h>
+	#include <stdint.h>
 
-	#ifndef __NEED_CORE_OR1K
-		#error "or1k core not required"
-	#endif
+#ifndef _ASM_FILE_
 
-	#include <arch/core/or1k/cache.h>
-	#include <arch/core/or1k/clock.h>
-	#include <arch/core/or1k/core.h>
-	#include <arch/core/or1k/excp.h>
-	#include <arch/core/or1k/int.h>
-	#include <arch/core/or1k/mmu.h>
-	#include <arch/core/or1k/spinlock.h>
-	#include <arch/core/or1k/tlb.h>
-	#include <arch/core/or1k/trap.h>
-	#include <arch/core/or1k/upcall.h>
+	/* External functions. */
+	EXTERN void or1k_cluster_ompic_init(void);
+	EXTERN void or1k_cluster_ompic_send_ipi(uint32_t dstcore, uint16_t data);
 
-	#ifdef _ASM_FILE_
-		#include <arch/core/or1k/asm.h>
-	#endif
+#endif /* _ASM_FILE_ */
 
-/**
- * @cond or1k
- */
-
-	/**
-	 * @name Core Features
-	 */
-	/**@{*/
-	#define CORE_HAS_ATOMICS      1 /**< Has Atomic Instructions?    */
-	#define CORE_HAS_PMIO         0 /**< Has Programmed I/O?         */
-	#define CORE_HAS_TLB_HW       0 /**< Has Hardware-Managed TLB?   */
-	#define CORE_HAS_CACHE_HW     1 /**< Has Hardware-Managed Cache? */
-	#define CORE_HAS_HUGE_PAGES   1 /**< Are Huge Pages Supported?   */
-	#define CORE_IS_LITTLE_ENDIAN 0 /**< Is Little Endian?           */
-	/**@}*/
-
-/**@endcond*/
-
-#endif /* CORE_OR1K_H_ */
-
+#endif /* CLUSTER_OR1K_CLUSTER_OMPIC_H_ */

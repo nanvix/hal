@@ -25,7 +25,6 @@
 /* Must come first. */
 #define __NEED_HAL_CLUSTER
 
-#include <arch/core/or1k/ompic.h>
 #include <nanvix/hal/cluster.h>
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
@@ -173,7 +172,7 @@ PUBLIC void optimsoc_cluster_setup(void)
 	or1k_mmu_setup();
 
 	/* Configure OMPIC. */
-	or1k_ompic_init();
+	optimsoc_cluster_ompic_init();
 
 	/* Enable OMPIC interrupts. */
 	or1k_pic_unmask(OR1K_INT_OMPIC);
