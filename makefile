@@ -27,6 +27,9 @@
 # Verbose build?
 export VERBOSE ?= no
 
+# Run Arguments
+export RUN_ARGS ?= "--all"
+
 #===============================================================================
 # Directories
 #===============================================================================
@@ -63,32 +66,32 @@ export IMAGE = hal-debug.img
 all: image
 
 # Runs Unit Tests in all clusters
-run: | image
-	bash $(TOOLSDIR)/utils/nanvix-run.sh $(IMAGE) $(BINDIR)/$(EXECBIN) $(TARGET) all --no-debug
+run:
+	@bash $(TOOLSDIR)/utils/nanvix-run.sh $(IMAGE) $(BINDIR)/$(EXECBIN) $(TARGET) all --no-debug $(RUN_ARGS)
 
 # Runs Unit Tests in IO Cluster.
-run-iocluster: | image
-	bash $(TOOLSDIR)/utils/nanvix-run.sh $(IMAGE) $(BINDIR)/$(EXECBIN) $(TARGET) iocluster --no-debug
+run-iocluster:
+	@bash $(TOOLSDIR)/utils/nanvix-run.sh $(IMAGE) $(BINDIR)/$(EXECBIN) $(TARGET) iocluster --no-debug $(RUN_ARGS)
 
 # Runs Unit Tests in Compute Cluster.
-run-ccluster: | image
-	bash $(TOOLSDIR)/utils/nanvix-run.sh $(IMAGE) $(BINDIR)/$(EXECBIN) $(TARGET) ccluster --no-debug
+run-ccluster:
+	@bash $(TOOLSDIR)/utils/nanvix-run.sh $(IMAGE) $(BINDIR)/$(EXECBIN) $(TARGET) ccluster --no-debug $(RUN_ARGS)
 
 # Runs Unit Tests in all clusters in debug mode.
-debug: | image
-	bash $(TOOLSDIR)/utils/nanvix-run.sh $(IMAGE) $(BINDIR)/$(EXECBIN) $(TARGET) all --debug
+debug:
+	@bash $(TOOLSDIR)/utils/nanvix-run.sh $(IMAGE) $(BINDIR)/$(EXECBIN) $(TARGET) all --debug $(RUN_ARGS)
 
 # Runs Unit Tests in IO Cluster in debug mode.
-debug-iocluster: | image
-	bash $(TOOLSDIR)/utils/nanvix-run.sh $(IMAGE) $(BINDIR)/$(EXECBIN) $(TARGET) iocluster --debug
+debug-iocluster:
+	@bash $(TOOLSDIR)/utils/nanvix-run.sh $(IMAGE) $(BINDIR)/$(EXECBIN) $(TARGET) iocluster --debug $(RUN_ARGS)
 
 # Runs Unit Tests in Compute Cluster in debug mode.
-debug-ccluster: | image
-	bash $(TOOLSDIR)/utils/nanvix-run.sh $(IMAGE) $(BINDIR)/$(EXECBIN) $(TARGET) ccluster --debug
+debug-ccluster:
+	@bash $(TOOLSDIR)/utils/nanvix-run.sh $(IMAGE) $(BINDIR)/$(EXECBIN) $(TARGET) ccluster --debug $(RUN_ARGS)
 
 # Builds image.
 image: hal-target
-	bash $(TOOLSDIR)/image/build-image.sh $(BINDIR) $(IMAGE)
+	@bash $(TOOLSDIR)/image/build-image.sh $(BINDIR) $(IMAGE)
 
 # Make directories
 make-dirs:

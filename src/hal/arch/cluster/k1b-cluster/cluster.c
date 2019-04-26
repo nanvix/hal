@@ -71,6 +71,54 @@ PUBLIC struct coreinfo ALIGN(K1B_CACHE_LINE_SIZE) cores[K1B_CLUSTER_NUM_CORES] =
  *============================================================================*/
 
 /**
+ * @name Default boot arguments.
+ */
+/**@{*/
+PRIVATE const char *noargv[] = {"kmain", NULL };
+PRIVATE const char *noenvp[] = { NULL };
+/**@}*/
+
+/**
+ * @brief Gets boot arguments.
+ *
+ * @param args Location where boot arguments should be stored.
+ */
+PRIVATE void k1b_get_boot_args(k1_boot_args_t *args)
+{
+	extern uint8_t __image_start;
+	extern uint8_t __image_end;
+	__k1_boot_args_mmap_t *_args = (__k1_boot_args_mmap_t*) &MPPA_ARGAREA_START;
+
+again:
+
+	/* This is a valid boort argument. */
+	if ((args != NULL) && (_args->magic_value == __MPPA_MAGIC_BOOT_ARGS_VALUE))
+	{
+		args->argc = _args->argc;
+		args->envc = _args->envc;
+		args->argv = (char**) _args->argv_ptr;
+		args->envp = (char**) _args->envp_ptr;
+		return;
+	}
+
+	/* Search in the memory for boot arguments. */
+	for (uint8_t *p = &__image_start; p < &__image_end; p++)
+	{
+		if (*((uint32_t *) p) == __MPPA_MAGIC_BOOT_ARGS_VALUE)
+		{
+			_args = (__k1_boot_args_mmap_t *) p;
+			goto again;
+		}
+	}
+
+	args->argc  = 1;
+	args->envc  = 0;
+	args->argv  = (char **) noargv;
+	args->envp  = (char **) noenvp;
+}
+
+
+/**
  * @brief Initializes the master core.
  *
  * The k1b_cluster_master_setup() function initializes the underlying
@@ -86,7 +134,7 @@ PRIVATE NORETURN void k1b_cluster_master_setup(void)
 {
 	k1_boot_args_t args;
 
-	get_k1_boot_args(&args);
+	k1b_get_boot_args(&args);
 
 	k1b_cluster_setup();
 
