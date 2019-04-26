@@ -315,29 +315,12 @@ PUBLIC int k1b_tlb_write(
 	int coreid;
 	unsigned idx;
 	struct tlbe tlbe;
-	__k1_tlb_entry_t _tlbe;
-
-	tlbe.addr_ext = 0;
-	tlbe.addrspace = 0;
-	tlbe.cache_policy = K1B_DTLBE_CACHE_POLICY_WRTHROUGH;
-	tlbe.frame = paddr >> 12;
-	tlbe.global = 1;
-	tlbe.page = (vaddr >> 12) | (1 << (shift - 12 - 1));
-	tlbe.protection = protection;
-	tlbe.size = (shift == 12) ? 1 : 0;
-	tlbe.status = K1B_TLBE_STATUS_AMODIFIED;
-
+	
 	coreid = k1b_core_get_id();
 	idx = 2*((vaddr >> shift) & 0x3f) + way;
 
-	kmemcpy(&_tlbe, &tlbe, K1B_TLBE_SIZE);
-
-	/* Write to hardware TLB. */
-	if (mOS_mem_write_jtlb(_tlbe, way) != 0)
-	{
-		kprintf("[hal] failed to write tlb %x", vaddr);
+	if (k1b_tlbe_write(vaddr, paddr, shift, way, protection, &tlbe) != 0)
 		return (-EAGAIN);
-	}
 
 	kmemcpy(&k1b_tlb[coreid].jtlb[idx], &tlbe, K1B_TLBE_SIZE);
 
@@ -359,29 +342,13 @@ PUBLIC int k1b_tlb_inval(vaddr_t vaddr, unsigned shift, unsigned way)
 	int coreid;
 	unsigned idx;
 	struct tlbe tlbe;
-	__k1_tlb_entry_t _tlbe;
-
-	tlbe.addr_ext = 0;
-	tlbe.addrspace = 0;
-	tlbe.cache_policy = 0;
-	tlbe.frame = 0;
-	tlbe.global = 0;
-	tlbe.page = (vaddr >> 12) | (1 << (shift - 12 - 1));
-	tlbe.protection = 0;
-	tlbe.size = (shift == 12) ? 1 : 0;
-	tlbe.status = K1B_TLBE_STATUS_INVALID;
 
 	coreid = k1b_core_get_id();
 	idx = 2*((vaddr >> shift) & 0x3f) + way;
 
-	kmemcpy(&_tlbe, &tlbe, K1B_TLBE_SIZE);
-
 	/* Write to hardware TLB. */
-	if (mOS_mem_write_jtlb(_tlbe, way) != 0)
-	{
-		kprintf("[hal] failed to invalidate tlb %x", vaddr);
+	if (k1b_tlbe_inval(vaddr, shift, way, &tlbe) != 0)
 		return (-EAGAIN);
-	}
 
 	kmemcpy(&k1b_tlb[coreid].jtlb[idx], &tlbe, K1B_TLBE_SIZE);
 

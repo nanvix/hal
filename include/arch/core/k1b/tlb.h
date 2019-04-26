@@ -242,6 +242,41 @@
 		return (0);
 	}
 
+	/**
+	 * @brief Writes a TLB entry.
+	 *
+	 * @param vaddr      Target virtual address.
+	 * @param paddr      Target physical address.
+	 * @param shift      Page shift.
+	 * @param way        Target set-associative way.
+	 * @param protection Protection attributes.
+	 * @param tlbe       The updated value of target TLB entry.
+	 */
+	EXTERN int k1b_tlbe_write(
+		vaddr_t vaddr,
+		paddr_t paddr,
+		unsigned shift,
+		unsigned way,
+		unsigned protection,
+		struct tlbe * tlbe
+	);
+
+
+	/**
+	 * @brief Invalidates a TLB entry.
+	 *
+	 * @param vaddr Target virtual address.
+	 * @param shift Page shift.
+	 * @param way   Target set-associative way.
+	 * @param tlbe  The updated value of target TLB entry.
+	 */
+	EXTERN int k1b_tlbe_inval(
+		vaddr_t vaddr,
+		unsigned shift,
+		unsigned way,
+		struct tlbe * tlbe
+	);
+
 #endif /* _ASM_FILE_ */
 
 /**@}*/
