@@ -56,11 +56,21 @@ PUBLIC void k1b_core_setup(void *stack)
  *============================================================================*/
 
 /**
- * @todo TODO provide a detailed description for this function.
+ * The k1b_core_poweroff() function powers off the underlying core.
+ * Afeter powering off a core, instruction execution cannot be resumed
+ * on it.
  *
  * @author Pedro Henrique Penna
  */
-PUBLIC void k1b_core_poweroff(void)
+PUBLIC NORETURN void k1b_core_poweroff(void)
 {
+	kprintf("[hal] powering off...");
+
+	/* Disable all interrupts. */
+	k1b_int_disable();
+
+	/* Power off. */
 	mOS_exit(__k1_spawn_type() != __MPPA_MPPA_SPAWN, 0);
+
+	UNREACHABLE();
 }

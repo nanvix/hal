@@ -49,7 +49,7 @@
 	/**
 	 * @brief Powers off the underlying core.
 	 */
-	EXTERN void k1b_core_poweroff(void);
+	EXTERN NORETURN void k1b_core_poweroff(void);
 
 	/**
 	 * @brief Gets the ID of the core.
@@ -130,7 +130,7 @@
 	/**
 	 * @see k1b_core_poweroff().
 	 */
-	static inline void core_poweroff(void)
+	static inline NORETURN void core_poweroff(void)
 	{
 		k1b_core_poweroff();
 	}

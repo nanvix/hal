@@ -55,21 +55,24 @@ PUBLIC void or1k_core_setup(void)
 /**
  * The or1k_core_poweroff() function powers off the underlying core.
  * Afeter powering off a core, instruction execution cannot be
- * resumed.
+ * resumed on it.
  *
  * @author Davidson Francis
  */
-PUBLIC void or1k_core_poweroff(void)
+PUBLIC NORETURN void or1k_core_poweroff(void)
 {
 	/* Disable all interrupts. */
 	or1k_pic_lvl_set(OR1K_IRQLVL_0);
 
-	/* If Power Management Present. */
+	/* Is Power Management Unit present? */
 	if (or1k_mfspr(OR1K_SPR_UPR) & OR1K_SPR_UPR_PMP)
-		or1k_mtspr(OR1K_SPR_PMR, OR1K_SPR_PMR_DME);
-	else
 	{
-		while (true)
-			/* noop(). */;
+		kprintf("[hal] powering off...");
+		or1k_mtspr(OR1K_SPR_PMR, OR1K_SPR_PMR_DME);
 	}
+	else
+		kprintf("[hal] halting...");
+
+	/* Stay here forever. */
+	UNREACHABLE();
 }

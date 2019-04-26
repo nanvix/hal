@@ -54,6 +54,11 @@
 		return (0);
 	}
 
+	/**
+	 * @brief Powers off the underlying core.
+	 */
+	EXTERN NORETURN void i486_core_poweroff(void);
+
 #endif /* _ASM_FILE_ */
 
 /**@}*/
@@ -130,8 +135,9 @@
 	/**
 	 * @todo Implement this function.
 	 */
-	static inline void core_poweroff(void)
+	static inline NORETURN void core_poweroff(void)
 	{
+		i486_core_poweroff();
 	}
 
 	/**
