@@ -109,34 +109,6 @@ PRIVATE struct
 	struct tlbe itlb[OR1K_TLB_LENGTH];
 } or1k_tlb[OR1K_CLUSTER_NUM_CORES];
 
-/**
- * @brief TLB Entry Value
- *
- * Converts between a structure value and a single value
- * writable into xTLBMR and xTLBTR.
- */
-struct tlbe_value
-{
-	union
-	{
-		/* TLB Entry. */
-		struct tlbe tlbe;
-
-		/* TLB Value. */
-		uint64_t value;
-	} u;
-} PACK;
-
-/**
- * TLBE xTLBMR
- */
-#define OR1K_TLBE_xTLBMR(x) ((x) >> 32)
-
-/**
- * TLBE xTLBTR
- */
-#define OR1K_TLBE_xTLBTR(x) ((x) & 0xFFFFFFFF)
-
 /*============================================================================*
  * or1k_tlb_check_inst()                                                      *
  *============================================================================*/
@@ -242,9 +214,9 @@ PUBLIC const struct tlbe *or1k_tlb_lookup_vaddr(int tlb_type, vaddr_t vaddr)
  */
 PUBLIC const struct tlbe *or1k_tlb_lookup_paddr(int tlb_type, paddr_t paddr)
 {
-	const struct tlbe *tlbe;  /* TLB Entry Pointer. */
-	vaddr_t addr;             /* Aligned address.   */
-	int coreid;               /* Core ID.           */
+	const struct tlbe *tlbe; /* TLB Entry Pointer. */
+	vaddr_t addr;            /* Aligned address.   */
+	int coreid;              /* Core ID.           */
 
 	addr = paddr & PAGE_MASK;
 	coreid = or1k_core_get_id();
@@ -296,19 +268,19 @@ PUBLIC const struct tlbe *or1k_tlb_lookup_paddr(int tlb_type, paddr_t paddr)
  */
 PUBLIC int or1k_tlb_write(int tlb_type, vaddr_t vaddr, paddr_t paddr)
 {
-	struct tlbe_value tlbev; /* TLB Entry value.   */
-	struct tlbe tlbe;        /* TLB Entry.         */
-	unsigned idx;            /* TLB Index.         */
-	unsigned user;           /* User address flag. */
-	unsigned inst;           /* Instruction flag.  */
-	volatile vaddr_t kcode;  /* Kernel start code. */
-	int coreid;              /* Core ID.           */
+	volatile vaddr_t kcode; /* Kernel start code. */
+	struct tlbe * tlbe;     /* TLB Entry.         */
+	unsigned idx;           /* TLB Index.         */
+	int coreid;             /* Core ID.           */
+	int user;               /* User address flag. */
+	int inst;               /* Instruction flag.  */
 
-	coreid = or1k_core_get_id();
+	idx = (vaddr >> PAGE_SHIFT) & (OR1K_TLB_LENGTH - 1);
 	kcode = (vaddr_t)&KSTART_CODE;
-	kmemset(&tlbe, 0, OR1K_TLBE_SIZE);
-
+	inst = or1k_tlb_check_inst(vaddr);
+	coreid = or1k_core_get_id();
 	user = 1;
+
 	/*
 	 * Check if the virtual address belongs to
 	 * kernel or user.
@@ -316,111 +288,15 @@ PUBLIC int or1k_tlb_write(int tlb_type, vaddr_t vaddr, paddr_t paddr)
 	if ((vaddr >= kcode && vaddr < KMEM_SIZE))
 		user = 0;
 
-	/*
-	 * Check if the virtual address is instruction
-	 * or data.
-	 */
-	inst = or1k_tlb_check_inst(vaddr);
-
-	/* Address belonging to the kernel. */
-	if (!user)
-	{
-		if (tlb_type == OR1K_TLB_INSTRUCTION)
-		{
-			if (inst)
-				tlbe.perms = OR1K_ITLBE_SXE;
-
-			/*
-			 * Kernel trying to execute data segments
-			 * should leads to error.
-			 */
-			else
-				tlbe.perms = 0;
-		}
-
-		else
-		{
-			/*
-			 * Kernel trying to read code segment.
-			 */
-			if (inst)
-				tlbe.perms = OR1K_DTLBE_SRE;
-
-			else
-				tlbe.perms = OR1K_DTLBE_SRE | OR1K_DTLBE_SwE;
-		}
-
-	}
-
-	/* Address belonging to the user. */
-	else
-	{
-		if (tlb_type == OR1K_TLB_INSTRUCTION)
-		{
-			if (inst)
-				tlbe.perms = OR1K_ITLBE_UXE;
-
-			/*
-			 * User trying to execute data segments
-			 * should leads to error.
-			 */
-			else
-				tlbe.perms = 0;
-		}
-
-		else
-		{
-			/*
-			 * User trying to read code segment.
-			 * Kernel always have permissions to R/W user data.
-			 */
-			if (inst)
-				tlbe.perms = OR1K_DTLBE_URE | OR1K_DTLBE_SRE |
-					OR1K_DTLBE_SwE;
-
-			else
-				tlbe.perms = OR1K_DTLBE_URE | OR1K_DTLBE_UWE |
-					OR1K_DTLBE_SRE | OR1K_DTLBE_SwE;
-		}
-	}
-
-	/* Remaining fields. */
-	tlbe.vpn = vaddr >> PAGE_SHIFT;
-	tlbe.lru = 0;
-	tlbe.cid = 0;
-	tlbe.pl = OR1K_TLBE_PL2;
-	tlbe.valid = OR1K_TLBE_VALID;
-
-	tlbe.ppn = paddr >> PAGE_SHIFT;
-	tlbe.dirty = !OR1K_TLBE_DIRTY;
-	tlbe.accessed = !OR1K_TLBE_ACCESSED;
-	tlbe.wom = OR1K_TLBE_MEMORY_MODEL_STRONG;
-	tlbe.wbc = OR1K_TLBE_CACHE_POLICY_WRBACK;
-	tlbe.ci = !OR1K_TLBE_CACHE_INHIBIT;
-	tlbe.cc = OR1K_TLBE_CACHE_COHERENCY;
-
-	/* TLB index. */
-	idx = (vaddr >> PAGE_SHIFT) & (OR1K_TLB_LENGTH - 1);
-	tlbev.u.tlbe = tlbe;
-
+	/* Copy to the in-memory Instruction TLB copy. */
 	if (tlb_type == OR1K_TLB_INSTRUCTION)
-	{
-		/* Copy to the in-memory TLB copy. */
-		kmemcpy(&or1k_tlb[coreid].itlb[idx], &tlbe, OR1K_TLBE_SIZE);
-
-		/* Copy to HW TLB. */
-		or1k_mtspr(OR1K_SPR_ITLBTR_BASE(0) | idx, OR1K_TLBE_xTLBTR(tlbev.u.value));
-		or1k_mtspr(OR1K_SPR_ITLBMR_BASE(0) | idx, OR1K_TLBE_xTLBMR(tlbev.u.value));
-	}
+		tlbe =  &or1k_tlb[coreid].itlb[idx];
+	
+	/* Copy to the in-memory Data TLB copy. */
 	else
-	{
-		/* Copy to the in-memory TLB copy. */
-		kmemcpy(&or1k_tlb[coreid].dtlb[idx], &tlbe, OR1K_TLBE_SIZE);
+		tlbe = &or1k_tlb[coreid].dtlb[idx];
 
-		/* Copy to HW TLB. */
-		or1k_mtspr(OR1K_SPR_DTLBTR_BASE(0) | idx, OR1K_TLBE_xTLBTR(tlbev.u.value));
-		or1k_mtspr(OR1K_SPR_DTLBMR_BASE(0) | idx, OR1K_TLBE_xTLBMR(tlbev.u.value));
-	}
+	or1k_tlbe_write(tlb_type, user, inst, vaddr, paddr, tlbe);
 
 	return (0);
 }
@@ -443,22 +319,18 @@ PUBLIC int or1k_tlb_inval(int tlb_type, vaddr_t vaddr)
 	idx = (vaddr >> PAGE_SHIFT) & (OR1K_TLB_LENGTH - 1);
 	coreid = or1k_core_get_id();
 
+	or1k_tlbe_inval(tlb_type, vaddr);
+
 	/*
 	 * Invalidates the entry accordingly if
 	 * instruction or data.
 	 */
 	if (tlb_type == OR1K_TLB_INSTRUCTION)
-	{
 		kmemset(&or1k_tlb[coreid].itlb[idx], 0, OR1K_TLBE_SIZE);
-		or1k_mtspr(OR1K_SPR_ITLBMR_BASE(0) | idx, 0);
-	}
 
 	/* Data. */
 	else
-	{
 		kmemset(&or1k_tlb[coreid].dtlb[idx], 0, OR1K_TLBE_SIZE);
-		or1k_mtspr(OR1K_SPR_DTLBMR_BASE(0) | idx, 0);
-	}
 
 	return (0);
 }
@@ -473,22 +345,17 @@ PUBLIC int or1k_tlb_inval(int tlb_type, vaddr_t vaddr)
  */
 PUBLIC int or1k_tlb_flush(void)
 {
-	struct tlbe_value tlbev; /* TLB Entry value. */
-	int coreid;              /* Core ID.         */
+	int coreid;       /* Core ID.   */
 
 	coreid = or1k_core_get_id();
 
 	for (int i = 0; i < OR1K_TLB_LENGTH; i++)
 	{
-		/* Data TLB. */
-		kmemcpy(&tlbev, &or1k_tlb[coreid].itlb[i], OR1K_TLBE_SIZE);
-		or1k_mtspr(OR1K_SPR_ITLBTR_BASE(0) | i, OR1K_TLBE_xTLBTR(tlbev.u.value));
-		or1k_mtspr(OR1K_SPR_ITLBMR_BASE(0) | i, OR1K_TLBE_xTLBMR(tlbev.u.value));
-
 		/* Instruction TLB. */
-		kmemcpy(&tlbev, &or1k_tlb[coreid].dtlb[i], OR1K_TLBE_SIZE);
-		or1k_mtspr(OR1K_SPR_DTLBTR_BASE(0) | i, OR1K_TLBE_xTLBTR(tlbev.u.value));
-		or1k_mtspr(OR1K_SPR_DTLBMR_BASE(0) | i, OR1K_TLBE_xTLBMR(tlbev.u.value));
+		or1k_tlbe_update(OR1K_TLB_INSTRUCTION, i, &or1k_tlb[coreid].itlb[i]);
+
+		/* Data TLB. */
+		or1k_tlbe_update(OR1K_TLB_DATA, i, &or1k_tlb[coreid].dtlb[i]);
 	}
 
 	return (0);
@@ -503,7 +370,7 @@ PUBLIC int or1k_tlb_flush(void)
  */
 PUBLIC void or1k_tlb_init(void)
 {
-	struct tlbe_value tlbev; /* TLB Entry value.                     */
+	// struct tlbe_value tlbev; /* TLB Entry value.                     */
 	unsigned dtlbtr;         /* Data TLB Translate Register.         */
 	unsigned itlbtr;         /* Instruction TLB Translate Register.  */
 	unsigned xtlbmr;         /* Data/Instruction TLB Match Register. */
@@ -522,16 +389,14 @@ PUBLIC void or1k_tlb_init(void)
 	/* Write into DTLB/ITLB. */
 	for (int i = 0; i < OR1K_TLB_LENGTH; i++)
 	{
-		or1k_mtspr(OR1K_SPR_DTLBTR_BASE(0) | i, dtlbtr);
-		or1k_mtspr(OR1K_SPR_ITLBTR_BASE(0) | i, itlbtr);
-		or1k_mtspr(OR1K_SPR_DTLBMR_BASE(0) | i, xtlbmr);
-		or1k_mtspr(OR1K_SPR_ITLBMR_BASE(0) | i, xtlbmr);
-
-		tlbev.u.value = ((uint64_t)xtlbmr << 32) | dtlbtr;
-		kmemcpy(&or1k_tlb[coreid].dtlb[i], &tlbev.u.tlbe, OR1K_TLBE_SIZE);
-
-		tlbev.u.value = ((uint64_t)xtlbmr << 32) | itlbtr;
-		kmemcpy(&or1k_tlb[coreid].itlb[i], &tlbev.u.tlbe, OR1K_TLBE_SIZE);
+		or1k_tlbe_init(
+			i,
+			dtlbtr,
+			itlbtr,
+			xtlbmr,
+			&or1k_tlb[coreid].dtlb[i],
+			&or1k_tlb[coreid].itlb[i]
+		);
 
 		dtlbtr += OR1K_PAGE_SIZE;
 		itlbtr += OR1K_PAGE_SIZE;

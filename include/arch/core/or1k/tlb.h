@@ -187,6 +187,73 @@
 		return (tlbe->ppn << PAGE_SHIFT);
 	}
 
+	/**
+	 * @brief Updates TLB entry.
+	 *
+	 * @param tlb_type TLB type.
+	 * @param idx      TLB Index.
+	 * @param tlbe     Target TLB entry.
+	 *
+	 * The or1k_tlbe_update() function updates the HW TLB using the
+	 * given parameters.
+	 *
+	 * @author João Vicente Souto
+	 */
+	EXTERN void or1k_tlbe_update(int tlb_type, int idx, const struct tlbe *tlbe);
+
+	/**
+	 * @brief Writes a TLB entry.
+	 *
+	 * @param tlb_type Target TLB.
+	 * @param user     User adderss flag.
+	 * @param inst     Instruction flag.
+	 * @param vaddr    Target virtual address.
+	 * @param paddr    Target physical address.
+	 * @param tlbe  The updated value of target TLB entry.
+	 */
+	EXTERN int or1k_tlbe_write(
+		int tlb_type,
+		int user,
+		int inst,
+		vaddr_t vaddr,
+		paddr_t paddr,
+		struct tlbe * tlbe
+	);
+
+	/**
+	 * @brief Invalidates a TLB entry.
+	 *
+	 * @param tlb_type Target TLB.
+	 * @param idx      Target TLB idx.
+	 */
+	static inline int or1k_tlbe_inval(int tlb_type, int idx)
+	{
+		/*
+		* Invalidates the entry accordingly if
+		* instruction or data.
+		*/
+		if (tlb_type == OR1K_TLB_INSTRUCTION)
+			or1k_mtspr(OR1K_SPR_ITLBMR_BASE(0) | idx, 0);
+
+		/* Data. */
+		else
+			or1k_mtspr(OR1K_SPR_DTLBMR_BASE(0) | idx, 0);
+
+		return (0);
+	}
+
+	/**
+	 * @brief Initializes the TLB.
+	 */
+	EXTERN void or1k_tlbe_init(
+		int idx,
+		unsigned dtlbtr,
+		unsigned itlbtr,
+		unsigned xtlbmr,
+		struct tlbe *dtlb,
+		struct tlbe *itlb
+	);
+
 #endif /* _ASM_FILE_ */
 
 /**@}*/
