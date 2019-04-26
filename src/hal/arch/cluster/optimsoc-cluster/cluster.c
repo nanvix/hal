@@ -172,7 +172,7 @@ PUBLIC void optimsoc_cluster_setup(void)
 	or1k_mmu_setup();
 
 	/* Configure OMPIC. */
-	or1k_ompic_init();
+	optimsoc_cluster_ompic_init();
 
 	/* Enable OMPIC interrupts. */
 	or1k_pic_unmask(OR1K_INT_OMPIC);

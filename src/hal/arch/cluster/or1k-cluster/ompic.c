@@ -33,7 +33,7 @@
  * @param reg Target register.
  * @return Register value.
  */
-PRIVATE inline uint32_t or1k_ompic_readreg(uint32_t reg)
+PRIVATE inline uint32_t or1k_cluster_ompic_readreg(uint32_t reg)
 {
 	return ( *((volatile uint32_t *) (reg)) );
 }
@@ -44,7 +44,7 @@ PRIVATE inline uint32_t or1k_ompic_readreg(uint32_t reg)
  * @param reg Target register.
  * @param data Data to be written.
  */
-PRIVATE inline void or1k_ompic_writereg(uint32_t reg, uint32_t data)
+PRIVATE inline void or1k_cluster_ompic_writereg(uint32_t reg, uint32_t data)
 {
 	*((volatile uint32_t *) (reg)) = data;
 }
@@ -55,13 +55,13 @@ PRIVATE inline void or1k_ompic_writereg(uint32_t reg, uint32_t data)
  * @param dstcore Destination core to be sent the message.
  * @param data Data to be sent.
  */
-PUBLIC void or1k_ompic_send_ipi(uint32_t dstcore, uint16_t data)
+PUBLIC void or1k_cluster_ompic_send_ipi(uint32_t dstcore, uint16_t data)
 {
 	int coreid; /* Core ID. */
 	coreid = or1k_core_get_id();
 
 	/* Send IPI. */
-	or1k_ompic_writereg(OR1K_OMPIC_CTRL(coreid), OR1K_OMPIC_CTRL_IRQ_GEN |
+	or1k_cluster_ompic_writereg(OR1K_OMPIC_CTRL(coreid), OR1K_OMPIC_CTRL_IRQ_GEN |
 		OR1K_OMPIC_CTRL_DST(dstcore)| OR1K_OMPIC_DATA(data));
 }
 
@@ -70,7 +70,7 @@ PUBLIC void or1k_ompic_send_ipi(uint32_t dstcore, uint16_t data)
  *
  * @param num Dummy argument.
  */
-PRIVATE void or1k_ompic_handle_ipi(int num)
+PRIVATE void or1k_cluster_ompic_handle_ipi(int num)
 {
 	int coreid; /* Core ID. */
 
@@ -80,14 +80,14 @@ PRIVATE void or1k_ompic_handle_ipi(int num)
 	coreid = or1k_core_get_id();
 
 	/* ACK IPI. */
-	or1k_ompic_writereg(OR1K_OMPIC_CTRL(coreid), OR1K_OMPIC_CTRL_IRQ_ACK);
+	or1k_cluster_ompic_writereg(OR1K_OMPIC_CTRL(coreid), OR1K_OMPIC_CTRL_IRQ_ACK);
 }
 
 /*
  * @brief Setup the OMPIC.
  */
-PUBLIC void or1k_ompic_init(void)
+PUBLIC void or1k_cluster_ompic_init(void)
 {
 	/* IPI handler. */
-	interrupt_register(OR1K_INT_OMPIC, or1k_ompic_handle_ipi);
+	interrupt_register(OR1K_INT_OMPIC, or1k_cluster_ompic_handle_ipi);
 }
