@@ -23,6 +23,14 @@
 # C Source Files
 C_SRC += $(wildcard stdout/systrace.c)
 
+# Filter C Source List
+C_SRC := $(filter-out $(wildcard arch/cluster/optimsoc-cluster/*.c), $(C_SRC))
+C_SRC += $(wildcard arch/cluster/or1k-cluster/*.c)
+
+# Filter ASM Source List
+ASM_SRC := $(filter-out $(wildcard arch/cluster/optimsoc-cluster/*.S), $(ASM_SRC))
+ASM_SRC += $(wildcard arch/cluster/or1k-cluster/*.S)
+
 # Object Files
 OBJ = $(ASM_SRC:.S=.o) \
 	  $(C_SRC:.c=.o)
