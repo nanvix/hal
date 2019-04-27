@@ -27,7 +27,11 @@
 #define __NEED_OR1K_REGS
 #define __NEED_CORE_TYPES
 
-#include <arch/cluster/or1k-cluster/cores.h>
+#if (defined(__or1k_cluster__))
+	#include <arch/cluster/or1k-cluster/cores.h>
+#elif (defined(__optimsoc_cluster__))
+	#include <arch/cluster/optimsoc-cluster/cores.h>
+#endif
 
 /* Exported symbols. */
 .globl start

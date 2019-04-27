@@ -40,6 +40,13 @@ PUBLIC struct
 	unsigned pending;
 	or1k_spinlock_t lock;
 } events[OR1K_CLUSTER_NUM_CORES] ALIGN(OR1K_CACHE_LINE_SIZE) = {
+#if (defined(__or1k_cluster__))
 	{ 0, OR1K_SPINLOCK_UNLOCKED }, /* Master Core  */
 	{ 0, OR1K_SPINLOCK_UNLOCKED }, /* Slave Core 1 */
+#elif (defined(__optimsoc_cluster__))
+	{ 0, OR1K_SPINLOCK_UNLOCKED }, /* Master Core  */
+	{ 0, OR1K_SPINLOCK_UNLOCKED }, /* Slave Core 1 */
+	{ 0, OR1K_SPINLOCK_UNLOCKED }, /* Slave Core 2 */
+	{ 0, OR1K_SPINLOCK_UNLOCKED }, /* Slave Core 3 */
+#endif
 };
