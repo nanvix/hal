@@ -140,7 +140,7 @@ PUBLIC NORETURN void or1k_cluster_slave_setup(void)
 	or1k_fence_wait();
 
 	/* Initial TLB. */
-	or1k_tlb_init();
+	or1k_cluster_tlb_init();
 
 	/* Enable MMU. */
 	or1k_enable_mmu();
