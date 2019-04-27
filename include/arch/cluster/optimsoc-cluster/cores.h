@@ -50,6 +50,7 @@
 	 * @brief ID of the master core.
 	 */
 	#define OPTIMSOC_CLUSTER_COREID_MASTER 0
+	#define OR1K_CLUSTER_COREID_MASTER OPTIMSOC_CLUSTER_COREID_MASTER
 
 #ifndef _ASM_FILE_
 
@@ -58,12 +59,12 @@
 	 *
 	 * @param coreid ID of target core.
 	 */
-	EXTERN NORETURN void _optimsoc_cluster_core_reset(int coreid);
+	EXTERN NORETURN void _or1k_cluster_core_reset(int coreid);
 
 	/**
 	 * @brief Initializes the underlying cluster.
 	 */
-	EXTERN void optimsoc_cluster_setup(void);
+	EXTERN void or1k_cluster_setup(void);
 
 	/**
 	 * @brief Gets the number of cores.
@@ -116,7 +117,7 @@
 	 */
 	static inline void _core_reset(void)
 	{
-		_optimsoc_cluster_core_reset(or1k_core_get_id());
+		_or1k_cluster_core_reset(or1k_core_get_id());
 	}
 
 	/**
@@ -130,11 +131,11 @@
 #ifdef __NANVIX_HAL
 
 	/**
-	 * @see optimsoc_cluster_setup().
+	 * @see or1k_cluster_setup().
 	 */
 	static inline void core_setup(void)
 	{
-		optimsoc_cluster_setup();
+		or1k_cluster_setup();
 	}
 
 #endif /* __NANVIX_HAL */

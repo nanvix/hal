@@ -26,14 +26,31 @@
 #define CLUSTER_OPTIMSOC_CLUSTER_OMPIC_H_
 	
 	#include <arch/cluster/optimsoc-cluster/_optimsoc-cluster.h>
+	#include <arch/cluster/or1k-cluster/ompic.h>
 	#include <nanvix/const.h>
 	#include <stdint.h>
 
 #ifndef _ASM_FILE_
 
-	/* External functions. */
-	EXTERN void optimsoc_cluster_ompic_init(void);
-	EXTERN void optimsoc_cluster_ompic_send_ipi(uint32_t dstcore, uint16_t data);
+/**
+ * @cond optimsoc_cluster
+ */
+
+	/**
+	 * @see or1k_cluster_ompic_init().
+	 */
+	static inline void optimsoc_cluster_ompic_init(void)
+	{
+		or1k_cluster_ompic_init();
+	}
+
+	/**
+	 * @see or1k_cluster_ompic_send_ipi()
+	 */
+	static inline void optimsoc_cluster_ompic_send_ipi(uint32_t dstcore, uint16_t data)
+	{
+		or1k_cluster_ompic_send_ipi(dstcore, data);
+	}
 
 #endif /* _ASM_FILE_ */
 

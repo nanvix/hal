@@ -55,6 +55,18 @@
 	/**@}*/
 
 	/**
+	 * @name Physical Memory Layout Aliases
+	 */
+	/**@{*/
+	#define OR1K_CLUSTER_KERNEL_BASE_PHYS OPTIMSOC_CLUSTER_KERNEL_BASE_PHYS /**< Kernel Code and Data */
+	#define OR1K_CLUSTER_KERNEL_END_PHYS  OPTIMSOC_CLUSTER_KERNEL_END_PHYS  /**< Kernel End           */
+	#define OR1K_CLUSTER_KPOOL_BASE_PHYS  OPTIMSOC_CLUSTER_KPOOL_BASE_PHYS  /**< Kernel Page Pool     */
+	#define OR1K_CLUSTER_KPOOL_END_PHYS   OPTIMSOC_CLUSTER_KPOOL_END_PHYS   /**< Kernel Pool End      */
+	#define OR1K_CLUSTER_USER_BASE_PHYS   OPTIMSOC_CLUSTER_USER_BASE_PHYS   /**< User Base            */
+	#define OR1K_CLUSTER_USER_END_PHYS    OPTIMSOC_CLUSTER_USER_END_PHYS    /**< User End             */
+	/**@}*/
+
+	/**
 	 * @name Virtual Memory Layout
 	 */
 	/**@{*/
@@ -71,10 +83,29 @@
 	/**@}*/
 
 	/**
+	 * @name Virtual Memory Layout Aliases
+	 */
+	/**@{*/
+	#define OR1K_CLUSTER_OMPIC_BASE_VIRT  OPTIMSOC_CLUSTER_OMPIC_BASE_VIRT  /**< PIC Base             */
+	#define OR1K_CLUSTER_OMPIC_END_VIRT   OPTIMSOC_CLUSTER_OMPIC_END_VIRT   /**< PIC End              */
+	#define OR1K_CLUSTER_KERNEL_BASE_VIRT OPTIMSOC_CLUSTER_KERNEL_BASE_VIRT /**< Kernel Code and Data */
+	#define OR1K_CLUSTER_KERNEL_END_VIRT  OPTIMSOC_CLUSTER_KERNEL_END_VIRT  /**< Kernel End           */
+	#define OR1K_CLUSTER_KPOOL_BASE_VIRT  OPTIMSOC_CLUSTER_KPOOL_BASE_VIRT  /**< Kernel Page Pool     */
+	#define OR1K_CLUSTER_KPOOL_END_VIRT   OPTIMSOC_CLUSTER_KPOOL_END_VIRT   /**< Kernel Pool End      */
+	#define OR1K_CLUSTER_USER_BASE_VIRT   OPTIMSOC_CLUSTER_USER_BASE_VIRT   /**< User Base            */
+	#define OR1K_CLUSTER_USER_END_VIRT    OPTIMSOC_CLUSTER_USER_END_VIRT    /**< User End             */
+	#define OR1K_CLUSTER_USTACK_BASE_VIRT OPTIMSOC_CLUSTER_USTACK_BASE_VIRT /**< User Stack Base      */
+	#define OR1K_CLUSTER_USTACK_END_VIRT  OPTIMSOC_CLUSTER_USTACK_END_VIRT  /**< User Stack End       */
+	/**@}*/
+
+	/**
 	 * @brief Memory size (in bytes).
 	 */
 	#define OPTIMSOC_CLUSTER_MEM_SIZE \
 		OPTIMSOC_CLUSTER_DRAM_SIZE
+
+	#define OR1K_CLUSTER_MEM_SIZE \
+		OR1K_CLUSTER_DRAM_SIZE
 
 	/**
 	 * @brief Kernel memory size (in bytes).
@@ -82,11 +113,15 @@
 	#define OPTIMSOC_CLUSTER_KMEM_SIZE \
 		(OPTIMSOC_CLUSTER_KERNEL_END_PHYS - OPTIMSOC_CLUSTER_KERNEL_BASE_PHYS)
 
+	#define OR1K_CLUSTER_KMEM_SIZE OPTIMSOC_CLUSTER_KMEM_SIZE
+
 	/**
 	 * @brief Kernel page pool size (in bytes).
 	 */
 	#define OPTIMSOC_CLUSTER_KPOOL_SIZE \
 		(OPTIMSOC_CLUSTER_KPOOL_END_PHYS - OPTIMSOC_CLUSTER_KPOOL_BASE_PHYS)
+
+	#define OR1K_CLUSTER_KPOOL_SIZE OPTIMSOC_CLUSTER_KPOOL_SIZE
 
 	/**
 	 * @brief User memory size (in bytes).
@@ -94,10 +129,13 @@
 	#define OPTIMSOC_CLUSTER_UMEM_SIZE \
 		(OPTIMSOC_CLUSTER_USER_END_PHYS - OPTIMSOC_CLUSTER_USER_BASE_PHYS)
 
+	#define OR1K_CLUSTER_UMEM_SIZE OPTIMSOC_CLUSTER_UMEM_SIZE
+
 	/**
 	 * @brief Kernel stack size (in bytes).
 	 */
 	#define OPTIMSOC_CLUSTER_KSTACK_SIZE OPTIMSOC_PAGE_SIZE
+	#define OR1K_CLUSTER_KSTACK_SIZE OPTIMSOC_CLUSTER_KSTACK_SIZE
 
 	/**
 	 * @brief OMPIC Registers and flags.
@@ -114,6 +152,21 @@
 	#define OPTIMSOC_OMPIC_STAT_SRC(x)      (((x) >> 16) & 0x3fff)
 	/**@}*/
 
+	/**
+	 * @brief OMPIC Registers and flags Aliases.
+	 */
+	/**@{*/
+	#define OR1K_OMPIC_CPUBYTES	        8
+	#define OR1K_OMPIC_CTRL(cpu)        (OR1K_CLUSTER_OMPIC_BASE_VIRT + (0x0 + ((cpu) * OR1K_OMPIC_CPUBYTES)))
+	#define OR1K_OMPIC_STAT(cpu)        (OR1K_CLUSTER_OMPIC_BASE_VIRT + (0x4 + ((cpu) * OR1K_OMPIC_CPUBYTES)))
+	#define OR1K_OMPIC_CTRL_IRQ_ACK	    (1 << 31)
+	#define OR1K_OMPIC_CTRL_IRQ_GEN	    (1 << 30)
+	#define OR1K_OMPIC_CTRL_DST(cpu)    (((cpu) & 0x3fff) << 16)
+	#define OR1K_OMPIC_STAT_IRQ_PENDING (1 << 30)
+	#define OR1K_OMPIC_DATA(x)          ((x) & 0xffff)
+	#define OR1K_OMPIC_STAT_SRC(x)      (((x) >> 16) & 0x3fff)
+	/**@}*/
+
 #ifndef _ASM_FILE_
 
 #ifdef __NANVIX_HAL
@@ -121,7 +174,15 @@
 	/**
 	 * @brief Initializes the Memory Interface.
 	 */
-	EXTERN void optimsoc_cluster_mem_setup(void);
+	EXTERN void or1k_cluster_mem_setup(void);
+
+	/**
+	 * @see or1k_cluster_mem_setup()
+	 */
+	static inline void optimsoc_cluster_mem_setup(void)
+	{
+		or1k_cluster_mem_setup();
+	}
 
 #endif /* NANVIX_HAL */
 
