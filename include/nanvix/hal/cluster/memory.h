@@ -69,6 +69,34 @@
 	#error "UMEM_SIZE not defined"
 	#endif
 
+	/*
+	 * Required interface for software-managed TLBs.
+	 */
+	#if (!CORE_HAS_TLB_HW)
+
+		/*
+		* Required interface for software- and hardware-managed TLBs.
+		*/
+		#ifndef __tlb_flush_fn
+			#error "tlb_flush() not defined?"
+		#endif
+
+		/* Functions */
+		#ifndef __tlb_lookup_vaddr_fn
+			#error "tlb_lookup_vaddr() not defined?"
+		#endif
+		#ifndef __tlb_lookup_paddr_fn
+			#error "tlb_lookup_paddr() not defined?"
+		#endif
+		#ifndef __tlb_write_fn
+			#error "tlb_write() not defined?"
+		#endif
+		#ifndef __tlb_inval_fn
+			#error "tlb_inval() not defined?"
+		#endif
+
+	#endif
+
 #endif
 
 /*============================================================================*
@@ -82,6 +110,106 @@
  * @brief Memory HAL Interface
  */
 /**@{*/
+
+#ifndef __NANVIX_HAL
+
+	/**
+	 * @brief Lookups a TLB entry by virtual address.
+	 *
+	 * @param tlb_type Target TLB (D-TLB or I-TLB).
+	 * @param vaddr    Target virtual address.
+	 *
+	 * @returns Upon successful completion, a pointer to the TLB entry
+	 * that matches the virtual address @p vaddr is returned. If no
+	 * TLB entry matches @p vaddr, @p NULL is returned instead.
+	 */
+#if (!CORE_HAS_TLB_HW)
+	EXTERN const struct tlbe *tlb_lookup_vaddr(int tlb_type, vaddr_t vaddr);
+#else
+	static const struct tlbe *tlb_lookup_vaddr(int tlb_type, vaddr_t vaddr)
+	{
+		UNUSED(tlb_type);
+		UNUSED(vaddr);
+
+		return (NULL);
+	}
+#endif
+
+	/**
+	 * @brief Lookups a TLB entry by physical address.
+	 *
+	 * @param tlb_type Target TLB (D-TLB or I-TLB).
+	 * @param paddr    Target physical address.
+	 *
+	 * @returns Upon successful completion, a pointer to the TLB entry
+	 * that matches the physical address @p paddr is returned. If no
+	 * TLB entry matches @p paddr, @p NULL is returned instead.
+	 */
+#if (!CORE_HAS_TLB_HW)
+	EXTERN const struct tlbe *tlb_lookup_paddr(int tlb_type, paddr_t paddr);
+#else
+	static const struct tlbe *tlb_lookup_paddr(int tlb_type, paddr_t paddr)
+	{
+		UNUSED(tlb_type);
+		UNUSED(paddr);
+
+		return (NULL);
+	}
+#endif
+
+#endif /* __NANVIX_HAL */
+
+	/**
+	 * @brief Encodes a virtual address into the TLB.
+	 *
+	 * @param tlb_type Target TLB (D-TLB or I-TLB).
+	 * @param vaddr    Target virtual address.
+	 * @param paddr    Target physical address.
+	 *
+	 * @returns Upon successful completion, zero is returned. Upon
+	 * failure, a negative error code is returned instead.
+	 */
+#if (!CORE_HAS_TLB_HW)
+	EXTERN int tlb_write(int tlb_type, vaddr_t vaddr, paddr_t paddr);
+#else
+	static inline int tlb_write(int tlb_type, vaddr_t vaddr, paddr_t paddr)
+	{
+		UNUSED(tlb_type);
+		UNUSED(vaddr);
+		UNUSED(paddr);
+
+		return (0);
+	}
+#endif
+
+	/**
+	 * @brief Invalidates a virtual address in the TLB.
+	 *
+	 * @param tlb_type Target TLB (D-TLB or I-TLB).
+	 * @param vaddr    Target virtual address.
+	 *
+	 * @returns Upon successful completion, zero is returned. Upon
+	 * failure, a negative error code is returned instead.
+	 */
+#if (!CORE_HAS_TLB_HW)
+	EXTERN int tlb_inval(int tlb_type, vaddr_t vaddr);
+#else
+	static inline int tlb_inval(int tlb_type, vaddr_t vaddr)
+	{
+		UNUSED(tlb_type);
+		UNUSED(vaddr);
+
+		return (0);
+	}
+#endif
+
+	/**
+	 * @brief Flushes changes in the TLB.
+	 *
+	 * @returns Upon successful completion, zero is returned. Upon
+	 * failure, a negative error code is returned instead.
+	 */
+	EXTERN int tlb_flush(void);
 
 /**@}*/
 
