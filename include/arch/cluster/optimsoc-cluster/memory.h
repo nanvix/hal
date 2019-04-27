@@ -186,6 +186,36 @@
 
 #endif /* NANVIX_HAL */
 
+	/**
+	 * @see or1k_cluster_tlb_lookup_vaddr
+	 */
+	EXTERN const struct tlbe *or1k_cluster_tlb_lookup_vaddr(int tlb_type, vaddr_t vaddr);
+
+	/**
+	 * @see or1k_cluster_tlb_lookup_paddr
+	 */
+	EXTERN const struct tlbe *or1k_cluster_tlb_lookup_paddr(int tlb_type, paddr_t paddr);
+
+	/**
+	 * @see or1k_cluster_tlb_write
+	 */
+	EXTERN int or1k_cluster_tlb_write(int tlb_type, vaddr_t vaddr, paddr_t paddr);
+
+	/**
+	 * @see or1k_cluster_tlb_inval
+	 */
+	EXTERN int or1k_cluster_tlb_inval(int tlb_type, vaddr_t vaddr);
+
+	/**
+	 * @see or1k_cluster_tlb_flush
+	 */
+	EXTERN int or1k_cluster_tlb_flush(void);
+
+	/**
+	 * @see or1k_cluster_tlb_init
+	 */
+	EXTERN void or1k_cluster_tlb_init(void);
+
 #endif /* !_ASM_FILE_ */
 
 /**@}*/
@@ -214,6 +244,132 @@
 	#define KBASE_VIRT   OPTIMSOC_CLUSTER_KERNEL_BASE_VIRT /**< @see OPTIMSOC_CLUSTER_KERNEL_BASE_VIRT */
 	#define KPOOL_VIRT   OPTIMSOC_CLUSTER_KPOOL_BASE_VIRT  /**< @see OPTIMSOC_CLUSTER_KPOOL_BASE_VIRT  */
 	/**@}*/
+
+#ifndef _ASM_FILE_
+
+	/**
+	 * @name Provided Interface
+	 */
+	/**@{*/
+	#define __tlb_lookup_vaddr_fn /**< tlbe_lookup_vaddr() */
+	#define __tlb_lookup_paddr_fn /**< tlbe_lookup()       */
+	#define __tlb_write_fn        /**< tlb_write()         */
+	#define __tlb_inval_fn        /**< tlb_inval()         */
+	#define __tlb_flush_fn        /**< tlb_flush()         */
+	/**@}*/
+
+/**
+ * @name TLB Aliases
+ */
+/**@{*/
+
+	/**
+	 * @see or1k_cluster_tlb_lookup_vaddr
+	 */
+	static inline const struct tlbe *optimsoc_cluster_tlb_lookup_vaddr(int tlb_type, vaddr_t vaddr)
+	{
+		return (or1k_cluster_tlb_lookup_vaddr(tlb_type, vaddr));
+	}
+
+	/**
+	 * @see or1k_cluster_tlb_lookup_paddr
+	 */
+	static inline const struct tlbe *optimsoc_cluster_tlb_lookup_paddr(int tlb_type, paddr_t paddr)
+	{
+		return (or1k_cluster_tlb_lookup_paddr(tlb_type, paddr));
+	}
+
+	/**
+	 * @see or1k_cluster_tlb_write
+	 */
+	static inline int optimsoc_cluster_tlb_write(int tlb_type, vaddr_t vaddr, paddr_t paddr)
+	{
+		return (or1k_cluster_tlb_write(tlb_type, vaddr, paddr));
+	}
+
+	/**
+	 * @see or1k_cluster_tlb_inval
+	 */
+	static inline int optimsoc_cluster_tlb_inval(int tlb_type, vaddr_t vaddr)
+	{
+		return (or1k_cluster_tlb_inval(tlb_type, vaddr));
+	}
+
+	/**
+	 * @see or1k_cluster_tlb_flush
+	 */
+	static inline int optimsoc_cluster_tlb_flush(void)
+	{
+		return (or1k_cluster_tlb_flush());
+	}
+
+	/**
+	 * @see or1k_cluster_tlb_init
+	 */
+	static inline void optimsoc_cluster_tlb_init(void)
+	{
+		or1k_cluster_tlb_init();
+	}
+
+/**@}*/
+
+	/**
+	 * @see or1k_cluster_tlb_lookup_vaddr().
+	 */
+	static inline const struct tlbe *tlb_lookup_vaddr(int tlb_type, vaddr_t vaddr)
+	{
+		/* Invalid TLB type. */
+		if ((tlb_type != OR1K_TLB_INSTRUCTION) && (tlb_type != OR1K_TLB_DATA))
+			return (NULL);
+
+		return (or1k_cluster_tlb_lookup_vaddr(tlb_type, vaddr));
+	}
+
+	/**
+	 * @see or1k_cluster_tlb_lookup_paddr().
+	 */
+	static inline const struct tlbe *tlb_lookup_paddr(int tlb_type, paddr_t paddr)
+	{
+		/* Invalid TLB type. */
+		if ((tlb_type != OR1K_TLB_INSTRUCTION) && (tlb_type != OR1K_TLB_DATA))
+			return (NULL);
+
+		return (or1k_cluster_tlb_lookup_paddr(tlb_type, paddr));
+	}
+
+	/**
+	 * @see or1k_cluster_tlb_write()
+	 */
+	static inline int tlb_write(int tlb_type, vaddr_t vaddr, paddr_t paddr)
+	{
+		/* Invalid TLB type. */
+		if ((tlb_type != OR1K_TLB_INSTRUCTION) && (tlb_type != OR1K_TLB_DATA))
+			return (-EINVAL);
+
+		return (or1k_cluster_tlb_write(tlb_type, vaddr, paddr));
+	}
+
+	/**
+	 * @see or1k_cluster_tlb_inval()
+	 */
+	static inline int tlb_inval(int tlb_type, vaddr_t vaddr)
+	{
+		/* Invalid TLB type. */
+		if ((tlb_type != OR1K_TLB_INSTRUCTION) && (tlb_type != OR1K_TLB_DATA))
+			return (-EINVAL);
+
+		return (or1k_cluster_tlb_inval(tlb_type, vaddr));
+	}
+
+	/**
+	 * @see or1k_cluster_tlb_flush().
+	 */
+	static inline int tlb_flush(void)
+	{
+		return (or1k_cluster_tlb_flush());
+	}
+
+#endif /* _ASM_FILE_ */
 
 /**@endcond*/
 
