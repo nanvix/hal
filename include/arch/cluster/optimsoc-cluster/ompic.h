@@ -24,17 +24,15 @@
 
 #ifndef CLUSTER_OPTIMSOC_CLUSTER_OMPIC_H_
 #define CLUSTER_OPTIMSOC_CLUSTER_OMPIC_H_
-	
+
+	/* Cluster Interface Implementation */
 	#include <arch/cluster/optimsoc-cluster/_optimsoc-cluster.h>
-	#include <arch/cluster/or1k-cluster/ompic.h>
-	#include <nanvix/const.h>
-	#include <stdint.h>
 
 #ifndef _ASM_FILE_
 
-/**
- * @cond optimsoc_cluster
- */
+	#include <arch/cluster/or1k-cluster/ompic.h>
+	#include <nanvix/const.h>
+	#include <stdint.h>
 
 	/**
 	 * @see or1k_cluster_ompic_init().

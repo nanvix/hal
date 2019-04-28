@@ -32,6 +32,9 @@
 	/* Cluster Interface Implementation */
 	#include <arch/cluster/or1k-cluster/_or1k-cluster.h>
 
+	/* Must come first. */
+	#define __NEED_CLUSTER_MEMMAP
+
 /**
  * @addtogroup or1k-cluster-mem Memory
  * @ingroup or1k-cluster
@@ -40,11 +43,8 @@
  */
 /**@{*/
 
-	/* Must come first. */
-	#define __NEED_CLUSTER_MEMMAP
-
-	#include <nanvix/const.h>
 	#include <arch/cluster/or1k-cluster/memmap.h>
+	#include <nanvix/const.h>
 
 	/**
 	 * @name Physical Memory Layout

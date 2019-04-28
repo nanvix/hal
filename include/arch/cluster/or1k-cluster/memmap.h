@@ -57,19 +57,19 @@
 	/**@}*/
 
 	/**
-	 * @brief DRAM brief (in bytes).
+	 * @brief DRAM size (in bytes).
 	 */
 	#define OR1K_CLUSTER_DRAM_SIZE \
 		(OR1K_CLUSTER_DRAM_END_PHYS - OR1K_CLUSTER_DRAM_BASE_PHYS)
 
 	/**
-	 * @brief OMPIC brief (in bytes).
+	 * @brief OMPIC size (in bytes).
 	 */
 	#define OR1K_CLUSTER_OMPIC_MEM_SIZE \
 		(OR1K_CLUSTER_OMPIC_END_PHYS - OR1K_CLUSTER_OMPIC_BASE_PHYS)
 
 	/**
-	 * @brief UART brief (in bytes).
+	 * @brief UART size (in bytes).
 	 */
 	#define OR1K_CLUSTER_UART_MEM_SIZE \
 		(OR1K_CLUSTER_UART_END_PHYS - OR1K_CLUSTER_UART_BASE_PHYS)

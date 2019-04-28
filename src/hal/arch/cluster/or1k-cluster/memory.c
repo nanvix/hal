@@ -86,7 +86,7 @@ PRIVATE struct memory_region or1k_cluster_mem_layout[OR1K_CLUSTER_MEM_REGIONS] =
 	{ OR1K_CLUSTER_KERNEL_BASE_PHYS, OR1K_CLUSTER_KERNEL_BASE_VIRT,
 	  OR1K_CLUSTER_KERNEL_END_PHYS,  OR1K_CLUSTER_KERNEL_END_VIRT,
 	  OR1K_CLUSTER_KMEM_SIZE, true, true,  "kernel" },
-	
+
 	{ OR1K_CLUSTER_KPOOL_BASE_PHYS, OR1K_CLUSTER_KPOOL_BASE_VIRT,
 	  OR1K_CLUSTER_KPOOL_END_PHYS,  OR1K_CLUSTER_KPOOL_END_VIRT,
 	  OR1K_CLUSTER_KPOOL_SIZE, true, false, "kpool" },
@@ -408,11 +408,10 @@ PUBLIC int or1k_cluster_tlb_flush(void)
  */
 PUBLIC void or1k_cluster_tlb_init(void)
 {
-	// struct tlbe_value tlbev; /* TLB Entry value.                     */
-	unsigned dtlbtr;         /* Data TLB Translate Register.         */
-	unsigned itlbtr;         /* Instruction TLB Translate Register.  */
-	unsigned xtlbmr;         /* Data/Instruction TLB Match Register. */
-	int coreid;              /* Core ID.                             */
+	unsigned dtlbtr; /* Data TLB Translate Register.         */
+	unsigned itlbtr; /* Instruction TLB Translate Register.  */
+	unsigned xtlbmr; /* Data/Instruction TLB Match Register. */
+	int coreid;      /* Core ID.                             */
 
 	dtlbtr = (OR1K_SPR_DTLBTR_CC | OR1K_SPR_DTLBTR_WBC | OR1K_SPR_DTLBTR_SRE
 			| OR1K_SPR_DTLBTR_SWE);
@@ -608,7 +607,7 @@ PRIVATE void or1k_cluster_mem_check_align(void)
 		if (or1k_cluster_mem_layout[i].vbase & (OR1K_PGTAB_SIZE - 1))
 			kpanic("%s base address misaligned", or1k_cluster_mem_layout[i].desc);
 		if (or1k_cluster_mem_layout[i].vend  & (OR1K_PGTAB_SIZE - 1))
-			kpanic("%s end address misaligned", or1k_cluster_mem_layout[i].desc);	
+			kpanic("%s end address misaligned", or1k_cluster_mem_layout[i].desc);
 	}
 
 	if (OR1K_CLUSTER_USER_BASE_VIRT & (OR1K_PGTAB_SIZE - 1))

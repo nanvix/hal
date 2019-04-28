@@ -25,7 +25,9 @@
 #ifndef CLUSTER_OR1K_CLUSTER_OMPIC_H_
 #define CLUSTER_OR1K_CLUSTER_OMPIC_H_
 
+	/* Cluster Interface Implementation */
 	#include <arch/cluster/or1k-cluster/_or1k-cluster.h>
+
 	#include <nanvix/const.h>
 	#include <stdint.h>
 

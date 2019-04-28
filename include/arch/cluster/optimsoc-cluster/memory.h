@@ -76,10 +76,10 @@
 	#define OPTIMSOC_CLUSTER_KERNEL_END_VIRT  OPTIMSOC_CLUSTER_KERNEL_END_PHYS  /**< Kernel End           */
 	#define OPTIMSOC_CLUSTER_KPOOL_BASE_VIRT  OPTIMSOC_CLUSTER_KPOOL_BASE_PHYS  /**< Kernel Page Pool     */
 	#define OPTIMSOC_CLUSTER_KPOOL_END_VIRT   OPTIMSOC_CLUSTER_KPOOL_END_PHYS   /**< Kernel Pool End      */
-	#define OPTIMSOC_CLUSTER_USER_BASE_VIRT   0xa0000000                    /**< User Base            */
-	#define OPTIMSOC_CLUSTER_USER_END_VIRT    0xc0000000                    /**< User End             */
-	#define OPTIMSOC_CLUSTER_USTACK_BASE_VIRT 0xc0000000                    /**< User Stack Base      */
-	#define OPTIMSOC_CLUSTER_USTACK_END_VIRT  0xb0000000                    /**< User Stack End       */
+	#define OPTIMSOC_CLUSTER_USER_BASE_VIRT   0xa0000000                        /**< User Base            */
+	#define OPTIMSOC_CLUSTER_USER_END_VIRT    0xc0000000                        /**< User End             */
+	#define OPTIMSOC_CLUSTER_USTACK_BASE_VIRT 0xc0000000                        /**< User Stack Base      */
+	#define OPTIMSOC_CLUSTER_USTACK_END_VIRT  0xb0000000                        /**< User Stack End       */
 	/**@}*/
 
 	/**
