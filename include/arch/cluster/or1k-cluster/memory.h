@@ -32,6 +32,9 @@
 	/* Cluster Interface Implementation */
 	#include <arch/cluster/or1k-cluster/_or1k-cluster.h>
 
+	/* Must come first. */
+	#define __NEED_CLUSTER_MEMMAP
+
 /**
  * @addtogroup or1k-cluster-mem Memory
  * @ingroup or1k-cluster
@@ -40,11 +43,8 @@
  */
 /**@{*/
 
-	/* Must come first. */
-	#define __NEED_CLUSTER_MEMMAP
-
-	#include <nanvix/const.h>
 	#include <arch/cluster/or1k-cluster/memmap.h>
+	#include <nanvix/const.h>
 
 	/**
 	 * @name Physical Memory Layout
@@ -141,7 +141,7 @@
 	 * that matches the virtual address @p vaddr is returned. If no
 	 * entry that meets this criteria is found, @p NULL is returned.
 	 */
-	EXTERN const struct tlbe *or1k_tlb_lookup_vaddr(int tlb_type, vaddr_t vaddr);
+	EXTERN const struct tlbe *or1k_cluster_tlb_lookup_vaddr(int tlb_type, vaddr_t vaddr);
 
 	/**
 	 * @brief Lookups a TLB entry by physical address.
@@ -153,7 +153,7 @@
 	 * that matches the physical address @p paddr is returned. If no
 	 * entry that meets this criteria is found, @p NULL is returned.
 	 */
-	EXTERN const struct tlbe *or1k_tlb_lookup_paddr(int tlb_type, paddr_t paddr);
+	EXTERN const struct tlbe *or1k_cluster_tlb_lookup_paddr(int tlb_type, paddr_t paddr);
 
 	/**
 	 * @brief Writes a TLB entry.
@@ -162,7 +162,7 @@
 	 * @param vaddr    Target virtual address.
 	 * @param paddr    Target physical address.
 	 */
-	EXTERN int or1k_tlb_write(int tlb_type, vaddr_t vaddr, paddr_t paddr);
+	EXTERN int or1k_cluster_tlb_write(int tlb_type, vaddr_t vaddr, paddr_t paddr);
 
 	/**
 	 * @brief Invalidates a TLB entry.
@@ -170,17 +170,17 @@
 	 * @param tlb_type Target TLB.
 	 * @param vaddr    Target virtual address.
 	 */
-	EXTERN int or1k_tlb_inval(int tlb_type, vaddr_t vaddr);
+	EXTERN int or1k_cluster_tlb_inval(int tlb_type, vaddr_t vaddr);
 
 	/**
 	 * @brief Flushes the TLB.
 	 */
-	EXTERN int or1k_tlb_flush(void);
+	EXTERN int or1k_cluster_tlb_flush(void);
 
 	/**
 	 * @brief Initializes the TLB.
 	 */
-	EXTERN void or1k_tlb_init(void);
+	EXTERN void or1k_cluster_tlb_init(void);
 
 #endif /* _ASM_FILE_ */
 
@@ -212,7 +212,6 @@
 	#define _UART_ADDR   OR1K_CLUSTER_UART_BASE_PHYS   /**< @see OR1K_CLUSTER_UART_BASE_PHYS   */
 	/**@}*/
 
-
 #ifndef _ASM_FILE_
 
 	/**
@@ -227,7 +226,7 @@
 	/**@}*/
 
 	/**
-	 * @see or1k_tlb_lookup_vaddr().
+	 * @see or1k_cluster_tlb_lookup_vaddr().
 	 */
 	static inline const struct tlbe *tlb_lookup_vaddr(int tlb_type, vaddr_t vaddr)
 	{
@@ -235,11 +234,11 @@
 		if ((tlb_type != OR1K_TLB_INSTRUCTION) && (tlb_type != OR1K_TLB_DATA))
 			return (NULL);
 
-		return (or1k_tlb_lookup_vaddr(tlb_type, vaddr));
+		return (or1k_cluster_tlb_lookup_vaddr(tlb_type, vaddr));
 	}
 
 	/**
-	 * @see or1k_tlb_lookup_paddr().
+	 * @see or1k_cluster_tlb_lookup_paddr().
 	 */
 	static inline const struct tlbe *tlb_lookup_paddr(int tlb_type, paddr_t paddr)
 	{
@@ -247,11 +246,11 @@
 		if ((tlb_type != OR1K_TLB_INSTRUCTION) && (tlb_type != OR1K_TLB_DATA))
 			return (NULL);
 
-		return (or1k_tlb_lookup_paddr(tlb_type, paddr));
+		return (or1k_cluster_tlb_lookup_paddr(tlb_type, paddr));
 	}
 
 	/**
-	 * @see or1k_tlb_write()
+	 * @see or1k_cluster_tlb_write()
 	 */
 	static inline int tlb_write(int tlb_type, vaddr_t vaddr, paddr_t paddr)
 	{
@@ -259,11 +258,11 @@
 		if ((tlb_type != OR1K_TLB_INSTRUCTION) && (tlb_type != OR1K_TLB_DATA))
 			return (-EINVAL);
 
-		return (or1k_tlb_write(tlb_type, vaddr, paddr));
+		return (or1k_cluster_tlb_write(tlb_type, vaddr, paddr));
 	}
 
 	/**
-	 * @see or1k_tlb_inval()
+	 * @see or1k_cluster_tlb_inval()
 	 */
 	static inline int tlb_inval(int tlb_type, vaddr_t vaddr)
 	{
@@ -271,15 +270,15 @@
 		if ((tlb_type != OR1K_TLB_INSTRUCTION) && (tlb_type != OR1K_TLB_DATA))
 			return (-EINVAL);
 
-		return (or1k_tlb_inval(tlb_type, vaddr));
+		return (or1k_cluster_tlb_inval(tlb_type, vaddr));
 	}
 
 	/**
-	 * @see or1k_tlb_flush().
+	 * @see or1k_cluster_tlb_flush().
 	 */
 	static inline int tlb_flush(void)
 	{
-		return (or1k_tlb_flush());
+		return (or1k_cluster_tlb_flush());
 	}
 
 #endif /* _ASM_FILE_ */

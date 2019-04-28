@@ -26,6 +26,7 @@
 #define __NEED_HAL_CLUSTER
 
 #include <nanvix/hal/cluster.h>
+#include <nanvix/hal/target/stdout.h>
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
 
@@ -36,8 +37,15 @@ EXTERN NORETURN void kmain(int, const char *[]);
  * @brief Cores table.
  */
 PUBLIC struct coreinfo  ALIGN(OR1K_CACHE_LINE_SIZE) cores[OR1K_CLUSTER_NUM_CORES] = {
+#if (defined(__or1k_cluster__))
 	{ true,  CORE_RUNNING,   0, NULL, OR1K_SPINLOCK_LOCKED }, /* Master Core   */
 	{ false, CORE_RESETTING, 0, NULL, OR1K_SPINLOCK_LOCKED }, /* Slave Core 1  */
+#elif (defined(__optimsoc_cluster__))
+	{ true,  CORE_RUNNING,   0, NULL, OR1K_SPINLOCK_LOCKED }, /* Master Core   */
+	{ false, CORE_RESETTING, 0, NULL, OR1K_SPINLOCK_LOCKED }, /* Slave Core 1  */
+	{ false, CORE_RESETTING, 0, NULL, OR1K_SPINLOCK_LOCKED }, /* Slave Core 2  */
+	{ false, CORE_RESETTING, 0, NULL, OR1K_SPINLOCK_LOCKED }, /* Slave Core 3  */
+#endif
 };
 
 /**
@@ -132,7 +140,7 @@ PUBLIC NORETURN void or1k_cluster_slave_setup(void)
 	or1k_fence_wait();
 
 	/* Initial TLB. */
-	or1k_tlb_init();
+	or1k_cluster_tlb_init();
 
 	/* Enable MMU. */
 	or1k_enable_mmu();
@@ -161,6 +169,12 @@ PUBLIC NORETURN void or1k_cluster_slave_setup(void)
  */
 PUBLIC void or1k_cluster_setup(void)
 {
+	/*
+	 * Early initialization of
+	 * stdout to help us debugging.
+	 */
+	stdout_init();
+
 	kprintf("[hal] booting up cluster...");
 
 	/* Configure Memory Layout. */

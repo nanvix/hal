@@ -22,8 +22,14 @@
  * SOFTWARE.
  */
 
-#include <arch/cluster/or1k-cluster/memory.h>
-#include <arch/cluster/or1k-cluster/cores.h>
+#if (defined(__or1k_cluster__))
+	#include <arch/cluster/or1k-cluster/memory.h>
+	#include <arch/cluster/or1k-cluster/cores.h>
+#elif (defined(__optimsoc_cluster__))
+	#include <arch/cluster/optimsoc-cluster/memory.h>
+	#include <arch/cluster/optimsoc-cluster/cores.h>
+#endif
+
 #include <nanvix/hal/core/exception.h>
 #include <nanvix/klib.h>
 #include <nanvix/const.h>
@@ -40,7 +46,19 @@
 /**
  * @brief Number of memory regions.
  */
-#define OR1K_CLUSTER_MEM_REGIONS 4
+#if (defined(__or1k_cluster__))
+	#define OR1K_CLUSTER_MEM_REGIONS 4
+#elif (defined(__optimsoc_cluster__))
+	#define OR1K_CLUSTER_MEM_REGIONS 3
+#endif
+
+/**
+ * @brief Page and page table indexes boundaries.
+ */
+#define MMREGION_PGTABLE_ALIGN_START 0                        /**< mmregion start pgtable aligned. */
+#define MMREGION_PGTABLE_ALIGN_END   2                        /**< mmregion end pgtable aligned.   */
+#define MMREGION_PG_ALIGN_START      2                        /**< mmregion start page aligned.    */
+#define MMREGION_PG_ALIGN_END        OR1K_CLUSTER_MEM_REGIONS /**< mmregion end page aligned.      */
 
 /**
  * @brief Memory region.
@@ -49,19 +67,39 @@ struct memory_region
 {
 	paddr_t pbase;    /**< Base physical address. */
 	vaddr_t vbase;    /**< Base virtual address.  */
+	paddr_t pend;     /**< End physical address.  */
+	vaddr_t vend;     /**< End virtual address.   */
 	size_t size;      /**< Size.                  */
 	bool writable;    /**< Writable?              */
 	bool  executable; /**< Executable?            */
+	const char *desc; /**< Description.           */
 };
 
 /**
  * @brief Memory layout.
+ *
+ * @note KERNEL_BASE and KPOOL_BASE *must* be the first two positions,
+ * since they are aligned at page table boundaries. The remaining
+ * positions left are intended for other devices.
  */
 PRIVATE struct memory_region or1k_cluster_mem_layout[OR1K_CLUSTER_MEM_REGIONS] = {
-	{ OR1K_CLUSTER_KERNEL_BASE_PHYS, OR1K_CLUSTER_KERNEL_BASE_VIRT, OR1K_CLUSTER_KMEM_SIZE,      true, true  },
-	{ OR1K_CLUSTER_KPOOL_BASE_PHYS,  OR1K_CLUSTER_KPOOL_BASE_VIRT,  OR1K_CLUSTER_KPOOL_SIZE,     true, false },
-	{ OR1K_CLUSTER_UART_BASE_PHYS,   OR1K_CLUSTER_UART_BASE_VIRT,   OR1K_CLUSTER_UART_MEM_SIZE,  true, false },
-	{ OR1K_CLUSTER_OMPIC_BASE_PHYS,  OR1K_CLUSTER_OMPIC_BASE_VIRT,  OR1K_CLUSTER_OMPIC_MEM_SIZE, true, false },
+	{ OR1K_CLUSTER_KERNEL_BASE_PHYS, OR1K_CLUSTER_KERNEL_BASE_VIRT,
+	  OR1K_CLUSTER_KERNEL_END_PHYS,  OR1K_CLUSTER_KERNEL_END_VIRT,
+	  OR1K_CLUSTER_KMEM_SIZE, true, true,  "kernel" },
+
+	{ OR1K_CLUSTER_KPOOL_BASE_PHYS, OR1K_CLUSTER_KPOOL_BASE_VIRT,
+	  OR1K_CLUSTER_KPOOL_END_PHYS,  OR1K_CLUSTER_KPOOL_END_VIRT,
+	  OR1K_CLUSTER_KPOOL_SIZE, true, false, "kpool" },
+
+	{ OR1K_CLUSTER_OMPIC_BASE_PHYS, OR1K_CLUSTER_OMPIC_BASE_VIRT,
+	  OR1K_CLUSTER_OMPIC_END_PHYS,  OR1K_CLUSTER_OMPIC_END_VIRT,
+	  OR1K_CLUSTER_OMPIC_MEM_SIZE,  true, false, "ompic" },
+
+#if (defined(__or1k_cluster__))
+	{ OR1K_CLUSTER_UART_BASE_PHYS, OR1K_CLUSTER_UART_BASE_VIRT,
+	  OR1K_CLUSTER_UART_END_PHYS,  OR1K_CLUSTER_UART_END_VIRT,
+	  OR1K_CLUSTER_UART_MEM_SIZE,  true, false, "uart" },
+#endif
 };
 
 /**
@@ -110,11 +148,11 @@ PRIVATE struct
 } or1k_tlb[OR1K_CLUSTER_NUM_CORES];
 
 /*============================================================================*
- * or1k_tlb_check_inst()                                                      *
+ * or1k_cluster_tlb_check_inst()                                              *
  *============================================================================*/
 
 /**
- * The or1k_tlb_check_inst() function checks by a given virtual address
+ * The or1k_cluster_tlb_check_inst() function checks by a given virtual address
  * @p vaddr if belongs to code or data.
  *
  * @param vaddr Virtual address to be checked.
@@ -124,7 +162,7 @@ PRIVATE struct
  *
  * @author Davidson Francis
  */
-PRIVATE int or1k_tlb_check_inst(vaddr_t vaddr)
+PRIVATE int or1k_cluster_tlb_check_inst(vaddr_t vaddr)
 {
 	volatile vaddr_t kcode; /* Kernel text start address. */
 	volatile vaddr_t kdata; /* Kernel data start address. */
@@ -150,17 +188,17 @@ PRIVATE int or1k_tlb_check_inst(vaddr_t vaddr)
 }
 
 /*============================================================================*
- * or1k_tlb_lookup_vaddr()                                                    *
+ * or1k_cluster_tlb_lookup_vaddr()                                            *
  *============================================================================*/
 
 /**
- * The or1k_tlb_lookup_vaddr() function searches the architectural TLB
+ * The or1k_cluster_tlb_lookup_vaddr() function searches the architectural TLB
  * for an entry that matches the virtual address @p vaddr.
  * type should be used.
  *
  * @author Davidson Francis
  */
-PUBLIC const struct tlbe *or1k_tlb_lookup_vaddr(int tlb_type, vaddr_t vaddr)
+PUBLIC const struct tlbe *or1k_cluster_tlb_lookup_vaddr(int tlb_type, vaddr_t vaddr)
 {
 	const struct tlbe *tlbe; /* TLB Entry Pointer. */
 	vaddr_t addr;            /* Aligned address.   */
@@ -199,7 +237,7 @@ PUBLIC const struct tlbe *or1k_tlb_lookup_vaddr(int tlb_type, vaddr_t vaddr)
 }
 
 /*============================================================================*
- * or1k_tlb_lookup_paddr()                                                    *
+ * or1k_cluster_tlb_lookup_paddr()                                            *
  *============================================================================*/
 
 /**
@@ -212,7 +250,7 @@ PUBLIC const struct tlbe *or1k_tlb_lookup_vaddr(int tlb_type, vaddr_t vaddr)
  *
  * @author Davidson Francis
  */
-PUBLIC const struct tlbe *or1k_tlb_lookup_paddr(int tlb_type, paddr_t paddr)
+PUBLIC const struct tlbe *or1k_cluster_tlb_lookup_paddr(int tlb_type, paddr_t paddr)
 {
 	const struct tlbe *tlbe; /* TLB Entry Pointer. */
 	vaddr_t addr;            /* Aligned address.   */
@@ -251,11 +289,11 @@ PUBLIC const struct tlbe *or1k_tlb_lookup_paddr(int tlb_type, paddr_t paddr)
 }
 
 /*============================================================================*
- * or1k_tlb_write()                                                           *
+ * or1k_cluster_tlb_write()                                                   *
  *============================================================================*/
 
 /**
- * The or1k_tlb_write() function writes an entry into the architectural
+ * The or1k_cluster_tlb_write() function writes an entry into the architectural
  * TLB. If the new entry conflicts to an old one, the old one is
  * overwritten.
  *
@@ -266,7 +304,7 @@ PUBLIC const struct tlbe *or1k_tlb_lookup_paddr(int tlb_type, paddr_t paddr)
  *
  * @author Davidson Francis
  */
-PUBLIC int or1k_tlb_write(int tlb_type, vaddr_t vaddr, paddr_t paddr)
+PUBLIC int or1k_cluster_tlb_write(int tlb_type, vaddr_t vaddr, paddr_t paddr)
 {
 	volatile vaddr_t kcode; /* Kernel start code. */
 	struct tlbe * tlbe;     /* TLB Entry.         */
@@ -277,7 +315,7 @@ PUBLIC int or1k_tlb_write(int tlb_type, vaddr_t vaddr, paddr_t paddr)
 
 	idx = (vaddr >> PAGE_SHIFT) & (OR1K_TLB_LENGTH - 1);
 	kcode = (vaddr_t)&KSTART_CODE;
-	inst = or1k_tlb_check_inst(vaddr);
+	inst = or1k_cluster_tlb_check_inst(vaddr);
 	coreid = or1k_core_get_id();
 	user = 1;
 
@@ -302,16 +340,16 @@ PUBLIC int or1k_tlb_write(int tlb_type, vaddr_t vaddr, paddr_t paddr)
 }
 
 /*============================================================================*
- * or1k_tlb_inval()                                                           *
+ * or1k_cluster_tlb_inval()                                                   *
  *============================================================================*/
 
 /**
- * The or1k_tlb_inval() function invalidates the TLB entry that
+ * The or1k_cluster_tlb_inval() function invalidates the TLB entry that
  * encodes the virtual address @p vaddr.
  *
  * @author Davidson Francis
  */
-PUBLIC int or1k_tlb_inval(int tlb_type, vaddr_t vaddr)
+PUBLIC int or1k_cluster_tlb_inval(int tlb_type, vaddr_t vaddr)
 {
 	int idx;     /* TLB Index.       */
 	int coreid;  /* Core ID.         */
@@ -336,14 +374,14 @@ PUBLIC int or1k_tlb_inval(int tlb_type, vaddr_t vaddr)
 }
 
 /*============================================================================*
- * or1k_tlb_flush()                                                           *
+ * or1k_cluster_tlb_flush()                                                   *
  *============================================================================*/
 
 /**
- * The or1k_tlb_flush() function flushes the changes made to the TLB
+ * The or1k_cluster_tlb_flush() function flushes the changes made to the TLB
  * of the underlying or1k core.
  */
-PUBLIC int or1k_tlb_flush(void)
+PUBLIC int or1k_cluster_tlb_flush(void)
 {
 	int coreid;       /* Core ID.   */
 
@@ -362,19 +400,18 @@ PUBLIC int or1k_tlb_flush(void)
 }
 
 /*============================================================================*
- * or1k_tlb_init()                                                            *
+ * or1k_cluster_tlb_init()                                                    *
  *============================================================================*/
 
 /**
  * The or1k_tlb_init() initializes the architectural TLB.
  */
-PUBLIC void or1k_tlb_init(void)
+PUBLIC void or1k_cluster_tlb_init(void)
 {
-	// struct tlbe_value tlbev; /* TLB Entry value.                     */
-	unsigned dtlbtr;         /* Data TLB Translate Register.         */
-	unsigned itlbtr;         /* Instruction TLB Translate Register.  */
-	unsigned xtlbmr;         /* Data/Instruction TLB Match Register. */
-	int coreid;              /* Core ID.                             */
+	unsigned dtlbtr; /* Data TLB Translate Register.         */
+	unsigned itlbtr; /* Instruction TLB Translate Register.  */
+	unsigned xtlbmr; /* Data/Instruction TLB Match Register. */
+	int coreid;      /* Core ID.                             */
 
 	dtlbtr = (OR1K_SPR_DTLBTR_CC | OR1K_SPR_DTLBTR_WBC | OR1K_SPR_DTLBTR_SRE
 			| OR1K_SPR_DTLBTR_SWE);
@@ -411,7 +448,7 @@ PUBLIC void or1k_tlb_init(void)
 /**
  * @brief Handles a TLB fault.
  *
- * The or1k_do_tlb_fault() function handles a early TLB faults. It
+ * The or1k_cluster_do_tlb_fault() function handles a early TLB faults. It
  * checks the current page directory for a virtual-to-physical address
  * mapping, and if it finds one, it writes this mapping to the TLB. If
  * the faulting address is not currently mapped in the current page
@@ -423,7 +460,7 @@ PUBLIC void or1k_tlb_init(void)
  * @author Davidson Francis
  * @author Pedro Henrique Penna
  */
-PRIVATE void or1k_do_tlb_fault(
+PRIVATE void or1k_cluster_do_tlb_fault(
 	const struct exception *excp,
 	const struct context *ctx
 )
@@ -458,9 +495,11 @@ PRIVATE void or1k_do_tlb_fault(
 
 	/* Writing mapping to TLB. */
 	paddr = pte_frame_get(pte) << OR1K_PAGE_SHIFT;
+
 	tlb = (excp->num == OR1K_EXCP_ITLB_FAULT) ?
 		OR1K_TLB_INSTRUCTION : OR1K_TLB_DATA;
-	if (or1k_tlb_write(tlb, vaddr, paddr) < 0)
+
+	if (or1k_cluster_tlb_write(tlb, vaddr, paddr) < 0)
 		kpanic("[hal] cannot write to tlb");
 }
 
@@ -489,11 +528,11 @@ PUBLIC void or1k_enable_mmu(void)
 PUBLIC void or1k_mmu_setup(void)
 {
 	/* TLB Handler. */
-	exception_register(EXCEPTION_DTLB_FAULT, or1k_do_tlb_fault);
-	exception_register(EXCEPTION_ITLB_FAULT, or1k_do_tlb_fault);
+	exception_register(EXCEPTION_DTLB_FAULT, or1k_cluster_do_tlb_fault);
+	exception_register(EXCEPTION_ITLB_FAULT, or1k_cluster_do_tlb_fault);
 
 	/* Initial TLB. */
-	or1k_tlb_init();
+	or1k_cluster_tlb_init();
 
 	/* Enable MMU. */
 	or1k_enable_mmu();
@@ -513,26 +552,23 @@ PUBLIC void or1k_mmu_setup(void)
  */
 PRIVATE void or1k_cluster_mem_info(void)
 {
-	kprintf("[hal] kernel_base=%x kernel_end=%x",
-		OR1K_CLUSTER_KERNEL_BASE_VIRT,
-		OR1K_CLUSTER_KERNEL_END_VIRT
-	);
-	kprintf("[hal] kpool_base=%x  kpool_end=%x",
-		OR1K_CLUSTER_KPOOL_BASE_VIRT,
-		OR1K_CLUSTER_KPOOL_END_VIRT
-	);
+	int i; /* Loop index. */
+
+	for (i = 0; i < OR1K_CLUSTER_MEM_REGIONS; i++)
+	{
+		kprintf("[hal] %s_base=%x %s_end=%x",
+			or1k_cluster_mem_layout[i].desc,
+			or1k_cluster_mem_layout[i].vbase,
+			or1k_cluster_mem_layout[i].desc,
+			or1k_cluster_mem_layout[i].vend
+		);
+	}
+
 	kprintf("[hal] user_base=%x   user_end=%x",
 		OR1K_CLUSTER_USER_BASE_VIRT,
 		OR1K_CLUSTER_USER_END_VIRT
 	);
-	kprintf("[hal] uart_base=%x   uart_end=%x",
-		OR1K_CLUSTER_UART_BASE_VIRT,
-		OR1K_CLUSTER_UART_END_VIRT
-	);
-	kprintf("[hal] ompic_base=%x  ompic_end=%x",
-		OR1K_CLUSTER_OMPIC_BASE_VIRT,
-		OR1K_CLUSTER_OMPIC_END_VIRT
-	);
+
 	kprintf("[hal] memsize=%d MB kmem=%d KB kpool=%d KB umem=%d KB",
 		OR1K_CLUSTER_MEM_SIZE/MB,
 		OR1K_CLUSTER_KMEM_SIZE/KB,
@@ -554,25 +590,26 @@ PRIVATE void or1k_cluster_mem_info(void)
  */
 PRIVATE void or1k_cluster_mem_check_align(void)
 {
+	int i; /* Loop index. */
+
 	/* These should be aligned at page boundaries. */
-	if (OR1K_CLUSTER_UART_BASE_VIRT & (OR1K_PAGE_SIZE - 1))
-		kpanic("uart base address misaligned");
-	if (OR1K_CLUSTER_UART_END_VIRT & (OR1K_PAGE_SIZE - 1))
-		kpanic("uart end address misaligned");
-	if (OR1K_CLUSTER_OMPIC_BASE_VIRT & (OR1K_PAGE_SIZE - 1))
-		kpanic("ompic base address misaligned");
-	if (OR1K_CLUSTER_OMPIC_END_VIRT & (OR1K_PAGE_SIZE - 1))
-		kpanic("ompic end address misaligned");
+	for (i = MMREGION_PG_ALIGN_START; i < MMREGION_PG_ALIGN_END; i++)
+	{
+		if (or1k_cluster_mem_layout[i].vbase & (OR1K_PAGE_SIZE - 1))
+			kpanic("%s base address misaligned", or1k_cluster_mem_layout[i].desc);
+		if (or1k_cluster_mem_layout[i].vend  & (OR1K_PAGE_SIZE - 1))
+			kpanic("%s end address misaligned", or1k_cluster_mem_layout[i].desc);
+	}
 
 	/* These should be aligned at page table boundaries. */
-	if (OR1K_CLUSTER_KERNEL_BASE_VIRT & (OR1K_PGTAB_SIZE - 1))
-		kpanic("kernel base address misaligned");
-	if (OR1K_CLUSTER_KERNEL_END_VIRT & (OR1K_PGTAB_SIZE - 1))
-		kpanic("kernel end address misaligned");
-	if (OR1K_CLUSTER_KPOOL_BASE_VIRT & (OR1K_PGTAB_SIZE - 1))
-		kpanic("kernel pool base address misaligned");
-	if (OR1K_CLUSTER_KPOOL_END_VIRT & (OR1K_PGTAB_SIZE - 1))
-		kpanic("kernel pool end address misaligned");
+	for (i = MMREGION_PGTABLE_ALIGN_START; i < MMREGION_PGTABLE_ALIGN_END; i++)
+	{
+		if (or1k_cluster_mem_layout[i].vbase & (OR1K_PGTAB_SIZE - 1))
+			kpanic("%s base address misaligned", or1k_cluster_mem_layout[i].desc);
+		if (or1k_cluster_mem_layout[i].vend  & (OR1K_PGTAB_SIZE - 1))
+			kpanic("%s end address misaligned", or1k_cluster_mem_layout[i].desc);
+	}
+
 	if (OR1K_CLUSTER_USER_BASE_VIRT & (OR1K_PGTAB_SIZE - 1))
 		kpanic("user base address misaligned");
 	if (OR1K_CLUSTER_USER_END_VIRT & (OR1K_PGTAB_SIZE - 1))
@@ -592,26 +629,27 @@ PRIVATE void or1k_cluster_mem_check_align(void)
  */
 PRIVATE void or1k_cluster_mem_check_layout(void)
 {
+	int i; /* Loop index. */
+
 	/*
 	 * These should be identity mapped, becasuse the underlying
 	 * hypervisor runs with virtual memory disabled.
 	 */
-	if (OR1K_CLUSTER_UART_BASE_VIRT != OR1K_CLUSTER_UART_BASE_PHYS)
-		kpanic("uart base address is not identity mapped");
-	if (OR1K_CLUSTER_UART_END_VIRT != OR1K_CLUSTER_UART_END_PHYS)
-		kpanic("uart end address is not identity mapped");
-	if (OR1K_CLUSTER_OMPIC_BASE_VIRT != OR1K_CLUSTER_OMPIC_BASE_PHYS)
-		kpanic("ompic base address is not identity mapped");
-	if (OR1K_CLUSTER_OMPIC_END_VIRT != OR1K_CLUSTER_OMPIC_END_PHYS)
-		kpanic("ompic end address is not identity mapped");
-	if (OR1K_CLUSTER_KERNEL_BASE_VIRT != OR1K_CLUSTER_KERNEL_BASE_PHYS)
-		kpanic("kernel base address is not identity mapped");
-	if (OR1K_CLUSTER_KERNEL_END_VIRT != OR1K_CLUSTER_KERNEL_END_PHYS)
-		kpanic("kernel end address is not identity mapped");
-	if (OR1K_CLUSTER_KPOOL_BASE_VIRT != OR1K_CLUSTER_KPOOL_BASE_PHYS)
-		kpanic("kernel pool base address is not identity mapped");
-	if (OR1K_CLUSTER_KPOOL_END_VIRT != OR1K_CLUSTER_KPOOL_END_PHYS)
-		kpanic("kernel pool end address is not identity mapped");
+	for (i = 0; i < OR1K_CLUSTER_MEM_REGIONS; i++)
+	{
+		if (or1k_cluster_mem_layout[i].vbase != or1k_cluster_mem_layout[i].pbase)
+		{
+			kpanic("%s base address is not identity mapped",
+				or1k_cluster_mem_layout[i].desc
+			);
+		}
+		if (or1k_cluster_mem_layout[i].vend != or1k_cluster_mem_layout[i].pend)
+		{
+			kpanic("%s end address is not identity mapped",
+				or1k_cluster_mem_layout[i].desc
+			);
+		}
+	}
 }
 
 /*============================================================================*

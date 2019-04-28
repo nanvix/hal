@@ -22,8 +22,13 @@
  * SOFTWARE.
  */
 
+#if (defined(__or1k_cluster__))
+	#include <arch/cluster/or1k-cluster/memory.h>
+#elif (defined(__optimsoc_cluster__))
+	#include <arch/cluster/optimsoc-cluster/memory.h>
+#endif
+
 #include <nanvix/hal/core/interrupt.h>
-#include <arch/cluster/or1k-cluster/memory.h>
 #include <nanvix/const.h>
 #include <stdint.h>
 

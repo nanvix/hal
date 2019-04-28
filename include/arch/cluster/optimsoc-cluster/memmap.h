@@ -51,16 +51,30 @@
 	/**@}*/
 
 	/**
-	 * @brief DRAM brief (in bytes).
+	 * @name Physical Memory Layout Aliases
+	 */
+	/**@{*/
+	#define OR1K_CLUSTER_OMPIC_BASE_PHYS OPTIMSOC_CLUSTER_OMPIC_BASE_PHYS /**< OMPIC Base */
+	#define OR1K_CLUSTER_OMPIC_END_PHYS  OPTIMSOC_CLUSTER_OMPIC_END_PHYS  /**< OMPIC End */
+	#define OR1K_CLUSTER_DRAM_BASE_PHYS  OPTIMSOC_CLUSTER_DRAM_BASE_PHYS  /**< DRAM Base */
+	#define OR1K_CLUSTER_DRAM_END_PHYS   OPTIMSOC_CLUSTER_DRAM_END_PHYS   /**< DRAM End  */
+	/**@}*/
+
+	/**
+	 * @brief DRAM size (in bytes).
 	 */
 	#define OPTIMSOC_CLUSTER_DRAM_SIZE \
 		(OPTIMSOC_CLUSTER_DRAM_END_PHYS - OPTIMSOC_CLUSTER_DRAM_BASE_PHYS)
 
+	#define OR1K_CLUSTER_DRAM_SIZE OPTIMSOC_CLUSTER_DRAM_SIZE
+
 	/**
-	 * @brief OMPIC brief (in bytes).
+	 * @brief OMPIC size (in bytes).
 	 */
 	#define OPTIMSOC_CLUSTER_OMPIC_MEM_SIZE \
 		(OPTIMSOC_CLUSTER_OMPIC_END_PHYS - OPTIMSOC_CLUSTER_OMPIC_BASE_PHYS)
+
+	#define OR1K_CLUSTER_OMPIC_MEM_SIZE OPTIMSOC_CLUSTER_OMPIC_MEM_SIZE
 
 /**@}*/
 
