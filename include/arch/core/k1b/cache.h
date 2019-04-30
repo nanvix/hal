@@ -33,17 +33,35 @@
  */
 /**@{*/
 
+	#include <nanvix/const.h>
+
 	/**
-	 * @brief Cache line size (in bytes).
-	 *
-	 * @todo Check if the following this is valid for cores in IO DDR
-	 * and Ethernet Clusters.
+	 * @brief Cache line size log2.
 	 */
 	#if defined(__k1bdp__)
-		#define K1B_CACHE_LINE_SIZE 64
+		#define K1B_CACHE_LINE_SIZE_LOG2 6
 	#else
-		#define K1B_CACHE_LINE_SIZE 64
+		#define K1B_CACHE_LINE_SIZE_LOG2 6
 	#endif
+
+	/**
+	 * @brief Cache line size (in bytes).
+	 */
+	#define K1B_CACHE_LINE_SIZE (1 << K1B_CACHE_LINE_SIZE_LOG2)
+
+	/**
+	 * @brief Cache size log2.
+	 */
+	#if defined(__k1bdp__)
+		#define K1B_CACHE_SIZE_LOG2 13
+	#else
+		#define K1B_CACHE_SIZE_LOG2 15
+	#endif
+
+	/**
+	 * @brief Cache size.
+	 */
+	#define K1B_CACHE_SIZE (1 << K1B_CACHE_SIZE_LOG2)
 
 #ifndef _ASM_FILE_
 
@@ -82,9 +100,24 @@
 	/**@}*/
 
 	/**
+	 * @see K1B_CACHE_LINE_SIZE_LOG2.
+	 */
+	#define CACHE_LINE_SIZE_LOG2 K1B_CACHE_LINE_SIZE_LOG2
+
+	/**
 	 * @see K1B_CACHE_LINE_SIZE.
 	 */
 	#define CACHE_LINE_SIZE K1B_CACHE_LINE_SIZE
+
+	/**
+	 * @see K1B_CACHE_SIZE_LOG2.
+	 */
+	#define CACHE_SIZE_LOG2 K1B_CACHE_SIZE_LOG2
+
+	/**
+	 * @see K1B_CACHE_SIZE.
+	 */
+	#define CACHE_SIZE K1B_CACHE_SIZE
 
 #ifndef _ASM_FILE_
 
