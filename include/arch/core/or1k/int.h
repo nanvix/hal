@@ -103,6 +103,15 @@
 		);
 	}
 
+	/**
+	 * @brief Waits for an interrupt.
+	 */
+	static inline void or1k_int_wait(void)
+	{
+		if (or1k_mfspr(OR1K_SPR_UPR) & OR1K_SPR_UPR_PMP)
+			or1k_mtspr(OR1K_SPR_PMR, OR1K_SPR_PMR_DME);
+	}
+
 #endif
 
 /**@}*/

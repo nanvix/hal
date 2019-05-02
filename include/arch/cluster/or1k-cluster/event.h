@@ -22,40 +22,76 @@
  * SOFTWARE.
  */
 
-#ifndef CLUSTER_OR1K_CLUSTER_H_
-#define CLUSTER_OR1K_CLUSTER_H_
-
-	#ifndef __NEED_CLUSTER_OR1K
-		#error "bad cluster configuration?"
-	#endif
+#ifndef ARCH_CLUSTER_OR1K_CLUSTER_EVENT_H_
+#define ARCH_CLUSTER_OR1K_CLUSTER_EVENT_H_
 
 	/* Cluster Interface Implementation */
 	#include <arch/cluster/or1k-cluster/_or1k-cluster.h>
 
 /**
- * @addtogroup or1k-cluster OpenRISC Cluster
- * @ingroup clusters
+ * @addtogroup or1k-cluster-event Events
+ * @ingroup or1k-cluster
  *
- * @brief OpenRISC Cluster
+ * @brief Events Interface
  */
 /**@{*/
 
-	#include <arch/cluster/or1k-cluster/clock.h>
-	#include <arch/cluster/or1k-cluster/cores.h>
-	#include <arch/cluster/or1k-cluster/event.h>
-	#include <arch/cluster/or1k-cluster/memory.h>
-	#include <arch/cluster/or1k-cluster/ompic.h>
+	#include <nanvix/const.h>
+
+#ifndef _ASM_FILE_
 
 	/**
-	 * @name Provided Features
+	 * @brief Notifies a local core about an event.
+	 *
+	 * @param coreid ID of target core.
 	 */
-	/**@{*/
-	#define CLUSTER_IS_MULTICORE  1 /**< Multicore Cluster */
-	#define CLUSTER_IS_IO         1 /**< I/O Cluster       */
-	#define CLUSTER_IS_COMPUTE    0 /**< Compute Cluster   */
-	#define CLUSTER_HAS_EVENTS    1 /**< Event Support?    */
-	/**@}*/
+	EXTERN int or1k_cluster_event_notify(int coreid);
+
+	/**
+	 * @brief Waits for an event.
+	 */
+	EXTERN int or1k_cluster_event_wait(void);
+
+#endif /* _ASM_FILE_ */
 
 /**@}*/
 
-#endif /* CLUSTER_OR1K_CLUSTER_H_ */
+/*============================================================================*
+ * Exported Interface                                                         *
+ *============================================================================*/
+
+/**
+ * @cond or1k_cluster
+ */
+
+	/**
+	 * @name Exported Functions
+	 */
+	/**@{*/
+	#define __event_notify_fn /**< event_notify() */
+	#define __event_wait_fn   /**< event_wait()   */
+	/**@}*/
+
+#ifndef _ASM_FILE_
+
+	/**
+	 * @see or1k_cluster_event_notify()
+	 */
+	static inline void event_notify(int coreid)
+	{
+		or1k_cluster_event_notify(coreid);
+	}
+
+	/**
+	 * @see or1k_cluster_event_wait().
+	 */
+	static inline void event_wait(void)
+	{
+		or1k_cluster_event_wait();
+	}
+
+#endif /* _ASM_FILE_ */
+
+/**@endcond*/
+
+#endif /* ARCH_CLUSTER_OR1K_EVENT_H_ */

@@ -25,7 +25,14 @@
 /* Must come first. */
 #define __NEED_HAL_CLUSTER
 
-#include <nanvix/hal/cluster.h>
+#if (defined(__or1k_cluster__))
+	#include <arch/cluster/or1k-cluster/cores.h>
+	#include <arch/cluster/or1k-cluster/ompic.h>
+#elif (defined(__optimsoc_cluster__))
+	#include <arch/cluster/optimsoc-cluster/cores.h>
+	#include <arch/cluster/optimsoc-cluster/ompic.h>
+#endif
+
 #include <nanvix/const.h>
 
 /**
@@ -50,3 +57,77 @@ PUBLIC struct
 	{ 0, OR1K_SPINLOCK_UNLOCKED }, /* Slave Core 3 */
 #endif
 };
+
+/*============================================================================*
+ * or1k_cluster_event_notify()                                                *
+ *============================================================================*/
+
+/**
+ * @todo TODO provide a detailed description for this function.
+ *
+ * @author Davidson Francis
+ */
+PUBLIC int or1k_cluster_event_notify(int coreid)
+{
+	int mycoreid;
+
+	/* Invalid core. */
+	if (UNLIKELY(coreid < 0))
+		return (-EINVAL);
+
+	mycoreid = or1k_core_get_id();
+
+	/* Bad core. */
+	if (UNLIKELY(coreid == mycoreid))
+		return (-EINVAL);
+
+	spinlock_lock(&events[coreid].lock);
+
+		/* Set the pending IPI flag. */
+		events[coreid].pending |= (1 << mycoreid);
+		or1k_cluster_ompic_send_ipi(coreid, 0);
+
+	spinlock_unlock(&events[coreid].lock);
+
+	return (0);
+}
+
+/*============================================================================*
+ * or1k_cluster_event_wait()                                                  *
+ *============================================================================*/
+
+/**
+ * @todo TODO provide a detailed description for this function.
+ *
+ * @author Davidson Francis
+ */
+PUBLIC int or1k_cluster_event_wait(void)
+{
+	int mycoreid = or1k_core_get_id();
+
+	while (true)
+	{
+		or1k_spinlock_lock(&events[mycoreid].lock);
+
+			if (events[mycoreid].pending)
+				break;
+
+		or1k_spinlock_unlock(&events[mycoreid].lock);
+
+		or1k_int_wait();
+	}
+
+		/* Clear event. */
+		for (int i = 0; i < OR1K_CLUSTER_NUM_CORES; i++)
+		{
+			if (events[mycoreid].lock & (1 << i))
+			{
+				events[mycoreid].pending &= ~(1 << i);
+				break;
+			}
+		}
+
+	or1k_spinlock_unlock(&events[mycoreid].lock);
+
+	return (0);
+}
