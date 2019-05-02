@@ -27,6 +27,11 @@
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
 
+/**
+ * @brief Number of core start trials.
+ */
+#define CORE_START_NTRIALS 10
+
 /*============================================================================*
  * core_idle()                                                                *
  *============================================================================*/
@@ -184,6 +189,8 @@ PUBLIC int core_wakeup(int coreid)
  */
 PUBLIC int core_start(int coreid, void (*start)(void))
 {
+	int ntrials = 0;
+
 	/* Invalid core. */
 	if ((coreid < 0) || (coreid >= CORES_NUM))
 		return (-EINVAL);
@@ -205,7 +212,11 @@ again:
 	if (cores[coreid].state == CORE_RESETTING)
 	{
 		spinlock_unlock(&cores[coreid].lock);
-		goto again;
+
+		if (ntrials++ < CORE_START_NTRIALS)
+			goto again;
+
+		goto error;
 	}
 
 	/* Wakeup target core. */
@@ -223,6 +234,8 @@ again:
 	}
 
 	spinlock_unlock(&cores[coreid].lock);
+
+error:
 	return (-EBUSY);
 }
 
