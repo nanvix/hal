@@ -162,6 +162,14 @@
 
 #ifndef _ASM_FILE_
 
+	/**
+	 * @brief Binary Sections
+	 */
+	/**@{*/
+	EXTERN unsigned char __BSS_START;       /**< BSS Start       */
+	EXTERN unsigned char __BSS_END;         /**< BSS End         */
+	/**@}*/
+
 #ifdef __NANVIX_HAL
 
 	/**

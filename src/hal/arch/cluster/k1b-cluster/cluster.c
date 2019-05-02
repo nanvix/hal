@@ -179,6 +179,8 @@ PRIVATE NORETURN void k1b_cluster_master_setup(void)
 {
 	k1_boot_args_t args;
 
+	kmemset(&__BSS_START, 0, &__BSS_END - &__BSS_START);
+
 	/*
 	 * Early initialization of
 	 * JTAG to help us debugging.

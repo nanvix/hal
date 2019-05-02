@@ -218,12 +218,14 @@
   .bss   ALIGN(0x20) :  AT ( ALIGN( LOADADDR(.data) + SIZEOF(.data), 0x20))
   {
     _bss_start = ABSOLUTE(.);
-    *(.bss)
-    *(.bss.*)
-    *(.dynbss)
-    *(.dynbss.*)
-    *(.gnu.linkonce.b.*)
-    . = ALIGN(0x20);
+	__BSS_START = ABSOLUTE(.);
+		*(.bss)
+		*(.bss.*)
+		*(.dynbss)
+		*(.dynbss.*)
+		*(.gnu.linkonce.b.*)
+		. = ALIGN(0x20);
+    __BSS_END = ABSOLUTE(.);
     _bss_end = ABSOLUTE(.);
   } =0x12345678
 
