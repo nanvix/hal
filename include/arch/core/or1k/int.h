@@ -72,6 +72,12 @@
 	/**@}*/
 
 	/**
+	 * @brief Calls the HAL do_interrupt function
+	 * with the appropriate values.
+	 */
+	EXTERN void or1k_do_interrupt(int num);
+
+	/**
 	 * @brief Enables hardware interrupts.
 	 *
 	 * The or1k_int_enable() function enables all hardware interrupts
