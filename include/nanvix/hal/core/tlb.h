@@ -59,6 +59,18 @@
 		#ifndef __tlbe_paddr_get_fn
 			#error "tlb_paddr_get() not defined?"
 		#endif
+		#ifndef __tlbe_get_index_fn
+			#error "tlbe_get_index() not defined?"
+		#endif
+		#ifndef __tlbe_is_valid_fn
+			#error "tlbe_is_valid() not defined?"
+		#endif
+		#ifndef __tlbe_write_fn
+			#error "tlb_write() not defined?"
+		#endif
+		#ifndef __tlbe_inval_fn
+			#error "tlb_inval() not defined?"
+		#endif
 
 	#endif
 
@@ -130,6 +142,59 @@
 	 * to by @p tlbe.
 	 */
 	EXTERN paddr_t tlbe_paddr_get(const struct tlbe *tlbe);
+
+	/**
+	 * @brief Assesses if a TLB entry is valid
+	 *
+	 * @param tlbe Target TLB entry.
+	 *
+	 * The tlbe_is_valid() function assess if a TLB entry
+	 * has the status bit valid.
+	 *
+	 * @return Non zero if is the TLB entry is valid, zero otherwise.
+	 */
+	EXTERN int tlbe_is_valid(const struct tlbe *tlbe);
+
+	/**
+	 * @brief Gets the tlbe entry index in TLB.
+	 * 
+	 * @param vaddr Target virtual address.
+	 *
+	 * @return Index of target entry in the TLB.
+	 */
+	EXTERN unsigned tlbe_get_index(vaddr_t vaddr);
+
+	/**
+	 * @brief Writes a TLB entry.
+	 *
+	 * @param tlbe       The updated value of target TLB entry.
+	 * @param tlb_type   Target TLB.
+	 * @param vaddr      Target virtual address.
+	 * @param paddr      Target physical address.
+	 * @param vaddr_info Virtual address information flags.
+	 * 
+	 * @return Zero if successfully writes a TLB entry,
+	 * non zero otherwise.
+	 */
+	EXTERN int tlbe_write(
+		struct tlbe *tlbe,
+		int tlb_type,
+		vaddr_t vaddr,
+		paddr_t paddr,
+		int vadd_info
+	);
+
+	/**
+	 * @brief Invalidates a TLB entry.
+	 *
+	 * @param tlbe  The updated value of target TLB entry.
+	 * @param tlb_type Target TLB.
+	 * @param vaddr Target virtual address.
+	 * 
+	 * @return Zero if successfully writes a TLB entry,
+	 * non zero otherwise.
+	 */
+	EXTERN int tlbe_inval(struct tlbe *tlbe, int tlb_type, vaddr_t vaddr);
 
 #endif /* __NANVIX_HAL */
 
