@@ -25,6 +25,7 @@
 /* Must come first. */
 #define __NEED_HAL_CLUSTER
 
+#include <arch/stdout/jtag.h>
 #include <nanvix/hal/cluster.h>
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
@@ -65,6 +66,50 @@ PUBLIC struct coreinfo ALIGN(K1B_CACHE_LINE_SIZE) cores[K1B_CLUSTER_NUM_CORES] =
 	{ false, CORE_RESETTING, 0, NULL, K1B_SPINLOCK_LOCKED   }, /* Slave Core 15 */
 #endif
 };
+
+/*============================================================================*
+ * Startup Fence                                                              *
+ *============================================================================*/
+
+/**
+ * @brief Startup fence.
+ */
+PRIVATE struct
+{
+	bool master_alive;
+	k1b_spinlock_t lock;
+} fence = { false , K1B_SPINLOCK_UNLOCKED};
+
+/**
+ * @brief Releases the startup fence.
+ */
+PRIVATE void k1b_cluster_fence_release(void)
+{
+	k1b_spinlock_lock(&fence.lock);
+		fence.master_alive = true;
+	k1b_spinlock_unlock(&fence.lock);
+}
+
+/**
+ * @brief Waits on the startup fence.
+ */
+PRIVATE void k1b_cluster_fence_wait(void)
+{
+	while (true)
+	{
+		k1b_spinlock_lock(&fence.lock);
+
+			/* Fence is released. */
+			if (fence.master_alive)
+			{
+				k1b_spinlock_unlock(&fence.lock);
+				break;
+			}
+
+			noop();
+		k1b_spinlock_unlock(&fence.lock);
+	}
+}
 
 /*============================================================================*
  * k1b_cluster_master_setup()                                                 *
@@ -133,6 +178,14 @@ again:
 PRIVATE NORETURN void k1b_cluster_master_setup(void)
 {
 	k1_boot_args_t args;
+
+	/*
+	 * Early initialization of
+	 * JTAG to help us debugging.
+	 */
+	jtag_init();
+
+	k1b_cluster_fence_release();
 
 	k1b_get_boot_args(&args);
 
@@ -205,6 +258,8 @@ PUBLIC void k1b_cluster_setup(void)
 PUBLIC void SECTION_TEXT NORETURN _do_slave_pe(uint32_t oldsp)
 {
 	UNUSED(oldsp);
+
+	k1b_cluster_fence_wait();
 
 	k1b_cluster_slave_setup();
 }
