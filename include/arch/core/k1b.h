@@ -41,6 +41,7 @@
 	#include <arch/core/k1b/int.h>
 	#include <arch/core/k1b/mmu.h>
 	#include <arch/core/k1b/mOS.h>
+	#include <arch/core/k1b/perf.h>
 	#include <arch/core/k1b/pmio.h>
 	#include <arch/core/k1b/lpic.h>
 	#include <arch/core/k1b/ivt.h>
@@ -61,6 +62,7 @@
 	 * @name Core Features
 	 */
 	/**@{*/
+	#define CORE_HAS_PERF         1 /**< Has Performance Monitors?   */
 	#define CORE_HAS_ATOMICS      1 /**< Has Atomic Instructions?    */
 	#define CORE_HAS_PMIO         1 /**< Has Programmed I/O?         */
 	#define CORE_HAS_TLB_HW       0 /**< Has Hardware-Managed TLB?   */
