@@ -43,9 +43,13 @@
 	 * @name Aliases for Standard C Extensions
 	 */
 	/**@{*/
-	#define inline __inline__     /**< Inline Function */
-	#define asm    __asm__        /**< Inline Assembly */
-	#define volatile __volatile__ /**< Volatile Symbol */
+	#ifdef NDEBUG
+		#define inline __inline__  __attribute__((always_inline)) /**< Inline Function */
+	#else
+		#define inline __inline__                                 /**< Inline Function */
+	#endif
+	#define asm    __asm__                                        /**< Inline Assembly */
+	#define volatile __volatile__                                 /**< Volatile Symbol */
 	/**@}*/
 
 	/**
