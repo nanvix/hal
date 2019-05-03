@@ -65,6 +65,7 @@
 	#define K1B_INT_GIC2      11 /**< GIC 2                */
 	#define K1B_INT_GIC3      12 /**< GIC2                 */
 	#endif
+	#define K1B_INT_IPI      256 /**< Dummy IPI interrupt  */
 	/**@}*/
 
 #ifndef _ASM_FILE_
@@ -128,6 +129,7 @@
 	/**@{*/
 	#define INTERRUPTS_NUM  K1B_INT_NUM    /**< @ref K1b_INT_NUM    */
 	#define INTERRUPT_CLOCK K1B_INT_CLOCK0 /**< @ref K1B_INT_CLOCK0 */
+	#define INTERRUPT_IPI   K1B_INT_IPI    /**< @ref K1B_INT_IPI    */
 	#define HAL_INT_CNOC    K1B_INT_CNOC   /**< @ref K1B_INT_CNOC   */
 	/**@}*/
 
