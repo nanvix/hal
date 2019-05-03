@@ -202,6 +202,37 @@
 	}
 
 	/**
+	 * @brief Gets the tlbe entry index on TLB structure.
+	 * 
+	 * @param vaddr Target virtual address.
+	 * @param shift Page shift.
+	 * @param way   Target set-associative way.
+	 *
+	 * @return Index of target entry in the TLB.
+	 */
+	static inline unsigned k1b_tlbe_get_index(vaddr_t vaddr, unsigned shift, unsigned way)
+	{
+		return (2*((vaddr >> shift) & 0x3f) + way);
+	}
+
+	/**
+	 * @brief Assesses if a TLB entry is valid
+	 *
+	 * @param tlbe Target TLB entry.
+	 *
+	 * The k1b_tlbe_is_valid() function assess if a TLB entry
+	 * has the status bit valid.
+	 *
+	 * @return Non zero if is the TLB entry is valid, zero otherwise.
+	 *
+	 * @author João Vicente Souto
+	 */
+	static inline int k1b_tlbe_is_valid(const struct tlbe *tlbe)
+	{
+		return (tlbe->status != K1B_TLBE_STATUS_INVALID);
+	}
+
+	/**
 	 * @brief Gets the size of a page.
 	 *
 	 * @param tlbe Target TLB entry.
@@ -245,36 +276,41 @@
 	/**
 	 * @brief Writes a TLB entry.
 	 *
+	 * @param tlbe       The updated value of target TLB entry.
 	 * @param vaddr      Target virtual address.
 	 * @param paddr      Target physical address.
 	 * @param shift      Page shift.
 	 * @param way        Target set-associative way.
 	 * @param protection Protection attributes.
-	 * @param tlbe       The updated value of target TLB entry.
+	 * 
+	 * @return Zero if successfully writes a TLB entry,
+	 * non zero otherwise.
 	 */
 	EXTERN int k1b_tlbe_write(
+		struct tlbe *tlbe,
 		vaddr_t vaddr,
 		paddr_t paddr,
 		unsigned shift,
 		unsigned way,
-		unsigned protection,
-		struct tlbe * tlbe
+		unsigned protection
 	);
-
 
 	/**
 	 * @brief Invalidates a TLB entry.
 	 *
+	 * @param tlbe  The updated value of target TLB entry.
 	 * @param vaddr Target virtual address.
 	 * @param shift Page shift.
 	 * @param way   Target set-associative way.
-	 * @param tlbe  The updated value of target TLB entry.
+	 * 
+	 * @return Zero if successfully writes a TLB entry,
+	 * non zero otherwise.
 	 */
 	EXTERN int k1b_tlbe_inval(
+		struct tlbe *tlbe,
 		vaddr_t vaddr,
 		unsigned shift,
-		unsigned way,
-		struct tlbe * tlbe
+		unsigned way
 	);
 
 #endif /* _ASM_FILE_ */
@@ -293,13 +329,17 @@
 	 * @brief Provided Interface
 	 */
 	/**@{*/
-	#define __tlbe_st             /**< TLB Entry           */
-	#define __tlbe_vaddr_get_fn   /**< tlbe_vaddr_get()    */
-	#define __tlbe_paddr_get_fn   /**< tlbe_paddr_get()    */
+	#define __tlbe_st             /**< TLB Entry        */
+	#define __tlbe_vaddr_get_fn   /**< tlbe_vaddr_get() */
+	#define __tlbe_paddr_get_fn   /**< tlbe_paddr_get() */
+	#define __tlbe_get_index_fn   /**< tlbe_get_index() */
+	#define __tlbe_is_valid_fn    /**< tlbe_is_valid()  */
+	#define __tlbe_write_fn       /**< tlbe_write()     */
+	#define __tlbe_inval_fn       /**< tlbe_inval()     */
 	/**@}*/
 
 	/**
-	 * @brief Length of TLB (number of entries).
+	 * @name Length of TLB (number of entries).
 	 *
 	 * Number of entries in the architectural TLB exposed by the
 	 * hardware.
@@ -307,7 +347,10 @@
 	 * @note The Hypervisor only exposes an interface for playing with
 	 * the JTLB, therefore this should not be @p K1B_TLB_SIZE.
 	 */
-	#define TLB_LENGTH K1B_JTLB_LENGTH
+	/**@{*/
+	#define TLB_LENGTH        K1B_JTLB_LENGTH /**< TLB Length                      */
+	#define LOOKUP_TLB_LENGTH K1B_TLB_LENGTH  /**< TLB Length for lookup algorithm */
+	/**@}*/
 
 	/**
 	 * @name TLB Types
@@ -333,6 +376,54 @@
 	static inline paddr_t tlbe_paddr_get(const struct tlbe *tlbe)
 	{
 		return (k1b_tlbe_paddr_get(tlbe));
+	}
+
+	/**
+	 * @see k1b_tlbe_get_index().
+	 */
+	static inline unsigned tlbe_get_index(vaddr_t vaddr)
+	{
+		return (k1b_tlbe_get_index(vaddr, 12, 0));
+	}
+
+	/**
+	 * @see k1b_tlbe_is_valid().
+	 */
+	static inline int tlbe_is_valid(const struct tlbe *tlbe)
+	{
+		return (k1b_tlbe_is_valid(tlbe));
+	}
+
+	/**
+	 * @see k1b_tlbe_inval().
+	 */
+	static inline int tlbe_write(
+		struct tlbe *tlbe,
+		int tlb_type,
+		vaddr_t vaddr,
+		paddr_t paddr,
+		int vadd_info
+	)
+	{
+		/* Invalid TLB type. */
+		if ((tlb_type != K1B_TLB_INSTRUCTION) && (tlb_type != K1B_TLB_DATA))
+			return (-EINVAL);
+		
+		UNUSED(vadd_info);
+
+		return (k1b_tlbe_write(tlbe, vaddr, paddr, 12, 0, K1B_TLBE_PROT_RW));
+	}
+
+	/**
+	 * @see k1b_tlbe_inval().
+	 */
+	static inline int tlbe_inval(struct tlbe *tlbe, int tlb_type, vaddr_t vaddr)
+	{
+		/* Invalid TLB type. */
+		if ((tlb_type != K1B_TLB_INSTRUCTION) && (tlb_type != K1B_TLB_DATA))
+			return (-EINVAL);
+
+		return (k1b_tlbe_inval(tlbe, vaddr, 12, 0));
 	}
 
 #endif /* !_ASM_FILE_ */

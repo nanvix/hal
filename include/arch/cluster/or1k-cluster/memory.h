@@ -132,45 +132,31 @@
 #endif /* __NANVIX_HAL */
 
 	/**
-	 * @brief Lookups a TLB entry by virtual address.
-	 *
-	 * @param tlb_type Target TLB.
-	 * @param vaddr    Target virtual address.
-	 *
-	 * @returns Upon successful completion, a pointer to the TLB entry
-	 * that matches the virtual address @p vaddr is returned. If no
-	 * entry that meets this criteria is found, @p NULL is returned.
+	 * @brief TLB lookup address mask.
 	 */
-	EXTERN const struct tlbe *or1k_cluster_tlb_lookup_vaddr(int tlb_type, vaddr_t vaddr);
+	#define OR1K_TLB_VADDR_MASK PAGE_MASK
 
 	/**
-	 * @brief Lookups a TLB entry by physical address.
+	 * @brief Gets the underlying TLB entries.
 	 *
-	 * @param tlb_type Target TLB.
-	 * @param paddr    Target physical address.
+	 * @param _tlb     The TLB of a core.
+	 * @param tlb_type Type of the underlying TLB entries that we want get.
 	 *
-	 * @returns Upon successful completion, a pointer to the TLB entry
-	 * that matches the physical address @p paddr is returned. If no
-	 * entry that meets this criteria is found, @p NULL is returned.
+	 * The or1k_cluster_tlb_get_utlb() function returns the architectural 
+	 * TLB entries of a specific TLB type.
+	 *
+	 * @returns Initial position of the specific underlying tlb entries.
 	 */
-	EXTERN const struct tlbe *or1k_cluster_tlb_lookup_paddr(int tlb_type, paddr_t paddr);
+	EXTERN struct tlbe *or1k_cluster_tlb_get_utlb(int tlb_type);
 
 	/**
-	 * @brief Writes a TLB entry.
+	 * @brief Gets the configuration of a TLB Entry.
+	 * 
+	 * @param vaddr Target virtual address.
 	 *
-	 * @param tlb_type Target TLB.
-	 * @param vaddr    Target virtual address.
-	 * @param paddr    Target physical address.
+	 * @return K1B TLB entry does not need configuration.
 	 */
-	EXTERN int or1k_cluster_tlb_write(int tlb_type, vaddr_t vaddr, paddr_t paddr);
-
-	/**
-	 * @brief Invalidates a TLB entry.
-	 *
-	 * @param tlb_type Target TLB.
-	 * @param vaddr    Target virtual address.
-	 */
-	EXTERN int or1k_cluster_tlb_inval(int tlb_type, vaddr_t vaddr);
+	EXTERN int or1k_cluster_tlb_get_vaddr_info(vaddr_t vaddr);
 
 	/**
 	 * @brief Flushes the TLB.
@@ -197,19 +183,20 @@
 	/**
 	 * @name Exported Constants
 	 */
-	#define MEMORY_SIZE  OR1K_CLUSTER_MEM_SIZE         /**< @see OR1K_CLUSTER_MEM_SIZE         */
-	#define KMEM_SIZE    OR1K_CLUSTER_KMEM_SIZE        /**< @see OR1K_CLUSTER_KMEM_SIZE        */
-	#define UMEM_SIZE    OR1K_CLUSTER_UMEM_SIZE        /**< @see OR1K_CLUSTER_UMEM_SIZE        */
-	#define KSTACK_SIZE  OR1K_CLUSTER_KSTACK_SIZE      /**< @see OR1K_CLUSTER_KSTACK_SIZE      */
-	#define KPOOL_SIZE   OR1K_CLUSTER_KPOOL_SIZE       /**< @see OR1K_CLUSTER_KPOOL_SIZE       */
-	#define KBASE_PHYS   OR1K_CLUSTER_KERNEL_BASE_PHYS /**< @see OR1K_CLUSTER_KERNEL_BASE_PHYS */
-	#define KPOOL_PHYS   OR1K_CLUSTER_KPOOL_BASE_PHYS  /**< @see OR1K_CLUSTER_KPOOL_BASE_PHYS  */
-	#define UBASE_PHYS   OR1K_CLUSTER_USER_BASE_PHYS   /**< @see OR1K_CLUSTER_USER_BASE_PHYS   */
-	#define USTACK_VIRT  OR1K_CLUSTER_USTACK_BASE_VIRT /**< @see OR1K_CLUSTER_USTACK_BASE_VIRT */
-	#define UBASE_VIRT   OR1K_CLUSTER_USER_BASE_VIRT   /**< @see OR1K_CLUSTER_USER_BASE_VIRT   */
-	#define KBASE_VIRT   OR1K_CLUSTER_KERNEL_BASE_VIRT /**< @see OR1K_CLUSTER_KERNEL_BASE_VIRT */
-	#define KPOOL_VIRT   OR1K_CLUSTER_KPOOL_BASE_VIRT  /**< @see OR1K_CLUSTER_KPOOL_BASE_VIRT  */
-	#define _UART_ADDR   OR1K_CLUSTER_UART_BASE_PHYS   /**< @see OR1K_CLUSTER_UART_BASE_PHYS   */
+	#define MEMORY_SIZE    OR1K_CLUSTER_MEM_SIZE         /**< @see OR1K_CLUSTER_MEM_SIZE         */
+	#define KMEM_SIZE      OR1K_CLUSTER_KMEM_SIZE        /**< @see OR1K_CLUSTER_KMEM_SIZE        */
+	#define UMEM_SIZE      OR1K_CLUSTER_UMEM_SIZE        /**< @see OR1K_CLUSTER_UMEM_SIZE        */
+	#define KSTACK_SIZE    OR1K_CLUSTER_KSTACK_SIZE      /**< @see OR1K_CLUSTER_KSTACK_SIZE      */
+	#define KPOOL_SIZE     OR1K_CLUSTER_KPOOL_SIZE       /**< @see OR1K_CLUSTER_KPOOL_SIZE       */
+	#define KBASE_PHYS     OR1K_CLUSTER_KERNEL_BASE_PHYS /**< @see OR1K_CLUSTER_KERNEL_BASE_PHYS */
+	#define KPOOL_PHYS     OR1K_CLUSTER_KPOOL_BASE_PHYS  /**< @see OR1K_CLUSTER_KPOOL_BASE_PHYS  */
+	#define UBASE_PHYS     OR1K_CLUSTER_USER_BASE_PHYS   /**< @see OR1K_CLUSTER_USER_BASE_PHYS   */
+	#define USTACK_VIRT    OR1K_CLUSTER_USTACK_BASE_VIRT /**< @see OR1K_CLUSTER_USTACK_BASE_VIRT */
+	#define UBASE_VIRT     OR1K_CLUSTER_USER_BASE_VIRT   /**< @see OR1K_CLUSTER_USER_BASE_VIRT   */
+	#define KBASE_VIRT     OR1K_CLUSTER_KERNEL_BASE_VIRT /**< @see OR1K_CLUSTER_KERNEL_BASE_VIRT */
+	#define KPOOL_VIRT     OR1K_CLUSTER_KPOOL_BASE_VIRT  /**< @see OR1K_CLUSTER_KPOOL_BASE_VIRT  */
+	#define _UART_ADDR     OR1K_CLUSTER_UART_BASE_PHYS   /**< @see OR1K_CLUSTER_UART_BASE_PHYS   */
+	#define TLB_VADDR_MASK OR1K_TLB_VADDR_MASK           /**< @see OR1K_TLB_VADDR_MASK           */
 	/**@}*/
 
 #ifndef _ASM_FILE_
@@ -218,60 +205,10 @@
 	 * @name Provided Interface
 	 */
 	/**@{*/
-	#define __tlb_lookup_vaddr_fn /**< tlbe_lookup_vaddr() */
-	#define __tlb_lookup_paddr_fn /**< tlbe_lookup()       */
-	#define __tlb_write_fn        /**< tlb_write()         */
-	#define __tlb_inval_fn        /**< tlb_inval()         */
-	#define __tlb_flush_fn        /**< tlb_flush()         */
+	#define __tlb_flush_fn          /**< tlb_flush()          */
+	#define __tlb_get_vaddr_info_fn /**< tlb_get_vaddr_info() */
+	#define __tlb_get_utlb_fn       /**< tlb_get_utlb()       */
 	/**@}*/
-
-	/**
-	 * @see or1k_cluster_tlb_lookup_vaddr().
-	 */
-	static inline const struct tlbe *tlb_lookup_vaddr(int tlb_type, vaddr_t vaddr)
-	{
-		/* Invalid TLB type. */
-		if ((tlb_type != OR1K_TLB_INSTRUCTION) && (tlb_type != OR1K_TLB_DATA))
-			return (NULL);
-
-		return (or1k_cluster_tlb_lookup_vaddr(tlb_type, vaddr));
-	}
-
-	/**
-	 * @see or1k_cluster_tlb_lookup_paddr().
-	 */
-	static inline const struct tlbe *tlb_lookup_paddr(int tlb_type, paddr_t paddr)
-	{
-		/* Invalid TLB type. */
-		if ((tlb_type != OR1K_TLB_INSTRUCTION) && (tlb_type != OR1K_TLB_DATA))
-			return (NULL);
-
-		return (or1k_cluster_tlb_lookup_paddr(tlb_type, paddr));
-	}
-
-	/**
-	 * @see or1k_cluster_tlb_write()
-	 */
-	static inline int tlb_write(int tlb_type, vaddr_t vaddr, paddr_t paddr)
-	{
-		/* Invalid TLB type. */
-		if ((tlb_type != OR1K_TLB_INSTRUCTION) && (tlb_type != OR1K_TLB_DATA))
-			return (-EINVAL);
-
-		return (or1k_cluster_tlb_write(tlb_type, vaddr, paddr));
-	}
-
-	/**
-	 * @see or1k_cluster_tlb_inval()
-	 */
-	static inline int tlb_inval(int tlb_type, vaddr_t vaddr)
-	{
-		/* Invalid TLB type. */
-		if ((tlb_type != OR1K_TLB_INSTRUCTION) && (tlb_type != OR1K_TLB_DATA))
-			return (-EINVAL);
-
-		return (or1k_cluster_tlb_inval(tlb_type, vaddr));
-	}
 
 	/**
 	 * @see or1k_cluster_tlb_flush().
@@ -279,6 +216,26 @@
 	static inline int tlb_flush(void)
 	{
 		return (or1k_cluster_tlb_flush());
+	}
+
+	/**
+	 * @see or1k_cluster_tlb_get_vaddr_info().
+	 */
+	static inline int tlb_get_vaddr_info(vaddr_t vaddr)
+	{
+		return (or1k_cluster_tlb_get_vaddr_info(vaddr));
+	}
+
+	/**
+	 * @see or1k_cluster_tlb_get_utlb().
+	 */
+	static inline struct tlbe *tlb_get_utlb(int tlb_type)
+	{
+		/* Invalid TLB type. */
+		if ((tlb_type != OR1K_TLB_INSTRUCTION) && (tlb_type != OR1K_TLB_DATA))
+			return (NULL);
+
+		return (or1k_cluster_tlb_get_utlb(tlb_type));
 	}
 
 #endif /* _ASM_FILE_ */

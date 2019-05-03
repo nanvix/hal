@@ -74,6 +74,14 @@
 	 */
 	#if (!CORE_HAS_TLB_HW)
 
+		/* Constants. */
+		#ifndef TLB_VADDR_MASK
+			#error "TLB_VADDR_MASK not defined?"
+		#endif
+		#ifndef LOOKUP_TLB_LENGTH
+			#error "LOOKUP_TLB_LENGTH not defined?"
+		#endif
+
 		/*
 		* Required interface for software- and hardware-managed TLBs.
 		*/
@@ -82,17 +90,11 @@
 		#endif
 
 		/* Functions */
-		#ifndef __tlb_lookup_vaddr_fn
-			#error "tlb_lookup_vaddr() not defined?"
+		#ifndef __tlb_get_utlb_fn
+			#error "tlb_get_utlb() not defined?"
 		#endif
-		#ifndef __tlb_lookup_paddr_fn
-			#error "tlb_lookup_paddr() not defined?"
-		#endif
-		#ifndef __tlb_write_fn
-			#error "tlb_write() not defined?"
-		#endif
-		#ifndef __tlb_inval_fn
-			#error "tlb_inval() not defined?"
+		#ifndef __tlb_get_vaddr_info_fn
+			#error "tlb_get_vaddr_info() not defined?"
 		#endif
 
 	#endif

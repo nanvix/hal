@@ -146,7 +146,7 @@
 		#define K1B_CLUSTER_HYPER_HIGH_BASE_VIRT 0x001f8000       /**< High Hypervisor Base */
 		#define K1B_CLUSTER_HYPER_HIGH_END_VIRT  0x00200000       /**< High Hypervisor End  */
 	#endif
-	#define K1B_CLUSTER_USTACK_BASE_VIRT K1B_CLUSTER_HYPER_HIGH_BASE_VIRT /**< User Stack */
+	#define K1B_CLUSTER_USTACK_BASE_VIRT K1B_CLUSTER_HYPER_HIGH_BASE_VIRT /**< User Stack   */
 #ifndef _ASM_FILE_
 	EXTERN const vaddr_t K1B_CLUSTER_KERNEL_BASE_VIRT;            /**< Kernel Base          */
 	EXTERN const vaddr_t K1B_CLUSTER_KERNEL_END_VIRT;             /**< Kernel End           */
@@ -172,64 +172,45 @@
 #endif /* __NANVIX_HAL */
 
 	/**
-	 * @brief Writes a TLB entry.
-	 *
-	 * @param vaddr      Target virtual address.
-	 * @param paddr      Target physical address.
-	 * @param shift      Page shift.
-	 * @param way        Target set-associative way.
-	 * @param protection Protection attributes.
+	 * @brief TLB lookup address mask.
 	 */
-	EXTERN int k1b_tlb_write(
-			vaddr_t vaddr,
-			paddr_t paddr,
-			unsigned shift,
-			unsigned way,
-			unsigned protection
-	);
+	#define K1B_TLB_VADDR_MASK (~0)
 
 	/**
-	 * @brief Invalidates a TLB entry.
+	 * @brief Gets the underlying TLB entries.
 	 *
-	 * @param vaddr Target virtual address.
-	 * @param shift Page shift.
-	 * @param way   Target set-associative way.
+	 * The k1b_cluster_tlb_get_utlb() function returns the architectural
+	 * TLB entries.
+	 *
+	 * @returns Initial position of the specific underlying tlb entries.
 	 */
-	EXTERN int k1b_tlb_inval(vaddr_t vaddr, unsigned shift, unsigned way);
+	EXTERN struct tlbe *k1b_cluster_tlb_get_utlb();
 
 	/**
-	 * @brief Lookups a TLB entry by virtual address.
+	 * @brief Gets the configuration of a TLB Entry.
 	 *
 	 * @param vaddr Target virtual address.
 	 *
-	 * @returns Upon successful completion, a pointer to the TLB entry
-	 * that matches the virtual address @p vaddr is returned. If no
-	 * entry that meets this criteria is found, @p NULL is returned.
+	 * @return K1B TLB entry does not need configuration.
 	 */
-	EXTERN const struct tlbe *k1b_tlb_lookup_vaddr(vaddr_t vaddr);
+	static inline int k1b_cluster_tlb_get_vaddr_info(vaddr_t vaddr)
+	{
+		UNUSED(vaddr);
 
-	/**
-	 * @brief Lookups a TLB entry by physical address.
-	 *
-	 * @param paddr Target physical address.
-	 *
-	 * @returns Upon successful completion, a pointer to the TLB entry
-	 * that matches the physical address @p paddr is returned. If no
-	 * entry that meets this criteria is found, @p NULL is returned.
-	 */
-	EXTERN const struct tlbe *k1b_tlb_lookup_paddr(paddr_t paddr);
+		return (0);
+	}
 
 	/**
 	 * @brief Flushes the TLB.
 	 */
-	EXTERN int k1b_tlb_flush(void);
+	EXTERN int k1b_cluster_tlb_flush(void);
 
 	/**
 	 * @brief Dumps a TLB entry.
 	 *
 	 * @param idx Index of target entry in the TLB.
 	 */
-	EXTERN void k1b_tlbe_dump(int idx);
+	EXTERN void k1b_cluster_tlbe_dump(int idx);
 
 #endif /* _ASM_FILE_ */
 
@@ -240,24 +221,25 @@
  *============================================================================*/
 
 /**
- * @cond k1b_cluster
+ * @cond k1b_cluster_cluster
  */
 
 	/**
 	 * @name Exported Constants
 	 */
-	#define MEMORY_SIZE  K1B_CLUSTER_MEM_SIZE         /**< @see K1B_CLUSTER_MEM_SIZE          */
-	#define KMEM_SIZE    K1B_CLUSTER_KMEM_SIZE        /**< @see K1B_CLUSTER_KMEM_SIZE         */
-	#define UMEM_SIZE    K1B_CLUSTER_UMEM_SIZE        /**< @see K1B_CLUSTER_UMEM_SIZE         */
-	#define KSTACK_SIZE  K1B_CLUSTER_KSTACK_SIZE      /**< @see K1B_CLUSTER_KSTACK_SIZE       */
-	#define KPOOL_SIZE   K1B_CLUSTER_KPOOL_SIZE       /**< @see K1B_CLUSTER_KPOOL_SIZE        */
-	#define KBASE_PHYS   K1B_CLUSTER_KERNEL_BASE_PHYS /**< @see K1B_CLUSTER_KERNEL_BASE_PHYS  */
-	#define KPOOL_PHYS   K1B_CLUSTER_KPOOL_BASE_PHYS  /**< @see K1B_CLUSTER_KPOOL_BASE_PHYS   */
-	#define UBASE_PHYS   K1B_CLUSTER_USER_BASE_PHYS   /**< @see K1B_CLUSTER_USER_BASE_PHYS    */
-	#define USTACK_VIRT  K1B_CLUSTER_USTACK_BASE_VIRT /**< @see K1B_CLUSTER_USTACK_BASE_VIRT  */
-	#define UBASE_VIRT   K1B_CLUSTER_USER_BASE_VIRT   /**< @see K1B_CLUSTER_USER_BASE_VIRT    */
-	#define KBASE_VIRT   K1B_CLUSTER_KERNEL_BASE_VIRT /**< @see K1B_CLUSTER_KERNEL_BASE_VIRT  */
-	#define KPOOL_VIRT   K1B_CLUSTER_KPOOL_BASE_VIRT  /**< @see K1B_CLUSTER_KPOOL_BASE_VIRT   */
+	#define MEMORY_SIZE    K1B_CLUSTER_MEM_SIZE         /**< @see K1B_CLUSTER_MEM_SIZE          */
+	#define KMEM_SIZE      K1B_CLUSTER_KMEM_SIZE        /**< @see K1B_CLUSTER_KMEM_SIZE         */
+	#define UMEM_SIZE      K1B_CLUSTER_UMEM_SIZE        /**< @see K1B_CLUSTER_UMEM_SIZE         */
+	#define KSTACK_SIZE    K1B_CLUSTER_KSTACK_SIZE      /**< @see K1B_CLUSTER_KSTACK_SIZE       */
+	#define KPOOL_SIZE     K1B_CLUSTER_KPOOL_SIZE       /**< @see K1B_CLUSTER_KPOOL_SIZE        */
+	#define KBASE_PHYS     K1B_CLUSTER_KERNEL_BASE_PHYS /**< @see K1B_CLUSTER_KERNEL_BASE_PHYS  */
+	#define KPOOL_PHYS     K1B_CLUSTER_KPOOL_BASE_PHYS  /**< @see K1B_CLUSTER_KPOOL_BASE_PHYS   */
+	#define UBASE_PHYS     K1B_CLUSTER_USER_BASE_PHYS   /**< @see K1B_CLUSTER_USER_BASE_PHYS    */
+	#define USTACK_VIRT    K1B_CLUSTER_USTACK_BASE_VIRT /**< @see K1B_CLUSTER_USTACK_BASE_VIRT  */
+	#define UBASE_VIRT     K1B_CLUSTER_USER_BASE_VIRT   /**< @see K1B_CLUSTER_USER_BASE_VIRT    */
+	#define KBASE_VIRT     K1B_CLUSTER_KERNEL_BASE_VIRT /**< @see K1B_CLUSTER_KERNEL_BASE_VIRT  */
+	#define KPOOL_VIRT     K1B_CLUSTER_KPOOL_BASE_VIRT  /**< @see K1B_CLUSTER_KPOOL_BASE_VIRT   */
+	#define TLB_VADDR_MASK K1B_TLB_VADDR_MASK           /**< @see K1B_TLB_VADDR_MASK            */
 	/**@}*/
 
 #ifndef _ASM_FILE_
@@ -266,67 +248,37 @@
 	 * @brief Provided Interface
 	 */
 	/**@{*/
-	#define __tlb_lookup_vaddr_fn /**< tlbe_lookup_vaddr() */
-	#define __tlb_lookup_paddr_fn /**< tlbe_lookup()       */
-	#define __tlb_write_fn        /**< tlb_write()         */
-	#define __tlb_inval_fn        /**< tlb_inval()         */
-	#define __tlb_flush_fn        /**< tlb_flush()         */
+	#define __tlb_flush_fn          /**< tlb_flush()          */
+	#define __tlb_get_vaddr_info_fn /**< tlb_get_vaddr_info() */
+	#define __tlb_get_utlb_fn       /**< tlb_get_utlb()       */
 	/**@}*/
 
 	/**
-	 * @see k1b_tlb_lookup_vaddr().
-	 */
-	static inline const struct tlbe *tlb_lookup_vaddr(int tlb_type, vaddr_t vaddr)
-	{
-		/* Invalid TLB type. */
-		if ((tlb_type != K1B_TLB_INSTRUCTION) && (tlb_type != K1B_TLB_DATA))
-			return (NULL);
-
-		return (k1b_tlb_lookup_vaddr(vaddr));
-	}
-
-	/**
-	 * @see k1b_tlb_lookup_paddr().
-	 */
-	static inline const struct tlbe *tlb_lookup_paddr(int tlb_type, paddr_t paddr)
-	{
-		/* Invalid TLB type. */
-		if ((tlb_type != K1B_TLB_INSTRUCTION) && (tlb_type != K1B_TLB_DATA))
-			return (NULL);
-
-		return (k1b_tlb_lookup_paddr(paddr));
-	}
-
-	/**
-	 * @see k1b_tlb_write()
-	 */
-	static inline int tlb_write(int tlb_type, vaddr_t vaddr, paddr_t paddr)
-	{
-		/* Invalid TLB type. */
-		if ((tlb_type != K1B_TLB_INSTRUCTION) && (tlb_type != K1B_TLB_DATA))
-			return (-EINVAL);
-
-		return (k1b_tlb_write(vaddr, paddr, 12, 0, K1B_TLBE_PROT_RW));
-	}
-
-	/**
-	 * @see k1b_tlb_inval()
-	 */
-	static inline int tlb_inval(int tlb_type, vaddr_t vaddr)
-	{
-		/* Invalid TLB type. */
-		if ((tlb_type != K1B_TLB_INSTRUCTION) && (tlb_type != K1B_TLB_DATA))
-			return (-EINVAL);
-
-		return (k1b_tlb_inval(vaddr, 12, 0));
-	}
-
-	/**
-	 * @see k1b_tlb_flush().
+	 * @see k1b_cluster_tlb_flush().
 	 */
 	static inline int tlb_flush(void)
 	{
-		return (k1b_tlb_flush());
+		return (k1b_cluster_tlb_flush());
+	}
+
+	/**
+	 * @see k1b_cluster_tlb_get_vaddr_info().
+	 */
+	static inline int tlb_get_vaddr_info(vaddr_t vaddr)
+	{
+		return (k1b_cluster_tlb_get_vaddr_info(vaddr));
+	}
+
+	/**
+	 * @see k1b_cluster_tlb_lookup_paddr().
+	 */
+	static inline struct tlbe *tlb_get_utlb(int tlb_type)
+	{
+		/* Invalid TLB type. */
+		if ((tlb_type != K1B_TLB_INSTRUCTION) && (tlb_type != K1B_TLB_DATA))
+			return (NULL);
+
+		return (k1b_cluster_tlb_get_utlb());
 	}
 
 #endif /* _ASM_FILE_ */

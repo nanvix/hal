@@ -112,7 +112,7 @@ PUBLIC const vaddr_t K1B_CLUSTER_KSTACK_BASE_VIRT  = K1B_VADDR(&_user_stack_star
  *
  * @author Pedro Henrique Penna
  */
-PRIVATE struct
+struct
 {
 	/**
 	 * @brief Join TLB.
@@ -136,6 +136,32 @@ PRIVATE struct
 	 */
 	struct tlbe ltlb[K1B_LTLB_LENGTH];
 } ALIGN(K1B_CACHE_LINE_SIZE) k1b_tlb[K1B_CLUSTER_NUM_CORES];
+
+/*============================================================================*
+ * k1b_cluster_tlb_get_utlb()                                                 *
+ *============================================================================*/
+
+/**
+ * @brief Gets the underlying TLB entries.
+ *
+ * @param _tlb     The TLB of a core.
+ * @param tlb_type Type of the underlying TLB entries that we want get.
+ *
+ * The k1b_cluster_tlb_get_utlb() function returns the architectural
+ * TLB entries of a specific TLB type.
+ *
+ * @returns Initial position of the specific underlying tlb entries.
+ *
+ * @author João Vicente Souto
+ */
+PUBLIC struct tlbe *k1b_cluster_tlb_get_utlb()
+{
+	int coreid;
+
+	coreid = core_get_id();
+
+	return (k1b_tlb[coreid].jtlb);
+}
 
 /*============================================================================*
  * k1b_tlbe_idx_get()                                                         *
@@ -171,6 +197,21 @@ PRIVATE inline const struct tlbe *k1b_tlbe_get(int idx)
 }
 
 /*============================================================================*
+ * k1b_cluster_tlb_flush()                                                    *
+ *============================================================================*/
+
+/**
+ * The k1b_cluster_tlb_flush() function writes all JTLB entries cached in
+ * memory into the architectural TLB of the underlying core.
+ *
+ * @todo Implement this function.
+ */
+PUBLIC int k1b_cluster_tlb_flush(void)
+{
+	return (0);
+}
+
+/*============================================================================*
  * k1b_tlbe_dump()                                                            *
  *============================================================================*/
 
@@ -199,186 +240,14 @@ PUBLIC void k1b_tlbe_dump(int idx)
 }
 
 /*============================================================================*
- * k1b_tlb_lookup_vaddr()                                                     *
+ * k1b_cluster_tlb_init()                                                     *
  *============================================================================*/
 
 /**
- * The k1b_tlb_lookup_vaddr() function searches the architectural TLB
- * for an entry that matches the virtual address @p vaddr.
- *
- * @todo Search in the JTLB may be performed using a faster method
- * based on tag lookup.
- *
- * @author Pedro Henrique Penna
- */
-PUBLIC const struct tlbe *k1b_tlb_lookup_vaddr(vaddr_t vaddr)
-{
-	int coreid;
-	const struct tlbe *tlbe;
-
-	coreid = k1b_core_get_id();
-
-	/* Search in JTLB. */
-	for (int i = 0; i < K1B_JTLB_LENGTH; i++)
-	{
-		tlbe = &k1b_tlb[coreid].jtlb[i];
-
-		/* Found */
-		if (k1b_tlbe_vaddr_get(tlbe) == vaddr)
-		{
-			if (tlbe->status != K1B_TLBE_STATUS_INVALID)
-				return (tlbe);
-		}
-	}
-
-	/* Search in LTLB. */
-	for (int i = 0; i < K1B_LTLB_LENGTH; i++)
-	{
-		tlbe = &k1b_tlb[coreid].ltlb[i];
-
-		/* Found */
-		if (k1b_tlbe_vaddr_get(tlbe) == vaddr)
-		{
-			if (tlbe->status != K1B_TLBE_STATUS_INVALID)
-				return (tlbe);
-		}
-	}
-
-	return (NULL);
-}
-
-/*============================================================================*
- * k1b_tlb_lookup_paddr()                                                     *
- *============================================================================*/
-
-/**
- * The k1b_tlb_lookup_paddr() function searches the architectural TLB
- * for an entry that matches the physical address @p paddr.
- *
- * @author Pedro Henrique Penna
- */
-PUBLIC const struct tlbe *k1b_tlb_lookup_paddr(paddr_t paddr)
-{
-	int coreid;
-	const struct tlbe *tlbe;
-
-	coreid = k1b_core_get_id();
-
-	/* Search in JTLB. */
-	for (int i = 0; i < K1B_JTLB_LENGTH; i++)
-	{
-		tlbe = &k1b_tlb[coreid].jtlb[i];
-
-		/* Found */
-		if (k1b_tlbe_paddr_get(tlbe) == paddr)
-		{
-			if (tlbe->status != K1B_TLBE_STATUS_INVALID)
-				return (tlbe);
-		}
-	}
-
-	/* Search in LTLB. */
-	for (int i = 0; i < K1B_LTLB_LENGTH; i++)
-	{
-		tlbe = &k1b_tlb[coreid].ltlb[i];
-
-		/* Found */
-		if (k1b_tlbe_paddr_get(tlbe) == paddr)
-		{
-			if (tlbe->status != K1B_TLBE_STATUS_INVALID)
-				return (tlbe);
-		}
-	}
-
-	return (NULL);
-}
-
-/*============================================================================*
- * k1b_tlb_write()                                                            *
- *============================================================================*/
-
-/**
- * THe k1b_tlb_write() function writes an entry into the architectural
- * TLB. If the new entry conflicts to an old one, the old one is
- * overwritten.
- *
- * @author Pedro Henrique Penna
- */
-PUBLIC int k1b_tlb_write(
-		vaddr_t vaddr,
-		paddr_t paddr,
-		unsigned shift,
-		unsigned way,
-		unsigned protection
-)
-{
-	int coreid;
-	unsigned idx;
-	struct tlbe tlbe;
-	
-	coreid = k1b_core_get_id();
-	idx = 2*((vaddr >> shift) & 0x3f) + way;
-
-	if (k1b_tlbe_write(vaddr, paddr, shift, way, protection, &tlbe) != 0)
-		return (-EAGAIN);
-
-	kmemcpy(&k1b_tlb[coreid].jtlb[idx], &tlbe, K1B_TLBE_SIZE);
-
-	return (0);
-}
-
-/*============================================================================*
- * k1b_tlb_inval()                                                            *
- *============================================================================*/
-
-/**
- * The k1b_tlb_inval() function invalidates the TLB entry that
- * encodes the virtual address @p vaddr.
- *
- * @author Pedro Henrique Penna
- */
-PUBLIC int k1b_tlb_inval(vaddr_t vaddr, unsigned shift, unsigned way)
-{
-	int coreid;
-	unsigned idx;
-	struct tlbe tlbe;
-
-	coreid = k1b_core_get_id();
-	idx = 2*((vaddr >> shift) & 0x3f) + way;
-
-	/* Write to hardware TLB. */
-	if (k1b_tlbe_inval(vaddr, shift, way, &tlbe) != 0)
-		return (-EAGAIN);
-
-	kmemcpy(&k1b_tlb[coreid].jtlb[idx], &tlbe, K1B_TLBE_SIZE);
-
-	return (0);
-}
-
-/*============================================================================*
- * k1b_tlb_flush()                                                            *
- *============================================================================*/
-
-/**
- * The k1b_tlb_flush() function writes all JTLB entries cached in
- * memory into the architectural TLB of the underlying core.
- *
- * @todo Implement this function.
- */
-PUBLIC int k1b_tlb_flush(void)
-{
-	return (0);
-}
-
-/*============================================================================*
- * k1b_tlb_init()                                                             *
- *============================================================================*/
-
-/**
- * The k1b_tlb_init() initializes the architectural TLB of the
+ * The k1b_cluster_tlb_init() initializes the architectural TLB of the
  * underlying k1b core.
  */
-PRIVATE void k1b_tlb_init(void)
+PRIVATE void k1b_cluster_tlb_init(void)
 {
 	int coreid;
 
@@ -393,6 +262,63 @@ PRIVATE void k1b_tlb_init(void)
 	/* Read LTLB into memory. */
 	for (int i = 0; i < K1B_LTLB_LENGTH; i++)
 		k1b_tlbe_read(&k1b_tlb[coreid].ltlb[i], K1B_LTLB_OFFSET + i);
+}
+
+/*============================================================================*
+ * k1b_cluster_tlb_write()                                                    *
+ *============================================================================*/
+
+/**
+ * THe k1b_cluster_tlb_write() function writes an entry into the architectural
+ * TLB. If the new entry conflicts to an old one, the old one is
+ * overwritten.
+ *
+ * @author Pedro Henrique Penna
+ */
+PRIVATE int k1b_cluster_tlb_write(
+		vaddr_t vaddr,
+		paddr_t paddr,
+		unsigned shift,
+		unsigned way,
+		unsigned protection
+)
+{
+	int coreid;
+	unsigned idx;
+
+	coreid = k1b_core_get_id();
+	idx = k1b_tlbe_get_index(vaddr, shift, way);
+
+	return k1b_tlbe_write(
+		&k1b_tlb[coreid].jtlb[idx],
+		vaddr,
+		paddr,
+		shift,
+		way,
+		protection
+	);
+}
+
+/*============================================================================*
+ * k1b_cluster_tlb_inval()                                                    *
+ *============================================================================*/
+
+/**
+ * The k1b_tlb_inval() function invalidates the TLB entry that
+ * encodes the virtual address @p vaddr.
+ *
+ * @author Pedro Henrique Penna
+ */
+PRIVATE int k1b_cluster_tlb_inval(vaddr_t vaddr, unsigned shift, unsigned way)
+{
+	int coreid;
+	unsigned idx;
+
+	coreid = k1b_core_get_id();
+	idx = k1b_tlbe_get_index(vaddr, shift, way);
+
+	/* Write to hardware TLB. */
+	return (k1b_tlbe_inval(&k1b_tlb[coreid].jtlb[idx], vaddr, shift, way));
 }
 
 /*============================================================================*
@@ -417,14 +343,14 @@ PRIVATE void k1b_cluster_mem_warmup(void)
 	vaddr_t start, end;
 
 	/* Load Hypervisor entries into the TLB. */
-	k1b_tlb_write(
+	k1b_cluster_tlb_write(
 		K1B_CLUSTER_HYPER_LOW_BASE_VIRT,
 		K1B_CLUSTER_HYPER_LOW_BASE_VIRT,
 		K1B_HUGE_PAGE_SHIFT,
 		1,
 		K1B_TLBE_PROT_RWX
 	);
-	k1b_tlb_write(
+	k1b_cluster_tlb_write(
 		K1B_CLUSTER_HYPER_HIGH_BASE_VIRT,
 		K1B_CLUSTER_HYPER_HIGH_BASE_VIRT,
 		K1B_HUGE_PAGE_SHIFT,
@@ -435,17 +361,17 @@ PRIVATE void k1b_cluster_mem_warmup(void)
 	/* Load Kernel entries into the TLB. */
 	start = K1B_CLUSTER_KERNEL_BASE_VIRT; end = K1B_CLUSTER_KERNEL_END_VIRT;
 	for (vaddr_t vaddr = start; vaddr < end; vaddr += K1B_HUGE_PAGE_SIZE)
-		k1b_tlb_write(vaddr, vaddr, K1B_HUGE_PAGE_SHIFT, 1, K1B_TLBE_PROT_RWX);
+		k1b_cluster_tlb_write(vaddr, vaddr, K1B_HUGE_PAGE_SHIFT, 1, K1B_TLBE_PROT_RWX);
 
 	/* Load Kernel Page Pool entries into the TLB. */
 	start = K1B_CLUSTER_KPOOL_BASE_VIRT; end = K1B_CLUSTER_KPOOL_END_VIRT;
 	for (vaddr_t vaddr = start; vaddr < end; vaddr += K1B_HUGE_PAGE_SIZE)
-		k1b_tlb_write(vaddr, vaddr, K1B_HUGE_PAGE_SHIFT, 1, K1B_TLBE_PROT_RW);
+		k1b_cluster_tlb_write(vaddr, vaddr, K1B_HUGE_PAGE_SHIFT, 1, K1B_TLBE_PROT_RW);
 
 	/* Invalidate all entries in way 0. */
 	start = 0; end = MEMORY_SIZE;
 	for (vaddr_t vaddr = start; vaddr < end; vaddr += K1B_PAGE_SIZE)
-		k1b_tlb_inval(vaddr, K1B_PAGE_SHIFT, 0);
+		k1b_cluster_tlb_inval(vaddr, K1B_PAGE_SHIFT, 0);
 }
 
 /*============================================================================*
@@ -612,5 +538,5 @@ PUBLIC void k1b_cluster_mem_setup(void)
 
 	k1b_cluster_mem_warmup();
 
-	k1b_tlb_init();
+	k1b_cluster_tlb_init();
 }

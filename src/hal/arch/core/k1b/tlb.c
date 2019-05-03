@@ -38,34 +38,41 @@
  * @author Pedro Henrique Penna
  */
 PUBLIC int k1b_tlbe_write(
+		struct tlbe *tlbe,
 		vaddr_t vaddr,
 		paddr_t paddr,
 		unsigned shift,
 		unsigned way,
-		unsigned protection,
-		struct tlbe *tlbe
+		unsigned protection
 )
 {
-	__k1_tlb_entry_t _tlbe;
+	struct tlbe _tlbe;      /**< Temporary tlbe.  */
+	__k1_tlb_entry_t utlbe; /**< Underlying tlbe. */
 
-	tlbe->addr_ext = 0;
-	tlbe->addrspace = 0;
-	tlbe->cache_policy = K1B_DTLBE_CACHE_POLICY_WRTHROUGH;
-	tlbe->frame = paddr >> 12;
-	tlbe->global = 1;
-	tlbe->page = (vaddr >> 12) | (1 << (shift - 12 - 1));
-	tlbe->protection = protection;
-	tlbe->size = (shift == 12) ? 1 : 0;
-	tlbe->status = K1B_TLBE_STATUS_AMODIFIED;
+	/* Invalid TLB entry. */
+	if (tlbe == NULL)
+		return (-EINVAL);
 
-	kmemcpy(&_tlbe, tlbe, K1B_TLBE_SIZE);
+	_tlbe.addr_ext = 0;
+	_tlbe.addrspace = 0;
+	_tlbe.cache_policy = K1B_DTLBE_CACHE_POLICY_WRTHROUGH;
+	_tlbe.frame = paddr >> 12;
+	_tlbe.global = 1;
+	_tlbe.page = (vaddr >> 12) | (1 << (shift - 12 - 1));
+	_tlbe.protection = protection;
+	_tlbe.size = (shift == 12) ? 1 : 0;
+	_tlbe.status = K1B_TLBE_STATUS_AMODIFIED;
+
+	kmemcpy(&utlbe, &_tlbe, K1B_TLBE_SIZE);
 
 	/* Write to hardware TLB. */
-	if (mOS_mem_write_jtlb(_tlbe, way) != 0)
+	if (mOS_mem_write_jtlb(utlbe, way) != 0)
 	{
 		kprintf("[hal] failed to write tlb %x", vaddr);
 		return (-EAGAIN);
 	}
+
+	kmemcpy(tlbe, &_tlbe, K1B_TLBE_SIZE);
 
 	return (0);
 }
@@ -77,32 +84,39 @@ PUBLIC int k1b_tlbe_write(
  * @author Pedro Henrique Penna
  */
 PUBLIC int k1b_tlbe_inval(
+	struct tlbe *tlbe,
 	vaddr_t vaddr,
 	unsigned shift,
-	unsigned way,
-	struct tlbe *tlbe
+	unsigned way
 )
 {
-	__k1_tlb_entry_t _tlbe;
+	struct tlbe _tlbe;      /**< Temporary tlbe.  */
+	__k1_tlb_entry_t utlbe; /**< Underlying tlbe. */
 
-	tlbe->addr_ext = 0;
-	tlbe->addrspace = 0;
-	tlbe->cache_policy = 0;
-	tlbe->frame = 0;
-	tlbe->global = 0;
-	tlbe->page = (vaddr >> 12) | (1 << (shift - 12 - 1));
-	tlbe->protection = 0;
-	tlbe->size = (shift == 12) ? 1 : 0;
-	tlbe->status = K1B_TLBE_STATUS_INVALID;
+	/* Invalid TLB entry. */
+	if (tlbe == NULL)
+		return (-EINVAL);
 
-	kmemcpy(&_tlbe, tlbe, K1B_TLBE_SIZE);
+	_tlbe.addr_ext = 0;
+	_tlbe.addrspace = 0;
+	_tlbe.cache_policy = 0;
+	_tlbe.frame = 0;
+	_tlbe.global = 0;
+	_tlbe.page = (vaddr >> 12) | (1 << (shift - 12 - 1));
+	_tlbe.protection = 0;
+	_tlbe.size = (shift == 12) ? 1 : 0;
+	_tlbe.status = K1B_TLBE_STATUS_INVALID;
+
+	kmemcpy(&utlbe, &_tlbe, K1B_TLBE_SIZE);
 
 	/* Write to hardware TLB. */
-	if (mOS_mem_write_jtlb(_tlbe, way) != 0)
+	if (mOS_mem_write_jtlb(utlbe, way) != 0)
 	{
 		kprintf("[hal] failed to invalidate tlb %x", vaddr);
 		return (-EAGAIN);
 	}
+
+	kmemcpy(tlbe, &_tlbe, K1B_TLBE_SIZE);
 
 	return (0);
 }

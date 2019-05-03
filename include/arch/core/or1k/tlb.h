@@ -125,6 +125,20 @@
 	#define OR1K_ITLBE_UXE 2 /**< User Execute Enable       */
 	/**@}*/
 
+	/**
+	 * @name Macros for set and get information about a vaddr (TLB).
+	 */
+	/**@{*/
+	#define OR1K_INFO_PERM_OFFSET         0                                     /**< Permission offset           */
+	#define OR1K_INFO_LOC_OFFSET          1                                     /**< Location offset             */
+	#define OR1K_KERNEL_VADDR             (0 << OR1K_INFO_PERM_OFFSET)          /**< vaddr kernel constant       */
+	#define OR1K_USER_VADDR               (1 << OR1K_INFO_PERM_OFFSET)          /**< vaddr user constant         */
+	#define OR1K_DATA_VADDR               (0 << OR1K_INFO_LOC_OFFSET)           /**< vaddr data constant         */
+	#define OR1K_CODE_VADDR               (1 << OR1K_INFO_LOC_OFFSET)           /**< vaddr code constant         */
+	#define OR1K_VADDR_BELONGS_USER(info) (info & (1 << OR1K_INFO_PERM_OFFSET)) /**< Gets permission information */
+	#define OR1K_VADDR_BELONGS_CODE(info) (info & (1 << OR1K_INFO_LOC_OFFSET))  /**< Gets location information   */
+	/**@}*/
+
 #ifndef _ASM_FILE_
 
 	/**
@@ -188,6 +202,36 @@
 	}
 
 	/**
+	 * @brief Gets the tlbe entry index on TLB structure.
+	 * 
+	 * @param vaddr Target virtual address.
+	 *
+	 * @return Index of target entry in the TLB.
+	 */
+	static inline unsigned or1k_tlbe_get_index(vaddr_t vaddr)
+	{
+		return ((vaddr >> PAGE_SHIFT) & (OR1K_TLB_LENGTH - 1));
+	}
+
+	/**
+	 * @brief Assesses if a TLB entry is valid
+	 *
+	 * @param tlbe Target TLB entry.
+	 *
+	 * The or1k_tlbe_is_valid() function always return true.
+	 *
+	 * @return The TLB entry is always valid.
+	 *
+	 * @author João Vicente Souto
+	 */
+	static inline int or1k_tlbe_is_valid(const struct tlbe *tlbe)
+	{
+		UNUSED(tlbe);
+
+		return (1);
+	}
+
+	/**
 	 * @brief Updates TLB entry.
 	 *
 	 * @param tlb_type TLB type.
@@ -204,20 +248,23 @@
 	/**
 	 * @brief Writes a TLB entry.
 	 *
+	 * @param tlbe     The updated value of target TLB entry.
 	 * @param tlb_type Target TLB.
 	 * @param user     User adderss flag.
 	 * @param inst     Instruction flag.
 	 * @param vaddr    Target virtual address.
 	 * @param paddr    Target physical address.
-	 * @param tlbe  The updated value of target TLB entry.
+	 * 
+	 * @return Zero if successfully writes a TLB entry,
+	 * non zero otherwise.
 	 */
 	EXTERN int or1k_tlbe_write(
+		struct tlbe *tlbe,
 		int tlb_type,
-		int user,
-		int inst,
 		vaddr_t vaddr,
 		paddr_t paddr,
-		struct tlbe * tlbe
+		int user,
+		int inst
 	);
 
 	/**
@@ -225,6 +272,9 @@
 	 *
 	 * @param tlb_type Target TLB.
 	 * @param idx      Target TLB idx.
+	 * 
+	 * @return Zero if successfully writes a TLB entry,
+	 * non zero otherwise.
 	 */
 	static inline int or1k_tlbe_inval(int tlb_type, int idx)
 	{
@@ -270,18 +320,25 @@
 	 * @name Provided Interface
 	 */
 	/**@{*/
-	#define __tlbe_st             /**< TLB Entry           */
-	#define __tlbe_vaddr_get_fn   /**< tlbe_vaddr_get()    */
-	#define __tlbe_paddr_get_fn   /**< tlbe_paddr_get()    */
+	#define __tlbe_st             /**< TLB Entry        */
+	#define __tlbe_vaddr_get_fn   /**< tlbe_vaddr_get() */
+	#define __tlbe_paddr_get_fn   /**< tlbe_paddr_get() */
+	#define __tlbe_get_index_fn   /**< tlbe_get_index() */
+	#define __tlbe_is_valid_fn    /**< tlbe_is_valid()  */
+	#define __tlbe_write_fn       /**< tlbe_write()     */
+	#define __tlbe_inval_fn       /**< tlbe_inval()     */
 	/**@}*/
 
 	/**
-	 * @brief Length of TLB (number of entries).
+	 * @name Length of TLB (number of entries).
 	 *
 	 * Number of entries in the architectural TLB exposed by the
 	 * hardware.
 	 */
-	#define TLB_LENGTH OR1K_TLB_LENGTH
+	/**@{*/
+	#define TLB_LENGTH        OR1K_TLB_LENGTH /**< TLB Length                      */
+	#define LOOKUP_TLB_LENGTH OR1K_TLB_LENGTH /**< TLB Length for lookup algorithm */
+	/**@}*/
 
 	/**
 	 * @name TLB Types
@@ -307,6 +364,55 @@
 	static inline paddr_t tlbe_paddr_get(const struct tlbe *tlbe)
 	{
 		return (or1k_tlbe_paddr_get(tlbe));
+	}
+
+	/**
+	 * @see or1k_tlbe_get_index().
+	 */
+	static inline unsigned tlbe_get_index(vaddr_t vaddr)
+	{
+		return (or1k_tlbe_get_index(vaddr));
+	}
+
+	/**
+	 * @see or1k_tlbe_is_valid().
+	 */
+	static inline int tlbe_is_valid(const struct tlbe *tlbe)
+	{
+		return (or1k_tlbe_is_valid(tlbe));
+	}
+
+	/**
+	 * @see or1k_tlbe_inval().
+	 */
+	static inline int tlbe_write(
+		struct tlbe *tlbe,
+		int tlb_type,
+		vaddr_t vaddr,
+		paddr_t paddr,
+		int vaddr_info
+	)
+	{
+		return (
+			or1k_tlbe_write(
+				tlbe,
+				tlb_type,
+				vaddr,
+				paddr,
+				OR1K_VADDR_BELONGS_USER(vaddr_info),
+				OR1K_VADDR_BELONGS_CODE(vaddr_info)
+			)
+		);
+	}
+
+	/**
+	 * @see or1k_tlbe_inval().
+	 */
+	static inline int tlbe_inval(struct tlbe *tlbe, int tlb_type, vaddr_t vaddr)
+	{
+		kmemset(tlbe, 0, OR1K_TLBE_SIZE);
+
+		return (or1k_tlbe_inval(tlb_type, vaddr));
 	}
 
 #endif /* _ASM_FILE_ */

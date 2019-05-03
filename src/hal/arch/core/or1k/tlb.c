@@ -55,6 +55,26 @@ struct tlbe_value
  */
 #define OR1K_TLBE_xTLBTR(x) ((x) & 0xFFFFFFFF)
 
+/**
+ * @brief Execution flags
+ */
+/**@{*/
+#define OR1K_KERNEL_EXEC_CODE OR1K_ITLBE_SXE /**< Kernel executes code segment         */
+#define OR1K_KERNEL_EXEC_DATA 0              /**< Kernel executes data segment (error) */
+#define OR1K_USER_EXEC_CODE   OR1K_ITLBE_UXE /**< User executes code segment           */
+#define OR1K_USER_EXEC_DATA   0              /**< User executes data segment (error)   */
+/**@}*/
+
+/**
+ * @brief Read flags
+ */
+/**@{*/
+#define OR1K_KERNEL_READ_CODE (OR1K_DTLBE_SRE)                                                    /**< Kernel reads code segment */
+#define OR1K_KERNEL_READ_DATA (OR1K_DTLBE_SRE | OR1K_DTLBE_SwE)                                   /**< Kernel reads data segment */
+#define OR1K_USER_READ_CODE   (OR1K_DTLBE_URE | OR1K_DTLBE_SRE | OR1K_DTLBE_SwE)                  /**< User reads code segment   */
+#define OR1K_USER_READ_DATA   (OR1K_DTLBE_URE | OR1K_DTLBE_UWE | OR1K_DTLBE_SRE | OR1K_DTLBE_SwE) /**< User reads data segment   */
+/**@}*/
+
 /*============================================================================*
  * or1k_tlbe_update()                                                         *
  *============================================================================*/
@@ -102,99 +122,60 @@ PUBLIC void or1k_tlbe_update(int tlb_type, int idx, const struct tlbe *tlbe)
  * @author Davidson Francis
  */
 PUBLIC int or1k_tlbe_write(
+	struct tlbe *tlbe,
 	int tlb_type,
-	int user,
-	int inst,
 	vaddr_t vaddr,
 	paddr_t paddr,
-	struct tlbe *tlbe
+	int user,
+	int inst
 )
 {
-	unsigned idx; /* TLB Index.         */
+	unsigned idx;      /* TLB Index.           */
+	struct tlbe _tlbe; /* Temporary TLB Entry. */
 
-	kmemset(tlbe, 0, OR1K_TLBE_SIZE);
+	/* Invalid TLB entry. */
+	if (tlbe == NULL)
+		return (-EINVAL);
 
 	/* Address belonging to the kernel. */
 	if (!user)
 	{
 		if (tlb_type == OR1K_TLB_INSTRUCTION)
-		{
-			if (inst)
-				tlbe->perms = OR1K_ITLBE_SXE;
-
-			/*
-			 * Kernel trying to execute data segments
-			 * should leads to error.
-			 */
-			else
-				tlbe->perms = 0;
-		}
-
+			_tlbe.perms = (inst) ? OR1K_KERNEL_EXEC_CODE : OR1K_KERNEL_EXEC_DATA;
 		else
-		{
-			/*
-			 * Kernel trying to read code segment.
-			 */
-			if (inst)
-				tlbe->perms = OR1K_DTLBE_SRE;
-
-			else
-				tlbe->perms = OR1K_DTLBE_SRE | OR1K_DTLBE_SwE;
-		}
-
+			_tlbe.perms = (inst) ? OR1K_KERNEL_READ_CODE : OR1K_KERNEL_READ_DATA;
 	}
 
 	/* Address belonging to the user. */
 	else
 	{
 		if (tlb_type == OR1K_TLB_INSTRUCTION)
-		{
-			if (inst)
-				tlbe->perms = OR1K_ITLBE_UXE;
-
-			/*
-			 * User trying to execute data segments
-			 * should leads to error.
-			 */
-			else
-				tlbe->perms = 0;
-		}
-
+			_tlbe.perms = (inst) ? OR1K_USER_EXEC_CODE : OR1K_USER_EXEC_DATA;
 		else
-		{
-			/*
-			 * User trying to read code segment.
-			 * Kernel always have permissions to R/W user data.
-			 */
-			if (inst)
-				tlbe->perms = OR1K_DTLBE_URE | OR1K_DTLBE_SRE |
-					OR1K_DTLBE_SwE;
-
-			else
-				tlbe->perms = OR1K_DTLBE_URE | OR1K_DTLBE_UWE |
-					OR1K_DTLBE_SRE | OR1K_DTLBE_SwE;
-		}
+			_tlbe.perms = (inst) ? OR1K_USER_READ_CODE : OR1K_USER_READ_DATA;
 	}
 
 	/* Remaining fields. */
-	tlbe->vpn = vaddr >> PAGE_SHIFT;
-	tlbe->lru = 0;
-	tlbe->cid = 0;
-	tlbe->pl = OR1K_TLBE_PL2;
-	tlbe->valid = OR1K_TLBE_VALID;
+	_tlbe.vpn = vaddr >> PAGE_SHIFT;
+	_tlbe.lru = 0;
+	_tlbe.cid = 0;
+	_tlbe.pl = OR1K_TLBE_PL2;
+	_tlbe.valid = OR1K_TLBE_VALID;
 
-	tlbe->ppn = paddr >> PAGE_SHIFT;
-	tlbe->dirty = !OR1K_TLBE_DIRTY;
-	tlbe->accessed = !OR1K_TLBE_ACCESSED;
-	tlbe->wom = OR1K_TLBE_MEMORY_MODEL_STRONG;
-	tlbe->wbc = OR1K_TLBE_CACHE_POLICY_WRBACK;
-	tlbe->ci = !OR1K_TLBE_CACHE_INHIBIT;
-	tlbe->cc = OR1K_TLBE_CACHE_COHERENCY;
+	_tlbe.ppn = paddr >> PAGE_SHIFT;
+	_tlbe.dirty = !OR1K_TLBE_DIRTY;
+	_tlbe.accessed = !OR1K_TLBE_ACCESSED;
+	_tlbe.wom = OR1K_TLBE_MEMORY_MODEL_STRONG;
+	_tlbe.wbc = OR1K_TLBE_CACHE_POLICY_WRBACK;
+	_tlbe.ci = !OR1K_TLBE_CACHE_INHIBIT;
+	_tlbe.cc = OR1K_TLBE_CACHE_COHERENCY;
 
 	/* TLB index. */
-	idx = (vaddr >> PAGE_SHIFT) & (OR1K_TLB_LENGTH - 1);
+	idx = or1k_tlbe_get_index(vaddr);
 
-	or1k_tlbe_update(tlb_type, idx, tlbe);
+	or1k_tlbe_update(tlb_type, idx, &_tlbe);
+
+	kmemcpy(tlbe, &_tlbe, OR1K_TLBE_SIZE);
 
 	return (0);
 }
