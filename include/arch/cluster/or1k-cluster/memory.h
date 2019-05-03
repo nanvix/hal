@@ -110,8 +110,8 @@
 	 */
 	/**@{*/
 	#define OR1K_OMPIC_CPUBYTES	        8
-	#define OR1K_OMPIC_CTRL(cpu)        (OR1K_CLUSTER_OMPIC_BASE_VIRT + (0x0 + ((cpu) * OR1K_OMPIC_CPUBYTES)))
-	#define OR1K_OMPIC_STAT(cpu)        (OR1K_CLUSTER_OMPIC_BASE_VIRT + (0x4 + ((cpu) * OR1K_OMPIC_CPUBYTES)))
+	#define OR1K_OMPIC_CTRL(cpu)        ((0x0 + ((cpu) * OR1K_OMPIC_CPUBYTES)))
+	#define OR1K_OMPIC_STAT(cpu)        ((0x4 + ((cpu) * OR1K_OMPIC_CPUBYTES)))
 	#define OR1K_OMPIC_CTRL_IRQ_ACK	    (1 << 31)
 	#define OR1K_OMPIC_CTRL_IRQ_GEN	    (1 << 30)
 	#define OR1K_OMPIC_CTRL_DST(cpu)    (((cpu) & 0x3fff) << 16)

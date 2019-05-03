@@ -52,6 +52,11 @@
 	 */
 	EXTERN int or1k_cluster_event_wait(void);
 
+	/**
+	 * @brief Waits for an event.
+	 */
+	EXTERN void or1k_cluster_event_reset(void);
+
 #endif /* _ASM_FILE_ */
 
 /**@}*/
@@ -88,6 +93,14 @@
 	static inline void event_wait(void)
 	{
 		or1k_cluster_event_wait();
+	}
+
+	/**
+	 * @see or1k_cluster_event_reset().
+	 */
+	static inline void event_reset(void)
+	{
+		or1k_cluster_event_reset();
 	}
 
 #endif /* _ASM_FILE_ */
