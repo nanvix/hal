@@ -88,6 +88,60 @@
 	 */
 	#define PERF_EVENTS_MAX 14
 
+	/**
+	 * @name Dummy Performance Events
+	 */
+	/**@{*/
+	#ifndef PERF_MONITORS_NUM
+	#define PERF_MONITORS_NUM  -1
+	#endif
+	#ifndef PERF_EVENTS_NUM
+	#define PERF_EVENTS_NUM    -1
+	#endif
+	#ifndef PERF_CYCLES
+	#define PERF_CYCLES        -1
+	#endif
+	#ifndef PERF_ICACHE_HITS
+	#define PERF_ICACHE_HITS   -1
+	#endif
+	#ifndef PERF_ICACHE_MISSES
+	#define PERF_ICACHE_MISSES -1
+	#endif
+	#ifndef PERF_ICACHE_STALLS
+	#define PERF_ICACHE_STALLS -1
+	#endif
+	#ifndef PERF_DCACHE_HITS
+	#define PERF_DCACHE_HITS   -1
+	#endif
+	#ifndef PERF_DCACHE_MISSES
+	#define PERF_DCACHE_MISSES -1
+	#endif
+	#ifndef PERF_DCACHE_STALLS
+	#define PERF_DCACHE_STALLS -1
+	#endif
+	#ifndef PERF_BUNDLES
+	#define PERF_BUNDLES       -1
+	#endif
+	#ifndef PERF_BRANCH_TAKEN
+	#define PERF_BRANCH_TAKEN  -1
+	#endif
+	#ifndef PERF_BRANCH_STALLS
+	#define PERF_BRANCH_STALLS -1
+	#endif
+	#ifndef PERF_REG_STALLS
+	#define PERF_REG_STALLS    -1
+	#endif
+	#ifndef PERF_ITLB_STALLS
+	#define PERF_ITLB_STALLS   -1
+	#endif
+	#ifndef PERF_DTLB_STALLS
+	#define PERF_DTLB_STALLS   -1
+	#endif
+	#ifndef PERF_STREAM_STALLS
+	#define PERF_STREAM_STALLS -1
+	#endif
+	/**@}*/
+
 #ifndef _ASM_FILE_
 
 #ifdef __NANVIX_HAL
