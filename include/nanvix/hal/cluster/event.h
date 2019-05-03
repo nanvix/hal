@@ -82,6 +82,22 @@
 	}
 #endif
 
+	/**
+	 * @brief Resets the pending IPI interrupt.
+	 *
+	 * If the current architecture have events and have a valid
+	 * interrupt number for the IPI handler, exports the function,
+	 * otherwise, defines a dummy reset function.
+	 */
+#if (CLUSTER_HAS_EVENTS && INTERRUPT_IPI < INTERRUPTS_NUM)
+	EXTERN void event_reset(void);
+#else
+	static inline void event_reset(void)
+	{
+		/* noop. */
+	}
+#endif
+
 /**@}*/
 
 #endif /* NANVIX_HAL_CLUSTER_EVENT_H_ */
