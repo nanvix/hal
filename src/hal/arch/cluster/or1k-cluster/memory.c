@@ -403,6 +403,12 @@ PRIVATE void or1k_cluster_mem_info(void)
 {
 	int i; /* Loop index. */
 
+	kprintf("[hal] text = %d KB data = %d KB bss = %d KB",
+		(&__TEXT_END - &__TEXT_START)/KB,
+		(&__DATA_END - &__DATA_START)/KB,
+		(&__BSS_END  - &__BSS_START)/KB
+	);
+
 	for (i = 0; i < OR1K_CLUSTER_MEM_REGIONS; i++)
 	{
 		kprintf("[hal] %s_base=%x %s_end=%x",

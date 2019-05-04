@@ -105,6 +105,9 @@ PRIVATE void or1k_fence_wait(void)
  */
 PUBLIC NORETURN void or1k_cluster_master_setup(void)
 {
+	/* Clear BSS section. */
+	kmemset(&__BSS_START, 0, &__BSS_END - &__BSS_START);
+
 	/* Core setup. */
 	or1k_cluster_setup();
 
