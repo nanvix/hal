@@ -7,15 +7,27 @@ services:
 
 jobs:
   include:
-    - stage: build
+    # Build Debug
+    - stage: "Build Debug"
       name: "QEMU OpenRISC"
       script: docker run -v"$(pwd):/root/nanvix/hal" -p4567:4567 nanvix/toolchain-openrisc /bin/sh -c "cd /root/nanvix/hal && export TARGET=qemu-openrisc && export TOOLCHAIN_DIR=/root/toolchain/or1k/bin && make distclean  && make all"
-    - stage: build
+    - stage: "Build Debug"
       name: "QEMU x86"
       script: docker run -v"$(pwd):/root/nanvix/hal" -p4567:4567 nanvix/toolchain-i486 /bin/sh -c "cd /root/nanvix/hal && export TARGET=qemu-x86 && export TOOLCHAIN_DIR=/root/toolchain/i486/bin && make distclean && make all"
-    - stage: build
+    - stage: "Build Debug"
       name: "QEMU RISC-V 32-Bit"
       script: docker run -v"$(pwd):/root/nanvix/hal" -p4567:4567 nanvix/toolchain-riscv32 /bin/sh -c "cd /root/nanvix/hal && export TARGET=qemu-riscv32 && export TOOLCHAIN_DIR=/root/toolchain/riscv32/bin && make distclean && make all"
+
+    # Build Release
+    - stage: "Build Release"
+      name: "QEMU OpenRISC"
+      script: docker run -v"$(pwd):/root/nanvix/hal" -p4567:4567 nanvix/toolchain-openrisc /bin/sh -c "cd /root/nanvix/hal && export TARGET=qemu-openrisc && export TOOLCHAIN_DIR=/root/toolchain/or1k/bin && export RELEASE=true && make distclean  && make all"
+    - stage: "Build Release"
+      name: "QEMU x86"
+      script: docker run -v"$(pwd):/root/nanvix/hal" -p4567:4567 nanvix/toolchain-i486 /bin/sh -c "cd /root/nanvix/hal && export TARGET=qemu-x86 && export TOOLCHAIN_DIR=/root/toolchain/i486/bin && export RELEASE=true && make distclean && make all"
+    - stage: "Build Release"
+      name: "QEMU RISC-V 32-Bit"
+      script: docker run -v"$(pwd):/root/nanvix/hal" -p4567:4567 nanvix/toolchain-riscv32 /bin/sh -c "cd /root/nanvix/hal && export TARGET=qemu-riscv32 && export TOOLCHAIN_DIR=/root/toolchain/riscv32/bin && export RELEASE=true && make distclean && make all"
 
 notifications:
   slack: nanvix:31ePVjsrXynUajPUDqy6I0hp
