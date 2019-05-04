@@ -22,6 +22,7 @@
  * SOFTWARE.
  */
 
+#include <nanvix/hal/core/interrupt.h>
 #include <arch/core/or1k/int.h>
 #include <arch/core/or1k/core.h>
 #include <nanvix/const.h>
@@ -34,3 +35,23 @@
 PUBLIC void (*interrupt_handlers[OR1K_INT_NUM])(int) = {
 	NULL, NULL, NULL
 };
+
+/**
+ * @brief Receives an interrupt number, checks if belongs
+ * to a clock interrupt or a external device and
+ * call the generic handler with the appropriate
+ * interrupt number.
+ *
+ * @param num Interrupt type identifier.
+ */
+PUBLIC void or1k_do_interrupt(int num)
+{
+	int interrupt; /* Interrupt to be served. */
+
+	if (num == OR1K_INT_EXTERNAL)
+		interrupt = or1k_pic_next();
+	else
+		interrupt = num;
+
+	do_interrupt(interrupt);
+}

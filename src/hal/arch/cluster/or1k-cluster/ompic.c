@@ -28,31 +28,10 @@
 	#include <arch/cluster/optimsoc-cluster/memory.h>
 #endif
 
+#include <nanvix/hal/cluster/mmio.h>
 #include <nanvix/hal/core/interrupt.h>
 #include <nanvix/const.h>
 #include <stdint.h>
-
-/*
- * @brief Reds from a specified OMPIC register.
- *
- * @param reg Target register.
- * @return Register value.
- */
-PRIVATE inline uint32_t or1k_cluster_ompic_readreg(uint32_t reg)
-{
-	return ( *((volatile uint32_t *) (reg)) );
-}
-
-/*
- * @brief Writes into a specified OMPIC register.
- *
- * @param reg Target register.
- * @param data Data to be written.
- */
-PRIVATE inline void or1k_cluster_ompic_writereg(uint32_t reg, uint32_t data)
-{
-	*((volatile uint32_t *) (reg)) = data;
-}
 
 /*
  * @brief Sends an Inter-processor Interrupt.
@@ -62,30 +41,18 @@ PRIVATE inline void or1k_cluster_ompic_writereg(uint32_t reg, uint32_t data)
  */
 PUBLIC void or1k_cluster_ompic_send_ipi(uint32_t dstcore, uint16_t data)
 {
-	int coreid; /* Core ID. */
-	coreid = or1k_core_get_id();
-
-	/* Send IPI. */
-	or1k_cluster_ompic_writereg(OR1K_OMPIC_CTRL(coreid), OR1K_OMPIC_CTRL_IRQ_GEN |
-		OR1K_OMPIC_CTRL_DST(dstcore)| OR1K_OMPIC_DATA(data));
-}
-
-/*
- * @brief Handles to Inter-processor Interrupt here.
- *
- * @param num Dummy argument.
- */
-PRIVATE void or1k_cluster_ompic_handle_ipi(int num)
-{
-	int coreid; /* Core ID. */
-
-	UNUSED(num);
+	int coreid;       /* Core ID.       */
+	uint32_t *ompic;  /* OMPIC address. */
 
 	/* Current core. */
 	coreid = or1k_core_get_id();
 
-	/* ACK IPI. */
-	or1k_cluster_ompic_writereg(OR1K_OMPIC_CTRL(coreid), OR1K_OMPIC_CTRL_IRQ_ACK);
+	/* Get address of uart. */
+	ompic = mmio_get(OR1K_CLUSTER_OMPIC_BASE_PHYS);
+
+	/* Send IPI. */
+	ompic[OR1K_OMPIC_CTRL(coreid) / OR1K_WORD_SIZE] = OR1K_OMPIC_CTRL_IRQ_GEN |
+		OR1K_OMPIC_CTRL_DST(dstcore)| OR1K_OMPIC_DATA(data);
 }
 
 /*
@@ -93,6 +60,5 @@ PRIVATE void or1k_cluster_ompic_handle_ipi(int num)
  */
 PUBLIC void or1k_cluster_ompic_init(void)
 {
-	/* IPI handler. */
-	interrupt_register(OR1K_INT_OMPIC, or1k_cluster_ompic_handle_ipi);
+	/* noop. */
 }
