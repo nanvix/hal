@@ -36,6 +36,11 @@
 PRIVATE interrupt_handler_t clock_handler = NULL;
 
 /**
+ * @brief Event handler.
+ */
+PRIVATE interrupt_handler_t event_handler = NULL;
+
+/**
  * @brief Number of spurious interrupts.
  */
 PRIVATE unsigned spurious = 0;
@@ -66,6 +71,18 @@ PRIVATE void do_clock(int num)
 		clock_handler(num);
 
 	clock_reset();
+}
+
+/**
+ * @brief Wrapper for event IPI.
+ */
+PRIVATE void do_event(int num)
+{
+	/* Forward event interrupt handling. */
+	if (event_handler != default_handler)
+		event_handler(num);
+
+	event_reset();
 }
 
 /**
@@ -117,7 +134,7 @@ PUBLIC int interrupt_register(int num, interrupt_handler_t handler)
 	if ((num < 0) || (num >= INTERRUPTS_NUM))
 		return (-EINVAL);
 
-	if (num != INTERRUPT_CLOCK)
+	if (num != INTERRUPT_CLOCK && num != INTERRUPT_IPI)
 	{
 		/* Handler function already registered. */
 		if (interrupt_handlers[num] != default_handler)
@@ -127,11 +144,22 @@ PUBLIC int interrupt_register(int num, interrupt_handler_t handler)
 	}
 	else
 	{
-		/* Handler function already registered. */
-		if (clock_handler != default_handler)
-			return (-EBUSY);
+		if (num == INTERRUPT_CLOCK)
+		{
+			/* Handler function already registered. */
+			if (clock_handler != default_handler)
+				return (-EBUSY);
 
-		clock_handler = handler;
+			clock_handler = handler;
+		}
+		else
+		{
+			/* Handler function already registered. */
+			if (event_handler != default_handler)
+				return (-EBUSY);
+
+			event_handler = handler;
+		}
 	}
 
 	dcache_invalidate();
@@ -154,7 +182,7 @@ PUBLIC int interrupt_unregister(int num)
 	if ((num < 0) || (num >= INTERRUPTS_NUM))
 		return (-EINVAL);
 
-	if (num != INTERRUPT_CLOCK)
+	if (num != INTERRUPT_CLOCK && num != INTERRUPT_IPI)
 	{
 		/* No handler function is registered. */
 		if (interrupt_handlers[num] == default_handler)
@@ -164,11 +192,22 @@ PUBLIC int interrupt_unregister(int num)
 	}
 	else
 	{
-		/* No handler function is registered. */
-		if (clock_handler == default_handler)
-			return (-EINVAL);
+		if (num == INTERRUPT_CLOCK)
+		{
+			/* No handler function is registered. */
+			if (clock_handler == default_handler)
+				return (-EINVAL);
 
-		clock_handler = default_handler;
+			clock_handler = default_handler;
+		}
+		else
+		{
+			/* No handler function is registered. */
+			if (event_handler == default_handler)
+				return (-EINVAL);
+
+			event_handler = default_handler;
+		}
 	}
 
 		dcache_invalidate();
@@ -191,12 +230,21 @@ PUBLIC void interrupt_setup(void)
 	{
 		interrupt_handler_t handler;
 
-		handler = (i == INTERRUPT_CLOCK) ? do_clock : default_handler;
+		if (i == INTERRUPT_CLOCK)
+			handler = do_clock;
+		else if (i == INTERRUPT_IPI)
+			handler = do_event;
+		else
+			handler = default_handler;
 
 		interrupt_handlers[i] = handler;
 	}
 
 	clock_handler = default_handler;
+
+#if (CLUSTER_HAS_EVENTS)
+	event_handler = default_handler;
+#endif
 
 	dcache_invalidate();
 }

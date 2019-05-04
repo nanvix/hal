@@ -63,6 +63,7 @@
 	#define RV32GC_INT_EXTERN_USER     RV32GC_IRQ_UEXTERN /**< User External Interrupt       */
 	#define RV32GC_INT_EXTERN_KERNEL   RV32GC_IRQ_SEXTERN /**< Supervisor External Interrupt */
 	#define RV32GC_INT_EXTERN_MACHINE  RV32GC_IRQ_HEXTERN /**< Machine External Interrupt    */
+	#define RV32GC_INT_IPI             RV32GC_IRQ_IPI     /**< Dummy IPI interrupt.          */
 	/**@}*/
 
 #ifndef _ASM_FILE_
@@ -132,6 +133,7 @@
 	/**@{*/
 	#define INTERRUPTS_NUM  RV32GC_INT_NUM          /**< @ref RV32GC_INT_NUM          */
 	#define INTERRUPT_CLOCK RV32GC_INT_TIMER_KERNEL /**< @ref RV32GC_INT_TIMER_KERNEL */
+	#define INTERRUPT_IPI   RV32GC_INT_IPI          /**< @ref RV32GC_INT_IPI          */
 	/**@}*/
 
 	/**

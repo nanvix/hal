@@ -59,6 +59,7 @@
 	#define RV32GC_IRQ_UEXTERN  8 /**< User External       */
 	#define RV32GC_IRQ_SEXTERN  9 /**< Supervisor External */
 	#define RV32GC_IRQ_HEXTERN 11 /**< Hypervisor External */
+	#define RV32GC_IRQ_IPI    256 /**< Dummy IPI irq.      */
 	/**@}*/
 
 #ifndef _ASM_FILE_

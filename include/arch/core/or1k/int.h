@@ -115,6 +115,7 @@
 	/**@{*/
 	#define INTERRUPTS_NUM  OR1K_INT_NUM   /**< @ref OR1K_INT_NUM   */
 	#define INTERRUPT_CLOCK OR1K_INT_CLOCK /**< @ref OR1K_INT_CLOCK */
+	#define INTERRUPT_IPI   OR1K_INT_OMPIC /**< @ref OR1K_INT_CLOCK */
 	/**@}*/
 
 	/**

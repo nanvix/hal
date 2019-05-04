@@ -63,6 +63,7 @@
 	#define I486_INT_COPROC  13 /*< FPU, coprocessor or inter-processor.       */
 	#define I486_INT_ATA1    14 /*< Primary ATA hard disk.                     */
 	#define I486_INT_ATA2    15 /*< Secondary ATA hard disk.                   */
+	#define I486_INT_IPI    256 /*< Dummy IPI interrupt.                       */
 	/**@}*/
 
 #ifndef _ASM_FILE_
@@ -129,6 +130,7 @@
 	/**@{*/
 	#define INTERRUPTS_NUM  I486_INT_NUM   /**< @ref I486_INT_NUM   */
 	#define INTERRUPT_CLOCK I486_INT_CLOCK /**< @ref I486_INT_CLOCK */
+	#define INTERRUPT_IPI   I486_INT_IPI   /**< @ref I486_INT_IPI   */
 	/**@}*/
 
 	/**
