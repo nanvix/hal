@@ -58,7 +58,6 @@ SECTIONS
 	.data ALIGN(8192) : AT(ADDR(.data))
 	{
 		__DATA_START = .;
-		*boot_data.o
 		*(.rodata)
 		*(.data)
 		__DATA_END = .;
@@ -68,6 +67,7 @@ SECTIONS
 	.bss : AT(ADDR(.bss))
 	{
 		__BSS_START = .;
+		*boot_data.o
 		*(.bss)
 		__BSS_END = .;
 	}

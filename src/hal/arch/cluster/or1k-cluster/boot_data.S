@@ -32,16 +32,16 @@
 #endif
 
 /* Exported symbols. */
-.globl core.kstack
+.globl kstacks
 
-.section .data
+.section .bss
 /*----------------------------------------------------------------------------*
- * core.kstack                                                                *
+ * kstacks                                                                    *
  *----------------------------------------------------------------------------*/
 
 /**
  * @brief Kernel stack for all cores.
  */
 .align OR1K_PAGE_SIZE
-core.kstack:
-	.fill (OR1K_PAGE_SIZE/OR1K_PTE_SIZE)*OR1K_CLUSTER_NUM_CORES, OR1K_PTE_SIZE, 0
+kstacks:
+	.skip OR1K_PAGE_SIZE * OR1K_CLUSTER_NUM_CORES

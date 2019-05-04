@@ -35,7 +35,7 @@
 
 /* Exported symbols. */
 .globl start
-.globl core.kstack
+.globl kstacks
 
 /*============================================================================*
  *                              bootstrap section                             *
