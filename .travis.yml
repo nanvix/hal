@@ -5,6 +5,15 @@ language: C
 services:
 - docker
 
+env:
+  global:
+      - SERVER1_USERNAME=penna
+      - SERVER1_ALIASNAME=bastionguest
+      - SERVER1_HOSTNAME=lig-bastionguest.imag.fr
+      - SERVER2_USERNAME=penna
+      - SERVER2_ALIASNAME=mppa
+      - SERVER2_HOSTNAME=mppa
+
 jobs:
   include:
     # Build Debug
@@ -17,6 +26,19 @@ jobs:
     - stage: "Build Debug"
       name: "QEMU RISC-V 32-Bit"
       script: docker run -v"$(pwd):/root/nanvix/hal" -p4567:4567 nanvix/toolchain-riscv32 /bin/sh -c "cd /root/nanvix/hal && export TARGET=qemu-riscv32 && export TOOLCHAIN_DIR=/root/toolchain/riscv32/bin && make distclean && make all"
+    - stage: "Build Debug"
+      name: "MPPA-256"
+      if: !TRAVIS_PULL_REQUEST
+      before_script:
+        - openssl aes-256-cbc -K $encrypted_b4131d7a7a41_key -iv $encrypted_b4131d7a7a41_iv -in travis_rsa.enc -out travis_rsa -d
+        - eval "$(ssh-agent -s)"
+        - chmod 600 travis_rsa
+        - echo -e "Host $SERVER1_ALIASNAME\n\tUser $SERVER1_USERNAME\n\tHostName $SERVER1_HOSTNAME\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
+        - echo -e "Host $SERVER2_ALIASNAME\n\tUser $SERVER2_USERNAME\n\tHostName $SERVER2_HOSTNAME\n\tProxyCommand ssh -q $SERVER1_ALIASNAME nc -q0 $SERVER2_HOSTNAME %p\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
+        - ssh-add travis_rsa
+      script:
+        - rsync -avz --delete-after --exclude=".git" . $SERVER2_ALIASNAME:~/travis/hal
+        - ssh $SERVER2_ALIASNAME 'bash travis/build-hal.sh'
 
     # Build Release
     - stage: "Build Release"
