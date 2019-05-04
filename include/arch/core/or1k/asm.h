@@ -372,7 +372,7 @@
 	 */
 	.macro or1k_core_stack_reset coreid
 
-		OR1K_LOAD_SYMBOL_2_GPR(r1, core.kstack)
+		OR1K_LOAD_SYMBOL_2_GPR(r1, kstacks)
 		l.or   r3, r0, \coreid
 		l.addi r3, r3, 1
 		l.slli r3, r3, OR1K_PAGE_SHIFT

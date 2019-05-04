@@ -34,7 +34,7 @@
 
 /* Exported symbols. */
 .global _or1k_cluster_core_reset
-.global core.kstack
+.global kstacks
 
 .section .text
 
