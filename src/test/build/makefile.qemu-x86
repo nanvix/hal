@@ -26,8 +26,8 @@ export LDFLAGS  += -L $(LINKERDIR)/ -T link.ld
 ASM_SRC = $(wildcard core/arch/i486.S)
 
 # Object Files
-OBJ = $(C_SRC:.c=.o) \
-      $(ASM_SRC:.S=.o)
+OBJ = $(C_SRC:.c=.$(CLUSTER)-$(CORE).o) \
+      $(ASM_SRC:.S=.$(CLUSTER)-$(CORE).o)
 
 # Builds object files for i486 PC target.
 all: $(OBJ)
@@ -48,7 +48,7 @@ else
 endif
 
 # Builds a C Source file
-%.o: %.c
+%.$(CLUSTER)-$(CORE).o: %.c
 ifeq ($(VERBOSE), no)
 	@echo [CC] $@
 	@$(CC) $(CFLAGS) $< -c -o $@
@@ -57,7 +57,7 @@ else
 endif
 
 # Builds an ASM Source File
-%.o: %.S
+%.$(CLUSTER)-$(CORE).o: %.S
 ifeq ($(VERBOSE), no)
 	@echo [AS] $@
 	@$(CC) $(CFLAGS) $< -c -o $@

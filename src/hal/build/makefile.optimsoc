@@ -32,8 +32,8 @@ ASM_SRC := $(filter-out $(wildcard arch/cluster/optimsoc-cluster/*.S), $(ASM_SRC
 ASM_SRC += $(wildcard arch/cluster/or1k-cluster/*.S)
 
 # Object Files
-OBJ = $(ASM_SRC:.S=.o) \
-	  $(C_SRC:.c=.o)
+OBJ = $(ASM_SRC:.S=.$(CLUSTER)-$(CORE).o) \
+	  $(C_SRC:.c=.$(CLUSTER)-$(CORE).o)
 
 # Builds All Object Files
 all: $(OBJ)
@@ -54,7 +54,7 @@ else
 endif
 
 # Builds a C Source file
-%.o: %.c
+%.$(CLUSTER)-$(CORE).o: %.c
 ifeq ($(VERBOSE), no)
 	@echo [CC] $@
 	@$(CC) $(CFLAGS) $< -c -o $@
@@ -63,7 +63,7 @@ else
 endif
 
 # Builds an ASM Source File
-%.o: %.S
+%.$(CLUSTER)-$(CORE).o: %.S
 ifeq ($(VERBOSE), no)
 	@echo [AS] $@
 	@$(CC) $(CFLAGS) $< -c -o $@
