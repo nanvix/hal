@@ -385,6 +385,11 @@ PRIVATE void k1b_cluster_mem_warmup(void)
  */
 PRIVATE void k1b_cluster_mem_info(void)
 {
+	kprintf("[hal] text = %d KB data = %d KB bss = %d KB",
+		(&__TEXT_END - &__TEXT_START)/KB,
+		(&__DATA_END - &__DATA_START)/KB,
+		(&__BSS_END  - &__BSS_START)/KB
+	);
 	kprintf("[hal] kernel_base=%x kernel_end=%x",
 		K1B_CLUSTER_KERNEL_BASE_VIRT,
 		K1B_CLUSTER_KERNEL_END_VIRT
