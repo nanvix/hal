@@ -1,5 +1,5 @@
-Nanvix Microkernel HAL
-======================
+Hardware Abstraction Layer (HAL) of Nanvix
+==========================================
 [![Build Status](https://travis-ci.com/nanvix/hal.svg?branch=unstable)](https://travis-ci.com/nanvix/hal)
 [![Join us on Slack!](https://img.shields.io/badge/chat-on%20Slack-e01563.svg)](https://join.slack.com/t/nanvix/shared_invite/enQtMzY2Nzg5OTQ4NTAyLTAxMmYwOGQ0ZmU2NDg2NTJiMWU1OWVkMWJhMWY4NzMzY2E1NTIyMjNiOTVlZDFmOTcyMmM2NDljMTAzOGI1NGY)
 
@@ -26,8 +26,9 @@ Building & Running
 **1. Clone This Repository**
 
 ```
-cd ~/                                       # Go to HOME directory
-git clone https://github.com/nanvix/hal.git # Clone the source tree
+export WORKDIR=$HOME                                    # Change this at your will
+cd $WORKDIR                                             # Go to working directory
+git clone --recursive https://github.com/nanvix/hal.git # Clone the source tree
 ```
 
 **2. Get the Development Toolchain**
@@ -35,8 +36,8 @@ git clone https://github.com/nanvix/hal.git # Clone the source tree
 Install build dependencies.
 
 ```
-cd ~/hal                                     # Switch to source tree
-sudo bash tools/dev/setup-pre-requisites.sh  # Get Essential tools for building
+cd $WORKDIR/hal                             # Enter the source tree
+sudo bash tools/dev/setup-prerequisites.sh  # Get essential tools for building
 ```
 
 Export the name of the desired target:
@@ -59,6 +60,12 @@ Build simulators:
 sudo bash tools/dev/setup-qemu.sh
 ```
 
+Add simulators to your path:
+
+```
+export PATH=$PATH:$WORKDIR/hal/tools/dev/toolchain/qemu/bin
+```
+
 **3. Build the HAL**
 
 ```
@@ -70,9 +77,9 @@ make all       # Build the HAL.
 **4. Run Regression Tests (optional)**
 
 ```
-bash tools/run/run-qemu.sh
+make run-ccluster   # Compute Cluster
+make run-iocluster  # IO Cluster
 ```
-
 
 License & Maintainers
 ---------------------
