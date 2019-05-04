@@ -24,8 +24,8 @@
 C_SRC += $(wildcard stdout/8250.c)
 
 # Object Files
-OBJ = $(ASM_SRC:.S=.o) \
-	  $(C_SRC:.c=.o)
+OBJ = $(ASM_SRC:.S=.$(CLUSTER)-$(CORE).o) \
+	  $(C_SRC:.c=.$(CLUSTER)-$(CORE).o)
 
 # Builds All Object Files
 all: $(OBJ)
@@ -46,7 +46,7 @@ else
 endif
 
 # Builds a C Source file
-%.o: %.c
+%.$(CLUSTER)-$(CORE).o: %.c
 ifeq ($(VERBOSE), no)
 	@echo [CC] $@
 	@$(CC) $(CFLAGS) $< -c -o $@
@@ -55,7 +55,7 @@ else
 endif
 
 # Builds an ASM Source File
-%.o: %.S
+%.$(CLUSTER)-$(CORE).o: %.S
 ifeq ($(VERBOSE), no)
 	@echo [AS] $@
 	@$(CC) $(CFLAGS) $< -c -o $@
