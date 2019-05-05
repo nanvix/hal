@@ -48,6 +48,7 @@ export CFLAGS += -ansi -pedantic-errors
 export CFLAGS += -Wstack-usage=4096
 export CFLAGS += -D __HAS_HW_DIVISION
 export CFLAGS += -D __INTERFACE_CHECK
+export CFLAGS += -Wno-type-limits
 
 # Linker Options
 export LDFLAGS  =
