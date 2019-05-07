@@ -37,13 +37,30 @@
 /**@{*/
 
 	#include <nanvix/const.h>
+	#include <stdint.h>
+
+#ifndef _ASM_FILE_
+
+	/**
+	 * @brief Stub function.
+	 *
+	 * @returns Always zero.
+	 *
+	 * @todo TODO implement this function.
+	 */
+	static inline uint64_t or1k_cluster_clock_read(void)
+	{
+		return (0);
+	}
+
+#endif /* !_ASM_FILE_ */
 
 /*============================================================================*
  * Exported Interface                                                         *
  *============================================================================*/
 
 /**
- * @cond or1k
+ * @cond or1k_cluster
  */
 
 	/**
@@ -57,6 +74,7 @@
 	/**@{*/
 	#define __timer_init_fn  /**< timer_init()  */
 	#define __timer_reset_fn /**< timer_reset() */
+	#define __clock_read_fn  /**< clock_read()  */
 	/**@}*/
 
 	/**
@@ -75,7 +93,17 @@
 		or1k_timer_reset();
 	}
 
+	/**
+	 * @see or1k_cluster_clock_read().
+	 */
+	static inline uint64_t clock_read(void)
+	{
+		return (or1k_cluster_clock_read());
+	}
+
 /**@endcond*/
+
+/*============================================================================*/
 
 /**@}*/
 
