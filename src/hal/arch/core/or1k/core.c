@@ -66,7 +66,7 @@ PUBLIC NORETURN void or1k_core_poweroff(void)
 {
 	/* Disable all interrupts. */
 	or1k_pic_lvl_set(OR1K_IRQLVL_0);
-	
+
 	/* Is Power Management Unit present? */
 	if (or1k_mfspr(OR1K_SPR_UPR) & OR1K_SPR_UPR_PMP)
 	{

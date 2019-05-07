@@ -23,8 +23,10 @@
  */
 
 /* Must come first. */
+#define __NEED_HAL_CORE
 #define __NEED_CORE_IVT
 
+#include <nanvix/hal/core.h>
 #include <arch/core/rv32gc/ivt.h>
 #include <arch/core/rv32gc/int.h>
 #include <nanvix/const.h>
@@ -39,20 +41,15 @@ EXTERN void rv32gc_do_strap(void);
 
 /**
  * The rv32gc_core_poweroff() function powers off the underlying core.
- * Afeter powering off a core, instruction execution cannot be
+ * After powering off a core, instruction execution cannot be
  * resumed on it.
  *
  * @author Pedro Henrique Penna
+ * @author João Vicente Souto
  */
 PUBLIC NORETURN void rv32gc_core_poweroff(void)
 {
-	kprintf("[hal] halting...");
-
-	/* Disable all interrupts. */
-	rv32gc_int_disable();
-
-	/* Stay here forever. */
-	UNREACHABLE();
+	core_halt();
 }
 
 /*============================================================================*
