@@ -46,6 +46,9 @@
 	#ifndef __timer_reset_fn
 	#error "timer_reset() not defined?"
 	#endif
+	#ifndef __clock_read_fn
+	#error "clock_read() not defined?"
+	#endif
 
 #endif
 
@@ -62,9 +65,10 @@
 /**@{*/
 
 	#include <nanvix/const.h>
+	#include <stdint.h>
 
 	/**
-	 * @brief Initializes the timer device
+	 * @brief Initializes the timer device.
 	 *
 	 * @param freq Frequency for the timer device.
 	 */
@@ -78,6 +82,11 @@
 	EXTERN void timer_reset(void);
 
 #endif /* __NANVIX_HAL */
+
+	/**
+	 * @brief Returns the clock value.
+	 */
+	EXTERN uint64_t clock_read(void);
 
 /**@}*/
 

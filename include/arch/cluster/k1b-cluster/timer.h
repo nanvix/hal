@@ -36,6 +36,24 @@
  */
 /**@{*/
 
+	#include <stdint.h>
+
+#ifndef _ASM_FILE_
+
+	/**
+	 * @brief Reads the timestamp counter from the DSU.
+	 *
+	 * @returns The timestamp counter from the DSU.
+	 *
+	 * @author Pedro Henrique Penna
+	 */
+	static inline uint64_t k1b_cluster_clock_read(void)
+	{
+		return (__k1_read_dsu_timestamp());
+	}
+
+#endif /* !_ASM_FILE_ */
+
 /*============================================================================*
  * Exported Interface                                                         *
  *============================================================================*/
@@ -50,7 +68,10 @@
 	/**@{*/
 	#define __timer_init_fn  /**< timer_init()  */
 	#define __timer_reset_fn /**< timer_reset() */
+	#define __clock_read_fn  /**< clock_read()  */
 	/**@}*/
+
+#ifndef _ASM_FILE_
 
 	/**
 	 * @see k1b_timer_init().
@@ -68,7 +89,19 @@
 		/* noop */
 	}
 
+	/**
+	 * @see k1b_cluster_clock_read().
+	 */
+	static inline uint64_t clock_read(void)
+	{
+		return (k1b_cluster_clock_read());
+	}
+
+#endif /* !_ASM_FILE_ */
+
 /**@endcond*/
+
+/*============================================================================*/
 
 /**@}*/
 
