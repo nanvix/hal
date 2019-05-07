@@ -740,11 +740,13 @@ PRIVATE struct test fault_tests_api[] = {
 /**
  * @brief Stress Injection Tests.
  */
+#if defined(__ENABLE_STRESS_TESTS)
 PRIVATE struct test stress_tests_api[] = {
 	{ test_cluster_cores_stress_master_start, "start from master core" },
 	{ test_cluster_cores_stress_leader_start, "start from leader core" },
 	{ NULL,                                    NULL                    },
 };
+#endif
 
 /**
  * The test_cluster_cores() function launches testing units on the
@@ -771,10 +773,12 @@ PUBLIC void test_cluster_cores(void)
 	}
 
 	/* Stress Tests */
+#if defined(__ENABLE_STRESS_TESTS)
 	kprintf("--------------------------------------------------------------------------------");
 	for (int i = 0; stress_tests_api[i].test_fn != NULL; i++)
 	{
 		stress_tests_api[i].test_fn();
 		kprintf("[test][cluster][cores][stress] %s [passed]", stress_tests_api[i].name);
 	}
+#endif
 }

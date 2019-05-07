@@ -25,4 +25,9 @@ C_SRC = $(wildcard *.c)         \
         $(wildcard core/*.c)    \
         $(wildcard cluster/*.c)
 
+# Stress Tests Flag
+ifeq ($(__ENABLE_STRESS_TESTS),yes)
+  CFLAGS += -D__ENABLE_STRESS_TESTS
+endif
+
 include build/makefile.$(TARGET)
