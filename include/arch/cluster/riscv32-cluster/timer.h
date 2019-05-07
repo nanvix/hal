@@ -28,6 +28,9 @@
 	/* Cluster Interface Implementation */
 	#include <arch/cluster/riscv32-cluster/_riscv32-cluster.h>
 
+	/* Must come first. */
+	#define __NEED_CLUSTER_CLINT
+
 /**
  * @addtogroup rscv32-cluster-timer Timer
  * @ingroup riscv32-cluster
@@ -35,9 +38,6 @@
  * @brief 64-bit Timer
  */
 /**@{*/
-
-	/* Must come first. */
-	#define __NEED_CLUSTER_CLINT
 
 	#include <arch/cluster/riscv32-cluster/clint.h>
 	#include <stdint.h>
@@ -47,12 +47,28 @@
 	 */
 	#define RISCV32_CLUSTER_TIMEBASE 10000000
 
+#ifndef _ASM_FILE_
+
+	/**
+	 * @brief Stub function.
+	 *
+	 * @returns Always zero.
+	 *
+	 * @todo TODO implement this function.
+	 */
+	static inline uint64_t riscv32_cluster_clock_read(void)
+	{
+		return (0);
+	}
+
+#endif /* !_ASM_FILE_ */
+
 /*============================================================================*
  * Exported Interface                                                         *
  *============================================================================*/
 
 /**
- * @cond riscv32_smp
+ * @cond riscv32_cluster
  */
 
 	/**
@@ -61,6 +77,7 @@
 	/**@{*/
 	#define __timer_init_fn   /**< timer_init() */
 	#define __timer_reset_fn /**< timer_reset() */
+	#define __clock_read_fn  /**< clock_read()  */
 	/**@}*/
 
 #ifndef _ASM_FILE_
@@ -86,9 +103,19 @@
 		rv32gc_timer_reset();
 	}
 
-#endif
+	/**
+	 * @see riscv32_cluster_clock_read().
+	 */
+	static inline uint64_t clock_read(void)
+	{
+		return (riscv32_cluster_clock_read());
+	}
+
+#endif /* !_ASM_FILE_ */
 
 /**@endcond*/
+
+/*============================================================================*/
 
 /**@}*/
 
