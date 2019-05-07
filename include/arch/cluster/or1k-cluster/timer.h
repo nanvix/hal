@@ -22,65 +22,89 @@
  * SOFTWARE.
  */
 
-#ifndef ARCH_CLUSTER_OPTIMSOC_CLUSTER_CLOCK_H_
-#define ARCH_CLUSTER_OPTIMSOC_CLUSTER_CLOCK_H_
+#ifndef ARCH_CLUSTER_OR1K_CLUSTER_TIMER_H_
+#define ARCH_CLUSTER_OR1K_CLUSTER_TIMER_H_
 
 	/* Cluster Interface Implementation */
-	#include <arch/cluster/optimsoc-cluster/_optimsoc-cluster.h>
+	#include <arch/cluster/or1k-cluster/_or1k-cluster.h>
 
 /**
- * @addtogroup optimsoc-cluster-clock Clock
- * @ingroup optimsoc-cluster
+ * @addtogroup or1k-core-timer Timer
+ * @ingroup or1k-core
  *
- * @brief Integrated Clock Device
+ * @brief Integrated Timer Device
  */
 /**@{*/
 
 	#include <nanvix/const.h>
+	#include <stdint.h>
 
-/**@}*/
+#ifndef _ASM_FILE_
+
+	/**
+	 * @brief Stub function.
+	 *
+	 * @returns Always zero.
+	 *
+	 * @todo TODO implement this function.
+	 */
+	static inline uint64_t or1k_cluster_clock_read(void)
+	{
+		return (0);
+	}
+
+#endif /* !_ASM_FILE_ */
 
 /*============================================================================*
  * Exported Interface                                                         *
  *============================================================================*/
 
 /**
- * @optimsoc_cluster
+ * @cond or1k_cluster
  */
 
 	/**
-	 * @brief Estimated CPU frequency (in Hz), 50Mhz.
+	 * @brief Estimated CPU frequency (in Hz), 20Mhz.
 	 */
-	#define OR1K_CPU_FREQUENCY 50000000
+	#define OR1K_CPU_FREQUENCY 20000000
 
 	/**
 	 * @name Exported Functions
 	 */
 	/**@{*/
-	#define __clock_init_fn  /**< clock_init()  */
-	#define __clock_reset_fn /**< clock_reset() */
+	#define __timer_init_fn  /**< timer_init()  */
+	#define __timer_reset_fn /**< timer_reset() */
+	#define __clock_read_fn  /**< clock_read()  */
 	/**@}*/
 
-#ifndef _ASM_FILE_
-
 	/**
-	 * @see or1k_clock_init().
+	 * @see or1k_timer_init().
 	 */
-	static inline void clock_init(unsigned freq)
+	static inline void timer_init(unsigned freq)
 	{
-		or1k_clock_init(freq);
+		or1k_timer_init(freq);
 	}
 
 	/**
-	 * @see or1k_clock_reset().
+	 * @see or1k_timer_reset().
 	 */
-	static inline void clock_reset(void)
+	static inline void timer_reset(void)
 	{
-		or1k_clock_reset();
+		or1k_timer_reset();
 	}
 
-#endif /* !_ASM_FILE_ */
+	/**
+	 * @see or1k_cluster_clock_read().
+	 */
+	static inline uint64_t clock_read(void)
+	{
+		return (or1k_cluster_clock_read());
+	}
 
 /**@endcond*/
 
-#endif /* ARCH_CLUSTER_OPTIMSOC_CLUSTER_CLOCK */
+/*============================================================================*/
+
+/**@}*/
+
+#endif /* ARCH_CLUSTER_OR1K_CLUSTER_TIMER */

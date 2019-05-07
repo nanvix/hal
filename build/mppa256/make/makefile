@@ -45,7 +45,11 @@ export AR = $(TOOLCHAIN_DIR)/bin/k1-ar
 export CFLAGS  = -D __mppa256__ -D __k1b__
 export CFLAGS += -mos=bare -march=k1b -mboard=developer
 export CFLAGS += -D __HAS_HW_DIVISION
-export CFLAGS += -D __INTERFACE_CHECK
+export CFLAGS += -D __INTERFACE_CHECK_CORE_AL
+export CFLAGS += -D __INTERFACE_CHECK_EVENT
+export CFLAGS += -D __INTERFACE_CHECK_MEMORY
+export CFLAGS += -D __INTERFACE_CHECK_PROCESSOR_AL
+export CFLAGS += -D __INTERFACE_CHECK_TARGET_AL
 
 # Linker Options
 export LDFLAGS  = -Wl,--allow-multiple-definition

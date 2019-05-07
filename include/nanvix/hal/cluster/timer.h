@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 
-#ifndef NANVIX_HAL_CLUSTER_CLOCK_H_
-#define NANVIX_HAL_CLUSTER_CLOCK_H_
+#ifndef NANVIX_HAL_CLUSTER_TIMER_H_
+#define NANVIX_HAL_CLUSTER_TIMER_H_
 
 	/* Core Interface Implementation */
 	#include <nanvix/hal/cluster/_cluster.h>
@@ -32,54 +32,63 @@
  * Interface Implementation Checking                                          *
  *============================================================================*/
 
-#if defined(__INTERFACE_CHECK) || defined(__INTERFACE_CHECK_CLUSTER_AL) || defined(__INTERFACE_CHECK_CLOCK)
+#if defined(__INTERFACE_CHECK) || defined(__INTERFACE_CHECK_CLUSTER_AL) || defined(__INTERFACE_CHECK_TIMER)
 
 	/* Constants */
-	#ifndef INTERRUPT_CLOCK
-	#error "INTERRUPT_CLOCK not defined"
+	#ifndef INTERRUPT_TIMER
+	#error "INTERRUPT_TIMER not defined"
 	#endif
 
 	/* Functions */
-	#ifndef __clock_init_fn
-	#error "clock_init() not defined?"
+	#ifndef __timer_init_fn
+	#error "timer_init() not defined?"
 	#endif
-	#ifndef __clock_reset_fn
-	#error "clock_reset() not defined?"
+	#ifndef __timer_reset_fn
+	#error "timer_reset() not defined?"
+	#endif
+	#ifndef __clock_read_fn
+	#error "clock_read() not defined?"
 	#endif
 
 #endif
 
 /*============================================================================*
- * Clock Device Interface                                                     *
+ * Timer Device Interface                                                     *
  *============================================================================*/
 
 /**
- * @addtogroup kernel-hal-core-clock Clock
+ * @addtogroup kernel-hal-core-timer Timer
  * @ingroup kernel-hal-core
  *
- * @brief Clock Device Interface HAL Interface
+ * @brief Timer Device Interface HAL Interface
  */
 /**@{*/
 
 	#include <nanvix/const.h>
+	#include <stdint.h>
 
 	/**
-	 * @brief Initializes the clock device
+	 * @brief Initializes the timer device.
 	 *
-	 * @param freq Frequency for the clock device.
+	 * @param freq Frequency for the timer device.
 	 */
-	EXTERN void clock_init(unsigned freq);
+	EXTERN void timer_init(unsigned freq);
 
 #ifdef __NANVIX_HAL
 
 	/**
-	 * @brief Resets the timer of the clock device.
+	 * @brief Resets the timer of the timer device.
 	 */
-	EXTERN void clock_reset(void);
+	EXTERN void timer_reset(void);
 
 #endif /* __NANVIX_HAL */
 
+	/**
+	 * @brief Returns the clock value.
+	 */
+	EXTERN uint64_t clock_read(void);
+
 /**@}*/
 
-#endif /* NANVIX_HAL_CLUSTER_CLOCK_H_ */
+#endif /* NANVIX_HAL_CLUSTER_TIMER_H_ */
 

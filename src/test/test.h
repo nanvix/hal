@@ -35,9 +35,9 @@
 	};
 
 	/**
-	 * @brief Test driver for the Clock Interface.
+	 * @brief Test driver for the Timer Interface.
 	 */
-	EXTERN void test_clock(void);
+	EXTERN void test_timer(void);
 
 	/**
 	 * @brief Test driver for the Core Interface.

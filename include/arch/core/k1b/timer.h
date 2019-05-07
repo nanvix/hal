@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 
-#ifndef ARCH_CORE_K1B_CLOCK_H_
-#define ARCH_CORE_K1B_CLOCK_H_
+#ifndef ARCH_CORE_K1B_TIMER_H_
+#define ARCH_CORE_K1B_TIMER_H_
 
 /**
  * @addtogroup k1b-core-timer Timer
@@ -38,14 +38,14 @@
 #ifndef _ASM_FILE_
 
 	/**
-	 * @brief Initializes the clock driver in the k1b architecture.
+	 * @brief Initializes the timer driver in the k1b architecture.
 	 *
-	 * @param freq Target frequency for the clock device.
+	 * @param freq Target frequency for the timer device.
 	 */
-	EXTERN void k1b_clock_init(unsigned freq);
+	EXTERN void k1b_timer_init(unsigned freq);
 
 #endif /* !_ASM_FILE_ */
 
 /**@}*/
 
-#endif /* ARCH_CORE_K1B_CLOCK */
+#endif /* ARCH_CORE_K1B_TIMER */

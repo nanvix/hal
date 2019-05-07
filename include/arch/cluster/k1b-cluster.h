@@ -45,7 +45,7 @@
 /**@{*/
 
 	#include <arch/cluster/k1b-cluster/cores.h>
-	#include <arch/cluster/k1b-cluster/clock.h>
+	#include <arch/cluster/k1b-cluster/timer.h>
 	#include <arch/cluster/k1b-cluster/event.h>
 	#include <arch/cluster/k1b-cluster/memory.h>
 

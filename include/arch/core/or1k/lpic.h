@@ -54,7 +54,7 @@
 	 * @name Interrupt Request (IRQ) lines.
 	 */
 	/**@{*/
-	#define OR1K_IRQ_CLOCK   0 /*< Tmer.               */
+	#define OR1K_IRQ_TIMER   0 /*< Tmer.               */
 	#define OR1K_IRQ_OMPIC   1 /*< OMLPIC.             */
 	#define OR1K_IRQ_COM1    2 /*< COM1.               */
 	#define OR1K_IRQ_EXT   256 /*< External interrupt. */
@@ -71,9 +71,9 @@
 	/**@{*/
 	#define OR1K_IRQLVL_5 5 /**< Level 5: all hardware interrupts enabled.         */
 	#define OR1K_IRQLVL_4 4 /**< Level 4: all hardware interrupts enabled.         */
-	#define OR1K_IRQLVL_3 3 /**< Level 3: clock, ompic, serial interrupts enabled. */
-	#define OR1K_IRQLVL_2 2 /**< Level 2: clock, ompic interrupts enabled.         */
-	#define OR1K_IRQLVL_1 1 /**< Level 1: clock interrupts enabled.                */
+	#define OR1K_IRQLVL_3 3 /**< Level 3: timer, ompic, serial interrupts enabled. */
+	#define OR1K_IRQLVL_2 2 /**< Level 2: timer, ompic interrupts enabled.         */
+	#define OR1K_IRQLVL_1 1 /**< Level 1: timer interrupts enabled.                */
 	#define OR1K_IRQLVL_0 0 /**< Level 0: all hardware interrupts disabled.        */
 	/**@}*/
 

@@ -177,7 +177,7 @@ PUBLIC void k1b_perf_setup(void)
 		K1B_PERF_STOP(2) | K1B_PERF_STOP(3);
 
 	/*
-	 * - Disengage Monitors Clock
+	 * - Disengage Monitors Timer
 	 * - Stop Monitors in Privileged Mode
 	 * - Stop Monitors in Debug
 	 * - Enable PM0 and PM1 Chaining

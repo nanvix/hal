@@ -32,7 +32,7 @@
 	/* Cluster Interface Implementation */
 	#include <nanvix/hal/cluster/_cluster.h>
 
-	#include <nanvix/hal/cluster/clock.h>
+	#include <nanvix/hal/cluster/timer.h>
 	#include <nanvix/hal/cluster/event.h>
 	#include <nanvix/hal/cluster/memory.h>
 	#include <nanvix/hal/cluster/mmio.h>

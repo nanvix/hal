@@ -40,7 +40,7 @@
  */
 /**@{*/
 
-	#include <arch/cluster/or1k-cluster/clock.h>
+	#include <arch/cluster/or1k-cluster/timer.h>
 	#include <arch/cluster/or1k-cluster/cores.h>
 	#include <arch/cluster/or1k-cluster/event.h>
 	#include <arch/cluster/or1k-cluster/memory.h>

@@ -22,26 +22,44 @@
  * SOFTWARE.
  */
 
-#include <nanvix/const.h>
-#include <arch/core/i486/clock.h>
-#include <arch/core/i486/pmio.h>
+#ifndef ARCH_CORE_RV32GC_TIMER_H_
+#define ARCH_CORE_RV32GC_TIMER_H_
 
 /**
- * The i486_clock_init() function initializes the clock driver in the
- * i486 architecture. The frequency of the device is set to @p freq
- * Hz.
+ * @addtogroup rv32gc-timer Timer
+ * @ingroup rv32gc
+ *
+ * @brief Programmable Timer Interface
  */
-PUBLIC void i486_clock_init(unsigned freq)
-{
-	uint16_t freq_divisor;
+/**@{*/
 
-	freq_divisor = PIT_FREQUENCY/freq;
+	#include <nanvix/const.h>
+	#include <stdint.h>
 
-	/* Send control byte: adjust frequency divisor. */
-	i486_output8(PIT_CTRL, 0x36);
+#ifndef _ASM_FILE_
 
-	/* Send data byte: divisor_low and divisor_high. */
-	i486_output8(PIT_DATA, (uint8_t)(freq_divisor & 0xff));
-	i486_output8(PIT_DATA, (uint8_t)((freq_divisor >> 8)));
-}
+	/**
+	 * @brief Initializes the timer device.
+	 *
+	 * @param freq     Timer frequency (in Hz).
+	 * @param timebase Timer time base.
+	 * @param mtime    Location of mtime register.
+	 * @param mtime    Location of mtimecmp register.
+	 */
+	EXTERN void rv32gc_timer_init(
+		uint64_t freq,
+		uint64_t timebase,
+		uint64_t *mtime,
+		uint64_t *mtimecmp
+	);
 
+	/**
+	 * @brief Resets the timer device.
+	 */
+	EXTERN void rv32gc_timer_reset(void);
+
+#endif
+
+/**@}*/
+
+#endif /* ARCH_CORE_RV32GC_TIMER */

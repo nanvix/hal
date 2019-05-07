@@ -89,7 +89,7 @@
 	 */
 	/**@{*/
 	#define I486_IRQLVL_5 5 /**< Level 0: all hardware interrupts disabled. */
-	#define I486_IRQLVL_4 4 /**< Level 1: clock interrupts enabled.         */
+	#define I486_IRQLVL_4 4 /**< Level 1: timer interrupts enabled.         */
 	#define I486_IRQLVL_3 3 /**< Level 2: disk interrupts enabled.          */
 	#define I486_IRQLVL_2 2 /**< Level 3: network interrupts enabled        */
 	#define I486_IRQLVL_1 1 /**< Level 4: terminal interrupts enabled.      */

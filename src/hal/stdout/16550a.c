@@ -86,7 +86,7 @@ void uart_16550a_init(void)
 		return;
 
 	/* Calculate and set divisor. */
-	divisor = UART_CLOCK/(UART_BAUD << 4);
+	divisor = UART_TIMER/(UART_BAUD << 4);
     uart[UART_LCR] = UART_LCR_DLAB;
     uart[UART_DLL] = divisor & 0xff;
     uart[UART_DLM] = (divisor >> 8) & 0xff;

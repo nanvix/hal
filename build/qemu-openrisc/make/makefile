@@ -46,9 +46,13 @@ export CFLAGS  = -D __qemu_openrisc__ -D__openrisc__
 export CFLAGS += -nostdlib -nostdinc
 export CFLAGS += -ansi -pedantic-errors
 export CFLAGS += -Wstack-usage=4096
-export CFLAGS += -D __HAS_HW_DIVISION
-export CFLAGS += -D __INTERFACE_CHECK
 export CFLAGS += -Wno-type-limits
+export CFLAGS += -D __HAS_HW_DIVISION
+export CFLAGS += -D __INTERFACE_CHECK_CORE_AL
+export CFLAGS += -D __INTERFACE_CHECK_EVENT
+export CFLAGS += -D __INTERFACE_CHECK_MEMORY
+export CFLAGS += -D __INTERFACE_CHECK_PROCESSOR_AL
+export CFLAGS += -D __INTERFACE_CHECK_TARGET_AL
 
 # Linker Options
 export LDFLAGS  =

@@ -22,75 +22,87 @@
  * SOFTWARE.
  */
 
-#ifndef ARCH_CLUSTER_CLUSTER_RISCV32_CLUSTER_CLOCK_H_
-#define ARCH_CLUSTER_CLUSTER_RISCV32_CLUSTER_CLOCK_H_
+#ifndef ARCH_CLUSTER_K1B_CLUSTER_TIMER_H_
+#define ARCH_CLUSTER_K1B_CLUSTER_TIMER_H_
 
 	/* Cluster Interface Implementation */
-	#include <arch/cluster/riscv32-cluster/_riscv32-cluster.h>
+	#include <arch/cluster/k1b-cluster/_k1b-cluster.h>
 
 /**
- * @addtogroup rscv32-cluster-clock Clock
- * @ingroup riscv32-cluster
+ * @addtogroup k1b-cluster-timer Timer
+ * @ingroup k1b-cluster
  *
- * @brief 64-bit Timer
+ * @brief Programmable Timer Interface
  */
 /**@{*/
 
-	/* Must come first. */
-	#define __NEED_CLUSTER_CLINT
-
-	#include <arch/cluster/riscv32-cluster/clint.h>
 	#include <stdint.h>
 
+#ifndef _ASM_FILE_
+
 	/**
-	 * @brief Clock frequency (10 MHz)
+	 * @brief Reads the timestamp counter from the DSU.
+	 *
+	 * @returns The timestamp counter from the DSU.
+	 *
+	 * @author Pedro Henrique Penna
 	 */
-	#define RISCV32_CLUSTER_TIMEBASE 10000000
+	static inline uint64_t k1b_cluster_clock_read(void)
+	{
+		return (__k1_read_dsu_timestamp());
+	}
+
+#endif /* !_ASM_FILE_ */
 
 /*============================================================================*
  * Exported Interface                                                         *
  *============================================================================*/
 
 /**
- * @cond riscv32_smp
+ * @cond k1b_cluster
  */
 
 	/**
 	 * @name Exported Functions
 	 */
 	/**@{*/
-	#define __clock_init_fn   /**< clock_init() */
-	#define __clock_reset_fn /**< clock_reset() */
+	#define __timer_init_fn  /**< timer_init()  */
+	#define __timer_reset_fn /**< timer_reset() */
+	#define __clock_read_fn  /**< clock_read()  */
 	/**@}*/
 
 #ifndef _ASM_FILE_
 
 	/**
-	 * @see clock_init().
+	 * @see k1b_timer_init().
 	 */
-	static inline void clock_init(unsigned freq)
+	static inline void timer_init(unsigned freq)
 	{
-		rv32gc_clock_init(
-			freq,
-			RISCV32_CLUSTER_TIMEBASE,
-			(uint64_t *) RISCV32_CLUSTER_CLINT_MTIME_BASE,
-			(uint64_t *) RISCV32_CLUSTER_CLINT_MTIMECMP_BASE
-		);
+		k1b_timer_init(freq);
 	}
 
 	/**
-	 * @see rv32gc_clock_reset().
+	 * Dummy function
 	 */
-	static inline void clock_reset(void)
+	static inline void timer_reset(void)
 	{
-		rv32gc_clock_reset();
+		/* noop */
 	}
 
-#endif
+	/**
+	 * @see k1b_cluster_clock_read().
+	 */
+	static inline uint64_t clock_read(void)
+	{
+		return (k1b_cluster_clock_read());
+	}
+
+#endif /* !_ASM_FILE_ */
 
 /**@endcond*/
 
+/*============================================================================*/
+
 /**@}*/
 
-#endif /* ARCH_CLUSTER_CLUSTER_RISCV32_CLUSTER_CLOCK */
-
+#endif /* ARCH_CLUSTER_K1B_CLUSTER_TIMER */

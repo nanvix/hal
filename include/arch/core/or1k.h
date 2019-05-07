@@ -35,7 +35,7 @@
 	#endif
 
 	#include <arch/core/or1k/cache.h>
-	#include <arch/core/or1k/clock.h>
+	#include <arch/core/or1k/timer.h>
 	#include <arch/core/or1k/core.h>
 	#include <arch/core/or1k/excp.h>
 	#include <arch/core/or1k/int.h>

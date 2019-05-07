@@ -22,88 +22,93 @@
  * SOFTWARE.
  */
 
-#ifndef ARCH_I486_CLOCK_H_
-#define ARCH_I486_CLOCK_H_
+#ifndef ARCH_CLUSTER_OPTIMSOC_CLUSTER_TIMER_H_
+#define ARCH_CLUSTER_OPTIMSOC_CLUSTER_TIMER_H_
+
+	/* Cluster Interface Implementation */
+	#include <arch/cluster/optimsoc-cluster/_optimsoc-cluster.h>
 
 /**
- * @addtogroup i486-core-clock Clock
- * @ingroup i486-core
+ * @addtogroup optimsoc-cluster-timer Timer
+ * @ingroup optimsoc-cluster
  *
- * @brief Clock Interface
+ * @brief Integrated Timer Device
  */
 /**@{*/
 
 	#include <nanvix/const.h>
+	#include <stdint.h>
+
+#ifndef _ASM_FILE_
 
 	/**
-	 * @name Provided Interface
-	 */
-	/**@{*/
-	#define __clock_init_fn
-	/**@}*/
-
-	/**
-	 * @brief Oscillator frequency (in Hz)
-	 */
-	#define PIT_FREQUENCY 1193182
-
-	/**
-	 * @name Registers
-	 */
-	/**@{*/
-	#define PIT_CTRL 0x43 /**< Control */
-	#define PIT_DATA 0x40 /**< Data    */
-	/**@}*/
-
-	/**
-	 * @brief Initializes the clock device.
+	 * @brief Stub function.
 	 *
-	 * @param freq Target frequency for the clock device.
+	 * @returns Always zero.
+	 *
+	 * @todo TODO implement this function.
 	 */
-	EXTERN void i486_clock_init(unsigned freq);
-
-	/**
-	 * @brief Resets the clock device.
-	 */
-	static inline void i486_clock_reset(void)
+	static inline uint64_t optimsoc_cluster_clock_read(void)
 	{
+		return (0);
 	}
 
-/**@}*/
+#endif /* !_ASM_FILE_ */
 
 /*============================================================================*
  * Exported Interface                                                         *
  *============================================================================*/
 
 /**
- * @cond i486
+ * @optimsoc_cluster
  */
 
 	/**
-	 * @name Exported functions
+	 * @brief Estimated CPU frequency (in Hz), 50Mhz.
+	 */
+	#define OR1K_CPU_FREQUENCY 50000000
+
+	/**
+	 * @name Exported Functions
 	 */
 	/**@{*/
-	#define __clock_init_fn  /**< clock_init(   */
-	#define __clock_reset_fn /**< clock_reset() */
+	#define __timer_init_fn  /**< timer_init()  */
+	#define __timer_reset_fn /**< timer_reset() */
+	#define __clock_read_fn  /**< clock_read()  */
 	/**@}*/
 
+#ifndef _ASM_FILE_
+
 	/**
-	 * @see i486_clock_init().
+	 * @see or1k_timer_init().
 	 */
-	static inline void clock_init(unsigned freq)
+	static inline void timer_init(unsigned freq)
 	{
-		i486_clock_init(freq);
+		or1k_timer_init(freq);
 	}
 
 	/**
-	 * @see i486_clock_reset().
+	 * @see or1k_timer_reset().
 	 */
-	static inline void clock_reset(void)
+	static inline void timer_reset(void)
 	{
-		i486_clock_reset();
+		or1k_timer_reset();
 	}
+
+	/**
+	 * @see optimsoc_cluster_clock_read().
+	 */
+	static inline uint64_t clock_read(void)
+	{
+		return (optimsoc_cluster_clock_read());
+	}
+
+#endif /* !_ASM_FILE_ */
 
 /**@endcond*/
 
-#endif /* ARCH_I486_CLOCK_H_ */
+/*============================================================================*/
 
+/**@}*/
+
+#endif /* ARCH_CLUSTER_OPTIMSOC_CLUSTER_TIMER */

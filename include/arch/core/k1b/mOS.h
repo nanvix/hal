@@ -38,6 +38,7 @@
 #ifndef _ASM_FILE_
 
 	#include <HAL/hal/board/boot_args.h>
+	#include <HAL/hal/core/timer.h>
 	#include <HAL/hal/hal_ext.h>
 	#include <mOS_segment_manager_u.h>
 	#include <mOS_common_types_c.h>

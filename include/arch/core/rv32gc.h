@@ -35,7 +35,7 @@
 	#endif
 
 	#include <arch/core/rv32gc/cache.h>
-	#include <arch/core/rv32gc/clock.h>
+	#include <arch/core/rv32gc/timer.h>
 	#include <arch/core/rv32gc/core.h>
 	#include <arch/core/rv32gc/excp.h>
 	#include <arch/core/rv32gc/int.h>

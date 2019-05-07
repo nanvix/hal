@@ -59,7 +59,7 @@
 	 * @name Performance Events
 	 */
 	/**@{*/
-	#define K1B_PERF_CYCLES         0x0 /**< Clock Cycles                    */
+	#define K1B_PERF_CYCLES         0x0 /**< Timer Cycles                    */
 	#define K1B_PERF_ICACHE_HITS    0x1 /**< Instruction Cache Hits          */
 	#define K1B_PERF_ICACHE_MISSES  0x2 /**< Instruction Cache Misses        */
 	#define K1B_PERF_ICACHE_STALLS  0x3 /**< Instruction Cache Misses Stalls */
@@ -85,7 +85,7 @@
 	#define K1B_PERF_MASK(r)    (0xf << ((r) << 2)) /**< Mask for Counter            */
 	#define K1B_PERF_CHAIN_0_1  (1 << 16)           /**< Enable PM0 and PM1 Chaining */
 	#define K1B_PERF_CHAIN_2_3  (1 << 17)           /**< Enable PM2 and PM3 Chaining */
-	#define K1B_PERF_DMC        (1 << 18)           /**< Disengage Monitors Clock    */
+	#define K1B_PERF_DMC        (1 << 18)           /**< Disengage Monitors Timer    */
 	#define K1B_PERF_SMP        (1 << 19)           /**< Stop Monitors in Privileged */
 	#define K1B_PERF_SMD        (1 << 20)           /**< Stop Monitors in Debug      */
 	/**@}*/

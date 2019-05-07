@@ -31,9 +31,9 @@
 #include <errno.h>
 
 /**
- * @brief Clock handler.
+ * @brief Timer handler.
  */
-PRIVATE interrupt_handler_t clock_handler = NULL;
+PRIVATE interrupt_handler_t timer_handler = NULL;
 
 /**
  * @brief Event handler.
@@ -62,15 +62,15 @@ PRIVATE void default_handler(int num)
 }
 
 /**
- * @brief Wrapper for clock interrupt.
+ * @brief Wrapper for timer interrupt.
  */
-PRIVATE void do_clock(int num)
+PRIVATE void do_timer(int num)
 {
-	/* Forward clock interrupt handling. */
-	if (clock_handler != NULL)
-		clock_handler(num);
+	/* Forward timer interrupt handling. */
+	if (timer_handler != NULL)
+		timer_handler(num);
 
-	clock_reset();
+	timer_reset();
 }
 
 /**
@@ -134,7 +134,7 @@ PUBLIC int interrupt_register(int num, interrupt_handler_t handler)
 	if ((num < 0) || (num >= INTERRUPTS_NUM))
 		return (-EINVAL);
 
-	if (num != INTERRUPT_CLOCK && num != INTERRUPT_IPI)
+	if (num != INTERRUPT_TIMER && num != INTERRUPT_IPI)
 	{
 		/* Handler function already registered. */
 		if (interrupt_handlers[num] != default_handler)
@@ -144,13 +144,13 @@ PUBLIC int interrupt_register(int num, interrupt_handler_t handler)
 	}
 	else
 	{
-		if (num == INTERRUPT_CLOCK)
+		if (num == INTERRUPT_TIMER)
 		{
 			/* Handler function already registered. */
-			if (clock_handler != default_handler)
+			if (timer_handler != default_handler)
 				return (-EBUSY);
 
-			clock_handler = handler;
+			timer_handler = handler;
 		}
 		else
 		{
@@ -182,7 +182,7 @@ PUBLIC int interrupt_unregister(int num)
 	if ((num < 0) || (num >= INTERRUPTS_NUM))
 		return (-EINVAL);
 
-	if (num != INTERRUPT_CLOCK && num != INTERRUPT_IPI)
+	if (num != INTERRUPT_TIMER && num != INTERRUPT_IPI)
 	{
 		/* No handler function is registered. */
 		if (interrupt_handlers[num] == default_handler)
@@ -192,13 +192,13 @@ PUBLIC int interrupt_unregister(int num)
 	}
 	else
 	{
-		if (num == INTERRUPT_CLOCK)
+		if (num == INTERRUPT_TIMER)
 		{
 			/* No handler function is registered. */
-			if (clock_handler == default_handler)
+			if (timer_handler == default_handler)
 				return (-EINVAL);
 
-			clock_handler = default_handler;
+			timer_handler = default_handler;
 		}
 		else
 		{
@@ -230,8 +230,8 @@ PUBLIC void interrupt_setup(void)
 	{
 		interrupt_handler_t handler;
 
-		if (i == INTERRUPT_CLOCK)
-			handler = do_clock;
+		if (i == INTERRUPT_TIMER)
+			handler = do_timer;
 		else if (i == INTERRUPT_IPI)
 			handler = do_event;
 		else
@@ -240,7 +240,7 @@ PUBLIC void interrupt_setup(void)
 		interrupt_handlers[i] = handler;
 	}
 
-	clock_handler = default_handler;
+	timer_handler = default_handler;
 
 #if (CLUSTER_HAS_EVENTS)
 	event_handler = default_handler;

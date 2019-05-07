@@ -64,8 +64,8 @@ PRIVATE void dummy_handler(int num)
  */
 PRIVATE void test_interrupt_register_unregister(void)
 {
-	KASSERT(interrupt_register(INTERRUPT_CLOCK, dummy_handler) == 0);
-	KASSERT(interrupt_unregister(INTERRUPT_CLOCK) == 0);
+	KASSERT(interrupt_register(INTERRUPT_TIMER, dummy_handler) == 0);
+	KASSERT(interrupt_unregister(INTERRUPT_TIMER) == 0);
 }
 
 /*----------------------------------------------------------------------------*
@@ -84,7 +84,7 @@ PRIVATE void test_interrupt_enable_disable(void)
 	ncalls = 0;
 	dcache_invalidate();
 
-	KASSERT(interrupt_register(INTERRUPT_CLOCK, dummy_handler) == 0);
+	KASSERT(interrupt_register(INTERRUPT_TIMER, dummy_handler) == 0);
 
 	interrupts_enable();
 
@@ -94,7 +94,7 @@ PRIVATE void test_interrupt_enable_disable(void)
 
 	interrupts_disable();
 
-	KASSERT(interrupt_unregister(INTERRUPT_CLOCK) == 0);
+	KASSERT(interrupt_unregister(INTERRUPT_TIMER) == 0);
 
 	/*
 	 * Ensure that the handler is not
@@ -167,9 +167,9 @@ PRIVATE void test_interrupt_unregister_handler_inval(void)
  */
 PRIVATE void test_interrupt_register_handler_bad(void)
 {
-	KASSERT(interrupt_register(INTERRUPT_CLOCK, dummy_handler) == 0);
-	KASSERT(interrupt_register(INTERRUPT_CLOCK, dummy_handler) == -EBUSY);
-	KASSERT(interrupt_unregister(INTERRUPT_CLOCK) == 0);
+	KASSERT(interrupt_register(INTERRUPT_TIMER, dummy_handler) == 0);
+	KASSERT(interrupt_register(INTERRUPT_TIMER, dummy_handler) == -EBUSY);
+	KASSERT(interrupt_unregister(INTERRUPT_TIMER) == 0);
 }
 
 /*----------------------------------------------------------------------------*
@@ -183,7 +183,7 @@ PRIVATE void test_interrupt_register_handler_bad(void)
  */
 PRIVATE void test_interrupt_unregister_handler_bad(void)
 {
-	KASSERT(interrupt_unregister(INTERRUPT_CLOCK) == -EINVAL);
+	KASSERT(interrupt_unregister(INTERRUPT_TIMER) == -EINVAL);
 }
 
 /*----------------------------------------------------------------------------*

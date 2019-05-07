@@ -49,7 +49,7 @@
 	 * @name Hardware Interrupts
 	 */
 	/**@{*/
-	#define OR1K_INT_CLOCK    OR1K_IRQ_CLOCK /*< Tmer.               */
+	#define OR1K_INT_TIMER    OR1K_IRQ_TIMER /*< Tmer.               */
 	#define OR1K_INT_OMPIC    OR1K_IRQ_OMPIC /*< OMPIC.              */
 	#define OR1K_INT_COM1     OR1K_IRQ_COM1  /*< COM1.               */
 	#define OR1K_INT_EXTERNAL OR1K_IRQ_EXT   /*< External interrupt. */
@@ -129,8 +129,8 @@
 	 */
 	/**@{*/
 	#define INTERRUPTS_NUM  OR1K_INT_NUM   /**< @ref OR1K_INT_NUM   */
-	#define INTERRUPT_CLOCK OR1K_INT_CLOCK /**< @ref OR1K_INT_CLOCK */
-	#define INTERRUPT_IPI   OR1K_INT_OMPIC /**< @ref OR1K_INT_CLOCK */
+	#define INTERRUPT_TIMER OR1K_INT_TIMER /**< @ref OR1K_INT_TIMER */
+	#define INTERRUPT_IPI   OR1K_INT_OMPIC /**< @ref OR1K_INT_TIMER */
 	/**@}*/
 
 	/**

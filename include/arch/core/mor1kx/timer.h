@@ -22,14 +22,14 @@
  * SOFTWARE.
  */
 
-#ifndef ARCH_CORE_OR1K_CLOCK_H_
-#define ARCH_CORE_OR1K_CLOCK_H_
+#ifndef ARCH_CORE_MOR1KX_TIMER_H_
+#define ARCH_CORE_MOR1KX_TIMER_H_
 
 /**
- * @addtogroup or1k-core-clock Clock
+ * @addtogroup or1k-core-timer Timer
  * @ingroup or1k-core
  *
- * @brief Integrated Clock Device
+ * @brief Integrated Timer Device
  */
 /**@{*/
 
@@ -38,19 +38,19 @@
 #ifndef _ASM_FILE_
 
 	/**
-	 * @brief Initializes the clock driver in the or1k architecture.
+	 * @brief Initializes the timer driver in the or1k architecture.
 	 *
-	 * @param freq Target frequency for the clock device.
+	 * @param freq Target frequency for the timer device.
 	 */
-	EXTERN void or1k_clock_init(unsigned freq);
+	EXTERN void or1k_timer_init(unsigned freq);
 
 	/**
-	 * @brief Resets the clock device.
+	 * @brief Resets the timer device.
 	 */
-	EXTERN void or1k_clock_reset(void);
+	EXTERN void or1k_timer_reset(void);
 
 #endif /* !_ASM_FILE_ */
 
 /**@}*/
 
-#endif /* ARCH_CORE_OR1K_CLOCK */
+#endif /* ARCH_CORE_MOR1KX_TIMER */

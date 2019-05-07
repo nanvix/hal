@@ -22,25 +22,35 @@
  * SOFTWARE.
  */
 
-#include <arch/core/k1b/mOS.h>
-#include <nanvix/const.h>
+#ifndef ARCH_CORE_OR1K_TIMER_H_
+#define ARCH_CORE_OR1K_TIMER_H_
 
 /**
- * The k1b_clock_init() function initializes the clock driver in the
- * k1b architecture. The frequency of the device is set to @p freq Hz.
+ * @addtogroup or1k-core-timer Timer
+ * @ingroup or1k-core
+ *
+ * @brief Integrated Timer Device
  */
-PUBLIC void k1b_clock_init(unsigned freq)
-{
-	const unsigned timer = 0;     /* Timer to select.           */
-	const unsigned value = freq;  /* Value to put in the timer. */
-	const unsigned reload = freq; /* Reload value.              */
-	const unsigned disable = 0;   /* Disable timer interrupt?   */
+/**@{*/
 
-	mOS_timer_general_setup();
-	mOS_timer_setup_num(
-		timer,
-		value,
-		reload,
-		disable
-	);
-}
+	#include <nanvix/const.h>
+
+#ifndef _ASM_FILE_
+
+	/**
+	 * @brief Initializes the timer driver in the or1k architecture.
+	 *
+	 * @param freq Target frequency for the timer device.
+	 */
+	EXTERN void or1k_timer_init(unsigned freq);
+
+	/**
+	 * @brief Resets the timer device.
+	 */
+	EXTERN void or1k_timer_reset(void);
+
+#endif /* !_ASM_FILE_ */
+
+/**@}*/
+
+#endif /* ARCH_CORE_OR1K_TIMER */
