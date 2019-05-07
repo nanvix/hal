@@ -48,14 +48,14 @@
 	 * @name Hardware Interrupts for the IBM PC Target
 	 */
 	/**@{*/
-	#define I486_INT_CLOCK    0 /*< Programmable interrupt timer.              */
+	#define I486_INT_TIMER    0 /*< Programmable interrupt timer.              */
 	#define I486_INT_KEYBOARD 1 /*< Keyboard.                                  */
 	#define I486_INT_COM2     3 /*< COM2.                                      */
 	#define I486_INT_COM1     4 /*< COM1.                                      */
 	#define I486_INT_LPT2     5 /*< LPT2.                                      */
 	#define I486_INT_FLOPPY   6 /*< Floppy disk.                               */
 	#define I486_INT_LPT1     7 /*< LPT1.                                      */
-	#define I486_INT_CMOS     8 /*< CMOS real-time clock.                      */
+	#define I486_INT_CMOS     8 /*< CMOS real-time timer.                      */
 	#define I486_INT_SCSI1    9 /*< Free for peripherals (legacy SCSI or NIC). */
 	#define I486_INT_SCSI2   10 /*< Free for peripherals (legacy SCSI or NIC). */
 	#define I486_INT_SCSI3   11 /*< Free for peripherals (legacy SCSI or NIC). */
@@ -129,7 +129,7 @@
 	 */
 	/**@{*/
 	#define INTERRUPTS_NUM  I486_INT_NUM   /**< @ref I486_INT_NUM   */
-	#define INTERRUPT_CLOCK I486_INT_CLOCK /**< @ref I486_INT_CLOCK */
+	#define INTERRUPT_TIMER I486_INT_TIMER /**< @ref I486_INT_TIMER */
 	#define INTERRUPT_IPI   I486_INT_IPI   /**< @ref I486_INT_IPI   */
 	/**@}*/
 

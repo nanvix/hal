@@ -29,8 +29,8 @@
 
 	#include <stdint.h>
 
-	/* Used for system times in clock ticks. */
-	typedef int clock_t;
+	/* Used for system times in timer ticks. */
+	typedef int timer_t;
 
 	/* Used for device IDs. */
 	typedef unsigned dev_t;

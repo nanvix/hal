@@ -22,65 +22,75 @@
  * SOFTWARE.
  */
 
-#ifndef ARCH_CLUSTER_OPTIMSOC_CLUSTER_CLOCK_H_
-#define ARCH_CLUSTER_OPTIMSOC_CLUSTER_CLOCK_H_
+#ifndef ARCH_CLUSTER_CLUSTER_RISCV32_CLUSTER_TIMER_H_
+#define ARCH_CLUSTER_CLUSTER_RISCV32_CLUSTER_TIMER_H_
 
 	/* Cluster Interface Implementation */
-	#include <arch/cluster/optimsoc-cluster/_optimsoc-cluster.h>
+	#include <arch/cluster/riscv32-cluster/_riscv32-cluster.h>
 
 /**
- * @addtogroup optimsoc-cluster-clock Clock
- * @ingroup optimsoc-cluster
+ * @addtogroup rscv32-cluster-timer Timer
+ * @ingroup riscv32-cluster
  *
- * @brief Integrated Clock Device
+ * @brief 64-bit Timer
  */
 /**@{*/
 
-	#include <nanvix/const.h>
+	/* Must come first. */
+	#define __NEED_CLUSTER_CLINT
 
-/**@}*/
+	#include <arch/cluster/riscv32-cluster/clint.h>
+	#include <stdint.h>
+
+	/**
+	 * @brief Timer frequency (10 MHz)
+	 */
+	#define RISCV32_CLUSTER_TIMEBASE 10000000
 
 /*============================================================================*
  * Exported Interface                                                         *
  *============================================================================*/
 
 /**
- * @optimsoc_cluster
+ * @cond riscv32_smp
  */
-
-	/**
-	 * @brief Estimated CPU frequency (in Hz), 50Mhz.
-	 */
-	#define OR1K_CPU_FREQUENCY 50000000
 
 	/**
 	 * @name Exported Functions
 	 */
 	/**@{*/
-	#define __clock_init_fn  /**< clock_init()  */
-	#define __clock_reset_fn /**< clock_reset() */
+	#define __timer_init_fn   /**< timer_init() */
+	#define __timer_reset_fn /**< timer_reset() */
 	/**@}*/
 
 #ifndef _ASM_FILE_
 
 	/**
-	 * @see or1k_clock_init().
+	 * @see timer_init().
 	 */
-	static inline void clock_init(unsigned freq)
+	static inline void timer_init(unsigned freq)
 	{
-		or1k_clock_init(freq);
+		rv32gc_timer_init(
+			freq,
+			RISCV32_CLUSTER_TIMEBASE,
+			(uint64_t *) RISCV32_CLUSTER_CLINT_MTIME_BASE,
+			(uint64_t *) RISCV32_CLUSTER_CLINT_MTIMECMP_BASE
+		);
 	}
 
 	/**
-	 * @see or1k_clock_reset().
+	 * @see rv32gc_timer_reset().
 	 */
-	static inline void clock_reset(void)
+	static inline void timer_reset(void)
 	{
-		or1k_clock_reset();
+		rv32gc_timer_reset();
 	}
 
-#endif /* !_ASM_FILE_ */
+#endif
 
 /**@endcond*/
 
-#endif /* ARCH_CLUSTER_OPTIMSOC_CLUSTER_CLOCK */
+/**@}*/
+
+#endif /* ARCH_CLUSTER_CLUSTER_RISCV32_CLUSTER_TIMER */
+

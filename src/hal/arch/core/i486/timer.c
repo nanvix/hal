@@ -22,39 +22,26 @@
  * SOFTWARE.
  */
 
-#ifndef CLUSTER_RISCV32_CLUSTER_H_
-#define CLUSTER_RISCV32_CLUSTER_H_
-
-	#ifndef __NEED_CLUSTER_RISCV32
-		#error "bad cluster configuration?"
-	#endif
-
-	/* Cluster Interface Implementation */
-	#include <arch/cluster/riscv32-cluster/_riscv32-cluster.h>
+#include <nanvix/const.h>
+#include <arch/core/i486/timer.h>
+#include <arch/core/i486/pmio.h>
 
 /**
- * @addtogroup riscv-cluster RISC-V 32-Bit Cluster
- * @ingroup clusters
- *
- * @brief RISC-V 32-Bit Cluster
+ * The i486_timer_init() function initializes the timer driver in the
+ * i486 architecture. The frequency of the device is set to @p freq
+ * Hz.
  */
-/**@{*/
+PUBLIC void i486_timer_init(unsigned freq)
+{
+	uint16_t freq_divisor;
 
-	#include <arch/cluster/riscv32-cluster/timer.h>
-	#include <arch/cluster/riscv32-cluster/cores.h>
-	#include <arch/cluster/riscv32-cluster/event.h>
-	#include <arch/cluster/riscv32-cluster/memory.h>
+	freq_divisor = PIT_FREQUENCY/freq;
 
-	/**
-	 * @name Provided Features
-	 */
-	/**@{*/
-	#define CLUSTER_IS_MULTICORE  1 /**< Multicore Cluster */
-	#define CLUSTER_IS_IO         1 /**< I/O Cluster       */
-	#define CLUSTER_IS_COMPUTE    0 /**< Compute Cluster   */
-	#define CLUSTER_HAS_EVENTS    1 /**< Event Support?    */
-	/**@}*/
+	/* Send control byte: adjust frequency divisor. */
+	i486_output8(PIT_CTRL, 0x36);
 
-/**@}*/
+	/* Send data byte: divisor_low and divisor_high. */
+	i486_output8(PIT_DATA, (uint8_t)(freq_divisor & 0xff));
+	i486_output8(PIT_DATA, (uint8_t)((freq_divisor >> 8)));
+}
 
-#endif /* CLUSTER_RISCV32_CLUSTER_H_ */

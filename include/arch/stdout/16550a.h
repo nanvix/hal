@@ -39,7 +39,7 @@
 	 */
 	/**@{*/
 	#define UART_ADDR  0x10000000
-	#define UART_CLOCK    1843200
+	#define UART_TIMER    1843200
 	#define UART_BAUD      115200
 	/**@}*/
 

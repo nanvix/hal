@@ -35,7 +35,7 @@
 	#endif
 
 	#include <arch/core/k1b/cache.h>
-	#include <arch/core/k1b/clock.h>
+	#include <arch/core/k1b/timer.h>
 	#include <arch/core/k1b/core.h>
 	#include <arch/core/k1b/excp.h>
 	#include <arch/core/k1b/int.h>

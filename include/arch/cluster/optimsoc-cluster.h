@@ -40,7 +40,7 @@
  */
 /**@{*/
 
-	#include <arch/cluster/optimsoc-cluster/clock.h>
+	#include <arch/cluster/optimsoc-cluster/timer.h>
 	#include <arch/cluster/optimsoc-cluster/cores.h>
 	#include <arch/cluster/optimsoc-cluster/event.h>
 	#include <arch/cluster/optimsoc-cluster/memory.h>

@@ -50,8 +50,8 @@
 	 * @name Hardware Interrupts for Kalray MPPA-256 Target
 	 */
 	/**@{*/
-	#define K1B_INT_CLOCK0     0 /**< Clock 0              */
-	#define K1B_INT_CLOCK1     1 /**< Clock 1              */
+	#define K1B_INT_TIMER0     0 /**< Timer 0              */
+	#define K1B_INT_TIMER1     1 /**< Timer 1              */
 	#define K1B_INT_TIMER      2 /**< Watchdog Timer       */
 	#define K1B_INT_CNOC       3 /**< Control NoC          */
 	#define K1B_INT_DNOC       4 /**< Data NoC             */
@@ -128,7 +128,7 @@
 	 */
 	/**@{*/
 	#define INTERRUPTS_NUM  K1B_INT_NUM    /**< @ref K1b_INT_NUM    */
-	#define INTERRUPT_CLOCK K1B_INT_CLOCK0 /**< @ref K1B_INT_CLOCK0 */
+	#define INTERRUPT_TIMER K1B_INT_TIMER0 /**< @ref K1B_INT_TIMER0 */
 	#define INTERRUPT_IPI   K1B_INT_IPI    /**< @ref K1B_INT_IPI    */
 	#define HAL_INT_CNOC    K1B_INT_CNOC   /**< @ref K1B_INT_CNOC   */
 	/**@}*/

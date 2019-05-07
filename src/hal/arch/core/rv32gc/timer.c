@@ -22,26 +22,26 @@
  * SOFTWARE.
  */
 
-#include <arch/core/rv32gc/clock.h>
+#include <arch/core/rv32gc/timer.h>
 #include <arch/core/rv32gc/mcall.h>
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
 #include <stdint.h>
 
 /**
- * @brief Was the clock device initialized?
+ * @brief Was the timer device initialized?
  */
 PRIVATE bool initialized = false;
 
 /**
- * @brief Clock delta
+ * @brief Timer delta
  */
-PRIVATE uint64_t clock_delta = 0;
+PRIVATE uint64_t timer_delta = 0;
 
 /**
- * @brief Clock delay.
+ * @brief Timer delay.
  */
-PRIVATE uint64_t clock_delay = 0;
+PRIVATE uint64_t timer_delay = 0;
 
 /**
  * @brief 64-bit timer register.
@@ -101,13 +101,13 @@ PRIVATE void rv32gc_mtimecmp_write(uint64_t time)
 }
 
 /**
- * @brief Calibrates the clock.
+ * @brief Calibrates the timer.
  *
  * @todo TODO provide a long description for this function.
  *
  * @author Pedro Henrique Penna
  */
-PRIVATE uint64_t rv32gc_clock_calibrate(void)
+PRIVATE uint64_t rv32gc_timer_calibrate(void)
 {
 	uint64_t t0, t1;
 
@@ -118,12 +118,12 @@ PRIVATE uint64_t rv32gc_clock_calibrate(void)
 }
 
 /**
- * The rv32gc_clock_reset() function resets the clock device in the
+ * The rv32gc_timer_reset() function resets the timer device in the
  * underlying rv32gc core.
  *
  * @author Pedro Henrique Penna
  */
-PUBLIC void rv32gc_clock_reset(void)
+PUBLIC void rv32gc_timer_reset(void)
 {
 	uint64_t ctime;
 
@@ -131,16 +131,16 @@ PUBLIC void rv32gc_clock_reset(void)
 	ctime = rv32gc_mtime_read();
 
 	/* Set next timer interrupt to near future. */
-	rv32gc_mtimecmp_write(ctime + clock_delta + clock_delay);
+	rv32gc_mtimecmp_write(ctime + timer_delta + timer_delay);
 }
 
 /**
- * The rv32gc_clock_init() function initializes the clock device in the
+ * The rv32gc_timer_init() function initializes the timer device in the
  * underlying rv32gc core.
  *
  * @author Pedro Henrique Penna
  */
-PUBLIC void rv32gc_clock_init(
+PUBLIC void rv32gc_timer_init(
 	uint64_t freq,
 	uint64_t timebase,
 	uint64_t *mtime,
@@ -151,25 +151,25 @@ PUBLIC void rv32gc_clock_init(
 	if (initialized)
 		return;
 
-	kprintf("[hal] initializing the clock device...");
+	kprintf("[hal] initializing the timer device...");
 
 	/* Setup memory mapped registers. */
 	rv32gc_mtime = mtime;
 	rv32gc_mtimecmp = mtimecmp;
 
-	/* Initialize clock. */
-	clock_delta = timebase/freq;
-	clock_delay = rv32gc_clock_calibrate();
+	/* Initialize timer. */
+	timer_delta = timebase/freq;
+	timer_delay = rv32gc_timer_calibrate();
 	initialized = true;
 
 	/* Print some info. */
-	kprintf("[hal] clock delay is %d ticks", clock_delay);
-	kprintf("[hal] clock delta is %d ticks", clock_delta);
+	kprintf("[hal] timer delay is %d ticks", timer_delay);
+	kprintf("[hal] timer delta is %d ticks", timer_delta);
 
 	/*
-	 * Reset the clock for the first
+	 * Reset the timer for the first
 	 * time, so that it starts working.
 	 */
-	rv32gc_clock_reset();
+	rv32gc_timer_reset();
 
 }

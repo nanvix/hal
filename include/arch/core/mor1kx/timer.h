@@ -22,61 +22,35 @@
  * SOFTWARE.
  */
 
-#ifndef ARCH_CLUSTER_OR1K_CLUSTER_CLOCK_H_
-#define ARCH_CLUSTER_OR1K_CLUSTER_CLOCK_H_
-
-	/* Cluster Interface Implementation */
-	#include <arch/cluster/or1k-cluster/_or1k-cluster.h>
+#ifndef ARCH_CORE_MOR1KX_TIMER_H_
+#define ARCH_CORE_MOR1KX_TIMER_H_
 
 /**
- * @addtogroup or1k-core-clock Clock
+ * @addtogroup or1k-core-timer Timer
  * @ingroup or1k-core
  *
- * @brief Integrated Clock Device
+ * @brief Integrated Timer Device
  */
 /**@{*/
 
 	#include <nanvix/const.h>
 
-/*============================================================================*
- * Exported Interface                                                         *
- *============================================================================*/
-
-/**
- * @cond or1k
- */
+#ifndef _ASM_FILE_
 
 	/**
-	 * @brief Estimated CPU frequency (in Hz), 20Mhz.
+	 * @brief Initializes the timer driver in the or1k architecture.
+	 *
+	 * @param freq Target frequency for the timer device.
 	 */
-	#define OR1K_CPU_FREQUENCY 20000000
+	EXTERN void or1k_timer_init(unsigned freq);
 
 	/**
-	 * @name Exported Functions
+	 * @brief Resets the timer device.
 	 */
-	/**@{*/
-	#define __clock_init_fn  /**< clock_init()  */
-	#define __clock_reset_fn /**< clock_reset() */
-	/**@}*/
+	EXTERN void or1k_timer_reset(void);
 
-	/**
-	 * @see or1k_clock_init().
-	 */
-	static inline void clock_init(unsigned freq)
-	{
-		or1k_clock_init(freq);
-	}
-
-	/**
-	 * @see or1k_clock_reset().
-	 */
-	static inline void clock_reset(void)
-	{
-		or1k_clock_reset();
-	}
-
-/**@endcond*/
+#endif /* !_ASM_FILE_ */
 
 /**@}*/
 
-#endif /* ARCH_CLUSTER_OR1K_CLUSTER_CLOCK */
+#endif /* ARCH_CORE_MOR1KX_TIMER */

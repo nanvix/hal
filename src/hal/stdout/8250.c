@@ -75,7 +75,7 @@ PUBLIC void uart8250_init(void)
 	uart8250 = mmio_get(UART_ADDR);
 
 	/* Calculate and set divisor. */
-	divisor = UART_CLOCK_SIGNAL / (UART_BAUD << 4);
+	divisor = UART_TIMER_SIGNAL / (UART_BAUD << 4);
 	uart8250[LCR ] = LCR_DLA;
 	uart8250[DLB1] = divisor & 0xff;
 	uart8250[DLB2] = divisor >> 8;

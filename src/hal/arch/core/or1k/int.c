@@ -38,7 +38,7 @@ PUBLIC void (*interrupt_handlers[OR1K_INT_NUM])(int) = {
 
 /**
  * @brief Receives an interrupt number, checks if belongs
- * to a clock interrupt or a external device and
+ * to a timer interrupt or a external device and
  * call the generic handler with the appropriate
  * interrupt number.
  *

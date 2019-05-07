@@ -22,44 +22,30 @@
  * SOFTWARE.
  */
 
-#ifndef ARCH_CORE_RV32GC_CLOCK_H_
-#define ARCH_CORE_RV32GC_CLOCK_H_
+#ifndef ARCH_CORE_K1B_TIMER_H_
+#define ARCH_CORE_K1B_TIMER_H_
 
 /**
- * @addtogroup rv32gc-clock Timer
- * @ingroup rv32gc
+ * @addtogroup k1b-core-timer Timer
+ * @ingroup k1b-core
  *
  * @brief Programmable Timer Interface
  */
 /**@{*/
 
 	#include <nanvix/const.h>
-	#include <stdint.h>
 
 #ifndef _ASM_FILE_
 
 	/**
-	 * @brief Initializes the clock device.
+	 * @brief Initializes the timer driver in the k1b architecture.
 	 *
-	 * @param freq     Clock frequency (in Hz).
-	 * @param timebase Clock time base.
-	 * @param mtime    Location of mtime register.
-	 * @param mtime    Location of mtimecmp register.
+	 * @param freq Target frequency for the timer device.
 	 */
-	EXTERN void rv32gc_clock_init(
-		uint64_t freq,
-		uint64_t timebase,
-		uint64_t *mtime,
-		uint64_t *mtimecmp
-	);
+	EXTERN void k1b_timer_init(unsigned freq);
 
-	/**
-	 * @brief Resets the clock device.
-	 */
-	EXTERN void rv32gc_clock_reset(void);
-
-#endif
+#endif /* !_ASM_FILE_ */
 
 /**@}*/
 
-#endif /* ARCH_CORE_RV32GC_CLOCK */
+#endif /* ARCH_CORE_K1B_TIMER */

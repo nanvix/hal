@@ -22,54 +22,88 @@
  * SOFTWARE.
  */
 
-#ifndef ARCH_CLUSTER_K1B_CLUSTER_CLOCK_H_
-#define ARCH_CLUSTER_K1B_CLUSTER_CLOCK_H_
-
-	/* Cluster Interface Implementation */
-	#include <arch/cluster/k1b-cluster/_k1b-cluster.h>
+#ifndef ARCH_I486_TIMER_H_
+#define ARCH_I486_TIMER_H_
 
 /**
- * @addtogroup k1b-cluster-timer Timer
- * @ingroup k1b-cluster
+ * @addtogroup i486-core-timer Timer
+ * @ingroup i486-core
  *
- * @brief Programmable Timer Interface
+ * @brief Timer Interface
  */
 /**@{*/
+
+	#include <nanvix/const.h>
+
+	/**
+	 * @name Provided Interface
+	 */
+	/**@{*/
+	#define __timer_init_fn
+	/**@}*/
+
+	/**
+	 * @brief Oscillator frequency (in Hz)
+	 */
+	#define PIT_FREQUENCY 1193182
+
+	/**
+	 * @name Registers
+	 */
+	/**@{*/
+	#define PIT_CTRL 0x43 /**< Control */
+	#define PIT_DATA 0x40 /**< Data    */
+	/**@}*/
+
+	/**
+	 * @brief Initializes the timer device.
+	 *
+	 * @param freq Target frequency for the timer device.
+	 */
+	EXTERN void i486_timer_init(unsigned freq);
+
+	/**
+	 * @brief Resets the timer device.
+	 */
+	static inline void i486_timer_reset(void)
+	{
+	}
+
+/**@}*/
 
 /*============================================================================*
  * Exported Interface                                                         *
  *============================================================================*/
 
 /**
- * @cond k1b_cluster
+ * @cond i486
  */
 
 	/**
-	 * @name Exported Functions
+	 * @name Exported functions
 	 */
 	/**@{*/
-	#define __clock_init_fn  /**< clock_init()  */
-	#define __clock_reset_fn /**< clock_reset() */
+	#define __timer_init_fn  /**< timer_init(   */
+	#define __timer_reset_fn /**< timer_reset() */
 	/**@}*/
 
 	/**
-	 * @see k1b_clock_init().
+	 * @see i486_timer_init().
 	 */
-	static inline void clock_init(unsigned freq)
+	static inline void timer_init(unsigned freq)
 	{
-		k1b_clock_init(freq);
+		i486_timer_init(freq);
 	}
 
 	/**
-	 * Dummy function
+	 * @see i486_timer_reset().
 	 */
-	static inline void clock_reset(void)
+	static inline void timer_reset(void)
 	{
-		/* noop */
+		i486_timer_reset();
 	}
 
 /**@endcond*/
 
-/**@}*/
+#endif /* ARCH_I486_TIMER_H_ */
 
-#endif /* ARCH_CLUSTER_K1B_CLUSTER_CLOCK */

@@ -393,7 +393,7 @@
 	#define OR1K_SPR_PMR_SDF	0x0000000f  /* Slow down factor.           */
 	#define OR1K_SPR_PMR_DME	0x00000010  /* Doze mode enable.           */
 	#define OR1K_SPR_PMR_SME	0x00000020  /* Sleep mode enable.          */
-	#define OR1K_SPR_PMR_DCGE	0x00000040  /* Dynamic clock gating enable.*/
+	#define OR1K_SPR_PMR_DCGE	0x00000040  /* Dynamic timer gating enable.*/
 	#define OR1K_SPR_PMR_SUME	0x00000080  /* Suspend mode enable.        */
 
 	/**

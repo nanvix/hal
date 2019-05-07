@@ -27,32 +27,32 @@
 #include <nanvix/klib.h>
 
 /**
- * @brief Was the clock device initialized?
+ * @brief Was the timer device initialized?
  */
 PRIVATE bool initialized = false;
 
 /**
- * @brief Clock delta
+ * @brief Timer delta
  */
-PRIVATE uint32_t clock_delta = 0;
+PRIVATE uint32_t timer_delta = 0;
 
 /**
- * @brief Clock delay.
+ * @brief Timer delay.
  */
-PRIVATE uint32_t clock_delay = 0;
+PRIVATE uint32_t timer_delay = 0;
 
 /**
- * @brief Calibrates the clock.
+ * @brief Calibrates the timer.
  *
  * Since the timer frequency is sensible to the proper instruction
- * execution, the or1k_clock_calibrate gets the minimal overhead
+ * execution, the or1k_timer_calibrate gets the minimal overhead
  * between two reads, in order to adjust the timer value to a more
  * stable value.
  *
  *
  * @author Davidson Francis
  */
-PRIVATE uint32_t or1k_clock_calibrate(void)
+PRIVATE uint32_t or1k_timer_calibrate(void)
 {
 	uint32_t t0, t1;
 
@@ -63,28 +63,28 @@ PRIVATE uint32_t or1k_clock_calibrate(void)
 }
 
 /**
- * The or1k_clock_reset() function acknoledges the clock interrupt and
- * resets the clock counter.
+ * The or1k_timer_reset() function acknoledges the timer interrupt and
+ * resets the timer counter.
  */
-PUBLIC void or1k_clock_reset(void)
+PUBLIC void or1k_timer_reset(void)
 {
 	/* Ack. */
 	or1k_mtspr(OR1K_SPR_TTMR, OR1K_SPR_TTMR_DI);
 
 	/* Reenable timer. */
 	or1k_mtspr(OR1K_SPR_TTMR, OR1K_SPR_TTMR_SR | OR1K_SPR_TTMR_IE |
-		(clock_delta + clock_delay));
+		(timer_delta + timer_delay));
 
 	/* Reset counter. */
 	or1k_mtspr(OR1K_SPR_TTCR, 0);
 }
 
 /**
- * The or1k_clock_init() function initializes the clock driver in the
+ * The or1k_timer_init() function initializes the timer driver in the
  * or1k architecture. The frequency of the device is set to @p freq
  * Hz.
  */
-PUBLIC void or1k_clock_init(unsigned freq)
+PUBLIC void or1k_timer_init(unsigned freq)
 {
 	unsigned upr;  /* Unit Present Register. */
 
@@ -97,29 +97,29 @@ PUBLIC void or1k_clock_init(unsigned freq)
 	if (!(upr & OR1K_SPR_UPR_TTP))
 		while (1);
 
-	/* Clock rate. */
-	clock_delta = (OR1K_CPU_FREQUENCY/freq);
+	/* Timer rate. */
+	timer_delta = (OR1K_CPU_FREQUENCY/freq);
 
 	/*
-	 * Clock calibrate.
+	 * Timer calibrate.
 	 *
 	 * Since the timer is disabled by default, its necessary to
 	 * temporarily enable the timer (with interrupts disabled)
 	 * to get the minimal timer variation between two consecutive
 	 * reads.
 	 */
-	or1k_mtspr(OR1K_SPR_TTMR, OR1K_SPR_TTMR_SR | clock_delta);
+	or1k_mtspr(OR1K_SPR_TTMR, OR1K_SPR_TTMR_SR | timer_delta);
 	or1k_mtspr(OR1K_SPR_TTCR, 0);
-	clock_delay = or1k_clock_calibrate();
+	timer_delay = or1k_timer_calibrate();
 	initialized = true;
 
 	/* Print some info. */
-	kprintf("[hal] clock delay is %d ticks", clock_delay);
-	kprintf("[hal] clock delta is %d ticks", clock_delta);
+	kprintf("[hal] timer delay is %d ticks", timer_delay);
+	kprintf("[hal] timer delta is %d ticks", timer_delta);
 
 	/*
-	 * Reset the clock for the first
+	 * Reset the timer for the first
 	 * time, so that it starts working.
 	 */
-	or1k_clock_reset();
+	or1k_timer_reset();
 }

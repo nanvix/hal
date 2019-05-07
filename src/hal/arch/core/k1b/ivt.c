@@ -45,8 +45,8 @@ PRIVATE struct {
 	int intnum; /**< Interrupt Number          */
 	int hwint;  /**< Hardware Interrupt Number */
 } hwints[K1B_IVT_LENGTH] = {
-	{ BSP_IT_TIMER_0, K1B_INT_CLOCK0    }, /* Clock 0              */
-	{ BSP_IT_TIMER_1, K1B_INT_CLOCK1    }, /* Clock 1              */
+	{ BSP_IT_TIMER_0, K1B_INT_TIMER0    }, /* Timer 0              */
+	{ BSP_IT_TIMER_1, K1B_INT_TIMER1    }, /* Timer 1              */
 	{ BSP_IT_WDOG,    K1B_INT_TIMER     }, /* Watchdog Timer       */
 	{ BSP_IT_CN,      K1B_INT_CNOC      }, /* Control NoC          */
 	{ BSP_IT_RX,      K1B_INT_DNOC      }, /* Data NoC             */

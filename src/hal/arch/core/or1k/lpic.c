@@ -91,7 +91,7 @@ PUBLIC int or1k_pic_lvl_set(int newlevel)
  */
 PUBLIC void or1k_pic_ack(int irq)
 {
-	if (irq == OR1K_IRQ_CLOCK)
+	if (irq == OR1K_IRQ_TIMER)
 		or1k_mtspr(OR1K_SPR_TTMR, or1k_mfspr(OR1K_SPR_TTMR) & ~OR1K_SPR_TTMR_IP);
 	else
 		or1k_mtspr(OR1K_SPR_PICSR, (1UL << irq));
@@ -108,7 +108,7 @@ PUBLIC int or1k_pic_mask(int irq)
 	if ((irq < 0) || (irq >= OR1K_IRQ_NUM))
 		return (-EINVAL);
 
-	if (irq == OR1K_IRQ_CLOCK)
+	if (irq == OR1K_IRQ_TIMER)
 		or1k_mtspr(OR1K_SPR_SR, or1k_mfspr(OR1K_SPR_SR) & ~OR1K_SPR_SR_TEE);
 	else
 		or1k_mtspr(OR1K_SPR_PICMR, or1k_mfspr(OR1K_SPR_PICMR) & ~(1 << irq));
@@ -127,7 +127,7 @@ PUBLIC int or1k_pic_unmask(int irq)
 	if ((irq < 0) || (irq >= OR1K_IRQ_NUM))
 		return (-EINVAL);
 
-	if (irq == OR1K_IRQ_CLOCK)
+	if (irq == OR1K_IRQ_TIMER)
 		or1k_mtspr(OR1K_SPR_SR, or1k_mfspr(OR1K_SPR_SR) | OR1K_SPR_SR_TEE);
 	else
 		or1k_mtspr(OR1K_SPR_PICMR, or1k_mfspr(OR1K_SPR_PICMR) | (1 << irq));

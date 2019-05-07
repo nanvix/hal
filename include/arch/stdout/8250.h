@@ -39,7 +39,7 @@
 	 * @brief UART definitions
 	 */
 	/**@{*/
-	#define UART_CLOCK_SIGNAL 50000000
+	#define UART_TIMER_SIGNAL 50000000
 	#define UART_ADDR         _UART_ADDR
 	#define UART_BAUD         115200
 	#define UART_IRQ          2

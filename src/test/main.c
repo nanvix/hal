@@ -29,9 +29,9 @@
 #include "test.h"
 
 /**
- * @brief Clock frequency (in Hz).
+ * @brief Timer frequency (in Hz).
  */
-#define CLOCK_FREQ 100
+#define TIMER_FREQ 100
 
 /**
  * @brief Launches unit tests on Core AL.
@@ -103,7 +103,7 @@ PUBLIC NORETURN void kmain(int argc, const char *argv[])
 	 */
 	hal_init();
 
-	clock_init(CLOCK_FREQ);
+	timer_init(TIMER_FREQ);
 
 	/* Run unit tests. */
 	if ((!kstrcmp(arg, "--all")) || (!kstrcmp(arg, "--core")))

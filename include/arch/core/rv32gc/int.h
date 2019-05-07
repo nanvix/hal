@@ -132,7 +132,7 @@
 	 */
 	/**@{*/
 	#define INTERRUPTS_NUM  RV32GC_INT_NUM          /**< @ref RV32GC_INT_NUM          */
-	#define INTERRUPT_CLOCK RV32GC_INT_TIMER_KERNEL /**< @ref RV32GC_INT_TIMER_KERNEL */
+	#define INTERRUPT_TIMER RV32GC_INT_TIMER_KERNEL /**< @ref RV32GC_INT_TIMER_KERNEL */
 	#define INTERRUPT_IPI   RV32GC_INT_IPI          /**< @ref RV32GC_INT_IPI          */
 	/**@}*/
 

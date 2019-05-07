@@ -22,30 +22,65 @@
  * SOFTWARE.
  */
 
-#ifndef ARCH_CORE_K1B_CLOCK_H_
-#define ARCH_CORE_K1B_CLOCK_H_
+#ifndef ARCH_CLUSTER_OPTIMSOC_CLUSTER_TIMER_H_
+#define ARCH_CLUSTER_OPTIMSOC_CLUSTER_TIMER_H_
+
+	/* Cluster Interface Implementation */
+	#include <arch/cluster/optimsoc-cluster/_optimsoc-cluster.h>
 
 /**
- * @addtogroup k1b-core-timer Timer
- * @ingroup k1b-core
+ * @addtogroup optimsoc-cluster-timer Timer
+ * @ingroup optimsoc-cluster
  *
- * @brief Programmable Timer Interface
+ * @brief Integrated Timer Device
  */
 /**@{*/
 
 	#include <nanvix/const.h>
 
+/**@}*/
+
+/*============================================================================*
+ * Exported Interface                                                         *
+ *============================================================================*/
+
+/**
+ * @optimsoc_cluster
+ */
+
+	/**
+	 * @brief Estimated CPU frequency (in Hz), 50Mhz.
+	 */
+	#define OR1K_CPU_FREQUENCY 50000000
+
+	/**
+	 * @name Exported Functions
+	 */
+	/**@{*/
+	#define __timer_init_fn  /**< timer_init()  */
+	#define __timer_reset_fn /**< timer_reset() */
+	/**@}*/
+
 #ifndef _ASM_FILE_
 
 	/**
-	 * @brief Initializes the clock driver in the k1b architecture.
-	 *
-	 * @param freq Target frequency for the clock device.
+	 * @see or1k_timer_init().
 	 */
-	EXTERN void k1b_clock_init(unsigned freq);
+	static inline void timer_init(unsigned freq)
+	{
+		or1k_timer_init(freq);
+	}
+
+	/**
+	 * @see or1k_timer_reset().
+	 */
+	static inline void timer_reset(void)
+	{
+		or1k_timer_reset();
+	}
 
 #endif /* !_ASM_FILE_ */
 
-/**@}*/
+/**@endcond*/
 
-#endif /* ARCH_CORE_K1B_CLOCK */
+#endif /* ARCH_CLUSTER_OPTIMSOC_CLUSTER_TIMER */

@@ -91,7 +91,7 @@ _do_handler 0x100, _do_start, OR1K_EXCP_RESET               /* Reset.           
 _do_handler 0x200, _do_excp,  OR1K_EXCP_BUSERROR            /* Bus error.              */
 _do_handler 0x300, _do_excp,  OR1K_EXCP_PAGE_FAULT          /* Data page fault.        */
 _do_handler 0x400, _do_excp,  OR1K_EXCP_PAGE_FAULT          /* Instruction page fault. */
-_do_handler 0x500, _do_hwint, OR1K_INT_CLOCK                /* Tick timer.             */
+_do_handler 0x500, _do_hwint, OR1K_INT_TIMER                /* Tick timer.             */
 _do_handler 0x600, _do_excp,  OR1K_EXCP_ALIGNMENT           /* Alignment.              */
 _do_handler 0x700, _do_excp,  OR1K_EXCP_ILLEGAL_INSTRUCTION /* Illegal Instruction.    */
 _do_handler 0x800, _do_hwint, OR1K_INT_EXTERNAL             /* External Interrupt.     */
