@@ -43,7 +43,7 @@ export DOCDIR    := $(CURDIR)/doc
 export INCDIR    := $(CURDIR)/include
 export LIBDIR    := $(CURDIR)/lib
 export SRCDIR    := $(CURDIR)/src
-export TOOLSDIR  := $(CURDIR)/tools
+export TOOLSDIR  := $(CURDIR)/utils
 
 #===============================================================================
 
@@ -67,31 +67,31 @@ all: image
 
 # Runs Unit Tests in all clusters
 run:
-	@bash $(TOOLSDIR)/utils/nanvix-run.sh $(IMAGE) $(BINDIR)/$(EXECBIN) $(TARGET) all --no-debug $(RUN_ARGS)
+	@bash $(TOOLSDIR)/nanvix-run.sh $(IMAGE) $(BINDIR) $(EXECBIN) $(TARGET) all --no-debug $(RUN_ARGS)
 
 # Runs Unit Tests in IO Cluster.
 run-iocluster:
-	@bash $(TOOLSDIR)/utils/nanvix-run.sh $(IMAGE) $(BINDIR)/$(EXECBIN) $(TARGET) iocluster --no-debug $(RUN_ARGS)
+	@bash $(TOOLSDIR)/nanvix-run.sh $(IMAGE) $(BINDIR) $(EXECBIN) $(TARGET) iocluster --no-debug $(RUN_ARGS)
 
 # Runs Unit Tests in Compute Cluster.
 run-ccluster:
-	@bash $(TOOLSDIR)/utils/nanvix-run.sh $(IMAGE) $(BINDIR)/$(EXECBIN) $(TARGET) ccluster --no-debug $(RUN_ARGS)
+	@bash $(TOOLSDIR)/nanvix-run.sh $(IMAGE) $(BINDIR) $(EXECBIN) $(TARGET) ccluster --no-debug $(RUN_ARGS)
 
 # Runs Unit Tests in all clusters in debug mode.
 debug:
-	@bash $(TOOLSDIR)/utils/nanvix-run.sh $(IMAGE) $(BINDIR)/$(EXECBIN) $(TARGET) all --debug $(RUN_ARGS)
+	@bash $(TOOLSDIR)/nanvix-run.sh $(IMAGE) $(BINDIR) $(EXECBIN) $(TARGET) all --debug $(RUN_ARGS)
 
 # Runs Unit Tests in IO Cluster in debug mode.
 debug-iocluster:
-	@bash $(TOOLSDIR)/utils/nanvix-run.sh $(IMAGE) $(BINDIR)/$(EXECBIN) $(TARGET) iocluster --debug $(RUN_ARGS)
+	@bash $(TOOLSDIR)/nanvix-run.sh $(IMAGE) $(BINDIR) $(EXECBIN) $(TARGET) iocluster --debug $(RUN_ARGS)
 
 # Runs Unit Tests in Compute Cluster in debug mode.
 debug-ccluster:
-	@bash $(TOOLSDIR)/utils/nanvix-run.sh $(IMAGE) $(BINDIR)/$(EXECBIN) $(TARGET) ccluster --debug $(RUN_ARGS)
+	@bash $(TOOLSDIR)/nanvix-run.sh $(IMAGE) $(BINDIR) $(EXECBIN) $(TARGET) ccluster --debug $(RUN_ARGS)
 
 # Builds image.
 image: hal-target
-	@bash $(TOOLSDIR)/image/build-image.sh $(BINDIR) $(IMAGE)
+	@bash $(TOOLSDIR)/nanvix-build-image.sh $(IMAGE) $(BINDIR) $(EXECBIN)
 
 # Make directories
 make-dirs:

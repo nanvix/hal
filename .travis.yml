@@ -32,8 +32,8 @@ services:
 env:
   global:
       - MOUNT_DIR=/root/nanvix/hal
-      - SSH_KEY=tools/ssh/travis_rsa.enc
-      - SSH_CONFIG=tools/ssh/config
+      - SSH_KEY=ssh/travis_rsa.enc
+      - SSH_CONFIG=ssh/config
       - SERVER_NAME=mppa
 
 jobs:
