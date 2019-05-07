@@ -210,7 +210,11 @@
 	/**
 	 * @see _kassert()
 	 */
+	#ifdef NDEBUG
+	#define kassert(x, msg) { UNUSED(x); UNUSED(msg); }
+	#else
 	#define kassert(x, msg) _kassert(x, msg, __FILE__, __LINE__)
+	#endif
 
 	/**
 	 * @brief Wrapper for kassert().
