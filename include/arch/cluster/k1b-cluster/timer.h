@@ -38,6 +38,11 @@
 
 	#include <stdint.h>
 
+	/**
+	 * @brief Cluster frequency.
+	 */
+	#define K1B_CLUSTER_FREQ 400000000
+
 #ifndef _ASM_FILE_
 
 	/**
@@ -61,6 +66,13 @@
 /**
  * @cond k1b_cluster
  */
+
+	/**
+	 * @name Exported Constants
+	 */
+	/**@{*/
+	#define CLUSTER_FREQ K1B_CLUSTER_FREQ /**< @see K1B_CLUSTER_FREQ */
+	/**@}*/
 
 	/**
 	 * @name Exported Functions

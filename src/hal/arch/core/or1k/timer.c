@@ -98,7 +98,7 @@ PUBLIC void or1k_timer_init(unsigned freq)
 		while (1);
 
 	/* Timer rate. */
-	timer_delta = (OR1K_CPU_FREQUENCY/freq);
+	timer_delta = (OR1K_CLUSTER_FREQUENCY/freq);
 
 	/*
 	 * Timer calibrate.

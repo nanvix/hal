@@ -39,6 +39,11 @@
 	#include <nanvix/const.h>
 	#include <stdint.h>
 
+	/**
+	 * @brief Estimated CPU frequency (in Hz), 20Mhz.
+	 */
+	#define OR1K_CLUSTER_FREQUENCY 20000000
+
 #ifndef _ASM_FILE_
 
 	/**
@@ -64,9 +69,11 @@
  */
 
 	/**
-	 * @brief Estimated CPU frequency (in Hz), 20Mhz.
+	 * @name Exported Constants
 	 */
-	#define OR1K_CPU_FREQUENCY 20000000
+	/**@{*/
+	#define CLUSTER_FREQ OR1K_CLUSTER_FREQ /**< @see OR1K_CLUSTER_FREQ */
+	/**@}*/
 
 	/**
 	 * @name Exported Functions

@@ -72,6 +72,13 @@
  */
 
 	/**
+	 * @name Exported Constants
+	 */
+	/**@{*/
+	#define CLUSTER_FREQ RISCV32_CLUSTER_TIMEBASE /**< @see RISCV32_CLUSTER_TIMEBASE */
+	/**@}*/
+
+	/**
 	 * @name Exported Functions
 	 */
 	/**@{*/
