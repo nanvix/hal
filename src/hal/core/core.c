@@ -329,7 +329,7 @@ PUBLIC int core_reset(void)
 
 /**
  * The core_shutdown() function powers off the underlying core.
- * Afeter powering off a core, instruction execution cannot be
+ * After powering off a core, instruction execution cannot be
  * resumed. The status code @p status is handled to the remote spawner
  * device.
  *
@@ -349,4 +349,27 @@ PUBLIC void core_shutdown(int status)
 	spinlock_unlock(&cores[coreid].lock);
 
 	core_poweroff();
+}
+
+
+/*============================================================================*
+ * core_halt()                                                                *
+ *============================================================================*/
+
+/**
+ * The rv32gc_core_poweroff() function halt the underlying core.
+ * After halting a core, instruction execution cannot be
+ * resumed on it.
+ *
+ * @author João Vicente Souto
+ */
+PUBLIC NORETURN void core_halt(void)
+{
+	kprintf("[hal] halting...");
+
+	/* Disable all interrupts. */
+	interrupts_disable();
+
+	/* Stay here forever. */
+	UNREACHABLE();
 }

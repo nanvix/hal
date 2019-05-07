@@ -60,7 +60,7 @@ PUBLIC void k1b_core_setup(void *stack)
 
 /**
  * The k1b_core_poweroff() function powers off the underlying core.
- * Afeter powering off a core, instruction execution cannot be resumed
+ * After powering off a core, instruction execution cannot be resumed
  * on it.
  *
  * @author Pedro Henrique Penna

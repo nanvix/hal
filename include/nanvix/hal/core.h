@@ -167,12 +167,17 @@
 	 */
 	EXTERN void core_idle(void);
 
-#endif /* __NANVIX_HAL */
-
 	/**
 	 * @brief Powers off the underlying core.
 	 */
 	EXTERN NORETURN void core_poweroff(void);
+
+	/**
+	 * @brief halt the underlying core.
+	 */
+	EXTERN NORETURN void core_halt(void);
+	
+#endif /* __NANVIX_HAL */
 
 	/**
 	 * @brief Reset the underlying core.
