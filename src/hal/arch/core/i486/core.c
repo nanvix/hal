@@ -39,18 +39,13 @@ PUBLIC struct coreinfo ALIGN(I486_CACHE_LINE_SIZE) cores[X86_CLUSTER_NUM_CORES] 
 
 /**
  * The i486_core_poweroff() function powers off the underlying core.
- * Afeter powering off a core, instruction execution cannot be
+ * After powering off a core, instruction execution cannot be
  * resumed on it.
  *
  * @author Pedro Henrique Penna
+ * @author João Vicente Souto
  */
 PUBLIC NORETURN void i486_core_poweroff(void)
 {
-	kprintf("[hal] halting...");
-
-	/* Disable all interrupts. */
-	i486_int_disable();
-
-	/* Stay here forever. */
-	UNREACHABLE();
+	core_halt();
 }
