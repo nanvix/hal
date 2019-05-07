@@ -23,9 +23,11 @@
  */
 
 /* Must come first. */
+#define __NEED_HAL_CORE
 #define __NEED_CORE_LPIC
 #define __NEED_OR1K_REGS
 
+#include <nanvix/hal/core.h>
 #include <arch/core/or1k/regs.h>
 #include <arch/core/or1k/lpic.h>
 #include <arch/core/or1k/mmu.h>
@@ -54,25 +56,27 @@ PUBLIC void or1k_core_setup(void)
 
 /**
  * The or1k_core_poweroff() function powers off the underlying core.
- * Afeter powering off a core, instruction execution cannot be
+ * After powering off a core, instruction execution cannot be
  * resumed on it.
  *
  * @author Davidson Francis
+ * @author João Vicente Souto
  */
 PUBLIC NORETURN void or1k_core_poweroff(void)
 {
 	/* Disable all interrupts. */
 	or1k_pic_lvl_set(OR1K_IRQLVL_0);
-
+	
 	/* Is Power Management Unit present? */
 	if (or1k_mfspr(OR1K_SPR_UPR) & OR1K_SPR_UPR_PMP)
 	{
 		kprintf("[hal] powering off...");
+
 		or1k_mtspr(OR1K_SPR_PMR, OR1K_SPR_PMR_DME);
+
+		/* Stay here forever. */
+		UNREACHABLE();
 	}
 	else
-		kprintf("[hal] halting...");
-
-	/* Stay here forever. */
-	UNREACHABLE();
+		core_halt();
 }
