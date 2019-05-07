@@ -1,12 +1,19 @@
-*.a
-*.o
+# Vim
 *.swp
 *.swo
-*.output
 
-tools/dev/toolchain/
+# Toolchain
+utils/toolchain
 
+# Doxygen
 doc/html
-bin/
+doxygen.output
 
+# Build Files
+bin/
+lib/
+*.a
+*.o
+
+# Ctags
 tags
