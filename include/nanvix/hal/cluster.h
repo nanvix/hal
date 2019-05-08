@@ -142,6 +142,20 @@
 		return ((CLUSTER_IS_IO) ? CLUSTER_IO : CLUSTER_COMPUTE);
 	}
 
+#ifdef __NANVIX_HAL
+
+	/**
+	* @brief Releases the startup fence.
+	*/
+	EXTERN void cluster_fence_release(void);
+
+	/**
+	* @brief Waits on the startup fence.
+	*/
+	EXTERN void cluster_fence_wait(void);
+
+#endif
+
 /**@}*/
 
 #endif /* NANVIX_HAL_CLUSTER_H_ */
