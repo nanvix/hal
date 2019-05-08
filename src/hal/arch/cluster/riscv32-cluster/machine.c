@@ -23,53 +23,13 @@
  */
 
 /* Must come first. */
+#define __NEED_HAL_CLUSTER
 #define __NEED_CORE_MACHINE
 
-#include <arch/cluster/riscv32-cluster/memory.h>
-#include <arch/cluster/riscv32-cluster/cores.h>
+#include <nanvix/hal/cluster.h>
 #include <arch/stdout/16550a.h>
 #include <nanvix/const.h>
 #include <errno.h>
-
-/**
- * @brief Startup fence.
- */
-PRIVATE struct
-{
-	bool master_alive;
-	rv32gc_spinlock_t lock;
-} fence = { false , RV32GC_SPINLOCK_UNLOCKED};
-
-/**
- * @brief Releases the startup fence.
- */
-PRIVATE void rv32gc_fence_release(void)
-{
-	rv32gc_spinlock_lock(&fence.lock);
-		fence.master_alive = true;
-	rv32gc_spinlock_unlock(&fence.lock);
-}
-
-/**
- * @brief Waits on the startup fence.
- */
-PRIVATE void rv32gc_fence_wait(void)
-{
-	while (true)
-	{
-		rv32gc_spinlock_lock(&fence.lock);
-
-			/* Fence is released. */
-			if (fence.master_alive)
-			{
-				rv32gc_spinlock_unlock(&fence.lock);
-				break;
-			}
-
-			noop();
-		rv32gc_spinlock_unlock(&fence.lock);
-	}
-}
 
 /**
  * @brief Initializes machine mode.
@@ -89,7 +49,7 @@ PUBLIC NORETURN void rv32gc_machine_master_setup(rv32gc_word_t pc)
 	 */
 	uart_16550a_init();
 
-	rv32gc_fence_release();
+	cluster_fence_release();
 
 	/* Enable machine IRQs. */
 	mie = rv32gc_mie_read();
@@ -121,7 +81,7 @@ PUBLIC NORETURN void rv32gc_machine_slave_setup(rv32gc_word_t pc)
 
 	rv32gc_machine_delegate_traps();
 
-	rv32gc_fence_wait();
+	cluster_fence_wait();
 
 	rv32gc_supervisor_enter(pc);
 }
