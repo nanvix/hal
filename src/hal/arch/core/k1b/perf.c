@@ -32,26 +32,6 @@
 #include <stdint.h>
 
 /**
- * Events that may be monitored.
- */
-PRIVATE const uint8_t perf_events[K1B_PERF_EVENTS_NUM] = {
-	K1B_PERF_CYCLES,
-	K1B_PERF_ICACHE_HITS,
-	K1B_PERF_ICACHE_MISSES,
-	K1B_PERF_ICACHE_STALLS,
-	K1B_PERF_DCACHE_HITS,
-	K1B_PERF_DCACHE_MISSES,
-	K1B_PERF_DCACHE_STALLS,
-	K1B_PERF_BUNDLES,
-	K1B_PERF_BRANCH_TAKEN,
-	K1B_PERF_BRANCH_STALLS,
-	K1B_PERF_REG_STALLS,
-	K1B_PERF_ITLB_STALLS,
-	K1B_PERF_DTLB_STALLS,
-	K1B_PERF_STREAM_STALLS
-};
-
-/**
  * @brief Asserts a valid performance monitor.
  *
  * @param perf Monitor to assert.
@@ -102,6 +82,33 @@ static inline k1b_word_t k1b_pmc_read(void)
 }
 
 /**
+ * @brief Resets a performance monitor.
+ *
+ * @param perf Target performance counter.
+ *
+ * @returns The previous value of the performance counter @p PMC
+ * register.
+ *
+ * @author Pedro Henrque Penna
+ */
+PRIVATE k1b_word_t k1b_perf_reset(int perf)
+{
+	k1b_word_t pmc;
+	uint32_t pmX, pmY;
+
+	/* Chain mode. */
+	pmY = (pmX = perf << 1) + 1;
+
+	/* Reset performance monitor. */
+	pmc = k1b_pmc_read();
+	pmc &= ~(K1B_PERF_MASK(pmX) | K1B_PERF_MASK(pmY));
+	pmc |= K1B_PERF_RESET(pmX) | K1B_PERF_RESET(pmY);
+	k1b_pmc_write(pmc);
+
+	return (pmc);
+}
+
+/**
  * The k1b_perf_start() function starts watching for the @p event
  * using the performance monitor @p perf.
  *
@@ -123,13 +130,8 @@ PUBLIC int k1b_perf_start(int perf, int event)
 	/* Chain mode. */
 	pmY = (pmX = perf << 1) + 1;
 
-	/* Reset performance monitor. */
-	pmc = k1b_pmc_read();
-	pmc &= ~(K1B_PERF_MASK(pmX) | K1B_PERF_MASK(pmY));
-	pmc |= K1B_PERF_RESET(pmX) | K1B_PERF_RESET(pmY);
-	k1b_pmc_write(pmc);
-
-	/* Start performance monitor. */
+	/* Reset performance monitor and then start it . */
+	pmc = k1b_perf_reset(perf);
 	pmc &= ~(K1B_PERF_MASK(pmX) | K1B_PERF_MASK(pmY));
 	pmc |= K1B_PERF_START(pmX, event) | K1B_PERF_START(pmY, event);
 	k1b_pmc_write(pmc);
@@ -190,10 +192,6 @@ PUBLIC void k1b_perf_setup(void)
 	k1b_pmc_write(pmc);
 
 	/* Reset performance monitors. */
-	pmc = k1b_pmc_read();
-	pmc &= ~(K1B_PERF_MASK(0) | K1B_PERF_MASK(1));
-	pmc &= ~(K1B_PERF_MASK(2) | K1B_PERF_MASK(2));
-	pmc |= K1B_PERF_RESET(0) | K1B_PERF_RESET(1);
-	pmc |= K1B_PERF_RESET(2) | K1B_PERF_RESET(3);
-	k1b_pmc_write(pmc);
+	pmc = k1b_perf_reset(K1B_PERF_PM_0_1);
+	pmc = k1b_perf_reset(K1B_PERF_PM_2_3);
 }

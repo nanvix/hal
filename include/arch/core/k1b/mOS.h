@@ -38,6 +38,7 @@
 #ifndef _ASM_FILE_
 
 	#include <HAL/hal/board/boot_args.h>
+	#include <HAL/hal/core/diagnostic.h>
 	#include <HAL/hal/cluster/dsu.h>
 	#include <HAL/hal/hal_ext.h>
 	#include <mOS_segment_manager_u.h>
