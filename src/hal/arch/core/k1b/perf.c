@@ -32,26 +32,6 @@
 #include <stdint.h>
 
 /**
- * Events that may be monitored.
- */
-PRIVATE const uint8_t perf_events[K1B_PERF_EVENTS_NUM] = {
-	K1B_PERF_CYCLES,
-	K1B_PERF_ICACHE_HITS,
-	K1B_PERF_ICACHE_MISSES,
-	K1B_PERF_ICACHE_STALLS,
-	K1B_PERF_DCACHE_HITS,
-	K1B_PERF_DCACHE_MISSES,
-	K1B_PERF_DCACHE_STALLS,
-	K1B_PERF_BUNDLES,
-	K1B_PERF_BRANCH_TAKEN,
-	K1B_PERF_BRANCH_STALLS,
-	K1B_PERF_REG_STALLS,
-	K1B_PERF_ITLB_STALLS,
-	K1B_PERF_DTLB_STALLS,
-	K1B_PERF_STREAM_STALLS
-};
-
-/**
  * @brief Asserts a valid performance monitor.
  *
  * @param perf Monitor to assert.
