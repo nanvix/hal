@@ -65,6 +65,21 @@
 	 */
 	EXTERN void dcache_invalidate(void);
 
+	/**
+	 * @brief Flushes the data cache.
+	 */
+	EXTERN void dcache_flush(void);
+
+	/**
+	 * @brief Waits for ongoing operations on the data cache.
+	 */
+	EXTERN void dcache_fence(void);
+
+	/**
+	 * @brief Invalidades the instruction cache.
+	 */
+	EXTERN void icache_invalidate(void);
+
 /**@}*/
 
 #endif /* NANVIX_HAL_CORE_CACHE_H_ */
