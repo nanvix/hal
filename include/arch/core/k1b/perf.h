@@ -76,6 +76,8 @@
 	#define K1B_PERF_STREAM_STALLS  _K1_STREAM_LOAD_STALLS /**< Stream Buffer Stalls            */
 	/**@}*/
 
+#ifdef __NANVIX_HAL
+
 	/**
 	 * @name Commands
 	 */
@@ -91,7 +93,11 @@
 	#define K1B_PERF_SMD        (1 << 20)           /**< Stop Monitors in Debug      */
 	/**@}*/
 
+#endif /* __NANVIX_HAL */
+
 #ifndef _ASM_FILE_
+
+#ifdef __NANVIX_HAL
 
 	/**
 	 * @brief Initializes performance monitors.
@@ -100,6 +106,8 @@
 	 * failure, a negative error code is returned instead.
 	 */
 	EXTERN void k1b_perf_setup(void);
+
+#endif /* __NANVIX_HAL */
 
 	/**
 	 * @brief Starts a performance monitor.
