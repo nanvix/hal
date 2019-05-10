@@ -48,46 +48,6 @@ PUBLIC struct coreinfo  ALIGN(OR1K_CACHE_LINE_SIZE) cores[OR1K_CLUSTER_NUM_CORES
 #endif
 };
 
-/**
- * @brief Startup fence.
- */
-PRIVATE struct
-{
-	bool master_alive;
-	or1k_spinlock_t lock;
-} fence = { false , OR1K_SPINLOCK_UNLOCKED};
-
-/**
- * @brief Releases the startup fence.
- */
-PRIVATE void or1k_fence_release(void)
-{
-	or1k_spinlock_lock(&fence.lock);
-		fence.master_alive = true;
-	or1k_spinlock_unlock(&fence.lock);
-}
-
-/**
- * @brief Waits on the startup fence.
- */
-PRIVATE void or1k_fence_wait(void)
-{
-	while (true)
-	{
-		or1k_spinlock_lock(&fence.lock);
-
-			/* Fence is released. */
-			if (fence.master_alive)
-			{
-				or1k_spinlock_unlock(&fence.lock);
-				break;
-			}
-
-			noop();
-		or1k_spinlock_unlock(&fence.lock);
-	}
-}
-
 /*============================================================================*
  * or1k_cluster_master_setup()                                                 *
  *============================================================================*/
@@ -114,7 +74,7 @@ PUBLIC NORETURN void or1k_cluster_master_setup(void)
 	/* Enable interrupts. */
 	or1k_mtspr(OR1K_SPR_SR, or1k_mfspr(OR1K_SPR_SR) | OR1K_SPR_SR_IEE);
 
-	or1k_fence_release();
+	cluster_fence_release();
 
 	/* Kernel main. */
 	kmain(0, NULL);
@@ -140,7 +100,7 @@ PUBLIC NORETURN void or1k_cluster_master_setup(void)
  */
 PUBLIC NORETURN void or1k_cluster_slave_setup(void)
 {
-	or1k_fence_wait();
+	cluster_fence_wait();
 
 	/* Initial TLB. */
 	or1k_cluster_tlb_init();
@@ -195,5 +155,5 @@ PUBLIC void or1k_cluster_setup(void)
 	/* Enable interrupts. */
 	or1k_mtspr(OR1K_SPR_SR, or1k_mfspr(OR1K_SPR_SR) | OR1K_SPR_SR_IEE);
 
-	or1k_fence_release();
+	cluster_fence_release();
 }

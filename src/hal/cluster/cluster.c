@@ -24,64 +24,52 @@
 
 /* Must come first. */
 #define __NEED_HAL_CLUSTER
-#define __NEED_CORE_MACHINE
 
 #include <nanvix/hal/cluster.h>
-#include <arch/stdout/16550a.h>
 #include <nanvix/const.h>
-#include <errno.h>
+#include <nanvix/klib.h>
+
+
+/*============================================================================*
+ * Startup Fence                                                              *
+ *============================================================================*/
 
 /**
- * @brief Initializes machine mode.
- *
- * @param pc Target program counter.
+ * @brief Startup fence.
  */
-PUBLIC NORETURN void rv32gc_machine_master_setup(rv32gc_word_t pc)
+PRIVATE struct
 {
-	rv32gc_word_t mie;
+	bool master_alive;
+	spinlock_t lock;
+} fence = { false , SPINLOCK_UNLOCKED};
 
-	/* TODO: do this even earlier. */
-	kmemset(&__BSS_START, 0, &__BSS_END - &__BSS_START);
-
-	/*
-	 * Early initialization of
-	 * UART to help us debugging.
-	 */
-	uart_16550a_init();
-
-	cluster_fence_release();
-
-	/* Enable machine IRQs. */
-	mie = rv32gc_mie_read();
-	mie = BITS_SET(mie, RV32GC_MIE_MSIE, 1);
-	mie = BITS_SET(mie, RV32GC_MIE_MTIE, 1);
-	mie = BITS_SET(mie, RV32GC_MIE_MEIE, 1);
-	rv32gc_mie_write(mie);
-
-	rv32gc_machine_delegate_traps();
-
-	rv32gc_supervisor_enter(pc);
+/**
+ * @brief Releases the startup fence.
+ */
+PUBLIC void cluster_fence_release(void)
+{
+	spinlock_lock(&fence.lock);
+		fence.master_alive = true;
+	spinlock_unlock(&fence.lock);
 }
 
 /**
- * @brief Initializes machine mode.
- *
- * @param pc Target program counter.
+ * @brief Waits on the startup fence.
  */
-PUBLIC NORETURN void rv32gc_machine_slave_setup(rv32gc_word_t pc)
+PUBLIC void cluster_fence_wait(void)
 {
-	rv32gc_word_t mie;
+	while (true)
+	{
+		spinlock_lock(&fence.lock);
 
-	/* Enable machine IRQs. */
-	mie = rv32gc_mie_read();
-	mie = BITS_SET(mie, RV32GC_MIE_MSIE, 1);
-	mie = BITS_SET(mie, RV32GC_MIE_MTIE, 0);
-	mie = BITS_SET(mie, RV32GC_MIE_MEIE, 0);
-	rv32gc_mie_write(mie);
+			/* Fence is released. */
+			if (fence.master_alive)
+			{
+				spinlock_unlock(&fence.lock);
+				break;
+			}
 
-	rv32gc_machine_delegate_traps();
-
-	cluster_fence_wait();
-
-	rv32gc_supervisor_enter(pc);
+			noop();
+		spinlock_unlock(&fence.lock);
+	}
 }
