@@ -110,7 +110,10 @@ PUBLIC int or1k_cluster_event_notify(int coreid)
 
 		/* Set the pending IPI flag. */
 		events[coreid].pending |= (1 << mycoreid);
+
+#if (defined(__or1k_cluster__))
 		or1k_cluster_ompic_send_ipi(coreid, 0);
+#endif
 
 	spinlock_unlock(&events[coreid].lock);
 
@@ -139,7 +142,9 @@ PUBLIC int or1k_cluster_event_wait(void)
 
 		or1k_spinlock_unlock(&events[mycoreid].lock);
 
+#if (defined(__or1k_cluster__))
 		or1k_int_wait();
+#endif
 	}
 
 		/* Clear event. */
