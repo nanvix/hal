@@ -82,7 +82,7 @@ PRIVATE void test_perf_api_read(void)
  */
 PRIVATE void test_perf_api_start_stop(void)
 {
-	int event;
+	int event = -1;
 
 	/*
 	 * Get the first performance
@@ -140,7 +140,7 @@ PRIVATE void test_perf_fault_read(void)
  */
 PRIVATE void test_perf_fault_start(void)
 {
-	int event;
+	int event = -1;
 
 	/*
 	 * Get the first performance

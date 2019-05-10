@@ -33,7 +33,7 @@ export CFLAGS  += -Wno-unused-function
 export CFLAGS  += -fno-stack-protector
 export CFLAGS  += -Wvla # -Wredundant-decls
 export CFLAGS  += -I $(INCDIR)
-include $(BUILDDIR)/makefile.oflags
+include $(BUILDDIR)/makefile.cflags
 
 # Archiver Options
 export ARFLAGS = rc
