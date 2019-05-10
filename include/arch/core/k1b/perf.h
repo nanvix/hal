@@ -33,6 +33,7 @@
  */
 /**@{*/
 
+	#include <arch/core/k1b/mOS.h>
 	#include <nanvix/const.h>
 	#include <errno.h>
 	#include <stdint.h>
@@ -59,20 +60,20 @@
 	 * @name Performance Events
 	 */
 	/**@{*/
-	#define K1B_PERF_CYCLES         0x0 /**< Timer Cycles                    */
-	#define K1B_PERF_ICACHE_HITS    0x1 /**< Instruction Cache Hits          */
-	#define K1B_PERF_ICACHE_MISSES  0x2 /**< Instruction Cache Misses        */
-	#define K1B_PERF_ICACHE_STALLS  0x3 /**< Instruction Cache Misses Stalls */
-	#define K1B_PERF_DCACHE_HITS    0x4 /**< Data Cache Hits                 */
-	#define K1B_PERF_DCACHE_MISSES  0x5 /**< Data Cache Misses               */
-	#define K1B_PERF_DCACHE_STALLS  0x6 /**< Data Cache Misses Stalls        */
-	#define K1B_PERF_BUNDLES        0x7 /**< Bundles Executed                */
-	#define K1B_PERF_BRANCH_TAKEN   0x8 /**< Branches Taken                  */
-	#define K1B_PERF_BRANCH_STALLS  0x9 /**< Branches Stalled                */
-	#define K1B_PERF_REG_STALLS     0xa /**< Register Dependence Stalls      */
-	#define K1B_PERF_ITLB_STALLS    0xb /**< Instruction TLB Stalls          */
-	#define K1B_PERF_DTLB_STALLS    0xc /**< Data TLB Stalls                 */
-	#define K1B_PERF_STREAM_STALLS  0xd /**< Stream Buffer Stalls            */
+	#define K1B_PERF_CYCLES         _K1_CYCLE_COUNT        /**< Timer Cycles                    */
+	#define K1B_PERF_ICACHE_HITS    _K1_IHITS              /**< Instruction Cache Hits          */
+	#define K1B_PERF_ICACHE_MISSES  _K1_IMISS              /**< Instruction Cache Misses        */
+	#define K1B_PERF_ICACHE_STALLS  _K1_IMISS_STALLS       /**< Instruction Cache Misses Stalls */
+	#define K1B_PERF_DCACHE_HITS    _K1_DHITS              /**< Data Cache Hits                 */
+	#define K1B_PERF_DCACHE_MISSES  _K1_DMISS              /**< Data Cache Misses               */
+	#define K1B_PERF_DCACHE_STALLS  _K1_DMISS_STALLS       /**< Data Cache Misses Stalls        */
+	#define K1B_PERF_BUNDLES        _K1_EXEC_BUNDLES       /**< Bundles Executed                */
+	#define K1B_PERF_BRANCH_TAKEN   _K1_BR_TAKEN           /**< Branches Taken                  */
+	#define K1B_PERF_BRANCH_STALLS  _K1_BR_TAKEN_STALLS    /**< Branches Stalled                */
+	#define K1B_PERF_REG_STALLS     _K1_RAW_STALLS         /**< Register Dependence Stalls      */
+	#define K1B_PERF_ITLB_STALLS    _K1_ITLB_STALLS        /**< Instruction TLB Stalls          */
+	#define K1B_PERF_DTLB_STALLS    _K1_DTLB_STALLS        /**< Data TLB Stalls                 */
+	#define K1B_PERF_STREAM_STALLS  _K1_STREAM_LOAD_STALLS /**< Stream Buffer Stalls            */
 	/**@}*/
 
 	/**
