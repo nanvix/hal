@@ -199,24 +199,20 @@
 #endif /* NANVIX_HAL */
 
 	/**
-	 * @see or1k_cluster_tlb_lookup_vaddr
+	 * @brief TLB lookup address mask.
 	 */
-	EXTERN const struct tlbe *or1k_cluster_tlb_lookup_vaddr(int tlb_type, vaddr_t vaddr);
+	#define OPTIMSOC_TLB_VADDR_MASK PAGE_MASK
+	#define OR1K_TLB_VADDR_MASK     PAGE_MASK
 
 	/**
-	 * @see or1k_cluster_tlb_lookup_paddr
+	 * @see or1k_cluster_tlb_get_utlb
 	 */
-	EXTERN const struct tlbe *or1k_cluster_tlb_lookup_paddr(int tlb_type, paddr_t paddr);
+	EXTERN struct tlbe *or1k_cluster_tlb_get_utlb(int tlb_type);
 
 	/**
-	 * @see or1k_cluster_tlb_write
+	 * @see or1k_cluster_tlb_get_vaddr_info
 	 */
-	EXTERN int or1k_cluster_tlb_write(int tlb_type, vaddr_t vaddr, paddr_t paddr);
-
-	/**
-	 * @see or1k_cluster_tlb_inval
-	 */
-	EXTERN int or1k_cluster_tlb_inval(int tlb_type, vaddr_t vaddr);
+	EXTERN int or1k_cluster_tlb_get_vaddr_info(vaddr_t vaddr);
 
 	/**
 	 * @see or1k_cluster_tlb_flush
@@ -243,18 +239,19 @@
 	/**
 	 * @name Exported Constants
 	 */
-	#define MEMORY_SIZE  OPTIMSOC_CLUSTER_MEM_SIZE         /**< @see OPTIMSOC_CLUSTER_MEM_SIZE         */
-	#define KMEM_SIZE    OPTIMSOC_CLUSTER_KMEM_SIZE        /**< @see OPTIMSOC_CLUSTER_KMEM_SIZE        */
-	#define UMEM_SIZE    OPTIMSOC_CLUSTER_UMEM_SIZE        /**< @see OPTIMSOC_CLUSTER_UMEM_SIZE        */
-	#define KSTACK_SIZE  OPTIMSOC_CLUSTER_KSTACK_SIZE      /**< @see OPTIMSOC_CLUSTER_KSTACK_SIZE      */
-	#define KPOOL_SIZE   OPTIMSOC_CLUSTER_KPOOL_SIZE       /**< @see OPTIMSOC_CLUSTER_KPOOL_SIZE       */
-	#define KBASE_PHYS   OPTIMSOC_CLUSTER_KERNEL_BASE_PHYS /**< @see OPTIMSOC_CLUSTER_KERNEL_BASE_PHYS */
-	#define KPOOL_PHYS   OPTIMSOC_CLUSTER_KPOOL_BASE_PHYS  /**< @see OPTIMSOC_CLUSTER_KPOOL_BASE_PHYS  */
-	#define UBASE_PHYS   OPTIMSOC_CLUSTER_USER_BASE_PHYS   /**< @see OPTIMSOC_CLUSTER_USER_BASE_PHYS   */
-	#define USTACK_VIRT  OPTIMSOC_CLUSTER_USTACK_BASE_VIRT /**< @see OPTIMSOC_CLUSTER_USTACK_BASE_VIRT */
-	#define UBASE_VIRT   OPTIMSOC_CLUSTER_USER_BASE_VIRT   /**< @see OPTIMSOC_CLUSTER_USER_BASE_VIRT   */
-	#define KBASE_VIRT   OPTIMSOC_CLUSTER_KERNEL_BASE_VIRT /**< @see OPTIMSOC_CLUSTER_KERNEL_BASE_VIRT */
-	#define KPOOL_VIRT   OPTIMSOC_CLUSTER_KPOOL_BASE_VIRT  /**< @see OPTIMSOC_CLUSTER_KPOOL_BASE_VIRT  */
+	#define MEMORY_SIZE    OPTIMSOC_CLUSTER_MEM_SIZE         /**< @see OPTIMSOC_CLUSTER_MEM_SIZE         */
+	#define KMEM_SIZE      OPTIMSOC_CLUSTER_KMEM_SIZE        /**< @see OPTIMSOC_CLUSTER_KMEM_SIZE        */
+	#define UMEM_SIZE      OPTIMSOC_CLUSTER_UMEM_SIZE        /**< @see OPTIMSOC_CLUSTER_UMEM_SIZE        */
+	#define KSTACK_SIZE    OPTIMSOC_CLUSTER_KSTACK_SIZE      /**< @see OPTIMSOC_CLUSTER_KSTACK_SIZE      */
+	#define KPOOL_SIZE     OPTIMSOC_CLUSTER_KPOOL_SIZE       /**< @see OPTIMSOC_CLUSTER_KPOOL_SIZE       */
+	#define KBASE_PHYS     OPTIMSOC_CLUSTER_KERNEL_BASE_PHYS /**< @see OPTIMSOC_CLUSTER_KERNEL_BASE_PHYS */
+	#define KPOOL_PHYS     OPTIMSOC_CLUSTER_KPOOL_BASE_PHYS  /**< @see OPTIMSOC_CLUSTER_KPOOL_BASE_PHYS  */
+	#define UBASE_PHYS     OPTIMSOC_CLUSTER_USER_BASE_PHYS   /**< @see OPTIMSOC_CLUSTER_USER_BASE_PHYS   */
+	#define USTACK_VIRT    OPTIMSOC_CLUSTER_USTACK_BASE_VIRT /**< @see OPTIMSOC_CLUSTER_USTACK_BASE_VIRT */
+	#define UBASE_VIRT     OPTIMSOC_CLUSTER_USER_BASE_VIRT   /**< @see OPTIMSOC_CLUSTER_USER_BASE_VIRT   */
+	#define KBASE_VIRT     OPTIMSOC_CLUSTER_KERNEL_BASE_VIRT /**< @see OPTIMSOC_CLUSTER_KERNEL_BASE_VIRT */
+	#define KPOOL_VIRT     OPTIMSOC_CLUSTER_KPOOL_BASE_VIRT  /**< @see OPTIMSOC_CLUSTER_KPOOL_BASE_VIRT  */
+	#define TLB_VADDR_MASK OPTIMSOC_TLB_VADDR_MASK           /**< @see OR1K_TLB_VADDR_MASK               */
 	/**@}*/
 
 #ifndef _ASM_FILE_
@@ -263,11 +260,9 @@
 	 * @name Provided Interface
 	 */
 	/**@{*/
-	#define __tlb_lookup_vaddr_fn /**< tlbe_lookup_vaddr() */
-	#define __tlb_lookup_paddr_fn /**< tlbe_lookup()       */
-	#define __tlb_write_fn        /**< tlb_write()         */
-	#define __tlb_inval_fn        /**< tlb_inval()         */
-	#define __tlb_flush_fn        /**< tlb_flush()         */
+	#define __tlb_flush_fn          /**< tlb_flush()          */
+	#define __tlb_get_vaddr_info_fn /**< tlb_get_vaddr_info() */
+	#define __tlb_get_utlb_fn       /**< tlb_get_utlb()       */
 	/**@}*/
 
 /**
@@ -276,35 +271,19 @@
 /**@{*/
 
 	/**
-	 * @see or1k_cluster_tlb_lookup_vaddr
+	 * @see or1k_cluster_tlb_get_utlb
 	 */
-	static inline const struct tlbe *optimsoc_cluster_tlb_lookup_vaddr(int tlb_type, vaddr_t vaddr)
+	static inline struct tlbe *optimsoc_cluster_tlb_get_utlb(int tlb_type)
 	{
-		return (or1k_cluster_tlb_lookup_vaddr(tlb_type, vaddr));
+		return (or1k_cluster_tlb_get_utlb(tlb_type));
 	}
 
 	/**
-	 * @see or1k_cluster_tlb_lookup_paddr
+	 * @see or1k_cluster_tlb_get_vaddr_info
 	 */
-	static inline const struct tlbe *optimsoc_cluster_tlb_lookup_paddr(int tlb_type, paddr_t paddr)
+	static inline int optimsoc_cluster_tlb_get_vaddr_info(vaddr_t vaddr)
 	{
-		return (or1k_cluster_tlb_lookup_paddr(tlb_type, paddr));
-	}
-
-	/**
-	 * @see or1k_cluster_tlb_write
-	 */
-	static inline int optimsoc_cluster_tlb_write(int tlb_type, vaddr_t vaddr, paddr_t paddr)
-	{
-		return (or1k_cluster_tlb_write(tlb_type, vaddr, paddr));
-	}
-
-	/**
-	 * @see or1k_cluster_tlb_inval
-	 */
-	static inline int optimsoc_cluster_tlb_inval(int tlb_type, vaddr_t vaddr)
-	{
-		return (or1k_cluster_tlb_inval(tlb_type, vaddr));
+		return (or1k_cluster_tlb_get_vaddr_info(vaddr));
 	}
 
 	/**
@@ -326,59 +305,31 @@
 /**@}*/
 
 	/**
-	 * @see or1k_cluster_tlb_lookup_vaddr().
-	 */
-	static inline const struct tlbe *tlb_lookup_vaddr(int tlb_type, vaddr_t vaddr)
-	{
-		/* Invalid TLB type. */
-		if ((tlb_type != OR1K_TLB_INSTRUCTION) && (tlb_type != OR1K_TLB_DATA))
-			return (NULL);
-
-		return (or1k_cluster_tlb_lookup_vaddr(tlb_type, vaddr));
-	}
-
-	/**
-	 * @see or1k_cluster_tlb_lookup_paddr().
-	 */
-	static inline const struct tlbe *tlb_lookup_paddr(int tlb_type, paddr_t paddr)
-	{
-		/* Invalid TLB type. */
-		if ((tlb_type != OR1K_TLB_INSTRUCTION) && (tlb_type != OR1K_TLB_DATA))
-			return (NULL);
-
-		return (or1k_cluster_tlb_lookup_paddr(tlb_type, paddr));
-	}
-
-	/**
-	 * @see or1k_cluster_tlb_write()
-	 */
-	static inline int tlb_write(int tlb_type, vaddr_t vaddr, paddr_t paddr)
-	{
-		/* Invalid TLB type. */
-		if ((tlb_type != OR1K_TLB_INSTRUCTION) && (tlb_type != OR1K_TLB_DATA))
-			return (-EINVAL);
-
-		return (or1k_cluster_tlb_write(tlb_type, vaddr, paddr));
-	}
-
-	/**
-	 * @see or1k_cluster_tlb_inval()
-	 */
-	static inline int tlb_inval(int tlb_type, vaddr_t vaddr)
-	{
-		/* Invalid TLB type. */
-		if ((tlb_type != OR1K_TLB_INSTRUCTION) && (tlb_type != OR1K_TLB_DATA))
-			return (-EINVAL);
-
-		return (or1k_cluster_tlb_inval(tlb_type, vaddr));
-	}
-
-	/**
 	 * @see or1k_cluster_tlb_flush().
 	 */
 	static inline int tlb_flush(void)
 	{
-		return (or1k_cluster_tlb_flush());
+		return (optimsoc_cluster_tlb_flush());
+	}
+
+	/**
+	 * @see or1k_cluster_tlb_get_vaddr_info().
+	 */
+	static inline int tlb_get_vaddr_info(vaddr_t vaddr)
+	{
+		return (optimsoc_cluster_tlb_get_vaddr_info(vaddr));
+	}
+
+	/**
+	 * @see or1k_cluster_tlb_get_utlb().
+	 */
+	static inline struct tlbe *tlb_get_utlb(int tlb_type)
+	{
+		/* Invalid TLB type. */
+		if ((tlb_type != OR1K_TLB_INSTRUCTION) && (tlb_type != OR1K_TLB_DATA))
+			return (NULL);
+
+		return (optimsoc_cluster_tlb_get_utlb(tlb_type));
 	}
 
 #endif /* _ASM_FILE_ */
