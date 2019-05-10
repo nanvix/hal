@@ -121,38 +121,6 @@
  */
 /**@{*/
 
-#ifdef __NANVIX_HAL
-
-	/**
-	 * @name States of a Core
-	 */
-	/**@{*/
-	#define CORE_IDLE      0 /**< Idle        */
-	#define CORE_SLEEPING  1 /**< Sleeping    */
-	#define CORE_RUNNING   2 /**< Running     */
-	#define CORE_RESETTING 3 /**< Resetting   */
-	#define CORE_OFFLINE   4 /**< Powered Off */
-	/**@}*/
-
-	/**
-	 * @brief Core information.
-	 */
-	struct coreinfo
-	{
-		bool initialized;    /**< Initialized?      */
-		int state;           /**< State.            */
-		int wakeups;         /**< Wakeup signals.   */
-		void (*start)(void); /**< Starting routine. */
-		spinlock_t lock;     /**< Lock.             */
-	};
-
-	/**
-	 * @brief Cores table.
-	 */
-	EXTERN struct coreinfo cores[];
-
-#endif /* __NANVIX_HAL */
-
 	/**
 	 * @brief Gets the ID of the underlying core.
 	 *
@@ -161,11 +129,6 @@
 	EXTERN int core_get_id(void);
 
 #ifdef __NANVIX_HAL
-
-	/**
-	 * @brief Suspends execution until a start signal is received.
-	 */
-	EXTERN void core_idle(void);
 
 	/**
 	 * @brief Powers off the underlying core.
@@ -178,49 +141,6 @@
 	EXTERN NORETURN void core_halt(void);
 	
 #endif /* __NANVIX_HAL */
-
-	/**
-	 * @brief Reset the underlying core.
-	 */
-	EXTERN int core_reset(void);
-
-	/**
-	 * @brief Resumes instruction execution in the underlying core.
-	 */
-	EXTERN void core_run(void);
-
-	/**
-	 * @brief Shutdowns the underlying core.
-	 *
-	 * @param status Shutdown status.
-	 */
-	EXTERN void core_shutdown(int status);
-
-	/**
-	 * @brief Suspends instruction execution in the underling core.
-	 */
-	EXTERN void core_sleep(void);
-
-	/**
-	 * @brief Starts a core.
-	 *
-	 * @param coreid ID of the target core.
-	 * @param start  Starting routine to execute.
-	 *
-	 * @return Returns 0 if the core start was successful and, otherwise,
-	 * non-zero value.
-	 */
-	EXTERN int core_start(int coreid, void (*start)(void));
-
-	/**
-	 * @brief Wakes up a core.
-	 *
-	 * @param coreid ID of the target core.
-	 *
-	 * @return Returns 0 if the wakeup was successful and a negative
-	 * number otherwise.
-	 */
-	EXTERN int core_wakeup(int coreid);
 
 /**@}*/
 
