@@ -41,6 +41,7 @@
 	#include <arch/core/or1k/int.h>
 	#include <arch/core/or1k/mmu.h>
 	#include <arch/core/or1k/lpic.h>
+	#include <arch/core/mor1kx/perf.h>
 	#include <arch/core/or1k/spinlock.h>
 	#include <arch/core/or1k/tlb.h>
 	#include <arch/core/or1k/trap.h>
@@ -58,7 +59,7 @@
 	 * @name Core Features
 	 */
 	/**@{*/
-	#define CORE_HAS_PERF         0 /**< Has Performance Monitors?   */
+	#define CORE_HAS_PERF         1 /**< Has Performance Monitors?   */
 	#define CORE_HAS_ATOMICS      1 /**< Has Atomic Instructions?    */
 	#define CORE_HAS_PMIO         0 /**< Has Programmed I/O?         */
 	#define CORE_HAS_TLB_HW       0 /**< Has Hardware-Managed TLB?   */
