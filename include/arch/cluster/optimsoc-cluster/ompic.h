@@ -30,9 +30,12 @@
 
 #ifndef _ASM_FILE_
 
-	#include <arch/cluster/or1k-cluster/ompic.h>
 	#include <nanvix/const.h>
 	#include <stdint.h>
+
+	/* External functions. */
+	EXTERN void or1k_cluster_ompic_init(void);
+	EXTERN void or1k_cluster_ompic_send_ipi(uint32_t dstcore, uint16_t data);
 
 	/**
 	 * @see or1k_cluster_ompic_init().
