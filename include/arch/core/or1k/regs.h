@@ -167,6 +167,12 @@
 	#define OR1K_SPR_ICR_LAST(WAY) (OR1K_SPRGROUP_IC + 0x3ff + (WAY) * 0x200)
 
 	/**
+	 * Performance counters group
+	 */
+	#define OR1K_SPR_PCCR(N) (OR1K_SPRGROUP_PC +     (N))
+	#define OR1K_SPR_PCMR(N) (OR1K_SPRGROUP_PC + 8 + (N))
+
+	/**
 	 * Power management group
 	 */
 	#define OR1K_SPR_PMR (OR1K_SPRGROUP_PM + 0)
@@ -385,6 +391,26 @@
 	#define OR1K_SPR_IMMUCFGR_HTR   0x00000800
 	#define OR1K_SPR_IMMUCFGR_NTW_OFF 0
 	#define OR1K_SPR_IMMUCFGR_NTS_OFF 2
+
+	/**
+	 * Bit definitions for Performance counters mode registers
+	 */
+	#define OR1K_SPR_PCMR_CP    0x00000001  /* Counter present.             */
+	#define OR1K_SPR_PCMR_UMRA  0x00000002  /* User mode read access.       */
+	#define OR1K_SPR_PCMR_CISM  0x00000004  /* Count in supervisor mode.    */
+	#define OR1K_SPR_PCMR_CIUM  0x00000008  /* Count in user mode.          */
+	#define OR1K_SPR_PCMR_LA    0x00000010  /* Load access event.           */
+	#define OR1K_SPR_PCMR_SA    0x00000020  /* Store access event.          */
+	#define OR1K_SPR_PCMR_IF    0x00000040  /* Instruction fetch event.     */
+	#define OR1K_SPR_PCMR_DCM   0x00000080  /* Data cache miss event.       */
+	#define OR1K_SPR_PCMR_ICM   0x00000100  /* Insn cache miss event.       */
+	#define OR1K_SPR_PCMR_IFS   0x00000200  /* Insn fetch stall event.      */
+	#define OR1K_SPR_PCMR_LSUS  0x00000400  /* LSU stall event.             */
+	#define OR1K_SPR_PCMR_BS    0x00000800  /* Branch stall event.          */
+	#define OR1K_SPR_PCMR_DTLBM 0x00001000  /* DTLB miss event              */
+	#define OR1K_SPR_PCMR_ITLBM 0x00002000  /* ITLB miss event              */
+	#define OR1K_SPR_PCMR_DDS   0x00004000  /* Data dependency stall event. */
+	#define OR1K_SPR_PCMR_WPE   0x03ff8000  /* Watchpoint events.           */
 
 	/**
 	 * Bit definitions for the Power management register

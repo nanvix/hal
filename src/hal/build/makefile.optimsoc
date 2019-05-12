@@ -23,6 +23,9 @@
 # C Source Files
 C_SRC += $(wildcard stdout/systrace.c)
 
+# Include mor1kx core
+C_SRC += $(wildcard arch/core/mor1kx/*.c)
+
 # Filter C Source List
 C_SRC := $(filter-out $(wildcard arch/cluster/optimsoc-cluster/*.c), $(C_SRC))
 C_SRC += $(wildcard arch/cluster/or1k-cluster/*.c)
