@@ -50,6 +50,7 @@ export CFLAGS += -D __INTERFACE_CHECK_EVENT
 export CFLAGS += -D __INTERFACE_CHECK_MEMORY
 export CFLAGS += -D __INTERFACE_CHECK_PROCESSOR_AL
 export CFLAGS += -D __INTERFACE_CHECK_TARGET_AL
+export CFLAGS += -I $(INCDIR)/posix
 
 # Linker Options
 export LDFLAGS  = -Wl,--allow-multiple-definition

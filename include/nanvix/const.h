@@ -26,9 +26,6 @@
 #define NANVIX_CONST_H_
 
 	/* Must come first. */
-	#define __need_size_t
-	#define __need_ssize_t
-	#define __need_NULL
 	#define __NEED_CC
 
 /**
@@ -43,7 +40,7 @@
 
 	#include <nanvix/cc.h>
 	#include <stdbool.h>
-	#include <decl.h>
+	#include <stddef.h>
 
 	/**
 	 * @name Scope Constants
