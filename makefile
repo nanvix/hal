@@ -61,30 +61,6 @@ export IMAGE = hal-debug.img
 # Builds everything.
 all: image
 
-# Runs Unit Tests in all clusters
-run:
-	@bash $(TOOLSDIR)/nanvix-run.sh $(IMAGE) $(BINDIR) $(EXECBIN) $(TARGET) all --no-debug $(RUN_ARGS)
-
-# Runs Unit Tests in IO Cluster.
-run-iocluster:
-	@bash $(TOOLSDIR)/nanvix-run.sh $(IMAGE) $(BINDIR) $(EXECBIN) $(TARGET) iocluster --no-debug $(RUN_ARGS)
-
-# Runs Unit Tests in Compute Cluster.
-run-ccluster:
-	@bash $(TOOLSDIR)/nanvix-run.sh $(IMAGE) $(BINDIR) $(EXECBIN) $(TARGET) ccluster --no-debug $(RUN_ARGS)
-
-# Runs Unit Tests in all clusters in debug mode.
-debug:
-	@bash $(TOOLSDIR)/nanvix-run.sh $(IMAGE) $(BINDIR) $(EXECBIN) $(TARGET) all --debug $(RUN_ARGS)
-
-# Runs Unit Tests in IO Cluster in debug mode.
-debug-iocluster:
-	@bash $(TOOLSDIR)/nanvix-run.sh $(IMAGE) $(BINDIR) $(EXECBIN) $(TARGET) iocluster --debug $(RUN_ARGS)
-
-# Runs Unit Tests in Compute Cluster in debug mode.
-debug-ccluster:
-	@bash $(TOOLSDIR)/nanvix-run.sh $(IMAGE) $(BINDIR) $(EXECBIN) $(TARGET) ccluster --debug $(RUN_ARGS)
-
 # Builds image.
 image: hal-target
 	@bash $(TOOLSDIR)/nanvix-build-image.sh $(IMAGE) $(BINDIR) $(EXECBIN)
@@ -119,3 +95,9 @@ documentation:
 #===============================================================================
 
 include $(BUILDDIR)/makefile.install
+
+#===============================================================================
+# Debug and Run Rules
+#===============================================================================
+
+include $(BUILDDIR)/makefile.run
