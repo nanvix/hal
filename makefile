@@ -52,10 +52,6 @@ include $(MAKEDIR)/makefile
 
 #===============================================================================
 
-export ARTIFACTS := $(shell find $(INCDIR) -name *.h -type f)
-
-#===============================================================================
-
 # Binary Name
 export EXECBIN = test-driver
 
@@ -112,45 +108,14 @@ distclean: distclean-target
 distclean-target:
 	@$(MAKE) -C $(SRCDIR) -f build/processor/makefile.$(PROCESSOR) distclean
 
-# Install
-install: | hal-target copy-artifacts
-	@mkdir -p $(PREFIX)/lib
-	@cp -f $(LIBDIR)/libhal*.a $(PREFIX)/lib
-	@echo [CP] $(LIBDIR)/libhal*.a
-	@echo "==============================================================================="
-	@echo "Nanvix HAL Successfully Installed into $(PREFIX)"
-	@echo "==============================================================================="
-
-# Uninstall
-uninstall: | distclean delete-artifacts
-	@rm -f $(PREFIX)/lib/libhal*.a
-	@echo [RM] $(PREFIX)/lib/libhal*.a
-	@echo "==============================================================================="
-	@echo "Nanvix HAL Successfully Uninstalled from $(PREFIX)"
-	@echo "==============================================================================="
-
-# Copies All Artifacts
-copy-artifacts: $(patsubst $(CURDIR)/%, copy/%, $(ARTIFACTS))
-
-# Copy a Single Artifact
-copy/%: %
-	$(eval file := $(<F))
-	$(eval dir := $(<D))
-	@echo [CP] $(dir)/$(file)
-	@mkdir -p $(PREFIX)/$(dir)
-	@cp -f $< $(PREFIX)/$(dir)/$(file)
-	@chmod 444 $(PREFIX)/$(dir)/$(file)
-
-# Deletes All Artifacts
-delete-artifacts: $(patsubst $(CURDIR)/%, delete/%, $(ARTIFACTS))
-
-# Deletes a Single Artifact
-delete/%:
-	$(eval file := $(patsubst delete/%, %, $@))
-	@echo [RM] $(file)
-	@rm -f $(PREFIX)/$(file)
 
 # Builds documentation.
 documentation:
 	mkdir -p $(DOCDIR)
 	doxygen doxygen/doxygen.$(TARGET)
+
+#===============================================================================
+# Install and Uninstall Rules
+#===============================================================================
+
+include $(BUILDDIR)/makefile.install
