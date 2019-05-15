@@ -119,11 +119,10 @@ PUBLIC void core_idle(void)
 			/* Awaken. */
 			if (cores[coreid].state != CORE_IDLE)
 			{
+				event_drop();
 				spinlock_unlock(&cores[coreid].lock);
 				break;
 			}
-
-			event_drop();
 
 		dcache_invalidate();
 		spinlock_unlock(&cores[coreid].lock);
@@ -168,7 +167,6 @@ PUBLIC void core_sleep(void)
 			}
 
 			cores[coreid].state = CORE_SLEEPING;
-			event_drop();
 
 		dcache_invalidate();
 		spinlock_unlock(&cores[coreid].lock);
