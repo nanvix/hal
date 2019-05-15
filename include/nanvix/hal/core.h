@@ -139,7 +139,7 @@
 	 * @brief halt the underlying core.
 	 */
 	EXTERN NORETURN void core_halt(void);
-	
+
 #endif /* __NANVIX_HAL */
 
 /**@}*/
