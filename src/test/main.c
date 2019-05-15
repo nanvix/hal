@@ -22,11 +22,21 @@
  * SOFTWARE.
  */
 
+#ifndef __unix64__
+
 #include <nanvix/hal/hal.h>
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
 #include <nanvix/const.h>
 #include "test.h"
+
+#else
+
+#include <nanvix/const.h>
+
+#endif
+
+#ifndef __unix64__
 
 /**
  * @brief Timer frequency (in Hz).
@@ -88,11 +98,15 @@ PUBLIC int main(int argc, const char *argv[])
 	return (0);
 }
 
+#endif
+
 /**
  * @brief Initializes the kernel.
  */
 PUBLIC NORETURN void kmain(int argc, const char *argv[])
 {
+#ifndef __unix64__
+
 	const char *arg;
 
 	arg = (argc < 2) ? "--all" : argv[1];
@@ -116,4 +130,13 @@ PUBLIC NORETURN void kmain(int argc, const char *argv[])
 		test_target_al();
 
 	core_poweroff();
+
+#else
+
+	UNUSED(argc);
+	UNUSED(argv);
+
+	UNREACHABLE();
+
+#endif
 }
