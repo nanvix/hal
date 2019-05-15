@@ -59,6 +59,12 @@
 		#define __NEED_CORE_RV32GC
 		#include <arch/core/rv32gc.h>
 
+	#elif (defined(__linux64__))
+
+		#undef  __NEED_CORE_LINUX64
+		#define __NEED_CORE_LINUX64
+		// TODO: include core-specific header.
+
 	#else
 
 		#error "unkonwn core"
