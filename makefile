@@ -52,10 +52,6 @@ include $(MAKEDIR)/makefile
 
 #===============================================================================
 
-export ARTIFACTS := $(shell find $(INCDIR) -name *.h -type f)
-
-#===============================================================================
-
 # Binary Name
 export EXECBIN = test-driver
 
@@ -64,30 +60,6 @@ export IMAGE = hal-debug.img
 
 # Builds everything.
 all: image
-
-# Runs Unit Tests in all clusters
-run:
-	@bash $(TOOLSDIR)/nanvix-run.sh $(IMAGE) $(BINDIR) $(EXECBIN) $(TARGET) all --no-debug $(RUN_ARGS)
-
-# Runs Unit Tests in IO Cluster.
-run-iocluster:
-	@bash $(TOOLSDIR)/nanvix-run.sh $(IMAGE) $(BINDIR) $(EXECBIN) $(TARGET) iocluster --no-debug $(RUN_ARGS)
-
-# Runs Unit Tests in Compute Cluster.
-run-ccluster:
-	@bash $(TOOLSDIR)/nanvix-run.sh $(IMAGE) $(BINDIR) $(EXECBIN) $(TARGET) ccluster --no-debug $(RUN_ARGS)
-
-# Runs Unit Tests in all clusters in debug mode.
-debug:
-	@bash $(TOOLSDIR)/nanvix-run.sh $(IMAGE) $(BINDIR) $(EXECBIN) $(TARGET) all --debug $(RUN_ARGS)
-
-# Runs Unit Tests in IO Cluster in debug mode.
-debug-iocluster:
-	@bash $(TOOLSDIR)/nanvix-run.sh $(IMAGE) $(BINDIR) $(EXECBIN) $(TARGET) iocluster --debug $(RUN_ARGS)
-
-# Runs Unit Tests in Compute Cluster in debug mode.
-debug-ccluster:
-	@bash $(TOOLSDIR)/nanvix-run.sh $(IMAGE) $(BINDIR) $(EXECBIN) $(TARGET) ccluster --debug $(RUN_ARGS)
 
 # Builds image.
 image: hal-target
@@ -112,45 +84,20 @@ distclean: distclean-target
 distclean-target:
 	@$(MAKE) -C $(SRCDIR) -f build/processor/makefile.$(PROCESSOR) distclean
 
-# Install
-install: | hal-target copy-artifacts
-	@mkdir -p $(PREFIX)/lib
-	@cp -f $(LIBDIR)/libhal*.a $(PREFIX)/lib
-	@echo [CP] $(LIBDIR)/libhal*.a
-	@echo "==============================================================================="
-	@echo "Nanvix HAL Successfully Installed into $(PREFIX)"
-	@echo "==============================================================================="
-
-# Uninstall
-uninstall: | distclean delete-artifacts
-	@rm -f $(PREFIX)/lib/libhal*.a
-	@echo [RM] $(PREFIX)/lib/libhal*.a
-	@echo "==============================================================================="
-	@echo "Nanvix HAL Successfully Uninstalled from $(PREFIX)"
-	@echo "==============================================================================="
-
-# Copies All Artifacts
-copy-artifacts: $(patsubst $(CURDIR)/%, copy/%, $(ARTIFACTS))
-
-# Copy a Single Artifact
-copy/%: %
-	$(eval file := $(<F))
-	$(eval dir := $(<D))
-	@echo [CP] $(dir)/$(file)
-	@mkdir -p $(PREFIX)/$(dir)
-	@cp -f $< $(PREFIX)/$(dir)/$(file)
-	@chmod 444 $(PREFIX)/$(dir)/$(file)
-
-# Deletes All Artifacts
-delete-artifacts: $(patsubst $(CURDIR)/%, delete/%, $(ARTIFACTS))
-
-# Deletes a Single Artifact
-delete/%:
-	$(eval file := $(patsubst delete/%, %, $@))
-	@echo [RM] $(file)
-	@rm -f $(PREFIX)/$(file)
 
 # Builds documentation.
 documentation:
 	mkdir -p $(DOCDIR)
 	doxygen doxygen/doxygen.$(TARGET)
+
+#===============================================================================
+# Install and Uninstall Rules
+#===============================================================================
+
+include $(BUILDDIR)/makefile.install
+
+#===============================================================================
+# Debug and Run Rules
+#===============================================================================
+
+include $(BUILDDIR)/makefile.run
