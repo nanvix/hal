@@ -95,6 +95,14 @@ PUBLIC void event_drop(void)
 
 	spinlock_lock(&events[mycoreid].lock);
 
+		if (events[mycoreid].pending)
+		{
+			kprintf("[hal] core %d dropping events %x",
+				mycoreid,
+				events[mycoreid].pending
+			);
+		}
+
 		events[mycoreid].pending = 0;
 
 	spinlock_unlock(&events[mycoreid].lock);
