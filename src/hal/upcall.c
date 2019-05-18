@@ -53,7 +53,7 @@ PUBLIC void upcall_forge(
 	KASSERT(ALIGNED(UPCALL_STACK_FRAME_SIZE(argsize), DWORD_SIZE));
 
 	/* Compute argument padding. */
-	padding = DWORD_SIZE - TRUNCATE(argsize, DWORD_SIZE);
+	padding = DWORD_SIZE - (argsize % DWORD_SIZE);
 
 	sp = context_get_sp(ctx);
 
