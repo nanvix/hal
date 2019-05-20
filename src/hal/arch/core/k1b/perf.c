@@ -164,6 +164,25 @@ PUBLIC int k1b_perf_stop(int perf)
 }
 
 /**
+ * The k1b_perf_restart() function restarts the performance monitor @p perf.
+ */
+PUBLIC int k1b_perf_restart(int perf)
+{
+	k1b_word_t pmc;
+
+	/* Invalid performance monitor. */
+	if (UNLIKELY(!k1b_perf_monitor_is_valid(perf)))
+		return (-EINVAL);
+
+	/* Stop performance monitor. */
+	pmc = k1b_pmc_read();
+	k1b_perf_reset(perf);
+	k1b_pmc_write(pmc);
+
+	return (0);
+}
+
+/**
  * The k1b_perf_setup() function initializes performance monitors. It
  * stops al monitors and setup them to be disabled in idle, privileged
  * and debug modes.

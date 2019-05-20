@@ -131,6 +131,16 @@
 	EXTERN int k1b_perf_stop(int perf);
 
 	/**
+	 * @brief Restarts a performance monitor.
+	 *
+	 * @param perf Target performance monitor.
+	 *
+	 * @returns Upon successful completion, zero is returned. Upon
+	 * failure, a negative error code is returned instead.
+	 */
+	EXTERN int k1b_perf_restart(int perf);
+
+	/**
 	 * @brief Reads a PM register.
 	 *
 	 * @param perf Target performance monitor.
@@ -202,10 +212,11 @@
 	 * @name Exported Functions
 	 */
 	/**@{*/
-	#define __perf_setup_fn /**< perf_setup() */
-	#define __perf_start_fn /**< perf_start() */
-	#define __perf_stop_fn  /**< perf_stop()  */
-	#define __perf_read_fn  /**< perf_read()  */
+	#define __perf_setup_fn   /**< perf_setup()   */
+	#define __perf_start_fn   /**< perf_start()   */
+	#define __perf_stop_fn    /**< perf_stop()    */
+	#define __perf_restart_fn /**< perf_restart() */
+	#define __perf_read_fn    /**< perf_read()    */
 	/**@}*/
 
 #ifndef _ASM_FILE_
@@ -236,6 +247,14 @@
 	static inline int perf_stop(int perf)
 	{
 		return (k1b_perf_stop(perf));
+	}
+
+	/**
+	 * @see k1b_perf_restart().
+	 */
+	static inline int perf_restart(int perf)
+	{
+		return (k1b_perf_restart(perf));
 	}
 
 	/**
