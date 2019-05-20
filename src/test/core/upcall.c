@@ -90,7 +90,7 @@ PRIVATE struct context fake_context;
  */
 void dumb_upcall(void *arg)
 {
-	KASSERT(*((dword_t*) arg) == MAGIC);
+	KASSERT(*((word_t*) arg) == MAGIC);
 }
 
 /**
@@ -98,7 +98,7 @@ void dumb_upcall(void *arg)
  */
 PRIVATE void test_upcall_forge(void)
 {
-	dword_t arg = MAGIC;
+	word_t arg = MAGIC;
 
 	/* These should agree. */
 	KASSERT(FAKE_STACK_SIZE == UPCALL_STACK_FRAME_SIZE(DWORD_SIZE));
@@ -118,7 +118,7 @@ PRIVATE void test_upcall_forge(void)
 		&fake_context,
 		&dumb_upcall,
 		&arg,
-		sizeof(dword_t)
+		sizeof(word_t)
 	);
 
 #if (UPCALL_TEST_VERBOSE)
@@ -140,11 +140,12 @@ PRIVATE void test_upcall_forge(void)
 #endif /* UPCAL_TEST_VERBOSE */
 
 	/* Check fake stack. */
-	KASSERT(*((dword_t *)FAKE_STACK(UPCALL_STACK_FRAME_ARG_OFF)) == (dword_t)MAGIC);
+	KASSERT(*((word_t *)FAKE_STACK(UPCALL_STACK_FRAME_ARG_OFF)) == (word_t)MAGIC);
 	KASSERT(*((word_t *)FAKE_STACK(UPCALL_STACK_FRAME_ARGSIZE_OFF)) == (word_t)sizeof(dword_t));
 	KASSERT(*((word_t *)FAKE_STACK(UPCALL_STACK_FRAME_FN_OFF)) == (word_t)&dumb_upcall);
 
 	/* Check fake context. */
+	KASSERT((context_get_sp(&fake_context) % 8) == 0);
 	KASSERT(context_get_sp(&fake_context) == FAKE_STACK_TOP);
 	KASSERT(context_get_pc(&fake_context) == ((word_t) &upcall_ret));
 }
@@ -154,10 +155,10 @@ PRIVATE void test_upcall_forge(void)
  */
 PRIVATE void test_upcall_issue(void)
 {
-	dword_t arg = MAGIC;
+	word_t arg = MAGIC;
 
 	/* These should agree. */
-	KASSERT(FAKE_STACK_SIZE == UPCALL_STACK_FRAME_SIZE(sizeof(dword_t)));
+	KASSERT(FAKE_STACK_SIZE == UPCALL_STACK_FRAME_SIZE(sizeof(word_t)));
 
 	/* Build fake stack. */
 	kmemset(&fake_stack, 0, FAKE_STACK_SIZE);
@@ -174,7 +175,7 @@ PRIVATE void test_upcall_issue(void)
 		&fake_context,
 		&dumb_upcall,
 		&arg,
-		sizeof(dword_t)
+		sizeof(word_t)
 	);
 
 	/* Issue upcall. */
