@@ -61,6 +61,9 @@
 	#ifndef __perf_stop_fn
 	#error "perf_stop() not defined?"
 	#endif
+	#ifndef __perf_restart_fn
+	#error "perf_restart() not defined?"
+	#endif
 	#ifndef __perf_read_fn
 	#error "perf_read() not defined?"
 	#endif
@@ -217,6 +220,25 @@
 	EXTERN int perf_stop(int perf);
 	#else
 	static inline int perf_stop(int perf)
+	{
+		UNUSED(perf);
+
+		return (-ENOTSUP);
+	}
+	#endif
+
+	/**
+	 * @brief Restarts a performance monitor.
+	 *
+	 * @param perf Target performance monitor.
+	 *
+	 * @returns Upon successful completion, zero is returned. Upon
+	 * failure, a negative error code is returned instead.
+	 */
+	#if (CORE_HAS_PERF)
+	EXTERN int perf_restart(int perf);
+	#else
+	static inline int perf_restart(int perf)
 	{
 		UNUSED(perf);
 
