@@ -146,6 +146,5 @@ PUBLIC void exception_forward(int excpnum, const struct exception *excp, const s
 
 	_excp->num = excpnum;
 
-	kprintf("[hal] forwarding exception");
 	do_exception(_excp, ctx);
 }
