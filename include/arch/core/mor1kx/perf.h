@@ -106,6 +106,16 @@
 	EXTERN int mor1kx_perf_stop(int perf);
 
 	/**
+	 * @brief Restarts a performance monitor.
+	 *
+	 * @param perf Target performance monitor.
+	 *
+	 * @returns Upon successful completion, zero is returned. Upon
+	 * failure, a negative error code is returned instead.
+	 */
+	EXTERN int mor1kx_perf_restart(int perf);
+
+	/**
 	 * @brief Reads a PM register.
 	 *
 	 * @param perf Target performance monitor.
@@ -178,6 +188,14 @@
 	static inline int perf_stop(int perf)
 	{
 		return (mor1kx_perf_stop(perf));
+	}
+
+	/**
+	 * @see mor1kx_perf_restart().
+	 */
+	static inline int perf_restart(int perf)
+	{
+		return (mor1kx_perf_restart(perf));
 	}
 
 	/**
