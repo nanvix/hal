@@ -107,6 +107,18 @@ PUBLIC int mor1kx_perf_stop(int perf)
 }
 
 /**
+ * The mor1kx_perf_restart() function restarts the performance monitor @p perf.
+ *
+ * @todo TODO: implement this function.
+ */
+PUBLIC int mor1kx_perf_restart(int perf)
+{
+	UNUSED(perf);
+
+	return (0);
+}
+
+/**
  * @brief Reads a PM register.
  *
  * @param perf Target performance monitor.
