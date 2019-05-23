@@ -40,8 +40,8 @@ export CFLAGS += -mcluster=$(CLUSTER_VARIANT)
 #===============================================================================
 
 # Libraries
-export LIBKERNEL    = libhal-$(CORE)-$(CLUSTER_VARIANT).a
-export LIBS_OURS    = $(LIBDIR)/$(LIBKERNEL)
+export LIBHAL       = libhal-$(CORE)-$(CLUSTER_VARIANT).a
+export LIBS_OURS    = $(LIBDIR)/$(LIBHAL)
 export LIBS_THEIRS  = -lvbsp -lmppanoc -lmpparouting -mhypervisor
 
 include $(SRCDIR)/build/makefile.nanvix

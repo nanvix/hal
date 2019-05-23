@@ -30,19 +30,19 @@ OBJ = $(ASM_SRC:.S=.$(CLUSTER)-$(CORE).o) \
 # Builds All Object Files
 all: $(OBJ)
 ifeq ($(VERBOSE), no)
-	@echo [AR] $(LIBDIR)/$(LIBKERNEL)
-	@$(AR) $(ARFLAGS) $(LIBDIR)/$(LIBKERNEL) $(OBJ)
+	@echo [AR] $(LIBDIR)/$(LIBHAL)
+	@$(AR) $(ARFLAGS) $(LIBDIR)/$(LIBHAL) $(OBJ)
 else
-	$(AR) $(ARFLAGS) $(LIBDIR)/$(LIBKERNEL) $(OBJ)
+	$(AR) $(ARFLAGS) $(LIBDIR)/$(LIBHAL) $(OBJ)
 endif
 
 # Cleans All Object Files
 clean:
 ifeq ($(VERBOSE), no)
-	@echo [CLEAN] $(LIBDIR)/$(LIBKERNEL) $(OBJ)
-	@rm -rf $(LIBDIR)/$(LIBKERNEL) $(OBJ)
+	@echo [CLEAN] $(LIBDIR)/$(LIBHAL) $(OBJ)
+	@rm -rf $(LIBDIR)/$(LIBHAL) $(OBJ)
 else
-	rm -rf $(LIBDIR)/$(LIBKERNEL) $(OBJ)
+	rm -rf $(LIBDIR)/$(LIBHAL) $(OBJ)
 endif
 
 # Builds a C Source file
