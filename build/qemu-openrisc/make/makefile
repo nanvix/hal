@@ -63,5 +63,5 @@ export LDFLAGS  =
 #===============================================================================
 
 # Libraries
-export LIBKERNEL = libhal-$(TARGET).a
-export LIBS = $(LIBDIR)/$(LIBKERNEL)
+export LIBHAL = libhal-$(TARGET).a
+export LIBS = $(LIBDIR)/$(LIBHAL)
