@@ -22,57 +22,36 @@
  * SOFTWARE.
  */
 
-#ifndef _NANVIX_HAL_CLUSTER_CLUSTER_H_
-#define _NANVIX_HAL_CLUSTER_CLUSTER_H_
+#ifndef CLUSTER_LINUX64_CLUSTER_H_
+#define CLUSTER_LINUX64_CLUSTER_H_
 
-	/**
-	 * @defgroup clusters Clusters
-	 */
+#define COREID_MASTER 0
 
-	#if (defined(__k1bdp__) || defined(__k1bio__))
-
-		#undef  __NEED_CLUSTER_K1B
-		#define __NEED_CLUSTER_K1B
-		#include <arch/cluster/k1b-cluster.h>
-
-	#elif (defined(__x86_cluster__))
-
-		#undef  __NEED_CLUSTER_X86
-		#define __NEED_CLUSTER_X86
-		#include <arch/cluster/x86-cluster.h>
-
-	#elif (defined(__or1k_cluster__))
-
-		#undef  __NEED_CLUSTER_OR1K
-		#define __NEED_CLUSTER_OR1K
-		#include <arch/cluster/or1k-cluster.h>
-
-	#elif (defined(__optimsoc_cluster__))
-
-		#undef  __NEED_CLUSTER_OPTIMSOC
-		#define __NEED_CLUSTER_OPTIMSOC
-		#include <arch/cluster/optimsoc-cluster.h>
-
-	#elif (defined(__riscv32_cluster__))
-
-		#undef  __NEED_CLUSTER_RISCV32
-		#define __NEED_CLUSTER_RISCV32
-		#include <arch/cluster/riscv32-cluster.h>
-
-	#elif (defined(__linux64_cluster__))
-
-		#undef  __NEED_CLUSTER_LINUX64
-		#define __NEED_CLUSTER_LINUX64
-		#include <arch/cluster/linux64-cluster.h>
-
-	#else
-
-		#error "unkonwn cluster"
-
+	#ifndef __NEED_CLUSTER_LINUX64
+		#error "bad cluster configuration?"
 	#endif
 
-	#undef  __NEED_HAL_CORE
-	#define __NEED_HAL_CORE
-	#include <nanvix/hal/core.h>
+	/* Cluster Interface Implementation */
+	#include <arch/cluster/linux64-cluster/_linux64-cluster.h>
 
-#endif /* _NANVIX_HAL_CLUSTER_CLUSTER_H_ */
+/**
+ * @addtogroup linux64-cluster Linux64 Cluster
+ * @ingroup clusters
+ *
+ * @brief Linux64 Cluster
+ */
+/**@{*/
+
+	/**
+	 * @name Provided Features
+	 */
+	/**@{*/
+	#define CLUSTER_IS_MULTICORE  0 /**< Multicore Cluster */
+	#define CLUSTER_IS_IO         1 /**< I/O Cluster       */
+	#define CLUSTER_IS_COMPUTE    0 /**< Compute Cluster   */
+	#define CLUSTER_HAS_EVENTS    0 /**< Event Support?    */
+	/**@}*/
+
+/**@}*/
+
+#endif /* CLUSTER_LINUX64_CLUSTER_H_ */

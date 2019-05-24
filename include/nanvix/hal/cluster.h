@@ -35,7 +35,9 @@
 	#include <nanvix/hal/cluster/timer.h>
 	#include <nanvix/hal/cluster/event.h>
 	#include <nanvix/hal/cluster/memory.h>
+#ifndef __unix64__
 	#include <nanvix/hal/cluster/mmio.h>
+#endif
 	#include <nanvix/const.h>
 
 /*============================================================================*
