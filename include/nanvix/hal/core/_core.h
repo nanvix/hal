@@ -63,7 +63,7 @@
 
 		#undef  __NEED_CORE_LINUX64
 		#define __NEED_CORE_LINUX64
-		// TODO: include core-specific header.
+		#include <arch/core/linux64.h>
 
 	#else
 
