@@ -22,57 +22,45 @@
  * SOFTWARE.
  */
 
-#ifndef _NANVIX_HAL_TARGET_TARGET_H_
-#define _NANVIX_HAL_TARGET_TARGET_H_
+#ifndef TARGET_UNIX64_H_
+#define TARGET_UNIX64_H_
 
-	/**
-	 * @defgroup targets Targets
-	 */
-
-	#if defined(__mppa256__)
-
-		#undef  __NEED_TARGET_MPPA256
-		#define __NEED_TARGET_MPPA256
-		#include <arch/target/kalray/mppa256.h>
-
-	#elif (defined(__optimsoc__))
-
-		#undef  __NEED_TARGET_OPTIMSOC
-		#define __NEED_TARGET_OPTIMSOC
-		#include <arch/target/optimsoc/optimsoc.h>
-
-	#elif (defined(__qemu_x86__))
-
-		#undef  __NEED_TARGET_QEMU_I486_PC
-		#define __NEED_TARGET_QEMU_I486_PC
-		#include <arch/target/qemu/i486-pc.h>
-
-	#elif (defined(__qemu_openrisc__))
-
-		#undef  __NEED_TARGET_QEMU_OR1K_PC
-		#define __NEED_TARGET_QEMU_OR1K_PC
-		#include <arch/target/qemu/or1k-pc.h>
-
-	#elif (defined(__qemu_riscv32__))
-
-		#undef  __NEED_TARGET_QEMU_RISCV32
-		#define __NEED_TARGET_QEMU_RISCV32
-		#include <arch/target/qemu/riscv32.h>
-
-	#elif (defined(__unix64__))
-
-		#undef  __NEED_TARGET_UNIX64
-		#define __NEED_TARGET_UNIX64
-		#include <arch/target/unix64/unix64.h>
-
-	#else
-
-		#error "unknown target"
-
+	#ifndef __NEED_TARGET_UNIX64
+		#error "bad target configuration?"
 	#endif
 
-	#undef  __NEED_HAL_PROCESSOR
-	#define __NEED_HAL_PROCESSOR
-	#include <nanvix/hal/processor.h>
+	/* Target Interface Implementation */
+	#include <arch/target/unix64/unix64/_unix64.h>
 
-#endif /* _NANVIX_HAL_TARGET_TARGET_H_ */
+/**
+ * @defgroup target-unix64
+ * @ingroup targets
+ *
+ * @brief Unix64 Platform
+ */
+/**@{*/
+
+	#include <arch/target/unix64/unix64/stdout.h>
+
+/**@}*/
+
+/*============================================================================*
+ * Exported Interface                                                         *
+ *============================================================================*/
+
+/**
+ * @cond or1k
+ */
+
+	/**
+	 * @name Provided Features
+	 */
+	/**@{*/
+	#define TARGET_HAS_STDOUT  1 /**< Standard Output feature */
+	#define TARGET_HAS_SYNC    0 /**< Synchronization feature */
+	#define TARGET_HAS_MAILBOX 0 /**< Mailbox feature         */
+	/**@}*/
+
+/**@endcond*/
+
+#endif /* TARGET_UNIX64_H_ */
