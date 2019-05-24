@@ -22,19 +22,11 @@
  * SOFTWARE.
  */
 
-#ifndef __unix64__
-
 #include <nanvix/hal/hal.h>
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
 #include <nanvix/const.h>
 #include "test.h"
-
-#else
-
-#include <nanvix/const.h>
-
-#endif
 
 #ifndef __unix64__
 
@@ -129,14 +121,14 @@ PUBLIC NORETURN void kmain(int argc, const char *argv[])
 	if ((!kstrcmp(arg, "--all")) || (!kstrcmp(arg, "--target")))
 		test_target_al();
 
-	core_poweroff();
-
 #else
 
 	UNUSED(argc);
 	UNUSED(argv);
 
-	UNREACHABLE();
+	test_core();
 
 #endif
+
+	core_poweroff();
 }
