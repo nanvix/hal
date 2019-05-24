@@ -22,53 +22,36 @@
  * SOFTWARE.
  */
 
-#ifndef _NANVIX_HAL_CORE_CORE_H_
-#define _NANVIX_HAL_CORE_CORE_H_
+#ifndef CLUSTER_LINUX64_CLUSTER_H_
+#define CLUSTER_LINUX64_CLUSTER_H_
 
-	/**
-	 * @defgroup cores Cores
-	 */
+#define COREID_MASTER 0
 
-	#if (defined(__k1b__))
-
-		#undef  __NEED_CORE_K1B
-		#define __NEED_CORE_K1B
-		#include <arch/core/k1b.h>
-
-	#elif (defined(__x86__))
-
-		#undef  __NEED_CORE_I486
-		#define __NEED_CORE_I486
-		#include <arch/core/i486.h>
-
-	#elif (defined(__or1200__))
-
-		#undef  __NEED_CORE_OR1K
-		#define __NEED_CORE_OR1K
-		#include <arch/core/or1k.h>
-
-	#elif (defined(__mor1kx__))
-
-		#undef  __NEED_CORE_MOR1KX
-		#define __NEED_CORE_MOR1KX
-		#include <arch/core/mor1kx.h>
-
-	#elif (defined(__rv32gc__))
-
-		#undef  __NEED_CORE_RV32GC
-		#define __NEED_CORE_RV32GC
-		#include <arch/core/rv32gc.h>
-
-	#elif (defined(__linux64__))
-
-		#undef  __NEED_CORE_LINUX64
-		#define __NEED_CORE_LINUX64
-		#include <arch/core/linux64.h>
-
-	#else
-
-		#error "unkonwn core"
-
+	#ifndef __NEED_CLUSTER_LINUX64
+		#error "bad cluster configuration?"
 	#endif
 
-#endif /* _NANVIX_HAL_CORE_CORE_H_ */
+	/* Cluster Interface Implementation */
+	#include <arch/cluster/linux64-cluster/_linux64-cluster.h>
+
+/**
+ * @addtogroup linux64-cluster Linux64 Cluster
+ * @ingroup clusters
+ *
+ * @brief Linux64 Cluster
+ */
+/**@{*/
+
+	/**
+	 * @name Provided Features
+	 */
+	/**@{*/
+	#define CLUSTER_IS_MULTICORE  0 /**< Multicore Cluster */
+	#define CLUSTER_IS_IO         1 /**< I/O Cluster       */
+	#define CLUSTER_IS_COMPUTE    0 /**< Compute Cluster   */
+	#define CLUSTER_HAS_EVENTS    0 /**< Event Support?    */
+	/**@}*/
+
+/**@}*/
+
+#endif /* CLUSTER_LINUX64_CLUSTER_H_ */

@@ -59,6 +59,12 @@
 		#define __NEED_PROCESSOR_RISCV32
 		#include <arch/processor/riscv32.h>
 
+	#elif (defined(__linux64__))
+
+		#undef  __NEED_PROCESSOR_LINUX64
+		#define __NEED_PROCESSOR_LINUX64
+		#include <arch/processor/linux64.h>
+
 	#else
 
 		#error "unkonwn processor"

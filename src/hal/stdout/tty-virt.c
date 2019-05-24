@@ -22,53 +22,57 @@
  * SOFTWARE.
  */
 
-#ifndef _NANVIX_HAL_CORE_CORE_H_
-#define _NANVIX_HAL_CORE_CORE_H_
+#include <nanvix/const.h>
+#include <stdio.h>
+#include <string.h>
+
+/**
+ * @brief Size of internal buffer for virtual tty device.
+ */
+#define TTY_VIRT_BUFSIZE 255
+
+/**
+ * @brief Flag that indicates if the device was initialized.
+ */
+PRIVATE bool tty_virt_initialized = false;
+
+/**
+ * Writes into the virtual tty device.
+ *
+ * @param buf Data to be written.
+ * @param n Data size.
+ */
+PUBLIC void tty_virt_write(const char *buf, size_t n)
+{
+	char _buf[TTY_VIRT_BUFSIZE + 1];
 
 	/**
-	 * @defgroup cores Cores
+	 * It's important to only try to write if the device
+	 * was already initialized.
 	 */
+	if (!tty_virt_initialized)
+		return;
 
-	#if (defined(__k1b__))
+	while (n > 0)
+	{
+		size_t i;
 
-		#undef  __NEED_CORE_K1B
-		#define __NEED_CORE_K1B
-		#include <arch/core/k1b.h>
+		i = (n >= TTY_VIRT_BUFSIZE) ? TTY_VIRT_BUFSIZE : n;
 
-	#elif (defined(__x86__))
+		_buf[i] = '\0';
+		memcpy(_buf, buf, i);
 
-		#undef  __NEED_CORE_I486
-		#define __NEED_CORE_I486
-		#include <arch/core/i486.h>
+		fprintf(stderr, "%s", _buf);
+		n -= i;
+	}
+}
 
-	#elif (defined(__or1200__))
+/**
+ * Initializes the virtual tty device.
+ */
+PUBLIC void tty_virt_init(void)
+{
+	/* Device initialized. */
+	tty_virt_initialized = true;
+}
 
-		#undef  __NEED_CORE_OR1K
-		#define __NEED_CORE_OR1K
-		#include <arch/core/or1k.h>
-
-	#elif (defined(__mor1kx__))
-
-		#undef  __NEED_CORE_MOR1KX
-		#define __NEED_CORE_MOR1KX
-		#include <arch/core/mor1kx.h>
-
-	#elif (defined(__rv32gc__))
-
-		#undef  __NEED_CORE_RV32GC
-		#define __NEED_CORE_RV32GC
-		#include <arch/core/rv32gc.h>
-
-	#elif (defined(__linux64__))
-
-		#undef  __NEED_CORE_LINUX64
-		#define __NEED_CORE_LINUX64
-		#include <arch/core/linux64.h>
-
-	#else
-
-		#error "unkonwn core"
-
-	#endif
-
-#endif /* _NANVIX_HAL_CORE_CORE_H_ */

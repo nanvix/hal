@@ -22,53 +22,37 @@
  * SOFTWARE.
  */
 
-#ifndef _NANVIX_HAL_CORE_CORE_H_
-#define _NANVIX_HAL_CORE_CORE_H_
+#include <arch/core/linux64/core.h>
+#include <nanvix/const.h>
+#include <nanvix/klib.h>
+#include <stdlib.h>
 
-	/**
-	 * @defgroup cores Cores
+/* Import definitions. */
+EXTERN NORETURN void linux64_cluster_master_setup(void);
+EXTERN NORETURN void linux64_cluster_slave_setup(void);
+
+/**
+ * @brief Entry point.
+ *
+ * @param argc Number of arguments.
+ * @param argv Arguments list.
+ */
+int main(int argc, char **argv)
+{
+	UNUSED(argc);
+	UNUSED(argv);
+
+	linux64_cores_tab[0] = pthread_self();
+
+	linux64_cluster_master_setup();
+
+	/*
+	 * TODO: grab some memory.
 	 */
 
-	#if (defined(__k1b__))
+	/*
+	 * TODO: spawn slave threads.
+	 */
 
-		#undef  __NEED_CORE_K1B
-		#define __NEED_CORE_K1B
-		#include <arch/core/k1b.h>
-
-	#elif (defined(__x86__))
-
-		#undef  __NEED_CORE_I486
-		#define __NEED_CORE_I486
-		#include <arch/core/i486.h>
-
-	#elif (defined(__or1200__))
-
-		#undef  __NEED_CORE_OR1K
-		#define __NEED_CORE_OR1K
-		#include <arch/core/or1k.h>
-
-	#elif (defined(__mor1kx__))
-
-		#undef  __NEED_CORE_MOR1KX
-		#define __NEED_CORE_MOR1KX
-		#include <arch/core/mor1kx.h>
-
-	#elif (defined(__rv32gc__))
-
-		#undef  __NEED_CORE_RV32GC
-		#define __NEED_CORE_RV32GC
-		#include <arch/core/rv32gc.h>
-
-	#elif (defined(__linux64__))
-
-		#undef  __NEED_CORE_LINUX64
-		#define __NEED_CORE_LINUX64
-		#include <arch/core/linux64.h>
-
-	#else
-
-		#error "unkonwn core"
-
-	#endif
-
-#endif /* _NANVIX_HAL_CORE_CORE_H_ */
+	return (0);
+}

@@ -22,53 +22,43 @@
  * SOFTWARE.
  */
 
-#ifndef _NANVIX_HAL_CORE_CORE_H_
-#define _NANVIX_HAL_CORE_CORE_H_
+#ifndef ARCH_LINUX64_CACHE_H_
+#define ARCH_LINUX64_CACHE_H_
+
+/**
+ * @addtogroup linux64-core-cache Cache
+ * @ingroup linux64-core
+ *
+ * @brief Memory Cache
+ */
+/**@{*/
 
 	/**
-	 * @defgroup cores Cores
+	 * @name Provided Interface
 	 */
+	/**@{*/
+	#define __dcache_invalidate_fn
+	/**@}*/
 
-	#if (defined(__k1b__))
+	/**
+	 * @brief Cache line size (in bytes).
+	 *
+	 * @bug The cache line size of i486 may change.
+	 */
+	#define LINUX64_CACHE_LINE_SIZE 64
 
-		#undef  __NEED_CORE_K1B
-		#define __NEED_CORE_K1B
-		#include <arch/core/k1b.h>
+	/**
+	 * @see LINUX64_CACHE_LINE_SIZE
+	 */
+	#define CACHE_LINE_SIZE LINUX64_CACHE_LINE_SIZE
 
-	#elif (defined(__x86__))
+	/**
+	 * @note The linux64 core features cache coherency.
+	 */
+	static inline void dcache_invalidate(void)
+	{
+	}
 
-		#undef  __NEED_CORE_I486
-		#define __NEED_CORE_I486
-		#include <arch/core/i486.h>
+/**@}*/
 
-	#elif (defined(__or1200__))
-
-		#undef  __NEED_CORE_OR1K
-		#define __NEED_CORE_OR1K
-		#include <arch/core/or1k.h>
-
-	#elif (defined(__mor1kx__))
-
-		#undef  __NEED_CORE_MOR1KX
-		#define __NEED_CORE_MOR1KX
-		#include <arch/core/mor1kx.h>
-
-	#elif (defined(__rv32gc__))
-
-		#undef  __NEED_CORE_RV32GC
-		#define __NEED_CORE_RV32GC
-		#include <arch/core/rv32gc.h>
-
-	#elif (defined(__linux64__))
-
-		#undef  __NEED_CORE_LINUX64
-		#define __NEED_CORE_LINUX64
-		#include <arch/core/linux64.h>
-
-	#else
-
-		#error "unkonwn core"
-
-	#endif
-
-#endif /* _NANVIX_HAL_CORE_CORE_H_ */
+#endif /* ARCH_LINUX64_CACHE_H_ */

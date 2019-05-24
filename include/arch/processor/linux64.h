@@ -22,53 +22,41 @@
  * SOFTWARE.
  */
 
-#ifndef _NANVIX_HAL_CORE_CORE_H_
-#define _NANVIX_HAL_CORE_CORE_H_
+#ifndef PROCESSOR_LINUX64_H_
+#define PROCESSOR_LINUX64_H_
 
-	/**
-	 * @defgroup cores Cores
-	 */
-
-	#if (defined(__k1b__))
-
-		#undef  __NEED_CORE_K1B
-		#define __NEED_CORE_K1B
-		#include <arch/core/k1b.h>
-
-	#elif (defined(__x86__))
-
-		#undef  __NEED_CORE_I486
-		#define __NEED_CORE_I486
-		#include <arch/core/i486.h>
-
-	#elif (defined(__or1200__))
-
-		#undef  __NEED_CORE_OR1K
-		#define __NEED_CORE_OR1K
-		#include <arch/core/or1k.h>
-
-	#elif (defined(__mor1kx__))
-
-		#undef  __NEED_CORE_MOR1KX
-		#define __NEED_CORE_MOR1KX
-		#include <arch/core/mor1kx.h>
-
-	#elif (defined(__rv32gc__))
-
-		#undef  __NEED_CORE_RV32GC
-		#define __NEED_CORE_RV32GC
-		#include <arch/core/rv32gc.h>
-
-	#elif (defined(__linux64__))
-
-		#undef  __NEED_CORE_LINUX64
-		#define __NEED_CORE_LINUX64
-		#include <arch/core/linux64.h>
-
-	#else
-
-		#error "unkonwn core"
-
+	#ifndef __NEED_PROCESSOR_LINUX64
+		#error "bad processor configuration?"
 	#endif
 
-#endif /* _NANVIX_HAL_CORE_CORE_H_ */
+	/* Processor Interface Implementation */
+	#include <arch/processor/linux64/_linux64.h>
+
+/**
+ * @addtogroup processor Linux64
+ * @ingroup processors
+ *
+ * @brief Linux64 Processor
+ */
+/**@*/
+
+/**@}*/
+
+/*============================================================================*
+ * Provided Interface                                                         *
+ *============================================================================*/
+/**
+ * @cond Linux64
+ */
+
+	/**
+	 * @name Provided Features
+	 */
+	/**@{*/
+	#define PROCESSOR_IS_MULTICLUSTER 0 /**< Multicluster feature */
+	#define PROCESSOR_HAS_NOC         0 /**< NoC feature          */
+	/**@}*/
+
+/**@endcond*/
+
+#endif /* PROCESSOR_LINUX64_H_ */

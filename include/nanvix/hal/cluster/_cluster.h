@@ -59,6 +59,12 @@
 		#define __NEED_CLUSTER_RISCV32
 		#include <arch/cluster/riscv32-cluster.h>
 
+	#elif (defined(__linux64_cluster__))
+
+		#undef  __NEED_CLUSTER_LINUX64
+		#define __NEED_CLUSTER_LINUX64
+		#include <arch/cluster/linux64-cluster.h>
+
 	#else
 
 		#error "unkonwn cluster"

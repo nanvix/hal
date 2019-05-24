@@ -22,53 +22,45 @@
  * SOFTWARE.
  */
 
-#ifndef _NANVIX_HAL_CORE_CORE_H_
-#define _NANVIX_HAL_CORE_CORE_H_
+#ifndef CORE_LINUX64_H_
+#define CORE_LINUX64_H_
+
+#include <arch/core/linux64/spinlock.h>
 
 	/**
-	 * @defgroup cores Cores
+	 * @addtogroup linux64-core Linux64 Core
+	 * @ingroup cores
 	 */
 
-	#if (defined(__k1b__))
-
-		#undef  __NEED_CORE_K1B
-		#define __NEED_CORE_K1B
-		#include <arch/core/k1b.h>
-
-	#elif (defined(__x86__))
-
-		#undef  __NEED_CORE_I486
-		#define __NEED_CORE_I486
-		#include <arch/core/i486.h>
-
-	#elif (defined(__or1200__))
-
-		#undef  __NEED_CORE_OR1K
-		#define __NEED_CORE_OR1K
-		#include <arch/core/or1k.h>
-
-	#elif (defined(__mor1kx__))
-
-		#undef  __NEED_CORE_MOR1KX
-		#define __NEED_CORE_MOR1KX
-		#include <arch/core/mor1kx.h>
-
-	#elif (defined(__rv32gc__))
-
-		#undef  __NEED_CORE_RV32GC
-		#define __NEED_CORE_RV32GC
-		#include <arch/core/rv32gc.h>
-
-	#elif (defined(__linux64__))
-
-		#undef  __NEED_CORE_LINUX64
-		#define __NEED_CORE_LINUX64
-		#include <arch/core/linux64.h>
-
-	#else
-
-		#error "unkonwn core"
-
+	#ifndef __NEED_CORE_LINUX64
+		#error "linux64 core not required"
 	#endif
 
-#endif /* _NANVIX_HAL_CORE_CORE_H_ */
+
+	#include <arch/core/linux64/core.h>
+	#include <arch/core/linux64/cache.h>
+	#include <arch/core/linux64/excp.h>
+	#include <arch/core/linux64/int.h>
+	#include <arch/core/linux64/spinlock.h>
+
+/**
+ * @cond linux64
+ */
+
+	/**
+	 * @name Core Features
+	 */
+	/**@{*/
+	#define CORE_HAS_PERF         0 /**< Has Performance Monitors?   */
+	#define CORE_HAS_ATOMICS      1 /**< Has Atomic Instructions?    */
+	#define CORE_HAS_PMIO         0 /**< Has Programmed I/O?         */
+	#define CORE_HAS_TLB_HW       1 /**< Has Hardware-Managed TLB?   */
+	#define CORE_HAS_CACHE_HW     1 /**< Has Hardware-Managed Cache? */
+	#define CORE_HAS_HUGE_PAGES   1 /**< Are Huge Pages Supported?   */
+	#define CORE_IS_LITTLE_ENDIAN 0 /**< Is Little Endian?           */
+	/**@}*/
+
+/**@endcond*/
+
+#endif /* CORE_LINUX64_H_ */
+

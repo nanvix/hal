@@ -22,53 +22,44 @@
  * SOFTWARE.
  */
 
-#ifndef _NANVIX_HAL_CORE_CORE_H_
-#define _NANVIX_HAL_CORE_CORE_H_
+#ifndef ARCH_CORE_LINUX64_H_
+#define ARCH_CORE_LINUX64_H_
+
+/**
+ * @addtogroup linux64-core-spinlock Spinlock
+ * @ingroup linux64-core
+ *
+ * @brief linux64 Spinlocks
+ */
+/**@{*/
 
 	/**
-	 * @defgroup cores Cores
+	 * @brief Spinlock.
 	 */
+	typedef int linux64_spinlock_t;
 
-	#if (defined(__k1b__))
+/**@}*/
 
-		#undef  __NEED_CORE_K1B
-		#define __NEED_CORE_K1B
-		#include <arch/core/k1b.h>
+/*============================================================================*
+ * Exported Interface                                                         *
+ *============================================================================*/
 
-	#elif (defined(__x86__))
+/**
+ * @cond linux64
+ */
 
-		#undef  __NEED_CORE_I486
-		#define __NEED_CORE_I486
-		#include <arch/core/i486.h>
+	/**
+	 * @name Exported Types
+	 */
+	/**@{*/
+	#define __spinlock_t /**< @see spinlock_t */
+	/**@}*/
 
-	#elif (defined(__or1200__))
+	/**
+	 * @see linux64_spinlock_t
+	 */
+	typedef linux64_spinlock_t spinlock_t;
 
-		#undef  __NEED_CORE_OR1K
-		#define __NEED_CORE_OR1K
-		#include <arch/core/or1k.h>
+/**@endcond*/
 
-	#elif (defined(__mor1kx__))
-
-		#undef  __NEED_CORE_MOR1KX
-		#define __NEED_CORE_MOR1KX
-		#include <arch/core/mor1kx.h>
-
-	#elif (defined(__rv32gc__))
-
-		#undef  __NEED_CORE_RV32GC
-		#define __NEED_CORE_RV32GC
-		#include <arch/core/rv32gc.h>
-
-	#elif (defined(__linux64__))
-
-		#undef  __NEED_CORE_LINUX64
-		#define __NEED_CORE_LINUX64
-		#include <arch/core/linux64.h>
-
-	#else
-
-		#error "unkonwn core"
-
-	#endif
-
-#endif /* _NANVIX_HAL_CORE_CORE_H_ */
+#endif /* ARCH_CORE_LINUX64_H_ */
