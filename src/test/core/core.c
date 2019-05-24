@@ -32,6 +32,12 @@
  */
 #define TEST_CORE_VERBOSE 0
 
+/**
+ * @brief Run destructive tests?
+ */
+#define TEST_CORE_DESTRUCTIVE 0
+
+
 /*============================================================================*
  * API Tests                                                                  *
  *============================================================================*/
@@ -56,6 +62,24 @@ PRIVATE void test_core_get_id(void)
 	KASSERT(coreid == COREID_MASTER);
 }
 
+
+/*----------------------------------------------------------------------------*
+ * Core Poweroff                                                              *
+ *----------------------------------------------------------------------------*/
+
+
+/**
+ * @brief API Test: Poweroff the core
+ */
+PRIVATE void test_core_poweroff(void)
+{
+	/* Don't run destructive tests. */
+	if (!TEST_CORE_DESTRUCTIVE)
+		return;
+
+	core_poweroff();
+}
+
 /*============================================================================*
  * Test Driver                                                                *
  *============================================================================*/
@@ -64,8 +88,9 @@ PRIVATE void test_core_get_id(void)
  * @brief API Tests.
  */
 PRIVATE struct test core_tests_api[] = {
-	{ test_core_get_id, "get core id" },
-	{ NULL,             NULL          },
+	{ test_core_get_id,   "get core id   " },
+	{ test_core_poweroff, "power off core" },
+	{ NULL,                NULL            },
 };
 
 /**
