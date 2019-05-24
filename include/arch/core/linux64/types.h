@@ -30,9 +30,7 @@
 	#error "do not include this file"
 #endif
 
-#ifndef _ASM_FILE_
 	#include <stdint.h>
-#endif
 
 /**
  * @addtogroup linux64-core

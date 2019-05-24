@@ -22,37 +22,45 @@
  * SOFTWARE.
  */
 
-#include <arch/core/linux64/core.h>
-#include <nanvix/const.h>
-#include <nanvix/klib.h>
-#include <stdlib.h>
+#ifndef CORE_LINUX64_H_
+#define CORE_LINUX64_H_
 
-/* Import definitions. */
-EXTERN NORETURN void linux64_cluster_master_setup(void);
-EXTERN NORETURN void linux64_cluster_slave_setup(void);
+#include <arch/core/linux64/spinlock.h>
+
+	/**
+	 * @addtogroup linux64-core Linux64 Core
+	 * @ingroup cores
+	 */
+
+	#ifndef __NEED_CORE_LINUX64
+		#error "linux64 core not required"
+	#endif
+
+
+	#include <arch/core/linux64/core.h>
+	#include <arch/core/linux64/cache.h>
+	#include <arch/core/linux64/excp.h>
+	#include <arch/core/linux64/int.h>
+	#include <arch/core/linux64/spinlock.h>
 
 /**
- * @brief Entry point.
- *
- * @param argc Number of arguments.
- * @param argv Arguments list.
+ * @cond linux64
  */
-int main(int argc, char **argv)
-{
-	UNUSED(argc);
-	UNUSED(argv);
 
-	linux64_cores_tab[0] = pthread_self();
-
-	linux64_cluster_master_setup();
-
-	/*
-	 * TODO: grab some memory.
+	/**
+	 * @name Core Features
 	 */
+	/**@{*/
+	#define CORE_HAS_PERF         0 /**< Has Performance Monitors?   */
+	#define CORE_HAS_ATOMICS      1 /**< Has Atomic Instructions?    */
+	#define CORE_HAS_PMIO         0 /**< Has Programmed I/O?         */
+	#define CORE_HAS_TLB_HW       1 /**< Has Hardware-Managed TLB?   */
+	#define CORE_HAS_CACHE_HW     1 /**< Has Hardware-Managed Cache? */
+	#define CORE_HAS_HUGE_PAGES   1 /**< Are Huge Pages Supported?   */
+	#define CORE_IS_LITTLE_ENDIAN 0 /**< Is Little Endian?           */
+	/**@}*/
 
-	/*
-	 * TODO: spawn slave threads.
-	 */
+/**@endcond*/
 
-	return (0);
-}
+#endif /* CORE_LINUX64_H_ */
+

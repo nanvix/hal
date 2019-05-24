@@ -22,60 +22,54 @@
  * SOFTWARE.
  */
 
+#include <nanvix/hal/core/interrupt.h>
+#include <arch/core/linux64/core.h>
 #include <nanvix/const.h>
-#include <nanvix/klib.h>
-#include <arch/stdout/tty-virt.h>
 
-/* Import definitions. */
-EXTERN NORETURN void kmain(int, const char *[]);
+/**
+ * @brief Lookup table for thread IDs.
+ */
+PUBLIC pthread_t linux64_cores_tab[LINUX64_CORE_NUM_CORES];
 
 /*============================================================================*
- * linux64_cluster_setup()                                                    *
+ * linux64_core_getid()                                                       *
  *============================================================================*/
 
 /**
- * @todo TODO provide a detailed description of this function.
- *
- * @author Pedro Henrique Penna
+ * The linux64_core_get_id() returns the ID of the underlying core.
  */
-PUBLIC void linux64_cluster_setup(void)
+PUBLIC int linux64_core_get_id(void)
 {
-	// TODO: implement
+	/* Search for target core. */
+	for (int i = 0; i < LINUX64_CORE_NUM_CORES ; i++)
+	{
+		/* Found. */
+		if (linux64_cores_tab[i] == pthread_self())
+			return (i);
+	}
+
+	return (-1);
 }
 
 /*============================================================================*
- * linux64_cluster_slave_setup()                                              *
+ * linux64_core_poweroff()                                                    *
  *============================================================================*/
 
 /**
- * @todo TODO provide a detailed description of this function.
- *
- * @author Pedro Henrique Penna
+ * @todo TODO: provide a detailed description for this function.
  */
-PUBLIC NORETURN void linux64_cluster_slave_setup(void)
+PUBLIC NORETURN void linux64_core_poweroff(void)
 {
+	/* Search for target core. */
+	for (int i = 0; i < LINUX64_CORE_NUM_CORES; i++)
+	{
+		/* Found. */
+		if (linux64_cores_tab[i] == pthread_self())
+		{
+			linux64_cores_tab[i] = 0;
+			pthread_exit(NULL);
+		}
+	}
+
 	UNREACHABLE();
-}
-
-/*============================================================================*
- * linux64_cluster_master_setup()                                             *
- *============================================================================*/
-
-/**
- * @todo TODO provide a detailed description of this function.
- *
- * @author Pedro Henrique Penna
- */
-PUBLIC NORETURN void linux64_cluster_master_setup(void)
-{
-	/*
-	 * Early initialization of Virtual
-	 * TTY device to help us debugging.
-	 */
-	tty_virt_init();
-
-	/* cluster setup. */
-	linux64_cluster_setup();
-
-	kmain(0, NULL);
 }
