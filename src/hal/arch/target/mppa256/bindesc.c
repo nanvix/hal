@@ -42,11 +42,11 @@
  */
 #define K1B_TLBE_ETHERNET \
 	K1B_TLBE_INITIALIZER(\
-		0x04200,                       \
+		0x04420,                       \
+		0x0,                           \
 		0x0,                           \
 		0x0,                           \
 		0x04400,                       \
-		0x00,                          \
 		0x0,                           \
 		K1B_TLBE_PROT_RW,              \
 		K1B_DTLBE_CACHE_POLICY_DEVICE, \
@@ -58,13 +58,13 @@
  */
 #define K1B_TLBE_DDR \
 	K1B_TLBE_INITIALIZER(\
+		0xc0000,                          \
+		0x0,                              \
+		0x0,                              \
+		0x0,                              \
 		0x80000,                          \
 		0x0,                              \
-		0x0,                              \
-		0x80000,                          \
-		0x00,                             \
-		0x0,                              \
-		K1B_TLBE_PROT_RW,                 \
+		K1B_TLBE_PROT_RWX,                \
 		K1B_DTLBE_CACHE_POLICY_WRTHROUGH, \
 		K1B_TLBE_STATUS_AMODIFIED         \
 	)
@@ -74,11 +74,11 @@
  */
 #define K1B_TLBE_NULL \
 	K1B_TLBE_INITIALIZER(\
-		0x00000,                       \
+		0xc0002,                       \
 		0x0,                           \
 		0x0,                           \
+		0x0,                           \
 		0x00000,                       \
-		0x00,                          \
 		0x0,                           \
 		K1B_TLBE_PROT_NONE,            \
 		K1B_ITLBE_CACHE_POLICY_ENABLE, \
@@ -140,12 +140,9 @@ volatile mOS_bin_desc_t bin_descriptor SECTION_BINDESC OVERRIDE =
 		{._dword = K1B_TLBE_NULL      },
 		{._dword = K1B_TLBE_NULL      },
 		{._dword = K1B_TLBE_NULL      },
-		{._dword = K1B_TLBE_NULL      },
-		{._dword = K1B_TLBE_NULL      },
-#else
-		{._dword = K1B_TLBE_NULL      },
-		{._dword = K1B_TLBE_NULL      },
 #endif
+		{._dword = K1B_TLBE_NULL      },
+		{._dword = K1B_TLBE_NULL      },
 		{._dword = K1B_TLBE_NULL      },
 		{._dword = K1B_TLBE_NULL      },
 		{._dword = K1B_TLBE_NULL      },
