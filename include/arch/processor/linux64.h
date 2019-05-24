@@ -22,57 +22,41 @@
  * SOFTWARE.
  */
 
-#ifndef _NANVIX_HAL_PROCESSOR_PROCESSOR_H_
-#define _NANVIX_HAL_PROCESSOR_PROCESSOR_H_
+#ifndef PROCESSOR_LINUX64_H_
+#define PROCESSOR_LINUX64_H_
 
-	/**
-	 * @defgroup processors Processors
-	 */
-
-	#if (defined(__bostan__))
-
-		#undef  __NEED_PROCESSOR_BOSTAN
-		#define __NEED_PROCESSOR_BOSTAN
-		#include <arch/processor/bostan.h>
-
-	#elif (defined(__x86__))
-
-		#undef  __NEED_PROCESSOR_I486_QEMU
-		#define __NEED_PROCESSOR_I486_QEMU
-		#include <arch/processor/i486-qemu.h>
-
-	#elif (defined(__optimsoc4__))
-
-		#undef  __NEED_PROCESSOR_OR1K_OPTIMSOC
-		#define __NEED_PROCESSOR_OR1K_OPTIMSOC
-		#include <arch/processor/optimsoc.h>
-
-	#elif (defined(__openrisc__))
-
-		#undef  __NEED_PROCESSOR_OR1K_QEMU
-		#define __NEED_PROCESSOR_OR1K_QEMU
-		#include <arch/processor/or1k-qemu.h>
-
-	#elif (defined(__riscv32__))
-
-		#undef  __NEED_PROCESSOR_RISCV32
-		#define __NEED_PROCESSOR_RISCV32
-		#include <arch/processor/riscv32.h>
-
-	#elif (defined(__linux64__))
-
-		#undef  __NEED_PROCESSOR_LINUX64
-		#define __NEED_PROCESSOR_LINUX64
-		#include <arch/processor/linux64.h>
-
-	#else
-
-		#error "unkonwn processor"
-
+	#ifndef __NEED_PROCESSOR_LINUX64
+		#error "bad processor configuration?"
 	#endif
 
-	#undef  __NEED_HAL_CLUSTER
-	#define __NEED_HAL_CLUSTER
-	#include <nanvix/hal/cluster.h>
+	/* Processor Interface Implementation */
+	#include <arch/processor/linux64/_linux64.h>
 
-#endif /* _NANVIX_HAL_PROCESSOR_PROCESSOR_H_ */
+/**
+ * @addtogroup processor Linux64
+ * @ingroup processors
+ *
+ * @brief Linux64 Processor
+ */
+/**@*/
+
+/**@}*/
+
+/*============================================================================*
+ * Provided Interface                                                         *
+ *============================================================================*/
+/**
+ * @cond Linux64
+ */
+
+	/**
+	 * @name Provided Features
+	 */
+	/**@{*/
+	#define PROCESSOR_IS_MULTICLUSTER 0 /**< Multicluster feature */
+	#define PROCESSOR_HAS_NOC         0 /**< NoC feature          */
+	/**@}*/
+
+/**@endcond*/
+
+#endif /* PROCESSOR_LINUX64_H_ */
