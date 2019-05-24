@@ -41,7 +41,7 @@ jobs:
     # Build Debug
     - stage: "Build Debug"
       name: "QEMU OpenRISC"
-      script: docker run -v"$(pwd):$MOUNTDIR/hal" -p4567:4567 nanvix/toolchain-openrisc /bin/sh -c "cd $MOUNTDIR/hal && export TARGET=qemu-openrisc && export TOOLCHAIN_DIR=/root/toolchain/or1k/bin && make distclean  && make all"
+      script: docker run -v"$(pwd):$MOUNTDIR/hal" -p4567:4567 nanvix/toolchain-openrisc /bin/sh -c "cd $MOUNTDIR/hal && export TARGET=qemu-openrisc && export TOOLCHAIN_DIR=/root/toolchain/or1k/bin && make distclean && make all"
     - stage: "Build Debug"
       name: "QEMU x86"
       script: docker run -v"$(pwd):$MOUNTDIR/hal" -p4567:4567 nanvix/toolchain-i486 /bin/sh -c "cd $MOUNTDIR/hal && export TARGET=qemu-x86 && export TOOLCHAIN_DIR=/root/toolchain/i486/bin && make distclean && make all"
@@ -60,11 +60,15 @@ jobs:
       script:
         - rsync -avz --delete-after --exclude=".git" . $SERVER_NAME:~/travis/hal
         - ssh $SERVER_NAME 'bash travis/build-hal.sh --no-verbose --debug'
+    - stage: "Build Debug"
+      name: "UNIX64"
+      script: /bin/sh -c "export TARGET=unix64 && make distclean && make all"
+
 
     # Build Release
     - stage: "Build Release"
       name: "QEMU OpenRISC"
-      script: docker run -v"$(pwd):$MOUNTDIR/hal" -p4567:4567 nanvix/toolchain-openrisc /bin/sh -c "cd $MOUNTDIR/hal && export TARGET=qemu-openrisc && export TOOLCHAIN_DIR=/root/toolchain/or1k/bin && export RELEASE=true && make distclean  && make all"
+      script: docker run -v"$(pwd):$MOUNTDIR/hal" -p4567:4567 nanvix/toolchain-openrisc /bin/sh -c "cd $MOUNTDIR/hal && export TARGET=qemu-openrisc && export TOOLCHAIN_DIR=/root/toolchain/or1k/bin && export RELEASE=true && make distclean && make all"
     - stage: "Build Release"
       name: "QEMU x86"
       script: docker run -v"$(pwd):$MOUNTDIR/hal" -p4567:4567 nanvix/toolchain-i486 /bin/sh -c "cd $MOUNTDIR/hal && export TARGET=qemu-x86 && export TOOLCHAIN_DIR=/root/toolchain/i486/bin && export RELEASE=true && make distclean && make all"
@@ -83,6 +87,9 @@ jobs:
       script:
         - rsync -avz --delete-after --exclude=".git" . $SERVER_NAME:~/travis/hal
         - ssh $SERVER_NAME 'bash travis/build-hal.sh --no-verbose --release'
+    - stage: "Build Release"
+      name: "UNIX64"
+      script: /bin/sh -c "export TARGET=unix64 && export RELEASE=true && make distclean && make all"
 
 notifications:
   slack: nanvix:31ePVjsrXynUajPUDqy6I0hp
