@@ -108,12 +108,24 @@ PUBLIC int mor1kx_perf_stop(int perf)
 
 /**
  * The mor1kx_perf_restart() function restarts the performance monitor @p perf.
- *
- * @todo TODO: implement this function.
  */
 PUBLIC int mor1kx_perf_restart(int perf)
 {
-	UNUSED(perf);
+	or1k_word_t pcmr; /* Mode register.  */
+
+	/* Invalid performance monitor. */
+	if (UNLIKELY(!mor1kx_perf_monitor_is_valid(perf)))
+		return (-EINVAL);
+
+	/* Stop counter. */
+	pcmr = or1k_mfspr(OR1K_SPR_PCMR(perf));
+	or1k_mtspr(OR1K_SPR_PCMR(perf), 0);
+
+	/* Resets counter. */
+	or1k_mtspr(OR1K_SPR_PCCR(perf), 0);
+	
+	/* Start counter again. */
+	or1k_mtspr(OR1K_SPR_PCMR(perf), pcmr);
 
 	return (0);
 }

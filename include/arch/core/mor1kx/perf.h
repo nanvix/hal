@@ -157,10 +157,11 @@
 	 * @name Exported Functions
 	 */
 	/**@{*/
-	#define __perf_setup_fn /**< perf_setup() */
-	#define __perf_start_fn /**< perf_start() */
-	#define __perf_stop_fn  /**< perf_stop()  */
-	#define __perf_read_fn  /**< perf_read()  */
+	#define __perf_setup_fn   /**< perf_setup()   */
+	#define __perf_start_fn   /**< perf_start()   */
+	#define __perf_stop_fn    /**< perf_stop()    */
+	#define __perf_restart_fn /**< perf_restart() */
+	#define __perf_read_fn    /**< perf_read()    */
 	/**@}*/
 
 #ifndef _ASM_FILE_
