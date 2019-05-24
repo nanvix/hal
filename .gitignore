@@ -1,6 +1,7 @@
 # Vim
 *.swp
 *.swo
+.vscode
 
 # Toolchain
 utils/toolchain
