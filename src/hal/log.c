@@ -26,6 +26,7 @@
 #include <nanvix/hal/log.h>
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
+#include <sys/types.h>
 #include <stdint.h>
 
 /**
