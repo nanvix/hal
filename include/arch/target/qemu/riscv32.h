@@ -42,6 +42,11 @@
 
 	#include <arch/target/qemu/riscv32/stdout.h>
 
+	/**
+	 * @brief Frequency (in MHz).
+	 */
+	#define QEMU_RISCV32_FREQUENCY 10
+
 /**@}*/
 
 /*============================================================================*
@@ -51,6 +56,13 @@
 /**
  * @cond qemu_riscv32
  */
+
+	/**
+	 * @name Exported Constants
+	 */
+	/**@{*/
+	#define TARGET_FREQUENCY QEMU_RISCV32_FREQUENCY
+	/**@}*/
 
 	/**
 	 * @name Provided Features
