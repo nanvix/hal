@@ -33,6 +33,10 @@
  */
 /**@{*/
 
+	#include <nanvix/klib.h>
+	#include <stdlib.h>
+	#include <stdio.h>
+
 	/**
 	 * @name Provided Interface
 	 */
@@ -41,23 +45,189 @@
 	/**@}*/
 
 	/**
-	 * @brief Cache line size (in bytes).
-	 *
-	 * @bug The cache line size of i486 may change.
+	 * @brief Signalizes if the core supports data cache
 	 */
-	#define LINUX64_CACHE_LINE_SIZE 64
+	#define CORE_HAS_DCACHE 0
+	
+	/**
+	 * @brief Signalizes if the core supports instruction cache
+	 */
+	#define CORE_HAS_ICACHE 0
 
 	/**
-	 * @see LINUX64_CACHE_LINE_SIZE
+	 * @brief Initialize all the cache variables
 	 */
-	#define CACHE_LINE_SIZE LINUX64_CACHE_LINE_SIZE
+	EXTERN void linux64_core_cache_init(void);
+
+	/**
+	 * @brief Cache line size
+	 */
+	EXTERN unsigned int linux64_cache_line_size;
+
+	/**
+	 * @brief recover the cache line size
+	 */
+	EXTERN unsigned int get_linux64_cache_line_size(void);
+
+	/**
+	 * @see linux64_cache_line_size
+	 */
+	#define CACHE_LINE_SIZE get_linux64_cache_line_size()
+
+	/**
+	 * @brief Cache line size log2
+	 */
+	EXTERN unsigned int linux64_cache_line_size_log2;
+
+	/**
+	 * @brief recover the cache line size log2
+	 */
+	EXTERN unsigned int get_linux64_cache_line_size_log2(void);
+
+	/**
+	 * @brief Cache size
+	 */
+	EXTERN unsigned int linux64_cache_size;
+
+	/**
+	 * @brief recover the cache line size
+	 */
+	EXTERN unsigned int get_linux64_cache_size(void);
+
+	/**
+	 * @brief : cache size log2
+	 */
+	#define CACHE_SIZE get_linux64_cache_size()
+
+	/**
+	 * @brief Cache line size log2.
+	 */
+	#define CACHE_LINE_SIZE_LOG2 get_linux64_cache_line_size_log2()
+	
+	/**
+	 * @brief Cache line size log2
+	 */
+	EXTERN unsigned int linux64_cache_size_log2;
+
+	/**
+	 * @brief Get the cache line size log2
+	 */
+	EXTERN unsigned int get_linux64_cache_size_log2(void);
+
+	/**
+	 * @brief Cache size log2
+	 */
+	#define CACHE_SIZE_LOG2 get_linux64_cache_size_log2()
+	
+	/**
+	 * @brief A counter to know how many time the dcache invalidate is called
+	 */
+	EXTERN unsigned int dcache_invalidate_count;
 
 	/**
 	 * @note The linux64 core features cache coherency.
 	 */
-	static inline void dcache_invalidate(void)
-	{
-	}
+	EXTERN void dcache_invalidate(void);
+
+	/**
+	 * @brief A counter to know how many time the dcache invalidate is called
+	 */
+	EXTERN unsigned int dcache_flush_count;
+
+	/**
+	 * @brief Flushes changes of the data cache into memory
+	 */
+	EXTERN void dcache_flush(void);
+	
+	/**
+	 * @brief A counter to know how many time the dcache invalidate is called
+	 */
+	EXTERN unsigned int dcache_fence_count;
+
+	/**
+	 * @brief Wait for ongoing flush operations in the data cache to finish
+	 */
+	EXTERN void dcache_fence(void);
+
+	/**
+	 * @brief A counter to know how many time the dcache invalidate is called
+	 */
+	EXTERN unsigned int dcache_prefetch_line_count;
+
+	/**
+	 * @brief Prefetches a line of the data cache
+	 */
+	EXTERN void dcache_prefetch_line(void);
+	
+	/**
+	 * @brief A counter to know how many time the dcache invalidate is called
+	 */
+	EXTERN unsigned int dcache_invalidate_line_count;
+
+	/**
+	 * @brief Invalidates a line of the data cache
+	 */
+	EXTERN void dcache_invalidate_line(void);
+	
+	/**
+	 * @brief A counter to know how many time the dcache invalidate is called
+	 */
+	EXTERN unsigned int dcache_setup_count;
+
+	/**
+	 * @brief Enables the data cache
+	 */
+	EXTERN void dcache_setup(void);
+
+	/**
+	 * @brief A counter to know how many time the dcache invalidate is called
+	 */
+	EXTERN unsigned int icache_invalidate_count;
+
+	/**
+	 * @brief Invalidates the instruction cache
+	 */
+	EXTERN void icache_invalidate(void);
+	
+	/**
+	 * @brief A counter to know how many time the dcache invalidate is called
+	 */
+	EXTERN unsigned int icache_prefetch_line_count;
+
+	/**
+	 * @brief Prefetches a line of the instruction cache
+	 */
+	EXTERN void icache_prefetch_line(void);
+	
+	/**
+	 * @brief A counter to know how many time the dcache invalidate is called
+	 */
+	EXTERN unsigned int icache_invalidate_line_count;
+
+	/**
+	 * @brief Invalidates a line of the instruction cache
+	 */
+	EXTERN void icache_invalidate_line(void);
+	
+	/**
+	 * @brief A counter to know how many time the dcache invalidate is called
+	 */
+	EXTERN unsigned int icache_setup_count;
+
+	/**
+	 * @brief Enables the instruction cache
+	 */
+	EXTERN void icache_setup(void);
+
+	/**
+	 * @brief Display all the cache variables
+	 */
+	EXTERN void linux64_core_cache_print(void);
+
+	/**
+	 * @brief Display all the cache counters
+	 */
+	EXTERN void linux64_core_cache_count_print(void);
 
 /**@}*/
 

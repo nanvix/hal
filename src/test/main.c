@@ -26,6 +26,7 @@
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
 #include <nanvix/const.h>
+#include <nanvix/hal/core/cache.h>
 #include "test.h"
 
 #ifndef __unix64__
@@ -127,6 +128,9 @@ PUBLIC NORETURN void kmain(int argc, const char *argv[])
 	UNUSED(argv);
 
 	test_core();
+
+	linux64_core_cache_print();
+	linux64_core_cache_count_print();
 
 #endif
 
