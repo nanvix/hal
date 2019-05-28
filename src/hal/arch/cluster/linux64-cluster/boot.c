@@ -23,9 +23,12 @@
  */
 
 #include <arch/core/linux64/core.h>
+#include <arch/core/linux64/cache.h>
+#include <math.h>
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 /* Import definitions. */
 EXTERN NORETURN void linux64_cluster_master_setup(void);
@@ -42,6 +45,12 @@ int main(int argc, char **argv)
 	UNUSED(argc);
 	UNUSED(argv);
 
+	linux64_core_dcache_setup();
+	linux64_core_icache_setup();
+
+	/**
+	 * Initialize the lookup table for Threads IDs.
+	 */
 	linux64_cores_tab[0] = pthread_self();
 
 	linux64_cluster_master_setup();

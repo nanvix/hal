@@ -26,6 +26,7 @@
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
 #include <nanvix/const.h>
+#include <nanvix/hal/core/cache.h>
 #include "test.h"
 
 #ifndef __unix64__
