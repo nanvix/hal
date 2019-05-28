@@ -42,6 +42,11 @@
 
 	#include <arch/target/qemu/i486-pc/stdout.h>
 
+	/**
+	 * @brief Frequency (in MHz).
+	 */
+	#define QEMU_X86_FREQUENCY 50
+
 /**@}*/
 
 /*============================================================================*
@@ -51,6 +56,13 @@
 /**
  * @cond i486
  */
+
+	/**
+	 * @name Exported Constants
+	 */
+	/**@{*/
+	#define TARGET_FREQUENCY QEMU_X86_FREQUENCY
+	/**@}*/
 
 	/**
 	 * @name Provided Features
