@@ -154,7 +154,7 @@ PRIVATE void slave(void)
 /**
  * @brief Number of starts of slave core.
  */
-PRIVATE int slave_nstarts = 0;
+PRIVATE volatile int slave_nstarts = 0;
 
 /**
  * @brief Reset slave.
@@ -194,7 +194,7 @@ PRIVATE void slave_reset(void)
 /**
  * @brief State of slave core.
  */
-PRIVATE int slave_state = 0;
+PRIVATE volatile int slave_state = 0;
 
 /**
  * @brief Sleep/Wakeup slave.
