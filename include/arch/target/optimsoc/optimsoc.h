@@ -42,6 +42,11 @@
 
 	#include <arch/target/optimsoc/or1k/stdout.h>
 
+	/**
+	 * @brief Frequency (in MHz).
+	 */
+	#define OPTIMSOC_FREQUENCY 50
+
 /**@}*/
 
 /*============================================================================*
@@ -51,6 +56,13 @@
 /**
  * @cond or1k
  */
+
+	/**
+	 * @name Exported Constants
+	 */
+	/**@{*/
+	#define TARGET_FREQUENCY OPTIMSOC_FREQUENCY
+	/**@}*/
 
 	/**
 	 * @name Provided Features
