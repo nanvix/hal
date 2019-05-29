@@ -376,6 +376,8 @@ PRIVATE void test_cluster_core_api_reset_slave(void)
 	int ret;
 	int coreid;
 
+	coreid = 0;
+
 	/* Reset flag. */
 	slave_nstarts = 0;
 	dcache_invalidate();
@@ -431,6 +433,8 @@ PRIVATE void test_cluster_core_api_reset_slave(void)
 PRIVATE void test_cluster_core_api_sleep_wakeup_slave(void)
 {
 	int coreid;
+	
+	coreid = 0;
 
 	/* Start one slave core. */
 	for (int i = 0; i < CORES_NUM; i++)
