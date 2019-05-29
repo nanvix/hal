@@ -32,6 +32,23 @@
 	/* Target Interface Implementation */
 	#include <nanvix/hal/target/_target.h>
 
+/*============================================================================*
+ * Interface Implementation Checking                                          *
+ *============================================================================*/
+
+#if defined(__INTERFACE_CHECK) || defined(__INTERFACE_CHECK_TARGET_AL)
+
+	/* Constants */
+	#ifndef TARGET_FREQUENCY
+	#error "TARGET_FREQUENCY not defined"
+	#endif
+
+#endif
+
+/*============================================================================*
+ * Provided Interface                                                         *
+ *============================================================================*/
+
 	/**
 	 * @defgroup kernel-hal-target Target
 	 * @ingroup kernel-hal

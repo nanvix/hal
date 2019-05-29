@@ -42,6 +42,11 @@
 
 	#include <arch/target/qemu/or1k-pc/stdout.h>
 
+	/**
+	 * @brief Frequency (in MHz).
+	 */
+	#define QEMU_OPENRISC_FREQUENCY 20
+
 /**@}*/
 
 /*============================================================================*
@@ -51,6 +56,13 @@
 /**
  * @cond or1k
  */
+
+	/**
+	 * @name Exported Constants
+	 */
+	/**@{*/
+	#define TARGET_FREQUENCY QEMU_OPENRISC_FREQUENCY
+	/**@}*/
 
 	/**
 	 * @name Provided Features

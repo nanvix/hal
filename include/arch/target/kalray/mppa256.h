@@ -44,6 +44,11 @@
 	#include <arch/target/kalray/mppa256/sync.h>
 
 	/**
+	 * @brief Frequency (in MHz).
+	 */
+	#define MPPA256_FREQUENCY 400
+
+	/**
 	 * @brief DRAM size (in bytes).
 	 */
 	#define MPPA256_DRAM_SIZE (2*1024*1024*1024ULL)
@@ -65,6 +70,13 @@
 	#define TARGET_HAS_STDOUT  1 /**< Standard Output feature */
 	#define TARGET_HAS_SYNC    1 /**< Synchronization feature */
 	#define TARGET_HAS_MAILBOX 0 /**< Mailbox feature         */
+	/**@}*/
+
+	/**
+	 * @name Exported Constants
+	 */
+	/**@{*/
+	#define TARGET_FREQUENCY MPPA256_FREQUENCY
 	/**@}*/
 
 	/**
