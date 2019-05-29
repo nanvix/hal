@@ -36,7 +36,7 @@
 /**
  * @brief Counter of handler calls.
  */
-PRIVATE int ncalls = 0;
+PRIVATE volatile int ncalls = 0;
 
 /**
  * @brief Dummy interrupt handler.

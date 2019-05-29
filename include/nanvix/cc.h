@@ -43,7 +43,7 @@
 	 * @name Aliases for Standard C Extensions
 	 */
 	/**@{*/
-	#ifdef NDEBUG
+	#if defined (NDEBUG) && !defined(__optimsoc__) && !defined(__qemu_openrisc__)
 		#define inline __inline__  __attribute__((always_inline)) /**< Inline Function */
 	#else
 		#define inline __inline__                                 /**< Inline Function */
