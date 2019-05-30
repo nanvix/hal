@@ -57,6 +57,16 @@
 		or1k_mtspr(OR1K_SPR_DCBIR, 0);
 	}
 
+	/**
+	 * @brief Setup the instruction cache.
+	 */
+	EXTERN void or1k_icache_setup(void);
+
+	/**
+	 * @brief Setup the data cache.
+	 */
+	EXTERN void or1k_dcache_setup(void);
+
 #endif /* _ASM_FILE_ */
 
 /**@}*/
@@ -89,6 +99,22 @@
 	static inline void dcache_invalidate(void)
 	{
 		or1k_dcache_inval();
+	}
+
+	/**
+	 * @see or1k_icache_setup
+	 */
+	static inline void icache_setup(void)
+	{
+		or1k_icache_setup();
+	}
+
+	/**
+	 * @see or1k_dcache_setup
+	 */
+	static inline void dcache_setup(void)
+	{
+		or1k_dcache_setup();
 	}
 
 #endif /* !_ASM_FILE_ */
