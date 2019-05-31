@@ -126,12 +126,14 @@
 	 * @brief Binary Sections
 	 */
 	/**@{*/
-	EXTERN unsigned char __TEXT_START; /**< Text Start */
-	EXTERN unsigned char __TEXT_END;   /**< Text End   */
-	EXTERN unsigned char __DATA_START; /**< Data Start */
-	EXTERN unsigned char __DATA_END;   /**< Data End   */
-	EXTERN unsigned char __BSS_START;  /**< BSS Start  */
-	EXTERN unsigned char __BSS_END;    /**< BSS End    */
+	EXTERN unsigned char __BOOTSTRAP_START; /**< Bootstrap Start */
+	EXTERN unsigned char __BOOTSTRAP_END;   /**< Bootstrap End   */
+	EXTERN unsigned char __TEXT_START;      /**< Text Start      */
+	EXTERN unsigned char __TEXT_END;        /**< Text End        */
+	EXTERN unsigned char __DATA_START;      /**< Data Start      */
+	EXTERN unsigned char __DATA_END;        /**< Data End        */
+	EXTERN unsigned char __BSS_START;       /**< BSS Start       */
+	EXTERN unsigned char __BSS_END;         /**< BSS End         */
 	/**@}*/
 
 #ifdef __NANVIX_HAL
