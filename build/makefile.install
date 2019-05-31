@@ -38,20 +38,32 @@ export ARTIFACTS := $(shell find $(INCDIR) -name *.h -type f)
 #===============================================================================
 
 # Install
-install: | hal-target copy-artifacts
+install: | hal-target install-headers
 	@mkdir -p $(PREFIX)/lib
 	@cp -f $(LIBDIR)/libhal*.a $(PREFIX)/lib
 	@echo [CP] $(LIBDIR)/libhal*.a
 	@echo "==============================================================================="
-	@echo "Nanvix HAL Successfully Installed into $(PREFIX)"
+	@echo "Nanvix HAL Libraries Successfully Installed into $(PREFIX)"
+	@echo "==============================================================================="
+
+# Install Headers
+install-headers: copy-artifacts
+	@echo "==============================================================================="
+	@echo "Nanvix HAL Headers Successfully Installed from $(PREFIX)"
 	@echo "==============================================================================="
 
 # Uninstall
-uninstall: | distclean delete-artifacts
+uninstall: | distclean unstall-headers
 	@rm -f $(PREFIX)/lib/libhal*.a
 	@echo [RM] $(PREFIX)/lib/libhal*.a
 	@echo "==============================================================================="
-	@echo "Nanvix HAL Successfully Uninstalled from $(PREFIX)"
+	@echo "Nanvix HAL Libraries Successfully Uninstalled from $(PREFIX)"
+	@echo "==============================================================================="
+
+# Uninstall Headers
+uninstall-headers: delete-artifacts
+	@echo "==============================================================================="
+	@echo "Nanvix HAL Headers Successfully Uninstalled from $(PREFIX)"
 	@echo "==============================================================================="
 
 # Copies All Artifacts
