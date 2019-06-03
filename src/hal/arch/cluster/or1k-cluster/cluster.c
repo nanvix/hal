@@ -68,6 +68,11 @@ PUBLIC NORETURN void or1k_cluster_master_setup(void)
 	/* Clear BSS section. */
 	kmemset(&__BSS_START, 0, &__BSS_END - &__BSS_START);
 
+	/* Initialize events table. */
+	#if (!CLUSTER_HAS_EVENTS)
+		event_setup();
+	#endif
+
 	/* Core setup. */
 	or1k_cluster_setup();
 
