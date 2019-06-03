@@ -63,4 +63,4 @@ export LDFLAGS =
 # Libraries
 export LIBKERNEL = libhal-$(TARGET).a
 export LIBS = $(LIBDIR)/$(LIBKERNEL)
-export LIB_THEIRS = -lpthread
+export LIB_THEIRS = -lpthread -lm
