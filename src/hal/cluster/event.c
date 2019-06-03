@@ -34,11 +34,31 @@
 /**
  * @brief Table of events.
  */
-EXTERN struct
+PUBLIC struct events_table
 {
 	unsigned pending; /**< Pending Events  */
 	spinlock_t lock;  /**< Event Line Lock */
 } events[CORES_NUM];
+
+/*============================================================================*
+ * event_setup()                                                              *
+ *============================================================================*/
+
+/**
+ * Initializes the table of events. 
+ *
+ * @author Davidson Francis
+ */
+PUBLIC void event_setup(void)
+{
+	int i; /* Loop index. */
+
+	for (i = 0; i < CORES_NUM; i++)
+	{
+		events[i].pending = 0;
+		events[i].lock = SPINLOCK_UNLOCKED;
+	}
+}
 
 /*============================================================================*
  * event_wait()                                                               *
