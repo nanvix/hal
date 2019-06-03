@@ -41,27 +41,22 @@
 #include <nanvix/hal/cluster/mmio.h>
 #include <nanvix/const.h>
 
+#if (CLUSTER_HAS_EVENTS)
+
 /**
- * @cond or1k_cluster
- *
- * Table of events
- *
- * @endcond
+ * @brief Table of locks.
  */
-PUBLIC struct
-{
-	unsigned pending;
-	or1k_spinlock_t lock;
-} events[OR1K_CLUSTER_NUM_CORES] ALIGN(OR1K_CACHE_LINE_SIZE) = {
-#if (defined(__or1k_cluster__))
-	{ 0, OR1K_SPINLOCK_UNLOCKED }, /* Master Core  */
-	{ 0, OR1K_SPINLOCK_UNLOCKED }, /* Slave Core 1 */
-#elif (defined(__optimsoc_cluster__))
-	{ 0, OR1K_SPINLOCK_UNLOCKED }, /* Master Core  */
-	{ 0, OR1K_SPINLOCK_UNLOCKED }, /* Slave Core 1 */
-	{ 0, OR1K_SPINLOCK_UNLOCKED }, /* Slave Core 2 */
-	{ 0, OR1K_SPINLOCK_UNLOCKED }, /* Slave Core 3 */
-#endif
+PRIVATE or1k_spinlock_t locks[OR1K_CLUSTER_NUM_CORES] = {
+	OR1K_SPINLOCK_UNLOCKED, /* Master Core  */
+	OR1K_SPINLOCK_UNLOCKED, /* Slave Core 1 */
+};
+
+/**
+ * Table of pending events.
+ */
+PRIVATE int volatile events[OR1K_CLUSTER_NUM_CORES] ALIGN(OR1K_CACHE_LINE_SIZE) = {
+	0, /* Master Core  */
+	0, /* Slave Core 1 */
 };
 
 /*============================================================================*
@@ -106,16 +101,13 @@ PUBLIC int or1k_cluster_event_notify(int coreid)
 	if (UNLIKELY(coreid == mycoreid))
 		return (-EINVAL);
 
-	spinlock_lock(&events[coreid].lock);
+	spinlock_lock(&locks[coreid]);
 
 		/* Set the pending IPI flag. */
-		events[coreid].pending |= (1 << mycoreid);
-
-#if (defined(__or1k_cluster__))
+		events[coreid] |= (1 << mycoreid);
 		or1k_cluster_ompic_send_ipi(coreid, 0);
-#endif
 
-	spinlock_unlock(&events[coreid].lock);
+	spinlock_unlock(&locks[coreid]);
 
 	return (0);
 }
@@ -135,29 +127,29 @@ PUBLIC int or1k_cluster_event_wait(void)
 
 	while (true)
 	{
-		or1k_spinlock_lock(&events[mycoreid].lock);
+		or1k_spinlock_lock(&locks[mycoreid]);
 
-			if (events[mycoreid].pending)
+			if (events[mycoreid])
 				break;
 
-		or1k_spinlock_unlock(&events[mycoreid].lock);
+		or1k_spinlock_unlock(&locks[mycoreid]);
 
-#if (defined(__or1k_cluster__))
 		or1k_int_wait();
-#endif
 	}
 
 		/* Clear event. */
 		for (int i = 0; i < OR1K_CLUSTER_NUM_CORES; i++)
 		{
-			if (events[mycoreid].lock & (1 << i))
+			if (locks[mycoreid] & (1 << i))
 			{
-				events[mycoreid].pending &= ~(1 << i);
+				events[mycoreid] &= ~(1 << i);
 				break;
 			}
 		}
 
-	or1k_spinlock_unlock(&events[mycoreid].lock);
+	or1k_spinlock_unlock(&locks[mycoreid]);
 
 	return (0);
 }
+
+#endif /* CLUSTER_HAS_EVENTS */
