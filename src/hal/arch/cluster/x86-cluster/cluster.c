@@ -22,39 +22,25 @@
  * SOFTWARE.
  */
 
-#ifndef CLUSTER_OPTIMSOC_CLUSTER_H_
-#define CLUSTER_OPTIMSOC_CLUSTER_H_
+/* Must come first. */
+#define __NEED_HAL_CLUSTER
 
-	#ifndef __NEED_CLUSTER_OPTIMSOC
-		#error "bad cluster configuration?"
-	#endif
+#include <nanvix/hal/cluster.h>
+#include <nanvix/hal/target/stdout.h>
+#include <nanvix/const.h>
+#include <nanvix/klib.h>
 
-	/* Cluster Interface Implementation */
-	#include <arch/cluster/optimsoc-cluster/_optimsoc-cluster.h>
+/*============================================================================*
+ * i486_cluster_setup()                                                       *
+ *============================================================================*/
 
 /**
- * @addtogroup optimsoc-cluster OpenRISC Cluster
- * @ingroup clusters
+ * @todo TODO provide a detailed description for this function.
  *
- * @brief OpenRISC Cluster
+ * @author Davidson Francis
  */
-/**@{*/
-
-	#include <arch/cluster/optimsoc-cluster/timer.h>
-	#include <arch/cluster/optimsoc-cluster/cores.h>
-	#include <arch/cluster/optimsoc-cluster/memory.h>
-	#include <arch/cluster/optimsoc-cluster/ompic.h>
-
-	/**
-	 * @name Provided Features
-	 */
-	/**@{*/
-	#define CLUSTER_IS_MULTICORE  1 /**< Multicore Cluster */
-	#define CLUSTER_IS_IO         1 /**< I/O Cluster       */
-	#define CLUSTER_IS_COMPUTE    0 /**< Compute Cluster   */
-	#define CLUSTER_HAS_EVENTS    0 /**< Event Support?    */
-	/**@}*/
-
-/**@}*/
-
-#endif /* CLUSTER_OPTIMSOC_CLUSTER_H_ */
+PUBLIC void i486_cluster_setup(void)
+{
+	/* Initialize events table. */
+	event_setup();
+}

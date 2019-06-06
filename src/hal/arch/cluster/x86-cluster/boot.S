@@ -115,6 +115,8 @@ start:
 
 	call i486_core_setup
 
+	call i486_cluster_setup
+
 	call kmain
 
 	/* Halt execution. */

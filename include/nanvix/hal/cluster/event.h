@@ -98,6 +98,13 @@
 	}
 #endif
 
+	/**
+	 * @brief Initializes the events table.
+	 */
+#if (!CLUSTER_HAS_EVENTS)
+	EXTERN void event_setup(void);
+#endif
+
 /**@}*/
 
 #endif /* NANVIX_HAL_CLUSTER_EVENT_H_ */
