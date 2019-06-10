@@ -24,6 +24,7 @@
 
 #include <arch/core/linux64/core.h>
 #include <arch/core/linux64/cache.h>
+#include <arch/core/linux64/mmu.h>
 #include <math.h>
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
@@ -33,6 +34,9 @@
 /* Import definitions. */
 EXTERN NORETURN void linux64_cluster_master_setup(void);
 EXTERN NORETURN void linux64_cluster_slave_setup(void);
+
+struct pde root_pgdir[LINUX64_PGDIR_LENGTH];
+struct pte root_pgtab[LINUX64_PGTAB_LENGTH];
 
 /**
  * @brief Entry point.

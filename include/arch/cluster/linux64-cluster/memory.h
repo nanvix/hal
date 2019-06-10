@@ -22,41 +22,4 @@
  * SOFTWARE.
  */
 
-#ifndef CLUSTER_LINUX64_CLUSTER_H_
-#define CLUSTER_LINUX64_CLUSTER_H_
-
-#define COREID_MASTER 0
-
-	#ifndef __NEED_CLUSTER_LINUX64
-		#error "bad cluster configuration?"
-	#endif
-
-	/* Cluster Interface Implementation */
-	#include <arch/cluster/linux64-cluster/_linux64-cluster.h>
-
-/*============================================================================*
- * Exported Interface                                                         *
- *============================================================================*/
-
-/**
- * @addtogroup linux64-cluster Bostan Cluster
- * @ingroup clusters
- *
- * @brief Bostan Cluster
- */
-/**@{*/
-	#include <arch/cluster/linux64-cluster/memory.h>
-
-	/**
-	 * @name Provided Features
-	 */
-	/**@{*/
-	#define CLUSTER_IS_MULTICORE  0 /**< Multicore Cluster */
-	#define CLUSTER_IS_IO         1 /**< I/O Cluster       */
-	#define CLUSTER_IS_COMPUTE    0 /**< Compute Cluster   */
-	#define CLUSTER_HAS_EVENTS    0 /**< Event Support?    */
-	/**@}*/
-
-/**@}*/
-
-#endif /* CLUSTER_LINUX64_CLUSTER_H_ */
+#define KBASE_VIRT 0 /**< @Brief Tests */

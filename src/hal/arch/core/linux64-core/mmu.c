@@ -22,41 +22,41 @@
  * SOFTWARE.
  */
 
-#ifndef CLUSTER_LINUX64_CLUSTER_H_
-#define CLUSTER_LINUX64_CLUSTER_H_
-
-#define COREID_MASTER 0
-
-	#ifndef __NEED_CLUSTER_LINUX64
-		#error "bad cluster configuration?"
-	#endif
-
-	/* Cluster Interface Implementation */
-	#include <arch/cluster/linux64-cluster/_linux64-cluster.h>
-
-/*============================================================================*
- * Exported Interface                                                         *
- *============================================================================*/
+#include <arch/core/linux64/mmu.h>
+#include <nanvix/const.h>
+#include <errno.h>
 
 /**
- * @addtogroup linux64-cluster Bostan Cluster
- * @ingroup clusters
+ * @todo TODO provide a detailed description for this function.
  *
- * @brief Bostan Cluster
+ * @author Pedro Henrique Penna
  */
-/**@{*/
-	#include <arch/cluster/linux64-cluster/memory.h>
+PUBLIC int linux64_page_map(struct pte *pgtab, paddr_t paddr, vaddr_t vaddr, int w)
+{
 
-	/**
-	 * @name Provided Features
-	 */
-	/**@{*/
-	#define CLUSTER_IS_MULTICORE  0 /**< Multicore Cluster */
-	#define CLUSTER_IS_IO         1 /**< I/O Cluster       */
-	#define CLUSTER_IS_COMPUTE    0 /**< Compute Cluster   */
-	#define CLUSTER_HAS_EVENTS    0 /**< Event Support?    */
-	/**@}*/
+	if(pgtab == NULL)
+		return (-EINVAL);
+		
+	int i = pte_idx_get(vaddr);
+	pgtab[i].writable = w;
+	pgtab[i].present = 1;
+	pgtab[i].frame = LINUX64_FRAME(paddr >> LINUX64_PAGE_SHIFT);
+	return (0);
+}
 
-/**@}*/
+/**
+ * @todo TODO provide a detailed description for this function.
+ *
+ * @author Pedro Henrique Penna
+ */
+PUBLIC int linux64_pgtab_map(struct pde *pgdir, paddr_t paddr, vaddr_t vaddr)
+{
+	if(pgdir == NULL)
+		return (-EINVAL);
 
-#endif /* CLUSTER_LINUX64_CLUSTER_H_ */
+	int i = pde_idx_get(vaddr);
+	pgdir[i].present = 1;
+	pgdir[i].frame = LINUX64_FRAME(paddr >> LINUX64_PAGE_SHIFT);
+
+	return (0);
+}

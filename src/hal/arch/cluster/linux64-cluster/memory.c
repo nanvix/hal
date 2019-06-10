@@ -22,41 +22,30 @@
  * SOFTWARE.
  */
 
-#ifndef CLUSTER_LINUX64_CLUSTER_H_
-#define CLUSTER_LINUX64_CLUSTER_H_
-
-#define COREID_MASTER 0
-
-	#ifndef __NEED_CLUSTER_LINUX64
-		#error "bad cluster configuration?"
-	#endif
-
-	/* Cluster Interface Implementation */
-	#include <arch/cluster/linux64-cluster/_linux64-cluster.h>
-
-/*============================================================================*
- * Exported Interface                                                         *
- *============================================================================*/
+#include <arch/cluster/linux64-cluster/memory.h>
+#include <arch/core/linux64/mmu.h>
+#include <nanvix/const.h>
 
 /**
- * @addtogroup linux64-cluster Bostan Cluster
- * @ingroup clusters
- *
- * @brief Bostan Cluster
+ * @brief Root page directory.
  */
-/**@{*/
-	#include <arch/cluster/linux64-cluster/memory.h>
+PRIVATE struct pde linux64_root_pgdir[LINUX64_PGDIR_LENGTH];
+/**
+ * @brief Root page table.
+ */
+PRIVATE struct pte linux64_root_pgtab[LINUX64_PGTAB_LENGTH];
 
-	/**
-	 * @name Provided Features
-	 */
-	/**@{*/
-	#define CLUSTER_IS_MULTICORE  0 /**< Multicore Cluster */
-	#define CLUSTER_IS_IO         1 /**< I/O Cluster       */
-	#define CLUSTER_IS_COMPUTE    0 /**< Compute Cluster   */
-	#define CLUSTER_HAS_EVENTS    0 /**< Event Support?    */
-	/**@}*/
+/**
+ * Alias to root page directory.
+ */
+PUBLIC struct pde *root_pgdir = &linux64_root_pgdir[0];
 
-/**@}*/
+/**
+ * Alias to kernel page table.
+ */
+PUBLIC struct pte *kernel_pgtab = &linux64_root_pgtab[0];
 
-#endif /* CLUSTER_LINUX64_CLUSTER_H_ */
+/**
+ * Alias to kernel page pool page table.
+ */
+PUBLIC struct pte *kpool_pgtab = &linux64_root_pgtab[0];

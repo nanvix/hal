@@ -42,6 +42,7 @@
 	#include <arch/core/linux64/excp.h>
 	#include <arch/core/linux64/int.h>
 	#include <arch/core/linux64/spinlock.h>
+	#include <arch/core/linux64/mmu.h>
 
 /**
  * @cond linux64
@@ -56,7 +57,7 @@
 	#define CORE_HAS_PMIO         0 /**< Has Programmed I/O?         */
 	#define CORE_HAS_TLB_HW       1 /**< Has Hardware-Managed TLB?   */
 	#define CORE_HAS_CACHE_HW     1 /**< Has Hardware-Managed Cache? */
-	#define CORE_HAS_HUGE_PAGES   1 /**< Are Huge Pages Supported?   */
+	#define CORE_HAS_HUGE_PAGES   0 /**< Are Huge Pages Supported?   */
 	#define CORE_IS_LITTLE_ENDIAN 0 /**< Is Little Endian?           */
 	/**@}*/
 
