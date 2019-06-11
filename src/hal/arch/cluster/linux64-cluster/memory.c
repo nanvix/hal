@@ -22,46 +22,30 @@
  * SOFTWARE.
  */
 
-#ifndef CORE_LINUX64_H_
-#define CORE_LINUX64_H_
-
-#include <arch/core/linux64/spinlock.h>
-
-	/**
-	 * @addtogroup linux64-core Linux64 Core
-	 * @ingroup cores
-	 */
-
-	#ifndef __NEED_CORE_LINUX64
-		#error "linux64 core not required"
-	#endif
-
-
-	#include <arch/core/linux64/core.h>
-	#include <arch/core/linux64/cache.h>
-	#include <arch/core/linux64/excp.h>
-	#include <arch/core/linux64/int.h>
-	#include <arch/core/linux64/spinlock.h>
-	#include <arch/core/linux64/mmu.h>
+#include <arch/cluster/linux64-cluster/memory.h>
+#include <arch/core/linux64/mmu.h>
+#include <nanvix/const.h>
 
 /**
- * @cond linux64
+ * @brief Root page directory.
  */
+PRIVATE struct pde linux64_root_pgdir[LINUX64_PGDIR_LENGTH];
+/**
+ * @brief Root page table.
+ */
+PRIVATE struct pte linux64_root_pgtab[LINUX64_PGTAB_LENGTH];
 
-	/**
-	 * @name Core Features
-	 */
-	/**@{*/
-	#define CORE_HAS_PERF         0 /**< Has Performance Monitors?   */
-	#define CORE_HAS_ATOMICS      1 /**< Has Atomic Instructions?    */
-	#define CORE_HAS_PMIO         0 /**< Has Programmed I/O?         */
-	#define CORE_HAS_TLB_HW       1 /**< Has Hardware-Managed TLB?   */
-	#define CORE_HAS_CACHE_HW     1 /**< Has Hardware-Managed Cache? */
-	#define CORE_HAS_HUGE_PAGES   0 /**< Are Huge Pages Supported?   */
-	#define CORE_IS_LITTLE_ENDIAN 0 /**< Is Little Endian?           */
-	/**@}*/
+/**
+ * Alias to root page directory.
+ */
+PUBLIC struct pde *root_pgdir = &linux64_root_pgdir[0];
 
-/**@endcond*/
+/**
+ * Alias to kernel page table.
+ */
+PUBLIC struct pte *kernel_pgtab = &linux64_root_pgtab[0];
 
-#endif /* CORE_LINUX64_H_ */
-
+/**
+ * Alias to kernel page pool page table.
+ */
+PUBLIC struct pte *kpool_pgtab = &linux64_root_pgtab[0];

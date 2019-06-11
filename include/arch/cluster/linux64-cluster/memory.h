@@ -22,46 +22,27 @@
  * SOFTWARE.
  */
 
-#ifndef CORE_LINUX64_H_
-#define CORE_LINUX64_H_
+#ifndef ARCH_CLUSTER_LINUX64_CLUSTER_MEMORY_H_
+#define ARCH_CLUSTER_LINUX64_CLUSTER_MEMORY_H_
 
-#include <arch/core/linux64/spinlock.h>
-
-	/**
-	 * @addtogroup linux64-core Linux64 Core
-	 * @ingroup cores
-	 */
-
-	#ifndef __NEED_CORE_LINUX64
-		#error "linux64 core not required"
-	#endif
-
-
-	#include <arch/core/linux64/core.h>
-	#include <arch/core/linux64/cache.h>
-	#include <arch/core/linux64/excp.h>
-	#include <arch/core/linux64/int.h>
-	#include <arch/core/linux64/spinlock.h>
-	#include <arch/core/linux64/mmu.h>
+	/* Cluster Interface Implementation */
+	#include <arch/cluster/linux64-cluster/_linux64-cluster.h>
 
 /**
- * @cond linux64
+ * @addtogroup linux64-cluster-mem Memory
+ * @ingroup linux64-cluster
+ *
+ * @brief Memory Interface
  */
+/**@{*/
 
 	/**
-	 * @name Core Features
+	 * @brief Dummy virtual address for the kernel.
+	 *
+	 * @bug FIXME
 	 */
-	/**@{*/
-	#define CORE_HAS_PERF         0 /**< Has Performance Monitors?   */
-	#define CORE_HAS_ATOMICS      1 /**< Has Atomic Instructions?    */
-	#define CORE_HAS_PMIO         0 /**< Has Programmed I/O?         */
-	#define CORE_HAS_TLB_HW       1 /**< Has Hardware-Managed TLB?   */
-	#define CORE_HAS_CACHE_HW     1 /**< Has Hardware-Managed Cache? */
-	#define CORE_HAS_HUGE_PAGES   0 /**< Are Huge Pages Supported?   */
-	#define CORE_IS_LITTLE_ENDIAN 0 /**< Is Little Endian?           */
-	/**@}*/
+	#define KBASE_VIRT 0 /**< @Brief Tests */
 
-/**@endcond*/
+/**@}*/
 
-#endif /* CORE_LINUX64_H_ */
-
+#endif /* ARCH_CLUSTER_LINUX64_CLUSTER_MEMORY_H_ */

@@ -126,6 +126,11 @@
 		 */
 		typedef uint32_t paddr_t;
 
+		/**
+		 * @brief Page Frame number.
+		 */
+		typedef uint32_t frame_t;
+
 	#endif
 	#endif
 

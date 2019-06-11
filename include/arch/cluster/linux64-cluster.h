@@ -25,7 +25,6 @@
 #ifndef CLUSTER_LINUX64_CLUSTER_H_
 #define CLUSTER_LINUX64_CLUSTER_H_
 
-#define COREID_MASTER 0
 
 	#ifndef __NEED_CLUSTER_LINUX64
 		#error "bad cluster configuration?"
@@ -41,6 +40,15 @@
  * @brief Linux64 Cluster
  */
 /**@{*/
+
+	#include <arch/cluster/linux64-cluster/memory.h>
+
+	/**
+	 * @brief ID of the master core.
+	 *
+	 * @bug FIXME: move this to cores.h
+	 */
+	#define COREID_MASTER 0
 
 	/**
 	 * @name Provided Features
