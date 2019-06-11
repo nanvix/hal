@@ -24,6 +24,7 @@
 
 #include <arch/core/linux64/core.h>
 #include <arch/core/linux64/cache.h>
+#include <arch/core/linux64/mmu.h>
 #include <math.h>
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
@@ -33,6 +34,26 @@
 /* Import definitions. */
 EXTERN NORETURN void linux64_cluster_master_setup(void);
 EXTERN NORETURN void linux64_cluster_slave_setup(void);
+
+/**
+ * @brief Root page directory.
+ */
+PRIVATE struct pde linux64_cluster_root_pgdir[LINUX64_PGDIR_LENGTH];
+
+/**
+ * @brief Root page tables.
+ */
+PRIVATE struct pte linux64_cluster_root_pgtab[LINUX64_PGTAB_LENGTH];
+
+/**
+ * Alias to root page directory.
+ */
+PUBLIC struct pde *root_pgdir = &linux64_cluster_root_pgdir[0];
+
+/**
+ * Alias to kernel page table.
+ */
+PUBLIC struct pte *kernel_pgtab = &linux64_cluster_root_pgtab[0];
 
 /**
  * @brief Entry point.

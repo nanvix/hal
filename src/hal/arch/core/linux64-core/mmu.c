@@ -22,46 +22,41 @@
  * SOFTWARE.
  */
 
-#ifndef CORE_LINUX64_H_
-#define CORE_LINUX64_H_
-
-#include <arch/core/linux64/spinlock.h>
-
-	/**
-	 * @addtogroup linux64-core Linux64 Core
-	 * @ingroup cores
-	 */
-
-	#ifndef __NEED_CORE_LINUX64
-		#error "linux64 core not required"
-	#endif
-
-
-	#include <arch/core/linux64/core.h>
-	#include <arch/core/linux64/cache.h>
-	#include <arch/core/linux64/excp.h>
-	#include <arch/core/linux64/int.h>
-	#include <arch/core/linux64/spinlock.h>
-	#include <arch/core/linux64/mmu.h>
+#include <arch/core/linux64/mmu.h>
+#include <nanvix/const.h>
+#include <errno.h>
 
 /**
- * @cond linux64
+ * @todo TODO provide a detailed description for this function.
+ *
+ * @author Daniel Coascia
  */
+PUBLIC int linux64_page_map(struct pte *pgtab, paddr_t paddr, vaddr_t vaddr, int w)
+{
 
-	/**
-	 * @name Core Features
-	 */
-	/**@{*/
-	#define CORE_HAS_PERF         0 /**< Has Performance Monitors?   */
-	#define CORE_HAS_ATOMICS      1 /**< Has Atomic Instructions?    */
-	#define CORE_HAS_PMIO         0 /**< Has Programmed I/O?         */
-	#define CORE_HAS_TLB_HW       1 /**< Has Hardware-Managed TLB?   */
-	#define CORE_HAS_CACHE_HW     1 /**< Has Hardware-Managed Cache? */
-	#define CORE_HAS_HUGE_PAGES   0 /**< Are Huge Pages Supported?   */
-	#define CORE_IS_LITTLE_ENDIAN 0 /**< Is Little Endian?           */
-	/**@}*/
+	if(pgtab == NULL)
+		return (-EINVAL);
 
-/**@endcond*/
+	int i = pte_idx_get(vaddr);
+	pgtab[i].writable = w;
+	pgtab[i].present = 1;
+	pgtab[i].frame = LINUX64_FRAME(paddr >> LINUX64_PAGE_SHIFT);
+	return (0);
+}
 
-#endif /* CORE_LINUX64_H_ */
+/**
+ * @todo TODO provide a detailed description for this function.
+ *
+ * @author Daniel Coascia
+ */
+PUBLIC int linux64_pgtab_map(struct pde *pgdir, paddr_t paddr, vaddr_t vaddr)
+{
+	if(pgdir == NULL)
+		return (-EINVAL);
 
+	int i = pde_idx_get(vaddr);
+	pgdir[i].present = 1;
+	pgdir[i].frame = LINUX64_FRAME(paddr >> LINUX64_PAGE_SHIFT);
+
+	return (0);
+}
