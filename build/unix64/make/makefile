@@ -52,6 +52,7 @@ export CFLAGS += -D __HAS_HW_DIVISION
 #export CFLAGS += -D __INTERFACE_CHECK_CLUSTER_AL
 #export CFLAGS += -D __INTERFACE_CHECK_PROCESSOR_AL
 #export CFLAGS += -D __INTERFACE_CHECK_TARGET_AL
+export CFLAGS += -std=c99 -D_GNU_SOURCE
 
 # Linker Options
 export LDFLAGS =

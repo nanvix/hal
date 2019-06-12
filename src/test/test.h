@@ -89,4 +89,9 @@
 	 */
 	EXTERN void test_perf(void);
 
+	/*
+	 * @brief Test driver for Spinlock Interface.
+	 */
+	EXTERN void test_spinlock(void);
+
 #endif /* _HAL_TEST_H_ */

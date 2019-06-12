@@ -33,13 +33,18 @@
 	/* Cluster Interface Implementation */
 	#include <arch/cluster/linux64-cluster/_linux64-cluster.h>
 
+/*============================================================================*
+ * Exported Interface                                                         *
+ *============================================================================*/
+
 /**
- * @addtogroup linux64-cluster Linux64 Cluster
+ * @addtogroup linux64-cluster Bostan Cluster
  * @ingroup clusters
  *
- * @brief Linux64 Cluster
+ * @brief Bostan Cluster
  */
 /**@{*/
+	#include <arch/cluster/linux64-cluster/memory.h>
 
 	#include <arch/cluster/linux64-cluster/memory.h>
 
