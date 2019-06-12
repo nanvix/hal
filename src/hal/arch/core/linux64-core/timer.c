@@ -22,48 +22,24 @@
  * SOFTWARE.
  */
 
-#ifndef CLUSTER_LINUX64_CLUSTER_H_
-#define CLUSTER_LINUX64_CLUSTER_H_
+#include <arch/cluster/linux64-cluster/timer.h>
+#include <time.h>
 
-
-	#ifndef __NEED_CLUSTER_LINUX64
-		#error "bad cluster configuration?"
-	#endif
-
-	/* Cluster Interface Implementation */
-	#include <arch/cluster/linux64-cluster/_linux64-cluster.h>
-
-/*============================================================================*
- * Exported Interface                                                         *
- *============================================================================*/
+PRIVATE clock_t clock_init;
 
 /**
- * @addtogroup linux64-cluster Bostan Cluster
- * @ingroup clusters
+ * @brief Reads the timestamp counter from the DSU.
  *
- * @brief Bostan Cluster
+ * @returns The timestamp counter from the DSU.
+ *
+ * @author Daniel Coscia
  */
-/**@{*/
-	#include <arch/cluster/linux64-cluster/memory.h>
-	#include <arch/cluster/linux64-cluster/timer.h>
+PUBLIC void linux64_timer_init(void)
+{
+    clock_init = clock();
+}
 
-	/**
-	 * @brief ID of the master core.
-	 *
-	 * @bug FIXME: move this to cores.h
-	 */
-	#define COREID_MASTER 0
-
-	/**
-	 * @name Provided Features
-	 */
-	/**@{*/
-	#define CLUSTER_IS_MULTICORE  0 /**< Multicore Cluster */
-	#define CLUSTER_IS_IO         1 /**< I/O Cluster       */
-	#define CLUSTER_IS_COMPUTE    0 /**< Compute Cluster   */
-	#define CLUSTER_HAS_EVENTS    0 /**< Event Support?    */
-	/**@}*/
-
-/**@}*/
-
-#endif /* CLUSTER_LINUX64_CLUSTER_H_ */
+PUBLIC uint64_t linux64_cluster_clock_read(void)
+{
+    return (clock() - clock_init);
+}

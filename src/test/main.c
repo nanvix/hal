@@ -126,14 +126,16 @@ PUBLIC NORETURN void kmain(int argc, const char *argv[])
 	UNUSED(argc);
 	UNUSED(argv);
 
-	test_core();
+	/* test_core();
 
 	linux64_core_dcache_dump_info();
 	linux64_core_icache_dump_stats();
 	linux64_core_dcache_dump_stats();
 
 	test_mmu();
-	test_spinlock();
+	test_spinlock();*/
+	
+	test_timer();
 
 #endif
 

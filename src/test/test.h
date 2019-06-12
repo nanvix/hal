@@ -94,4 +94,9 @@
 	 */
 	EXTERN void test_spinlock(void);
 
+	/*
+	 * @brief Test driver for Timer Interface.
+	 */
+	EXTERN void test_timer(void);
+
 #endif /* _HAL_TEST_H_ */
