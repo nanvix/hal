@@ -44,6 +44,8 @@
  */
 PUBLIC void test_timer(void)
 {
+#ifndef __x86__
     timer_init(0);
     kprintf("clock = %d", clock_read());
+#endif
 }
