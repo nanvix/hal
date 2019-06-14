@@ -25,8 +25,6 @@
 #ifndef CORE_LINUX64_H_
 #define CORE_LINUX64_H_
 
-#include <arch/core/linux64/spinlock.h>
-
 	/**
 	 * @addtogroup linux64-core Linux64 Core
 	 * @ingroup cores
