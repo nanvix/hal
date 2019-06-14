@@ -26,7 +26,6 @@
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
 #include <nanvix/const.h>
-#include <nanvix/hal/core/cache.h>
 #include "test.h"
 
 #ifndef __unix64__
@@ -134,6 +133,7 @@ PUBLIC NORETURN void kmain(int argc, const char *argv[])
 	linux64_core_dcache_dump_stats();
 
 	test_mmu();
+	test_spinlock();
 
 #endif
 

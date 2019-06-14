@@ -89,7 +89,7 @@
 	 *
 	 * Number of bits in a virtual address.
 	 *
-	 * @author Daniel Coascia
+	 * @author Daniel Coscia
 	 */
 	#define LINUX64_VADDR_LENGTH 32
 
@@ -98,7 +98,7 @@
 	 *
 	 * Number of Page Directory Entries (PDEs) per Page Directory.
 	 *
-	 * @author Daniel Coascia
+	 * @author Daniel Coscia
 	 */
 	#define LINUX64_PGDIR_LENGTH (1 << (LINUX64_VADDR_LENGTH - LINUX64_PGTAB_SHIFT))
 
@@ -107,7 +107,7 @@
 	 *
 	 * Number of Page Table Entries (PTEs) per Page Table.
 	 *
-	 * @author Daniel Coascia
+	 * @author Daniel Coscia
 	 */
 	#define LINUX64_PGTAB_LENGTH (1 << (LINUX64_PGTAB_SHIFT - LINUX64_PAGE_SHIFT))
 
@@ -257,7 +257,7 @@
 	 *
 	 * @param pde Target page directory entry.
 	 *
-	 * @author Daniel Coascia
+	 * @author Daniel Coscia
 	 */
 	static inline int pde_clear(struct pde *pde)
 	{
@@ -276,7 +276,7 @@
 	 * @param pde Page directory entry of target page table.
 	 * @param frame Frame number.
 	 *
-	 * @author Daniel Coascia
+	 * @author Daniel Coscia
 	 */
 	static inline int pde_frame_set(struct pde *pde, frame_t frame)
 	{
@@ -299,7 +299,7 @@
 	 * @param pde Page directory entry of target page table.
 	 * @param set Set bit?
 	 *
-	 * @author Daniel Coascia
+	 * @author Daniel Coscia
 	 */
 	static inline int pde_present_set(struct pde *pde, int set)
 	{
@@ -320,7 +320,7 @@
 	 * @returns If the present bit of the target page table is set,
 	 * non zero is returned. Otherwise, zero is returned instead.
 	 *
-	 * @author Daniel Coascia
+	 * @author Daniel Coscia
 	 */
 	static inline int pde_is_present(struct pde *pde)
 	{
@@ -338,7 +338,7 @@
 	 *
 	 * @returns The frame number of the target page directory entry.
 	 *
-	 * @author Daniel Coascia
+	 * @author Daniel Coscia
 	 */
 	static inline frame_t pde_frame_get(struct pde *pde)
 	{
@@ -351,7 +351,7 @@
 	 * @param pde Page directory entry of target page table.
 	 * @param set Set bit?
 	 *
-	 * @author Daniel Coascia
+	 * @author Daniel Coscia
 	 */
 	static inline int pde_read_set(struct pde *pde, int set)
 	{
@@ -373,7 +373,7 @@
 	 * @returns If the read bit of the target page table is set, non
 	 * zero is returned. Otherwise, zero is returned instead.
 	 *
-	 * @author Daniel Coascia
+	 * @author Daniel Coscia
 	 */
 	static inline int pde_is_read(struct pde *pde)
 	{
@@ -390,7 +390,7 @@
 	 * @param pde Page directory entry of target page table.
 	 * @param set Set bit?
 	 *
-	 * @author Daniel Coascia
+	 * @author Daniel Coscia
 	 */
 	static inline int pde_write_set(struct pde *pde, int set)
 	{
@@ -411,7 +411,7 @@
 	 * @returns If the write bit of the target page table is set, non
 	 * zero is returned. Otherwise, zero is returned instead.
 	 *
-	 * @author Daniel Coascia
+	 * @author Daniel Coscia
 	 */
 	static inline int pde_is_write(struct pde *pde)
 	{
@@ -428,7 +428,7 @@
 	 * @param pde Page directory entry of target page table.
 	 * @param set Set bit?
 	 *
-	 * @author Daniel Coascia
+	 * @author Daniel Coscia
 	 */
 	static inline int pde_exec_set(struct pde *pde, int set)
 	{
@@ -446,7 +446,7 @@
 	 * @returns If the exec bit of the target page table is set, non
 	 * zero is returned. Otherwise, zero is returned instead.
 	 *
-	 * @author Daniel Coascia
+	 * @author Daniel Coscia
 	 */
 	static inline int pde_is_exec(struct pde *pde)
 	{
@@ -463,7 +463,7 @@
 	 * @param pde Page directory entry of target page table.
 	 * @param set Set bit?
 	 *
-	 * @author Daniel Coascia
+	 * @author Daniel Coscia
 	 */
 	static inline int pde_user_set(struct pde *pde, int set)
 	{
@@ -484,7 +484,7 @@
 	 * @returns If the user bit of the target page table is set, non
 	 * zero is returned. Otherwise, zero is returned instead.
 	 *
-	 * @author Daniel Coascia
+	 * @author Daniel Coscia
 	 */
 	static inline int pde_is_user(struct pde *pde)
 	{
@@ -500,7 +500,7 @@
 	 *
 	 * @param pte Target page table entry.
 	 *
-	 * @author Daniel Coascia
+	 * @author Daniel Coscia
 	 */
 	static inline int pte_clear(struct pte *pte)
 	{
@@ -519,7 +519,7 @@
 	 * @param pte Page table entry of target page.
 	 * @param set Set bit?
 	 *
-	 * @author Daniel Coascia
+	 * @author Daniel Coscia
 	 */
 	static inline int pte_present_set(struct pte *pte, int set)
 	{
@@ -540,7 +540,7 @@
 	 * @returns If the present bit of the target page, non zero is
 	 * returned. Otherwise, zero is returned instead.
 	 *
-	 * @author Daniel Coascia
+	 * @author Daniel Coscia
 	 */
 	static inline int pte_is_present(struct pte *pte)
 	{
@@ -557,7 +557,7 @@
 	 * @param pte   Page table entry of target page.
 	 * @param frame Frame number.
 	 *
-	 * @author Daniel Coascia
+	 * @author Daniel Coscia
 	 */
 	static inline int pte_frame_set(struct pte *pte, frame_t frame)
 	{
@@ -581,7 +581,7 @@
 	 *
 	 * @returns Number of the frame that is linked to the target page.
 	 *
-	 * @author Daniel Coascia
+	 * @author Daniel Coscia
 	 */
 	static inline frame_t pte_frame_get(struct pte *pte)
 	{
@@ -594,7 +594,7 @@
 	 * @param pte Page table entry of target page.
 	 * @param set Set bit?
 	 *
-	 * @author Daniel Coascia
+	 * @author Daniel Coscia
 	 */
 	static inline int pte_read_set(struct pte *pte, int set)
 	{
@@ -616,7 +616,7 @@
 	 * @returns If the read bit of the target page, non zero is
 	 * returned. Otherwise, zero is returned instead.
 	 *
-	 * @author Daniel Coascia
+	 * @author Daniel Coscia
 	 */
 	static inline int pte_is_read(struct pte *pte)
 	{
@@ -633,7 +633,7 @@
 	 * @param pte Page table entry of target page.
 	 * @param set Set bit?
 	 *
-	 * @author Daniel Coascia
+	 * @author Daniel Coscia
 	 */
 	static inline int pte_write_set(struct pte *pte, int set)
 	{
@@ -654,7 +654,7 @@
 	 * @returns If the write bit of the target page, non zero is
 	 * returned. Otherwise, zero is returned instead.
 	 *
-	 * @author Daniel Coascia
+	 * @author Daniel Coscia
 	 */
 	static inline int pte_is_write(struct pte *pte)
 	{
@@ -671,7 +671,7 @@
 	 * @param pte Page table entry of target page.
 	 * @param set Set bit?
 	 *
-	 * @author Daniel Coascia
+	 * @author Daniel Coscia
 	 */
 	static inline int pte_exec_set(struct pte *pte, int set)
 	{
@@ -693,7 +693,7 @@
 	 * @returns If the exec bit of the target page, non zero is
 	 * returned. Otherwise, zero is returned instead.
 	 *
-	 * @author Daniel Coascia
+	 * @author Daniel Coscia
 	 */
 	static inline int pte_is_exec(struct pte *pte)
 	{
@@ -710,7 +710,7 @@
 	 * @param pte Page table entry of target page.
 	 * @param set Set bit?
 	 *
-	 * @author Daniel Coascia
+	 * @author Daniel Coscia
 	 */
 	static inline int pte_user_set(struct pte *pte, int set)
 	{
@@ -731,7 +731,7 @@
 	 * @returns If the user bit of the target page, non zero is
 	 * returned. Otherwise, zero is returned instead.
 	 *
-	 * @author Daniel Coascia
+	 * @author Daniel Coscia
 	 */
 	static inline int pte_is_user(struct pte *pte)
 	{
@@ -750,7 +750,7 @@
 	 * @returns Returns the page table index of the page that lies at
 	 * address @p vaddr.
 	 *
-	 * @author Daniel Coascia
+	 * @author Daniel Coscia
 	 */
 	static inline unsigned pte_idx_get(vaddr_t vaddr)
 	{
@@ -765,7 +765,7 @@
 	 * @returns Returns the page directory index of the page that lies
 	 * at address @p vaddr.
 	 *
-	 * @author Daniel Coascia
+	 * @author Daniel Coscia
 	 */
 	static inline unsigned pde_idx_get(vaddr_t vaddr)
 	{
@@ -780,7 +780,7 @@
 	 *
 	 * @returns The requested page directory entry.
 	 *
-	 * @author Daniel Coascia
+	 * @author Daniel Coscia
 	 */
 	static inline struct pde *pde_get(struct pde *pgdir, vaddr_t vaddr)
 	{
@@ -799,7 +799,7 @@
 	 *
 	 * @returns The requested page table entry.
 	 *
-	 * @author Daniel Coascia
+	 * @author Daniel Coscia
 	 */
 	static inline struct pte *pte_get(struct pte *pgtab, vaddr_t vaddr)
 	{

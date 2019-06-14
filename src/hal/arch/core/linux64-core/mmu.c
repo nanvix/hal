@@ -29,14 +29,13 @@
 /**
  * @todo TODO provide a detailed description for this function.
  *
- * @author Daniel Coascia
+ * @author Daniel Coscia
  */
 PUBLIC int linux64_page_map(struct pte *pgtab, paddr_t paddr, vaddr_t vaddr, int w)
 {
 
 	if(pgtab == NULL)
 		return (-EINVAL);
-
 	int i = pte_idx_get(vaddr);
 	pgtab[i].writable = w;
 	pgtab[i].present = 1;
@@ -47,7 +46,7 @@ PUBLIC int linux64_page_map(struct pte *pgtab, paddr_t paddr, vaddr_t vaddr, int
 /**
  * @todo TODO provide a detailed description for this function.
  *
- * @author Daniel Coascia
+ * @author Daniel Coscia
  */
 PUBLIC int linux64_pgtab_map(struct pde *pgdir, paddr_t paddr, vaddr_t vaddr)
 {
