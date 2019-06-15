@@ -107,7 +107,7 @@
 #if (TARGET_HAS_MAILBOX)
 	EXTERN int mailbox_create(int nodenum);
 #else
-	EXTERN int mailbox_create(int nodenum)
+	static inline int mailbox_create(int nodenum)
 	{
 		UNUSED(nodenum);
 
