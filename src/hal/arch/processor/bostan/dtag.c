@@ -29,6 +29,62 @@
 #include <errno.h>
 
 /**
+ * @brief TODO: Describe.
+ */
+PUBLIC void bostan_dnoc_setup(void)
+{
+
+}
+
+/*============================================================================*
+ * Data Receiver                                                              *
+ *============================================================================*/
+
+/**
+ * @brief Allocate D-NoC receiver buffer.
+ *
+ * @param interface Number of the interface.
+ * @param tag       Numberof receiver buffer.
+ *
+ * @return Zero if allocate correctly and non zero otherwise.
+ */
+PUBLIC int bostan_dnoc_rx_alloc(int interface, int tag)
+{
+	UNUSED(interface);
+	UNUSED(tag);
+
+	return (0);
+}
+
+/**
+ * @brief Free D-NoC receiver buffer.
+ *
+ * @param interface Number of the interface.
+ * @param tag       Numberof receiver buffer.
+ */
+PUBLIC void bostan_dnoc_rx_free(int interface, int tag)
+{
+	UNUSED(interface);
+	UNUSED(tag);
+}
+
+/**
+ * @brief Wait events on D-NoC receiver buffer.
+ *
+ * @param interface Number of the interface.
+ * @param tag       Number tag.
+ *
+ * @return Amount of received events.
+ */
+PUBLIC int bostan_dnoc_rx_wait(int interface, int tag)
+{
+	UNUSED(interface);
+	UNUSED(tag);
+
+	return (0);
+}
+
+/**
  * @brief Configure D-NoC receiver buffer.
  *
  * @param interface Number of the interface.
@@ -38,7 +94,7 @@
  * @param max_size  Size of the receiver buffer (in bytes).
  * @param offset    Offset in receiver buffer where data shall be written.
  *
- * @return Zero if configure sucefully and non zero otherwise.
+ * @return Zero if configure successfully and non zero otherwise.
  */
 PUBLIC int bostan_dnoc_rx_config(
 	int interface,
@@ -48,24 +104,46 @@ PUBLIC int bostan_dnoc_rx_config(
 	size_t max_size,
 	size_t offset)
 {
-	if (max_size < min_size || (max_size - offset) < min_size)
-		return (-EINVAL);
+	UNUSED(interface);
+	UNUSED(tag);
+	UNUSED(buffer);
+	UNUSED(min_size);
+	UNUSED(max_size);
+	UNUSED(offset);
 
-	mppa_noc_dnoc_rx_configuration_t config = {
-		.buffer_base    = (uintptr_t) buffer,
-		.buffer_size    = max_size,
-		.current_offset = offset,
-		.item_reload    = min_size,
-		.item_counter   = min_size,
-		.event_counter  = 0,
-		.reload_mode    = MPPA_NOC_RX_RELOAD_MODE_DECR_DATA_RELOAD,
-		.activation     = MPPA_NOC_ACTIVATED,
-		.counter_id     = 0
-	};
+	return (0);
+}
 
-	k1b_dcache_inval();
+/*============================================================================*
+ * Data Transfer                                                              *
+ *============================================================================*/
 
-	return mppa_noc_dnoc_rx_configure(interface, tag, config);
+/**
+ * @brief Free D-NoC transfer buffer.
+ *
+ * @param interface Number of the interface.
+ * @param tag       Numberof transfer buffer.
+ *
+ * @return Zero if allocate correctly and non zero otherwise.
+ */
+PUBLIC int bostan_dnoc_tx_alloc(int interface, int tag)
+{
+	UNUSED(interface);
+	UNUSED(tag);
+
+	return (0);
+}
+
+/**
+ * @brief Free D-NoC transfer buffer.
+ *
+ * @param interface Number of the interface.
+ * @param tag       Number of transfer buffer.
+ */
+PUBLIC void bostan_dnoc_tx_free(int interface, int tag)
+{
+	UNUSED(interface);
+	UNUSED(tag);
 }
 
 /**
@@ -77,28 +155,22 @@ PUBLIC int bostan_dnoc_rx_config(
  * @param target_node Target interface ID.
  * @param target_tag  Number of target buffer.
  *
- * @return Zero if configure sucefully and non zero otherwise.
+ * @return Zero if configure successfully and non zero otherwise.
  */
 PUBLIC int bostan_dnoc_tx_config(
 	int interface,
 	int source_node,
 	int source_tag,
-	int target_tag,
-	int target_node)
+	int target_node,
+	int target_tag)
 {
-	mppa_dnoc_channel_config_t config = {0};
-	mppa_dnoc_header_t header = {0};
+	UNUSED(interface);
+	UNUSED(source_node);
+	UNUSED(source_tag);
+	UNUSED(target_node);
+	UNUSED(target_tag);
 
-	MPPA_NOC_DNOC_TX_CONFIG_INITIALIZER_DEFAULT(config, 0);
-	header._.tag   = target_tag;
-	header._.valid = 1;
-
-	k1b_dcache_inval();
-
-	if (mppa_routing_get_dnoc_unicast_route(source_node, target_node, &config, &header) != 0)
-		return (-EINVAL);
-
-	return mppa_noc_dnoc_tx_configure(interface, source_tag, header, config);
+	return (0);
 }
 
 /**
@@ -117,18 +189,78 @@ PUBLIC void bostan_dnoc_tx_write(
 	size_t size,
 	size_t offset)
 {
-	mppa_noc_dnoc_tx_flush(interface, tag);
+	UNUSED(interface);
+	UNUSED(tag);
+	UNUSED(buffer);
+	UNUSED(size);
+	UNUSED(offset);
+}
 
-	mppa_dnoc_push_offset_t offset_config = {0};
-	offset_config._.offset   = offset;
-	offset_config._.protocol = 0x1; /**< Absolute offset */
-	offset_config._.valid    = 1;
+/*============================================================================*
+ * UCore                                                                      *
+ *============================================================================*/
 
-	k1b_dcache_inval();
+/**
+ * @brief Free D-NoC transfer buffer.
+ *
+ * @param interface Number of the interface.
+ * @param uctag     Number of ucore.
+ * @param txtag     Number of transfer buffer.
+ *
+ * @return Zero if allocate correctly and non zero otherwise.
+ */
+PUBLIC int bostan_dnoc_uc_alloc(int interface, int uctag, int txtag)
+{
+	UNUSED(interface);
+	UNUSED(uctag);
+	UNUSED(txtag);
 
-	mppa_noc_dnoc_tx_set_push_offset(interface, tag, offset_config);
-	mppa_noc_dnoc_tx_send_data(interface, tag, size, buffer);
-	mppa_noc_dnoc_tx_flush_eot(interface, tag);
+	return (0);
+}
+
+/**
+ * @brief Free D-NoC transfer buffer.
+ *
+ * @param interface Number of the interface.
+ * @param tag       Number of transfer buffer.
+ */
+PUBLIC void bostan_dnoc_uc_free(int interface, int tag)
+{
+	UNUSED(interface);
+	UNUSED(tag);
+}
+
+/**
+ * @brief Wait events on D-NoC sender buffer.
+ *
+ * @param interface Number of the interface.
+ * @param tag       Ucore thread ID.
+ *
+ * @return Amount of received events.
+ */
+PUBLIC int bostan_dnoc_uc_wait(int interface, int tag)
+{
+	UNUSED(interface);
+	UNUSED(tag);
+
+	// return mppa_noc_wait_clear_event(interface, MPPA_NOC_INTERRUPT_LINE_DNOC_TX, tag);
+	return (0);
+}
+
+/**
+ * @brief Releases D-NoC Ucore thread.
+ *
+ * @param interface Number of the interface.
+ * @param txtag     Number of transfer buffer.
+ * @param uctag     Number of ucore thread.
+ */
+PUBLIC int bostan_dnoc_uc_desconfig(int interface, int txtag, int uctag)
+{
+	UNUSED(txtag);
+	UNUSED(uctag);
+	UNUSED(interface);
+
+	return (0);
 }
 
 /**
@@ -153,56 +285,14 @@ PUBLIC int bostan_dnoc_uc_config_write(
 	const void *buffer,
 	size_t size)
 {
-	mppa_dnoc_channel_config_t tx_config = {0};
-	mppa_dnoc_header_t tx_header = {0};
-
-	MPPA_NOC_DNOC_TX_CONFIG_INITIALIZER_DEFAULT(tx_config, 0);
-	tx_config._.payload_max = 32;
-	tx_header._.tag         = target_tag;
-	tx_header._.valid       = 1;
-
-	if (mppa_routing_get_dnoc_unicast_route(source_node, target_node, &tx_config, &tx_header) != 0)
-		return (-EINVAL);
-
-	if (mppa_noc_dnoc_tx_configure(interface, txtag, tx_header, tx_config) != 0)
-		return (-EINVAL);
-
-	mppa_noc_dnoc_uc_configuration_t uc_config;
-	memset(&uc_config, 0, sizeof(uc_config));
-
-	uc_config.program_start = (uintptr_t) mppa_noc_linear_firmware_eot_event;
-	uc_config.buffer_base   = (uintptr_t) buffer;
-	uc_config.buffer_size   = size;
-	uc_config.channel_ids._.channel_0 = txtag;
-	uc_config.channel_ids._.channel_1 = txtag;
-	uc_config.channel_ids._.channel_2 = txtag;
-	uc_config.channel_ids._.channel_3 = txtag;
-	uc_config.channel_ids._.channel_4 = txtag;
-	uc_config.channel_ids._.channel_5 = txtag;
-	uc_config.channel_ids._.channel_6 = txtag;
-	uc_config.channel_ids._.channel_7 = txtag;
-
-	k1b_dcache_inval();
-
-	mppa_noc_dnoc_uc_set_linear_params(&uc_config, size, 0, 0);
-
-#ifdef __node__
-	if (mppa_noc_dnoc_uc_configure(interface, uctag, uc_config, tx_header, tx_config) != 0)
-		return (-EINVAL);
-
-	if (mppa_noc_dnoc_uc_link(interface, uctag, txtag, uc_config) != 0)
-		return (-EINVAL);
-#else
-	if (mppa_noc_dnoc_uc_configure(interface, uctag, uc_config) != 0)
-		return (-EINVAL);
-#endif
-
-	mppa_noc_uc_program_run_t program_run;
-	memset(&program_run, 0, sizeof(mppa_noc_uc_program_run_t));
-	program_run.semaphore = 1;
-	program_run.activation = 1;
-
-	mppa_noc_dnoc_uc_set_program_run(interface, uctag, program_run);
+	UNUSED(interface);
+	UNUSED(source_node);
+	UNUSED(txtag);
+	UNUSED(uctag);
+	UNUSED(target_node);
+	UNUSED(target_tag);
+	UNUSED(buffer);
+	UNUSED(size);
 
 	return (0);
 }

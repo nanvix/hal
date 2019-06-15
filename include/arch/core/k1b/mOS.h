@@ -40,13 +40,25 @@
 	#include <HAL/hal/board/boot_args.h>
 	#include <HAL/hal/core/diagnostic.h>
 	#include <HAL/hal/cluster/dsu.h>
+	#include "HAL/hal/cluster/cnoc.h"
+	#include "HAL/hal/cluster/dnoc.h"
 	#include <HAL/hal/hal_ext.h>
 	#include <mOS_segment_manager_u.h>
 	#include <mOS_common_types_c.h>
+	#include "mOS_constants_c.h"
+	#include "mOS_scoreboard_c.h"
+	#include "mOS_domain_u.h"
 	#include <mOS_vcore_u.h>
+	#include <mOS_mailbox_c.h>
 	#include <mOS_mailbox_u.h>
-	#include <mppa_routing.h>
-	#include <mppa_noc.h>
+	#include "mOS_dnoc_c.h"
+	#include "mOS_dnoc_u.h"
+	#include "mOS_shaper_c.h"
+	#include "mOS_shaper_u.h"
+	#include "mOS_ucore_c.h"
+	#include "mOS_ucore_u.h"
+	#include "mppa_bsp.h"
+	#include "mOS_bugs_c.h"
 	#include <vbsp.h>
 
 #endif /* !_ASM_FILE_ */

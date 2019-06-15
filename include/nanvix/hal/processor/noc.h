@@ -235,6 +235,18 @@
 	}
 #endif
 
+	/**
+	 * @brief TODO: Describe.
+	 */
+#if (PROCESSOR_HAS_NOC)
+	EXTERN void processor_noc_setup(void);
+#else
+	static inline void processor_noc_setup(void)
+	{
+
+	}
+#endif
+
 #endif /* __NANVIX_HAL */
 
 /**@}*/
