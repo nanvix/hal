@@ -45,11 +45,6 @@
 	EXTERN void test_core(void);
 
 	/**
-	 * @brief Test driver for the Sync Interface
-	 */
-	EXTERN void test_sync(void);
-
-	/**
 	 * @brief Test driver for the Exception Interface.
 	 */
 	EXTERN void test_exception(void);
@@ -84,19 +79,34 @@
 	 */
 	EXTERN void test_cluster_cores(void);
 
-	/*
+	/**
 	 * @brief Test driver for Performance Monitor Interface.
 	 */
 	EXTERN void test_perf(void);
 
-	/*
+	/**
 	 * @brief Test driver for Spinlock Interface.
 	 */
 	EXTERN void test_spinlock(void);
 
-	/*
+	/**
 	 * @brief Test driver for Timer Interface.
 	 */
 	EXTERN void test_timer(void);
+
+	/**
+	 * @brief Test driver for the Control NoC Interface
+	 */
+	EXTERN void test_cnoc(void);
+
+	/**
+	 * @brief Test driver for the Sync Interface
+	 */
+	EXTERN void test_sync(void);
+
+	/**
+	 * @brief Test driver for the Mailbox Interface
+	 */
+	EXTERN void test_mailbox(void);
 
 #endif /* _HAL_TEST_H_ */
