@@ -67,8 +67,8 @@ PRIVATE void test_cluster_al(void)
  */
 PRIVATE void test_processor_al(void)
 {
-#if (TARGET_HAS_SYNC)
-	test_sync();
+#ifdef __mppa256__
+	test_cnoc();
 #endif
 }
 
@@ -77,6 +77,9 @@ PRIVATE void test_processor_al(void)
  */
 PRIVATE void test_target_al(void)
 {
+#if (TARGET_HAS_SYNC)
+	test_sync();
+#endif
 }
 
 /**
