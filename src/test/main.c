@@ -134,6 +134,7 @@ PUBLIC NORETURN void kmain(int argc, const char *argv[])
 
 	test_mmu();
 	test_spinlock();
+	test_timer();
 
 #endif
 

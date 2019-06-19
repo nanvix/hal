@@ -22,45 +22,30 @@
  * SOFTWARE.
  */
 
-#ifndef CLUSTER_LINUX64_CLUSTER_H_
-#define CLUSTER_LINUX64_CLUSTER_H_
-
-
-	#ifndef __NEED_CLUSTER_LINUX64
-		#error "bad cluster configuration?"
-	#endif
-
-	/* Cluster Interface Implementation */
-	#include <arch/cluster/linux64-cluster/_linux64-cluster.h>
+#include <nanvix/hal/hal.h>
+#include <nanvix/const.h>
+#include <nanvix/klib.h>
+#include "../test.h"
 
 /**
- * @addtogroup linux64-cluster Linux64 Cluster
- * @ingroup clusters
- *
- * @brief Linux64 Cluster
+ * @brief Launch verbose tests?
  */
-/**@{*/
+#define TEST_TIMER_VERBOSE 0
 
-	#include <arch/cluster/linux64-cluster/memory.h>
-	#include <arch/cluster/linux64-cluster/timer.h>
+/*============================================================================*
+ * Test Driver                                                                *
+ *============================================================================*/
 
-	/**
-	 * @brief ID of the master core.
-	 *
-	 * @bug FIXME: move this to cores.h
-	 */
-	#define COREID_MASTER 0
-
-	/**
-	 * @name Provided Features
-	 */
-	/**@{*/
-	#define CLUSTER_IS_MULTICORE  0 /**< Multicore Cluster */
-	#define CLUSTER_IS_IO         1 /**< I/O Cluster       */
-	#define CLUSTER_IS_COMPUTE    0 /**< Compute Cluster   */
-	#define CLUSTER_HAS_EVENTS    0 /**< Event Support?    */
-	/**@}*/
-
-/**@}*/
-
-#endif /* CLUSTER_LINUX64_CLUSTER_H_ */
+/**
+ * The test_spinlock() function launches testing units on the spinlock
+ * interface of the HAL.
+ *
+ * @author Daniel Coscia
+ */
+PUBLIC void test_timer(void)
+{
+#ifndef __x86__
+    timer_init(0);
+    kprintf("clock = %d", clock_read());
+#endif
+}
