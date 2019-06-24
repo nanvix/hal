@@ -46,8 +46,23 @@
 	 */
 	#define LINUX64_CLUSTER_COREID_MASTER 0
 
+	/**
+	 * @brief Array of the cores
+	 */
+	EXTERN pthread_t linux64_cores_tab[LINUX64_CLUSTER_NUM_CORES];
 
-#ifndef _ASM_FILE_
+	/**
+	 * @brief Powers off the underlying core.
+	 */
+	EXTERN NORETURN void linux64_core_poweroff(void);
+
+	/**
+	 * @brief Gets the ID of the underlying core.
+	 *
+	 * @returns The ID of the underlying core or -1 if the thread
+	 * calling thread is not attached to the underlying cluster.
+	 */
+	EXTERN int linux64_core_get_id(void);
 
 	/**
 	 * @brief Gets the number of cores.
@@ -61,8 +76,6 @@
 	{
 		return (LINUX64_CLUSTER_NUM_CORES);
 	}
-
-#endif /* _ASM_FILE_ */
 
 /**@}*/
 
@@ -94,7 +107,21 @@
 	 */
 	#define COREID_MASTER LINUX64_CLUSTER_COREID_MASTER
 
-#ifndef _ASM_FILE_
+	/**
+	 * @see linux64_core_get_id().
+	 */
+	static inline int core_get_id(void)
+	{
+		return (linux64_core_get_id());
+	}
+
+	/**
+	 * @see linux64_core_poweroff().
+	 */
+	static inline NORETURN void core_poweroff(void)
+	{
+		linux64_core_poweroff();
+	}
 
 	/**
 	 * @see linux64_cluster_get_num_cores().
@@ -103,8 +130,6 @@
 	{
 		return (linux64_cluster_get_num_cores());
 	}
-
-#endif /* _ASM_FILE_ */
 
 /**@endcond*/
 
