@@ -62,8 +62,8 @@ PRIVATE int itoa(char *str, unsigned num, int base)
 	{
 		unsigned remainder = num % divisor;
 
-		*p++ = (remainder < 10) ? remainder + '0' :
-		                          remainder + 'a' - 10;
+		*p++ = (remainder < 10) ?
+			remainder + '0' : remainder + 'a' - 10;
 	} while (num /= divisor);
 
 #else
@@ -80,8 +80,8 @@ PRIVATE int itoa(char *str, unsigned num, int base)
 	{
 		unsigned remainder = num  & 0xf;
 
-		*p++ = (remainder < 10) ? remainder + '0' :
-		                          remainder + 'a' - 10;
+		*p++ = (remainder < 10) ?
+			remainder + '0' : remainder + 'a' - 10;
 	} while ((num  = (num >> 4)));
 
 #endif
@@ -89,6 +89,52 @@ PRIVATE int itoa(char *str, unsigned num, int base)
 	/* Fill up with zeros. */
 	if (divisor == 16)
 		while ((p - b) < 8)
+			*p++ = '0';
+
+	/* Reverse BUF. */
+	p1 = b; p2 = p - 1;
+	while (p1 < p2)
+	{
+		char tmp = *p1;
+		*p1++ = *p2;
+		*p2-- = tmp;
+	}
+
+	return(p - str);
+}
+
+/**
+ * @brief Converts an 64 bit integer to a string.
+ *
+ * @param str  Output string.
+ * @param num  Number to be converted.
+ * @param base Base to use.
+ *
+ * @returns The length of the output string.
+ */
+PRIVATE int itoa64(char *str, unsigned long num, int base)
+{
+	UNUSED(base);
+	char *b = str;
+	char *p, *p1, *p2;
+	unsigned divisor;
+
+	*b++ = '0'; *b++ = 'x';
+	divisor = 16;
+
+	p = b;
+
+	/* Convert number. */
+	do
+	{
+		unsigned long remainder = num % divisor;
+
+		*p++ = (remainder < 10) ?
+			remainder + '0' : remainder + 'a' - 10;
+	} while (num /= divisor);
+
+	if (divisor == 16)
+		while ((p - b) < 16)
 			*p++ = '0';
 
 	/* Reverse BUF. */
@@ -139,6 +185,9 @@ PUBLIC int kvsprintf(char *str, const char *fmt, va_list args)
 					break;
 				case 'x':
 					str += itoa(str, va_arg(args, unsigned int), 'x');
+					break;
+				case 'h':
+					str += itoa64(str, va_arg(args, unsigned long int), 'h');
 					break;
 
 				/* String. */
