@@ -47,8 +47,8 @@
 	 * @name Page Shifts and Masks
 	 */
 	/**@{*/
-	#define LINUX64_PAGE_SHIFT  12                          /**< Page Shift        */
-	#define LINUX64_PGTAB_SHIFT 22                          /**< Page Table Shift  */
+	#define LINUX64_PAGE_SHIFT  22                          /**< Page Shift        */
+	#define LINUX64_PGTAB_SHIFT 44                          /**< Page Table Shift  */
 	#define LINUX64_PAGE_MASK   (~(LINUX64_PAGE_SIZE - 1))  /**< Page Mask         */
 	#define LINUX64_PGTAB_MASK  (~(LINUX64_PGTAB_SIZE - 1)) /**< Page Table Mask   */
 	/**@}*/
@@ -57,11 +57,11 @@
 	 * @name Size of Pages and Page Tables
 	 */
 	/**@{*/
-	#define LINUX64_HUGE_PAGE_SIZE (1 << LINUX64_HUGE_PAGE_SHIFT) /**< Huge Page Size (in bytes)            */
-	#define LINUX64_PAGE_SIZE      (1 << LINUX64_PAGE_SHIFT)      /**< Page Size (in bytes)                 */
-	#define LINUX64_PGTAB_SIZE     (1 << LINUX64_PGTAB_SHIFT)     /**< Page Table Size (in bytes)           */
-	#define LINUX64_PTE_SIZE        4                             /**< Page Table Entry Size (in bytes)     */
-	#define LINUX64_PDE_SIZE        4                             /**< Page Directory Entry Size (in bytes) */
+	#define LINUX64_HUGE_PAGE_SIZE (0x1UL << LINUX64_PAGE_SHIFT)  /**< Huge Page Size                       */
+	#define LINUX64_PAGE_SIZE      (0x1UL << LINUX64_PAGE_SHIFT)  /**< Page Size                            */
+	#define LINUX64_PGTAB_SIZE     (0x1UL << LINUX64_PGTAB_SHIFT) /**< Page Table Size                      */
+	#define LINUX64_PTE_SIZE        8                             /**< Page Table Entry Size (in bytes)     */
+	#define LINUX64_PDE_SIZE        8                             /**< Page Directory Entry Size (in bytes) */
 	/**@}*/
 
 	/**
@@ -91,7 +91,7 @@
 	 *
 	 * @author Daniel Coscia
 	 */
-	#define LINUX64_VADDR_LENGTH 32
+	#define LINUX64_VADDR_LENGTH 64
 
 	/**
 	 * @brief Page Directory length.
@@ -121,10 +121,10 @@
 		unsigned user     :  1; /**< User page?         */
 		unsigned          :  2; /**< Reserved.          */
 		unsigned accessed :  1; /**< Accessed?          */
-		unsigned          :  1; /**< Unused             */
+		unsigned          : 11; /**< Unused             */
 		unsigned          :  2; /**< Reserved.          */
 		unsigned          :  3; /**< Unused.            */
-		unsigned frame    : 20; /**< Frame number.      */
+		uint64_t frame    : 42; /**< Frame number.      */
 	};
 
 	/**
@@ -137,10 +137,10 @@
 		unsigned user     :  1; /**< User page?         */
 		unsigned          :  2; /**< Reserved.          */
 		unsigned accessed :  1; /**< Accessed?          */
-		unsigned          :  1; /**< Unused             */
+		unsigned          : 11; /**< Unused             */
 		unsigned          :  2; /**< Reserved.          */
 		unsigned          :  3; /**< Unused.            */
-		unsigned frame    : 20; /**< Frame number.      */
+		uint64_t frame    : 42; /**< Frame number.      */
 	};
 
 	/**
@@ -285,7 +285,7 @@
 			return (-EINVAL);
 
 		/* Invalid frame. */
-		if (frame > ~(frame_t)((1 << (VADDR_BIT - PAGE_SHIFT)) - 1))
+		if (frame > ~(frame_t)((0X1UL << (VADDR_BIT - PAGE_SHIFT)) - 1))
 			return (-EINVAL);
 
 		pde->frame = frame;
@@ -566,7 +566,7 @@
 			return (-EINVAL);
 
 		/* Invalid frame. */
-		if (frame > ~(frame_t)((1 << (VADDR_BIT - PAGE_SHIFT)) - 1))
+		if (frame > ~(frame_t)((0X1UL << (VADDR_BIT - PAGE_SHIFT)) - 1))
 			return (-EINVAL);
 
 		pte->frame = frame;
@@ -769,7 +769,7 @@
 	 */
 	static inline unsigned pde_idx_get(vaddr_t vaddr)
 	{
-		return ((unsigned)(vaddr) >> LINUX64_PGTAB_SHIFT);
+		return ((vaddr) >> LINUX64_PGTAB_SHIFT);
 	}
 
 	/**
