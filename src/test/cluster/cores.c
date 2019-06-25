@@ -97,6 +97,64 @@ PRIVATE void fence_join(struct fence *b)
 	spinlock_unlock(&b->lock);
 }
 
+/*----------------------------------------------------------------------------*
+ * Semaphore                                                                  *
+ *----------------------------------------------------------------------------*/
+
+/**
+ * @brief Semaphore
+ */
+struct semaphore
+{
+	spinlock_t lock; /**< Semaphore lock.    */
+	int count;       /**< Semaphore counter. */
+};
+
+/**
+ * @brief Initializes the semaphore with the given value.
+ *
+ * @param s Semaphore to be initialized.
+ * @param c Semaphore counter.
+ */
+PRIVATE void semaphore_init(struct semaphore *s, int c)
+{
+	spinlock_init(&s->lock);
+	s->count = c;
+}
+
+/**
+ * @brief Tries to decrement the semaphore counter:
+ * if greater than zero, decrements and returns,
+ * otherwise, does a busy-waiting until the counter
+ * becomes greater than zero.
+ *
+ * @param s Semaphore to decremented.
+ */
+PRIVATE void semaphore_down(struct semaphore *s)
+{
+	while (true)
+	{
+		spinlock_lock(&s->lock);
+			if (s->count > 0)
+				break;
+		spinlock_unlock(&s->lock);
+	}
+	s->count--;
+	spinlock_unlock(&s->lock);
+}
+
+/**
+ * @brief Increments the semaphore value.
+ *
+ * @param s Semaphore to be incremented.
+ */
+PRIVATE void semaphore_up(struct semaphore *s)
+{
+	spinlock_lock(&s->lock);
+		s->count++;
+	spinlock_unlock(&s->lock);
+}
+
 /*============================================================================*
  * Dummy Task                                                                 *
  *============================================================================*/
@@ -712,6 +770,128 @@ PRIVATE void test_cluster_cores_stress_leader_start(void)
 	}
 }
 
+/*----------------------------------------------------------------------------*
+ * Spinlock Tests                                                             *
+ *----------------------------------------------------------------------------*/
+
+/**
+ * @brief Producer and consumer semaphores
+ */
+struct semaphore mutex;
+struct semaphore empty;
+struct semaphore full;
+
+#define BUFFER_SIZE  32 /* Buffer size.              */
+#define ELEMENTS_LOGN 9 /* Elements in power of two. */
+
+/**
+ * @brief Given an N (power of two)
+ * sums the sequence between 0 and (1 << N).
+ */
+#define SUM_POWER_OF_TWO(N) \
+	( ((1 << ((N)+(N))) + (1 << (N))) >> 1 )
+
+PRIVATE int buffer[BUFFER_SIZE]; /* Producer/consumer buffer. */
+PRIVATE int producer_sum;        /* Producer sum.             */
+PRIVATE int consumer_sum;        /* Consumer sum.             */
+
+/**
+ * @brief Producer.
+ */
+PRIVATE void producer(void)
+{
+	int in;      /* Current position. */
+	int counter; /* Producer counter. */
+	int item;    /* Current item.     */
+
+	producer_sum = 0;
+	counter = 0;
+	item = 0;
+	in = 0;
+
+	while (counter <= (1 << ELEMENTS_LOGN))
+	{
+		semaphore_down(&empty);
+		semaphore_down(&mutex);
+
+			producer_sum += item;
+			buffer[in] = item;
+			item++;
+			in = (in + 1) & (BUFFER_SIZE - 1);
+
+			counter++;
+
+		semaphore_up(&mutex);
+		semaphore_up(&full);
+	}
+}
+
+/**
+ * @brief Consumer.
+ */
+PRIVATE void consumer(void)
+{
+	int out;     /* Current position. */
+	int counter; /* Consumer counter. */
+	int item;    /* Current item.     */
+
+	consumer_sum = 0;
+	counter = 0;
+	out = 0;
+
+	while (counter <= (1 << ELEMENTS_LOGN))
+	{
+		semaphore_down(&full);
+		semaphore_down(&mutex);
+
+			item = buffer[out];
+			consumer_sum += item;
+			out  = (out + 1) & (BUFFER_SIZE - 1);
+
+		semaphore_up(&mutex);
+		semaphore_up(&empty);
+		counter++;
+	}
+
+	fence_join(&slave_fence);
+}
+
+/**
+ * @brief Stress Test: Spinlock Test
+ */
+PRIVATE void test_cluster_cores_stress_spinlocks(void)
+{
+	/* Initialize semaphores. */
+	semaphore_init(&mutex, 1);
+	semaphore_init(&empty, BUFFER_SIZE);
+	semaphore_init(&full,  0);
+
+	/* Start the producer/consumer. */
+	fence_init(&slave_fence, 1);
+
+		/* Start the first available slave core. */
+		for (int i = 0; i < CORES_NUM; i++)
+		{
+			if (i != COREID_MASTER)
+			{
+				KASSERT(core_start(i, consumer) == 0);
+				break;
+			}
+		}
+
+		producer();
+
+	fence_wait(&slave_fence);
+
+	/*
+	 * If the consumer sum is different from the expected
+	 * the master core will intentionally hang up in order
+	 * to indicate a wrong result.
+	 */
+	if (SUM_POWER_OF_TWO(ELEMENTS_LOGN) != consumer_sum)
+		while (true);
+}
+
 /*============================================================================*
  * Test Driver                                                                *
  *============================================================================*/
@@ -748,6 +928,7 @@ PRIVATE struct test fault_tests_api[] = {
 PRIVATE struct test stress_tests_api[] = {
 	{ test_cluster_cores_stress_master_start, "start from master core" },
 	{ test_cluster_cores_stress_leader_start, "start from leader core" },
+	{ test_cluster_cores_stress_spinlocks,    "spinlock test         " },
 	{ NULL,                                    NULL                    },
 };
 #endif
