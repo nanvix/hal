@@ -86,7 +86,6 @@
 	static inline void timer_init(unsigned freq)
 	{
 		UNUSED(freq);
-
 		linux64_timer_init();
 	}
 

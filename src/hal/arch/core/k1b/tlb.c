@@ -31,7 +31,7 @@
  *============================================================================*/
 
 /**
- * THe k1b_tlbe_write() function writes an entry into the architectural
+ * The k1b_tlbe_write() function writes an entry into the architectural
  * TLB. If the new entry conflicts to an old one, the old one is
  * overwritten.
  *
