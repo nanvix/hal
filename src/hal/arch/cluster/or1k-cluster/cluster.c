@@ -38,13 +38,13 @@ EXTERN NORETURN void kmain(int, const char *[]);
  */
 PUBLIC struct coreinfo  ALIGN(OR1K_CACHE_LINE_SIZE) cores[OR1K_CLUSTER_NUM_CORES] = {
 #if (defined(__or1k_cluster__))
-	{ true,  CORE_RUNNING,   0, NULL, OR1K_SPINLOCK_LOCKED }, /* Master Core   */
-	{ false, CORE_RESETTING, 0, NULL, OR1K_SPINLOCK_LOCKED }, /* Slave Core 1  */
+	{ true,  CORE_RUNNING,   0, NULL, OR1K_SPINLOCK_UNLOCKED }, /* Master Core   */
+	{ false, CORE_RESETTING, 0, NULL, OR1K_SPINLOCK_LOCKED   }, /* Slave Core 1  */
 #elif (defined(__optimsoc_cluster__))
-	{ true,  CORE_RUNNING,   0, NULL, OR1K_SPINLOCK_LOCKED }, /* Master Core   */
-	{ false, CORE_RESETTING, 0, NULL, OR1K_SPINLOCK_LOCKED }, /* Slave Core 1  */
-	{ false, CORE_RESETTING, 0, NULL, OR1K_SPINLOCK_LOCKED }, /* Slave Core 2  */
-	{ false, CORE_RESETTING, 0, NULL, OR1K_SPINLOCK_LOCKED }, /* Slave Core 3  */
+	{ true,  CORE_RUNNING,   0, NULL, OR1K_SPINLOCK_UNLOCKED }, /* Master Core   */
+	{ false, CORE_RESETTING, 0, NULL, OR1K_SPINLOCK_LOCKED   }, /* Slave Core 1  */
+	{ false, CORE_RESETTING, 0, NULL, OR1K_SPINLOCK_LOCKED   }, /* Slave Core 2  */
+	{ false, CORE_RESETTING, 0, NULL, OR1K_SPINLOCK_LOCKED   }, /* Slave Core 3  */
 #endif
 };
 
