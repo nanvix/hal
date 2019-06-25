@@ -111,8 +111,8 @@
 	 */
 	static inline void i486_spinlock_unlock(i486_spinlock_t *lock)
 	{
-		__sync_synchronize();
 		*lock = I486_SPINLOCK_UNLOCKED;
+		__sync_synchronize();
 	}
 
 /**@}*/

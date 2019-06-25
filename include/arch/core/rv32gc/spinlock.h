@@ -115,8 +115,8 @@
 	 */
 	static inline void rv32gc_spinlock_unlock(rv32gc_spinlock_t *lock)
 	{
-		__sync_synchronize();
 		*lock = RV32GC_SPINLOCK_UNLOCKED;
+		__sync_synchronize();
 	}
 
 #endif

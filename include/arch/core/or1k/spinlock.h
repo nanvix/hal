@@ -107,8 +107,8 @@
 	 */
 	static inline void or1k_spinlock_unlock(or1k_spinlock_t *lock)
 	{
-		__sync_synchronize();
 		*lock = OR1K_SPINLOCK_UNLOCKED;
+		__sync_synchronize();
 	}
 
 #endif
