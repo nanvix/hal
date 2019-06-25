@@ -69,7 +69,7 @@ static void test_cnoc_open_close(void)
 {
 	KASSERT(bostan_dma_control_open(INTERFACE, TX_TAG) == 0);
 	KASSERT(bostan_dma_control_close(INTERFACE, TX_TAG) == 0);
-	
+
 	KASSERT(bostan_dma_control_open(INTERFACE, TX_TAG) == 0);
 	KASSERT(bostan_dma_control_close(INTERFACE, TX_TAG) == 0);
 }
@@ -98,7 +98,7 @@ static void test_cnoc_loopback_with_events(void)
 	);
 
 	KASSERT(bostan_dma_control_wait(INTERFACE, RX_TAG) == 0);
-	
+
 	KASSERT(bostan_dma_control_close(INTERFACE, TX_TAG) == 0);
 	KASSERT(bostan_dma_control_unlink(INTERFACE, RX_TAG) == 0);
 }
@@ -131,7 +131,7 @@ static void test_cnoc_loopback_with_interrupts(void)
 		spinlock_lock(&test_cnoc_lock);
 
 	interrupts_disable();
-	
+
 	KASSERT(bostan_dma_control_close(INTERFACE, TX_TAG) == 0);
 	KASSERT(bostan_dma_control_unlink(INTERFACE, RX_TAG) == 0);
 }

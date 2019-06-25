@@ -72,7 +72,7 @@ PRIVATE uint8_t bostan_cnoc_tx_tags[BOSTAN_NR_INTERFACES] ALIGN(sizeof(uint64_t)
 PRIVATE uint64_t bostan_cnoc_rx_tags[BOSTAN_NR_INTERFACES][BOSTAN_CNOC_RX_BIT_FIELD_AMOUNT] ALIGN(sizeof(uint64_t));       /**< Receiver tags.                  */
 PRIVATE uint64_t bostan_cnoc_barrier_modes[BOSTAN_NR_INTERFACES][BOSTAN_CNOC_RX_BIT_FIELD_AMOUNT] ALIGN(sizeof(uint64_t)); /**< Receiver tags modes.            */
 PRIVATE uint64_t bostan_cnoc_rx_its[BOSTAN_NR_INTERFACES][BOSTAN_CNOC_RX_BIT_FIELD_AMOUNT] ALIGN(sizeof(uint64_t));        /**< Receiver tags interrupt status. */
-PRIVATE bostan_noc_handler_fn bostan_cnoc_rx_handlers[BOSTAN_NR_INTERFACES][BOSTAN_CNOC_RX_MAX] ALIGN(sizeof(uint64_t));      /**< Receiver tags handlers.         */
+PRIVATE bostan_noc_handler_fn bostan_cnoc_rx_handlers[BOSTAN_NR_INTERFACES][BOSTAN_CNOC_RX_MAX] ALIGN(sizeof(uint64_t));   /**< Receiver tags handlers.         */
 /**@}*/
 
 /*============================================================================*
@@ -244,7 +244,7 @@ PRIVATE void bostan_cnoc_it_handler(int ev_src)
 				tag = field * (sizeof(uint64_t) * 8) + offset;
 
 				bostan_noc_handler_fn handler = (bostan_noc_handler_fn) __builtin_k1_lwu(&bostan_cnoc_rx_handlers[interface][tag]);
-				
+
 				if (handler != NULL)
 					handler(interface, tag);
 			}
@@ -302,7 +302,7 @@ PUBLIC int bostan_cnoc_rx_alloc(int interface, int tag)
 
 	if (bostan_cnoc_rx_is_used(interface, tag))
 		return (-EBUSY);
-		
+
 	bostan_cnoc_rx_set_used(interface, tag);
 
 	return (0);

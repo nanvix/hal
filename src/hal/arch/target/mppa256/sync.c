@@ -191,7 +191,7 @@ PRIVATE int mppa256_sync_is_remote(int nodenum, const int *nodes, int nnodes)
 }
 
 /**
- * @brief TODO: Describes handler.
+ * @todo TODO: Provide a detailed description to this function.
  */
 PRIVATE void mppa256_sync_it_handler(int interface, int tag)
 {

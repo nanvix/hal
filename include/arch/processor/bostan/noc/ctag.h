@@ -91,7 +91,7 @@
 	/**@}*/
 
 	/**
-	 * @brief TODO: Describe.
+	 * @todo TODO: Provide a detailed description to this function.
 	 */
 	EXTERN void bostan_cnoc_setup(void);
 

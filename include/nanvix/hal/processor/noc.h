@@ -236,7 +236,7 @@
 #endif
 
 	/**
-	 * @brief TODO: Describe.
+	 * @todo TODO: Provide a detailed description to this function.
 	 */
 #if (PROCESSOR_HAS_NOC)
 	EXTERN void processor_noc_setup(void);

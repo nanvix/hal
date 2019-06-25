@@ -268,7 +268,7 @@
 	 * @param target_tag  Target receiver buffer.
 	 * @param buffer      Local data pointer.
 	 * @param size        Amount of bytes to transfer.
-	 * 
+	 *
 	 * @return Zero if configure successfully and non zero otherwise.
 	 */
 	EXTERN int bostan_dma_data_awrite(

@@ -203,7 +203,7 @@ PUBLIC int bostan_dma_data_aread(
  * @param target_tag  Target receiver buffer.
  * @param buffer      Local data pointer.
  * @param size        Amount of bytes to transfer.
- * 
+ *
  * @return Zero if configure successfully and non zero otherwise.
  */
 PUBLIC int bostan_dma_data_awrite(
@@ -235,7 +235,7 @@ PUBLIC int bostan_dma_data_awrite(
  * @param target_tag  Target receiver buffer.
  * @param buffer      Local data pointer.
  * @param size        Amount of bytes to transfer.
- * 
+ *
  * @return Zero if configure successfully and non zero otherwise.
  */
 PUBLIC int bostan_dma_data_write(

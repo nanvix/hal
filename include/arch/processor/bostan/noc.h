@@ -208,8 +208,8 @@
 	 */
 	EXTERN int bostan_node_portal_tag(int nodeid);
 
-    /**
-	 * @brief TODO: Describe.
+	/**
+	 * @todo TODO: Provide a detailed description to this function.
 	 */
 	static inline void bostan_noc_setup(void)
 	{

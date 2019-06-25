@@ -56,8 +56,9 @@
 		#define BOSTAN_NR_INTERFACES 4
 	#endif
 
-
-	/** micro interface callback type for asynchronous events */
+	/**
+	 * @brief Micro interface callback type for asynchronous events.
+	 */
 	typedef void (*bostan_noc_handler_fn)(int interface, int tag);
 
 
