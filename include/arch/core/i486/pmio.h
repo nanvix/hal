@@ -127,7 +127,7 @@
 	 *
 	 * @param port Number of the target port.
 	 */
-	static inline uint32_t i486_input32(uint32_t port)
+	static inline uint32_t i486_input32(uint16_t port)
 	{
 		uint32_t ret;
 		asm volatile ("inl %1, %0" : "=a" (ret) : "Nd" (port));
