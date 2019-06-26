@@ -79,16 +79,16 @@
 	 * @name Bit-Length of Memory Types
 	 */
 	/**@{*/
-	#define LINUX64_PADDR_BIT  32 /**< Physical Address */
-	#define LINUX64_VADDR_BIT  32 /**< Virtual Address  */
+	#define LINUX64_PADDR_BIT  64 /**< Physical Address */
+	#define LINUX64_VADDR_BIT  64 /**< Virtual Address  */
 	/**@}*/
 
 	/**
 	 * @name Byte-Length of Memory Types
 	 */
 	/**@{*/
-	#define LINUX64_PADDR_BYTE 4 /**< Physical Address */
-	#define LINUX64_VADDR_BYTE 4 /**< Virtual Address  */
+	#define LINUX64_PADDR_BYTE 8 /**< Physical Address */
+	#define LINUX64_VADDR_BYTE 8 /**< Virtual Address  */
 	/**@}*/
 
 #endif
@@ -119,17 +119,17 @@
 		/**
 		 * @brief Virtual address.
 		 */
-		typedef uint32_t vaddr_t;
+		typedef uint64_t vaddr_t;
 
 		/**
 		 * @brief Physical address.
 		 */
-		typedef uint32_t paddr_t;
+		typedef uint64_t paddr_t;
 
 		/**
 		 * @brief Page Frame number.
 		 */
-		typedef uint32_t frame_t;
+		typedef uint64_t frame_t;
 
 	#endif
 	#endif

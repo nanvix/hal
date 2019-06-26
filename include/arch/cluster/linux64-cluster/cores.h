@@ -22,95 +22,90 @@
  * SOFTWARE.
  */
 
-#ifndef ARCH_CLUSTER_LINUX64_CLUSTER_TIMER_H_
-#define ARCH_CLUSTER_LINUX64_CLUSTER_TIMER_H_
+#ifndef ARCH_CLUSTER_LINUX64_CLUSTER_CORES_H_
+#define ARCH_CLUSTER_LINUX64_CLUSTER_CORES_H_
 
 	/* Cluster Interface Implementation */
 	#include <arch/cluster/linux64-cluster/_linux64-cluster.h>
 
 /**
- * @addtogroup linux64-cluster-timer Timer
+ * @addtogroup linux64-cluster-cpu Cores
  * @ingroup linux64-cluster
  *
- * @brief Programmable Timer Interface
+ * @brief Cores
  */
 /**@{*/
 
-	#include <stdint.h>
+	/**
+	 * @brief Number of cores in the cluster.
+	 */
+    #define LINUX64_CLUSTER_NUM_CORES 4
 
-	#define INTERRUPT_TIMER 0
+	/**
+	 * @brief ID of the master core.
+	 */
+	#define LINUX64_CLUSTER_COREID_MASTER 0
+
 
 #ifndef _ASM_FILE_
 
 	/**
-	 * @brief Reads the timestamp counter from the linux system.
+	 * @brief Gets the number of cores.
 	 *
-	 * @returns The timestamp counter from the linux system.
+	 * The linux64_cluster_get_num_cores() gets the number of cores in the
+	 * underlying linux64 processor.
 	 *
-	 * @author Daniel Coscia
+	 * @returns The the number of cores in the underlying processor.
 	 */
-	EXTERN uint64_t linux64_cluster_clock_read(void);
+	static inline int linux64_cluster_get_num_cores(void)
+	{
+		return (LINUX64_CLUSTER_NUM_CORES);
+	}
 
+#endif /* _ASM_FILE_ */
 
-	/**
-	 * @brief Initialize the timer at the current clock()
-	 *
-	 * @author Daniel Coscia
-	 */
-	EXTERN void linux64_timer_init(void);
-
-#endif /* !_ASM_FILE_ */
+/**@}*/
 
 /*============================================================================*
  * Exported Interface                                                         *
  *============================================================================*/
 
 /**
- * @cond linux64_cluster
+ * @cond linux64
  */
 
 	/**
 	 * @name Exported Functions
 	 */
 	/**@{*/
-	#define __timer_init_fn  /**< timer_init()  */
-	#define __timer_reset_fn /**< timer_reset() */
-	#define __clock_read_fn  /**< clock_read()  */
+	#define ___core_reset_fn        /**< core_reset()            */
+	#define __core_get_id_fn        /**< core_get_id()           */
+	#define __core_setup_fn         /**< core_setup()            */
+	#define __cluster_get_num_cores /**< cluster_get_num_cores() */
 	/**@}*/
+
+	/**
+	 * @brief Number of cores in a cluster.
+	 */
+	#define CORES_NUM LINUX64_CLUSTER_NUM_CORES
+
+	/**
+	 * @brief ID of the master core.
+	 */
+	#define COREID_MASTER LINUX64_CLUSTER_COREID_MASTER
 
 #ifndef _ASM_FILE_
 
 	/**
-	 * @see linux64_timer_init().
+	 * @see linux64_cluster_get_num_cores().
 	 */
-	static inline void timer_init(unsigned freq)
+	static inline int cluster_get_num_cores(void)
 	{
-		UNUSED(freq);
-		linux64_timer_init();
+		return (linux64_cluster_get_num_cores());
 	}
 
-	/**
-	 * @brief Dummy function.
-	 */
-	static inline void timer_reset(void)
-	{
-		/* noop */
-	}
-
-	/**
-	 * @see linux64_cluster_clock_read().
-	 */
-	static inline uint64_t clock_read(void)
-	{
-		return (linux64_cluster_clock_read());
-	}
-
-#endif /* !_ASM_FILE_ */
+#endif /* _ASM_FILE_ */
 
 /**@endcond*/
 
-/*============================================================================*/
-
-/**@}*/
-
-#endif /* ARCH_CLUSTER_LINUX64_CLUSTER_TIMER */
+#endif /* ARCH_CLUSTER_LINUX64_CLUSTER_CORES_H_ */

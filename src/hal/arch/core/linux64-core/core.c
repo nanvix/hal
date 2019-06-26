@@ -29,7 +29,7 @@
 /**
  * @brief Lookup table for thread IDs.
  */
-PUBLIC pthread_t linux64_cores_tab[LINUX64_CORE_NUM_CORES];
+PUBLIC pthread_t linux64_cores_tab[LINUX64_CLUSTER_NUM_CORES];
 
 /*============================================================================*
  * linux64_core_getid()                                                       *
@@ -41,7 +41,7 @@ PUBLIC pthread_t linux64_cores_tab[LINUX64_CORE_NUM_CORES];
 PUBLIC int linux64_core_get_id(void)
 {
 	/* Search for target core. */
-	for (int i = 0; i < LINUX64_CORE_NUM_CORES ; i++)
+	for (int i = 0; i < LINUX64_CLUSTER_NUM_CORES ; i++)
 	{
 		/* Found. */
 		if (linux64_cores_tab[i] == pthread_self())
@@ -61,7 +61,7 @@ PUBLIC int linux64_core_get_id(void)
 PUBLIC NORETURN void linux64_core_poweroff(void)
 {
 	/* Search for target core. */
-	for (int i = 0; i < LINUX64_CORE_NUM_CORES; i++)
+	for (int i = 0; i < LINUX64_CLUSTER_NUM_CORES; i++)
 	{
 		/* Found. */
 		if (linux64_cores_tab[i] == pthread_self())

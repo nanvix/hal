@@ -22,9 +22,9 @@
  * SOFTWARE.
  */
 
-#include <arch/cluster/linux64-cluster/memory.h>
-#include <arch/core/linux64/mmu.h>
-#include <nanvix/const.h>
+#define __NEED_CORE_LINUX64
+
+#include <arch/core/linux64.h>
 
 /**
  * @brief Root page directory.
@@ -49,3 +49,62 @@ PUBLIC struct pte *kernel_pgtab = &linux64_root_pgtab[0];
  * Alias to kernel page pool page table.
  */
 PUBLIC struct pte *kpool_pgtab = &linux64_root_pgtab[0];
+
+/**
+ * @brief TLB
+ */
+PRIVATE struct tlbe linux64_root_tlb[LINUX64_CLUSTER_NUM_CORES][LINUX64_TLB_LENGTH];
+
+/**
+ * Alias to TLB
+ */
+PUBLIC struct tlbe *root_tlb = &linux64_root_tlb[0][0];
+
+/**
+ * @ brief counter for the flush function
+ */
+PRIVATE unsigned linux64_cluster_tlb_flush_count = 0;
+
+/**
+ * @brief Gets the underlying TLB entries.
+ *
+ * The linux64_cluster_tlb_get_utlb() function returns the architectural
+ * TLB entries.
+ *
+ * @returns Initial position of the specific underlying tlb entries.
+ */
+PUBLIC struct tlbe *linux64_cluster_tlb_get_utlb()
+{
+	return linux64_root_tlb[core_get_id()];
+}
+
+/**
+ * @brief
+ */
+PUBLIC int linux64_cluster_tlb_flush(void)
+{
+	linux64_cluster_tlb_flush_count++;
+	return (0);
+}
+
+/**
+ * @brief Dumps a TLB entry.
+ *
+ * @param idx Index of target entry in the TLB.
+ */
+PUBLIC void linux64_cluster_tlbe_dump(int idx)
+{
+	const struct tlbe *tlbe = &linux64_root_tlb[core_get_id()][idx];
+
+	if (tlbe == NULL)
+	{
+		kprintf("no tlb entry");
+		return;
+	}
+
+	kprintf("[%d] frame=%x page=%x",
+		idx,
+		linux64_tlbe_paddr_get(tlbe),
+		linux64_tlbe_vaddr_get(tlbe)
+	);
+}

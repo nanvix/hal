@@ -87,7 +87,7 @@ PRIVATE void mmu_pde_clear(void)
 PRIVATE void mmu_pte_frame_set(void)
 {
 	struct pte pte;
-	frame_t frame = (1 << (VADDR_BIT - PAGE_SHIFT)) - 1;
+	frame_t frame = (0x1UL << (VADDR_BIT - PAGE_SHIFT)) - 1;
 
 	kmemset(&pte, 1, sizeof(struct pte));
 	pte_clear(&pte);
@@ -113,7 +113,7 @@ PRIVATE void mmu_pte_frame_set(void)
 PRIVATE void mmu_pde_frame_set(void)
 {
 	struct pde pde;
-	frame_t frame = (1 << (VADDR_BIT - PAGE_SHIFT)) - 1;
+	frame_t frame = (0X1UL << (VADDR_BIT - PAGE_SHIFT)) - 1;
 
 	kmemset(&pde, 1, sizeof(struct pde));
 	pde_clear(&pde);
@@ -327,7 +327,7 @@ PRIVATE void mmu_pde_clear_inval(void)
  */
 PRIVATE void mmu_pte_frame_set_inval(void)
 {
-	frame_t frame = (1 << (VADDR_BIT - PAGE_SHIFT)) - 1;
+	frame_t frame = (0X1UL << (VADDR_BIT - PAGE_SHIFT)) - 1;
 
 	KASSERT(pte_frame_set(NULL, frame) == -EINVAL);
 }
@@ -341,7 +341,7 @@ PRIVATE void mmu_pte_frame_set_inval(void)
  */
 PRIVATE void mmu_pde_frame_set_inval(void)
 {
-	frame_t frame = (1 << (VADDR_BIT - PAGE_SHIFT)) - 1;
+	frame_t frame = (0X1UL << (VADDR_BIT - PAGE_SHIFT)) - 1;
 
 	KASSERT(pde_frame_set(NULL, frame) == -EINVAL);
 }

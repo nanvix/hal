@@ -32,17 +32,157 @@
  * @addtogroup linux64-cluster-mem Memory
  * @ingroup linux64-cluster
  *
- * @brief Memory Interface
+ * @brief Memory System
  */
 /**@{*/
 
 	/**
-	 * @brief Dummy virtual address for the kernel.
-	 *
-	 * @bug FIXME
+	 * @brief Memory size (in bytes).
 	 */
-	#define KBASE_VIRT 0 /**< @Brief Tests */
+	#define LINUX64_MEM_SIZE (32*1024*1024)
+
+	/**
+	 * @brief Kernel memory size (in bytes).
+	 */
+	#define LINUX64_KMEM_SIZE (16*1024*1024)
+
+	/**
+	 * @brief Kernel page pool size (in bytes).
+	 */
+	#define LINUX64_KPOOL_SIZE (4*1024*1024)
+
+	/**
+	 * @brief User memory size (in bytes).
+	 */
+	#define LINUX64_UMEM_SIZE (LINUX64_MEM_SIZE - LINUX64_KMEM_SIZE - LINUX64_KPOOL_SIZE)
+
+	/**
+	 * @brief Kernel stack size (in bytes).
+	 */
+	#define LINUX64_KSTACK_SIZE LINUX64_PAGE_SIZE
+
+	/**
+	 * @name Virtual Memory Layout
+	 */
+	/**@{*/
+	#define LINUX64_USER_BASE_VIRT   0x02000000 /**< User Base             */
+	#define LINUX64_USTACK_BASE_VIRT 0xc0000000 /**< User Stack Base       */
+	#define LINUX64_KERNEL_BASE_VIRT 0xc0000000 /**< Kernel Base           */
+	#define LINUX64_KPOOL_BASE_VIRT  0xc1000000 /**< Kernel Page Pool Base */
+	/**@}*/
+
+	/**
+	 * @name Physical Memory Layout
+	 */
+	/**@{*/
+	#define LINUX64_KERNEL_BASE_PHYS 0x00000000 /**< Kernel Base           */
+	#define LINUX64_KPOOL_BASE_PHYS  0x01000000 /**< Kernel Page Pool Base */
+	#define LINUX64_USER_BASE_PHYS   0x02000000 /**< User Base             */
+	/**@}*/
+
+	#define LINUX64_TLB_VADDR_MASK PAGE_MASK
+
+	/**
+	 * @brief Gets the underlying TLB entries.
+	 *
+	 * The linux64_cluster_tlb_get_utlb() function returns the architectural
+	 * TLB entries.
+	 *
+	 * @returns Initial position of the specific underlying tlb entries.
+	 */
+	EXTERN struct tlbe *linux64_cluster_tlb_get_utlb();
+
+	/**
+	 * @brief Gets the configuration of a TLB Entry.
+	 *
+	 * @param vaddr Target virtual address.
+	 *
+	 * @return linux64 TLB entry does not need configuration.
+	 */
+	static inline int linux64_cluster_tlb_get_vaddr_info(vaddr_t vaddr)
+	{
+		UNUSED(vaddr);
+
+		return (0);
+	}
+
+	/**
+	 * @brief Flushes the TLB.
+	 */
+	EXTERN int linux64_cluster_tlb_flush(void);
+
+	/**
+	 * @brief Dumps a TLB entry.
+	 *
+	 * @param idx Index of target entry in the TLB.
+	 */
+	EXTERN void linux64_cluster_tlbe_dump(int idx);
 
 /**@}*/
+
+/*============================================================================*
+ * Exported Interface                                                         *
+ *============================================================================*/
+
+/**
+ * @cond linux64_cluster
+ */
+
+	/**
+	 * @name Exported Constants
+	 */
+	#define MEMORY_SIZE    LINUX64_MEM_SIZE          /**< @see LINUX64_MEM_SIZE         */
+	#define KMEM_SIZE      LINUX64_KMEM_SIZE         /**< @see LINUX64_KMEM_SIZE        */
+	#define UMEM_SIZE      LINUX64_UMEM_SIZE         /**< @see LINUX64_UMEM_SIZE        */
+	#define KSTACK_SIZE    LINUX64_KSTACK_SIZE       /**< @see LINUX64_KSTACK_SIZE      */
+	#define KPOOL_SIZE     LINUX64_KPOOL_SIZE        /**< @see LINUX64_KPOOL_SIZE       */
+	#define KBASE_PHYS     LINUX64_KERNEL_BASE_PHYS  /**< @see LINUX64_KERNEL_BASE_PHYS */
+	#define KPOOL_PHYS     LINUX64_KPOOL_BASE_PHYS   /**< @see LINUX64_KPOOL_BASE_PHYS  */
+	#define UBASE_PHYS     LINUX64_USER_BASE_PHYS    /**< @see LINUX64_USER_BASE_PHYS   */
+	#define USTACK_VIRT    LINUX64_USTACK_BASE_VIRT  /**< @see LINUX64_USTACK_BASE_VIRT */
+	#define UBASE_VIRT     LINUX64_USER_BASE_VIRT    /**< @see LINUX64_USER_BASE_VIRT   */
+	#define KBASE_VIRT     LINUX64_KERNEL_BASE_VIRT  /**< @see LINUX64_KERNEL_BASE_VIRT */
+	#define KPOOL_VIRT     LINUX64_KPOOL_BASE_VIRT   /**< @see LINUX64_KPOOL_BASE_VIRT  */
+	#define TLB_VADDR_MASK LINUX64_TLB_VADDR_MASK    /**< @see LINUX64_TLB_VADDR_MASK   */
+	/**@}*/
+
+	/**
+	 * @brief Provided Interface
+	 */
+	/**@{*/
+	#define __tlb_flush_fn          /**< tlb_flush()          */
+	#define __tlb_get_vaddr_info_fn /**< tlb_get_vaddr_info() */
+	#define __tlb_get_utlb_fn       /**< tlb_get_utlb()       */
+	/**@}*/
+
+	/**
+	 * @see linux64_cluster_tlb_flush().
+	 */
+	static inline int tlb_flush(void)
+	{
+		return (linux64_cluster_tlb_flush());
+	}
+
+	/**
+	 * @see linux64_cluster_tlb_get_vaddr_info().
+	 */
+	static inline int tlb_get_vaddr_info(vaddr_t vaddr)
+	{
+		return (linux64_cluster_tlb_get_vaddr_info(vaddr));
+	}
+
+	/**
+	 * @see linux64_cluster_tlb_lookup_paddr().
+	 */
+	static inline struct tlbe *tlb_get_utlb(int tlb_type)
+	{
+		/* Invalid TLB type. */
+		if ((tlb_type != LINUX64_TLB_INSTRUCTION) && (tlb_type != LINUX64_TLB_DATA))
+			return (NULL);
+
+		return (linux64_cluster_tlb_get_utlb());
+	}
+
+/**@endcond*/
 
 #endif /* ARCH_CLUSTER_LINUX64_CLUSTER_MEMORY_H_ */

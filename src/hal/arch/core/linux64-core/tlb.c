@@ -22,32 +22,29 @@
  * SOFTWARE.
  */
 
-#include <arch/core/k1b/tlb.h>
+#include <arch/core/linux64/tlb.h>
 #include <nanvix/const.h>
 #include <errno.h>
 
 /*============================================================================*
- * k1b_tlb_write()                                                            *
+ * linux64_tlb_write()                                                            *
  *============================================================================*/
 
 /**
- * The k1b_tlbe_write() function writes an entry into the architectural
+ * The linux64_tlbe_write() function writes an entry into the architectural
  * TLB. If the new entry conflicts to an old one, the old one is
  * overwritten.
  *
  * @author Pedro Henrique Penna
  */
-PUBLIC int k1b_tlbe_write(
+PUBLIC int linux64_tlbe_write(
 		struct tlbe *tlbe,
 		vaddr_t vaddr,
 		paddr_t paddr,
-		unsigned shift,
-		unsigned way,
 		unsigned protection
 )
 {
 	struct tlbe _tlbe;      /**< Temporary tlbe.  */
-	__k1_tlb_entry_t utlbe; /**< Underlying tlbe. */
 
 	/* Invalid TLB entry. */
 	if (tlbe == NULL)
@@ -55,43 +52,31 @@ PUBLIC int k1b_tlbe_write(
 
 	_tlbe.addr_ext = 0;
 	_tlbe.addrspace = 0;
-	_tlbe.cache_policy = K1B_DTLBE_CACHE_POLICY_WRTHROUGH;
-	_tlbe.frame = paddr >> 12;
+	_tlbe.cache_policy = LINUX64_DTLBE_CACHE_POLICY_WRTHROUGH;
+	_tlbe.frame = paddr >> LINUX64_PAGE_SHIFT;
 	_tlbe.global = 1;
-	_tlbe.page = (vaddr >> 12) | (1 << (shift - 12 - 1));
+	_tlbe.page = vaddr >> LINUX64_PAGE_SHIFT;
 	_tlbe.protection = protection;
-	_tlbe.size = (shift == 12) ? 1 : 0;
-	_tlbe.status = K1B_TLBE_STATUS_AMODIFIED;
+	_tlbe.size = 1;
+	_tlbe.status = LINUX64_TLBE_STATUS_AMODIFIED;
 
-	kmemcpy(&utlbe, &_tlbe, K1B_TLBE_SIZE);
-
-	/* Write to hardware TLB. */
-	if (mOS_mem_write_jtlb(utlbe, way) != 0)
-	{
-		kprintf("[hal] failed to write tlb %x", vaddr);
-		return (-EAGAIN);
-	}
-
-	kmemcpy(tlbe, &_tlbe, K1B_TLBE_SIZE);
+	kmemcpy(tlbe, &_tlbe, LINUX64_TLBE_SIZE);
 
 	return (0);
 }
 
 /**
- * The k1b_tlbe_inval() function invalidates the TLB entry that
+ * The linux64_tlbe_inval() function invalidates the TLB entry that
  * encodes the virtual address @p vaddr.
  *
  * @author Pedro Henrique Penna
  */
-PUBLIC int k1b_tlbe_inval(
+PUBLIC int linux64_tlbe_inval(
 	struct tlbe *tlbe,
-	vaddr_t vaddr,
-	unsigned shift,
-	unsigned way
+	vaddr_t vaddr
 )
 {
 	struct tlbe _tlbe;      /**< Temporary tlbe.  */
-	__k1_tlb_entry_t utlbe; /**< Underlying tlbe. */
 
 	/* Invalid TLB entry. */
 	if (tlbe == NULL)
@@ -102,21 +87,12 @@ PUBLIC int k1b_tlbe_inval(
 	_tlbe.cache_policy = 0;
 	_tlbe.frame = 0;
 	_tlbe.global = 0;
-	_tlbe.page = (vaddr >> 12) | (1 << (shift - 12 - 1));
+	_tlbe.page = vaddr >> LINUX64_PAGE_SHIFT;
 	_tlbe.protection = 0;
-	_tlbe.size = (shift == 12) ? 1 : 0;
-	_tlbe.status = K1B_TLBE_STATUS_INVALID;
+	_tlbe.size = 1;
+	_tlbe.status = LINUX64_TLBE_STATUS_INVALID;
 
-	kmemcpy(&utlbe, &_tlbe, K1B_TLBE_SIZE);
-
-	/* Write to hardware TLB. */
-	if (mOS_mem_write_jtlb(utlbe, way) != 0)
-	{
-		kprintf("[hal] failed to invalidate tlb %x", vaddr);
-		return (-EAGAIN);
-	}
-
-	kmemcpy(tlbe, &_tlbe, K1B_TLBE_SIZE);
+	kmemcpy(tlbe, &_tlbe, LINUX64_TLBE_SIZE);
 
 	return (0);
 }

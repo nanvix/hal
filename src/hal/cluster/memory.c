@@ -75,7 +75,7 @@ PUBLIC const struct tlbe *tlb_lookup_vaddr(int tlb_type, vaddr_t vaddr)
  *============================================================================*/
 
 /**
- * The or1k_tlb_lookup_paddr() function searches the architectural TLB
+ * The tlb_lookup_paddr() function searches the architectural TLB
  * for an entry that matches the physical address @p paddr.
  *
  * @returns Upon successful completion, the matching TLB
@@ -117,7 +117,7 @@ PUBLIC const struct tlbe *tlb_lookup_paddr(int tlb_type, paddr_t paddr)
  *============================================================================*/
 
 /**
- * The or1k_cluster_tlb_write() function writes an entry into the architectural
+ * The tlb_write() function writes an entry into the architectural
  * TLB. If the new entry conflicts to an old one, the old one is
  * overwritten.
  *
@@ -149,11 +149,11 @@ PUBLIC int tlb_write(int tlb_type, vaddr_t vaddr, paddr_t paddr)
 }
 
 /*============================================================================*
- * or1k_cluster_tlb_inval()                                                   *
+ * tlb_inval()                                                   *
  *============================================================================*/
 
 /**
- * The or1k_cluster_tlb_inval() function invalidates the TLB entry that
+ * The tlb_inval() function invalidates the TLB entry that
  * encodes the virtual address @p vaddr.
  *
  * @author Davidson Francis

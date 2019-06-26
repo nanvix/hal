@@ -136,6 +136,8 @@ PUBLIC NORETURN void kmain(int argc, const char *argv[])
 	test_spinlock();
 	test_timer();
 
+	test_tlb();
+
 #endif
 
 	core_poweroff();

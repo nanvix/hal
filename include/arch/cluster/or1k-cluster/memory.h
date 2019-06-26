@@ -26,7 +26,7 @@
 #define CLUSTER_OR1K_CLUSTER_MEMORY_H_
 
 	#ifndef __or1k_cluster__
-		#error "wrong cluter included!"
+		#error "wrong cluster included!"
 	#endif
 
 	/* Cluster Interface Implementation */

@@ -31,7 +31,7 @@
 /**
  * @brief Run destructive tests?
  */
-#define TEST_TLB_DESTRUCTIVE 1
+#define TEST_TLB_DESTRUCTIVE 0
 
 /**
  * @brief Launch verbose tests?
@@ -357,6 +357,19 @@ PRIVATE struct test tlb_fault_tests[] = {
  * Test Driver                                                                *
  *============================================================================*/
 
+PRIVATE void test_unix64_tlb_init()
+{
+	for (int i = 0; tlb_api_tests[i].test_fn != NULL; i++)
+	{
+		tlb_write(TLB_INSTRUCTION, TRUNCATE(VADDR(tlb_api_tests[i].test_fn), KPAGE_SIZE), TRUNCATE(PADDR(tlb_api_tests[i].test_fn), KPAGE_SIZE));
+	}
+
+	for (int i = 0; tlb_fault_tests[i].test_fn != NULL; i++)
+	{
+		tlb_write(TLB_INSTRUCTION, TRUNCATE(VADDR(tlb_fault_tests[i].test_fn), KPAGE_SIZE), TRUNCATE(PADDR(tlb_fault_tests[i].test_fn), KPAGE_SIZE));
+	}
+}
+
 /**
  * The test_tlb() function launches testing units on the
  * TLB Interface of the HAL.
@@ -368,6 +381,10 @@ PUBLIC void test_tlb(void)
 	/* Test not applicable. */
 #if (CORE_HAS_TLB_HW)
 		return;
+#endif
+
+#ifdef __unix64__
+	test_unix64_tlb_init();
 #endif
 
 	for (int i = 0; tlb_api_tests[i].test_fn != NULL; i++)

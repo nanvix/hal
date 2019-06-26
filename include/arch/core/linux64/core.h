@@ -36,22 +36,12 @@
 
 	#include <arch/core/linux64/types.h>
 	#include <nanvix/const.h>
-	#include <pthread.h>
 	#include <nanvix/klib.h>
+	#include <pthread.h>
 
-	/**
-	 * TODO place this in the cluster file after doing it
-	 */
-	#define LINUX64_CORE_NUM_CORES 4
+	#define LINUX64_CLUSTER_NUM_CORES 4
 
-#ifdef __NANVIX_HAL
-
-	/**
-	 * @brief Lookup table for thread IDs.
-	 */
-	EXTERN pthread_t linux64_cores_tab[LINUX64_CORE_NUM_CORES];
-
-#endif /* !__NANVIX_HAL_ */
+	EXTERN pthread_t linux64_cores_tab[LINUX64_CLUSTER_NUM_CORES];
 
 	/**
 	 * @brief Powers off the underlying core.
