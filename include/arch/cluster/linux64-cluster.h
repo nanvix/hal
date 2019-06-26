@@ -43,13 +43,7 @@
 
 	#include <arch/cluster/linux64-cluster/memory.h>
 	#include <arch/cluster/linux64-cluster/timer.h>
-
-	/**
-	 * @brief ID of the master core.
-	 *
-	 * @bug FIXME: move this to cores.h
-	 */
-	#define COREID_MASTER 0
+	#include <arch/cluster/linux64-cluster/cores.h>
 
 	/**
 	 * @name Provided Features
