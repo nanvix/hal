@@ -40,7 +40,7 @@
 	#include <pthread.h>
 
 	#define LINUX64_CLUSTER_NUM_CORES 4
-	
+
 	EXTERN pthread_t linux64_cores_tab[LINUX64_CLUSTER_NUM_CORES];
 
 	/**
