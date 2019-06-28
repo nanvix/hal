@@ -208,6 +208,14 @@
 	 */
 	EXTERN int bostan_node_portal_tag(int nodeid);
 
+	/**
+	 * @todo TODO: Provide a detailed description to this function.
+	 */
+	static inline void bostan_noc_setup(void)
+	{
+		bostan_dma_init();
+	}
+
 /**@}*/
 
 /*============================================================================*
@@ -285,6 +293,14 @@
 	static inline int processor_nodes_convert(int *_nodes, const int *nodes, int nnodes)
 	{
 		return bostan_nodes_convert(_nodes, nodes, nnodes);
+	}
+
+	/**
+	 * @see bostan_noc_setup()
+	 */
+	static inline void processor_noc_setup(void)
+	{
+		bostan_noc_setup();
 	}
 
 /**@endcond*/

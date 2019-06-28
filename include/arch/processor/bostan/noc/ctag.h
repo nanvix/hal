@@ -90,6 +90,11 @@
 	#define BOSTAN_UNUSED_CNOC_TX_TAG  3 /**< C-NoC Transfer Tag unused.               */
 	/**@}*/
 
+	/**
+	 * @todo TODO: Provide a detailed description to this function.
+	 */
+	EXTERN void bostan_cnoc_setup(void);
+
 /*============================================================================*
  * C-Noc Receiver Interface                                                   *
  *============================================================================*/
@@ -116,10 +121,7 @@
 	 *
 	 * @return Zero if allocate correctly and non zero otherwise.
 	 */
-	static inline int bostan_cnoc_rx_alloc(int interface, int tag)
-	{
-		return mppa_noc_cnoc_rx_alloc(interface, tag);
-	}
+	EXTERN int bostan_cnoc_rx_alloc(int interface, int tag);
 
 	/**
 	 * @brief Free C-NoC receiver buffer.
@@ -127,10 +129,7 @@
 	 * @param interface Number of the DMA channel.
 	 * @param tag       Number of receiver buffer.
 	 */
-	static inline void bostan_cnoc_rx_free(int interface, int tag)
-	{
-		mppa_noc_cnoc_rx_free(interface, tag);
-	}
+	EXTERN void bostan_cnoc_rx_free(int interface, int tag);
 
 	/**
 	 * @brief Clear events of C-NoC receiver buffer.
@@ -138,10 +137,7 @@
 	 * @param interface Number of the DMA channel.
 	 * @param tag       Number of receiver buffer.
 	 */
-	static inline void bostan_cnoc_rx_clear(int interface, int tag)
-	{
-		mppa_noc_cnoc_clear_rx_event(interface, tag);
-	}
+	EXTERN void bostan_cnoc_rx_clear(int interface, int tag);
 
 	/**
 	 * @brief Wait events on C-NoC receiver buffer.
@@ -149,12 +145,9 @@
 	 * @param interface Number of the DMA channel.
 	 * @param tag       Number of receiver buffer.
 	 *
-	 * @return Zero if wait sucefully and non zero otherwise.
+	 * @return Zero if wait successfully and non zero otherwise.
 	 */
-	static inline int bostan_cnoc_rx_wait(int interface, int tag)
-	{
-		return mppa_noc_wait_clear_event(interface, MPPA_NOC_INTERRUPT_LINE_CNOC_RX, tag);
-	}
+	EXTERN int bostan_cnoc_rx_wait(int interface, int tag);
 
 	/**
 	 * @brief Configure C-NoC receiver buffer.
@@ -163,10 +156,11 @@
 	 * @param tag       Number of receiver buffer.
 	 * @param mode      C-NoC receiver mode.
 	 * @param mask      Initial value of the buffer.
+	 * @param handler   Interrupt handler (If NULL then uses events).
 	 *
-	 * @return Zero if configure sucefully and non zero otherwise.
+	 * @return Zero if configure successfully and non zero otherwise.
 	 */
-    EXTERN int bostan_cnoc_rx_config(int interface, int tag, int mode, uint64_t mask);
+    EXTERN int bostan_cnoc_rx_config(int interface, int tag, int mode, uint64_t mask, bostan_noc_handler_fn handler);
 
 /*============================================================================*
  * C-Noc Transfer Interface                                                   *
@@ -194,10 +188,7 @@
 
 	 * @return Zero if allocate correctly and non zero otherwise.
 	 */
-	static inline int bostan_cnoc_tx_alloc(int interface, int tag)
-	{
-		return mppa_noc_cnoc_tx_alloc(interface, tag);
-	}
+	EXTERN int bostan_cnoc_tx_alloc(int interface, int tag);
 
 	/**
 	 * @brief Free C-NoC transfer buffer.
@@ -205,10 +196,7 @@
 	 * @param interface Number of the DMA channel.
 	 * @param tag       Number of transfer buffer.
 	 */
-	static inline void bostan_cnoc_tx_free(int interface, int tag)
-	{
-		mppa_noc_cnoc_tx_free(interface, tag);
-	}
+	EXTERN void bostan_cnoc_tx_free(int interface, int tag);
 
 	/**
 	 * @brief Write into C-NoC transfer buffer.
@@ -217,10 +205,7 @@
 	 * @param tag       Number tag.
 	 * @param value     Data to send.
 	 */
-	static inline void bostan_cnoc_tx_write(int interface, int tag, uint64_t value)
-	{
-		mppa_noc_cnoc_tx_push_eot(interface, tag, value);
-	}
+	EXTERN void bostan_cnoc_tx_write(int interface, int tag, uint64_t value);
 
 	/**
 	 * @brief Configure C-NoC transfer buffer.
@@ -231,7 +216,7 @@
 	 * @param target_node Target interface ID.
 	 * @param target_tag  Number of target buffer.
 	 *
-	 * @return Zero if configure sucefully and non zero otherwise.
+	 * @return Zero if configure successfully and non zero otherwise.
 	 */
     EXTERN int bostan_cnoc_tx_config(
 		int interface,

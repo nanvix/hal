@@ -31,9 +31,9 @@
 /**
  * @brief ID of master NoC node.
  */
-#define NODES_AMOUNT 2
+#define NODES_AMOUNT    2
 #define NODENUM_MASTER 16
-#define NODENUM_SLAVE 0
+#define NODENUM_SLAVE   0
 
 /*============================================================================*
  * API Tests                                                                  *
@@ -84,7 +84,7 @@ struct test sync_tests_api[] = {
 	/* Intra-Cluster API Tests */
 	{test_sync_create_unlink, "Create Unlink" },
 	{test_sync_open_close,    "Open Close"    },
-	{NULL,                        NULL            },
+	{NULL,                    NULL            },
 };
 
 /*============================================================================*
@@ -340,7 +340,7 @@ struct test sync_tests_fault[] = {
 	{test_sync_bad_signal,     "Bad Signal"     },
 	{test_sync_invalid_wait,   "Invalid Wait"   },
 	{test_sync_bad_wait,       "Bad Wait"       },
-	{NULL,                         NULL             },
+	{NULL,                     NULL             },
 };
 
 /*============================================================================*

@@ -52,4 +52,5 @@ PUBLIC void hal_init(void)
 	KASSERT(ALIGNED(sizeof(struct exception), DWORD_SIZE));
 
 	interrupt_setup();
+	processor_noc_setup();
 }

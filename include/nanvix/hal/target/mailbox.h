@@ -107,7 +107,7 @@
 #if (TARGET_HAS_MAILBOX)
 	EXTERN int mailbox_create(int nodenum);
 #else
-	EXTERN int mailbox_create(int nodenum)
+	static inline int mailbox_create(int nodenum)
 	{
 		UNUSED(nodenum);
 
@@ -185,9 +185,9 @@
 	 * code is returned instead.
 	 */
 #if (TARGET_HAS_MAILBOX)
-	EXTERN ssize_t mailbox_write(int mbxid, const void * buffer, size_t size);
+	EXTERN int mailbox_write(int mbxid, const void * buffer, size_t size);
 #else
-	static inline ssize_t mailbox_write(int mbxid, const void * buffer, size_t size)
+	static inline int mailbox_write(int mbxid, const void * buffer, size_t size)
 	{
 		UNUSED(mbxid);
 		UNUSED(buffer);
@@ -209,9 +209,9 @@
 	 * is returned instead.
 	 */
 #if (TARGET_HAS_MAILBOX)
-	EXTERN ssize_t mailbox_read(int mbxid, void * buffer, size_t size);
+	EXTERN int mailbox_read(int mbxid, void * buffer, size_t size);
 #else
-	static inline ssize_t mailbox_read(int mbxid, void * buffer, size_t size)
+	static inline int mailbox_read(int mbxid, void * buffer, size_t size)
 	{
 		UNUSED(mbxid);
 		UNUSED(buffer);

@@ -49,9 +49,9 @@
 	 * @param tag       Number of the control receiver buffer.
 	 * @param mask      Initial value of the buffer.
 	 *
-	 * @return Zero if create sucefully and non zero otherwise.
+	 * @return Zero if create successfully and non zero otherwise.
 	 */
-	EXTERN int bostan_dma_control_create(int interface, int tag, uint64_t mask);
+	EXTERN int bostan_dma_control_create(int interface, int tag, uint64_t mask, bostan_noc_handler_fn handler);
 
 	/**
 	 * @brief Re-configure C-NoC control receiver buffer.
@@ -60,9 +60,9 @@
 	 * @param tag       Number of the control receiver buffer.
 	 * @param mask      Initial value of the buffer.
 	 *
-	 * @return Zero if configure sucefully and non zero otherwise.
+	 * @return Zero if configure successfully and non zero otherwise.
 	 */
-	EXTERN int bostan_dma_control_config(int interface, int tag, uint64_t mask);
+	EXTERN int bostan_dma_control_config(int interface, int tag, uint64_t mask, bostan_noc_handler_fn handler);
 
 	/**
 	 * @brief Allocates the control transfer buffer.
@@ -70,7 +70,7 @@
 	 * @param interface Number of the DMA channel.
 	 * @param tag       Number of the control transfer buffer.
 	 *
-	 * @return Zero if open sucefully and non zero otherwise.
+	 * @return Zero if open successfully and non zero otherwise.
 	 */
 	EXTERN int bostan_dma_control_open(int interface, int tag);
 
@@ -80,7 +80,7 @@
 	 * @param interface Number of the DMA channel.
 	 * @param tag       Number of the control transfer buffer.
 	 *
-	 * @return Zero if unlink sucefully and non zero otherwise.
+	 * @return Zero if unlink successfully and non zero otherwise.
 	 */
 	static inline int bostan_dma_control_unlink(int interface, int tag)
 	{
@@ -99,7 +99,7 @@
 	 * @param interface Number of the DMA channel.
 	 * @param tag       Number of the control transfer buffer.
 	 *
-	 * @return Zero if close sucefully and non zero otherwise.
+	 * @return Zero if close successfully and non zero otherwise.
 	 */
 	static inline int bostan_dma_control_close(int interface, int tag)
 	{
@@ -117,7 +117,7 @@
 	 * @param interface Number of the DMA channel.
 	 * @param tag       Number of the control transfer buffer.
 	 *
-	 * @return Zero if wait sucefully and non zero otherwise.
+	 * @return Zero if wait successfully and non zero otherwise.
 	 */
 	static inline int bostan_dma_control_wait(int interface, int tag)
 	{
@@ -131,19 +131,17 @@
 	 * @brief Configure and send a signal on a control transfer buffer.
 	 *
 	 * @param interface    Number of the DMA channel.
-	 * @param source_node  Source Node ID.
-	 * @param source_tag   Number of the control transfer buffer.
+	 * @param tag          Number of the control transfer buffer.
 	 * @param target_nodes Target Node IDs.
 	 * @param ntargets     Amount of targets.
 	 * @param target_tag   Number of the target control receiver buffer.
 	 * @param mask         Signal value.
 	 *
-	 * @return Zero if send sucefully and non zero otherwise.
+	 * @return Zero if send successfully and non zero otherwise.
 	 */
 	EXTERN int bostan_dma_control_signal(
 		int interface,
-		int source_node,
-		int source_tag,
+		int tag,
 		const int *target_nodes,
 		int ntargets,
 		int target_tag,
@@ -160,7 +158,7 @@
 	 * @param interface Number of the DMA channel.
 	 * @param tag       Number of the data receiver buffer.
 	 *
-	 * @return Zero if create sucefully and non zero otherwise.
+	 * @return Zero if create successfully and non zero otherwise.
 	 */
 	static inline int bostan_dma_data_create(int interface, int tag)
 	{
@@ -176,7 +174,7 @@
 	 * @param interface Number of the DMA channel.
 	 * @param tag       Number of the data transfer buffer.
 	 *
-	 * @return Zero if open sucefully and non zero otherwise.
+	 * @return Zero if open successfully and non zero otherwise.
 	 */
 	EXTERN int bostan_dma_data_open(int interface, int tag);
 
@@ -186,9 +184,17 @@
 	 * @param interface Number of the DMA channel.
 	 * @param tag       Number of the data transfer buffer.
 	 *
-	 * @return Zero if unlink sucefully and non zero otherwise.
+	 * @return Zero if unlink successfully and non zero otherwise.
 	 */
-	EXTERN int bostan_dma_data_unlink(int interface, int tag);
+	static int bostan_dma_data_unlink(int interface, int tag)
+	{
+		if (!bostan_dnoc_rx_is_valid(interface, tag))
+			return (-EINVAL);
+
+		bostan_dnoc_rx_free(interface, tag);
+
+		return (0);
+	}
 
 	/**
 	 * @brief Releases the data transfer buffer.
@@ -196,7 +202,7 @@
 	 * @param interface Number of the DMA channel.
 	 * @param tag       Number of the data transfer buffer.
 	 *
-	 * @return Zero if close sucefully and non zero otherwise.
+	 * @return Zero if close successfully and non zero otherwise.
 	 */
 	EXTERN int bostan_dma_data_close(int interface, int tag);
 
@@ -206,28 +212,91 @@
 	 * @param interface Number of the DMA channel.
 	 * @param tag       Number of the data transfer buffer.
 	 *
-	 * @return Zero if wait sucefully and non zero otherwise.
+	 * @return Zero if wait successfully and non zero otherwise.
 	 */
-	EXTERN int bostan_dma_data_wait(int interface, int tag);
+	static int bostan_dma_data_wait_read(int interface, int tag)
+	{
+		if (!bostan_dnoc_rx_is_valid(interface, tag))
+			return (-EINVAL);
+
+		return bostan_dnoc_rx_wait(interface, tag);
+	}
 
 	/**
-	 * @todo Provide a detailed comment for this.
+	 * @brief Wait an event on the data sender buffer.
+	 *
+	 * @param interface Number of the DMA channel.
+	 * @param tag       Number of the data transfer buffer.
+	 *
+	 * @return Zero if wait successfully and non zero otherwise.
 	 */
-	EXTERN int bostan_dma_data_read(
+	static int bostan_dma_data_wait_write(int interface, int tag)
+	{
+		if (!bostan_dnoc_tx_is_valid(interface, tag))
+			return (-EINVAL);
+
+		return bostan_dnoc_uc_wait(interface, tag);
+	}
+
+	/**
+	 * @brief Configure an async read on local buffer.
+	 *
+	 * @param interface Number of the interface.
+	 * @param tag       Number of receiver buffer.
+	 * @param buffer    Local data pointer.
+	 * @param min_size  Minimal value to generate an event (in bytes).
+	 * @param max_size  Size of the receiver buffer (in bytes).
+	 * @param offset    Offset in receiver buffer where data shall be written.
+	 *
+	 * @return Zero if configure successfully and non zero otherwise.
+	 */
+	EXTERN int bostan_dma_data_aread(
 		int interface,
-		int tag
-		/* Note: New parameters will be inserted during portal and mailbox development. */
+		int tag,
+		void *buffer,
+		size_t min_size,
+		size_t max_size,
+		size_t offset
 	);
 
-
 	/**
-	 * @todo Provide a detailed comment for this.
+	 * @brief Configure and async write to the target node.
+	 *
+	 * @param interface   Number of the DMA channel.
+	 * @param tag         Number of the data transfer buffer.
+	 * @param target_node Target Node ID.
+	 * @param target_tag  Target receiver buffer.
+	 * @param buffer      Local data pointer.
+	 * @param size        Amount of bytes to transfer.
+	 *
+	 * @return Zero if configure successfully and non zero otherwise.
 	 */
+	EXTERN int bostan_dma_data_awrite(
+		int interface,
+		int tag,
+		int target_node,
+		int target_tag,
+		const void *buffer,
+		size_t size
+	);
+
 	EXTERN int bostan_dma_data_write(
 		int interface,
-		int tag
-		/* Note: New parameters will be inserted during portal and mailbox development. */
+		int tag,
+		int target_node,
+		int target_tag,
+		const void *buffer,
+		size_t size
 	);
+
+	/**
+	 * @brief TODO: Describe.
+	 */
+	static inline void bostan_dma_init(void)
+	{
+		bostan_cnoc_setup();
+		bostan_dnoc_setup();
+	}
 
 /**@}*/
 

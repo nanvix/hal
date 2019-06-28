@@ -21,9 +21,11 @@
 # SOFTWARE.
 
 # Source Files
-C_SRC = $(wildcard *.c)         \
-        $(wildcard core/*.c)    \
-        $(wildcard cluster/*.c)
+C_SRC = $(wildcard *.c)           \
+        $(wildcard core/*.c)      \
+        $(wildcard cluster/*.c)   \
+        $(wildcard processor/*.c) \
+        $(wildcard target/*.c)
 
 # Stress Tests Flag
 ifeq ($(__ENABLE_STRESS_TESTS),yes)
