@@ -96,8 +96,8 @@
 	 */
 	static inline void k1b_spinlock_unlock(k1b_spinlock_t *lock)
 	{
-		k1b_dcache_inval();
 		__builtin_k1_sdu(lock, K1B_SPINLOCK_UNLOCKED);
+		k1b_dcache_inval();
 	}
 
 #endif /* !_ASM_FILE */
