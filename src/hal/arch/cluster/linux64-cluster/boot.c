@@ -22,10 +22,8 @@
  * SOFTWARE.
  */
 
-#define __NEED_CORE_LINUX64
 
-#include <arch/core/linux64.h>
-#include <math.h>
+#include <arch/cluster/linux64-cluster/cores.h>
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
 #include <stdlib.h>
@@ -34,6 +32,11 @@
 /* Import definitions. */
 EXTERN NORETURN void linux64_cluster_master_setup(void);
 EXTERN NORETURN void linux64_cluster_slave_setup(void);
+
+/**
+ * @brief Lookup table for thread IDs.
+ */
+PUBLIC pthread_t linux64_cores_tab[LINUX64_CLUSTER_NUM_CORES];
 
 /**
  * @brief Entry point.

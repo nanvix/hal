@@ -37,24 +37,11 @@
 	#include <arch/core/linux64/types.h>
 	#include <nanvix/const.h>
 	#include <nanvix/klib.h>
-	#include <pthread.h>
-
-	#define LINUX64_CLUSTER_NUM_CORES 4
-
-	EXTERN pthread_t linux64_cores_tab[LINUX64_CLUSTER_NUM_CORES];
 
 	/**
 	 * @brief Powers off the underlying core.
 	 */
 	EXTERN NORETURN void linux64_core_poweroff(void);
-
-	/**
-	 * @brief Gets the ID of the underlying core.
-	 *
-	 * @returns The ID of the underlying core or -1 if the thread
-	 * calling thread is not attached to the underlying cluster.
-	 */
-	EXTERN int linux64_core_get_id(void);
 
 /**@}*/
 
@@ -109,22 +96,6 @@
 	typedef linux64_word_t  word_t;  /**< Word        */
 	typedef linux64_dword_t dword_t; /**< Double Word */
 	/**@}*/
-
-	/**
-	 * @see linux64_core_get_id().
-	 */
-	static inline int core_get_id(void)
-	{
-		return (linux64_core_get_id());
-	}
-
-	/**
-	 * @see linux64_core_poweroff().
-	 */
-	static inline NORETURN void core_poweroff(void)
-	{
-		linux64_core_poweroff();
-	}
 
 #endif /* _ASM_FILE_ */
 

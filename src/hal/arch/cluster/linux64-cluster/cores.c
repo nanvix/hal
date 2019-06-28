@@ -21,15 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
-#include <nanvix/hal/core/interrupt.h>
-#include <arch/core/linux64/core.h>
-#include <nanvix/const.h>
-
-/**
- * @brief Lookup table for thread IDs.
- */
-PUBLIC pthread_t linux64_cores_tab[LINUX64_CLUSTER_NUM_CORES];
+#include <arch/cluster/linux64-cluster/_linux64-cluster.h>
 
 /*============================================================================*
  * linux64_core_getid()                                                       *
