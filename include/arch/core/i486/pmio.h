@@ -51,6 +51,28 @@
 	}
 
 	/**
+	 * @brief Writes 16 bits to an I/O port.
+	 *
+	 * @param port Number of the target port.
+	 * @param bits Bits to write.
+	 */
+	static inline void i486_output16(uint16_t port, uint16_t bits)
+	{
+		asm volatile ("outw %0, %1" : : "a"(bits), "Nd"(port));
+	}
+
+	/**
+	 * @brief Writes 32 bits to an I/O port.
+	 *
+	 * @param port Number of the target port.
+	 * @param bits Bits to write.
+	 */
+	static inline void i486_output32(uint16_t port, uint32_t bits)
+	{
+		asm volatile ("outl %0, %1" : : "a"(bits), "Nd"(port));
+	}
+
+	/**
 	 * @brief Waits for an operation in an I/O port to complete.
 	 */
 	static inline void i486_iowait(void)
@@ -74,6 +96,42 @@
 			i486_output8(port, str[i]);
 			i486_iowait();
 		}
+	}
+
+	/**
+	 * @brief Read 8 bits from an I/O port.
+	 *
+	 * @param port Number of the target port.
+	 */
+	static inline uint8_t i486_input8(uint16_t port)
+	{
+		uint8_t ret;
+		asm volatile("inb %1, %0" : "=a"(ret) : "Nd"(port));
+		return ret;
+	}
+
+	/**
+	 * @brief Read 16 bits from an I/O port.
+	 *
+	 * @param port Number of the target port.
+	 */
+	static inline uint16_t i486_input16(uint16_t port)
+	{
+		uint16_t ret;
+		asm volatile ("inw %1, %0" : "=a" (ret) : "Nd" (port));
+		return ret;
+	}
+
+	/**
+	 * @brief Read 32 bits from an I/O port.
+	 *
+	 * @param port Number of the target port.
+	 */
+	static inline uint32_t i486_input32(uint16_t port)
+	{
+		uint32_t ret;
+		asm volatile ("inl %1, %0" : "=a" (ret) : "Nd" (port));
+		return ret;
 	}
 
 #endif /* _ASM_FILE_ */
