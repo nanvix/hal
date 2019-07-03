@@ -143,6 +143,8 @@ PUBLIC NORETURN void kmain(int argc, const char *argv[])
 
 	test_trap();
 
+	test_perf();
+
 #endif
 
 	core_poweroff();

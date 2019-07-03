@@ -36,6 +36,7 @@ C_SRC += klib/kstrncmp.c klib/kstrncpy.c
 C_SRC += klib/kpanic.c klib/kprintf.c klib/kvsprintf.c klib/kputs.c
 C_SRC += log.c
 C_SRC += cluster/memory.c
+C_SRC += core/perf.c
 
 # Object Files
 OBJ = $(ASM_SRC:.S=.$(CLUSTER)-$(CORE).o) \
