@@ -44,6 +44,7 @@
 	#include <arch/core/linux64/tlb.h>
 	#include <arch/core/linux64/trap.h>
 	#include <arch/core/linux64/ctx.h>
+	#include <arch/core/linux64/perf.h>
 
 /**
  * @cond linux64
@@ -53,7 +54,7 @@
 	 * @name Core Features
 	 */
 	/**@{*/
-	#define CORE_HAS_PERF         0 /**< Has Performance Monitors?   */
+	#define CORE_HAS_PERF         1 /**< Has Performance Monitors?   */
 	#define CORE_HAS_ATOMICS      1 /**< Has Atomic Instructions?    */
 	#define CORE_HAS_PMIO         0 /**< Has Programmed I/O?         */
 	#define CORE_HAS_TLB_HW       0 /**< Has Hardware-Managed TLB?   */

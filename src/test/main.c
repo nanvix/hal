@@ -145,6 +145,7 @@ PUBLIC NORETURN void kmain(int argc, const char *argv[])
 
 	test_exception();
 	test_interrupt();
+	test_perf();
 
 #endif
 
