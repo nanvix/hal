@@ -42,6 +42,7 @@
 	#include <arch/core/linux64/spinlock.h>
 	#include <arch/core/linux64/mmu.h>
 	#include <arch/core/linux64/tlb.h>
+	#include <arch/core/linux64/trap.h>
 
 /**
  * @cond linux64
