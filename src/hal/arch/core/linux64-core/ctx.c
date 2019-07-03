@@ -22,51 +22,18 @@
  * SOFTWARE.
  */
 
+#define __NEED_CORE_CONTEXT
 
-#include <arch/cluster/linux64-cluster/cores.h>
+#include <arch/core/linux64/ctx.h>
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
-#include <stdlib.h>
-#include <stdio.h>
-
-/* Import definitions. */
-EXTERN NORETURN void linux64_cluster_master_setup(void);
-EXTERN NORETURN void linux64_cluster_slave_setup(void);
 
 /**
- * @brief Lookup table for thread IDs.
- */
-PUBLIC pthread_t linux64_cores_tab[LINUX64_CLUSTER_NUM_CORES];
-
-/**
- * @brief Entry point.
+ * @todo TODO provide a detailed description for this function.
  *
- * @param argc Number of arguments.
- * @param argv Arguments list.
+ * @uthor Daniel Coscia
  */
-int main(int argc, char **argv)
+PUBLIC void linux64_ctx_dump(const struct context *ctx)
 {
-	UNUSED(argc);
-	UNUSED(argv);
-
-	linux64_core_dcache_setup();
-	linux64_core_icache_setup();
-	perf_setup();
-
-	/**
-	 * Initialize the lookup table for Threads IDs.
-	 */
-	linux64_cores_tab[0] = pthread_self();
-
-	linux64_cluster_master_setup();
-
-	/*
-	 * TODO: grab some memory.
-	 */
-
-	/*
-	 * TODO: spawn slave threads.
-	 */
-
-	return (0);
+	kprintf("[linux64] id = %l", context_get_id(ctx));
 }

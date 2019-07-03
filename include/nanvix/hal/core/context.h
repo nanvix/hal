@@ -45,18 +45,29 @@
 	#endif
 
 	/* Functions */
-	#ifndef __context_get_sp_fn
-	#error "context_get_sp() not defined?"
+	#ifndef __unix64__
+
+		#ifndef __context_get_sp_fn
+		#error "context_get_sp() not defined?"
+		#endif
+		#ifndef __context_get_pc_fn
+		#error "context_get_pc() not defined?"
+		#endif
+		#ifndef __context_set_sp_fn
+		#error "context_set_sp() not defined?"
+		#endif
+		#ifndef __context_set_pc_fn
+		#error "context_set_pc() not defined?"
+		#endif
+
+	#else
+
+		#ifndef __context_get_id_fn
+		#error "context_get_id() not defined?"
+		#endif
+		
 	#endif
-	#ifndef __context_get_pc_fn
-	#error "context_get_pc() not defined?"
-	#endif
-	#ifndef __context_set_sp_fn
-	#error "context_set_sp() not defined?"
-	#endif
-	#ifndef __context_set_pc_fn
-	#error "context_set_pc() not defined?"
-	#endif
+
 
 #endif
 
@@ -79,6 +90,7 @@
 	 */
 	struct context;
 
+#ifndef __unix64__
 	/**
 	 * @brief Gets the value of the stack pointer register.
 	 *
@@ -114,6 +126,17 @@
 	 * @param val Value to store.
 	 */
 	EXTERN void context_set_pc(struct context *ctx, word_t val);
+
+#else
+
+	/**
+	 * @brief Get the value of the core.
+	 *
+	 * @param ctx Target context.
+	 */
+	EXTERN dword_t context_get_id(const struct context *ctx);
+
+#endif /* __unix64__ */
 
 /**@}*/
 

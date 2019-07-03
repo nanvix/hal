@@ -32,6 +32,8 @@
  */
 #define TEST_TRAP_VERBOSE 0
 
+#ifndef __unix64__
+
 /**
  * @brief Magic Numbers.
  */
@@ -240,3 +242,20 @@ PUBLIC void test_trap(void)
 	}
 }
 
+#else
+
+/**
+ * The trap_test() functions launches testing units on the trap interface of the HAL.
+ * 
+ * TODO : Add tests for syscall1, 2, 4 and 5
+ */
+PUBLIC void test_trap(void)
+{
+	KASSERT(syscall0(SYS_gettid) > 0);
+	kprintf("[test][api][trap] syscall0 [passed]");
+
+	KASSERT(syscall3(SYS_write, 1, (dword_t)"", 1) == 1);
+	kprintf("[test][api][trap] syscall3 [passed]");
+}
+
+#endif
