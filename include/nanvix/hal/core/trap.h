@@ -68,6 +68,12 @@
  */
 /**@{*/
 
+#ifdef __unix64__
+	#define TYPE dword_t
+#else
+	#define TYPE word_t
+#endif
+
 	/**
 	 * @brief Issues a system call with no arguments.
 	 *
@@ -75,7 +81,7 @@
 	 *
 	 * @returns The system call return value.
 	 */
-	EXTERN word_t syscall0(word_t syscall_nr);
+	EXTERN TYPE syscall0(TYPE syscall_nr);
 
 	/**
 	 * @brief Issues a system call with one argument.
@@ -85,9 +91,9 @@
 	 *
 	 * @returns The system call return value.
 	 */
-	EXTERN word_t syscall1(
-		word_t syscall_nr,
-		word_t arg0);
+	EXTERN TYPE syscall1(
+		TYPE syscall_nr,
+		TYPE arg0);
 
 	/**
 	 * @brief Issues a system call with two arguments.
@@ -98,10 +104,10 @@
 	 *
 	 * @returns The system call return value.
 	 */
-	EXTERN word_t syscall2(
-		word_t syscall_nr,
-		word_t arg0,
-		word_t arg1);
+	EXTERN TYPE syscall2(
+		TYPE syscall_nr,
+		TYPE arg0,
+		TYPE arg1);
 
 	/**
 	 * @brief Issues a system call with three arguments.
@@ -113,11 +119,11 @@
 	 *
 	 * @returns The system call return value.
 	 */
-	EXTERN word_t syscall3(
-		word_t syscall_nr,
-		word_t arg0,
-		word_t arg1,
-		word_t arg2);
+	EXTERN TYPE syscall3(
+		TYPE syscall_nr,
+		TYPE arg0,
+		TYPE arg1,
+		TYPE arg2);
 
 	/**
 	 * @brief Issues a system call with four arguments.
@@ -130,12 +136,12 @@
 	 *
 	 * @returns The system call return value.
 	 */
-	EXTERN word_t syscall4(
-		word_t syscall_nr,
-		word_t arg0,
-		word_t arg1,
-		word_t arg2,
-		word_t arg3);
+	EXTERN TYPE syscall4(
+		TYPE syscall_nr,
+		TYPE arg0,
+		TYPE arg1,
+		TYPE arg2,
+		TYPE arg3);
 
 	/**
 	 * @brief Issues a system call with five arguments.
@@ -149,13 +155,13 @@
 	 *
 	 * @returns The system call return value.
 	 */
-	EXTERN word_t syscall5(
-		word_t syscall_nr,
-		word_t arg0,
-		word_t arg1,
-		word_t arg2,
-		word_t arg3,
-		word_t arg4);
+	EXTERN TYPE syscall5(
+		TYPE syscall_nr,
+		TYPE arg0,
+		TYPE arg1,
+		TYPE arg2,
+		TYPE arg3,
+		TYPE arg4);
 
 	/**
 	 * @brief Handles a system call.
