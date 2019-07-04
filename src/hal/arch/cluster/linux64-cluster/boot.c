@@ -52,6 +52,7 @@ int main(int argc, char **argv)
 	linux64_core_dcache_setup();
 	linux64_core_icache_setup();
 	perf_setup();
+	linux64_excp_setup();
 
 	/**
 	 * Initialize the lookup table for Threads IDs.

@@ -73,12 +73,14 @@
 	#endif
 
 	/* Functions */
+#ifndef __unix64__
 	#ifndef __exception_get_addr_fn
 	#error "exception_get_addr() not defined?"
 	#endif
-	#ifndef __exception_get_instr_fn
+		#ifndef __exception_get_instr_fn
 	#error "exception_get_instr() not defined?"
 	#endif
+#endif
 	#ifndef __exception_get_num_fn
 	#error "exception_get_num() not defined?"
 	#endif
@@ -191,6 +193,18 @@
 		const struct exception *excp,
 		const struct context *ctx
 	);
+
+	/**
+	 * @brief High-level exception dispatcher.
+	 *
+	 * @param excp Exception information.
+	 * @param ctx  Interrupted context.
+	 *
+	 * @note This function is called from assembly code.
+	 *
+	 * @author Pedro Henrique Penna
+	 */
+	EXTERN void do_exception(const struct exception *excp, const struct context *ctx);
 
 /**@}*/
 

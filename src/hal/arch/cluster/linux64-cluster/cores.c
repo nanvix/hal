@@ -65,3 +65,10 @@ PUBLIC NORETURN void linux64_core_poweroff(void)
 
 	UNREACHABLE();
 }
+
+PUBLIC struct context linux64_create_context(void)
+{
+	struct context ctx;
+	ctx.id = linux64_core_get_id();
+	return ctx;
+}

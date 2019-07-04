@@ -144,6 +144,12 @@ PUBLIC NORETURN void kmain(int argc, const char *argv[])
 	test_trap();
 
 	test_perf();
+	
+	test_exception();
+
+	int i = 0;
+	int j = 3 / i;
+	UNUSED(j);
 
 #endif
 
