@@ -34,11 +34,49 @@
 /**@{*/
 
 	#include <nanvix/klib.h>
+	#include <signal.h>
 
 	/**
 	 * @brief Number of interrupts.
 	 */
-	#define LINUX64_INT_NUM 0
+	#define LINUX64_INT_NUM 2
+	#define LINUX64_INT_MAX_NUM SIGALRM + 1
+	#define LINUX64_INT_IPI 265 /* Dummy IPI */
+
+	/**
+	 * @brief Enable all the interrupts.
+	 */
+	EXTERN void linux64_interrupts_disable(void);
+
+	/**
+	 * @brief Disable all the interrupts.
+	 */
+	EXTERN void linux64_interrupts_enable(void);
+
+	/**
+	 * @brief Unmask a interrupt.
+	 * 
+	 * @param The number of the interrupt to mask.
+	 * 
+	 * @return 0 if succesful, negative value otherwise.
+	 */
+	EXTERN int linux64_interrupt_mask(int intnum);
+
+	/**
+	 * @brief Unmask a interrupt.
+	 * 
+	 * @param The number of the interrupt to unmask.
+	 * 
+	 * @return 0 if succesful, negative value otherwise.
+	 */
+	EXTERN int linux64_interrupt_unmask(int intnum);
+
+	/**
+ 	* @brief Give the next interrupt called while blocked.
+ 	* 
+ 	* @return The number of the next interrupt OR a negative value if there is none.
+ 	*/
+	EXTERN int linux64_interrupt_next(void);
 
 /**@}*/
 
@@ -54,7 +92,15 @@
 	 * @name Exported Constants
 	 */
 	/**@{*/
-	#define INTERRUPTS_NUM  LINUX64_INT_NUM /**< @ref LINUX64_INT_NUM   */
+	#define INTERRUPTS_NUM  LINUX64_INT_MAX_NUM /**< @ref LINUX64_INT_NUM   */
+	#define INTERRUPT_IPI	LINUX64_INT_IPI /**< @ref LINUX64_INT_IPI   */
+	/**@}*/
+
+	/**
+	 * @name Exported Variables
+	 */
+	/**@{*/
+	#define __interrupt_handlers_var /**< @ref interrupt_handlers */
 	/**@}*/
 
 	/**
@@ -74,48 +120,47 @@
 	 */
 	static inline void interrupts_disable(void)
 	{
-		// TODO: implement.
+		linux64_interrupts_disable();
 	}
 
 	/**
-	 * @see linux64_core_pic_mask()
+	 * @see linux64_interrupts_enable().
+	 */
+	static inline void interrupts_enable(void)
+	{
+		linux64_interrupts_enable();
+	}
+
+	/**
+	 * @see linux64_interrupt_mask().
 	 */
 	static inline int interrupt_mask(int intnum)
 	{
-		// TODO: implement.
-		UNUSED(intnum);
-
-		return (0);
+		return (linux64_interrupt_mask(intnum));
 	}
 
 	/**
-	 * @see linux64_core_pic_unmask()
+	 * @see linux64_interrupt_unmask().
 	 */
 	static inline int interrupt_unmask(int intnum)
 	{
-		// TODO: implement.
-		UNUSED(intnum);
-
-		return (0);
+		return (linux64_interrupt_unmask(intnum));
 	}
 
 	/**
-	 * @see linux64_core_pic_ack()
+	 * @brief Dummy function, No Interrupt controller in linux64
 	 */
 	static inline void interrupt_ack(int intnum)
 	{
-		// TODO: implement.
 		UNUSED(intnum);
 	}
 
 	/**
-	 * @see linux64_core_pic_next().
+	 * @see linux64_interrupt_next().
 	 */
 	static inline int interrupt_next(void)
 	{
-		// TODO: implement.
-
-		return (0);
+		return (linux64_interrupt_next());
 	}
 
 /**@endcond*/

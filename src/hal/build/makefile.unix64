@@ -38,6 +38,7 @@ C_SRC += log.c
 C_SRC += cluster/memory.c
 C_SRC += core/perf.c
 C_SRC += core/exception.c
+C_SRC += core/interrupt.c
 
 # Object Files
 OBJ = $(ASM_SRC:.S=.$(CLUSTER)-$(CORE).o) \
