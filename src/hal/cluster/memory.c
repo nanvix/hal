@@ -55,16 +55,13 @@ PUBLIC const struct tlbe *tlb_lookup_vaddr(int tlb_type, vaddr_t vaddr)
 	addr   = vaddr & TLB_VADDR_MASK;
 	utlb   = tlb_get_utlb(tlb_type);
 
-	for (int i = 0; i < LOOKUP_TLB_LENGTH; i++)
-	{
-		tlbe = &utlb[i];
+	tlbe = &utlb[tlbe_get_index(addr)];
 
-		/* Found */
-		if (tlbe_vaddr_get(tlbe) == addr)
-		{
-			if (tlbe_is_valid(tlbe))
-				return (tlbe);
-		}
+	/* Found. */
+	if (tlbe_vaddr_get(tlbe) == addr)
+	{
+		if (tlbe_is_valid(tlbe))
+			return (tlbe);
 	}
 
 	return (NULL);
