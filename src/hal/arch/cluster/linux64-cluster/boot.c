@@ -22,7 +22,6 @@
  * SOFTWARE.
  */
 
-
 #include <arch/cluster/linux64-cluster/cores.h>
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
@@ -52,6 +51,7 @@ int main(int argc, char **argv)
 	linux64_core_dcache_setup();
 	linux64_core_icache_setup();
 	linux64_excp_setup();
+	linux64_interrupts_enable();
 
 	/**
 	 * Initialize the lookup table for Threads IDs.
