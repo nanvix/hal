@@ -32,6 +32,7 @@ C_SRC += core/mmu.c
 C_SRC += core/spinlock.c
 C_SRC += cluster/timer.c
 C_SRC += core/tlb.c
+C_SRC += core/syscalls.c
 
 # Object Files
 OBJ = $(C_SRC:.c=.$(CLUSTER)-$(CORE).o) \
