@@ -86,6 +86,39 @@
 		((void) bits);
 	}
 #endif
+
+	/**
+	 * @brief Writes 16 bits to an I/O port.
+	 *
+	 * @param port Number of the target port.
+	 * @param bits Bits to write.
+	 */
+#if (CORE_HAS_PMIO)
+	EXTERN void output16(uint16_t port, uint16_t bits);
+#else
+	static inline void output16(uint16_t port, uint16_t bits)
+	{
+		((void) port);
+		((void) bits);
+	}
+#endif
+
+	/**
+	 * @brief Writes 32 bits to an I/O port.
+	 *
+	 * @param port Number of the target port.
+	 * @param bits Bits to write.
+	 */
+#if (CORE_HAS_PMIO)
+	EXTERN void output32(uint16_t port, uint32_t bits);
+#else
+	static inline void output32(uint16_t port, uint32_t bits)
+	{
+		((void) port);
+		((void) bits);
+	}
+#endif
+
 	/**
 	 * @brief Writes a 8-bit string to an I/O port.
 	 *
@@ -113,6 +146,48 @@
 	EXTERN void iowait(uint16_t port);
 #else
 	static inline void iowait(uint16_t port)
+	{
+		((void) port);
+	}
+#endif
+
+	/**
+	 * @brief Read 8 bits from an I/O port.
+	 *
+	 * @param port Number of the target port.
+	 */
+#if (CORE_HAS_PMIO)
+	EXTERN uint8_t input8(uint16_t port);
+#else
+	static inline uint8_t input8(uint16_t port)
+	{
+		((void) port);
+	}
+#endif
+
+	/**
+	 * @brief Read 16 bits from an I/O port.
+	 *
+	 * @param port Number of the target port.
+	 */
+#if (CORE_HAS_PMIO)
+	EXTERN uint16_t input16(uint16_t port);
+#else
+	static inline uint16_t input16(uint16_t port)
+	{
+		((void) port);
+	}
+#endif
+
+	/**
+	 * @brief Read 32 bits from an I/O port.
+	 *
+	 * @param port Number of the target port.
+	 */
+#if (CORE_HAS_PMIO)
+	EXTERN uint32_t input32(uint16_t port);
+#else
+	static inline uint32_t input32(uint16_t port)
 	{
 		((void) port);
 	}

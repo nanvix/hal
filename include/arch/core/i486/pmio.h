@@ -166,6 +166,22 @@
 	}
 
 	/**
+	 * @see i486_output16().
+	 */
+	static inline void output16(uint16_t port, uint16_t bits)
+	{
+		i486_output16(port, bits);
+	}
+
+	/**
+	 * @see i486_output32().
+	 */
+	static inline void output32(uint16_t port, uint32_t bits)
+	{
+		i486_output32(port, bits);
+	}
+
+	/**
 	 * @see i486_output8s().
 	 */
 	static inline void output8s(uint16_t port, const uint8_t *str, size_t len)
@@ -181,6 +197,30 @@
 		((void) port);
 
 		i486_iowait();
+	}
+
+	/**
+	 * @see i486_input8().
+	 */
+	static inline uint8_t input8(uint16_t port)
+	{
+		return i486_input8(port);
+	}
+
+	/**
+	 * @see i486_input16().
+	 */
+	static inline uint16_t input16(uint16_t port)
+	{
+		return i486_input16(port);
+	}
+
+	/**
+	 * @see i486_input32().
+	 */
+	static inline uint32_t input32(uint16_t port)
+	{
+		return i486_input32(port);
 	}
 
 #endif /* _ASM_FILE_ */
