@@ -27,8 +27,15 @@
 #include <errno.h>
 
 /**
- * @todo TODO provide a detailed description for this function.
+ * @brief For a given page table, addresses and permissions, maps a virtual
+ * address into a physical address by the specified page table with the
+ * permissions required.
  *
+ * @param pgtab Page table to be used.
+ * @param paddr Physical address target.
+ * @param vaddr Virtual address to be mapped.
+ * @param w Write permission.
+ * 
  * @author Daniel Coscia
  */
 PUBLIC int linux64_page_map(struct pte *pgtab, paddr_t paddr, vaddr_t vaddr, int w)
@@ -44,7 +51,12 @@ PUBLIC int linux64_page_map(struct pte *pgtab, paddr_t paddr, vaddr_t vaddr, int
 }
 
 /**
- * @todo TODO provide a detailed description for this function.
+ * @brief For a given page directory, virtual and physical addresses, maps a
+ * specified page table into a page directory entry.
+ *
+ * @param pgdir Page table to be used.
+ * @param paddr Physical address target.
+ * @param vaddr Virtual address to be mapped.
  *
  * @author Daniel Coscia
  */

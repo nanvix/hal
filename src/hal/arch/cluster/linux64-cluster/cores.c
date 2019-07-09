@@ -23,12 +23,8 @@
  */
 #include <arch/cluster/linux64-cluster/_linux64-cluster.h>
 
-/*============================================================================*
- * linux64_core_getid()                                                       *
- *============================================================================*/
-
 /**
- * The linux64_core_get_id() returns the ID of the underlying core.
+ * @brief Returns the ID of the underlying core.
  */
 PUBLIC int linux64_core_get_id(void)
 {
@@ -43,12 +39,9 @@ PUBLIC int linux64_core_get_id(void)
 	return (-1);
 }
 
-/*============================================================================*
- * linux64_core_poweroff()                                                    *
- *============================================================================*/
-
 /**
- * @todo TODO: provide a detailed description for this function.
+ * @brief Shutdown the core that execute this function
+ * and remove his pid from the core_tab.
  */
 PUBLIC NORETURN void linux64_core_poweroff(void)
 {
@@ -68,6 +61,8 @@ PUBLIC NORETURN void linux64_core_poweroff(void)
 
 /**
  * @brief Create an context struct.
+ * 
+ * @return Created context struct.
  */
 PUBLIC struct context linux64_create_context(void)
 {

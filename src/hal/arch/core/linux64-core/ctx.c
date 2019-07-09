@@ -29,8 +29,10 @@
 #include <nanvix/klib.h>
 
 /**
- * @todo TODO provide a detailed description for this function.
+ * @brief Dump the information contained in a saved context.
  *
+ * @param ctx Target saved context
+ * 
  * @uthor Daniel Coscia
  */
 PUBLIC void linux64_ctx_dump(const struct context *ctx)
