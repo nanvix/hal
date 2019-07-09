@@ -64,8 +64,13 @@ PRIVATE void dummy_handler(int num)
  */
 PRIVATE void test_interrupt_register_unregister(void)
 {
+#ifndef __unix64__
 	KASSERT(interrupt_register(INTERRUPT_TIMER, dummy_handler) == 0);
 	KASSERT(interrupt_unregister(INTERRUPT_TIMER) == 0);
+#else
+	KASSERT(interrupt_unregister(INTERRUPT_TIMER) == 0);
+	KASSERT(interrupt_register(INTERRUPT_TIMER, dummy_handler) == 0);
+#endif
 }
 
 /*----------------------------------------------------------------------------*
@@ -79,6 +84,7 @@ PRIVATE void test_interrupt_register_unregister(void)
  */
 PRIVATE void test_interrupt_enable_disable(void)
 {
+#ifndef __unix64__
 	const int ntrials = 1000000;
 
 	ncalls = 0;
@@ -107,6 +113,7 @@ PRIVATE void test_interrupt_enable_disable(void)
 		noop();
 		KASSERT(ncalls == 0);
 	}
+#endif
 }
 
 /*----------------------------------------------------------------------------*
@@ -167,6 +174,9 @@ PRIVATE void test_interrupt_unregister_handler_inval(void)
  */
 PRIVATE void test_interrupt_register_handler_bad(void)
 {
+#ifdef __unix64__
+	KASSERT(interrupt_unregister(INTERRUPT_TIMER) == 0);
+#endif
 	KASSERT(interrupt_register(INTERRUPT_TIMER, dummy_handler) == 0);
 	KASSERT(interrupt_register(INTERRUPT_TIMER, dummy_handler) == -EBUSY);
 	KASSERT(interrupt_unregister(INTERRUPT_TIMER) == 0);

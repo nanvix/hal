@@ -34,6 +34,7 @@ C_SRC += cluster/timer.c
 C_SRC += core/tlb.c
 C_SRC += core/syscalls.c
 C_SRC += core/exception.c
+C_SRC += core/interrupt.c
 
 # Object Files
 OBJ = $(C_SRC:.c=.$(CLUSTER)-$(CORE).o) \
