@@ -22,49 +22,64 @@
  * SOFTWARE.
  */
 
-#ifndef CORE_LINUX64_H_
-#define CORE_LINUX64_H_
+#ifndef ARCH_CORE_LINUX64_UPCALL_H_
+#define ARCH_CORE_LINUX64_UPCALL_H_
+
+/**
+ * @addtogroup linux64-core-upcall Upcall
+ * @ingroup linux64-core
+ *
+ * @brief Upcall Interface
+ */
+/**@{*/
 
 	/**
-	 * @addtogroup linux64-core Linux64 Core
-	 * @ingroup cores
+	 * @brief System call number for upcall_ret().
 	 */
+	#define LINUX64_NR_upcall_ret 0
 
-	#ifndef __NEED_CORE_LINUX64
-		#error "linux64 core not required"
-	#endif
+	/**
+	 * @brief Returns from an upcall.
+	 */
+	static inline void linux64_upcall_ret(void)
+    {
+    }
 
+/**@}*/
 
-	#include <arch/core/linux64/core.h>
-	#include <arch/core/linux64/cache.h>
-	#include <arch/core/linux64/excp.h>
-	#include <arch/core/linux64/int.h>
-	#include <arch/core/linux64/spinlock.h>
-	#include <arch/core/linux64/mmu.h>
-	#include <arch/core/linux64/tlb.h>
-	#include <arch/core/linux64/trap.h>
-	#include <arch/core/linux64/ctx.h>
-	#include <arch/core/linux64/perf.h>
-	#include <arch/core/linux64/upcall.h>
+/*============================================================================*
+ * Exported Interface                                                         *
+ *============================================================================*/
 
 /**
  * @cond linux64
  */
 
 	/**
-	 * @name Core Features
+	 * @name Exported Constants
 	 */
 	/**@{*/
-	#define CORE_HAS_PERF         1 /**< Has Performance Monitors?   */
-	#define CORE_HAS_ATOMICS      1 /**< Has Atomic Instructions?    */
-	#define CORE_HAS_PMIO         0 /**< Has Programmed I/O?         */
-	#define CORE_HAS_TLB_HW       0 /**< Has Hardware-Managed TLB?   */
-	#define CORE_HAS_CACHE_HW     1 /**< Has Hardware-Managed Cache? */
-	#define CORE_HAS_HUGE_PAGES   0 /**< Are Huge Pages Supported?   */
-	#define CORE_IS_LITTLE_ENDIAN 0 /**< Is Little Endian?           */
+	#define NR_upcall_ret LINUX64_NR_upcall_ret /**< @see NR_upcall_ret */
 	/**@}*/
+
+	/**
+	 * @name Exported Functions
+	 */
+	/**@{*/
+	#define __upcall_ret_fn /**< upcall_ret() */
+	/**@}*/
+
+	/**
+	 * @brief Alias for linux64_upcall_ret()
+	 *
+	 * @see linux64_upcall_ret().
+	 *
+	 * @note This should be an alias, otherwise the compiler may mess
+	 * up with the stack that we have crafted carefully.
+	 */
+	#define upcall_ret linux64_upcall_ret
 
 /**@endcond*/
 
-#endif /* CORE_LINUX64_H_ */
+#endif /* ARCH_CORE_LINUX64_UPCALL_H_ */
 
