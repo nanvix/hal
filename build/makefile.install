@@ -53,7 +53,7 @@ install-headers: copy-artifacts
 	@echo "==============================================================================="
 
 # Uninstall
-uninstall: | distclean unstall-headers
+uninstall: | distclean uninstall-headers
 	@rm -f $(PREFIX)/lib/libhal*.a
 	@echo [RM] $(PREFIX)/lib/libhal*.a
 	@echo "==============================================================================="
