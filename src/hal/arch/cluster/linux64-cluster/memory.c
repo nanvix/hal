@@ -61,7 +61,7 @@ PUBLIC struct tlbe *root_tlb = &linux64_root_tlb[0][0];
 /**
  * @ brief counter for the flush function
  */
-PRIVATE unsigned linux64_cluster_tlb_flush_count = 0;
+PRIVATE unsigned linux64_cluster_tlb_flush_count[LINUX64_CLUSTER_NUM_CORES];
 
 /**
  * @brief Gets the underlying TLB entries.
@@ -77,11 +77,12 @@ PUBLIC struct tlbe *linux64_cluster_tlb_get_utlb()
 }
 
 /**
- * @brief
+ * @brief Flushes the TLB.
  */
 PUBLIC int linux64_cluster_tlb_flush(void)
 {
-	linux64_cluster_tlb_flush_count++;
+	linux64_cluster_tlb_flush_count[linux64_core_get_id()]++;
+
 	return (0);
 }
 
@@ -105,4 +106,12 @@ PUBLIC void linux64_cluster_tlbe_dump(int idx)
 		linux64_tlbe_paddr_get(tlbe),
 		linux64_tlbe_vaddr_get(tlbe)
 	);
+}
+
+/**
+ * @brief Initializes the TLB.
+ */
+PUBLIC void linx64_cluster_tlb_setup(void)
+{
+	linux64_cluster_tlb_flush_count[linux64_core_get_id()] = 0;
 }
