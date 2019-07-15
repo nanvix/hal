@@ -74,6 +74,7 @@ PRIVATE void test_processor_al(void)
 {
 #ifdef __mppa256__
 	test_cnoc();
+	test_dnoc();
 #endif
 }
 

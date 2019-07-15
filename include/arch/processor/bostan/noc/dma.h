@@ -34,8 +34,11 @@
 /* Processor Interface Implementation */
 #include <arch/processor/bostan/_bostan.h>
 
+/* NoC Interface Implementation */
 #include <arch/processor/bostan/noc/ctag.h>
 #include <arch/processor/bostan/noc/dtag.h>
+
+/* Error Identification */
 #include <errno.h>
 
 /*============================================================================*
@@ -51,7 +54,12 @@
 	 *
 	 * @return Zero if create successfully and non zero otherwise.
 	 */
-	EXTERN int bostan_dma_control_create(int interface, int tag, uint64_t mask, bostan_noc_handler_fn handler);
+	EXTERN int bostan_dma_control_create(
+		int interface,
+		int tag,
+		uint64_t mask,
+		bostan_noc_handler_fn handler
+	);
 
 	/**
 	 * @brief Re-configure C-NoC control receiver buffer.
@@ -62,7 +70,21 @@
 	 *
 	 * @return Zero if configure successfully and non zero otherwise.
 	 */
-	EXTERN int bostan_dma_control_config(int interface, int tag, uint64_t mask, bostan_noc_handler_fn handler);
+	static inline int bostan_dma_control_config(
+		int interface,
+		int tag,
+		uint64_t mask,
+		bostan_noc_handler_fn handler
+	)
+	{
+		return bostan_cnoc_rx_config(
+			interface,
+			tag,
+			BOSTAN_CNOC_BARRIER_MODE,
+			mask,
+			handler
+		);
+	}
 
 	/**
 	 * @brief Allocates the control transfer buffer.
@@ -72,7 +94,10 @@
 	 *
 	 * @return Zero if open successfully and non zero otherwise.
 	 */
-	EXTERN int bostan_dma_control_open(int interface, int tag);
+	static inline int bostan_dma_control_open(int interface, int tag)
+	{
+		return bostan_cnoc_tx_alloc(interface, tag);
+	}
 
 	/**
 	 * @brief Releases and cleans the control receiver buffer.
@@ -84,13 +109,9 @@
 	 */
 	static inline int bostan_dma_control_unlink(int interface, int tag)
 	{
-		if (!bostan_cnoc_rx_is_valid(interface, tag))
-			return (-EINVAL);
-
 		bostan_cnoc_rx_clear(interface, tag);
-		bostan_cnoc_rx_free(interface, tag);
 
-		return (0);
+		return bostan_cnoc_rx_free(interface, tag);
 	}
 
 	/**
@@ -103,12 +124,7 @@
 	 */
 	static inline int bostan_dma_control_close(int interface, int tag)
 	{
-		if (!bostan_cnoc_tx_is_valid(interface, tag))
-			return (-EINVAL);
-
-		bostan_cnoc_tx_free(interface, tag);
-
-		return (0);
+		return bostan_cnoc_tx_free(interface, tag);
 	}
 
 	/**
@@ -121,9 +137,6 @@
 	 */
 	static inline int bostan_dma_control_wait(int interface, int tag)
 	{
-		if (!bostan_cnoc_rx_is_valid(interface, tag))
-			return (-EINVAL);
-
 		return bostan_cnoc_rx_wait(interface, tag);
 	}
 
@@ -162,9 +175,6 @@
 	 */
 	static inline int bostan_dma_data_create(int interface, int tag)
 	{
-		if (!bostan_dnoc_rx_is_valid(interface, tag))
-			return (-EINVAL);
-
 		return bostan_dnoc_rx_alloc(interface, tag);
 	}
 
@@ -176,7 +186,10 @@
 	 *
 	 * @return Zero if open successfully and non zero otherwise.
 	 */
-	EXTERN int bostan_dma_data_open(int interface, int tag);
+	static inline int bostan_dma_data_open(int interface, int tag)
+	{
+		return bostan_dnoc_uc_alloc(interface, tag, tag);
+	}
 
 	/**
 	 * @brief Releases and cleans the data receiver buffer.
@@ -186,14 +199,9 @@
 	 *
 	 * @return Zero if unlink successfully and non zero otherwise.
 	 */
-	static int bostan_dma_data_unlink(int interface, int tag)
+	static inline int bostan_dma_data_unlink(int interface, int tag)
 	{
-		if (!bostan_dnoc_rx_is_valid(interface, tag))
-			return (-EINVAL);
-
-		bostan_dnoc_rx_free(interface, tag);
-
-		return (0);
+		return bostan_dnoc_rx_free(interface, tag);
 	}
 
 	/**
@@ -204,7 +212,10 @@
 	 *
 	 * @return Zero if close successfully and non zero otherwise.
 	 */
-	EXTERN int bostan_dma_data_close(int interface, int tag);
+	static inline int bostan_dma_data_close(int interface, int tag)
+	{
+		return bostan_dnoc_uc_free(interface, tag, tag);
+	}
 
 	/**
 	 * @brief Wait an event on the data receiver buffer.
@@ -214,11 +225,8 @@
 	 *
 	 * @return Zero if wait successfully and non zero otherwise.
 	 */
-	static int bostan_dma_data_wait_read(int interface, int tag)
+	static inline int bostan_dma_data_wait_read(int interface, int tag)
 	{
-		if (!bostan_dnoc_rx_is_valid(interface, tag))
-			return (-EINVAL);
-
 		return bostan_dnoc_rx_wait(interface, tag);
 	}
 
@@ -230,11 +238,8 @@
 	 *
 	 * @return Zero if wait successfully and non zero otherwise.
 	 */
-	static int bostan_dma_data_wait_write(int interface, int tag)
+	static inline int bostan_dma_data_wait_write(int interface, int tag)
 	{
-		if (!bostan_dnoc_tx_is_valid(interface, tag))
-			return (-EINVAL);
-
 		return bostan_dnoc_uc_wait(interface, tag);
 	}
 
@@ -250,14 +255,26 @@
 	 *
 	 * @return Zero if configure successfully and non zero otherwise.
 	 */
-	EXTERN int bostan_dma_data_aread(
+	static inline int bostan_dma_data_aread(
 		int interface,
 		int tag,
 		void *buffer,
-		size_t min_size,
-		size_t max_size,
-		size_t offset
-	);
+		uint64_t min_size,
+		uint64_t max_size,
+		uint64_t offset,
+		bostan_noc_handler_fn handler
+	)
+	{
+		return bostan_dnoc_rx_config(
+			interface,
+			tag,
+			buffer,
+			min_size,
+			max_size,
+			offset,
+			handler
+		);
+	}
 
 	/**
 	 * @brief Configure and async write to the target node.
@@ -277,20 +294,36 @@
 		int target_node,
 		int target_tag,
 		const void *buffer,
-		size_t size
+		uint64_t size,
+		uint64_t offset
 	);
 
+	/**
+	 * @brief Configure and write to the target node.
+	 *
+	 * @param interface   Number of the DMA channel.
+	 * @param tag         Number of the data transfer buffer.
+	 * @param target_node Target Node ID.
+	 * @param target_tag  Target receiver buffer.
+	 * @param buffer      Local data pointer.
+	 * @param size        Amount of bytes to transfer.
+	 *
+	 * @return Zero if configure successfully and non zero otherwise.
+	 */
 	EXTERN int bostan_dma_data_write(
 		int interface,
 		int tag,
 		int target_node,
 		int target_tag,
 		const void *buffer,
-		size_t size
+		uint64_t size,
+		uint64_t offset
 	);
 
 	/**
-	 * @brief TODO: Describe.
+	 * The bostan_dma_init() function initializes the control
+	 * structures and configures the interrupt handler of the
+	 * Control and Data NoC.
 	 */
 	static inline void bostan_dma_init(void)
 	{
