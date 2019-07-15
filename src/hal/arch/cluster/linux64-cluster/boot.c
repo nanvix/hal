@@ -21,8 +21,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
-#include <arch/cluster/linux64-cluster/cores.h>
+#define __NEED_CLUSTER_LINUX64
+#include <arch/cluster/linux64-cluster.h>
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
 #include <stdlib.h>
@@ -33,9 +33,23 @@ EXTERN NORETURN void linux64_cluster_master_setup(void);
 EXTERN NORETURN void linux64_cluster_slave_setup(void);
 
 /**
+ * @brief Start point of the threads
+ */
+PRIVATE void *linux64_slaves_setup(void *args)
+{
+	UNUSED(args);
+	linux64_cluster_slave_setup();
+}
+
+/**
  * @brief Lookup table for thread IDs.
  */
 PUBLIC pthread_t linux64_cores_tab[LINUX64_CLUSTER_NUM_CORES];
+
+/**
+ * @brief Lock for the array of the cores.
+ */
+PUBLIC linux64_spinlock_t linux64_cores_lock;
 
 /**
  * @brief Entry point.
@@ -48,25 +62,21 @@ int main(int argc, char **argv)
 	UNUSED(argc);
 	UNUSED(argv);
 
-	linux64_core_dcache_setup();
-	linux64_core_icache_setup();
-	linux64_excp_setup();
-	linux64_interrupts_enable();
-	perf_setup();
+	linux64_cluster_event_setup();
 
 	/**
 	 * Initialize the lookup table for Threads IDs.
 	 */
 	linux64_cores_tab[0] = pthread_self();
 
+	for(int i = 1; i < LINUX64_CLUSTER_NUM_CORES; i++)
+		if(pthread_create(&linux64_cores_tab[i], NULL, linux64_slaves_setup, NULL))
+			return (-EINVAL);
+
 	linux64_cluster_master_setup();
 
 	/*
 	 * TODO: grab some memory.
-	 */
-
-	/*
-	 * TODO: spawn slave threads.
 	 */
 
 	return (0);

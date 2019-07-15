@@ -29,6 +29,5 @@
 	#define __NEED_CORE_LINUX64
 
 	#include <arch/core/linux64.h>
-	#include <arch/cluster/linux64-cluster/cores.h>
 
 #endif /* _CLUSTER_LINUX64_CLUSTER_H_ */

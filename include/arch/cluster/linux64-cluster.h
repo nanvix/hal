@@ -44,6 +44,7 @@
 	#include <arch/cluster/linux64-cluster/memory.h>
 	#include <arch/cluster/linux64-cluster/timer.h>
 	#include <arch/cluster/linux64-cluster/cores.h>
+	#include <arch/cluster/linux64-cluster/event.h>
 
 	/**
 	 * @name Provided Features
