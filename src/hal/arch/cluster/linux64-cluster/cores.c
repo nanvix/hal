@@ -22,46 +22,58 @@
  * SOFTWARE.
  */
 #include <arch/cluster/linux64-cluster/_linux64-cluster.h>
-
-/*============================================================================*
- * linux64_core_getid()                                                       *
- *============================================================================*/
+#include <arch/cluster/linux64-cluster/cores.h>
 
 /**
- * The linux64_core_get_id() returns the ID of the underlying core.
+ * @brief Return the Id of the underlying core.
  */
 PUBLIC int linux64_core_get_id(void)
 {
+	linux64_spinlock_lock(&linux64_cores_lock);
+
 	/* Search for target core. */
 	for (int i = 0; i < LINUX64_CLUSTER_NUM_CORES ; i++)
 	{
 		/* Found. */
 		if (linux64_cores_tab[i] == pthread_self())
+		{
+			linux64_spinlock_unlock(&linux64_cores_lock);
 			return (i);
+		}
 	}
-
+	linux64_spinlock_unlock(&linux64_cores_lock);
 	return (-1);
 }
 
-/*============================================================================*
- * linux64_core_poweroff()                                                    *
- *============================================================================*/
-
 /**
- * @todo TODO: provide a detailed description for this function.
+ * @brief Shutdown the underlying core.
  */
 PUBLIC NORETURN void linux64_core_poweroff(void)
 {
-	/* Search for target core. */
-	for (int i = 0; i < LINUX64_CLUSTER_NUM_CORES; i++)
-	{
-		/* Found. */
-		if (linux64_cores_tab[i] == pthread_self())
+	int is_master = false;
+
+	kprintf("[hal] powering off...");
+
+	linux64_spinlock_lock(&linux64_cores_lock);
+
+		/* Search for target core. */
+		for (int i = 0; i < LINUX64_CLUSTER_NUM_CORES; i++)
 		{
-			linux64_cores_tab[i] = 0;
-			pthread_exit(NULL);
+			/* Found. */
+			if (linux64_cores_tab[i] == pthread_self())
+			{
+				linux64_cores_tab[i] = 0;
+				linux64_spinlock_unlock(&linux64_cores_lock);
+				is_master = (i == LINUX64_CLUSTER_COREID_MASTER) ? true : false;
+			}
 		}
-	}
+
+	linux64_spinlock_unlock(&linux64_cores_lock);
+
+	if (is_master)
+		exit(0);
+	else
+		pthread_exit(NULL);
 
 	UNREACHABLE();
 }
@@ -74,4 +86,16 @@ PUBLIC struct context linux64_create_context(void)
 	struct context ctx;
 	ctx.id = linux64_core_get_id();
 	return ctx;
+}
+
+/**
+ * @brief Setup a core.
+ */
+PUBLIC void linux64_core_setup(void)
+{
+	linux64_core_dcache_setup();
+	linux64_core_icache_setup();
+	linux64_excp_setup();
+	linux64_interrupts_enable();
+	linux64_perf_setup();
 }

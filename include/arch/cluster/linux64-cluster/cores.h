@@ -47,14 +47,24 @@
 	#define LINUX64_CLUSTER_COREID_MASTER 0
 
 	/**
-	 * @brief Array of the cores
+	 * @brief Array of the cores.
 	 */
 	EXTERN pthread_t linux64_cores_tab[LINUX64_CLUSTER_NUM_CORES];
+
+	/**
+	 * @brief Lock for the array of the cores.
+	 */
+	EXTERN linux64_spinlock_t linux64_cores_lock;
 
 	/**
 	 * @brief Powers off the underlying core.
 	 */
 	EXTERN NORETURN void linux64_core_poweroff(void);
+
+	/**
+	 * @brief Powers off the underlying core.
+	 */
+	EXTERN void linux64_core_setup(void);
 
 	/**
 	 * @brief Gets the ID of the underlying core.
@@ -107,6 +117,15 @@
 	 */
 	#define COREID_MASTER LINUX64_CLUSTER_COREID_MASTER
 
+
+	/**
+	 * @TODO Implement this fn
+	 */
+	static inline void _core_reset(void)
+	{
+
+	}
+
 	/**
 	 * @see linux64_core_get_id().
 	 */
@@ -129,6 +148,14 @@
 	static inline int cluster_get_num_cores(void)
 	{
 		return (linux64_cluster_get_num_cores());
+	}
+
+	/**
+	 * @see linux64_cluster_get_num_cores().
+	 */
+	static inline void core_setup(void)
+	{
+		linux64_core_setup();
 	}
 
 /**@endcond*/

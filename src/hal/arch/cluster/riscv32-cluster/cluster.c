@@ -33,7 +33,7 @@ EXTERN NORETURN void kmain(int, const char *[]);
 /**
  * @brief Cores table.
  */
-PUBLIC struct coreinfo ALIGN(RV32GC_CACHE_LINE_SIZE) cores[RISCV32_CLUSTER_NUM_CORES] = {
+PUBLIC struct coreinfo cores[RISCV32_CLUSTER_NUM_CORES] = {
 	{ true,  CORE_RUNNING,   0, NULL, RV32GC_SPINLOCK_UNLOCKED }, /* Master Core   */
 	{ false, CORE_RESETTING, 0, NULL, RV32GC_SPINLOCK_LOCKED   }, /* Slave Core 1  */
 	{ false, CORE_RESETTING, 0, NULL, RV32GC_SPINLOCK_LOCKED   }, /* Slave Core 2  */

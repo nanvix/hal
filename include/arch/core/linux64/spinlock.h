@@ -33,7 +33,6 @@
  */
 /**@{*/
 
-	#include <arch/core/linux64/cache.h>
 	#include <pthread.h>
 
 	/**
@@ -42,14 +41,13 @@
 	 * @bug: We should wrap these.
 	 */
 	/**@{*/
-	#define LINUX64_SPINLOCK_UNLOCKED 0 /**< Unlocked */
-	#define LINUX64_SPINLOCK_LOCKED   1 /**< Locked   */
+	#define LINUX64_SPINLOCK_UNLOCKED PTHREAD_MUTEX_INITIALIZER /**< Unlocked */
 	/**@}*/
 
 	/**
 	 * @brief Spinlock.
 	 */
-	typedef pthread_spinlock_t linux64_spinlock_t;
+	typedef pthread_mutex_t linux64_spinlock_t;
 
 	/**
 	 * @brief Initializes a spinlock.
@@ -58,7 +56,7 @@
 	 */
 	static inline void linux64_spinlock_init(linux64_spinlock_t *lock)
 	{
-		pthread_spin_init(lock, PTHREAD_PROCESS_PRIVATE);
+		pthread_mutex_init(lock, NULL);
 	}
 
 	/**
@@ -68,7 +66,7 @@
 	 */
 	static inline void linux64_spinlock_lock(linux64_spinlock_t *lock)
 	{
-		pthread_spin_lock(lock);
+		pthread_mutex_lock(lock);
 	}
 
 	/**
@@ -83,7 +81,7 @@
 	 */
 	static inline int linux64_spinlock_trylock(linux64_spinlock_t *lock)
 	{
-		return (!pthread_spin_trylock(lock));
+		return (!pthread_mutex_trylock(lock));
 	}
 
 	/**
@@ -93,7 +91,7 @@
 	 */
 	static inline void linux64_spinlock_unlock(linux64_spinlock_t *lock)
 	{
-		pthread_spin_unlock(lock);
+		pthread_mutex_unlock(lock);
 	}
 
 /**@}*/
@@ -110,7 +108,7 @@
 	 * @name Exported Types
 	 */
 	/**@{*/
-	#define __spinlock_t /**< @see spinlock_t */
+	#define __spinlock_t 		  /**< @see spinlock_t */
 	#define __spinlock_init_fn    /**< spinlock_init()    */
 	#define __spinlock_lock_fn    /**< spinlock_lock()    */
 	#define __spinlock_trylock_fn /**< spinlock_trylock() */
@@ -121,8 +119,8 @@
 	 * @name Spinlock State
 	 */
 	/**@{*/
-	#define SPINLOCK_UNLOCKED LINUX64_SPINLOCK_UNLOCKED /**< @see LINUX64_SPINLOCK_UNLOCKED */
-	#define SPINLOCK_LOCKED   LINUX64_SPINLOCK_LOCKED   /**< @see LINUX64_SPINLOCK_LOCKED   */
+	#define SPINLOCK_UNLOCKED LINUX64_SPINLOCK_UNLOCKED /**< @see LINUX64_SPINLOCK_UNLOCKED    */
+	#define SPINLOCK_LOCKED   LINUX64_SPINLOCK_UNLOCKED /**< Cannot declare satic locked mutex */
 	/**@}*/
 
 	/**
