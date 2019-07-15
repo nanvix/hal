@@ -22,41 +22,57 @@
  * SOFTWARE.
  */
 
+#include <arch/cluster/linux64-cluster/cores.h>
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
-#include <math.h>
 #include <unistd.h>
 #include <stdio.h>
 
 /**
- * @name Data Cache Dimensions
+ * @brief Alias to the log2 fn in <math.h>
  */
-/**@{*/
-PRIVATE size_t linux64_cache_line_size = 0;
-PRIVATE size_t linux64_cache_line_size_log2 = 0;
-PRIVATE size_t linux64_cache_size = 0;
-PRIVATE size_t linux64_cache_size_log2 = 0;
-/**@}*/
+EXTERN double linux64_log2(double x);
 
 /**
- * @name Data Cache Statistics
+ * @brief Alias to the pow fn in <math.h>
  */
-/**@{*/
-PRIVATE unsigned dcache_invalidate_count = 0;      /**< Number of Invalidates      */
-PRIVATE unsigned dcache_flush_count = 0;           /**< Number of Flushes          */
-PRIVATE unsigned dcache_fence_count = 0;           /**< Number of Fences           */
-PRIVATE unsigned dcache_line_invalidate_count = 0; /**< Number of Line Invalidates */
-PRIVATE unsigned dcache_line_prefetch_count = 0;   /**< Number of Line Prefetches  */
-/**@}*/
+EXTERN double linux64_pow(double base, double exp);
 
 /**
- * @name Instruction Cache Statistics
+ * @brief Cache information.
  */
-/**@{*/
-PRIVATE unsigned icache_invalidate_count = 0;      /**< Number of Invalidates      */
-PRIVATE unsigned icache_line_prefetch_count = 0;   /**< Number of Line Invalidates */
-PRIVATE unsigned icache_line_invalidate_count = 0; /**< Number of Line Prefetches  */
-/**@{*/
+PRIVATE struct cache_info
+{
+	/**
+	 * @name Data Cache Dimensions
+	 */
+	/**@{*/
+	size_t cache_line_size;
+	size_t cache_line_size_log2;
+	size_t cache_size;
+	size_t cache_size_log2;
+	/**@}*/
+
+	/**
+	 * @name Data Cache Statistics
+	 */
+	/**@{*/
+	unsigned dcache_invalidate_count;      /**< Number of Invalidates      */
+	unsigned dcache_flush_count;           /**< Number of Flushes          */
+	unsigned dcache_fence_count;           /**< Number of Fences           */
+	unsigned dcache_line_invalidate_count; /**< Number of Line Invalidates */
+	unsigned dcache_line_prefetch_count;   /**< Number of Line Prefetches  */
+	/**@}*/
+
+	/**
+ 	* @name Instruction Cache Statistics
+ 	*/
+	/**@{*/
+	unsigned icache_invalidate_count;      /**< Number of Invalidates      */
+	unsigned icache_line_prefetch_count;   /**< Number of Line Invalidates */
+	unsigned icache_line_invalidate_count; /**< Number of Line Prefetches  */
+	/**@}*/
+} linux64_core_cache_info[LINUX64_CLUSTER_NUM_CORES];
 
 /*============================================================================*
  * Data Cache                                                                 *
@@ -67,7 +83,7 @@ PRIVATE unsigned icache_line_invalidate_count = 0; /**< Number of Line Prefetche
  */
 PUBLIC size_t linux64_core_dcache_line_size_get(void)
 {
-	return linux64_cache_line_size;
+	return linux64_core_cache_info[linux64_core_get_id()].cache_line_size;
 }
 
 /**
@@ -75,7 +91,7 @@ PUBLIC size_t linux64_core_dcache_line_size_get(void)
  */
 PUBLIC size_t linux64_core_dcache_line_size_log2_get(void)
 {
-	return linux64_cache_line_size_log2;
+	return linux64_core_cache_info[linux64_core_get_id()].cache_line_size_log2;
 }
 
 /**
@@ -83,7 +99,7 @@ PUBLIC size_t linux64_core_dcache_line_size_log2_get(void)
  */
 PUBLIC size_t linux64_core_dcache_size_get(void)
 {
-    return linux64_cache_size;
+    return linux64_core_cache_info[linux64_core_get_id()].cache_size;
 }
 
 /**
@@ -91,7 +107,7 @@ PUBLIC size_t linux64_core_dcache_size_get(void)
  */
 PUBLIC size_t linux64_core_dcache_size_log2_get(void)
 {
-    return linux64_cache_size_log2;
+    return linux64_core_cache_info[linux64_core_get_id()].cache_size_log2;
 }
 
 /**
@@ -99,7 +115,7 @@ PUBLIC size_t linux64_core_dcache_size_log2_get(void)
  */
 PUBLIC void linux64_core_dcache_invalidate(void)
 {
-	dcache_invalidate_count++;
+	linux64_core_cache_info[linux64_core_get_id()].dcache_invalidate_count++;
 }
 
 /**
@@ -107,7 +123,7 @@ PUBLIC void linux64_core_dcache_invalidate(void)
  */
 PUBLIC void linux64_core_dcache_flush(void)
 {
-	dcache_flush_count++;
+	linux64_core_cache_info[linux64_core_get_id()].dcache_flush_count++;
 }
 
 /**
@@ -115,7 +131,7 @@ PUBLIC void linux64_core_dcache_flush(void)
  */
 PUBLIC void linux64_core_dcache_fence(void)
 {
-	dcache_fence_count++;
+	linux64_core_cache_info[linux64_core_get_id()].dcache_fence_count++;
 }
 
 /**
@@ -123,7 +139,7 @@ PUBLIC void linux64_core_dcache_fence(void)
  */
 PUBLIC void linux64_core_dcache_prefetch_line(void)
 {
-	dcache_line_prefetch_count++;
+	linux64_core_cache_info[linux64_core_get_id()].dcache_line_prefetch_count++;
 }
 
 /**
@@ -131,7 +147,7 @@ PUBLIC void linux64_core_dcache_prefetch_line(void)
  */
 PUBLIC void linux64_core_dcache_invalidate_line(void)
 {
-	dcache_line_invalidate_count++;
+	linux64_core_cache_info[linux64_core_get_id()].dcache_line_invalidate_count++;
 }
 
 /**
@@ -152,11 +168,11 @@ PUBLIC void linux64_core_dcache_dump_info(void)
  */
 PUBLIC void linux64_core_dcache_dump_stats(void)
 {
-	kprintf("dcache_invalidate = %d", dcache_invalidate_count);
-	kprintf("dcache_flush = %d", dcache_flush_count);
-	kprintf("dcache_fence = %d", dcache_fence_count);
-	kprintf("dcache_line_prefetch = %d", dcache_line_prefetch_count);
-	kprintf("dcache_line_invalidate = %d", dcache_line_invalidate_count);
+	kprintf("dcache_invalidate = %d",linux64_core_cache_info[linux64_core_get_id()].dcache_invalidate_count);
+	kprintf("dcache_flush = %d", linux64_core_cache_info[linux64_core_get_id()].dcache_flush_count);
+	kprintf("dcache_fence = %d", linux64_core_cache_info[linux64_core_get_id()].dcache_fence_count);
+	kprintf("dcache_line_prefetch = %d", linux64_core_cache_info[linux64_core_get_id()].dcache_line_prefetch_count);
+	kprintf("dcache_line_invalidate = %d", linux64_core_cache_info[linux64_core_get_id()].dcache_line_invalidate_count);
 }
 
 /**
@@ -169,18 +185,24 @@ PUBLIC void linux64_core_dcache_setup(void)
 	 * intentionally truncate the line size to a of power 2, because
 	 * that may not be true in some archs.
 	 */
-	linux64_cache_line_size = sysconf(_SC_LEVEL1_DCACHE_LINESIZE);
-	linux64_cache_line_size_log2 = log2(linux64_cache_line_size);
-	linux64_cache_line_size = pow(2, linux64_cache_line_size_log2);
+	linux64_core_cache_info[linux64_core_get_id()].cache_line_size =
+		sysconf(_SC_LEVEL1_DCACHE_LINESIZE);
+	linux64_core_cache_info[linux64_core_get_id()].cache_line_size_log2 =
+		linux64_log2(linux64_core_cache_info[linux64_core_get_id()].cache_line_size);
+	linux64_core_cache_info[linux64_core_get_id()].cache_line_size =
+		linux64_pow(2, linux64_core_cache_info[linux64_core_get_id()].cache_line_size_log2);
 
 	/*
 	 * Retrieve dimension of cache. Note that we intentionally
 	 * truncate the line size to a of power 2, because that may not be
 	 * true in some archs.
 	 */
-	linux64_cache_size = sysconf(_SC_LEVEL1_DCACHE_SIZE);
-	linux64_cache_size_log2 = log2(linux64_cache_size);
-	linux64_cache_size = pow(2, linux64_cache_size_log2);
+	linux64_core_cache_info[linux64_core_get_id()].cache_size =
+		sysconf(_SC_LEVEL1_DCACHE_SIZE);
+	linux64_core_cache_info[linux64_core_get_id()].cache_size_log2 =
+		linux64_log2(linux64_core_cache_info[linux64_core_get_id()].cache_size);
+	linux64_core_cache_info[linux64_core_get_id()].cache_size =
+		linux64_pow(2, linux64_core_cache_info[linux64_core_get_id()].cache_size_log2);
 }
 
 /*============================================================================*
@@ -192,7 +214,7 @@ PUBLIC void linux64_core_dcache_setup(void)
  */
 PUBLIC void linux64_core_icache_invalidate(void)
 {
-	icache_invalidate_count++;
+	linux64_core_cache_info[linux64_core_get_id()].icache_invalidate_count++;
 }
 
 /**
@@ -200,7 +222,7 @@ PUBLIC void linux64_core_icache_invalidate(void)
  */
 PUBLIC void linux64_core_icache_line_prefetch(void)
 {
-	icache_line_prefetch_count++;
+	linux64_core_cache_info[linux64_core_get_id()].icache_line_prefetch_count++;
 }
 
 /**
@@ -208,7 +230,7 @@ PUBLIC void linux64_core_icache_line_prefetch(void)
  */
 PUBLIC void linux64_core_icache_line_invalidate(void)
 {
-	icache_line_invalidate_count++;
+	linux64_core_cache_info[linux64_core_get_id()].icache_line_invalidate_count++;
 }
 
 /**
@@ -225,7 +247,7 @@ PUBLIC void linux64_core_icache_setup(void)
  */
 PUBLIC void linux64_core_icache_dump_stats(void)
 {
-	kprintf("icache_invalidate = %d", icache_invalidate_count);
-	kprintf("icache_line_prefetch = %d", icache_line_prefetch_count);
-	kprintf("icache_line_invalidate = %d", icache_line_invalidate_count);
+	kprintf("icache_invalidate = %d", linux64_core_cache_info[linux64_core_get_id()].icache_invalidate_count);
+	kprintf("icache_line_prefetch = %d", linux64_core_cache_info[linux64_core_get_id()].icache_line_prefetch_count);
+	kprintf("icache_line_invalidate = %d", linux64_core_cache_info[linux64_core_get_id()].icache_line_invalidate_count);
 }
