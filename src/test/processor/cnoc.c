@@ -30,17 +30,29 @@
 
 #ifdef __mppa256__
 
-#define INTERFACE 0
-#define RX_TAG    58
-#define TX_TAG    1
-#define RX_MASK   (0x1)
-#define TX_MASK   (~RX_MASK)
+/**
+ * @name Tests arguments
+ */
+/**@{*/
+#define INTERFACE 0          /**< DMA channel used.             */
+#define RX_TAG    58         /**< Receiver identificantion tag. */
+#define RX_MASK   (0x1)      /**< Receiver default mask.        */
+#define TX_TAG    1          /**< Transfer identificantion tag. */
+#define TX_MASK   (~RX_MASK) /**< Transfer default mask.        */
+/**@}*/
 
+/**
+ * @brief Lock used for wait the completion of Control NoC operations.
+ */
 static spinlock_t test_cnoc_lock = SPINLOCK_LOCKED;
 
+/**
+ * @brief Interrupt handler: Control NoC handler to perform the unlock.
+ */
 static void test_cnoc_dummy_handler(int interface, int tag)
 {
-	kprintf("[test][api][noc][control][handler] Dummy handler from (%d, %d)", interface, tag);
+	UNUSED(tag);
+	UNUSED(interface);
 
 	spinlock_unlock(&test_cnoc_lock);
 }
@@ -75,7 +87,7 @@ static void test_cnoc_open_close(void)
 }
 
 /**
- * @brief API Test: Synchronization Point Open Close
+ * @brief API Test: Synchronization Point With Events
  */
 static void test_cnoc_loopback_with_events(void)
 {
@@ -104,7 +116,7 @@ static void test_cnoc_loopback_with_events(void)
 }
 
 /**
- * @brief API Test: Synchronization Point Open Close
+ * @brief API Test: Synchronization Point With Interrupts
  */
 static void test_cnoc_loopback_with_interrupts(void)
 {
