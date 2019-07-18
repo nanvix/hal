@@ -47,22 +47,6 @@
 	 */
 	#define RISCV32_CLUSTER_TIMEBASE 10000000
 
-#ifndef _ASM_FILE_
-
-	/**
-	 * @brief Stub function.
-	 *
-	 * @returns Always zero.
-	 *
-	 * @todo TODO implement this function.
-	 */
-	static inline uint64_t riscv32_cluster_clock_read(void)
-	{
-		return (0);
-	}
-
-#endif /* !_ASM_FILE_ */
-
 /*============================================================================*
  * Exported Interface                                                         *
  *============================================================================*/
@@ -110,14 +94,6 @@
 		rv32gc_timer_reset();
 	}
 
-	/**
-	 * @see riscv32_cluster_clock_read().
-	 */
-	static inline uint64_t clock_read(void)
-	{
-		return (riscv32_cluster_clock_read());
-	}
-
 #endif /* !_ASM_FILE_ */
 
 /**@endcond*/
@@ -127,4 +103,3 @@
 /**@}*/
 
 #endif /* ARCH_CLUSTER_CLUSTER_RISCV32_CLUSTER_TIMER */
-
