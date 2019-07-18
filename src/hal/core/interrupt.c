@@ -46,6 +46,11 @@ PRIVATE interrupt_handler_t event_handler = NULL;
 PRIVATE unsigned spurious = 0;
 
 /**
+ * @brief Timer value for archs that lacks RTC.
+ */
+PUBLIC uint64_t timer_value = 0;
+
+/**
  * @brief Default hardware interrupt handler.
  *
  * @param num Number of triggered interrupt.
@@ -66,6 +71,9 @@ PRIVATE void default_handler(int num)
  */
 PRIVATE void do_timer(int num)
 {
+	/* Increment timer value. */
+	timer_value++;
+
 	/* Forward timer interrupt handling. */
 	if (timer_handler != NULL)
 		timer_handler(num);

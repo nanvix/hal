@@ -68,6 +68,12 @@
 	#include <stdint.h>
 
 	/**
+	 * @brief Simulated clock for architectures that do not
+	 * have Real Time Clock (RTC).
+	 */
+	EXTERN uint64_t timer_value;
+
+	/**
 	 * @brief Initializes the timer device.
 	 *
 	 * @param freq Frequency for the timer device.
@@ -85,10 +91,20 @@
 
 	/**
 	 * @brief Returns the clock value.
+	 *
+	 * If the current architecture have an appropriate Real
+	 * Time Clock, exports the function, otherwise, uses the
+	 * counter provided by the HAL.
 	 */
+#if (CLUSTER_HAS_RTC)
 	EXTERN uint64_t clock_read(void);
+#else
+	static inline uint64_t clock_read(void)
+	{
+		return (timer_value);
+	}
+#endif
 
 /**@}*/
 
 #endif /* NANVIX_HAL_CLUSTER_TIMER_H_ */
-
