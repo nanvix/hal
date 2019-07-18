@@ -22,9 +22,8 @@
  * SOFTWARE.
  */
 
+#include <nanvix/hal/hal.h>
 #include <nanvix/const.h>
-#include <arch/core/i486/timer.h>
-#include <arch/core/i486/pmio.h>
 
 /**
  * The i486_timer_init() function initializes the timer driver in the
