@@ -48,7 +48,7 @@
  * @brief Number of memory regions.
  */
 #if (defined(__or1k_cluster__))
-	#define OR1K_CLUSTER_MEM_REGIONS 4
+	#define OR1K_CLUSTER_MEM_REGIONS 5
 #elif (defined(__optimsoc_cluster__))
 	#define OR1K_CLUSTER_MEM_REGIONS 3
 #endif
@@ -100,6 +100,10 @@ PRIVATE struct memory_region or1k_cluster_mem_layout[OR1K_CLUSTER_MEM_REGIONS] =
 	{ OR1K_CLUSTER_UART_BASE_PHYS, OR1K_CLUSTER_UART_BASE_VIRT,
 	  OR1K_CLUSTER_UART_END_PHYS,  OR1K_CLUSTER_UART_END_VIRT,
 	  OR1K_CLUSTER_UART_MEM_SIZE,  true, false, "uart" },
+
+	{ OR1K_CLUSTER_ETH_BASE_PHYS, OR1K_CLUSTER_ETH_BASE_VIRT,
+	  OR1K_CLUSTER_ETH_END_PHYS,  OR1K_CLUSTER_ETH_END_VIRT,
+	  OR1K_CLUSTER_ETH_MEM_SIZE,  true, false, "eth" },
 #endif
 };
 
@@ -158,7 +162,7 @@ PRIVATE struct
  * @param _tlb     The TLB of a core.
  * @param tlb_type Type of the underlying TLB entries that we want get.
  *
- * The or1k_cluster_tlb_get_utlb() function returns the architectural 
+ * The or1k_cluster_tlb_get_utlb() function returns the architectural
  * TLB entries of a specific TLB type.
  *
  * @returns Initial position of the specific underlying tlb entries.
@@ -183,7 +187,7 @@ PUBLIC struct tlbe *or1k_cluster_tlb_get_utlb(int tlb_type)
 
 /**
  * @brief Gets the configuration of a TLB Entry.
- * 
+ *
  * @param vaddr Target virtual address.
  *
  * @return K1B TLB entry does not need configuration.
@@ -196,7 +200,7 @@ PUBLIC int or1k_cluster_tlb_get_vaddr_info(vaddr_t vaddr)
 
 	kcode = (vaddr_t)&KSTART_CODE;
 	kdata = (vaddr_t)&KSTART_DATA;
-	
+
 	/* Kernel address. */
 	if (WITHIN(vaddr, kcode, KMEM_SIZE))
 	{

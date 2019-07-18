@@ -64,6 +64,8 @@
 	/**@{*/
 	#define OR1K_CLUSTER_UART_BASE_VIRT   OR1K_CLUSTER_UART_BASE_PHYS   /**< UART Base            */
 	#define OR1K_CLUSTER_UART_END_VIRT    OR1K_CLUSTER_UART_END_PHYS    /**< UART End             */
+	#define OR1K_CLUSTER_ETH_BASE_VIRT    OR1K_CLUSTER_ETH_BASE_PHYS    /**< ETH Base             */
+	#define OR1K_CLUSTER_ETH_END_VIRT     OR1K_CLUSTER_ETH_END_PHYS     /**< ETH End              */
 	#define OR1K_CLUSTER_OMPIC_BASE_VIRT  OR1K_CLUSTER_OMPIC_BASE_PHYS  /**< PIC Base             */
 	#define OR1K_CLUSTER_OMPIC_END_VIRT   OR1K_CLUSTER_OMPIC_END_PHYS   /**< PIC End              */
 	#define OR1K_CLUSTER_KERNEL_BASE_VIRT OR1K_CLUSTER_KERNEL_BASE_PHYS /**< Kernel Code and Data */
