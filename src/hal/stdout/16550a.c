@@ -82,6 +82,7 @@ void uart_16550a_init(void)
 {
 	uint32_t divisor;
 
+	/* Do not re-initialize the device. */
 	if (initialized)
 		return;
 

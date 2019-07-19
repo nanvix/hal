@@ -34,7 +34,7 @@
 /**
  * @brief Flag that indicates if the device was initialized.
  */
-PRIVATE bool tty_virt_initialized = false;
+PRIVATE bool initialized = false;
 
 /**
  * Writes into the virtual tty device.
@@ -50,7 +50,7 @@ PUBLIC void tty_virt_write(const char *buf, size_t n)
 	 * It's important to only try to write if the device
 	 * was already initialized.
 	 */
-	if (!tty_virt_initialized)
+	if (!initialized)
 		return;
 
 	while (n > 0)
@@ -73,6 +73,6 @@ PUBLIC void tty_virt_write(const char *buf, size_t n)
 PUBLIC void tty_virt_init(void)
 {
 	/* Device initialized. */
-	tty_virt_initialized = true;
+	initialized = true;
 }
 

@@ -27,7 +27,7 @@
 /**
  * @brief Flag that indicates if the device was initialized.
  */
-PRIVATE bool systrace_initialized = false;
+PRIVATE bool initialized = false;
 
 /**
  * Writes one character into systrace.
@@ -55,7 +55,7 @@ PUBLIC void systrace_write(const char *buf, size_t n)
 	 * It's important to only try to write if the device
 	 * was already initialized.
 	 */
-	if (!systrace_initialized)
+	if (!initialized)
 		return;
 
 	for (size_t i = 0; i < n; i++)
@@ -68,5 +68,5 @@ PUBLIC void systrace_write(const char *buf, size_t n)
 PUBLIC void systrace_init(void)
 {
 	/* Device initialized. */
-	systrace_initialized = true;
+	initialized = true;
 }
