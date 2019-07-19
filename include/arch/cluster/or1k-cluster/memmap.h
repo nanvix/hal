@@ -48,12 +48,14 @@
 	 * @name Physical Memory Layout
 	 */
 	/**@{*/
-	#define OR1K_CLUSTER_UART_BASE_PHYS  0x90000000 /**< UART Base */
-	#define OR1K_CLUSTER_UART_END_PHYS   0x90010000 /**< UART End  */
+	#define OR1K_CLUSTER_UART_BASE_PHYS  0x90000000 /**< UART Base  */
+	#define OR1K_CLUSTER_UART_END_PHYS   0x90010000 /**< UART End   */
+	#define OR1K_CLUSTER_ETH_BASE_PHYS   0x92000000 /**< ETH Base   */
+	#define OR1K_CLUSTER_ETH_END_PHYS    0x92010000 /**< ETH Base   */
 	#define OR1K_CLUSTER_OMPIC_BASE_PHYS 0x98000000 /**< OMPIC Base */
-	#define OR1K_CLUSTER_OMPIC_END_PHYS  0x98010000 /**< OMPIC End */
-	#define OR1K_CLUSTER_DRAM_BASE_PHYS  0x00000000 /**< DRAM Base */
-	#define OR1K_CLUSTER_DRAM_END_PHYS   0x08000000 /**< DRAM End  */
+	#define OR1K_CLUSTER_OMPIC_END_PHYS  0x98010000 /**< OMPIC End  */
+	#define OR1K_CLUSTER_DRAM_BASE_PHYS  0x00000000 /**< DRAM Base  */
+	#define OR1K_CLUSTER_DRAM_END_PHYS   0x08000000 /**< DRAM End   */
 	/**@}*/
 
 	/**
@@ -73,6 +75,12 @@
 	 */
 	#define OR1K_CLUSTER_UART_MEM_SIZE \
 		(OR1K_CLUSTER_UART_END_PHYS - OR1K_CLUSTER_UART_BASE_PHYS)
+
+	/**
+	 * @brief ETH size (in bytes).
+	 */
+	#define OR1K_CLUSTER_ETH_MEM_SIZE \
+		(OR1K_CLUSTER_ETH_END_PHYS - OR1K_CLUSTER_ETH_BASE_PHYS)
 
 /**@}*/
 

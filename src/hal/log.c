@@ -117,6 +117,4 @@ PUBLIC void hal_log_write(const char *buf, size_t n)
 PUBLIC void hal_log_setup(void)
 {
 	stdout_init();
-
-	hal_log_flush();
 }

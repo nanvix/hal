@@ -38,6 +38,11 @@ PRIVATE struct
 } cursor;
 
 /**
+ * @brief Was the device was initialized?
+ */
+PRIVATE bool initialized = false;
+
+/**
  * @brief Video memory.
  */
 PRIVATE uint16_t *video = (uint16_t*)VIDEO_ADDR;
@@ -155,6 +160,13 @@ PRIVATE void console_clear(void)
  */
 PUBLIC void console_write(const char *buf, size_t n)
 {
+	/**
+	 * It's important to only try to write if the device
+	 * was already initialized.
+	 */
+	if (!initialized)
+		return;
+
 	for (size_t i = 0; i < n; i++)
 		console_put((uint8_t) buf[i], WHITE);
 }
@@ -170,6 +182,10 @@ PUBLIC void console_write(const char *buf, size_t n)
  */
 PUBLIC void console_init(void)
 {
+	/* Do not re-initialize the device. */
+	if (initialized)
+		return;
+
 	/* Set cursor shape. */
 	output8(VIDEO_CRTL_REG, VIDEO_CS);
 	output8(VIDEO_DATA_REG, 0x00);
@@ -178,5 +194,8 @@ PUBLIC void console_init(void)
 
 	/* Clear the console. */
 	console_clear();
+
+	/* Device initialized. */
+	initialized = true;
 }
 

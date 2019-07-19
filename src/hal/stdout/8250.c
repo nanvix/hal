@@ -29,7 +29,7 @@
 /**
  * @brief Flag that indicates if the device was initialized.
  */
-PRIVATE bool uart8250_initialized = false;
+PRIVATE bool initialized = false;
 
 /**
  * Writes into serial port.
@@ -44,7 +44,7 @@ PUBLIC void uart8250_write(const char *buf, size_t n)
 	 * It's important to only try to write if the device
 	 * was already initialized.
 	 */
-	if (!uart8250_initialized)
+	if (!initialized)
 		return;
 
 	/* Get address of uart. */
@@ -70,6 +70,10 @@ PUBLIC void uart8250_init(void)
 {
 	uint8_t *uart8250;
 	uint16_t divisor;
+
+	/* Do not re-initialize the device. */
+	if (initialized)
+		return;
 
 	/* Get address of uart. */
 	uart8250 = mmio_get(UART_ADDR);
@@ -97,5 +101,5 @@ PUBLIC void uart8250_init(void)
 	uart8250[IER] = 0;
 
 	/* Device initialized. */
-	uart8250_initialized = true;
+	initialized = true;
 }
