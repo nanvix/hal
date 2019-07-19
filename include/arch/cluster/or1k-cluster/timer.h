@@ -42,7 +42,7 @@
 	/**
 	 * @brief Estimated CPU frequency (in Hz), 20Mhz.
 	 */
-	#define OR1K_CLUSTER_FREQUENCY 20000000
+	#define OR1K_CLUSTER_FREQUENCY OR1K_CORE_FREQUENCY
 
 /*============================================================================*
  * Exported Interface                                                         *
