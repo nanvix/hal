@@ -79,7 +79,7 @@ PRIVATE struct cache_info
  *============================================================================*/
 
 /**
- * @todo TODO: provide a detailed description for this function.
+ * @brief Return the cache_line_size value set for the underlying core.
  */
 PUBLIC size_t linux64_core_dcache_line_size_get(void)
 {
@@ -87,7 +87,7 @@ PUBLIC size_t linux64_core_dcache_line_size_get(void)
 }
 
 /**
- * @todo TODO: provide a detailed description for this function.
+ * @brief Return the cache_line_size_log2 value set for the underlying core.
  */
 PUBLIC size_t linux64_core_dcache_line_size_log2_get(void)
 {
@@ -95,7 +95,7 @@ PUBLIC size_t linux64_core_dcache_line_size_log2_get(void)
 }
 
 /**
- * @todo TODO: provide a detailed description for this function.
+ * @brief Return the cache_size value set for the underlying core.
  */
 PUBLIC size_t linux64_core_dcache_size_get(void)
 {
@@ -103,7 +103,7 @@ PUBLIC size_t linux64_core_dcache_size_get(void)
 }
 
 /**
- * @todo TODO: provide a detailed description for this function.
+ * @brief Return the cache_size_log2 value set for the underlying core.
  */
 PUBLIC size_t linux64_core_dcache_size_log2_get(void)
 {
@@ -111,7 +111,7 @@ PUBLIC size_t linux64_core_dcache_size_log2_get(void)
 }
 
 /**
- * @todo TODO: provide a detailed description for this function.
+ * @brief Incremement the counter, invalidate don't have sense in linux64.
  */
 PUBLIC void linux64_core_dcache_invalidate(void)
 {
@@ -119,7 +119,7 @@ PUBLIC void linux64_core_dcache_invalidate(void)
 }
 
 /**
- * @todo TODO: provide a detailed description for this function.
+ * @brief Incremement the counter, flush don't have sense in linux64.
  */
 PUBLIC void linux64_core_dcache_flush(void)
 {
@@ -127,7 +127,7 @@ PUBLIC void linux64_core_dcache_flush(void)
 }
 
 /**
- * @todo TODO: provide a detailed description for this function.
+ * @brief Incremement the counter, fence don't have sense in linux64.
  */
 PUBLIC void linux64_core_dcache_fence(void)
 {
@@ -135,7 +135,7 @@ PUBLIC void linux64_core_dcache_fence(void)
 }
 
 /**
- * @todo TODO: provide a detailed description for this function.
+ * @brief Incremement the counter, prefetch line don't have sense in linux64.
  */
 PUBLIC void linux64_core_dcache_prefetch_line(void)
 {
@@ -143,7 +143,7 @@ PUBLIC void linux64_core_dcache_prefetch_line(void)
 }
 
 /**
- * @todo TODO: provide a detailed description for this function.
+ * @brief Incremement the counter, invalidate line don't have sense in linux64.
  */
 PUBLIC void linux64_core_dcache_invalidate_line(void)
 {
@@ -151,7 +151,7 @@ PUBLIC void linux64_core_dcache_invalidate_line(void)
 }
 
 /**
- * @todo TODO: provide a detailed description for this function.
+ * @brief Print all informations about the dcache within the underlyin core.
  * @todo TODO: this should be platform independent.
  */
 PUBLIC void linux64_core_dcache_dump_info(void)
@@ -163,7 +163,7 @@ PUBLIC void linux64_core_dcache_dump_info(void)
 }
 
 /**
- * @todo TODO: provide a detailed description for this function.
+ * @brief Print all stats informations about the dcache within the underlying core.
  * @todo TODO: this should be platform independent.
  */
 PUBLIC void linux64_core_dcache_dump_stats(void)
@@ -176,7 +176,7 @@ PUBLIC void linux64_core_dcache_dump_stats(void)
 }
 
 /**
- * @todo TODO: provide a detailed description for this function.
+ * @brief Setup the dcache of the underlying core.
  */
 PUBLIC void linux64_core_dcache_setup(void)
 {
@@ -210,7 +210,7 @@ PUBLIC void linux64_core_dcache_setup(void)
  *============================================================================*/
 
 /**
- * @todo TODO: provide a detailed description for this function.
+ * @brief Incremement the counter, invalidate don't have sense in linux64.
  */
 PUBLIC void linux64_core_icache_invalidate(void)
 {
@@ -218,7 +218,7 @@ PUBLIC void linux64_core_icache_invalidate(void)
 }
 
 /**
- * @todo TODO: provide a detailed description for this function.
+ * @brief Incremement the counter, line prefetch don't have sense in linux64.
  */
 PUBLIC void linux64_core_icache_line_prefetch(void)
 {
@@ -226,7 +226,7 @@ PUBLIC void linux64_core_icache_line_prefetch(void)
 }
 
 /**
- * @todo TODO: provide a detailed description for this function.
+ * @brief Incremement the counter, line invalidate don't have sense in linux64.
  */
 PUBLIC void linux64_core_icache_line_invalidate(void)
 {
@@ -234,7 +234,7 @@ PUBLIC void linux64_core_icache_line_invalidate(void)
 }
 
 /**
- * @todo TODO: provide a detailed description for this function.
+ * @brief Setup the icache of the underlying core.
  * @todo TODO: implement this function.
  */
 PUBLIC void linux64_core_icache_setup(void)
@@ -242,7 +242,7 @@ PUBLIC void linux64_core_icache_setup(void)
 }
 
 /**
- * @todo TODO: provide a detailed description for this function.
+ * @brief Print all stats informations about the icache within the underlying core.
  * @todo TODO: this should be platform independent.
  */
 PUBLIC void linux64_core_icache_dump_stats(void)

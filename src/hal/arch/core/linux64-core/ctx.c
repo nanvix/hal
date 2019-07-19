@@ -29,9 +29,7 @@
 #include <nanvix/klib.h>
 
 /**
- * @todo TODO provide a detailed description for this function.
- *
- * @uthor Daniel Coscia
+ * @brief Print informations contained in the context.
  */
 PUBLIC void linux64_ctx_dump(const struct context *ctx)
 {
