@@ -38,6 +38,11 @@
 #ifndef _ASM_FILE_
 
 	/**
+	 * @brief Estimated CPU frequency (in Hz), 20Mhz.
+	 */
+	#define OR1K_CORE_FREQUENCY 20000000
+
+	/**
 	 * @brief Initializes the timer driver in the or1k architecture.
 	 *
 	 * @param freq Target frequency for the timer device.

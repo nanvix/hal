@@ -62,6 +62,7 @@
 		#define CLUSTER_IS_COMPUTE 1 /**< Compute Cluster   */
 	#endif
 	#define CLUSTER_HAS_EVENTS     1 /**< Event Support?    */
+	#define CLUSTER_HAS_RTC        1 /**< RTC Support?      */
 	/**@}*/
 
 /**@}*/

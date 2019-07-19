@@ -22,9 +22,10 @@
  * SOFTWARE.
  */
 
-#include <nanvix/const.h>
 #include <arch/core/i486/timer.h>
 #include <arch/core/i486/pmio.h>
+#include <nanvix/const.h>
+#include <stdint.h>
 
 /**
  * The i486_timer_init() function initializes the timer driver in the
@@ -44,4 +45,3 @@ PUBLIC void i486_timer_init(unsigned freq)
 	i486_output8(PIT_DATA, (uint8_t)(freq_divisor & 0xff));
 	i486_output8(PIT_DATA, (uint8_t)((freq_divisor >> 8)));
 }
-

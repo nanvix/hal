@@ -22,9 +22,17 @@
  * SOFTWARE.
  */
 
-#include <nanvix/hal/hal.h>
+#if (defined(__qemu_openrisc__))
+	#include <arch/core/or1k/timer.h>
+#elif (defined(__optimsoc__))
+	#include <arch/core/mor1kx/timer.h>
+#endif
+
+#define __NEED_OR1K_REGS
+#include <arch/core/or1k/regs.h>
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
+#include <stdint.h>
 
 /**
  * @brief Was the timer device initialized?
@@ -98,7 +106,7 @@ PUBLIC void or1k_timer_init(unsigned freq)
 		while (1);
 
 	/* Timer rate. */
-	timer_delta = (OR1K_CLUSTER_FREQUENCY/freq);
+	timer_delta = (OR1K_CORE_FREQUENCY/freq);
 
 	/*
 	 * Timer calibrate.

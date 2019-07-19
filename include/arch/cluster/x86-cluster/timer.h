@@ -22,43 +22,70 @@
  * SOFTWARE.
  */
 
-#ifndef ARCH_CLUSTER_X86_CLUSTER_H_
-#define ARCH_CLUSTER_X86_CLUSTER_H_
-
-	#ifndef __NEED_CLUSTER_X86
-		#error "bad cluster configuration?"
-	#endif
+#ifndef ARCH_CLUSTER_X86_CLUSTER_TIMER_H_
+#define ARCH_CLUSTER_X86_CLUSTER_TIMER_H_
 
 	/* Cluster Interface Implementation */
 	#include <arch/cluster/x86-cluster/_x86-cluster.h>
+
+/**
+ * @addtogroup x86-cluster-timer Timer
+ * @ingroup x86-cluster
+ *
+ * @brief Integrated Timer Device
+ */
+/**@{*/
+
+	#include <nanvix/const.h>
+	#include <stdint.h>
 
 /*============================================================================*
  * Exported Interface                                                         *
  *============================================================================*/
 
 /**
- * @addtogroup x86-cluster x86 Cluster
- * @ingroup clusters
- *
- * @brief x86 Cluster
+ * @x86_cluster
  */
-/**@{*/
-
-	#include <arch/cluster/x86-cluster/timer.h>
-	#include <arch/cluster/x86-cluster/cores.h>
-	#include <arch/cluster/x86-cluster/memory.h>
 
 	/**
-	 * @name Provided Features
+	 * @name Exported Constants
 	 */
 	/**@{*/
-	#define CLUSTER_IS_MULTICORE  0 /**< Multicore Cluster */
-	#define CLUSTER_IS_IO         1 /**< I/O Cluster       */
-	#define CLUSTER_IS_COMPUTE    0 /**< Compute Cluster   */
-	#define CLUSTER_HAS_EVENTS    0 /**< Event Support?    */
-	#define CLUSTER_HAS_RTC       0 /**< RTC Support?      */
+	#define CLUSTER_FREQ PIT_FREQUENCY /**< @see PIT_FREQUENCY */
 	/**@}*/
+
+	/**
+	 * @name Exported Functions
+	 */
+	/**@{*/
+	#define __timer_init_fn  /**< timer_init()  */
+	#define __timer_reset_fn /**< timer_reset() */
+	#define __clock_read_fn  /**< clock_read()  */
+	/**@}*/
+
+#ifndef _ASM_FILE_
+
+	/**
+	 * @see i486_timer_init().
+	 */
+	static inline void timer_init(unsigned freq)
+	{
+		i486_timer_init(freq);
+	}
+
+	/**
+	 * @see i486_timer_reset().
+	 */
+	static inline void timer_reset(void)
+	{
+	}
+
+#endif /* !_ASM_FILE_ */
+
+/**@endcond*/
+
+/*============================================================================*/
 
 /**@}*/
 
-#endif /* ARCH_CLUSTER_X86_CLUSTER_H_ */
+#endif /* ARCH_CLUSTER_X86_CLUSTER_TIMER */

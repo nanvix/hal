@@ -35,12 +35,7 @@
 
 	#include <nanvix/const.h>
 
-	/**
-	 * @name Provided Interface
-	 */
-	/**@{*/
-	#define __timer_init_fn
-	/**@}*/
+#ifndef _ASM_FILE_
 
 	/**
 	 * @brief Oscillator frequency (in Hz)
@@ -65,45 +60,10 @@
 	/**
 	 * @brief Resets the timer device.
 	 */
-	static inline void i486_timer_reset(void)
-	{
-	}
+	EXTERN void i486_timer_reset(void);
+
+#endif /* !_ASM_FILE_ */
 
 /**@}*/
 
-/*============================================================================*
- * Exported Interface                                                         *
- *============================================================================*/
-
-/**
- * @cond i486
- */
-
-	/**
-	 * @name Exported functions
-	 */
-	/**@{*/
-	#define __timer_init_fn  /**< timer_init(   */
-	#define __timer_reset_fn /**< timer_reset() */
-	/**@}*/
-
-	/**
-	 * @see i486_timer_init().
-	 */
-	static inline void timer_init(unsigned freq)
-	{
-		i486_timer_init(freq);
-	}
-
-	/**
-	 * @see i486_timer_reset().
-	 */
-	static inline void timer_reset(void)
-	{
-		i486_timer_reset();
-	}
-
-/**@endcond*/
-
 #endif /* ARCH_I486_TIMER_H_ */
-

@@ -42,23 +42,7 @@
 	/**
 	 * @brief Estimated CPU frequency (in Hz), 20Mhz.
 	 */
-	#define OR1K_CLUSTER_FREQUENCY 20000000
-
-#ifndef _ASM_FILE_
-
-	/**
-	 * @brief Stub function.
-	 *
-	 * @returns Always zero.
-	 *
-	 * @todo TODO implement this function.
-	 */
-	static inline uint64_t or1k_cluster_clock_read(void)
-	{
-		return (0);
-	}
-
-#endif /* !_ASM_FILE_ */
+	#define OR1K_CLUSTER_FREQUENCY OR1K_CORE_FREQUENCY
 
 /*============================================================================*
  * Exported Interface                                                         *
@@ -98,14 +82,6 @@
 	static inline void timer_reset(void)
 	{
 		or1k_timer_reset();
-	}
-
-	/**
-	 * @see or1k_cluster_clock_read().
-	 */
-	static inline uint64_t clock_read(void)
-	{
-		return (or1k_cluster_clock_read());
 	}
 
 /**@endcond*/
