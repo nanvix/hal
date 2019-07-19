@@ -41,6 +41,9 @@ export CC = $(TOOLCHAIN_DIR)/riscv32-elf-gcc
 export LD = $(TOOLCHAIN_DIR)/riscv32-elf-ld
 export AR = $(TOOLCHAIN_DIR)/riscv32-elf-ar
 
+# Timeout Variable
+export TIMEOUT ?= 5
+
 # Compiler Options
 export CFLAGS  = -D __qemu_riscv32__ -D__riscv32__
 export CFAGS  += -march=rv32imafdc -mabi=ilp32

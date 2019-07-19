@@ -53,6 +53,9 @@ export CFLAGS += -D __INTERFACE_CHECK_PROCESSOR_AL
 export CFLAGS += -D __INTERFACE_CHECK_TARGET_AL
 export CFLAGS += -I $(INCDIR)/posix
 
+# Timeout Variable
+export TIMEOUT ?= 5
+
 # Linker Options
 export LDFLAGS  =
 

@@ -28,6 +28,11 @@
 #include <nanvix/const.h>
 #include "test.h"
 
+/**
+ * @brief Launch unit tests on performance interface?
+ */
+#define TEST_PERF 0
+
 #ifndef __unix64__
 
 /**
@@ -145,7 +150,10 @@ PUBLIC NORETURN void kmain(int argc, const char *argv[])
 
 	test_exception();
 	test_interrupt();
+
+#if (defined(TEST_PERF) && (TEST_PERF))
 	test_perf();
+#endif
 
 #endif
 
