@@ -39,11 +39,6 @@
 	#include <nanvix/const.h>
 	#include <stdint.h>
 
-	/**
-	 * @brief Oscillator frequency (in Hz)
-	 */
-	#define PIT_FREQUENCY 1193182
-
 /*============================================================================*
  * Exported Interface                                                         *
  *============================================================================*/
@@ -57,14 +52,6 @@
 	 */
 	/**@{*/
 	#define CLUSTER_FREQ PIT_FREQUENCY /**< @see PIT_FREQUENCY */
-	/**@}*/
-
-	/**
-	 * @name Registers
-	 */
-	/**@{*/
-	#define PIT_CTRL 0x43 /**< Control */
-	#define PIT_DATA 0x40 /**< Data    */
 	/**@}*/
 
 	/**

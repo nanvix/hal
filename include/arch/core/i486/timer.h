@@ -38,6 +38,19 @@
 #ifndef _ASM_FILE_
 
 	/**
+	 * @brief Oscillator frequency (in Hz)
+	 */
+	#define PIT_FREQUENCY 1193182
+
+	/**
+	 * @name Registers
+	 */
+	/**@{*/
+	#define PIT_CTRL 0x43 /**< Control */
+	#define PIT_DATA 0x40 /**< Data    */
+	/**@}*/
+
+	/**
 	 * @brief Initializes the timer device.
 	 *
 	 * @param freq Target frequency for the timer device.
