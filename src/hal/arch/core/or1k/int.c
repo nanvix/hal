@@ -33,7 +33,7 @@
  * @brief Interrupt handlers.
  */
 PUBLIC void (*interrupt_handlers[OR1K_INT_NUM])(int) = {
-	NULL, NULL, NULL
+	NULL, NULL, NULL, NULL, NULL
 };
 
 /**
