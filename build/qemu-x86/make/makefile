@@ -41,6 +41,9 @@ export CC = $(TOOLCHAIN_DIR)/i486-elf-gcc
 export LD = $(TOOLCHAIN_DIR)/i486-elf-ld
 export AR = $(TOOLCHAIN_DIR)/i486-elf-ar
 
+# Timeout Variable
+export TIMEOUT ?= 5
+
 # Compiler Options
 export CFLAGS  = -D __qemu_x86__ -D __x86__
 export CFLAGS += -nostdlib -nostdinc
