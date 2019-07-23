@@ -48,8 +48,8 @@ PUBLIC void linux64_cluster_setup(void)
 {
 	kprintf("[hal] booting up cluster...");
 	
-	for(int i = 0; i < LINUX64_CLUSTER_NUM_CORES; i++)
-		linux64_spinlock_init(&cores[i].lock);
+	for(int i = 1; i < LINUX64_CLUSTER_NUM_CORES; i++)
+		linux64_spinlock_lock(&cores[i].lock);
 }
 
 /**
