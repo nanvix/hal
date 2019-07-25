@@ -50,6 +50,7 @@ export CFLAGS += -nostdlib -nostdinc
 export CFLAGS += -ansi -pedantic-errors
 export CFLAGS += -Wstack-usage=4096
 export CFLAGS += -Wno-type-limits
+export CFLAGS += -Wno-missing-profile
 export CFLAGS += -D __HAS_HW_DIVISION
 export CFLAGS += -D __INTERFACE_CHECK_CORE_AL
 export CFLAGS += -D __INTERFACE_CHECK_EVENT
