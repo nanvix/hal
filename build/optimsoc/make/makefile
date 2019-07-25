@@ -46,6 +46,7 @@ export CFLAGS  = -D __optimsoc__ -D__optimsoc4__
 export CFLAGS += -nostdlib -nostdinc
 export CFLAGS += -ansi -pedantic-errors
 export CFLAGS += -Wstack-usage=4096
+export CFLAGS += -Wno-missing-profile
 export CFLAGS += -D __INTERFACE_CHECK_CORE_AL
 export CFLAGS += -D __INTERFACE_CHECK_EVENT
 export CFLAGS += -D __INTERFACE_CHECK_MEMORY
