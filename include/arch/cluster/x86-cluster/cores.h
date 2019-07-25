@@ -46,6 +46,13 @@
 	 */
 	#define X86_CLUSTER_COREID_MASTER 0
 
+#ifndef _ASM_FILE_
+
+	/**
+	 * @brief Initializes the underlying cluster.
+	 */
+	EXTERN void x86_cluster_setup(void);
+
 	/**
 	 * @brief Gets the number of cores.
 	 *
@@ -58,6 +65,8 @@
 	{
 		return (X86_CLUSTER_NUM_CORES);
 	}
+
+#endif /* _ASM_FILE_ */
 
 /**@}*/
 
@@ -86,6 +95,7 @@
 	 */
 	#define COREID_MASTER X86_CLUSTER_COREID_MASTER
 
+#ifndef _ASM_FILE_
 #ifdef __NANVIX_HAL
 
 	/**
@@ -97,6 +107,7 @@
 	}
 
 #endif /* __NANVIX_HAL */
+#endif /* _ASM_FILE_ */
 
 /**@endcond*/
 

@@ -31,7 +31,7 @@
 #include <nanvix/klib.h>
 
 /*============================================================================*
- * i486_cluster_setup()                                                       *
+ * x86_cluster_setup()                                                       *
  *============================================================================*/
 
 /**
@@ -39,8 +39,11 @@
  *
  * @author Davidson Francis
  */
-PUBLIC void i486_cluster_setup(void)
+PUBLIC void x86_cluster_setup(void)
 {
 	/* Initialize events table. */
 	event_setup();
+
+	/* Initialize memory layout. */
+	x86_cluster_mem_setup();
 }

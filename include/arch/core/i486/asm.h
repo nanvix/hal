@@ -154,4 +154,40 @@
 
 	.endm
 
+/*============================================================================*
+ * Misc                                                                       *
+ *============================================================================*/
+
+	/*
+	 * Clear all GPR registers.
+	 */
+	.macro i486_clear_gprs
+
+		xorl %eax, %eax
+		xorl %ebx, %ebx
+		xorl %ecx, %ecx
+		xorl %edx, %edx
+		xorl %esi, %esi
+		xorl %edi, %edi
+		xorl %ebp, %ebp
+		xorl %esp, %esp
+
+	.endm
+
+	/*
+	 * Resets the stack.
+	 * - coreid ID of the calling core
+	 */
+	.macro i486_core_stack_reset coreid
+
+		movl $kstacks, %esp
+		movl %\coreid, %eax
+		addl %eax, 1
+		shll $I486_PAGE_SHIFT, %eax
+		addl %esp, %eax
+		addl $-I486_WORD_SIZE, %esp  /* Stack pointer. */
+		movl %esp, %ebp              /* Frame pointer. */
+
+	.endm
+
 #endif /* ARCH_CORE_I486_ASM_H_ */
