@@ -26,43 +26,15 @@
 #include <nanvix/const.h>
 
 /**
- * @brief Root page directory.
- */
-EXTERN struct pde i486_root_pgdir[];
-
-/**
- * @brief Kernel page table.
- */
-EXTERN struct pte i486_kernel_pgtab[];
-
-/**
- * @brief Kernel page pool page table.
- */
-EXTERN struct pte i486_kpool_pgtab[];
-
-/**
- * Alias to root page directory.
- */
-PUBLIC struct pde *root_pgdir = &i486_root_pgdir[0];
-
-/**
- * Alias to kernel page table.
- */
-PUBLIC struct pte *kernel_pgtab = &i486_kernel_pgtab[0];
-
-/**
- * Alias to kernel page pool page table.
- */
-PUBLIC struct pte *kpool_pgtab = &i486_kpool_pgtab[0];
-
-/**
  * @todo TODO provide a detailed description for this function.
  *
  * @author Pedro Henrique Penna
  */
-PUBLIC int i486_page_map(struct pte *pgtab, paddr_t paddr, vaddr_t vaddr, int w)
+PUBLIC int i486_page_map(struct pte *pgtab, paddr_t paddr, vaddr_t vaddr, int w, int x)
 {
 	int idx;
+
+	UNUSED(x);
 
 	/* Invalid page table. */
 	if (UNLIKELY(pgtab == NULL))

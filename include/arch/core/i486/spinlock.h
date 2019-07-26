@@ -48,6 +48,8 @@
 	#define I486_SPINLOCK_LOCKED   0x1 /**< Locked   */
 	/**@}*/
 
+#ifndef _ASM_FILE_
+
 	/**
 	 * @brief Spinlock.
 	 */
@@ -114,6 +116,8 @@
 		*lock = I486_SPINLOCK_UNLOCKED;
 		__sync_synchronize();
 	}
+
+#endif /* _ASM_FILE_ */
 
 /**@}*/
 

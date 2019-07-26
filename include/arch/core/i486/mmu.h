@@ -60,6 +60,27 @@
 	#define I486_PDE_SIZE   4                       /**< Page Directory Entry Size */
 	/**@}*/
 
+	/**
+	 * @brief Length of virtual addresses.
+	 *
+	 * Number of bits in a virtual address.
+	 */
+	#define I486_VADDR_LENGTH 32
+
+	/**
+	 * @brief Page Directory length.
+	 *
+	 * Number of Page Directory Entries (PDEs) per Page Directory.
+	 */
+	#define I486_PGDIR_LENGTH (1 << (I486_VADDR_LENGTH - I486_PGTAB_SHIFT))
+
+	/**
+	 * @brief Page Table length.
+	 *
+	 * Number of Page Table Entries (PTEs) per Page Table.
+	 */
+	#define I486_PGTAB_LENGTH (1 << (I486_PGTAB_SHIFT - I486_PAGE_SHIFT))
+
 #ifndef _ASM_FILE_
 
 	/**
@@ -101,11 +122,12 @@
 	 * @param paddr Physical address of the target page frame.
 	 * @param vaddr Virtual address of the target page.
 	 * @param w     Writable page?
+	 * @param x     Executable page?
 	 *
 	 * @returns Upon successful completion, zero is returned. Upon
 	 * failure, a negative error code is returned instead.
 	 */
-	EXTERN int i486_page_map(struct pte *pgtab, paddr_t paddr, vaddr_t vaddr, int w);
+	EXTERN int i486_page_map(struct pte *pgtab, paddr_t paddr, vaddr_t vaddr, int w, int x);
 
 	/**
 	 * @brief Maps a page table.
@@ -779,9 +801,7 @@
 	 */
 	static inline int mmu_page_map(struct pte *pgtab, paddr_t paddr, vaddr_t vaddr, int w, int x)
 	{
-		UNUSED(x);
-
-		return (i486_page_map(pgtab, paddr, vaddr, w));
+		return (i486_page_map(pgtab, paddr, vaddr, w, x));
 	}
 
 	/**

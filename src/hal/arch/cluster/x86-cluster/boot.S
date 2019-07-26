@@ -26,8 +26,7 @@
 #define _ASM_FILE_
 
 #include <grub/mboot.h>
-#include <arch/core/i486/core.h>
-#include <arch/core/i486/mmu.h>
+#include <arch/cluster/x86-cluster/cores.h>
 
 /**
  * @brief Multiboot flags.
@@ -36,9 +35,7 @@
 
 /* Exported symbols. */
 .globl start
-.globl i486_root_pgdir
-.globl i486_kernel_pgtab
-.globl i486_kpool_pgtab
+.globl kstacks
 
 /*============================================================================*
  *                              bootstrap section                             *
@@ -68,54 +65,16 @@ mboot_header:
  * Kernel entry point.
  */
 start:
-
-	/* Build kernel page tables. */
-	start.kernel.init:
-		movl $i486_kernel_pgtab, %edi
-		movl $0x00000000 + 7, %eax
-		start.kernel.init.loop:
-			stosl
-			addl $I486_PAGE_SIZE, %eax
-			cmpl $i486_kernel_pgtab + I486_PAGE_SIZE, %edi
-			jl start.kernel.init.loop
-
-	/* Build kernel pool tables. */
-	start.kpool.init:
-		movl $i486_kpool_pgtab, %edi
-		movl $0x01000000 + 7, %eax
-		start.kpool.init.loop:
-			stosl
-			addl $I486_PAGE_SIZE, %eax
-			cmpl $i486_kpool_pgtab + I486_PAGE_SIZE, %edi
-			jl start.kpool.init.loop
-
-	/*
-	 * Build initial page directory.
-	 *   - Kernel code + data at 0x00000000
-	 *   - Kernel code + data at 0xc0000000
-	 *   - Kernel page pool at 0xc1000000
-	 */
-	start.kpgdir.init:
-		movl $i486_kernel_pgtab + 3, i486_root_pgdir + I486_PTE_SIZE*0
-		movl $i486_kernel_pgtab + 3, i486_root_pgdir + I486_PTE_SIZE*768
-		movl $i486_kpool_pgtab  + 3, i486_root_pgdir + I486_PTE_SIZE*772
-
-	/* Enable paging. */
-	start.paging.enable:
-		movl $i486_root_pgdir, %eax
-		movl %eax, %cr3
-		movl %cr0, %eax
-		orl $0x80000000, %eax
-		movl %eax, %cr0
+	
+	i486_clear_gprs
 
 	/* Setup stack. */
-	start.kstack.setup:
-		movl $core0.kstack + I486_PAGE_SIZE - I486_WORD_SIZE, %ebp
-		movl $core0.kstack + I486_PAGE_SIZE - I486_WORD_SIZE, %esp
+	movl $0, %eax
+	i486_core_stack_reset eax
 
+	/* Core and cluster setup. */
+	call x86_cluster_setup
 	call i486_core_setup
-
-	call i486_cluster_setup
 
 	call kmain
 
@@ -125,45 +84,12 @@ start:
 		jmp start.halt
 
 /*----------------------------------------------------------------------------*
- * i486_kernel_pgtab                                                          *
+ * kstacks                                                                    *
  *----------------------------------------------------------------------------*/
 
 /**
- * @brief Page table for kernel code and data.
+ * @brief Kernel stack for all cores.
  */
 .align I486_PAGE_SIZE
-i486_kernel_pgtab:
-	.fill I486_PAGE_SIZE/I486_PTE_SIZE, I486_PTE_SIZE, 0
-
-/*----------------------------------------------------------------------------*
- * i486_kpool_pgtab                                                           *
- *----------------------------------------------------------------------------*/
-
-/**
- * @brief Page table for kernel page pool.
- */
-.align I486_PAGE_SIZE
-i486_kpool_pgtab:
-	.fill I486_PAGE_SIZE/I486_PTE_SIZE, I486_PTE_SIZE, 0
-
-/*----------------------------------------------------------------------------*
- * i486_root_pgdir                                                            *
- *----------------------------------------------------------------------------*/
-
-/**
- * @brief Page directory of idle process.
- */
-.align I486_PAGE_SIZE
-i486_root_pgdir:
-	.fill I486_PAGE_SIZE/I486_PTE_SIZE, I486_PTE_SIZE, 0
-
-/*----------------------------------------------------------------------------*
- * core0.kstack                                                               *
- *----------------------------------------------------------------------------*/
-
-/**
- * @brief Kernel stack for core 0.
- */
-.align I486_PAGE_SIZE
-core0.kstack:
-	.fill I486_PAGE_SIZE/I486_PTE_SIZE, I486_PTE_SIZE, 0
+kstacks:
+	.skip I486_PAGE_SIZE * X86_CLUSTER_NUM_CORES

@@ -22,47 +22,38 @@
  * SOFTWARE.
  */
 
-#ifndef ARCH_I486_CACHE_H_
-#define ARCH_I486_CACHE_H_
+#ifndef CLUSTER_X86_CLUSTER_MEMMAP_H_
+#define CLUSTER_X86_CLUSTER_MEMMAP_H_
+
+	#ifndef __NEED_CLUSTER_MEMMAP
+		#error "do not include this file"
+	#endif
+
+	/* Cluster Interface Implementation */
+	#include <arch/cluster/x86-cluster/_x86-cluster.h>
 
 /**
- * @addtogroup i486-core-cache Cache
- * @ingroup i486-core
+ * @addtogroup x86_cluster-cluster-memmap Memory Map
+ * @ingroup x86_cluster-cluster
  *
- * @brief Memory Cache
+ * @brief Physical memory map.
  */
 /**@{*/
 
 	/**
-	 * @name Provided Interface
+	 * @name Physical Memory Layout
 	 */
 	/**@{*/
-	#define __dcache_invalidate_fn
+	#define X86_CLUSTER_DRAM_BASE_PHYS 0x00000000 /**< DRAM Base */
+	#define X86_CLUSTER_DRAM_END_PHYS  0x04000000 /**< DRAM End  */
 	/**@}*/
 
 	/**
-	 * @brief Cache line size (in bytes).
-	 *
-	 * @bug The cache line size of i486 may change.
+	 * @brief DRAM brief (in bytes).
 	 */
-	#define I486_CACHE_LINE_SIZE 64
-
-	/**
-	 * @see I486_CACHE_LINE_SIZE
-	 */
-	#define CACHE_LINE_SIZE I486_CACHE_LINE_SIZE
-
-#ifndef _ASM_FILE_
-
-	/**
-	 * @note The i486 target features cache coherency.
-	 */
-	static inline void dcache_invalidate(void)
-	{
-	}
-
-#endif /* _ASM_FILE_ */
+	#define X86_CLUSTER_DRAM_SIZE \
+		(X86_CLUSTER_DRAM_END_PHYS - X86_CLUSTER_DRAM_BASE_PHYS)
 
 /**@}*/
 
-#endif /* ARCH_I486_CACHE_H_ */
+#endif /* CLUSTER_X86_CLUSTER_MEMMAP_H_ */

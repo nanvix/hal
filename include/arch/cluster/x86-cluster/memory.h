@@ -22,63 +22,107 @@
  * SOFTWARE.
  */
 
-#ifndef CLUSTER_X86_MEMORY_H_
-#define CLUSTER_X86_MEMORY_H_
+#ifndef CLUSTER_X86_CLUSTER_MEMORY_H_
+#define CLUSTER_X86_CLUSTER_MEMORY_H_
 
 	/* Cluster Interface Implementation */
 	#include <arch/cluster/x86-cluster/_x86-cluster.h>
 
 /**
- * @addtogroup i486-cluster-mem Memory
- * @ingroup i486-cluster
+ * @addtogroup x86-cluster-mem Memory
+ * @ingroup x86-cluster
  *
  * @brief Memory System
  */
 /**@{*/
 
-	/**
-	 * @brief Memory size (in bytes).
-	 */
-	#define I486_MEM_SIZE (32*1024*1024)
+	/* Must come first. */
+	#define __NEED_CLUSTER_MEMMAP
 
-	/**
-	 * @brief Kernel memory size (in bytes).
-	 */
-	#define I486_KMEM_SIZE (16*1024*1024)
-
-	/**
-	 * @brief Kernel page pool size (in bytes).
-	 */
-	#define I486_KPOOL_SIZE (4*1024*1024)
-
-	/**
-	 * @brief User memory size (in bytes).
-	 */
-	#define I486_UMEM_SIZE (I486_MEM_SIZE - I486_KMEM_SIZE - I486_KPOOL_SIZE)
-
-	/**
-	 * @brief Kernel stack size (in bytes).
-	 */
-	#define I486_KSTACK_SIZE I486_PAGE_SIZE
-
-	/**
-	 * @name Virtual Memory Layout
-	 */
-	/**@{*/
-	#define I486_USER_BASE_VIRT   0x02000000 /**< User Base             */
-	#define I486_USTACK_BASE_VIRT 0xc0000000 /**< User Stack Base       */
-	#define I486_KERNEL_BASE_VIRT 0xc0000000 /**< Kernel Base           */
-	#define I486_KPOOL_BASE_VIRT  0xc1000000 /**< Kernel Page Pool Base */
-	/**@}*/
+	#include <nanvix/const.h>
+	#include <arch/cluster/x86-cluster/memmap.h>
 
 	/**
 	 * @name Physical Memory Layout
 	 */
 	/**@{*/
-	#define I486_KERNEL_BASE_PHYS 0x00000000 /**< Kernel Base           */
-	#define I486_KPOOL_BASE_PHYS  0x01000000 /**< Kernel Page Pool Base */
-	#define I486_USER_BASE_PHYS   0x02000000 /**< User Base             */
+	#define X86_CLUSTER_KERNEL_BASE_PHYS X86_CLUSTER_DRAM_BASE_PHYS                       /**< Kernel Code and Data */
+	#define X86_CLUSTER_KERNEL_END_PHYS  (X86_CLUSTER_KERNEL_BASE_PHYS + I486_PGTAB_SIZE) /**< Kernel End           */
+	#define X86_CLUSTER_KPOOL_BASE_PHYS  (X86_CLUSTER_KERNEL_END_PHYS  + I486_PGTAB_SIZE) /**< Kernel Page Pool     */
+	#define X86_CLUSTER_KPOOL_END_PHYS   (X86_CLUSTER_KPOOL_BASE_PHYS  + I486_PGTAB_SIZE) /**< Kernel Pool End      */
+	#define X86_CLUSTER_USER_BASE_PHYS   X86_CLUSTER_KPOOL_END_PHYS                       /**< User Base            */
+	#define X86_CLUSTER_USER_END_PHYS    X86_CLUSTER_DRAM_END_PHYS                        /**< User End             */
 	/**@}*/
+
+	/**
+	 * @name Virtual Memory Layout
+	 */
+	/**@{*/
+	#define X86_CLUSTER_KERNEL_BASE_VIRT X86_CLUSTER_KERNEL_BASE_PHYS  /**< Kernel Code and Data */
+	#define X86_CLUSTER_KERNEL_END_VIRT  X86_CLUSTER_KERNEL_END_PHYS   /**< Kernel End           */
+	#define X86_CLUSTER_KPOOL_BASE_VIRT  X86_CLUSTER_KPOOL_BASE_PHYS   /**< Kernel Page Pool     */
+	#define X86_CLUSTER_KPOOL_END_VIRT   X86_CLUSTER_KPOOL_END_PHYS    /**< Kernel Pool End      */
+	#define X86_CLUSTER_USER_BASE_VIRT   0xa0000000                    /**< User Base            */
+	#define X86_CLUSTER_USER_END_VIRT    0xc0000000                    /**< User End             */
+	#define X86_CLUSTER_USTACK_BASE_VIRT 0xc0000000                    /**< User Stack Base      */
+	#define X86_CLUSTER_USTACK_END_VIRT  0xb0000000                    /**< User Stack End       */
+	/**@}*/
+
+	/**
+	 * @brief Memory size (in bytes).
+	 */
+	#define X86_CLUSTER_MEM_SIZE \
+		X86_CLUSTER_DRAM_SIZE
+
+	/**
+	 * @brief Kernel memory size (in bytes).
+	 */
+	#define X86_CLUSTER_KMEM_SIZE \
+		(X86_CLUSTER_KERNEL_END_PHYS - X86_CLUSTER_KERNEL_BASE_PHYS)
+
+	/**
+	 * @brief Kernel page pool size (in bytes).
+	 */
+	#define X86_CLUSTER_KPOOL_SIZE \
+		(X86_CLUSTER_KPOOL_END_PHYS - X86_CLUSTER_KPOOL_BASE_PHYS)
+
+	/**
+	 * @brief User memory size (in bytes).
+	 */
+	#define X86_CLUSTER_UMEM_SIZE \
+		(X86_CLUSTER_USER_END_PHYS - X86_CLUSTER_USER_BASE_PHYS)
+
+#ifndef _ASM_FILE
+
+	/**
+	 * @brief Binary Sections
+	 */
+	/**@{*/
+	EXTERN unsigned char __BOOTSTRAP_START; /**< Bootstrap Start */
+	EXTERN unsigned char __BOOTSTRAP_END;   /**< Bootstrap End   */
+	EXTERN unsigned char __TEXT_START;      /**< Text Start      */
+	EXTERN unsigned char __TEXT_END;        /**< Text End        */
+	EXTERN unsigned char __DATA_START;      /**< Data Start      */
+	EXTERN unsigned char __DATA_END;        /**< Data End        */
+	EXTERN unsigned char __BSS_START;       /**< BSS Start       */
+	EXTERN unsigned char __BSS_END;         /**< BSS End         */
+	/**@}*/
+
+#ifdef __NANVIX_HAL
+
+	/**
+	 * @brief Initializes the Memory Interface.
+	 */
+	EXTERN void x86_cluster_mem_setup(void);
+
+	/**
+	 * @brief Enable paging in the underlying core.
+	 */
+	EXTERN void _x86_cluster_enable_paging(void);
+
+#endif /* __NANVIX_HAL */
+
+#endif /* _ASM_FILE_ */
 
 /**@}*/
 
@@ -93,18 +137,18 @@
 	/**
 	 * @name Exported Constants
 	 */
-	#define MEMORY_SIZE  I486_MEM_SIZE          /**< @see I486_MEM_SIZE         */
-	#define KMEM_SIZE    I486_KMEM_SIZE         /**< @see I486_KMEM_SIZE        */
-	#define UMEM_SIZE    I486_UMEM_SIZE         /**< @see I486_UMEM_SIZE        */
-	#define KSTACK_SIZE  I486_KSTACK_SIZE       /**< @see I486_KSTACK_SIZE      */
-	#define KPOOL_SIZE   I486_KPOOL_SIZE        /**< @see I486_KPOOL_SIZE       */
-	#define KBASE_PHYS   I486_KERNEL_BASE_PHYS  /**< @see I486_KERNEL_BASE_PHYS */
-	#define KPOOL_PHYS   I486_KPOOL_BASE_PHYS   /**< @see I486_KPOOL_BASE_PHYS  */
-	#define UBASE_PHYS   I486_USER_BASE_PHYS    /**< @see I486_USER_BASE_PHYS   */
-	#define USTACK_VIRT  I486_USTACK_BASE_VIRT  /**< @see I486_USTACK_BASE_VIRT */
-	#define UBASE_VIRT   I486_USER_BASE_VIRT    /**< @see I486_USER_BASE_VIRT   */
-	#define KBASE_VIRT   I486_KERNEL_BASE_VIRT  /**< @see I486_KERNEL_BASE_VIRT */
-	#define KPOOL_VIRT   I486_KPOOL_BASE_VIRT   /**< @see I486_KPOOL_BASE_VIRT  */
+	#define MEMORY_SIZE  X86_CLUSTER_MEM_SIZE          /**< @see X86_CLUSTER_MEM_SIZE         */
+	#define KMEM_SIZE    X86_CLUSTER_KMEM_SIZE         /**< @see X86_CLUSTER_KMEM_SIZE        */
+	#define UMEM_SIZE    X86_CLUSTER_UMEM_SIZE         /**< @see X86_CLUSTER_UMEM_SIZE        */
+	#define KSTACK_SIZE  X86_CLUSTER_KSTACK_SIZE       /**< @see X86_CLUSTER_KSTACK_SIZE      */
+	#define KPOOL_SIZE   X86_CLUSTER_KPOOL_SIZE        /**< @see X86_CLUSTER_KPOOL_SIZE       */
+	#define KBASE_PHYS   X86_CLUSTER_KERNEL_BASE_PHYS  /**< @see X86_CLUSTER_KERNEL_BASE_PHYS */
+	#define KPOOL_PHYS   X86_CLUSTER_KPOOL_BASE_PHYS   /**< @see X86_CLUSTER_KPOOL_BASE_PHYS  */
+	#define UBASE_PHYS   X86_CLUSTER_USER_BASE_PHYS    /**< @see X86_CLUSTER_USER_BASE_PHYS   */
+	#define USTACK_VIRT  X86_CLUSTER_USTACK_BASE_VIRT  /**< @see X86_CLUSTER_USTACK_BASE_VIRT */
+	#define UBASE_VIRT   X86_CLUSTER_USER_BASE_VIRT    /**< @see X86_CLUSTER_USER_BASE_VIRT   */
+	#define KBASE_VIRT   X86_CLUSTER_KERNEL_BASE_VIRT  /**< @see X86_CLUSTER_KERNEL_BASE_VIRT */
+	#define KPOOL_VIRT   X86_CLUSTER_KPOOL_BASE_VIRT   /**< @see X86_CLUSTER_KPOOL_BASE_VIRT  */
 	/**@}*/
 
 /**@endcond*/

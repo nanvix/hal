@@ -22,47 +22,33 @@
  * SOFTWARE.
  */
 
-#ifndef ARCH_I486_CACHE_H_
-#define ARCH_I486_CACHE_H_
+/* Must come first. */
+#define _ASM_FILE_
+#define __NEED_CORE_TYPES
 
-/**
- * @addtogroup i486-core-cache Cache
- * @ingroup i486-core
- *
- * @brief Memory Cache
+#include <arch/core/i486/asm.h>
+#include <arch/core/i486/mmu.h>
+#include <arch/core/i486/types.h>
+
+/* Exported symbols. */
+.global _x86_cluster_enable_paging
+.global root_pgdir
+
+.section .text
+
+/*===========================================================================*
+ * _x86_cluster_enable_paging                                                *
+ *===========================================================================*/
+
+/*
+ * Enable paging for the underlying core.
  */
-/**@{*/
+.align I486_WORD_SIZE
+_x86_cluster_enable_paging:
 
-	/**
-	 * @name Provided Interface
-	 */
-	/**@{*/
-	#define __dcache_invalidate_fn
-	/**@}*/
-
-	/**
-	 * @brief Cache line size (in bytes).
-	 *
-	 * @bug The cache line size of i486 may change.
-	 */
-	#define I486_CACHE_LINE_SIZE 64
-
-	/**
-	 * @see I486_CACHE_LINE_SIZE
-	 */
-	#define CACHE_LINE_SIZE I486_CACHE_LINE_SIZE
-
-#ifndef _ASM_FILE_
-
-	/**
-	 * @note The i486 target features cache coherency.
-	 */
-	static inline void dcache_invalidate(void)
-	{
-	}
-
-#endif /* _ASM_FILE_ */
-
-/**@}*/
-
-#endif /* ARCH_I486_CACHE_H_ */
+	movl root_pgdir, %eax
+	movl %eax, %cr3
+	movl %cr0, %eax
+	orl $0x80000000, %eax
+	movl %eax, %cr0
+	ret
