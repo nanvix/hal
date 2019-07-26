@@ -15,6 +15,7 @@ bin/
 lib/
 *.a
 *.o
+nanvix-run.output
 
 # Ctags
 tags
