@@ -157,19 +157,21 @@
 	 * @name Exported Constants
 	 */
 	/**@{*/
-	#define KPAGE_SIZE  I486_PAGE_SIZE   /**< @ref I486_PAGE_SIZE   */
-	#define PAGE_SIZE   I486_PAGE_SIZE   /**< @ref I486_PAGE_SIZE   */
-	#define PGTAB_SIZE  I486_PGTAB_SIZE  /**< @ref I486_PGTAB_BIT   */
-	#define PTE_SIZE    I486_PTE_SIZE    /**< @ref I486_PTE_SIZE    */
-	#define PDE_SIZE    I486_PDE_SIZE    /**< @ref I486_PDE_SIZE    */
-	#define PAGE_SHIFT  I486_PAGE_SHIFT  /**< @ref I486_PAGE_SHIFT  */
-	#define PGTAB_SHIFT I486_PGTAB_SHIFT /**< @ref I486_PGTAB_SHIFT */
-	#define PAGE_MASK   I486_PAGE_MASK   /**< @ref I486_PAGE_MASK   */
-	#define PGTAB_MASK  I486_PGTAB_MASK  /**< @ref I486_PGTAB_MASK  */
-	#define PADDR_BIT   I486_PADDR_BIT   /**< @ref I486_PADDR_BIT   */
-	#define VADDR_BIT   I486_VADDR_BIT   /**< @ref I486_VADDR_BIT   */
-	#define PADDR_BYTE  I486_PADDR_BYTE  /**< @ref I486_PADDR_BYTE  */
-	#define VADDR_BYTE  I486_VADDR_BYTE  /**< @ref I486_VADDR_BYTE  */
+	#define KPAGE_SIZE    I486_PAGE_SIZE     /**< @ref I486_PAGE_SIZE    */
+	#define PAGE_SIZE     I486_PAGE_SIZE     /**< @ref I486_PAGE_SIZE    */
+	#define PGTAB_SIZE    I486_PGTAB_SIZE    /**< @ref I486_PGTAB_BIT    */
+	#define PGTAB_LENGTH  I486_PGTAB_LENGTH  /**< @ref I486_PGTAB_LENGTH */
+	#define PGDIR_LENGTH  I486_PGDIR_LENGTH  /**< @ref I486_PGTAB_LENGTH */
+	#define PTE_SIZE      I486_PTE_SIZE      /**< @ref I486_PTE_SIZE     */
+	#define PDE_SIZE      I486_PDE_SIZE      /**< @ref I486_PDE_SIZE     */
+	#define PAGE_SHIFT    I486_PAGE_SHIFT    /**< @ref I486_PAGE_SHIFT   */
+	#define PGTAB_SHIFT   I486_PGTAB_SHIFT   /**< @ref I486_PGTAB_SHIFT  */
+	#define PAGE_MASK     I486_PAGE_MASK     /**< @ref I486_PAGE_MASK    */
+	#define PGTAB_MASK    I486_PGTAB_MASK    /**< @ref I486_PGTAB_MASK   */
+	#define PADDR_BIT     I486_PADDR_BIT     /**< @ref I486_PADDR_BIT    */
+	#define VADDR_BIT     I486_VADDR_BIT     /**< @ref I486_VADDR_BIT    */
+	#define PADDR_BYTE    I486_PADDR_BYTE    /**< @ref I486_PADDR_BYTE   */
+	#define VADDR_BYTE    I486_VADDR_BYTE    /**< @ref I486_VADDR_BYTE   */
 	/**@}*/
 
 	/**
