@@ -36,101 +36,72 @@
 #include <nanvix/const.h>
 
 /**
- * @brief Length of virtual addresses.
- *
- * Number of bits in a virtual address.
- *
- * @author Davidson Francis
- */
-#define OR1K_VADDR_LENGTH 32
-
-/**
- * @brief Number of memory regions.
- */
-#if (defined(__or1k_cluster__))
-	#define OR1K_CLUSTER_MEM_REGIONS 5
-#elif (defined(__optimsoc_cluster__))
-	#define OR1K_CLUSTER_MEM_REGIONS 3
-#endif
-
-/**
- * @brief Page and page table indexes boundaries.
- */
-#define MMREGION_PGTABLE_ALIGN_START 0                        /**< mmregion start pgtable aligned. */
-#define MMREGION_PGTABLE_ALIGN_END   2                        /**< mmregion end pgtable aligned.   */
-#define MMREGION_PG_ALIGN_START      2                        /**< mmregion start page aligned.    */
-#define MMREGION_PG_ALIGN_END        OR1K_CLUSTER_MEM_REGIONS /**< mmregion end page aligned.      */
-
-/**
- * @brief Memory region.
- */
-struct memory_region
-{
-	paddr_t pbase;    /**< Base physical address. */
-	vaddr_t vbase;    /**< Base virtual address.  */
-	paddr_t pend;     /**< End physical address.  */
-	vaddr_t vend;     /**< End virtual address.   */
-	size_t size;      /**< Size.                  */
-	bool writable;    /**< Writable?              */
-	bool  executable; /**< Executable?            */
-	const char *desc; /**< Description.           */
-};
-
-/**
  * @brief Memory layout.
  *
  * @note KERNEL_BASE and KPOOL_BASE *must* be the first two positions,
  * since they are aligned at page table boundaries. The remaining
  * positions left are intended for other devices.
  */
-PRIVATE struct memory_region or1k_cluster_mem_layout[OR1K_CLUSTER_MEM_REGIONS] = {
-	{ OR1K_CLUSTER_KERNEL_BASE_PHYS, OR1K_CLUSTER_KERNEL_BASE_VIRT,
-	  OR1K_CLUSTER_KERNEL_END_PHYS,  OR1K_CLUSTER_KERNEL_END_VIRT,
-	  OR1K_CLUSTER_KMEM_SIZE, true, true,  "kernel" },
-
-	{ OR1K_CLUSTER_KPOOL_BASE_PHYS, OR1K_CLUSTER_KPOOL_BASE_VIRT,
-	  OR1K_CLUSTER_KPOOL_END_PHYS,  OR1K_CLUSTER_KPOOL_END_VIRT,
-	  OR1K_CLUSTER_KPOOL_SIZE, true, false, "kpool" },
-
-	{ OR1K_CLUSTER_OMPIC_BASE_PHYS, OR1K_CLUSTER_OMPIC_BASE_VIRT,
-	  OR1K_CLUSTER_OMPIC_END_PHYS,  OR1K_CLUSTER_OMPIC_END_VIRT,
-	  OR1K_CLUSTER_OMPIC_MEM_SIZE,  true, false, "ompic" },
+PUBLIC struct memory_region mem_layout[OR1K_CLUSTER_MEM_REGIONS] = {
+	{
+		.pbase = OR1K_CLUSTER_KERNEL_BASE_PHYS,
+		.vbase = OR1K_CLUSTER_KERNEL_BASE_VIRT,
+		.pend  = OR1K_CLUSTER_KERNEL_END_PHYS,
+		.vend  = OR1K_CLUSTER_KERNEL_END_VIRT,
+		.size  = OR1K_CLUSTER_KMEM_SIZE,
+		.writable = true,
+		.executable = true,
+		.root_pgtab_num = 0,
+		.desc = "kernel"
+	},
+	{
+		.pbase = OR1K_CLUSTER_KPOOL_BASE_PHYS,
+		.vbase = OR1K_CLUSTER_KPOOL_BASE_VIRT,
+		.pend  = OR1K_CLUSTER_KPOOL_END_PHYS,
+		.vend  = OR1K_CLUSTER_KPOOL_END_VIRT,
+		.size  = OR1K_CLUSTER_KPOOL_SIZE,
+		.writable = true,
+		.executable = false,
+		.root_pgtab_num = 1,
+		.desc = "kpool"
+	},
+	{
+		.pbase = OR1K_CLUSTER_OMPIC_BASE_PHYS,
+		.vbase = OR1K_CLUSTER_OMPIC_BASE_VIRT,
+		.pend  = OR1K_CLUSTER_OMPIC_END_PHYS,
+		.vend  = OR1K_CLUSTER_OMPIC_END_VIRT,
+		.size  = OR1K_CLUSTER_OMPIC_MEM_SIZE,
+		.writable = true,
+		.executable = false,
+		.root_pgtab_num = 2,
+		.desc = "ompic"
+	},
 
 #if (defined(__or1k_cluster__))
-	{ OR1K_CLUSTER_UART_BASE_PHYS, OR1K_CLUSTER_UART_BASE_VIRT,
-	  OR1K_CLUSTER_UART_END_PHYS,  OR1K_CLUSTER_UART_END_VIRT,
-	  OR1K_CLUSTER_UART_MEM_SIZE,  true, false, "uart" },
-
-	{ OR1K_CLUSTER_ETH_BASE_PHYS, OR1K_CLUSTER_ETH_BASE_VIRT,
-	  OR1K_CLUSTER_ETH_END_PHYS,  OR1K_CLUSTER_ETH_END_VIRT,
-	  OR1K_CLUSTER_ETH_MEM_SIZE,  true, false, "eth" },
+	{
+		.pbase = OR1K_CLUSTER_UART_BASE_PHYS,
+		.vbase = OR1K_CLUSTER_UART_BASE_VIRT,
+		.pend  = OR1K_CLUSTER_UART_END_PHYS,
+		.vend  = OR1K_CLUSTER_UART_END_VIRT,
+		.size  = OR1K_CLUSTER_UART_MEM_SIZE,
+		.writable = true,
+		.executable = false,
+		.root_pgtab_num = 3,
+		.desc = "uart"
+	},
+	{
+		.pbase = OR1K_CLUSTER_ETH_BASE_PHYS,
+		.vbase = OR1K_CLUSTER_ETH_BASE_VIRT,
+		.pend  = OR1K_CLUSTER_ETH_END_PHYS,
+		.vend  = OR1K_CLUSTER_ETH_END_VIRT,
+		.size  = OR1K_CLUSTER_ETH_MEM_SIZE,
+		.writable = true,
+		.executable = false,
+		.root_pgtab_num = 4,
+		.desc = "eth"
+	},
 #endif
 };
-
-/**
- * @brief Root page directory.
- */
-PRIVATE struct pde or1k_cluster_root_pgdir[OR1K_PGDIR_LENGTH] ALIGN(PAGE_SIZE);
-
-/**
- * @brief Root page tables.
- */
-PRIVATE struct pte or1k_cluster_root_pgtabs[OR1K_CLUSTER_MEM_REGIONS][OR1K_PGTAB_LENGTH] ALIGN(PAGE_SIZE);
-
-/**
- * Alias to root page directory.
- */
-PUBLIC struct pde *root_pgdir = &or1k_cluster_root_pgdir[0];
-
-/**
- * Alias to kernel page table.
- */
-PUBLIC struct pte *kernel_pgtab = or1k_cluster_root_pgtabs[0];
-
-/**
- * Alias to kernel page pool page table.
- */
-PUBLIC struct pte *kpool_pgtab = or1k_cluster_root_pgtabs[1];
 
 /**
  * @brief TLB
@@ -384,209 +355,6 @@ PUBLIC void or1k_mmu_setup(void)
 	exception_register(EXCEPTION_DTLB_FAULT, or1k_cluster_do_tlb_fault);
 	exception_register(EXCEPTION_ITLB_FAULT, or1k_cluster_do_tlb_fault);
 
-	/* Initial TLB. */
-	or1k_cluster_tlb_init();
-
 	/* Enable MMU. */
 	or1k_enable_mmu();
-}
-
-/*============================================================================*
- * or1k_cluster_mem_info()                                                    *
- *============================================================================*/
-
-/**
- * @brief Prints information about memory layout.
- *
- * The or1k_cluster_mem_info() prints information about the virtual
- * memory layout.
- *
- * @author Davidson Francis
- */
-PRIVATE void or1k_cluster_mem_info(void)
-{
-	int i; /* Loop index. */
-
-	kprintf("[hal] text = %d KB data = %d KB bss = %d KB",
-		(&__TEXT_END - &__TEXT_START)/KB,
-		(&__DATA_END - &__DATA_START)/KB,
-		(&__BSS_END  - &__BSS_START)/KB
-	);
-
-	for (i = 0; i < OR1K_CLUSTER_MEM_REGIONS; i++)
-	{
-		kprintf("[hal] %s_base=%x %s_end=%x",
-			or1k_cluster_mem_layout[i].desc,
-			or1k_cluster_mem_layout[i].vbase,
-			or1k_cluster_mem_layout[i].desc,
-			or1k_cluster_mem_layout[i].vend
-		);
-	}
-
-	kprintf("[hal] user_base=%x   user_end=%x",
-		OR1K_CLUSTER_USER_BASE_VIRT,
-		OR1K_CLUSTER_USER_END_VIRT
-	);
-
-	kprintf("[hal] memsize=%d MB kmem=%d KB kpool=%d KB umem=%d KB",
-		OR1K_CLUSTER_MEM_SIZE/MB,
-		OR1K_CLUSTER_KMEM_SIZE/KB,
-		OR1K_CLUSTER_KPOOL_SIZE/KB,
-		OR1K_CLUSTER_UMEM_SIZE/KB
-	);
-}
-
-/*============================================================================*
- * or1k_cluster_mem_check_align()                                             *
- *============================================================================*/
-
-/**
- * @brief Asserts the memory alignment.
- *
- * @todo TODO provide a detailed description for this function.
- *
- * @author Davidson Francis
- */
-PRIVATE void or1k_cluster_mem_check_align(void)
-{
-	int i; /* Loop index. */
-
-	/* These should be aligned at page boundaries. */
-	for (i = MMREGION_PG_ALIGN_START; i < MMREGION_PG_ALIGN_END; i++)
-	{
-		if (or1k_cluster_mem_layout[i].vbase & (OR1K_PAGE_SIZE - 1))
-			kpanic("%s base address misaligned", or1k_cluster_mem_layout[i].desc);
-		if (or1k_cluster_mem_layout[i].vend  & (OR1K_PAGE_SIZE - 1))
-			kpanic("%s end address misaligned", or1k_cluster_mem_layout[i].desc);
-	}
-
-	/* These should be aligned at page table boundaries. */
-	for (i = MMREGION_PGTABLE_ALIGN_START; i < MMREGION_PGTABLE_ALIGN_END; i++)
-	{
-		if (or1k_cluster_mem_layout[i].vbase & (OR1K_PGTAB_SIZE - 1))
-			kpanic("%s base address misaligned", or1k_cluster_mem_layout[i].desc);
-		if (or1k_cluster_mem_layout[i].vend  & (OR1K_PGTAB_SIZE - 1))
-			kpanic("%s end address misaligned", or1k_cluster_mem_layout[i].desc);
-	}
-
-	if (OR1K_CLUSTER_USER_BASE_VIRT & (OR1K_PGTAB_SIZE - 1))
-		kpanic("user base address misaligned");
-	if (OR1K_CLUSTER_USER_END_VIRT & (OR1K_PGTAB_SIZE - 1))
-		kpanic("user end address misaligned");
-}
-
-/*============================================================================*
- * or1k_cluster_mem_check_layout()                                            *
- *============================================================================*/
-
-/**
- * @brief Asserts the memory layout.
- *
- * @todo TODO provide a detailed description for this function.
- *
- * @author Davidson Francis
- */
-PRIVATE void or1k_cluster_mem_check_layout(void)
-{
-	int i; /* Loop index. */
-
-	/*
-	 * These should be identity mapped, becasuse the underlying
-	 * hypervisor runs with virtual memory disabled.
-	 */
-	for (i = 0; i < OR1K_CLUSTER_MEM_REGIONS; i++)
-	{
-		if (or1k_cluster_mem_layout[i].vbase != or1k_cluster_mem_layout[i].pbase)
-		{
-			kpanic("%s base address is not identity mapped",
-				or1k_cluster_mem_layout[i].desc
-			);
-		}
-		if (or1k_cluster_mem_layout[i].vend != or1k_cluster_mem_layout[i].pend)
-		{
-			kpanic("%s end address is not identity mapped",
-				or1k_cluster_mem_layout[i].desc
-			);
-		}
-	}
-}
-
-/*============================================================================*
- * or1k_cluster_mem_map()                                                     *
- *============================================================================*/
-
-/**
- * @brief Builds the memory layout.
- *
- * @todo TODO provide a detailed description for this function.
- *
- * @author Davidson Francis
- */
-PRIVATE void or1k_cluster_mem_map(void)
-{
-	/* Clean root page directory. */
-	for (int i = 0; i < OR1K_PGDIR_LENGTH; i++)
-		pde_clear(&or1k_cluster_root_pgdir[i]);
-
-	/* Build root address space. */
-	for (int i = 0; i < OR1K_CLUSTER_MEM_REGIONS; i++)
-	{
-		paddr_t j;
-		vaddr_t k;
-		paddr_t pbase = or1k_cluster_mem_layout[i].pbase;
-		vaddr_t vbase = or1k_cluster_mem_layout[i].vbase;
-		size_t size = or1k_cluster_mem_layout[i].size;
-		int w = or1k_cluster_mem_layout[i].writable;
-		int x = or1k_cluster_mem_layout[i].executable;
-
-		/* Map underlying pages. */
-		for (j = pbase, k = vbase;
-			 k < (pbase + size);
-			 j += OR1K_PAGE_SIZE, k += OR1K_PAGE_SIZE)
-		{
-			or1k_page_map(or1k_cluster_root_pgtabs[i], j, k, w, x);
-		}
-
-		/* Map underlying page table. */
-		or1k_pgtab_map(
-				or1k_cluster_root_pgdir,
-				OR1K_PADDR(or1k_cluster_root_pgtabs[i]),
-				vbase
-		);
-	}
-}
-
-/*============================================================================*
- * or1k_cluster_mem_setup()                                                   *
- *============================================================================*/
-
-/**
- * The or1k_cluster_mem_setup() function initializes the Memory
- * Interface of the underlying OpenRISC Cluster.
- *
- * @author Davidson Francis
- */
-PUBLIC void or1k_cluster_mem_setup(void)
-{
-	int coreid;
-
-	coreid = or1k_core_get_id();
-
-	/* Master core builds root virtual address space. */
-	if (coreid == OR1K_CLUSTER_COREID_MASTER)
-	{
-		kprintf("[hal] initializing memory layout...");
-
-		or1k_cluster_mem_info();
-
-		/* Check for memory layout. */
-		or1k_cluster_mem_check_layout();
-		or1k_cluster_mem_check_align();
-
-		or1k_cluster_mem_map();
-	}
-
-	/*
-	 * TODO: slave cores should warmup the TLB.
-	 */
 }

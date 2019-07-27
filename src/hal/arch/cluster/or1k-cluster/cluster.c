@@ -65,7 +65,7 @@ PUBLIC void or1k_cluster_setup(void)
 		kprintf("[hal] booting up cluster...");
 
 	/* Configure Memory Layout. */
-	or1k_cluster_mem_setup();
+	mem_setup();
 
 	/* Setup MMU. */
 	or1k_core_setup();
