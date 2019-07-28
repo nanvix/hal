@@ -218,19 +218,21 @@
 	 * @name Exported Constants
 	 */
 	/**@{*/
-	#define KPAGE_SIZE  RV32GC_PAGE_SIZE   /**< @ref RV32GC_PAGE_SIZE   */
-	#define PAGE_SIZE   RV32GC_PAGE_SIZE   /**< @ref RV32GC_PAGE_SIZE   */
-	#define PGTAB_SIZE  RV32GC_PGTAB_SIZE  /**< @ref RV32GC_PGTAB_BIT   */
-	#define PTE_SIZE    RV32GC_PTE_SIZE    /**< @ref RV32GC_PTE_SIZE    */
-	#define PDE_SIZE    RV32GC_PDE_SIZE    /**< @ref RV32GC_PDE_SIZE    */
-	#define PAGE_SHIFT  RV32GC_PAGE_SHIFT  /**< @ref RV32GC_PAGE_SHIFT  */
-	#define PGTAB_SHIFT RV32GC_PGTAB_SHIFT /**< @ref RV32GC_PGTAB_SHIFT */
-	#define PAGE_MASK   RV32GC_PAGE_MASK   /**< @ref RV32GC_PAGE_MASK   */
-	#define PGTAB_MASK  RV32GC_PGTAB_MASK  /**< @ref RV32GC_PGTAB_MASK  */
-	#define PADDR_BIT   RV32GC_PADDR_BIT   /**< @ref RV32GC_PADDR_BIT   */
-	#define VADDR_BIT   RV32GC_VADDR_BIT   /**< @ref RV32GC_VADDR_BIT   */
-	#define PADDR_BYTE  RV32GC_PADDR_BYTE  /**< @ref RV32GC_PADDR_BYTE  */
-	#define VADDR_BYTE  RV32GC_VADDR_BYTE  /**< @ref RV32GC_VADDR_BYTE  */
+	#define KPAGE_SIZE    RV32GC_PAGE_SIZE     /**< @ref RV32GC_PAGE_SIZE   */
+	#define PAGE_SIZE     RV32GC_PAGE_SIZE     /**< @ref RV32GC_PAGE_SIZE   */
+	#define PGTAB_SIZE    RV32GC_PGTAB_SIZE    /**< @ref RV32GC_PGTAB_SIZE  */
+	#define PGTAB_LENGTH  RV32GC_PGTAB_LENGTH  /**< @ref RV32GC_PGTAB_BIT   */
+	#define PGDIR_LENGTH  RV32GC_PGDIR_LENGTH  /**< @ref RV32GC_PGTAB_BIT   */
+	#define PTE_SIZE      RV32GC_PTE_SIZE      /**< @ref RV32GC_PTE_SIZE    */
+	#define PDE_SIZE      RV32GC_PDE_SIZE      /**< @ref RV32GC_PDE_SIZE    */
+	#define PAGE_SHIFT    RV32GC_PAGE_SHIFT    /**< @ref RV32GC_PAGE_SHIFT  */
+	#define PGTAB_SHIFT   RV32GC_PGTAB_SHIFT   /**< @ref RV32GC_PGTAB_SHIFT */
+	#define PAGE_MASK     RV32GC_PAGE_MASK     /**< @ref RV32GC_PAGE_MASK   */
+	#define PGTAB_MASK    RV32GC_PGTAB_MASK    /**< @ref RV32GC_PGTAB_MASK  */
+	#define PADDR_BIT     RV32GC_PADDR_BIT     /**< @ref RV32GC_PADDR_BIT   */
+	#define VADDR_BIT     RV32GC_VADDR_BIT     /**< @ref RV32GC_VADDR_BIT   */
+	#define PADDR_BYTE    RV32GC_PADDR_BYTE    /**< @ref RV32GC_PADDR_BYTE  */
+	#define VADDR_BYTE    RV32GC_VADDR_BYTE    /**< @ref RV32GC_VADDR_BYTE  */
 	/**@}*/
 
 	/**

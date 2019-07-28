@@ -54,7 +54,7 @@ PUBLIC void riscv32_cluster_setup(void)
 	if (coreid == RISCV32_CLUSTER_COREID_MASTER)
 		kprintf("[hal] booting up cluster...");
 
-	riscv32_cluster_mem_setup();
+	mem_setup();
 	rv32gc_core_setup();
 }
 
