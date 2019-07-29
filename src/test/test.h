@@ -100,6 +100,11 @@
 	EXTERN void test_cnoc(void);
 
 	/**
+	 * @brief Test driver for the Data NoC Interface
+	 */
+	EXTERN void test_dnoc(void);
+
+	/**
 	 * @brief Test driver for the Sync Interface
 	 */
 	EXTERN void test_sync(void);

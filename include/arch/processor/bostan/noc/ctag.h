@@ -91,27 +91,14 @@
 	/**@}*/
 
 	/**
-	 * @todo TODO: Provide a detailed description to this function.
+	 * @brief Initializes the control structures and configures the
+	 * interrupt handlers.
 	 */
 	EXTERN void bostan_cnoc_setup(void);
 
 /*============================================================================*
  * C-Noc Receiver Interface                                                   *
  *============================================================================*/
-
-	/**
-	 * @brief Assess reciver tag limits.
-	 *
-	 * @param interface Number of the DMA channel.
-	 * @param tag       Number of the receiver buffer.
-	 *
-	 * @return Zero if tag is valid non zero otherwise.
-	 */
-	static inline int bostan_cnoc_rx_is_valid(int interface, int tag)
-	{
-		return WITHIN(interface, 0, BOSTAN_NR_INTERFACES)
-		    && WITHIN(tag, BOSTAN_CNOC_RX_BASE, BOSTAN_NR_CNOC_RX);
-	}
 
 	/**
 	 * @brief Allocate C-NoC receiver buffer.
@@ -129,7 +116,7 @@
 	 * @param interface Number of the DMA channel.
 	 * @param tag       Number of receiver buffer.
 	 */
-	EXTERN void bostan_cnoc_rx_free(int interface, int tag);
+	EXTERN int bostan_cnoc_rx_free(int interface, int tag);
 
 	/**
 	 * @brief Clear events of C-NoC receiver buffer.
@@ -160,25 +147,17 @@
 	 *
 	 * @return Zero if configure successfully and non zero otherwise.
 	 */
-    EXTERN int bostan_cnoc_rx_config(int interface, int tag, int mode, uint64_t mask, bostan_noc_handler_fn handler);
+    EXTERN int bostan_cnoc_rx_config(
+		int interface,
+		int tag,
+		int mode,
+		uint64_t mask,
+		bostan_noc_handler_fn handler
+	);
 
 /*============================================================================*
  * C-Noc Transfer Interface                                                   *
  *============================================================================*/
-
-	/**
-	 * @brief Assess reciver tag limits.
-	 *
-	 * @param interface Number of the DMA channel.
-	 * @param tag       Number of the transfer buffer.
-	 *
-	 * @return Zero if tag is valid non zero otherwise.
-	 */
-	static inline int bostan_cnoc_tx_is_valid(int interface, int tag)
-	{
-		return WITHIN(interface, 0, BOSTAN_NR_INTERFACES)
-		    && WITHIN(tag, BOSTAN_CNOC_TX_BASE, BOSTAN_NR_CNOC_TX);
-	}
 
 	/**
 	 * @brief Free C-NoC transfer buffer.
@@ -196,7 +175,7 @@
 	 * @param interface Number of the DMA channel.
 	 * @param tag       Number of transfer buffer.
 	 */
-	EXTERN void bostan_cnoc_tx_free(int interface, int tag);
+	EXTERN int bostan_cnoc_tx_free(int interface, int tag);
 
 	/**
 	 * @brief Write into C-NoC transfer buffer.
