@@ -65,7 +65,7 @@ mboot_header:
  * Kernel entry point.
  */
 start:
-	
+
 	i486_clear_gprs
 
 	/* Setup stack. */

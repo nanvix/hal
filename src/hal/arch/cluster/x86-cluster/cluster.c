@@ -41,6 +41,9 @@
  */
 PUBLIC void x86_cluster_setup(void)
 {
+	/* Clear BSS section. */
+	kmemset(&__BSS_START, 0, &__BSS_END - &__BSS_START);
+
 	/* Initialize events table. */
 	event_setup();
 
