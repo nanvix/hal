@@ -146,7 +146,7 @@ PRIVATE struct test exception_api_tests[] = {
  *----------------------------------------------------------------------------*/
 
 /**
- * Fault Injection test: Set a Handler for an Invalid Exception
+ * Fault Injection Test: Set a Handler for an Invalid Exception
  */
 PRIVATE void test_exception_register_inval(void)
 {
@@ -159,14 +159,14 @@ PRIVATE void test_exception_register_inval(void)
  *----------------------------------------------------------------------------*/
 
 /**
- * Fault Injection test: Set a Handler for a Bad Exception
+ * Fault Injection Test: Set a Handler for a Bad Exception
  */
 PRIVATE void test_exception_register_bad(void)
 {
 #ifndef __unix64__
 	KASSERT(exception_register(EXCEPTION_PAGE_FAULT, dummy_handler) == 0);
 #endif
-	KASSERT(exception_register(EXCEPTION_PAGE_FAULT, dummy_handler) == -EBUSY);
+	KASSERT(exception_register(EXCEPTION_PAGE_FAULT, dummy_handler) == 1);
 	KASSERT(exception_unregister(EXCEPTION_PAGE_FAULT) == 0);
 }
 
@@ -175,7 +175,7 @@ PRIVATE void test_exception_register_bad(void)
  *----------------------------------------------------------------------------*/
 
 /**
- * Fault Injection test: Unset a Handler for an Invalid Exception
+ * Fault Injection Test: Unset a Handler for an Invalid Exception
  */
 PRIVATE void test_exception_unregister_inval(void)
 {
@@ -188,7 +188,7 @@ PRIVATE void test_exception_unregister_inval(void)
  *----------------------------------------------------------------------------*/
 
 /**
- * Fault Injection test: Unset a Handler for a Bad Exception
+ * Fault Injection Test: Unset a Handler for a Bad Exception
  */
 PRIVATE void test_exception_unregister_bad(void)
 {

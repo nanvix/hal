@@ -70,7 +70,7 @@ PUBLIC void do_exception(const struct exception *excp, const struct context *ctx
 
 /**
  * The exception_register() function registers @p handler as the
- * exception handler for the execption @p excpnum.
+ * exception handler for the exception @p excpnum.
  *
  * @author Pedro Henrique Penna
  */
@@ -96,7 +96,7 @@ PUBLIC int exception_register(int excpnum, exception_handler_t handler)
 		kprintf("[hal] exception handler already registered for %s",
 			exceptions[excpnum].name
 		);
-		return (-EBUSY);
+		return (1);
 	}
 
 	exceptions[excpnum].handler = handler;
@@ -136,7 +136,8 @@ PUBLIC int exception_unregister(int excpnum)
 
 
 /**
- * @todo TODO provide a detailed documentation for this function.
+ * The exception_forward() function forwards an exception to the
+ * handler of exception @p excpnum.
  *
  * @author Pedro Henrique Penna
  */

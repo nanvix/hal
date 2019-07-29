@@ -166,8 +166,11 @@
 	 * @param excpnum Number of the target exception.
 	 * @param handler Exception handler.
 	 *
-	 * @returns Upon successful completion zero is returned. Upon
-	 * failure a negative error code is returned instead.
+	 * @returns Upon successful completion zero is returned. If an
+	 * exception handler is already registered for exception @p
+	 * excpnum, the older handler is not overwritten and one is
+	 * returned. Upon failure a negative error code is returned
+	 * instead.
 	 */
 	EXTERN int exception_register(int excpnum, exception_handler_t handler);
 
