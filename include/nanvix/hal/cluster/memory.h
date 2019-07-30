@@ -78,8 +78,8 @@
 		#ifndef TLB_VADDR_MASK
 			#error "TLB_VADDR_MASK not defined?"
 		#endif
-		#ifndef LOOKUP_TLB_LENGTH
-			#error "LOOKUP_TLB_LENGTH not defined?"
+		#ifndef TLB_LENGTH
+			#error "TLB_LENGTH not defined?"
 		#endif
 
 		/*

@@ -247,17 +247,8 @@
 
 	/**
 	 * @name Length of TLB (number of entries).
-	 *
-	 * Number of entries in the architectural TLB exposed by the
-	 * hardware.
-	 *
-	 * @note The Hypervisor only exposes an interface for playing with
-	 * the JTLB, therefore this should not be @p LINUX64_TLB_SIZE.
 	 */
-	/**@{*/
-	#define TLB_LENGTH 			LINUX64_TLB_LENGTH	/**< TLB Length		                 */
-	#define LOOKUP_TLB_LENGTH 	LINUX64_TLB_LENGTH	/**< TLB Length for lookup algorithm */
-	/**@}*/
+	#define TLB_LENGTH LINUX64_TLB_LENGTH
 
 	/**
 	 * @name TLB Types
