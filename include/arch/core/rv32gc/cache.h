@@ -48,11 +48,21 @@
 #ifndef _ASM_FILE_
 
 	/**
-	 * @brief Flushes the data and instruction caches.
+	 * @brief Flushes the data cache.
 	 *
-	 * @note This function flushes the whole cache.
+	 * @note This function flushes the entire data cache.
 	 */
-	static inline void rv32gc_cache_inval(void)
+	static inline void rv32gc_dcache_inval(void)
+	{
+		asm volatile ("fence" ::: "memory");
+	}
+
+	/**
+	 * @brief Flushes the instruction cache.
+	 *
+	 * @note This function flushes the entire instruction cache.
+	 */
+	static inline void rv32gc_icache_inval(void)
 	{
 		asm volatile ("fence.i" ::: "memory");
 	}
@@ -89,7 +99,7 @@
 	 */
 	static inline void dcache_invalidate(void)
 	{
-		rv32gc_cache_inval();
+		rv32gc_dcache_inval();
 	}
 
 	/**
@@ -97,7 +107,7 @@
 	 */
 	static inline void icache_invalidate(void)
 	{
-		rv32gc_cache_inval();
+		rv32gc_icache_inval();
 	}
 
 #endif
