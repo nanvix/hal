@@ -50,11 +50,25 @@
 	/**
 	 * @brief Invalidates the data cache.
 	 *
-	 * @note The or1k target features cache coherency.
+	 * @note We do note need to flush the pipeline because OpenRISC
+	 * doesn't have any other instruction, besides load and store,
+	 * which also manipulate memory, and msync ensures that all load
+	 * and stores that were issued complete before we progress.
 	 */
 	static inline void or1k_dcache_inval(void)
 	{
+		or1k_mtspr(OR1K_SPR_DCBWR, 0);
+		asm volatile ("l.msync" ::: "memory");
 		or1k_mtspr(OR1K_SPR_DCBIR, 0);
+	}
+
+	/**
+	 * @brief Invalidates the instruction cache.
+	 */
+	static inline void or1k_icache_inval(void)
+	{
+		asm volatile ("l.psync" ::: "memory");
+		or1k_mtspr(OR1K_SPR_ICBIR, 0);
 	}
 
 	/**
@@ -99,6 +113,14 @@
 	static inline void dcache_invalidate(void)
 	{
 		or1k_dcache_inval();
+	}
+
+	/**
+	 * @see or1k_icache_inval().
+	 */
+	static inline void icache_invalidate(void)
+	{
+		or1k_icache_inval();
 	}
 
 	/**

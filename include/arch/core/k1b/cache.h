@@ -66,10 +66,10 @@
 #ifndef _ASM_FILE_
 
 	/**
-	 * @brief Invalidates the data cache.
+	 * @brief Flushes the data cache.
 	 *
-	 * The k1b_dcache_inval() function invalidates the data cache of
-	 * the underlying core. First, it purges the write buffer, then it
+	 * The k1b_dcache_inval() function flushes the data cache of the
+	 * underlying core. First, it purges the write buffer, then it
 	 * waits all pending write operations of other cores to complete,
 	 * and finally it performs a full invalidation in the data cache.
 	 */
@@ -78,6 +78,18 @@
 		__builtin_k1_wpurge();
 		__builtin_k1_fence();
 		__builtin_k1_dinval();
+	}
+
+	/**
+	 * @brief Flushes the instruction cache.
+	 *
+	 * The k1b_icache_inval() function flushes the instruction cache
+	 * and pipeline of the underlying core.
+	 */
+	static inline void k1b_icache_inval(void)
+	{
+		__builtin_k1_barrier();
+		__builtin_k1_iinval();
 	}
 
 #endif /* !_ASM_FILE_ */
@@ -97,6 +109,7 @@
 	 */
 	/**@{*/
 	#define __dcache_invalidate_fn /**< dcache_invalidate() */
+	#define __icache_invalidate_fn /**< icache_invalidate() */
 	/**@}*/
 
 	/**
@@ -127,6 +140,14 @@
 	static inline void dcache_invalidate(void)
 	{
 		k1b_dcache_inval();
+	}
+
+	/**
+	 * @see k1b_icache_inval().
+	 */
+	static inline void icache_invalidate(void)
+	{
+		k1b_icache_inval();
 	}
 
 #endif /* _ASM_FILE_ */
