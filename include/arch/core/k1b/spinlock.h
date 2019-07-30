@@ -59,7 +59,7 @@
 	 */
 	static inline void k1b_spinlock_init(k1b_spinlock_t *lock)
 	{
-		__builtin_k1_sdu(lock,  K1B_SPINLOCK_UNLOCKED);
+		__builtin_k1_sdu(lock, K1B_SPINLOCK_UNLOCKED);
 	}
 
 	/**
@@ -74,7 +74,9 @@
 	 */
 	static inline int k1b_spinlock_trylock(k1b_spinlock_t *lock)
 	{
-		return (__builtin_k1_ldc(lock) == K1B_SPINLOCK_UNLOCKED);
+		int ret = (__builtin_k1_ldc(lock) == K1B_SPINLOCK_UNLOCKED);
+		k1b_dcache_inval();
+		return (ret);
 	}
 
 	/**
@@ -86,7 +88,6 @@
 	{
 		while (!k1b_spinlock_trylock(lock))
 			/* noop */;
-		k1b_dcache_inval();
 	}
 
 	/**
@@ -154,9 +155,7 @@
 	 */
 	static inline int spinlock_trylock(spinlock_t *lock)
 	{
-		int ret = k1b_spinlock_trylock(lock);
-		k1b_dcache_inval();
-		return (ret);
+		return (k1b_spinlock_trylock(lock));
 	}
 
 	/**
