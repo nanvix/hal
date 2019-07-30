@@ -38,6 +38,7 @@
 	 */
 	/**@{*/
 	#define __dcache_invalidate_fn
+	#define __icache_invalidate_fn
 	/**@}*/
 
 	/**
@@ -55,10 +56,25 @@
 #ifndef _ASM_FILE_
 
 	/**
+	 * @brief Flushes the data cache.
+	 *
 	 * @note The i486 target features cache coherency.
 	 */
 	static inline void dcache_invalidate(void)
 	{
+		asm volatile ("wbinvd" ::: "memory");
+		asm volatile ("invd" ::: "memory");
+	}
+
+	/**
+	 * @brief Flushes the instruction cache.
+	 *
+	 * @note The i486 target features cache coherency.
+	 */
+	static inline void icache_invalidate(void)
+	{
+		asm volatile ("wbinvd" ::: "memory");
+		asm volatile ("invd" ::: "memory");
 	}
 
 #endif /* _ASM_FILE_ */
