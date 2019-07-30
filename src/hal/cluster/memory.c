@@ -55,7 +55,7 @@ PUBLIC const struct tlbe *tlb_lookup_vaddr(int tlb_type, vaddr_t vaddr)
 	addr   = vaddr & TLB_VADDR_MASK;
 	utlb   = tlb_get_utlb(tlb_type);
 
-	for (int i = 0; i < LOOKUP_TLB_LENGTH; i++)
+	for (int i = 0; i < TLB_LENGTH; i++)
 	{
 		tlbe = &utlb[i];
 
@@ -97,7 +97,7 @@ PUBLIC const struct tlbe *tlb_lookup_paddr(int tlb_type, paddr_t paddr)
 	addr   = paddr & TLB_VADDR_MASK;
 	utlb   = tlb_get_utlb(tlb_type);
 
-	for (int i = 0; i < LOOKUP_TLB_LENGTH; i++)
+	for (int i = 0; i < TLB_LENGTH; i++)
 	{
 		tlbe = &utlb[i];
 

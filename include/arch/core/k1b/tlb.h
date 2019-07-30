@@ -347,10 +347,7 @@
 	 * @note The Hypervisor only exposes an interface for playing with
 	 * the JTLB, therefore this should not be @p K1B_TLB_SIZE.
 	 */
-	/**@{*/
-	#define TLB_LENGTH        K1B_JTLB_LENGTH /**< TLB Length                      */
-	#define LOOKUP_TLB_LENGTH K1B_TLB_LENGTH  /**< TLB Length for lookup algorithm */
-	/**@}*/
+	#define TLB_LENGTH K1B_JTLB_LENGTH
 
 	/**
 	 * @name TLB Types

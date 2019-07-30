@@ -335,10 +335,7 @@
 	 * Number of entries in the architectural TLB exposed by the
 	 * hardware.
 	 */
-	/**@{*/
-	#define TLB_LENGTH        OR1K_TLB_LENGTH /**< TLB Length                      */
-	#define LOOKUP_TLB_LENGTH OR1K_TLB_LENGTH /**< TLB Length for lookup algorithm */
-	/**@}*/
+	#define TLB_LENGTH OR1K_TLB_LENGTH
 
 	/**
 	 * @name TLB Types
