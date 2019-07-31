@@ -84,10 +84,10 @@
 	 * @name Identifies C-NoC transfer tag reserved for Communication services.
 	 */
 	/**@{*/
-	#define BOSTAN_MAILBOX_CNOC_TX_TAG 0 /**< C-NoC Transfer Tag reserved for Mailbox. */
-	#define BOSTAN_PORTAL_CNOC_TX_TAG  1 /**< C-NoC Transfer Tag reserved for Portal.  */
-	#define BOSTAN_SYNC_CNOC_TX_TAG    2 /**< C-NoC Transfer Tag reserved for Sync.    */
-	#define BOSTAN_UNUSED_CNOC_TX_TAG  3 /**< C-NoC Transfer Tag unused.               */
+	#define BOSTAN_MAILBOX_CNOC_TX_BASE 0 /**< C-NoC Transfer Tag reserved for Mailbox. */
+	#define BOSTAN_SYNC_CNOC_TX_BASE    1 /**< C-NoC Transfer Tag reserved for Sync.    */
+	#define BOSTAN_PORTAL_CNOC_TX_BASE  2 /**< C-NoC Transfer Tag reserved for Portal.  */
+//! #define BOSTAN_PORTAL_CNOC_TX_BASE  3 /**< C-NoC Transfer Tag reserved for Portal.  */
 	/**@}*/
 
 	/**

@@ -64,17 +64,18 @@
 	 * @param nodes  IDs of target NoC nodes.
 	 * @param nnodes Number of target NoC nodes.
 	 * @param type   Type of synchronization point.
+	 * @param aiocb  Asynchronous operation control.
 	 *
 	 * @return The tag of underlying resource ID.
 	 */
-	EXTERN int mppa256_sync_create(const int *nodes, int nnodes, int type);
+	EXTERN int mppa256_sync_create(const int *nodes, int nnodes, int type, struct aiocb * aiocb);
 
 	/**
 	 * @brief Allocates and configures the sending side of the synchronization point.
 	 *
 	 * @return The tag of underlying resource ID.
 	 */
-	EXTERN int mppa256_sync_open(void);
+	EXTERN int mppa256_sync_open(const int *nodes, int nnodes, int type);
 
 	/**
 	 * @brief Releases and cleans receiver buffer.
@@ -97,11 +98,11 @@
 	/**
 	 * @brief Wait signal on a specific synchronization point.
 	 *
-	 * @param syncid Resource ID.
+	 * @param aiocb Asynchronous operation control.
 	 *
 	 * @return Zero if wait signal correctly and non zero otherwise.
 	 */
-	EXTERN int mppa256_sync_wait(int syncid);
+	EXTERN int mppa256_sync_wait(struct aiocb * aiocb);
 
 	/**
 	 * @brief Send signal on a specific synchronization point.
@@ -113,7 +114,7 @@
 	 *
 	 * @return Zero if send signal correctly and non zero otherwise.
 	 */
-	EXTERN int mppa256_sync_signal(int syncid, const int *nodes, int nnodes, int type);
+	EXTERN int mppa256_sync_signal(int syncid);
 
 /*============================================================================*
  *                              Exported Interface                            *
@@ -152,17 +153,17 @@
 	/**
 	 * @see mppa256_sync_create()
 	 */
-	static inline int sync_create(const int *nodes, int nnodes, int type)
+	static inline int sync_create(const int *nodes, int nnodes, int type, struct aiocb * aiocb)
 	{
-		return mppa256_sync_create(nodes, nnodes, type);
+		return mppa256_sync_create(nodes, nnodes, type, aiocb);
 	}
 
 	/**
 	 * @see mppa256_sync_open()
 	 */
-	static inline int sync_open(void)
+	static inline int sync_open(const int *nodes, int nnodes, int type)
 	{
-		return mppa256_sync_open();
+		return mppa256_sync_open(nodes, nnodes, type);
 	}
 
 	/**
@@ -184,17 +185,17 @@
 	/**
 	 * @see mppa256_sync_wait()
 	 */
-	static inline int sync_wait(int syncid)
+	static inline int sync_wait(struct aiocb * aiocb)
 	{
-		return mppa256_sync_wait(syncid);
+		return mppa256_sync_wait(aiocb);
 	}
 
 	/**
 	 * @see mppa256_sync_signal()
 	 */
-	static inline int sync_signal(int syncid, const int *nodes, int nnodes, int type)
+	static inline int sync_signal(int syncid)
 	{
-		return mppa256_sync_signal(syncid, nodes, nnodes, type);
+		return mppa256_sync_signal(syncid);
 	}
 
 #endif /* ARCH_MPPA256_SYNC_H_ */

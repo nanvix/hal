@@ -47,11 +47,15 @@ PRIVATE struct sync
 	 */
 	struct tx
 	{
-		struct resource resource; /**< Control flags. */
+		struct resource resource;         /**< Control flags.      */
+		int targets[BOSTAN_NR_NOC_NODES]; /**< Targets Physic IDs. */
+		int ntargets;                     /**< Number of targets.  */
+		int target_tag;                   /**< Master tag.         */
+		uint64_t mask;                    /**< Signal mask.        */
 	} txs[MPPA256_SYNC_OPEN_MAX];
 } synctab = {
 	.rxs[0 ... MPPA256_SYNC_CREATE_MAX-1] = { {0}, 0, K1B_SPINLOCK_UNLOCKED },
-	.txs[0 ... MPPA256_SYNC_OPEN_MAX-1]   = { {0} }
+	.txs[0 ... MPPA256_SYNC_OPEN_MAX-1]   = { {0}, {0, }, 0, 0, 0ULL }
 };
 
 /**
@@ -70,16 +74,16 @@ PRIVATE struct syncpools
  * @name Gets syncid.
  */
 #define RESOURCEID_RX(interface, tag) ((interface * BOSTAN_SYNC_CREATE_PER_DMA) + (tag - BOSTAN_SYNC_RX_OFF)) /**< synctab.rxs' index. */
-#define RESOURCEID_TX(interface, tag) (interface * BOSTAN_SYNC_CREATE_PER_DMA)                                /**< synctab.txs' index. */
+#define RESOURCEID_TX(interface)      (interface * BOSTAN_SYNC_OPEN_PER_DMA)                                /**< synctab.txs' index. */
 
 /**
  * @name Gets underlying resource IDs.
  */
 /**@{*/
-#define UNDERLYING_RX_TAG(syncid) ((syncid % BOSTAN_SYNC_CREATE_PER_DMA) + BOSTAN_SYNC_RX_OFF) /**< Receiver tag ID.         */
-#define UNDERLYING_RX_INTERFACE(syncid) (syncid / BOSTAN_SYNC_CREATE_PER_DMA)                  /**< Receiver DMA channel ID. */
-#define UNDERLYING_TX_TAG(syncid) (BOSTAN_SYNC_CNOC_TX_TAG)                                    /**< Transfer tag ID.         */
-#define UNDERLYING_TX_INTERFACE(syncid) (syncid)                                               /**< Transfer DMA channel ID. */
+#define UNDERLYING_RX_TAG(syncid)       ((syncid % BOSTAN_SYNC_CREATE_PER_DMA) + BOSTAN_SYNC_RX_OFF) /**< Receiver tag ID.         */
+#define UNDERLYING_RX_INTERFACE(syncid) (syncid / BOSTAN_SYNC_CREATE_PER_DMA)                        /**< Receiver DMA channel ID. */
+#define UNDERLYING_TX_TAG(syncid)       (BOSTAN_SYNC_CNOC_TX_BASE)                                   /**< Transfer tag ID.         */
+#define UNDERLYING_TX_INTERFACE(syncid) (syncid)                                                     /**< Transfer DMA channel ID. */
 /**@}*/
 
 /**
@@ -102,41 +106,6 @@ PRIVATE int mppa256_sync_rx_is_valid(int syncid)
 PRIVATE int mppa256_sync_tx_is_valid(int syncid)
 {
 	return WITHIN(syncid, 0, MPPA256_SYNC_OPEN_MAX);
-}
-
-/**
- * @brief Associate a underliyng DMA channel.
- *
- * @param nodes  IDs of target NoC nodes.
- * @param nnodes Number of target NoC nodes.
- *
- * @return Interface ID [0..(K1BIO_CORES_NUM-1)]
- */
-PRIVATE int mppa256_sync_select_interface(const int *nodes, int nnodes)
-{
-	int clusterid;
-	int _nodes[BOSTAN_NR_NOC_NODES];
-
-	clusterid = bostan_cluster_get_id();
-
-	/* Logic IDs are correctly. */
-	if (bostan_nodes_convert(_nodes, nodes, nnodes) < 0)
-		return (-EINVAL);
-
-	for (int i = 0; i < nnodes; i++)
-	{
-		if (WITHIN(_nodes[i], clusterid, clusterid + BOSTAN_NR_INTERFACES))
-		{
-			int interface = _nodes[i] - clusterid;
-			int tag = bostan_node_sync_tag(_nodes[i]);
-			int syncid = RESOURCEID_RX(interface, tag);
-
-			if (!resource_is_used(&synctab.rxs[syncid].resource))
-				return (interface);
-		}
-	}
-
-	return (-EINVAL);
 }
 
 /**
@@ -197,12 +166,51 @@ PRIVATE void mppa256_sync_it_handler(int interface, int tag)
 {
 	int syncid;
 
-	kprintf("[sync][handler] Receive an interrupt on %d:%d", interface, tag);
+	UNUSED(interface);
+	UNUSED(tag);
 
 	syncid = RESOURCEID_RX(interface, tag);
 
 	if (resource_is_used(&synctab.rxs[syncid].resource))
 		k1b_spinlock_unlock(&synctab.rxs[syncid].lock);
+	
+	if (bostan_dma_control_config(interface, tag, synctab.rxs[syncid].mask, mppa256_sync_it_handler) < 0)
+		kpanic("[hal][sync] Reconfiguration of the sync falied!");
+}
+
+/**
+ * @brief Associate a underliyng DMA RX channel.
+ *
+ * @param nodes  IDs of target NoC nodes.
+ * @param nnodes Number of target NoC nodes.
+ *
+ * @return Interface ID [0..(K1BIO_CORES_NUM-1)]
+ */
+PRIVATE int mppa256_sync_select_rx_interface(const int *nodes, int nnodes)
+{
+	int clusterid;
+	int _nodes[BOSTAN_NR_NOC_NODES];
+
+	clusterid = bostan_cluster_get_id();
+
+	/* Logic IDs are correctly. */
+	if (bostan_nodes_convert(_nodes, nodes, nnodes) < 0)
+		return (-EINVAL);
+
+	for (int i = 0; i < nnodes; i++)
+	{
+		if (WITHIN(_nodes[i], clusterid, clusterid + BOSTAN_NR_INTERFACES))
+		{
+			int interface = _nodes[i] - clusterid;
+			int tag = bostan_node_sync_tag(_nodes[i]);
+			int syncid = RESOURCEID_RX(interface, tag);
+
+			if (!resource_is_used(&synctab.rxs[syncid].resource))
+				return (interface);
+		}
+	}
+
+	return (-EINVAL);
 }
 
 /**
@@ -211,10 +219,11 @@ PRIVATE void mppa256_sync_it_handler(int interface, int tag)
  * @param nodes  IDs of target NoC nodes.
  * @param nnodes Number of target NoC nodes.
  * @param type   Type of synchronization point.
+ * @param aiocb  Asynchronous operation control.
  *
  * @return The tag of underlying resource ID.
  */
-PUBLIC int mppa256_sync_create(const int *nodes, int nnodes, int type)
+PUBLIC int mppa256_sync_create(const int *nodes, int nnodes, int type, struct aiocb * aiocb)
 {
 	int ret;
 	int tag;
@@ -223,13 +232,16 @@ PUBLIC int mppa256_sync_create(const int *nodes, int nnodes, int type)
 	int interface;
 	uint64_t mask;
 
-	if (nodes == NULL || !WITHIN(nnodes, 2, BOSTAN_NR_NOC_NODES))
+	if (nodes == NULL || aiocb == NULL)
+		return (-EINVAL);
+	
+	if (!WITHIN(nnodes, 2, BOSTAN_NR_NOC_NODES))
 		return (-EINVAL);
 
 	if (type != MPPA256_SYNC_ALL_TO_ONE && type != MPPA256_SYNC_ONE_TO_ALL)
 		return (-EINVAL);
 
-	if ((interface = mppa256_sync_select_interface(nodes, nnodes)) < 0)
+	if ((interface = mppa256_sync_select_rx_interface(nodes, nnodes)) < 0)
 		return (-EBUSY);
 
 	nodenum = bostan_node_get_num(bostan_cluster_get_id() + interface);
@@ -271,25 +283,103 @@ PUBLIC int mppa256_sync_create(const int *nodes, int nnodes, int type)
 	resource_set_async(&synctab.rxs[syncid].resource);
 	resource_set_notbusy(&synctab.rxs[syncid].resource);
 
+	aiocb->fd   = syncid;
+	aiocb->type = BOSTAN_NOC_RX_TYPE;
+	aiocb->lock = &synctab.rxs[syncid].lock;
+
 	return (syncid);
+}
+
+/**
+ * @brief Associate a underliyng DMA TX channel.
+ *
+ * @param nodes  IDs of target NoC nodes.
+ * @param nnodes Number of target NoC nodes.
+ *
+ * @return Interface ID [0..(K1BIO_CORES_NUM-1)]
+ */
+PRIVATE int mppa256_sync_select_tx_interface(const int *_nodes, int nnodes)
+{
+	int clusterid;
+
+	clusterid = bostan_cluster_get_id();
+
+	for (int i = 0; i < nnodes; i++)
+	{
+		if (WITHIN(_nodes[i], clusterid, clusterid + BOSTAN_NR_INTERFACES))
+		{
+			int interface = _nodes[i] - clusterid;
+			int syncid = RESOURCEID_TX(interface);
+
+			if (!resource_is_used(&synctab.txs[syncid].resource))
+				return (interface);
+		}
+	}
+
+	return (-EINVAL);
 }
 
 /**
  * @todo Comment this function.
  */
-PUBLIC int mppa256_sync_open(void)
+PUBLIC int mppa256_sync_open(const int *nodes, int nnodes, int type)
 {
 	int ret;
 	int tag;
 	int syncid;
+	int nodenum;
 	int interface;
+	int clusterid;
+	int _nodes[BOSTAN_NR_NOC_NODES];
 
-	/* Allocate a synchronization point. */
-	if ((syncid = resource_alloc(&syncpools.tx_pool)) < 0)
-		return (-EMLINK);
+	if (nodes == NULL || !WITHIN(nnodes, 2, BOSTAN_NR_NOC_NODES))
+		return (-EINVAL);
 
+	if (type != MPPA256_SYNC_ALL_TO_ONE && type != MPPA256_SYNC_ONE_TO_ALL)
+		return (-EINVAL);
+
+	if (bostan_nodes_convert(_nodes, nodes, nnodes) < 0)
+		return (-EINVAL);
+
+	if ((interface = mppa256_sync_select_tx_interface(_nodes, nnodes)) < 0)
+		return (-EBUSY);
+
+	syncid    = RESOURCEID_TX(interface);
+	clusterid = bostan_cluster_get_id();
+	nodenum   = bostan_node_get_num(clusterid + interface);
+
+	/* Broadcast. */
+	if (type == MPPA256_SYNC_ONE_TO_ALL)
+	{
+#if 1 /* First alternative of the check. */
+		if (nodes[0] != nodenum)
+			return (-ECONNREFUSED);
+#else
+		if (!WITHIN(_nodes[0], clusterid, clusterid + BOSTAN_NR_INTERFACES))
+			return (-EINVAL);
+
+		if (!mppa256_sync_is_local(nodeid, nodes, nnodes))
+			return (-ECONNREFUSED);
+#endif
+		kmemcpy(synctab.txs[syncid].targets, &_nodes[1], (nnodes - 1));
+		synctab.txs[syncid].ntargets = (nnodes - 1);
+		synctab.txs[syncid].mask     = ~(0ULL);
+	}
+
+	/* Unicast. */
+	else
+	{
+		if (!mppa256_sync_is_remote(nodenum, nodes, nnodes))
+			return (-ECONNREFUSED);
+
+		kmemcpy(synctab.txs[syncid].targets, &_nodes[0], 1);
+		synctab.txs[syncid].ntargets = 1;
+		synctab.txs[syncid].mask     = 1ULL << (nodenum);
+	}
+
+	synctab.txs[syncid].target_tag = bostan_node_sync_tag(_nodes[0]);
+	
 	tag = UNDERLYING_TX_TAG(syncid);
-	interface = UNDERLYING_TX_INTERFACE(syncid);
 
 	if ((ret = bostan_dma_control_open(interface, tag)) < 0)
 		return (ret);
@@ -317,7 +407,7 @@ PUBLIC int mppa256_sync_unlink(int syncid)
 	if (!resource_is_used(&synctab.rxs[syncid].resource))
 		return (-EACCES);
 
-	tag = UNDERLYING_RX_TAG(syncid);
+	tag       = UNDERLYING_RX_TAG(syncid);
 	interface = UNDERLYING_RX_INTERFACE(syncid);
 
 	if ((ret = bostan_dma_control_unlink(interface, tag)) < 0)
@@ -348,8 +438,7 @@ PUBLIC int mppa256_sync_close(int syncid)
 	/* Bad sync. */
 	if (!resource_is_used(&synctab.txs[syncid].resource))
 		return (-EACCES);
-
-	tag = UNDERLYING_TX_TAG(syncid);
+	tag       = UNDERLYING_TX_TAG(syncid);
 	interface = UNDERLYING_TX_INTERFACE(syncid);
 
 	if ((ret = bostan_dma_control_close(interface, tag)) < 0)
@@ -363,34 +452,33 @@ PUBLIC int mppa256_sync_close(int syncid)
 /**
  * @brief Wait signal on a specific synchronization point.
  *
- * @param syncid Resource ID.
+ * @param aiocb Asynchronous operation control.
  *
  * @return Zero if wait signal correctly and non zero otherwise.
+ * 
+ * @todo How make the slave wait on lock without the need to
+ * access the master's private structures? (microkernel approach)
  */
-PUBLIC int mppa256_sync_wait(int syncid)
+PUBLIC int mppa256_sync_wait(struct aiocb * aiocb)
 {
-	int ret;
-	int tag;
-	int interface;
-
-	if (!mppa256_sync_rx_is_valid(syncid))
-		return (-EBADF);
-
-	/* Bad sync. */
-	if (!resource_is_used(&synctab.rxs[syncid].resource))
-		return (-EACCES);
-
-	tag = UNDERLYING_RX_TAG(syncid);
-	interface = UNDERLYING_RX_INTERFACE(syncid);
-
+	/* Bad aiocb. */
+	if (aiocb == NULL)
+		return (-EINVAL);
+	
 	k1b_dcache_inval();
 
-	// if ((ret = bostan_dma_control_wait(interface, tag)) < 0)
-	// 	return (ret);
-	k1b_spinlock_lock(&synctab.rxs[syncid].lock);
+	if (!mppa256_sync_rx_is_valid(aiocb->fd))
+		return (-EBADF);
+	
+	if (aiocb->type != BOSTAN_NOC_RX_TYPE)
+		return (-EINVAL);
+	
+	/* Bad lock. */
+	if (aiocb->lock == NULL)
+		return (-EINVAL);
 
-	if ((ret = bostan_dma_control_config(interface, tag, synctab.rxs[syncid].mask, mppa256_sync_it_handler)) < 0)
-		return (ret);
+	/* Waits for the handler release the lock. */
+	k1b_spinlock_lock(aiocb->lock);
 
 	return (0);
 }
@@ -402,16 +490,10 @@ PUBLIC int mppa256_sync_wait(int syncid)
  *
  * @return Zero if send signal correctly and non zero otherwise.
  */
-PUBLIC int mppa256_sync_signal(int syncid, const int *nodes, int nnodes, int type)
+PUBLIC int mppa256_sync_signal(int syncid)
 {
 	int tag;
 	int interface;
-	int clusterid;
-	const int *targets;
-	int target_tag;
-	int ntargets;
-	int _nodes[BOSTAN_NR_NOC_NODES];
-	k1b_dword_t mask;
 
 	if (!mppa256_sync_tx_is_valid(syncid))
 		return (-EBADF);
@@ -420,55 +502,15 @@ PUBLIC int mppa256_sync_signal(int syncid, const int *nodes, int nnodes, int typ
 	if (!resource_is_used(&synctab.txs[syncid].resource))
 		return (-EACCES);
 
-	if (nodes == NULL || !WITHIN(nnodes, 2, BOSTAN_NR_NOC_NODES))
-		return (-EINVAL);
-
-	if (type != MPPA256_SYNC_ALL_TO_ONE && type != MPPA256_SYNC_ONE_TO_ALL)
-		return (-EINVAL);
-
-	if (bostan_nodes_convert(_nodes, nodes, nnodes) < 0)
-		return (-EINVAL);
-
+	tag       = UNDERLYING_TX_TAG(syncid);
 	interface = UNDERLYING_TX_INTERFACE(syncid);
-	clusterid = bostan_cluster_get_id();
-
-	/* Broadcast. */
-	if (type == MPPA256_SYNC_ONE_TO_ALL)
-	{
-		if (!WITHIN(_nodes[0], clusterid, clusterid + BOSTAN_NR_INTERFACES))
-			return (-EINVAL);
-
-		if (!mppa256_sync_is_local(nodes[0], nodes, nnodes))
-			return (-ECONNREFUSED);
-
-		targets = &_nodes[1];
-		ntargets = nnodes - 1;
-		mask = ~0;
-	}
-
-	/* Unicast. */
-	else
-	{
-		if (!WITHIN(_nodes[1], clusterid, clusterid + BOSTAN_NR_INTERFACES))
-			return (-EINVAL);
-
-		if (!mppa256_sync_is_remote(nodes[1], nodes, nnodes))
-			return (-ECONNREFUSED);
-
-		targets = &_nodes[0];
-		ntargets = 1;
-		mask = 1 << nodes[1];
-	}
-
-	tag        = UNDERLYING_TX_TAG(syncid);
-	target_tag = bostan_node_sync_tag(_nodes[0]);
 
 	return bostan_dma_control_signal(
 		interface,
 		tag,
-		targets,
-		ntargets,
-		target_tag,
-		mask
+		synctab.txs[syncid].targets,
+		synctab.txs[syncid].ntargets,
+		synctab.txs[syncid].target_tag,
+		synctab.txs[syncid].mask
 	);
 }

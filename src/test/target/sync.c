@@ -48,19 +48,20 @@ static void test_sync_create_unlink(void)
 	int nodenum;
 	int syncid;
 	int nodes[NODES_AMOUNT];
+	struct aiocb aiocb;
 
 	nodenum = processor_node_get_num(processor_node_get_id());
 	nodes[0] = nodenum;
 	nodes[1] = nodenum == NODENUM_MASTER ? NODENUM_SLAVE : NODENUM_MASTER;
 
-	KASSERT((syncid = sync_create(nodes, NODES_AMOUNT, SYNC_ALL_TO_ONE)) >= 0);
+	KASSERT((syncid = sync_create(nodes, NODES_AMOUNT, SYNC_ALL_TO_ONE, &aiocb)) >= 0);
 	KASSERT(sync_unlink(syncid) == 0);
 
 	tmp = nodes[0];
 	nodes[0] = nodes[1];
 	nodes[1] = tmp;
 
-	KASSERT((syncid = sync_create(nodes, NODES_AMOUNT, SYNC_ONE_TO_ALL)) >= 0);
+	KASSERT((syncid = sync_create(nodes, NODES_AMOUNT, SYNC_ONE_TO_ALL, &aiocb)) >= 0);
 	KASSERT(sync_unlink(syncid) == 0);
 }
 
@@ -69,9 +70,23 @@ static void test_sync_create_unlink(void)
  */
 static void test_sync_open_close(void)
 {
+	int tmp;
 	int syncid;
+	int nodenum;
+	int nodes[NODES_AMOUNT];
 
-	KASSERT((syncid = sync_open()) >= 0);
+	nodenum = processor_node_get_num(processor_node_get_id());
+	nodes[0] = nodenum;
+	nodes[1] = nodenum == NODENUM_MASTER ? NODENUM_SLAVE : NODENUM_MASTER;
+
+	KASSERT((syncid = sync_open(nodes, NODES_AMOUNT, SYNC_ONE_TO_ALL)) >= 0);
+	KASSERT(sync_close(syncid) == 0);
+
+	tmp = nodes[0];
+	nodes[0] = nodes[1];
+	nodes[1] = tmp;
+
+	KASSERT((syncid = sync_open(nodes, NODES_AMOUNT, SYNC_ALL_TO_ONE)) >= 0);
 	KASSERT(sync_close(syncid) == 0);
 }
 
@@ -100,39 +115,42 @@ static void test_sync_invalid_create(void)
 	int syncid;
 	int nodenum;
 	int nodes[NODES_AMOUNT];
+	struct aiocb aiocb;
 
 	nodenum = processor_node_get_num(processor_node_get_id());
 	nodes[0] = nodenum == NODENUM_MASTER ? NODENUM_SLAVE : NODENUM_MASTER;
 	nodes[1] = nodenum;
 
-	KASSERT(sync_create(NULL, NODES_AMOUNT, SYNC_ALL_TO_ONE) < 0);
-	KASSERT(sync_create(nodes, -1, SYNC_ALL_TO_ONE) < 0);
-	KASSERT(sync_create(nodes, 0, SYNC_ALL_TO_ONE) < 0);
-	KASSERT(sync_create(nodes, 1, SYNC_ALL_TO_ONE) < 0);
-	KASSERT(sync_create(nodes, 1000, SYNC_ALL_TO_ONE) < 0);
-	KASSERT(sync_create(nodes, NODES_AMOUNT, -1) < 0);
-	KASSERT(sync_create(nodes, NODES_AMOUNT, 1000) < 0);
-	KASSERT(sync_create(nodes, NODES_AMOUNT, SYNC_ALL_TO_ONE) < 0);
-	KASSERT(sync_create(nodes, NODES_AMOUNT, -1) < 0);
-	KASSERT(sync_create(nodes, NODES_AMOUNT, 1000) < 0);
+	KASSERT(sync_create(NULL, NODES_AMOUNT, SYNC_ALL_TO_ONE, &aiocb) < 0);
+	KASSERT(sync_create(nodes, -1, SYNC_ALL_TO_ONE, &aiocb) < 0);
+	KASSERT(sync_create(nodes, 0, SYNC_ALL_TO_ONE, &aiocb) < 0);
+	KASSERT(sync_create(nodes, 1, SYNC_ALL_TO_ONE, &aiocb) < 0);
+	KASSERT(sync_create(nodes, 1000, SYNC_ALL_TO_ONE, &aiocb) < 0);
+	KASSERT(sync_create(nodes, NODES_AMOUNT, -1, &aiocb) < 0);
+	KASSERT(sync_create(nodes, NODES_AMOUNT, 1000, &aiocb) < 0);
+	KASSERT(sync_create(nodes, NODES_AMOUNT, SYNC_ALL_TO_ONE, &aiocb) < 0);
+	KASSERT(sync_create(nodes, NODES_AMOUNT, -1, &aiocb) < 0);
+	KASSERT(sync_create(nodes, NODES_AMOUNT, 1000, &aiocb) < 0);
+	KASSERT(sync_create(nodes, NODES_AMOUNT, SYNC_ALL_TO_ONE, NULL) < 0);
 
 	tmp = nodes[0];
 	nodes[0] = nodes[1];
 	nodes[1] = tmp;
 
-	KASSERT(sync_create(NULL, NODES_AMOUNT, SYNC_ONE_TO_ALL) < 0);
-	KASSERT(sync_create(nodes, -1, SYNC_ONE_TO_ALL) < 0);
-	KASSERT(sync_create(nodes, 0, SYNC_ONE_TO_ALL) < 0);
-	KASSERT(sync_create(nodes, 1, SYNC_ONE_TO_ALL) < 0);
-	KASSERT(sync_create(nodes, 1000, SYNC_ONE_TO_ALL) < 0);
-	KASSERT(sync_create(nodes, NODES_AMOUNT, -1) < 0);
-	KASSERT(sync_create(nodes, NODES_AMOUNT, 1000) < 0);
-	KASSERT(sync_create(nodes, NODES_AMOUNT, SYNC_ONE_TO_ALL) < 0);
-	KASSERT(sync_create(nodes, NODES_AMOUNT, -1) < 0);
-	KASSERT(sync_create(nodes, NODES_AMOUNT, 1000) < 0);
+	KASSERT(sync_create(NULL, NODES_AMOUNT, SYNC_ONE_TO_ALL, &aiocb) < 0);
+	KASSERT(sync_create(nodes, -1, SYNC_ONE_TO_ALL, &aiocb) < 0);
+	KASSERT(sync_create(nodes, 0, SYNC_ONE_TO_ALL, &aiocb) < 0);
+	KASSERT(sync_create(nodes, 1, SYNC_ONE_TO_ALL, &aiocb) < 0);
+	KASSERT(sync_create(nodes, 1000, SYNC_ONE_TO_ALL, &aiocb) < 0);
+	KASSERT(sync_create(nodes, NODES_AMOUNT, -1, &aiocb) < 0);
+	KASSERT(sync_create(nodes, NODES_AMOUNT, 1000, &aiocb) < 0);
+	KASSERT(sync_create(nodes, NODES_AMOUNT, SYNC_ONE_TO_ALL, &aiocb) < 0);
+	KASSERT(sync_create(nodes, NODES_AMOUNT, -1, &aiocb) < 0);
+	KASSERT(sync_create(nodes, NODES_AMOUNT, 1000, &aiocb) < 0);
+	KASSERT(sync_create(nodes, NODES_AMOUNT, SYNC_ONE_TO_ALL, NULL) < 0);
 
-	KASSERT((syncid = sync_create(nodes, NODES_AMOUNT, SYNC_ALL_TO_ONE)) >= 0);
-	KASSERT(sync_create(nodes, NODES_AMOUNT, SYNC_ALL_TO_ONE) < 0);
+	KASSERT((syncid = sync_create(nodes, NODES_AMOUNT, SYNC_ALL_TO_ONE, &aiocb)) >= 0);
+	KASSERT(sync_create(nodes, NODES_AMOUNT, SYNC_ALL_TO_ONE, &aiocb) < 0);
 	KASSERT(sync_unlink(syncid) == 0);
 	KASSERT(sync_unlink(syncid) < 0);
 }
@@ -142,17 +160,35 @@ static void test_sync_invalid_create(void)
  */
 static void test_sync_invalid_open(void)
 {
-	int syncids[SYNC_OPEN_MAX];
+	int tmp;
+	int nodenum;
+	int nodes[NODES_AMOUNT];
 
-	for (int i = 0; i < SYNC_OPEN_MAX; i++)
-		KASSERT((syncids[i] = sync_open()) >= 0);
-	KASSERT(sync_open() < 0);
+	nodenum = processor_node_get_num(processor_node_get_id());
+	nodes[0] = nodenum;
+	nodes[1] = nodenum == NODENUM_MASTER ? NODENUM_SLAVE : NODENUM_MASTER;
 
-	for (int i = 0; i < SYNC_OPEN_MAX; i++)
-	{
-		KASSERT(sync_close(syncids[i]) == 0);
-		KASSERT(sync_close(syncids[i]) < 0);
-	}
+	KASSERT(sync_open(NULL, NODES_AMOUNT, SYNC_ONE_TO_ALL) < 0);
+	KASSERT(sync_open(nodes, -1, SYNC_ONE_TO_ALL) < 0);
+	KASSERT(sync_open(nodes, 0, SYNC_ONE_TO_ALL) < 0);
+	KASSERT(sync_open(nodes, 1, SYNC_ONE_TO_ALL) < 0);
+	KASSERT(sync_open(nodes, 1000, SYNC_ONE_TO_ALL) < 0);
+	KASSERT(sync_open(nodes, NODES_AMOUNT, -1) < 0);
+	KASSERT(sync_open(nodes, NODES_AMOUNT, 1000) < 0);
+	KASSERT(sync_open(nodes, NODES_AMOUNT, SYNC_ALL_TO_ONE) < 0);
+
+	tmp = nodes[0];
+	nodes[0] = nodes[1];
+	nodes[1] = tmp;
+
+	KASSERT(sync_open(NULL, NODES_AMOUNT, SYNC_ALL_TO_ONE) < 0);
+	KASSERT(sync_open(nodes, -1, SYNC_ALL_TO_ONE) < 0);
+	KASSERT(sync_open(nodes, 0, SYNC_ALL_TO_ONE) < 0);
+	KASSERT(sync_open(nodes, 1, SYNC_ALL_TO_ONE) < 0);
+	KASSERT(sync_open(nodes, 1000, SYNC_ALL_TO_ONE) < 0);
+	KASSERT(sync_open(nodes, NODES_AMOUNT, -1) < 0);
+	KASSERT(sync_open(nodes, NODES_AMOUNT, 1000) < 0);
+	KASSERT(sync_open(nodes, NODES_AMOUNT, SYNC_ONE_TO_ALL) < 0);
 }
 
 /**
@@ -171,8 +207,14 @@ static void test_sync_invalid_unlink(void)
 static void test_sync_bad_unlink(void)
 {
 	int syncid;
+	int nodenum;
+	int nodes[NODES_AMOUNT];
 
-	KASSERT((syncid = sync_open()) >= 0);
+	nodenum = processor_node_get_num(processor_node_get_id());
+	nodes[0] = nodenum;
+	nodes[1] = nodenum == NODENUM_MASTER ? NODENUM_SLAVE : NODENUM_MASTER;
+
+	KASSERT((syncid = sync_open(nodes, NODES_AMOUNT, SYNC_ONE_TO_ALL)) >= 0);
 	KASSERT(sync_unlink(syncid) < 0);
 	KASSERT(sync_close(syncid) == 0);
 }
@@ -185,12 +227,13 @@ static void test_sync_double_unlink(void)
 	int nodenum;
 	int syncid;
 	int nodes[NODES_AMOUNT];
+	struct aiocb aiocb;
 
 	nodenum = processor_node_get_num(processor_node_get_id());
 	nodes[0] = nodenum;
 	nodes[1] = nodenum == NODENUM_MASTER ? NODENUM_SLAVE : NODENUM_MASTER;
 
-	KASSERT((syncid = sync_create(nodes, NODES_AMOUNT, SYNC_ALL_TO_ONE)) >= 0);
+	KASSERT((syncid = sync_create(nodes, NODES_AMOUNT, SYNC_ALL_TO_ONE, &aiocb)) >= 0);
 	KASSERT(sync_unlink(syncid) == 0);
 	KASSERT(sync_unlink(syncid) < 0);
 }
@@ -213,12 +256,13 @@ static void test_sync_bad_close(void)
 	int nodenum;
 	int syncid;
 	int nodes[NODES_AMOUNT];
+	struct aiocb aiocb;
 
 	nodenum = processor_node_get_num(processor_node_get_id());
 	nodes[0] = nodenum;
 	nodes[1] = nodenum == NODENUM_MASTER ? NODENUM_SLAVE : NODENUM_MASTER;
 
-	KASSERT((syncid = sync_create(nodes, NODES_AMOUNT, SYNC_ALL_TO_ONE)) >= 0);
+	KASSERT((syncid = sync_create(nodes, NODES_AMOUNT, SYNC_ALL_TO_ONE, &aiocb)) >= 0);
 	KASSERT(sync_close(syncid) < 0);
 	KASSERT(sync_unlink(syncid) == 0);
 }
@@ -229,8 +273,14 @@ static void test_sync_bad_close(void)
 static void test_sync_double_close(void)
 {
 	int syncid;
+	int nodenum;
+	int nodes[NODES_AMOUNT];
 
-	KASSERT((syncid = sync_open()) >= 0);
+	nodenum = processor_node_get_num(processor_node_get_id());
+	nodes[0] = nodenum;
+	nodes[1] = nodenum == NODENUM_MASTER ? NODENUM_SLAVE : NODENUM_MASTER;
+
+	KASSERT((syncid = sync_open(nodes, NODES_AMOUNT, SYNC_ONE_TO_ALL)) >= 0);
 	KASSERT(sync_close(syncid) == 0);
 	KASSERT(sync_close(syncid) < 0);
 }
@@ -240,48 +290,8 @@ static void test_sync_double_close(void)
  */
 static void test_sync_invalid_signal(void)
 {
-	int tmp;
-	int nodenum;
-	int syncid;
-	int nodes[NODES_AMOUNT];
-
-	nodenum = processor_node_get_num(processor_node_get_id());
-	nodes[0] = nodenum;
-	nodes[1] = nodenum == NODENUM_MASTER ? NODENUM_SLAVE : NODENUM_MASTER;
-
-	KASSERT(sync_signal(-1, nodes, NODES_AMOUNT, SYNC_ONE_TO_ALL) < 0);
-	KASSERT(sync_signal(1, nodes, NODES_AMOUNT, SYNC_ONE_TO_ALL) < 0);
-	KASSERT(sync_signal(1000000, nodes, NODES_AMOUNT, SYNC_ONE_TO_ALL) < 0);
-
-	KASSERT((syncid = sync_open()) >= 0);
-
-	nodenum = processor_node_get_num(processor_node_get_id());
-	nodes[0] = nodenum;
-	nodes[1] = nodenum == NODENUM_MASTER ? NODENUM_SLAVE : NODENUM_MASTER;
-
-	KASSERT(sync_signal(syncid, NULL, NODES_AMOUNT, SYNC_ALL_TO_ONE) < 0);
-	KASSERT(sync_signal(syncid, nodes, -1, SYNC_ALL_TO_ONE) < 0);
-	KASSERT(sync_signal(syncid, nodes, 0, SYNC_ALL_TO_ONE) < 0);
-	KASSERT(sync_signal(syncid, nodes, 1, SYNC_ALL_TO_ONE) < 0);
-	KASSERT(sync_signal(syncid, nodes, 1000, SYNC_ALL_TO_ONE) < 0);
-	KASSERT(sync_signal(syncid, nodes, NODES_AMOUNT, SYNC_ALL_TO_ONE) < 0);
-	KASSERT(sync_signal(syncid, nodes, NODES_AMOUNT, -1) < 0);
-	KASSERT(sync_signal(syncid, nodes, NODES_AMOUNT, 1000) < 0);
-
-	tmp = nodes[0];
-	nodes[0] = nodes[1];
-	nodes[1] = tmp;
-
-	KASSERT(sync_signal(syncid, NULL, NODES_AMOUNT, SYNC_ONE_TO_ALL) < 0);
-	KASSERT(sync_signal(syncid, nodes, -1, SYNC_ONE_TO_ALL) < 0);
-	KASSERT(sync_signal(syncid, nodes, 0, SYNC_ONE_TO_ALL) < 0);
-	KASSERT(sync_signal(syncid, nodes, 1, SYNC_ONE_TO_ALL) < 0);
-	KASSERT(sync_signal(syncid, nodes, 1000, SYNC_ONE_TO_ALL) < 0);
-	KASSERT(sync_signal(syncid, nodes, NODES_AMOUNT, SYNC_ONE_TO_ALL) < 0);
-	KASSERT(sync_signal(syncid, nodes, NODES_AMOUNT, -1) < 0);
-	KASSERT(sync_signal(syncid, nodes, NODES_AMOUNT, 1000) < 0);
-
-	KASSERT(sync_close(syncid) == 0);
+	KASSERT(sync_signal(-1) < 0);
+	KASSERT(sync_signal(1000) < 0);
 }
 
 /**
@@ -292,36 +302,15 @@ static void test_sync_bad_signal(void)
 	int nodenum;
 	int syncid;
 	int nodes[NODES_AMOUNT];
+	struct aiocb aiocb;
 
 	nodenum = processor_node_get_num(processor_node_get_id());
 	nodes[0] = nodenum;
 	nodes[1] = nodenum == NODENUM_MASTER ? NODENUM_SLAVE : NODENUM_MASTER;
 
-	KASSERT((syncid = sync_create(nodes, NODES_AMOUNT, SYNC_ALL_TO_ONE)) >= 0);
-	KASSERT(sync_signal(syncid, nodes, NODES_AMOUNT, SYNC_ALL_TO_ONE) < 0);
+	KASSERT((syncid = sync_create(nodes, NODES_AMOUNT, SYNC_ALL_TO_ONE, &aiocb)) >= 0);
+	KASSERT(sync_signal(syncid) < 0);
 	KASSERT(sync_unlink(syncid) == 0);
-}
-
-/**
- * @brief Fault Injection Test: Synchronization Point Invalid Wait
- */
-static void test_sync_invalid_wait(void)
-{
-	KASSERT(sync_wait(-1) < 0);
-	KASSERT(sync_wait(1) < 0);
-	KASSERT(sync_wait(1000000) < 0);
-}
-
-/**
- * @brief Fault Injection Test: Synchronization Point Bad Signal
- */
-static void test_sync_bad_wait(void)
-{
-	int syncid;
-
-	KASSERT((syncid = sync_open()) >= 0);
-	KASSERT(sync_wait(syncid) < 0);
-	KASSERT(sync_close(syncid) == 0);
 }
 
 /**
@@ -338,8 +327,6 @@ struct test sync_tests_fault[] = {
 	{test_sync_double_close,   "Double Close"   },
 	{test_sync_invalid_signal, "Invalid Signal" },
 	{test_sync_bad_signal,     "Bad Signal"     },
-	{test_sync_invalid_wait,   "Invalid Wait"   },
-	{test_sync_bad_wait,       "Bad Wait"       },
 	{NULL,                     NULL             },
 };
 

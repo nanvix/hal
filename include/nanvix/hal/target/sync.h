@@ -56,6 +56,11 @@
 		#error "SYNC_OPEN_MAX not defined"
 		#endif
 
+		/* Structures */
+		#ifndef __aiocb_struct
+		#error "struct aiocb not defined?"
+		#endif
+
 		/* Functions */
 		#ifndef __sync_create_fn
 		#error "sync_create() not defined?"
@@ -110,17 +115,19 @@
 	 * @param nodes  IDs of target NoC nodes.
 	 * @param nnodes Number of target NoC nodes.
 	 * @param type   Type of synchronization point.
+	 * @param aiocb  Asynchronous operation control.
 	 *
 	 * @return The tag of underlying resource ID.
 	 */
 #if (__TARGET_HAS_SYNC)
-	EXTERN int sync_create(const int *nodes, int nnodes, int type);
+	EXTERN int sync_create(const int *nodes, int nnodes, int type, struct aiocb * aiocb);
 #else
-	static inline int sync_create(const int *nodes, int nnodes, int type)
+	static inline int sync_create(const int *nodes, int nnodes, int type, struct aiocb * aiocb)
 	{
 		UNUSED(nodes);
 		UNUSED(nnodes);
 		UNUSED(type);
+		UNUSED(aiocb);
 
 		return (-ENOSYS);
 	}
@@ -132,10 +139,14 @@
 	 * @return The tag of underlying resource ID.
 	 */
 #if (__TARGET_HAS_SYNC)
-	EXTERN int sync_open(void);
+	EXTERN int sync_open(const int *nodes, int nnodes, int type);
 #else
-	static inline int sync_open(void)
+	static inline int sync_open(const int *nodes, int nnodes, int type)
 	{
+		UNUSED(nodes);
+		UNUSED(nnodes);
+		UNUSED(type);
+
 		return (-ENOSYS);
 	}
 #endif
@@ -179,16 +190,16 @@
 	/**
 	 * @brief Wait signal on a specific synchronization point.
 	 *
-	 * @param syncid Resource ID.
+	 * @param aiocb Asynchronous operation control.
 	 *
 	 * @return Zero if wait signal correctly and non zero otherwise.
 	 */
 #if (__TARGET_HAS_SYNC)
-	EXTERN int sync_wait(int syncid);
+	EXTERN int sync_wait(struct aiocb * aiocb);
 #else
-	static inline int sync_wait(int syncid)
+	static inline int sync_wait(struct aiocb * aiocb)
 	{
-		UNUSED(syncid);
+		UNUSED(aiocb);
 
 		return (-ENOSYS);
 	}
@@ -205,14 +216,11 @@
 	 * @return Zero if send signal correctly and non zero otherwise.
 	 */
 #if (__TARGET_HAS_SYNC)
-	EXTERN int sync_signal(int syncid, const int *nodes, int nnodes, int type);
+	EXTERN int sync_signal(int syncid);
 #else
-	static inline int sync_signal(int syncid, const int *nodes, int nnodes, int type)
+	static inline int sync_signal(int syncid)
 	{
 		UNUSED(syncid);
-		UNUSED(nodes);
-		UNUSED(nnodes);
-		UNUSED(type);
 
 		return (-ENOSYS);
 	}
