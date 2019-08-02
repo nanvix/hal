@@ -53,27 +53,35 @@
 		#error "PORTAL_MAX_SIZE not defined"
 		#endif
 
+		/* Structures */
+		#ifndef __aiocb_struct
+		#error "struct aiocb not defined?"
+		#endif
+
 		/* Functions */
 		#ifndef __portal_create_fn
-		#error "sync_create() not defined?"
-		#endif
-		#ifndef __portal_open_fn
-		#error "sync_open() not defined?"
+		#error "portal_create() not defined?"
 		#endif
 		#ifndef __portal_allow_fn
-		#error "sync_allow() not defined?"
+		#error "portal_allow() not defined?"
+		#endif
+		#ifndef __portal_open_fn
+		#error "portal_open() not defined?"
 		#endif
 		#ifndef __portal_unlink_fn
-		#error "sync_unlink() not defined?"
+		#error "portal_unlink() not defined?"
 		#endif
 		#ifndef __portal_close_fn
-		#error "sync_close_() not defined?"
+		#error "portal_close() not defined?"
 		#endif
-		#ifndef __portal_write_fn
-		#error "sync_wait() not defined?"
+		#ifndef __portal_awrite_fn
+		#error "portal_write() not defined?"
 		#endif
-		#ifndef __portal_read_fn
-		#error "sync_signal() not defined?"
+		#ifndef __portal_aread_fn
+		#error "portal_aread() not defined?"
+		#endif
+		#ifndef __portal_wait_fn
+		#error "portal_wait() not defined?"
 		#endif
 
 	#else
@@ -124,20 +132,21 @@
 #endif
 
 	/**
-	 * @brief Opens a portal.
+	 * @brief Enables read operations from a remote.
 	 *
-	 * @param nodeid Logic ID of the target NoC node.
+	 * @param portalid ID of the target portal.
+	 * @param remote   NoC node ID of target remote.
 	 *
-	 * @returns Upon successful completion, the ID of the target portal
-	 * is returned. Upon failure, a negative error code is returned
-	 * instead.
+	 * @returns Upons successful completion zero is returned. Upon failure,
+	 * a negative error code is returned instead.
 	 */
 #if (__TARGET_HAS_PORTAL)
-	EXTERN int portal_open(int nodenum);
+	EXTERN int portal_open(int local, int remote);
 #else
-	static inline int portal_open(int nodenum)
+	static inline int portal_open(int local, int remote)
 	{
-		UNUSED(nodenum);
+		UNUSED(local);
+		UNUSED(remote);
 
 		return (-ENOSYS);
 	}
@@ -153,12 +162,12 @@
 	 * failure, a negative error code is returned instead.
 	 */
 #if (__TARGET_HAS_PORTAL)
-	EXTERN int portal_allow(int portalid, int nodenum);
+	EXTERN int portal_allow(int portalid, int remote);
 #else
-	static inline int portal_allow(int portalid, int nodenum);
+	static inline int portal_allow(int portalid, int remote)
 	{
 		UNUSED(portalid);
-		UNUSED(nodenum);
+		UNUSED(remote);
 
 		return (-ENOSYS);
 	}
@@ -214,13 +223,14 @@
 	 * code is returned instead.
 	 */
 #if (__TARGET_HAS_PORTAL)
-	EXTERN int portal_write(int portalid, const void * buffer, size_t size);
+	EXTERN int portal_awrite(int portalid, const void * buffer, uint64_t size, struct aiocb * aiocb);
 #else
-	static inline int portal_write(int portalid, const void * buffer, size_t size)
+	static inline int portal_awrite(int portalid, const void * buffer, uint64_t size, struct aiocb * aiocb)
 	{
 		UNUSED(portalid);
 		UNUSED(buffer);
 		UNUSED(size);
+		UNUSED(aiocb);
 
 		return (-ENOSYS);
 	}
@@ -232,19 +242,38 @@
 	 * @param portalid  ID of the target portal.
 	 * @param buffer Buffer where the data should be written to.
 	 * @param size   Number of bytes to read.
+	 * @param aiocb  Asynchronous operation control.
 	 *
-	 * @returns Upon successful completion, the number of bytes
-	 * successfully read is returned. Upon failure, a negative error code
-	 * is returned instead.
+	 * @returns Upon successful completion, 0 is returned
+	 * and non zero otherwise.
 	 */
 #if (__TARGET_HAS_PORTAL)
-	EXTERN int portal_read(int portalid, void * buffer, size_t size);
+	EXTERN int portal_aread(int portalid, void * buffer, uint64_t size, struct aiocb * aiocb);
 #else
-	static inline int portal_read(int portalid, void * buffer, size_t size)
+	static inline int portal_aread(int portalid, void * buffer, uint64_t size, struct aiocb * aiocb)
 	{
 		UNUSED(portalid);
 		UNUSED(buffer);
 		UNUSED(size);
+		UNUSED(aiocb);
+
+		return (-ENOSYS);
+	}
+#endif
+
+	/**
+	 * @brief Waits asynchronous operation.
+	 *
+	 * @param aiocb Asynchronous operation control.
+	 *
+	 * @return Zero if wait read correctly and non zero otherwise.
+	 */
+#if (__TARGET_HAS_PORTAL)
+	EXTERN int portal_wait(struct aiocb * aiocb);
+#else
+	static inline int portal_wait(struct aiocb * aiocb)
+	{
+		UNUSED(aiocb);
 
 		return (-ENOSYS);
 	}
@@ -253,4 +282,3 @@
 /**@}*/
 
 #endif /* NANVIX_HAL_TARGET_PORTAL_H_ */
-

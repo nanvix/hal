@@ -85,8 +85,8 @@
 	 * @name Identifies D-NoC transfer tag reserved for Communication services.
 	 */
 	/**@{*/
-	#define BOSTAN_MAILBOX_DNOC_TX_BASE  0                                                                /**< D-NoC Transfer Tag reserved for Mailbox. */
-	#define BOSTAN_PORTAL_DNOC_TX_BASE  (BOSTAN_PORTAL_DNOC_TX_BASE + BOSTAN_NR_DNOC_TX_PER_COMM_SERVICE) /**< D-NoC Transfer Tag reserved for Portal.  */
+	#define BOSTAN_MAILBOX_DNOC_TX_BASE  0                                                                 /**< D-NoC Transfer Tag reserved for Mailbox. */
+	#define BOSTAN_PORTAL_DNOC_TX_BASE  (BOSTAN_MAILBOX_DNOC_TX_BASE + BOSTAN_NR_DNOC_TX_PER_COMM_SERVICE) /**< D-NoC Transfer Tag reserved for Portal.  */
 	/**@}*/
 
 /*============================================================================*
