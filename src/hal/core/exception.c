@@ -27,6 +27,10 @@
 #include <nanvix/klib.h>
 #include <errno.h>
 
+/*===========================================================================*
+ * default_handler()                                                         *
+ *===========================================================================*/
+
 /**
  * @brief Generic exception handler.
  *
@@ -44,6 +48,10 @@ PRIVATE NORETURN void default_handler(
 
 	UNREACHABLE();
 }
+
+/*===========================================================================*
+ * do_exception()                                                            *
+ *===========================================================================*/
 
 /**
  * @brief High-level exception dispatcher.
@@ -66,6 +74,10 @@ PUBLIC void do_exception(const struct exception *excp, const struct context *ctx
 
 	handler(excp, ctx);
 }
+
+/*===========================================================================*
+ * exception_register()                                                      *
+ *===========================================================================*/
 
 /**
  * The exception_register() function registers @p handler as the
@@ -111,6 +123,10 @@ PUBLIC int exception_register(int excpnum, exception_handler_t handler)
 	return (0);
 }
 
+/*===========================================================================*
+ * exception_unregister()                                                    *
+ *===========================================================================*/
+
 /**
  * The exception_unregister() function unregisters @p handler as the
  * exception handler for the execption @p excpnum.
@@ -136,6 +152,9 @@ PUBLIC int exception_unregister(int excpnum)
 	return (0);
 }
 
+/*===========================================================================*
+ * exception_forward()                                                       *
+ *===========================================================================*/
 
 /**
  * The exception_forward() function forwards an exception to the
@@ -143,7 +162,11 @@ PUBLIC int exception_unregister(int excpnum)
  *
  * @author Pedro Henrique Penna
  */
-PUBLIC void exception_forward(int excpnum, const struct exception *excp, const struct context *ctx)
+PUBLIC void exception_forward(
+	int excpnum,
+	const struct exception *excp,
+	const struct context *ctx
+)
 {
 	struct exception *_excp = (struct exception *) excp;
 
@@ -151,6 +174,10 @@ PUBLIC void exception_forward(int excpnum, const struct exception *excp, const s
 
 	do_exception(_excp, ctx);
 }
+
+/*===========================================================================*
+ * exception_setup()                                                         *
+ *===========================================================================*/
 
 /**
  * The exception_setuo() function initializes the exception interface.
