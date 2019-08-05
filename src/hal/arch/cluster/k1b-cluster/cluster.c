@@ -68,6 +68,58 @@ PUBLIC struct coreinfo ALIGN(K1B_CACHE_LINE_SIZE) cores[K1B_CLUSTER_NUM_CORES] =
 };
 
 /*============================================================================*
+ * k1b_cluster_setup()                                                        *
+ *============================================================================*/
+
+/**
+ * @todo TODO provide a detailed description for this function.
+ *
+ * @author Pedro Henrique Penna
+ */
+PUBLIC void k1b_cluster_setup(void)
+{
+	int coreid;
+
+	coreid = k1b_core_get_id();
+
+	if (coreid == K1B_CLUSTER_COREID_MASTER)
+		kprintf("[hal] booting up cluster...");
+
+	k1b_cluster_mem_setup();
+	k1b_core_setup(&excp_stacks[k1b_core_get_id()][EXCEPTION_STACK_SIZE]);
+}
+
+/*============================================================================*
+ * k1b_cluster_slave_setup()                                                  *
+ *============================================================================*/
+
+/**
+ * @brief Initializes a slave core.
+ *
+ * The k1b_cluster_slave_setup() function initializes the underlying
+ * slave core.  It setups the stack and then call the kernel main
+ * function.  Architectural structures are initialized by the master
+ * core and registered later on, when the slave core is started
+ * effectively.
+ *
+ * @note This function does not return.
+ *
+ * @see k1b_cluster_setup() and k1b_cluster_master_setup().
+ *
+ * @author Pedro Henrique Penna
+ */
+PUBLIC NORETURN void k1b_cluster_slave_setup(void)
+{
+	k1b_cluster_setup();
+
+	while (true)
+	{
+		core_idle();
+		core_run();
+	}
+}
+
+/*============================================================================*
  * k1b_cluster_master_setup()                                                 *
  *============================================================================*/
 
@@ -143,58 +195,13 @@ PRIVATE NORETURN void k1b_cluster_master_setup(void)
 	 */
 	jtag_init();
 
-	cluster_fence_release();
-
 	k1b_get_boot_args(&args);
 
 	k1b_cluster_setup();
 
+	cluster_fence_release();
+
 	kmain(args.argc, (const char **)args.argv);
-}
-
-/*============================================================================*
- * k1b_cluster_slave_setup()                                                  *
- *============================================================================*/
-
-/**
- * @brief Initializes a slave core.
- *
- * The k1b_cluster_slave_setup() function initializes the underlying
- * slave core.  It setups the stack and then call the kernel main
- * function.  Architectural structures are initialized by the master
- * core and registered later on, when the slave core is started
- * effectively.
- *
- * @note This function does not return.
- *
- * @see k1b_cluster_setup() and k1b_cluster_master_setup().
- *
- * @author Pedro Henrique Penna
- */
-PUBLIC NORETURN void k1b_cluster_slave_setup(void)
-{
-	while (true)
-	{
-		core_idle();
-		core_run();
-	}
-}
-
-/*============================================================================*
- * k1b_cluster_setup()                                                        *
- *============================================================================*/
-
-/**
- * @todo TODO provide a detailed description for this function.
- *
- * @author Pedro Henrique Penna
- */
-PUBLIC void k1b_cluster_setup(void)
-{
-	kprintf("[hal] booting up cluster...");
-
-	k1b_core_setup(&excp_stacks[k1b_core_get_id()][EXCEPTION_STACK_SIZE]);
-	k1b_cluster_mem_setup();
 }
 
 /*============================================================================*
