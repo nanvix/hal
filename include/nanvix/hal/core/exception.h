@@ -115,7 +115,6 @@
 	 */
 	typedef void (*exception_handler_t)(const struct exception *, const struct context *);
 
-
 #ifdef __NANVIX_HAL
 
 	/**
@@ -126,6 +125,11 @@
 		exception_handler_t handler; /**< Handler */
 		const char *name;            /**< Name    */
 	} exceptions[EXCEPTIONS_NUM];
+
+	/**
+	 * @brief Initializes exceptions.
+	 */
+	EXTERN void exception_setup(void);
 
 #endif /* __NANVIX_HAL */
 

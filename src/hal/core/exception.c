@@ -33,7 +33,7 @@
  * @param excp Exception information.
  * @param ctx  Interrupted context.
  */
-PRIVATE NORETURN void exception_default_handler(
+PRIVATE NORETURN void default_handler(
 	const struct exception *excp,
 	const struct context *ctx)
 {
@@ -62,8 +62,7 @@ PUBLIC void do_exception(const struct exception *excp, const struct context *ctx
 
 	/* Nothing to do. */
 	excpnum = exception_get_num(excp);
-	if ((handler = exceptions[excpnum].handler) == NULL)
-		exception_default_handler(excp, ctx);
+	handler = exceptions[excpnum].handler;
 
 	handler(excp, ctx);
 }
@@ -91,12 +90,15 @@ PUBLIC int exception_register(int excpnum, exception_handler_t handler)
 	}
 
 	/* Bad exception number. */
-	if (exceptions[excpnum].handler != NULL)
+	if (exceptions[excpnum].handler != default_handler)
 	{
-		kprintf("[hal] exception handler already registered for %s",
-			exceptions[excpnum].name
-		);
-		return (1);
+		if (exceptions[excpnum].handler != NULL)
+		{
+			kprintf("[hal] exception handler already registered for %s",
+				exceptions[excpnum].name
+			);
+			return (1);
+		}
 	}
 
 	exceptions[excpnum].handler = handler;
@@ -125,10 +127,10 @@ PUBLIC int exception_unregister(int excpnum)
 	}
 
 	/* Bad exception number. */
-	if (exceptions[excpnum].handler == NULL)
+	if (exceptions[excpnum].handler == default_handler)
 		return (-EINVAL);
 
-	exceptions[excpnum].handler = NULL;
+	exceptions[excpnum].handler = default_handler;
 	dcache_invalidate();
 
 	return (0);
@@ -148,4 +150,23 @@ PUBLIC void exception_forward(int excpnum, const struct exception *excp, const s
 	_excp->num = excpnum;
 
 	do_exception(_excp, ctx);
+}
+
+/**
+ * The exception_setuo() function initializes the exception interface.
+ *
+ * @author Pedro Henrique Penna
+ */
+PUBLIC void exception_setup(void)
+{
+	for (int i = 0; i < EXCEPTIONS_NUM; i++)
+	{
+		/* Skip early registered handlers. */
+		if (exceptions[i].handler != NULL)
+			continue;
+
+		exceptions[i].handler = default_handler;
+	}
+
+	dcache_invalidate();
 }
