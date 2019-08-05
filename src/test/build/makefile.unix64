@@ -47,7 +47,7 @@ ifeq ($(VERBOSE), no)
 	@echo [LD] $(OBJ)
 	@$(CC) $(CFLAGS) $(LDFLAGS) $(OBJ) -o $(BINDIR)/$(EXECBIN) $(LIBS) $(LIB_THEIRS)
 else
-	$(CC) $(CFLAGS) $(LDFLAGS) $(OBJ) -o $(BINDIR)/$(EXECBIN) $(LIBS)
+	$(CC) $(CFLAGS) $(LDFLAGS) $(OBJ) -o $(BINDIR)/$(EXECBIN) $(LIBS) $(LIB_THEIRS)
 endif
 
 # Cleans all object files.
