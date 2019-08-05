@@ -572,11 +572,11 @@ PUBLIC void or1k_cluster_mem_setup(void)
 
 	coreid = or1k_core_get_id();
 
-	kprintf("[hal] initializing memory layout...");
-
 	/* Master core builds root virtual address space. */
 	if (coreid == OR1K_CLUSTER_COREID_MASTER)
 	{
+		kprintf("[hal] initializing memory layout...");
+
 		or1k_cluster_mem_info();
 
 		/* Check for memory layout. */

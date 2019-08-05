@@ -35,22 +35,6 @@
 #include <nanvix/klib.h>
 
 /*============================================================================*
- * or1k_core_setup()                                                          *
- *============================================================================*/
-
-/**
- * Initializes the core components for or1k.
- */
-PUBLIC void or1k_core_setup(void)
-{
-	/* Enable MMU. */
-	or1k_mmu_setup();
-
-	/* Enable interrupts. */
-	or1k_mtspr(OR1K_SPR_SR, or1k_mfspr(OR1K_SPR_SR) | OR1K_SPR_SR_IEE);
-}
-
-/*============================================================================*
  * or1k_core_poweroff()                                                       *
  *============================================================================*/
 
@@ -79,4 +63,22 @@ PUBLIC NORETURN void or1k_core_poweroff(void)
 	}
 	else
 		core_halt();
+}
+
+/*============================================================================*
+ * or1k_core_setup()                                                          *
+ *============================================================================*/
+
+/**
+ * The or1k_core_setup() function initializes all architectural
+ * structures of the underlying core. It setups the Interrupt Vector
+ * Table (IVT) and the Memory Management Unit (MMU) tables.
+ *
+ * @author Pedro Henrique Penna
+ */
+PUBLIC void or1k_core_setup(void)
+{
+	kprintf("[hal] booting up core...");
+
+	or1k_mmu_setup();
 }
