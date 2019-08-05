@@ -128,9 +128,9 @@
 #ifdef __NANVIX_HAL
 
 	/**
-	 * @see rv32gc_core_setup().
+	 * @see riscv32_cluster_setup().
 	 */
-	static inline void core_setup(void)
+	static inline void cluster_setup(void)
 	{
 		riscv32_cluster_setup();
 	}
