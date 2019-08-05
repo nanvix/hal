@@ -23,45 +23,25 @@
  */
 
 /* Must come first. */
-#define __NEED_HAL_CLUSTER
+#define __NEED_CORE_LPIC
 
-#include <nanvix/hal/cluster.h>
-#include <nanvix/hal/target/stdout.h>
+#include <arch/core/i486/gdt.h>
+#include <arch/core/i486/idt.h>
+#include <arch/core/i486/int.h>
+#include <arch/core/i486/tss.h>
 #include <nanvix/const.h>
-#include <nanvix/klib.h>
-
-/* Import definitions. */
-EXTERN NORETURN void kmain(int, const char *[]);
 
 /**
- * @brief Cores table.
+ * The ivt_setup() function initializes the interrupt vector
+ * table of the underlying core. It initializes the GDT, TSS and IDT,
+ * as well as it sets up the LPIC. 
  */
-PUBLIC struct coreinfo ALIGN(I486_CACHE_LINE_SIZE) cores[X86_CLUSTER_NUM_CORES] = {
-	{ true,  CORE_RUNNING,   0, NULL, I486_SPINLOCK_LOCKED }, /* Master Core   */
-};
-
-/*============================================================================*
- * x86_cluster_setup()                                                        *
- *============================================================================*/
-
-/**
- * @todo TODO provide a detailed description for this function.
- *
- * @author Davidson Francis
- */
-PUBLIC void x86_cluster_setup(void)
+PUBLIC void ivt_setup(void *stack)
 {
-	/* Clear BSS section. */
-	kmemset(&__BSS_START, 0, &__BSS_END - &__BSS_START);
+	UNUSED(stack);
 
-	kprintf("[hal] booting up cluster...");
-
-	mem_setup();
-
-	core_setup(NULL);
-
-	event_setup();
-
-	/* Kernel main. */
-	kmain(0, NULL);
+	gdt_setup();
+	tss_setup();
+	i486_lpic_setup(0x20, 0x28);
+	idt_setup();
 }

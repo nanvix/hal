@@ -22,46 +22,45 @@
  * SOFTWARE.
  */
 
-/* Must come first. */
-#define __NEED_HAL_CLUSTER
-
-#include <nanvix/hal/cluster.h>
-#include <nanvix/hal/target/stdout.h>
-#include <nanvix/const.h>
-#include <nanvix/klib.h>
-
-/* Import definitions. */
-EXTERN NORETURN void kmain(int, const char *[]);
+#ifndef ARCH_CORE_I486_IVT_H_
+#define ARCH_CORE_I486_IVT_H_
 
 /**
- * @brief Cores table.
+ * @addtogroup i486-core-ivt IVT
+ * @ingroup i486-core
+ *
+ * @brief Interrupt Vector Table
  */
-PUBLIC struct coreinfo ALIGN(I486_CACHE_LINE_SIZE) cores[X86_CLUSTER_NUM_CORES] = {
-	{ true,  CORE_RUNNING,   0, NULL, I486_SPINLOCK_LOCKED }, /* Master Core   */
-};
+/**@{*/
+
+	#include <nanvix/const.h>
+	#include <nanvix/klib.h>
+
+/**@}*/
 
 /*============================================================================*
- * x86_cluster_setup()                                                        *
+ * Exported Interface                                                         *
  *============================================================================*/
 
 /**
- * @todo TODO provide a detailed description for this function.
- *
- * @author Davidson Francis
+ * @cond i486
  */
-PUBLIC void x86_cluster_setup(void)
-{
-	/* Clear BSS section. */
-	kmemset(&__BSS_START, 0, &__BSS_END - &__BSS_START);
 
-	kprintf("[hal] booting up cluster...");
+#ifndef _ASM_FILE_
 
-	mem_setup();
+#ifdef __NANVIX_HAL
 
-	core_setup(NULL);
+	/**
+	 * @brief Initializes the interrupt vector table.
+	 *
+	 * @param stack Interrupt/Exception stack.
+	 */
+	EXTERN void ivt_setup(void *stack);
 
-	event_setup();
+#endif /* __NANVIX_HAL */
 
-	/* Kernel main. */
-	kmain(0, NULL);
-}
+#endif /* _ASM_FILE_ */
+
+/**@endcond*/
+
+#endif /* ARCH_CORE_I486_IVT_H_ */

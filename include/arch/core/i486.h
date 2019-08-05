@@ -39,6 +39,7 @@
 	#include <arch/core/i486/core.h>
 	#include <arch/core/i486/excp.h>
 	#include <arch/core/i486/int.h>
+	#include <arch/core/i486/ivt.h>
 	#include <arch/core/i486/mmu.h>
 	#include <arch/core/i486/pmio.h>
 	#include <arch/core/i486/spinlock.h>
