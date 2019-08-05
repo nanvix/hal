@@ -39,6 +39,7 @@
 	#include <arch/core/linux64/cache.h>
 	#include <arch/core/linux64/excp.h>
 	#include <arch/core/linux64/int.h>
+	#include <arch/core/linux64/ivt.h>
 	#include <arch/core/linux64/spinlock.h>
 	#include <arch/core/linux64/mmu.h>
 	#include <arch/core/linux64/tlb.h>

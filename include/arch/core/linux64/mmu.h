@@ -840,6 +840,18 @@
 		return (1);
 	}
 
+#ifndef __NANVIX_HAL
+
+	/**
+	 * @brief Initializes the MMU.
+	 */
+	static inline void mmu_setup(void)
+	{
+		/* noop */
+	}
+
+#endif /* !__NAVIX_HAL */
+
 /**@endcond**/
 
 #endif /* ARCH_CORE_LINUX64_CORE_MMU_H_ */

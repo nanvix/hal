@@ -150,14 +150,6 @@
 		return (linux64_cluster_get_num_cores());
 	}
 
-	/**
-	 * @see linux64_cluster_get_num_cores().
-	 */
-	static inline void core_setup(void)
-	{
-		linux64_core_setup();
-	}
-
 /**@endcond*/
 
 #endif /* ARCH_CLUSTER_LINUX64_CLUSTER_CORES_H_ */
