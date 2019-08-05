@@ -32,11 +32,27 @@
 #include <arch/core/rv32gc/types.h>
 #include <nanvix/const.h>
 
+/* Import definitions. */
+EXTERN void rv32gc_do_strap(void);
+
 /**
+ * @brief Initializes the interrupt vector table.
+ *
+ * @param do_trap Trap handler.
+ *
  * The rv32gc_ivt_setup() function initializes the interrupt vector
  * table in the rv32gc core.
  */
-PUBLIC void rv32gc_ivt_setup(void (*do_trap)(void))
+PRIVATE void rv32gc_ivt_setup(void (*do_trap)(void))
 {
 	rv32gc_stvec_write(RV32GC_WORD(do_trap));
+}
+
+/**
+ * @see rv32gc_ivt_setup().
+ */
+PUBLIC void ivt_setup(void *stack)
+{
+	((void) stack);
+	rv32gc_ivt_setup(&rv32gc_do_strap);
 }

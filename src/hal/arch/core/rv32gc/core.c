@@ -24,16 +24,10 @@
 
 /* Must come first. */
 #define __NEED_HAL_CORE
-#define __NEED_CORE_IVT
 
 #include <nanvix/hal/core.h>
-#include <arch/core/rv32gc/ivt.h>
-#include <arch/core/rv32gc/int.h>
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
-
-/* Import definitions. */
-EXTERN void rv32gc_do_strap(void);
 
 /*============================================================================*
  * rv32gc_core_poweroff()                                                      *
@@ -50,22 +44,4 @@ EXTERN void rv32gc_do_strap(void);
 PUBLIC NORETURN void rv32gc_core_poweroff(void)
 {
 	core_halt();
-}
-
-/*============================================================================*
- * rv32gc_core_setup()                                                         *
- *============================================================================*/
-
-/**
- * The rv32gc_core_setup() function initializes all architectural
- * structures of the underlying core. It setups the Interrupt Vector
- * Table (IVT) and the Memory Management Unit (MMU) tables.
- *
- * @author Pedro Henrique Penna
- */
-PUBLIC void rv32gc_core_setup(void)
-{
-	kprintf("[hal] booting up core...");
-
-	rv32gc_ivt_setup(&rv32gc_do_strap);
 }

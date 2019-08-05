@@ -50,6 +50,8 @@
 	 */
 	typedef void (*rv32gc_handler_fn)(void);
 
+#ifdef __NANVIX_HAL
+
 	/**
 	 * @brief Set ups the interrupt vector table.
 	 *
@@ -66,15 +68,31 @@
 		);
 	}
 
-	/**
-	 * @brief Initializes the interrupt vector table.
-	 *
-	 * @param do_trap Trap handler.
-	 */
-	extern void rv32gc_ivt_setup(rv32gc_handler_fn do_trap);
+#endif /* __NANVIX_HAL */
 
-#endif
+#endif /* !_ASM_FILE_ */
 
 /**@}*/
+
+/*============================================================================*
+ * Exported Interface                                                         *
+ *============================================================================*/
+
+/**
+ * @cond rv32gc
+ */
+
+#ifndef _ASM_FILE_
+
+#ifdef __NANVIX_HAL
+
+	/**
+	 * @brief Initializes the interrupt vector table.
+	 */
+	EXTERN void ivt_setup(void *stack);
+
+#endif /* __NANVIX_HAL */
+
+#endif /* !_ASM_FILE_ */
 
 #endif /* ARCH_CORE_RV32GC_IVT_H_ */

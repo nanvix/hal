@@ -42,11 +42,6 @@
 #ifndef _ASM_FILE_
 
 	/**
-	 * @brief Initializes the underlying core.
-	 */
-	EXTERN void rv32gc_core_setup(void);
-
-	/**
 	 * @brief Powers off the underlying core.
 	 */
 	EXTERN NORETURN void rv32gc_core_poweroff(void);
