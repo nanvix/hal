@@ -46,10 +46,21 @@ PUBLIC struct coreinfo cores[LINUX64_CLUSTER_NUM_CORES] = {
  */
 PUBLIC void linux64_cluster_setup(void)
 {
-	kprintf("[hal] booting up cluster...");
-	
-	for(int i = 1; i < LINUX64_CLUSTER_NUM_CORES; i++)
-		linux64_spinlock_lock(&cores[i].lock);
+	int coreid;
+
+	coreid = linux64_core_get_id();
+
+	if (coreid == LINUX64_CLUSTER_COREID_MASTER)
+		kprintf("[hal] booting up cluster...");
+
+	if (coreid == LINUX64_CLUSTER_COREID_MASTER)
+	{
+		for(int i = 1; i < LINUX64_CLUSTER_NUM_CORES; i++)
+			linux64_spinlock_lock(&cores[i].lock);
+	}
+
+	/* Core setup */
+	linux64_core_setup();
 }
 
 /**
@@ -57,7 +68,10 @@ PUBLIC void linux64_cluster_setup(void)
  */
 PUBLIC NORETURN void linux64_cluster_slave_setup(void)
 {
-	linux64_core_setup();
+	cluster_fence_wait();
+
+	linux64_cluster_setup();
+
 	while(1)
 	{
 		core_idle();
@@ -76,11 +90,9 @@ PUBLIC NORETURN void linux64_cluster_master_setup(void)
 	 */
 	tty_virt_init();
 
-	/* cluster setup. */
 	linux64_cluster_setup();
 
-	/* Core setup */
-	linux64_core_setup();
+	cluster_fence_release();
 
 	kmain(0, NULL);
 }
