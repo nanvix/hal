@@ -37,7 +37,7 @@ PRIVATE struct
 	size_t head;           /**< First element in the buffer.   */
 	size_t tail;            /**< Next free slot in the buffer. */
 	char buf[HAL_LOG_SIZE]; /**< Ring buffer.                  */
-} log = { 0, 0, {0, }};
+} logdev = { 0, 0, {0, }};
 
 /*============================================================================*
  * hal_log_flush()                                                            *
@@ -54,19 +54,19 @@ PRIVATE void hal_log_flush(void)
 	char buf[KBUFFER_SIZE]; /* Temporary buffer.         */
 
 	/* No data, so nothing to do. */
-	if (log.head == log.tail)
+	if (logdev.head == logdev.tail)
 		return;
 
 	/* Copy data from ring buffer. */
 	for (i = 0; i < KBUFFER_SIZE; /* noop */ )
 	{
-		buf[i] = log.buf[log.head];
+		buf[i] = logdev.buf[logdev.head];
 
 		i++;
-		log.head = (log.head + 1)%HAL_LOG_SIZE;
+		logdev.head = (logdev.head + 1)%HAL_LOG_SIZE;
 		dcache_invalidate();
 
-		if (log.head == log.tail)
+		if (logdev.head == logdev.tail)
 			break;
 	}
 
@@ -94,8 +94,8 @@ PUBLIC void hal_log_write(const char *buf, size_t n)
 		/* Copy data to ring buffer. */
 		for (size_t i = 0; i < n; i++)
 		{
-			log.buf[log.tail] = buf[i];
-			log.tail = (log.tail + 1)%HAL_LOG_SIZE;
+			logdev.buf[logdev.tail] = buf[i];
+			logdev.tail = (logdev.tail + 1)%HAL_LOG_SIZE;
 			dcache_invalidate();
 		}
 	}
