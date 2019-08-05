@@ -128,18 +128,6 @@
 		return (optimsoc_cluster_cluster_get_num_cores());
 	}
 
-#ifdef __NANVIX_HAL
-
-	/**
-	 * @see or1k_cluster_setup().
-	 */
-	static inline void core_setup(void)
-	{
-		or1k_cluster_setup();
-	}
-
-#endif /* __NANVIX_HAL */
-
 #endif /* !_ASM_FILE_ */
 
 /**@endcond*/
