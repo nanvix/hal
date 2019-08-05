@@ -131,6 +131,13 @@
 #ifdef __NANVIX_HAL
 
 	/**
+	 * @brief Initializes the underlying core.
+	 *
+	 * @param stack Interrupt/Exception stack.
+	 */
+	EXTERN void core_setup(void *stack);
+
+	/**
 	 * @brief Powers off the underlying core.
 	 */
 	EXTERN NORETURN void core_poweroff(void);

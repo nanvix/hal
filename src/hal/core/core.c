@@ -50,3 +50,24 @@ PUBLIC NORETURN void core_halt(void)
 	/* Stay here forever. */
 	UNREACHABLE();
 }
+
+/*============================================================================*
+ * core_setup()                                                               *
+ *============================================================================*/
+
+/**
+ * The core_setup() function initializes all architectural structures
+ * of the underlying core. It initializes the Memory Management Unit
+ * (MMU), Interrupt Vector Table (IVT) as well as performance
+ * monitoring registers.
+ *
+ * @author Pedro Henrique Penna
+ */
+PUBLIC void core_setup(void *stack)
+{
+	kprintf("[hal] booting up core...");
+
+	mmu_setup();
+	perf_setup();
+	ivt_setup(stack);
+}
