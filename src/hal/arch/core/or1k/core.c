@@ -64,21 +64,3 @@ PUBLIC NORETURN void or1k_core_poweroff(void)
 	else
 		core_halt();
 }
-
-/*============================================================================*
- * or1k_core_setup()                                                          *
- *============================================================================*/
-
-/**
- * The or1k_core_setup() function initializes all architectural
- * structures of the underlying core. It setups the Interrupt Vector
- * Table (IVT) and the Memory Management Unit (MMU) tables.
- *
- * @author Pedro Henrique Penna
- */
-PUBLIC void or1k_core_setup(void)
-{
-	kprintf("[hal] booting up core...");
-
-	or1k_mmu_setup();
-}

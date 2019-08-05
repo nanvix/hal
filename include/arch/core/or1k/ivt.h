@@ -22,52 +22,44 @@
  * SOFTWARE.
  */
 
-#ifndef CORE_OR1K_H_
-#define CORE_OR1K_H_
+#ifndef ARCH_CORE_OR1k_IVT_H_
+#define ARCH_CORE_OR1k_IVT_H_
 
-	/**
-	 * @addtogroup or1k-core OpenRISC Core
-	 * @ingroup cores
-	 */
+/**
+ * @addtogroup or1k-core-ivt IVT
+ * @ingroup or1k-core
+ *
+ * @brief Interrupt Vector Table
+ */
+/**@{*/
 
-	#ifndef __NEED_CORE_OR1K
-		#error "or1k core not required"
-	#endif
+	#include <nanvix/const.h>
 
-	#include <arch/core/or1k/cache.h>
-	#include <arch/core/or1k/timer.h>
-	#include <arch/core/or1k/core.h>
-	#include <arch/core/or1k/excp.h>
-	#include <arch/core/or1k/int.h>
-	#include <arch/core/or1k/ivt.h>
-	#include <arch/core/or1k/mmu.h>
-	#include <arch/core/or1k/spinlock.h>
-	#include <arch/core/or1k/tlb.h>
-	#include <arch/core/or1k/trap.h>
-	#include <arch/core/or1k/upcall.h>
-
-	#ifdef _ASM_FILE_
-		#include <arch/core/or1k/asm.h>
-	#endif
+/*============================================================================*
+ * Exported Interface                                                         *
+ *============================================================================*/
 
 /**
  * @cond or1k
  */
 
+#ifndef _ASM_FILE_
+
+#ifdef __NANVIX_HAL
+
 	/**
-	 * @name Core Features
+	 * @brief Initializes the interrupt vector table.
 	 */
-	/**@{*/
-	#define CORE_HAS_PERF         0 /**< Has Performance Monitors?   */
-	#define CORE_HAS_ATOMICS      1 /**< Has Atomic Instructions?    */
-	#define CORE_HAS_PMIO         0 /**< Has Programmed I/O?         */
-	#define CORE_HAS_TLB_HW       0 /**< Has Hardware-Managed TLB?   */
-	#define CORE_HAS_CACHE_HW     1 /**< Has Hardware-Managed Cache? */
-	#define CORE_HAS_HUGE_PAGES   1 /**< Are Huge Pages Supported?   */
-	#define CORE_IS_LITTLE_ENDIAN 0 /**< Is Little Endian?           */
-	/**@}*/
+	static inline void ivt_setup(void *stack)
+	{
+		((void) stack);
+	}
+
+#endif /* __NANVIX_HAL */
+
+#endif /* !_ASM_FILE_ */
 
 /**@endcond*/
 
-#endif /* CORE_OR1K_H_ */
+#endif /* ARCH_CORE_OR1k_IVT_H_ */
 

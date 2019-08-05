@@ -68,7 +68,7 @@ PUBLIC void or1k_cluster_setup(void)
 	mem_setup();
 
 	/* Setup MMU. */
-	or1k_core_setup();
+	core_setup(NULL);
 
 	/* Setup events. */
 	#if (!CLUSTER_HAS_EVENTS)
