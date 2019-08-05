@@ -52,23 +52,31 @@
 	 */
 	typedef void (*k1b_swint_handler_fn)(void);
 
-	/**
-	 * @brief Initializes the interrupt vector table.
-	 *
-	 * @param hwint_handler Default hardware interrupt handler.
-	 * @param swint_handler Default software interrupt handler.
-	 * @param excp_handler  Default exception handler.
-	 * @param stack         Stack for interrupts, exceptions and traps.
-	 */
-	extern void k1b_ivt_setup(
-			k1b_int_handler_fn hwint_handler,
-			k1b_swint_handler_fn swint_handler,
-			void (*excp_handler)(void),
-			void *stack
-	);
-
 #endif /* !_ASM_FILE_ */
 
 /**@}*/
+
+/*============================================================================*
+ * Exported Interface                                                         *
+ *============================================================================*/
+
+/**
+ * @cond k1b
+ */
+
+#ifndef _ASM_FILE_
+
+#ifdef __NANVIX_HAL
+
+	/**
+	 * @brief Initializes the interrupt vector table.
+	 */
+	EXTERN void ivt_setup(void *stack);
+
+#endif /* __NANVIX_HAL */
+
+#endif /* !_ASM_FILE_ */
+
+/**@endcond*/
 
 #endif /* ARCH_CORE_K1B_IVT_H_ */

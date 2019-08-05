@@ -855,6 +855,18 @@
 		return (1);
 	}
 
+#ifdef __NANVIX_HAL
+
+	/**
+	 * @brief Initializes the MMU.
+	 */
+	static inline void mmu_setup(void)
+	{
+		/* noop */
+	}
+
+#endif /* __NANVIX_HAL */
+
 #endif /* !_ASM_FILE_ */
 
 /**@endcond**/
