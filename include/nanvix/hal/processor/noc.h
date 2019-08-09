@@ -54,12 +54,6 @@
 		#endif
 
 		/* Functions */
-		#ifndef __processor_noc_is_ionode0_fn
-		#error "__processor_noc_is_ionode0() not defined?"
-		#endif
-		#ifndef __processor_noc_is_ionode1_fn
-		#error "__processor_noc_is_ionode1() not defined?"
-		#endif
 		#ifndef __processor_noc_is_ionode_fn
 		#error "__processor_noc_is_ionode() not defined?"
 		#endif
@@ -72,16 +66,12 @@
 		#ifndef __processor_node_get_num_fn
 		#error "__processor_node_get_num() not defined?"
 		#endif
-		#ifndef __processor_nodes_convert_fn
-		#error "__processor_nodes_convert() not defined?"
-		#endif
 
 	#else
 
-		/* Constants */
+		/* Dummy Constants */
 		#define NR_NOC_IONODES 1
-		#define NR_NOC_CNODES 0
-		#define NR_NOC_NODES (NR_NOC_IONODES + NR_NOC_CNODES)
+		#define NR_NOC_CNODES  0
 
 	#endif
 

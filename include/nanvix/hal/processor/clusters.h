@@ -43,11 +43,11 @@
 	#if (PROCESSOR_IS_MULTICLUSTER)
 
 		/* Constants */
-		#ifndef _PROCESSOR_CCLUSTERS_NUM
-		#error "_PROCESSOR_CCLUSTERS_NUM not defined"
+		#ifndef PROCESSOR_CCLUSTERS_NUM
+		#error "PROCESSOR_CCLUSTERS_NUM not defined"
 		#endif
-		#ifndef _PROCESSOR_IOCLUSTERS_NUM
-		#error "_PROCESSOR_IOCLUSTERS_NUM not defined"
+		#ifndef PROCESSOR_IOCLUSTERS_NUM
+		#error "PROCESSOR_IOCLUSTERS_NUM not defined"
 		#endif
 
 		/* Functions */
@@ -64,8 +64,8 @@
 	#else
 
 		/* Constants */
-		#define _PROCESSOR_CCLUSTERS_NUM  0
-		#define _PROCESSOR_IOCLUSTERS_NUM 1
+		#define PROCESSOR_CCLUSTERS_NUM  0
+		#define PROCESSOR_IOCLUSTERS_NUM 1
 
 	#endif
 

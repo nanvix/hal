@@ -48,20 +48,10 @@
 /**@{*/
 
 	/**
-	 * @brief Number of Compute Clusters in the processor.
-	 */
-	#define PROCESSOR_CCLUSTERS _PROCESSOR_CCLUSTERS_NUM
-
-	/**
-	 * @brief Number of IO Clusters in the processor.
-	 */
-	#define PROCESSOR_IOCLUSTERS_NUM _PROCESSOR_IOCLUSTERS_NUM
-
-	/**
 	 * @brief Total number of clusters in the processor.
 	 */
 	#define PROCESSOR_CLUSTERS_NUM \
-		(_PROCESSOR_IOCLUSTERS_NUM + _PROCESSOR_CCLUSTERS_NUM)
+		(PROCESSOR_IOCLUSTERS_NUM + PROCESSOR_CCLUSTERS_NUM)
 
 /**@}*/
 
