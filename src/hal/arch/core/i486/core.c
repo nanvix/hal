@@ -22,16 +22,17 @@
  * SOFTWARE.
  */
 
-#define __NEED_HAL_CLUSTER
-#include <nanvix/hal/cluster.h>
-#include <nanvix/const.h>
+/* Must come first. */
+#define __NEED_HAL_CORE
+#define __NEED_CORE_LPIC
+#define __NEED_OR1K_REGS
 
-/**
- * @brief Cores table.
- */
-PUBLIC struct coreinfo ALIGN(I486_CACHE_LINE_SIZE) cores[X86_CLUSTER_NUM_CORES] = {
-	{ true,  CORE_RUNNING,   0, NULL, I486_SPINLOCK_LOCKED }, /* Master Core   */
-};
+#include <arch/core/i486/gdt.h>
+#include <arch/core/i486/idt.h>
+#include <arch/core/i486/int.h>
+#include <arch/core/i486/tss.h>
+#include <nanvix/hal/core.h>
+#include <nanvix/const.h>
 
 /*============================================================================*
  * i486_core_poweroff()                                                       *
@@ -48,4 +49,22 @@ PUBLIC struct coreinfo ALIGN(I486_CACHE_LINE_SIZE) cores[X86_CLUSTER_NUM_CORES] 
 PUBLIC NORETURN void i486_core_poweroff(void)
 {
 	core_halt();
+}
+
+/*============================================================================*
+ * i486_core_setup()                                                          *
+ *============================================================================*/
+
+/**
+ * The i486_core_setup() function initializes all architectural
+ * structures of the underlying core. It setups the GDT, TSS and IDT.
+ *
+ * @author Pedro Henrique Penna
+ */
+PUBLIC void i486_core_setup(void)
+{
+	gdt_setup();
+	tss_setup();
+	i486_lpic_setup(0x20, 0x28);
+	idt_setup();
 }

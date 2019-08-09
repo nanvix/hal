@@ -314,8 +314,6 @@ PUBLIC void core_run(void)
 		/* Initialize core. */
 		if (!cores[coreid].initialized)
 		{
-			perf_setup();
-			core_setup();
 			cores[coreid].initialized = true;
 			dcache_invalidate();
 		}

@@ -49,40 +49,36 @@ PUBLIC struct coreinfo  ALIGN(OR1K_CACHE_LINE_SIZE) cores[OR1K_CLUSTER_NUM_CORES
 };
 
 /*============================================================================*
- * or1k_cluster_master_setup()                                                 *
+ * or1k_cluster_setup()                                                       *
  *============================================================================*/
 
 /**
- * @brief Initializes the master core.
- *
- * The or1k_master_setup() function initializes the underlying
- * master core. It setups the stack and then call the kernel
- * main function.
- *
- * @note This function does not return.
- *
- * @author Davidson Francis
+ * Initializes the underlying cluster.
  */
-PUBLIC NORETURN void or1k_cluster_master_setup(void)
+PUBLIC void or1k_cluster_setup(void)
 {
-	/* Clear BSS section. */
-	kmemset(&__BSS_START, 0, &__BSS_END - &__BSS_START);
+	int coreid;
 
-	/* Initialize events table. */
+	coreid = or1k_core_get_id();
+
+	if (coreid == OR1K_CLUSTER_COREID_MASTER)
+		kprintf("[hal] booting up cluster...");
+
+	/* Configure Memory Layout. */
+	or1k_cluster_mem_setup();
+
+	/* Setup MMU. */
+	or1k_core_setup();
+
+	/* Setup events. */
 	#if (!CLUSTER_HAS_EVENTS)
+	if (coreid == OR1K_CLUSTER_COREID_MASTER)
 		event_setup();
+	#else
+		or1k_cluster_ompic_init();
+		or1k_pic_unmask(OR1K_INT_OMPIC);
+		or1k_mtspr(OR1K_SPR_SR, or1k_mfspr(OR1K_SPR_SR) | OR1K_SPR_SR_IEE);
 	#endif
-
-	/* Core setup. */
-	or1k_cluster_setup();
-
-	/* Enable interrupts. */
-	or1k_mtspr(OR1K_SPR_SR, or1k_mfspr(OR1K_SPR_SR) | OR1K_SPR_SR_IEE);
-
-	cluster_fence_release();
-
-	/* Kernel main. */
-	kmain(0, NULL);
 }
 
 /*============================================================================*
@@ -107,17 +103,7 @@ PUBLIC NORETURN void or1k_cluster_slave_setup(void)
 {
 	cluster_fence_wait();
 
-	/* Initial TLB. */
-	or1k_cluster_tlb_init();
-
-	/* Enable MMU. */
-	or1k_enable_mmu();
-
-	/* Enable OMPIC interrupts. */
-	or1k_pic_unmask(OR1K_INT_OMPIC);
-
-	/* Enable interrupts. */
-	or1k_mtspr(OR1K_SPR_SR, or1k_mfspr(OR1K_SPR_SR) | OR1K_SPR_SR_IEE);
+	or1k_cluster_setup();
 
 	while (true)
 	{
@@ -127,38 +113,35 @@ PUBLIC NORETURN void or1k_cluster_slave_setup(void)
 }
 
 /*============================================================================*
- * or1k_cluster_setup()                                                        *
+ * or1k_cluster_master_setup()                                                 *
  *============================================================================*/
 
 /**
- * @todo TODO provide a detailed description for this function.
+ * @brief Initializes the master core.
  *
- * @author Pedro Henrique Penna, Davidson Francis
+ * The or1k_master_setup() function initializes the underlying
+ * master core. It setups the stack and then call the kernel
+ * main function.
+ *
+ * @note This function does not return.
+ *
+ * @author Davidson Francis
  */
-PUBLIC void or1k_cluster_setup(void)
+PUBLIC NORETURN void or1k_cluster_master_setup(void)
 {
+	/* Clear BSS section. */
+	kmemset(&__BSS_START, 0, &__BSS_END - &__BSS_START);
+
 	/*
 	 * Early initialization of
 	 * stdout to help us debugging.
 	 */
 	stdout_init();
 
-	kprintf("[hal] booting up cluster...");
-
-	/* Configure Memory Layout. */
-	or1k_cluster_mem_setup();
-
-	/* Enable MMU. */
-	or1k_mmu_setup();
-
-	/* Configure OMPIC. */
-	or1k_cluster_ompic_init();
-
-	/* Enable OMPIC interrupts. */
-	or1k_pic_unmask(OR1K_INT_OMPIC);
-
-	/* Enable interrupts. */
-	or1k_mtspr(OR1K_SPR_SR, or1k_mfspr(OR1K_SPR_SR) | OR1K_SPR_SR_IEE);
+	or1k_cluster_setup();
 
 	cluster_fence_release();
+
+	/* Kernel main. */
+	kmain(0, NULL);
 }

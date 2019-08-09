@@ -74,9 +74,6 @@ start:
 
 	/* Core and cluster setup. */
 	call x86_cluster_setup
-	call i486_core_setup
-
-	call kmain
 
 	/* Halt execution. */
 	start.halt:

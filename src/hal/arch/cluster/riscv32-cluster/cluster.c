@@ -45,38 +45,41 @@ PUBLIC struct coreinfo cores[RISCV32_CLUSTER_NUM_CORES] = {
  * riscv32_cluster_setup()                                                    *
  *============================================================================*/
 
-/**
- * @todo TODO provide a detailed description of this function.
- *
- * @author Pedro Henrique Penna
- */
 PUBLIC void riscv32_cluster_setup(void)
 {
-	kprintf("[hal] booting up cluster...");
-	rv32gc_core_setup();
+	int coreid;
+
+	coreid = rv32gc_core_get_id();
+
+	if (coreid == RISCV32_CLUSTER_COREID_MASTER)
+		kprintf("[hal] booting up cluster...");
+
 	riscv32_cluster_mem_setup();
+	rv32gc_core_setup();
 }
 
 /*============================================================================*
- * rv32gc_slave_setup()                                                        *
+ * riscv32_slave_setup()                                                      *
  *============================================================================*/
 
 /**
  * @brief Initializes a slave core.
  *
- * The rv32gc_slave_setup() function initializes the underlying slave
+ * The riscv32_slave_setup() function initializes the underlying slave
  * core.  It setups the stack and then call the kernel main function.
  * Architectural structures are initialized by the master core and
  * registered later on, when the slave core is started effectively.
  *
  * @note This function does not return.
  *
- * @see rv32gc_core_setup() and rv32gc_master_setup().
+ * @see rv32gc_core_setup() and riscv32_master_setup().
  *
  * @author Pedro Henrique Penna
  */
 PUBLIC NORETURN void riscv32_cluster_slave_setup(void)
 {
+	riscv32_cluster_setup();
+
 	while (true)
 	{
 		core_idle();
@@ -85,13 +88,13 @@ PUBLIC NORETURN void riscv32_cluster_slave_setup(void)
 }
 
 /*============================================================================*
- * rv32gc_master_setup()                                                      *
+ * riscv32_master_setup()                                                      *
  *============================================================================*/
 
 /**
  * @brief Initializes the master core.
  *
- * The rv32gc_master_setup() function initializes the underlying
+ * The riscv32_master_setup() function initializes the underlying
  * master core. It setups the stack and then call the kernel
  * main function.
  *
@@ -101,7 +104,6 @@ PUBLIC NORETURN void riscv32_cluster_slave_setup(void)
  */
 PUBLIC NORETURN void riscv32_cluster_master_setup(void)
 {
-	/* Core setup. */
 	riscv32_cluster_setup();
 
 	kmain(0, NULL);

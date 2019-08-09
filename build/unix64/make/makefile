@@ -47,9 +47,8 @@ export TIMEOUT ?= 5
 
 # Compiler Options
 export CFLAGS  = -D __unix64__ -D__linux64__
-export CFLAGS += -std=c99 -D_GNU_SOURCE
-#export CFLAGS += -nostdlib -nostdinc
-export CFLAGS += -ansi # -pedantic-errors
+export CFLAGS += -D_GNU_SOURCE
+export CFLAGS += -ansi -pedantic-errors
 export CFLAGS += -Wstack-usage=4096
 export CFLAGS += -D __HAS_HW_DIVISION
 #export CFLAGS += -D __INTERFACE_CHECK_CORE_AL

@@ -30,8 +30,18 @@
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
 
+/* Import definitions. */
+EXTERN NORETURN void kmain(int, const char *[]);
+
+/**
+ * @brief Cores table.
+ */
+PUBLIC struct coreinfo ALIGN(I486_CACHE_LINE_SIZE) cores[X86_CLUSTER_NUM_CORES] = {
+	{ true,  CORE_RUNNING,   0, NULL, I486_SPINLOCK_LOCKED }, /* Master Core   */
+};
+
 /*============================================================================*
- * x86_cluster_setup()                                                       *
+ * x86_cluster_setup()                                                        *
  *============================================================================*/
 
 /**
@@ -44,9 +54,14 @@ PUBLIC void x86_cluster_setup(void)
 	/* Clear BSS section. */
 	kmemset(&__BSS_START, 0, &__BSS_END - &__BSS_START);
 
-	/* Initialize events table. */
+	kprintf("[hal] booting up cluster...");
+
+	x86_cluster_mem_setup();
+
+	i486_core_setup();
+
 	event_setup();
 
-	/* Initialize memory layout. */
-	x86_cluster_mem_setup();
+	/* Kernel main. */
+	kmain(0, NULL);
 }

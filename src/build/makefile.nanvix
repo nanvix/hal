@@ -25,7 +25,7 @@
 #===============================================================================
 
 # Compiler Options.
-export CFLAGS  += -std=c99 -ffreestanding
+export CFLAGS  += -std=c99
 export CFLAGS  += -Wall -Wextra -Werror -Wa,--warn
 export CFLAGS  += -Winit-self -Wswitch-default -Wfloat-equal
 export CFLAGS  += -Wundef -Wshadow -Wuninitialized -Wlogical-op

@@ -43,7 +43,7 @@ export AR = $(TOOLCHAIN_DIR)/or1k-elf-ar
 
 # Compiler Options
 export CFLAGS  = -D __optimsoc__ -D__optimsoc4__
-export CFLAGS += -nostdlib -nostdinc
+export CFLAGS += -nostdlib -nostdinc -ffreestanding
 export CFLAGS += -ansi -pedantic-errors
 export CFLAGS += -Wstack-usage=4096
 export CFLAGS += -Wno-missing-profile

@@ -46,7 +46,7 @@ export TIMEOUT ?= 5
 
 # Compiler Options
 export CFLAGS  = -D __qemu_x86__ -D __x86__
-export CFLAGS += -nostdlib -nostdinc
+export CFLAGS += -nostdlib -nostdinc -ffreestanding
 export CFLAGS += -ansi -pedantic-errors
 export CFLAGS += -Wstack-usage=4096
 export CFLAGS += -D __HAS_HW_DIVISION

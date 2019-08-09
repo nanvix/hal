@@ -48,7 +48,7 @@ export TIMEOUT ?= 5
 export CFLAGS  = -D __qemu_riscv32__ -D__riscv32__
 export CFAGS  += -march=rv32imafdc -mabi=ilp32
 export CFLAGS += -mcmodel=medany
-export CFLAGS += -nostdlib -nostdinc
+export CFLAGS += -nostdlib -nostdinc -ffreestanding
 export CFLAGS += -ansi -pedantic-errors
 export CFLAGS += -Wstack-usage=4096
 export CFLAGS += -D __HAS_HW_DIVISION
