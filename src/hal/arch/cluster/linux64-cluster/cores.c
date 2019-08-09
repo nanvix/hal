@@ -25,6 +25,11 @@
 #include <arch/cluster/linux64-cluster/cores.h>
 
 /**
+ * @brief Lock for the array of the cores.
+ */
+PUBLIC linux64_spinlock_t linux64_cores_lock;
+
+/**
  * @brief Return the Id of the underlying core.
  */
 PUBLIC int linux64_core_get_id(void)
@@ -41,7 +46,9 @@ PUBLIC int linux64_core_get_id(void)
 			return (i);
 		}
 	}
+
 	linux64_spinlock_unlock(&linux64_cores_lock);
+
 	return (-1);
 }
 
@@ -86,16 +93,4 @@ PUBLIC struct context linux64_create_context(void)
 	struct context ctx;
 	ctx.id = linux64_core_get_id();
 	return ctx;
-}
-
-/**
- * @brief Setup a core.
- */
-PUBLIC void linux64_core_setup(void)
-{
-	linux64_core_dcache_setup();
-	linux64_core_icache_setup();
-	linux64_excp_setup();
-	linux64_interrupts_enable();
-	linux64_perf_setup();
 }

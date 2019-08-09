@@ -51,8 +51,9 @@ export CFLAGS += -D_GNU_SOURCE
 export CFLAGS += -ansi -pedantic-errors
 export CFLAGS += -Wstack-usage=4096
 export CFLAGS += -D __HAS_HW_DIVISION
-#export CFLAGS += -D __INTERFACE_CHECK_CORE_AL
-#export CFLAGS += -D __INTERFACE_CHECK_CLUSTER_AL
+export CFLAGS += -D __INTERFACE_CHECK_CORE_AL
+export CFLAGS += -D __INTERFACE_CHECK_CLUSTER_AL
+export CFLAGS += -D __INTERFACE_CHECK_PROCESSOR_AL
 #export CFLAGS += -D __INTERFACE_CHECK_PROCESSOR_AL
 #export CFLAGS += -D __INTERFACE_CHECK_TARGET_AL
 export CFLAGS += -D __INTERFACE_CHECK_SYNC
@@ -68,4 +69,4 @@ export LDFLAGS =
 # Libraries
 export LIBKERNEL = libhal-$(TARGET).a
 export LIBS = $(LIBDIR)/$(LIBKERNEL)
-export LIB_THEIRS = -lpthread -lm
+export LIB_THEIRS = -lpthread -lm -lrt

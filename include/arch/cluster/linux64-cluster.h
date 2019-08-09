@@ -41,6 +41,7 @@
  */
 /**@{*/
 
+	#include <nanvix/const.h>
 	#include <arch/cluster/linux64-cluster/memory.h>
 	#include <arch/cluster/linux64-cluster/timer.h>
 	#include <arch/cluster/linux64-cluster/cores.h>
@@ -56,6 +57,20 @@
 	#define CLUSTER_HAS_EVENTS    0 /**< Event Support?    */
 	#define CLUSTER_HAS_RTC       1 /**< RTC Support?      */
 	/**@}*/
+
+#ifdef __NANVIX_HAL
+
+	/**
+	 * @brief Powers on the underlying cluster.
+	 */
+	EXTERN int linux64_cluster_boot(void);
+
+	/**
+	 * @brief Initializes the the underlying cluster.
+	 */
+	EXTERN NORETURN void linux64_cluster_setup(void);
+
+#endif /* __NANVIX_HAL */
 
 /**@}*/
 
