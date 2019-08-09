@@ -49,10 +49,11 @@
 	 * @name Hardware Interrupts
 	 */
 	/**@{*/
-	#define OR1K_INT_TIMER    OR1K_IRQ_TIMER /*< Tmer.               */
-	#define OR1K_INT_OMPIC    OR1K_IRQ_OMPIC /*< OMPIC.              */
-	#define OR1K_INT_COM1     OR1K_IRQ_COM1  /*< COM1.               */
-	#define OR1K_INT_EXTERNAL OR1K_IRQ_EXT   /*< External interrupt. */
+	#define OR1K_INT_TIMER    OR1K_IRQ_TIMER /*< Tmer               */
+	#define OR1K_INT_OMPIC    OR1K_IRQ_OMPIC /*< OMPIC              */
+	#define OR1K_INT_COM1     OR1K_IRQ_COM1  /*< COM1               */
+	#define OR1K_INT_ETHOC    OR1K_IRQ_ETHOC /*< Ethernet           */
+	#define OR1K_INT_EXTERNAL OR1K_IRQ_EXT   /*< External Interrupt */
 	/**@}*/
 
 #ifndef _ASM_FILE_

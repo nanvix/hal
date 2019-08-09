@@ -48,7 +48,7 @@
 	/**
 	 * @brief Number of Interrupt Request (IRQ) lines.
 	 */
-	#define OR1K_IRQ_NUM 3
+	#define OR1K_IRQ_NUM 5
 
 	/**
 	 * @name Interrupt Request (IRQ) lines.
@@ -57,6 +57,7 @@
 	#define OR1K_IRQ_TIMER   0 /*< Tmer.               */
 	#define OR1K_IRQ_OMPIC   1 /*< OMLPIC.             */
 	#define OR1K_IRQ_COM1    2 /*< COM1.               */
+	#define OR1K_IRQ_ETHOC   4 /*< Ethernet            */
 	#define OR1K_IRQ_EXT   256 /*< External interrupt. */
 	/**@}*/
 
