@@ -102,12 +102,12 @@
 	 * @name Memory Regions Constants
 	 */
 	/**@{*/
-	#define OPTIMSOC_CLUSTER_MEM_REGIONS 3                                        /**< Memory Regions number.            */
-	#define OPTIMSOC_CLUSTER_ROOT_PGTAB_NUM         OPTIMSOC_CLUSTER_MEM_REGIONS  /**< Root page table size.             */
-	#define OPTIMSOC_CLUSTER_MREGION_PT_ALIGN_START 0                             /**< MRegion start page table aligned. */
-	#define OPTIMSOC_CLUSTER_MREGION_PT_ALIGN_END   2                             /**< MRegion end page table aligned.   */
-	#define OPTIMSOC_CLUSTER_MREGION_PG_ALIGN_START 2                             /**< MRegion start page aligned.       */
-	#define OPTIMSOC_CLUSTER_MREGION_PG_ALIGN_END   OPTIMSOC_CLUSTER_MEM_REGIONS  /**< MRegion end page aligned.         */
+	#define OPTIMSOC_CLUSTER_MEM_REGIONS            3                            /**< Memory Regions number.            */
+	#define OPTIMSOC_CLUSTER_ROOT_PGTAB_NUM         OPTIMSOC_CLUSTER_MEM_REGIONS /**< Root page table size.             */
+	#define OPTIMSOC_CLUSTER_MREGION_PT_ALIGN_START 0                            /**< MRegion start page table aligned. */
+	#define OPTIMSOC_CLUSTER_MREGION_PT_ALIGN_END   2                            /**< MRegion end page table aligned.   */
+	#define OPTIMSOC_CLUSTER_MREGION_PG_ALIGN_START 2                            /**< MRegion start page aligned.       */
+	#define OPTIMSOC_CLUSTER_MREGION_PG_ALIGN_END   OPTIMSOC_CLUSTER_MEM_REGIONS /**< MRegion end page aligned.         */
 	/**@}*/
 
 	/**
@@ -260,19 +260,19 @@
 	#define UEND_VIRT      OPTIMSOC_CLUSTER_USER_END_VIRT    /**< @see OPTIMSOC_CLUSTER_USER_END_VIRT    */
 	#define KBASE_VIRT     OPTIMSOC_CLUSTER_KERNEL_BASE_VIRT /**< @see OPTIMSOC_CLUSTER_KERNEL_BASE_VIRT */
 	#define KPOOL_VIRT     OPTIMSOC_CLUSTER_KPOOL_BASE_VIRT  /**< @see OPTIMSOC_CLUSTER_KPOOL_BASE_VIRT  */
-	#define TLB_VADDR_MASK OPTIMSOC_TLB_VADDR_MASK           /**< @see OR1K_TLB_VADDR_MASK               */
+	#define TLB_VADDR_MASK OPTIMSOC_TLB_VADDR_MASK           /**< @see OPTIMSOC_TLB_VADDR_MASK           */
 	/**@}*/
 
 	/**
 	 * @name Exported Memory Region Constants
 	 */
 	/**@{*/
-	#define MEM_REGIONS             OPTIMSOC_CLUSTER_MEM_REGIONS            /**< @see OPTIMSOC_CLUSTER_MEM_REGIONS            */
-	#define ROOT_PGTAB_NUM          OPTIMSOC_CLUSTER_ROOT_PGTAB_NUM         /**< @see OPTIMSOC_CLUSTER_ROOT_PGTAB_NUM         */
-	#define MREGION_PT_ALIGN_START  OPTIMSOC_CLUSTER_MREGION_PT_ALIGN_START /**< @see OPTIMSOC_CLUSTER_MREGION_PT_ALIGN_START */
-	#define MREGION_PT_ALIGN_END    OPTIMSOC_CLUSTER_MREGION_PT_ALIGN_END   /**< @see OPTIMSOC_CLUSTER_MREGION_PT_ALIGN_END   */
-	#define MREGION_PG_ALIGN_START  OPTIMSOC_CLUSTER_MREGION_PG_ALIGN_START /**< @see OPTIMSOC_CLUSTER_MREGION_PG_ALIGN_START */
-	#define MREGION_PG_ALIGN_END    OPTIMSOC_CLUSTER_MREGION_PG_ALIGN_END   /**< @see OPTIMSOC_CLUSTER_MREGION_PG_ALIGN_END   */
+	#define MEM_REGIONS            OPTIMSOC_CLUSTER_MEM_REGIONS            /**< @see OPTIMSOC_CLUSTER_MEM_REGIONS            */
+	#define ROOT_PGTAB_NUM         OPTIMSOC_CLUSTER_ROOT_PGTAB_NUM         /**< @see OPTIMSOC_CLUSTER_ROOT_PGTAB_NUM         */
+	#define MREGION_PT_ALIGN_START OPTIMSOC_CLUSTER_MREGION_PT_ALIGN_START /**< @see OPTIMSOC_CLUSTER_MREGION_PT_ALIGN_START */
+	#define MREGION_PT_ALIGN_END   OPTIMSOC_CLUSTER_MREGION_PT_ALIGN_END   /**< @see OPTIMSOC_CLUSTER_MREGION_PT_ALIGN_END   */
+	#define MREGION_PG_ALIGN_START OPTIMSOC_CLUSTER_MREGION_PG_ALIGN_START /**< @see OPTIMSOC_CLUSTER_MREGION_PG_ALIGN_START */
+	#define MREGION_PG_ALIGN_END   OPTIMSOC_CLUSTER_MREGION_PG_ALIGN_END   /**< @see OPTIMSOC_CLUSTER_MREGION_PG_ALIGN_END   */
 	/**@}*/
 
 #ifndef _ASM_FILE_

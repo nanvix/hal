@@ -157,21 +157,21 @@
 	 * @name Exported Constants
 	 */
 	/**@{*/
-	#define KPAGE_SIZE    I486_PAGE_SIZE     /**< @ref I486_PAGE_SIZE    */
-	#define PAGE_SIZE     I486_PAGE_SIZE     /**< @ref I486_PAGE_SIZE    */
-	#define PGTAB_SIZE    I486_PGTAB_SIZE    /**< @ref I486_PGTAB_BIT    */
-	#define PGTAB_LENGTH  I486_PGTAB_LENGTH  /**< @ref I486_PGTAB_LENGTH */
-	#define PGDIR_LENGTH  I486_PGDIR_LENGTH  /**< @ref I486_PGTAB_LENGTH */
-	#define PTE_SIZE      I486_PTE_SIZE      /**< @ref I486_PTE_SIZE     */
-	#define PDE_SIZE      I486_PDE_SIZE      /**< @ref I486_PDE_SIZE     */
-	#define PAGE_SHIFT    I486_PAGE_SHIFT    /**< @ref I486_PAGE_SHIFT   */
-	#define PGTAB_SHIFT   I486_PGTAB_SHIFT   /**< @ref I486_PGTAB_SHIFT  */
-	#define PAGE_MASK     I486_PAGE_MASK     /**< @ref I486_PAGE_MASK    */
-	#define PGTAB_MASK    I486_PGTAB_MASK    /**< @ref I486_PGTAB_MASK   */
-	#define PADDR_BIT     I486_PADDR_BIT     /**< @ref I486_PADDR_BIT    */
-	#define VADDR_BIT     I486_VADDR_BIT     /**< @ref I486_VADDR_BIT    */
-	#define PADDR_BYTE    I486_PADDR_BYTE    /**< @ref I486_PADDR_BYTE   */
-	#define VADDR_BYTE    I486_VADDR_BYTE    /**< @ref I486_VADDR_BYTE   */
+	#define KPAGE_SIZE   I486_PAGE_SIZE    /**< @ref I486_PAGE_SIZE    */
+	#define PAGE_SIZE    I486_PAGE_SIZE    /**< @ref I486_PAGE_SIZE    */
+	#define PGTAB_SIZE   I486_PGTAB_SIZE   /**< @ref I486_PGTAB_SIZE   */
+	#define PGTAB_LENGTH I486_PGTAB_LENGTH /**< @ref I486_PGTAB_LENGTH */
+	#define PGDIR_LENGTH I486_PGDIR_LENGTH /**< @ref I486_PGDIR_LENGTH */
+	#define PTE_SIZE     I486_PTE_SIZE     /**< @ref I486_PTE_SIZE     */
+	#define PDE_SIZE     I486_PDE_SIZE     /**< @ref I486_PDE_SIZE     */
+	#define PAGE_SHIFT   I486_PAGE_SHIFT   /**< @ref I486_PAGE_SHIFT   */
+	#define PGTAB_SHIFT  I486_PGTAB_SHIFT  /**< @ref I486_PGTAB_SHIFT  */
+	#define PAGE_MASK    I486_PAGE_MASK    /**< @ref I486_PAGE_MASK    */
+	#define PGTAB_MASK   I486_PGTAB_MASK   /**< @ref I486_PGTAB_MASK   */
+	#define PADDR_BIT    I486_PADDR_BIT    /**< @ref I486_PADDR_BIT    */
+	#define VADDR_BIT    I486_VADDR_BIT    /**< @ref I486_VADDR_BIT    */
+	#define PADDR_BYTE   I486_PADDR_BYTE   /**< @ref I486_PADDR_BYTE   */
+	#define VADDR_BYTE   I486_VADDR_BYTE   /**< @ref I486_VADDR_BYTE   */
 	/**@}*/
 
 	/**
@@ -196,37 +196,37 @@
 	 * @brief Exported Functions
 	 */
 	/**@{*/
-	#define __pde_clear_fn         /**< pde_clear()         */
-	#define __pde_frame_get_fn     /**< pde_frame_get()     */
-	#define __pde_frame_set_fn     /**< pde_frame_set()     */
-	#define __pde_get_fn           /**< pde_get()           */
-	#define __pde_is_present_fn    /**< pde_is_present()    */
-	#define __pde_is_user_fn       /**< pde_is_user()       */
-	#define __pde_is_read_fn       /**< pde_is_read()       */
-	#define __pde_is_write_fn      /**< pde_is_write()      */
-	#define __pde_is_exec_fn       /**< pde_is_exec()       */
-	#define __pde_present_set_fn   /**< pde_present_set()   */
-	#define __pde_user_set_fn      /**< pde_user_set()      */
-	#define __pde_read_set_fn      /**< pde_read_set()      */
-	#define __pde_write_set_fn     /**< pde_write_set()     */
-	#define __pde_exec_set_fn      /**< pde_exec_set()      */
-	#define __pte_clear_fn         /**< pte_clear()         */
-	#define __pte_frame_get_fn     /**< pte_frame_get()     */
-	#define __pte_frame_set_fn     /**< pte_frame_set()     */
-	#define __pte_get_fn           /**< pte_get()           */
-	#define __pte_is_present_fn    /**< pte_is_present()    */
-	#define __pte_is_user_fn       /**< pte_is_user()       */
-	#define __pte_is_read_fn       /**< pte_is_read()       */
-	#define __pte_is_write_fn      /**< pte_is_write()      */
-	#define __pte_is_exec_fn       /**< pte_is_exec()       */
-	#define __pte_present_set_fn   /**< pte_present_set()   */
-	#define __pte_user_set_fn      /**< pte_user_set()      */
-	#define __pte_read_set_fn      /**< pte_read_set()      */
-	#define __pte_write_set_fn     /**< pte_write_set()     */
-	#define __pte_exec_set_fn      /**< pte_exec_set()      */
-	#define __mmu_page_map_fn      /**< mmu_page_map()      */
-	#define __mmu_pgtab_map_fn     /**< mmu_pgtab_map()     */
-	#define __mmu_is_enabled_fn    /**< mmu_is_enabled()    */
+	#define __pde_clear_fn       /**< pde_clear()       */
+	#define __pde_frame_get_fn   /**< pde_frame_get()   */
+	#define __pde_frame_set_fn   /**< pde_frame_set()   */
+	#define __pde_get_fn         /**< pde_get()         */
+	#define __pde_is_present_fn  /**< pde_is_present()  */
+	#define __pde_is_user_fn     /**< pde_is_user()     */
+	#define __pde_is_read_fn     /**< pde_is_read()     */
+	#define __pde_is_write_fn    /**< pde_is_write()    */
+	#define __pde_is_exec_fn     /**< pde_is_exec()     */
+	#define __pde_present_set_fn /**< pde_present_set() */
+	#define __pde_user_set_fn    /**< pde_user_set()    */
+	#define __pde_read_set_fn    /**< pde_read_set()    */
+	#define __pde_write_set_fn   /**< pde_write_set()   */
+	#define __pde_exec_set_fn    /**< pde_exec_set()    */
+	#define __pte_clear_fn       /**< pte_clear()       */
+	#define __pte_frame_get_fn   /**< pte_frame_get()   */
+	#define __pte_frame_set_fn   /**< pte_frame_set()   */
+	#define __pte_get_fn         /**< pte_get()         */
+	#define __pte_is_present_fn  /**< pte_is_present()  */
+	#define __pte_is_user_fn     /**< pte_is_user()     */
+	#define __pte_is_read_fn     /**< pte_is_read()     */
+	#define __pte_is_write_fn    /**< pte_is_write()    */
+	#define __pte_is_exec_fn     /**< pte_is_exec()     */
+	#define __pte_present_set_fn /**< pte_present_set() */
+	#define __pte_user_set_fn    /**< pte_user_set()    */
+	#define __pte_read_set_fn    /**< pte_read_set()    */
+	#define __pte_write_set_fn   /**< pte_write_set()   */
+	#define __pte_exec_set_fn    /**< pte_exec_set()    */
+	#define __mmu_page_map_fn    /**< mmu_page_map()    */
+	#define __mmu_pgtab_map_fn   /**< mmu_pgtab_map()   */
+	#define __mmu_is_enabled_fn  /**< mmu_is_enabled()  */
 	/**@}*/
 
 #ifndef _ASM_FILE_

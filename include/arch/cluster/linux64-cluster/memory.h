@@ -87,7 +87,7 @@
 	 * @name Memory Regions Constants
 	 */
 	/**@{*/
-	#define LINUX64_CLUSTER_MEM_REGIONS 1                                       /**< Memory Regions number.            */
+	#define LINUX64_CLUSTER_MEM_REGIONS            1                            /**< Memory Regions number.            */
 	#define LINUX64_CLUSTER_ROOT_PGTAB_NUM         LINUX64_CLUSTER_MEM_REGIONS  /**< Root page table size.             */
 	#define LINUX64_CLUSTER_MREGION_PT_ALIGN_START 0                            /**< MRegion start page table aligned. */
 	#define LINUX64_CLUSTER_MREGION_PT_ALIGN_END   0                            /**< MRegion end page table aligned.   */
@@ -158,32 +158,32 @@
 	/**
 	 * @name Exported Constants
 	 */
-	#define MEMORY_SIZE    LINUX64_MEM_SIZE          /**< @see LINUX64_MEM_SIZE         */
-	#define KMEM_SIZE      LINUX64_KMEM_SIZE         /**< @see LINUX64_KMEM_SIZE        */
-	#define UMEM_SIZE      LINUX64_UMEM_SIZE         /**< @see LINUX64_UMEM_SIZE        */
-	#define KSTACK_SIZE    LINUX64_KSTACK_SIZE       /**< @see LINUX64_KSTACK_SIZE      */
-	#define KPOOL_SIZE     LINUX64_KPOOL_SIZE        /**< @see LINUX64_KPOOL_SIZE       */
-	#define KBASE_PHYS     LINUX64_KERNEL_BASE_PHYS  /**< @see LINUX64_KERNEL_BASE_PHYS */
-	#define KPOOL_PHYS     LINUX64_KPOOL_BASE_PHYS   /**< @see LINUX64_KPOOL_BASE_PHYS  */
-	#define UBASE_PHYS     LINUX64_USER_BASE_PHYS    /**< @see LINUX64_USER_BASE_PHYS   */
-	#define USTACK_VIRT    LINUX64_USTACK_BASE_VIRT  /**< @see LINUX64_USTACK_BASE_VIRT */
-	#define UBASE_VIRT     LINUX64_USER_BASE_VIRT    /**< @see LINUX64_USER_BASE_VIRT   */
-	#define UEND_VIRT      LINUX64_USER_END_VIRT     /**< @see LINUX64_USER_END_VIRT    */
-	#define KBASE_VIRT     LINUX64_KERNEL_BASE_VIRT  /**< @see LINUX64_KERNEL_BASE_VIRT */
-	#define KPOOL_VIRT     LINUX64_KPOOL_BASE_VIRT   /**< @see LINUX64_KPOOL_BASE_VIRT  */
-	#define TLB_VADDR_MASK LINUX64_TLB_VADDR_MASK    /**< @see LINUX64_TLB_VADDR_MASK   */
+	#define MEMORY_SIZE    LINUX64_MEM_SIZE         /**< @see LINUX64_MEM_SIZE         */
+	#define KMEM_SIZE      LINUX64_KMEM_SIZE        /**< @see LINUX64_KMEM_SIZE        */
+	#define UMEM_SIZE      LINUX64_UMEM_SIZE        /**< @see LINUX64_UMEM_SIZE        */
+	#define KSTACK_SIZE    LINUX64_KSTACK_SIZE      /**< @see LINUX64_KSTACK_SIZE      */
+	#define KPOOL_SIZE     LINUX64_KPOOL_SIZE       /**< @see LINUX64_KPOOL_SIZE       */
+	#define KBASE_PHYS     LINUX64_KERNEL_BASE_PHYS /**< @see LINUX64_KERNEL_BASE_PHYS */
+	#define KPOOL_PHYS     LINUX64_KPOOL_BASE_PHYS  /**< @see LINUX64_KPOOL_BASE_PHYS  */
+	#define UBASE_PHYS     LINUX64_USER_BASE_PHYS   /**< @see LINUX64_USER_BASE_PHYS   */
+	#define USTACK_VIRT    LINUX64_USTACK_BASE_VIRT /**< @see LINUX64_USTACK_BASE_VIRT */
+	#define UBASE_VIRT     LINUX64_USER_BASE_VIRT   /**< @see LINUX64_USER_BASE_VIRT   */
+	#define UEND_VIRT      LINUX64_USER_END_VIRT    /**< @see LINUX64_USER_END_VIRT    */
+	#define KBASE_VIRT     LINUX64_KERNEL_BASE_VIRT /**< @see LINUX64_KERNEL_BASE_VIRT */
+	#define KPOOL_VIRT     LINUX64_KPOOL_BASE_VIRT  /**< @see LINUX64_KPOOL_BASE_VIRT  */
+	#define TLB_VADDR_MASK LINUX64_TLB_VADDR_MASK   /**< @see LINUX64_TLB_VADDR_MASK   */
 	/**@}*/
 
 	/**
 	 * @name Exported Memory Region Constants
 	 */
 	/**@{*/
-	#define MEM_REGIONS             LINUX64_CLUSTER_MEM_REGIONS            /**< @see LINUX64_CLUSTER_MEM_REGIONS            */
-	#define ROOT_PGTAB_NUM          LINUX64_CLUSTER_ROOT_PGTAB_NUM         /**< @see LINUX64_CLUSTER_ROOT_PGTAB_NUM         */
-	#define MREGION_PT_ALIGN_START  LINUX64_CLUSTER_MREGION_PT_ALIGN_START /**< @see LINUX64_CLUSTER_MREGION_PT_ALIGN_START */
-	#define MREGION_PT_ALIGN_END    LINUX64_CLUSTER_MREGION_PT_ALIGN_END   /**< @see LINUX64_CLUSTER_MREGION_PT_ALIGN_END   */
-	#define MREGION_PG_ALIGN_START  LINUX64_CLUSTER_MREGION_PG_ALIGN_START /**< @see LINUX64_CLUSTER_MREGION_PG_ALIGN_START */
-	#define MREGION_PG_ALIGN_END    LINUX64_CLUSTER_MREGION_PG_ALIGN_END   /**< @see LINUX64_CLUSTER_MREGION_PG_ALIGN_END   */
+	#define MEM_REGIONS            LINUX64_CLUSTER_MEM_REGIONS            /**< @see LINUX64_CLUSTER_MEM_REGIONS            */
+	#define ROOT_PGTAB_NUM         LINUX64_CLUSTER_ROOT_PGTAB_NUM         /**< @see LINUX64_CLUSTER_ROOT_PGTAB_NUM         */
+	#define MREGION_PT_ALIGN_START LINUX64_CLUSTER_MREGION_PT_ALIGN_START /**< @see LINUX64_CLUSTER_MREGION_PT_ALIGN_START */
+	#define MREGION_PT_ALIGN_END   LINUX64_CLUSTER_MREGION_PT_ALIGN_END   /**< @see LINUX64_CLUSTER_MREGION_PT_ALIGN_END   */
+	#define MREGION_PG_ALIGN_START LINUX64_CLUSTER_MREGION_PG_ALIGN_START /**< @see LINUX64_CLUSTER_MREGION_PG_ALIGN_START */
+	#define MREGION_PG_ALIGN_END   LINUX64_CLUSTER_MREGION_PG_ALIGN_END   /**< @see LINUX64_CLUSTER_MREGION_PG_ALIGN_END   */
 	/**@}*/
 
 	/**

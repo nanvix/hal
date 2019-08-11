@@ -82,7 +82,7 @@
 	 * @name Memory Regions Constants
 	 */
 	/**@{*/
-	#define OR1K_CLUSTER_MEM_REGIONS 5                                    /**< Memory Regions number.            */
+	#define OR1K_CLUSTER_MEM_REGIONS            5                         /**< Memory Regions number.            */
 	#define OR1K_CLUSTER_ROOT_PGTAB_NUM         OR1K_CLUSTER_MEM_REGIONS  /**< Root page table size.             */
 	#define OR1K_CLUSTER_MREGION_PT_ALIGN_START 0                         /**< MRegion start page table aligned. */
 	#define OR1K_CLUSTER_MREGION_PT_ALIGN_END   2                         /**< MRegion end page table aligned.   */
@@ -223,12 +223,12 @@
 	 * @name Exported Memory Region Constants
 	 */
 	/**@{*/
-	#define MEM_REGIONS             OR1K_CLUSTER_MEM_REGIONS            /**< @see OR1K_CLUSTER_MEM_REGIONS            */
-	#define ROOT_PGTAB_NUM          OR1K_CLUSTER_ROOT_PGTAB_NUM         /**< @see OR1K_CLUSTER_ROOT_PGTAB_NUM         */
-	#define MREGION_PT_ALIGN_START  OR1K_CLUSTER_MREGION_PT_ALIGN_START /**< @see OR1K_CLUSTER_MREGION_PT_ALIGN_START */
-	#define MREGION_PT_ALIGN_END    OR1K_CLUSTER_MREGION_PT_ALIGN_END   /**< @see OR1K_CLUSTER_MREGION_PT_ALIGN_END   */
-	#define MREGION_PG_ALIGN_START  OR1K_CLUSTER_MREGION_PG_ALIGN_START /**< @see OR1K_CLUSTER_MREGION_PG_ALIGN_START */
-	#define MREGION_PG_ALIGN_END    OR1K_CLUSTER_MREGION_PG_ALIGN_END   /**< @see OR1K_CLUSTER_MREGION_PG_ALIGN_END   */
+	#define MEM_REGIONS            OR1K_CLUSTER_MEM_REGIONS            /**< @see OR1K_CLUSTER_MEM_REGIONS            */
+	#define ROOT_PGTAB_NUM         OR1K_CLUSTER_ROOT_PGTAB_NUM         /**< @see OR1K_CLUSTER_ROOT_PGTAB_NUM         */
+	#define MREGION_PT_ALIGN_START OR1K_CLUSTER_MREGION_PT_ALIGN_START /**< @see OR1K_CLUSTER_MREGION_PT_ALIGN_START */
+	#define MREGION_PT_ALIGN_END   OR1K_CLUSTER_MREGION_PT_ALIGN_END   /**< @see OR1K_CLUSTER_MREGION_PT_ALIGN_END   */
+	#define MREGION_PG_ALIGN_START OR1K_CLUSTER_MREGION_PG_ALIGN_START /**< @see OR1K_CLUSTER_MREGION_PG_ALIGN_START */
+	#define MREGION_PG_ALIGN_END   OR1K_CLUSTER_MREGION_PG_ALIGN_END   /**< @see OR1K_CLUSTER_MREGION_PG_ALIGN_END   */
 	/**@}*/
 
 #ifndef _ASM_FILE_
