@@ -22,31 +22,27 @@
  * SOFTWARE.
  */
 
+#include <nanvix/hal/cluster/memory.h>
 #include <arch/cluster/linux64-cluster/cores.h>
+#include <arch/cluster/linux64-cluster/memory.h>
 
 /**
- * @brief Root page directory.
+ * @brief Binary sections.
+ *
+ * Since the unix64 target lacks a custom linker
+ * script, these values for now are dummy.
  */
-PRIVATE struct pde linux64_root_pgdir[LINUX64_PGDIR_LENGTH];
-/**
- * @brief Root page table.
- */
-PRIVATE struct pte linux64_root_pgtab[LINUX64_PGTAB_LENGTH];
+unsigned char __TEXT_START = 0;
+unsigned char __TEXT_END   = 0;
+unsigned char __DATA_START = 0;
+unsigned char __DATA_END   = 0;
+unsigned char __BSS_START  = 0;
+unsigned char __BSS_END    = 0;
 
 /**
- * Alias to root page directory.
+ * @brief Memory layout.
  */
-PUBLIC struct pde *root_pgdir = &linux64_root_pgdir[0];
-
-/**
- * Alias to kernel page table.
- */
-PUBLIC struct pte *kernel_pgtab = &linux64_root_pgtab[0];
-
-/**
- * Alias to kernel page pool page table.
- */
-PUBLIC struct pte *kpool_pgtab = &linux64_root_pgtab[0];
+PUBLIC struct memory_region mem_layout[LINUX64_CLUSTER_MEM_REGIONS] = {0};
 
 /**
  * @brief TLB

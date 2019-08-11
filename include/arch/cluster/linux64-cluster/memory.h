@@ -65,10 +65,11 @@
 	 * @name Virtual Memory Layout
 	 */
 	/**@{*/
-	#define LINUX64_USER_BASE_VIRT   0x02000000 /**< User Base             */
-	#define LINUX64_USTACK_BASE_VIRT 0xc0000000 /**< User Stack Base       */
-	#define LINUX64_KERNEL_BASE_VIRT 0xc0000000 /**< Kernel Base           */
-	#define LINUX64_KPOOL_BASE_VIRT  0xc1000000 /**< Kernel Page Pool Base */
+	#define LINUX64_USER_BASE_VIRT   0x02000000                                   /**< User Base             */
+	#define LINUX64_USER_END_VIRT    (LINUX64_USER_BASE_VIRT + LINUX64_UMEM_SIZE) /**< User End              */
+	#define LINUX64_USTACK_BASE_VIRT 0xc0000000                                   /**< User Stack Base       */
+	#define LINUX64_KERNEL_BASE_VIRT 0xc0000000                                   /**< Kernel Base           */
+	#define LINUX64_KPOOL_BASE_VIRT  0xc1000000                                   /**< Kernel Page Pool Base */
 	/**@}*/
 
 	/**
@@ -81,6 +82,18 @@
 	/**@}*/
 
 	#define LINUX64_TLB_VADDR_MASK PAGE_MASK
+
+	/**
+	 * @name Memory Regions Constants
+	 */
+	/**@{*/
+	#define LINUX64_CLUSTER_MEM_REGIONS 1                                       /**< Memory Regions number.            */
+	#define LINUX64_CLUSTER_ROOT_PGTAB_NUM         LINUX64_CLUSTER_MEM_REGIONS  /**< Root page table size.             */
+	#define LINUX64_CLUSTER_MREGION_PT_ALIGN_START 0                            /**< MRegion start page table aligned. */
+	#define LINUX64_CLUSTER_MREGION_PT_ALIGN_END   0                            /**< MRegion end page table aligned.   */
+	#define LINUX64_CLUSTER_MREGION_PG_ALIGN_START 0                            /**< MRegion start page aligned.       */
+	#define LINUX64_CLUSTER_MREGION_PG_ALIGN_END   LINUX64_CLUSTER_MEM_REGIONS  /**< MRegion end page aligned.         */
+	/**@}*/
 
 	/**
 	 * @brief Gets the underlying TLB entries.
@@ -118,6 +131,20 @@
 	 */
 	EXTERN void linux64_cluster_tlbe_dump(int idx);
 
+	/**
+	 * @brief Binary Sections
+	 */
+	/**@{*/
+	EXTERN unsigned char __BOOTSTRAP_START; /**< Bootstrap Start */
+	EXTERN unsigned char __BOOTSTRAP_END;   /**< Bootstrap End   */
+	EXTERN unsigned char __TEXT_START;      /**< Text Start      */
+	EXTERN unsigned char __TEXT_END;        /**< Text End        */
+	EXTERN unsigned char __DATA_START;      /**< Data Start      */
+	EXTERN unsigned char __DATA_END;        /**< Data End        */
+	EXTERN unsigned char __BSS_START;       /**< BSS Start       */
+	EXTERN unsigned char __BSS_END;         /**< BSS End         */
+	/**@}*/
+
 /**@}*/
 
 /*============================================================================*
@@ -141,9 +168,22 @@
 	#define UBASE_PHYS     LINUX64_USER_BASE_PHYS    /**< @see LINUX64_USER_BASE_PHYS   */
 	#define USTACK_VIRT    LINUX64_USTACK_BASE_VIRT  /**< @see LINUX64_USTACK_BASE_VIRT */
 	#define UBASE_VIRT     LINUX64_USER_BASE_VIRT    /**< @see LINUX64_USER_BASE_VIRT   */
+	#define UEND_VIRT      LINUX64_USER_END_VIRT     /**< @see LINUX64_USER_END_VIRT    */
 	#define KBASE_VIRT     LINUX64_KERNEL_BASE_VIRT  /**< @see LINUX64_KERNEL_BASE_VIRT */
 	#define KPOOL_VIRT     LINUX64_KPOOL_BASE_VIRT   /**< @see LINUX64_KPOOL_BASE_VIRT  */
 	#define TLB_VADDR_MASK LINUX64_TLB_VADDR_MASK    /**< @see LINUX64_TLB_VADDR_MASK   */
+	/**@}*/
+
+	/**
+	 * @name Exported Memory Region Constants
+	 */
+	/**@{*/
+	#define MEM_REGIONS             LINUX64_CLUSTER_MEM_REGIONS            /**< @see LINUX64_CLUSTER_MEM_REGIONS            */
+	#define ROOT_PGTAB_NUM          LINUX64_CLUSTER_ROOT_PGTAB_NUM         /**< @see LINUX64_CLUSTER_ROOT_PGTAB_NUM         */
+	#define MREGION_PT_ALIGN_START  LINUX64_CLUSTER_MREGION_PT_ALIGN_START /**< @see LINUX64_CLUSTER_MREGION_PT_ALIGN_START */
+	#define MREGION_PT_ALIGN_END    LINUX64_CLUSTER_MREGION_PT_ALIGN_END   /**< @see LINUX64_CLUSTER_MREGION_PT_ALIGN_END   */
+	#define MREGION_PG_ALIGN_START  LINUX64_CLUSTER_MREGION_PG_ALIGN_START /**< @see LINUX64_CLUSTER_MREGION_PG_ALIGN_START */
+	#define MREGION_PG_ALIGN_END    LINUX64_CLUSTER_MREGION_PG_ALIGN_END   /**< @see LINUX64_CLUSTER_MREGION_PG_ALIGN_END   */
 	/**@}*/
 
 	/**

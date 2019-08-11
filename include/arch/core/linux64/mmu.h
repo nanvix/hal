@@ -182,19 +182,21 @@
 	 * @name Exported Constants
 	 */
 	/**@{*/
-	#define KPAGE_SIZE  LINUX64_HUGE_PAGE_SIZE /**< @ref LINUX64_PAGE_SIZE   */
-	#define PAGE_SIZE   LINUX64_PAGE_SIZE      /**< @ref LINUX64_PAGE_SIZE   */
-	#define PGTAB_SIZE  LINUX64_PGTAB_SIZE     /**< @ref LINUX64_PGTAB_BIT   */
-	#define PTE_SIZE    LINUX64_PTE_SIZE       /**< @ref LINUX64_PTE_SIZE    */
-	#define PDE_SIZE    LINUX64_PDE_SIZE       /**< @ref LINUX64_PDE_SIZE    */
-	#define PAGE_SHIFT  LINUX64_PAGE_SHIFT     /**< @ref LINUX64_PAGE_SHIFT  */
-	#define PGTAB_SHIFT LINUX64_PGTAB_SHIFT    /**< @ref LINUX64_PGTAB_SHIFT */
-	#define PAGE_MASK   LINUX64_PAGE_MASK      /**< @ref LINUX64_PAGE_MASK   */
-	#define PGTAB_MASK  LINUX64_PGTAB_MASK     /**< @ref LINUX64_PGTAB_MASK  */
-	#define PADDR_BIT   LINUX64_PADDR_BIT      /**< @ref LINUX64_PADDR_BIT   */
-	#define VADDR_BIT   LINUX64_VADDR_BIT      /**< @ref LINUX64_VADDR_BIT   */
-	#define PADDR_BYTE  LINUX64_PADDR_BYTE     /**< @ref LINUX64_PADDR_BYTE  */
-	#define VADDR_BYTE  LINUX64_VADDR_BYTE     /**< @ref LINUX64_VADDR_BYTE  */
+	#define KPAGE_SIZE    LINUX64_HUGE_PAGE_SIZE /**< @ref LINUX64_PAGE_SIZE   */
+	#define PAGE_SIZE     LINUX64_PAGE_SIZE      /**< @ref LINUX64_PAGE_SIZE   */
+	#define PGTAB_SIZE    LINUX64_PGTAB_SIZE     /**< @ref LINUX64_PGTAB_BIT   */
+	#define PGTAB_LENGTH  LINUX64_PGTAB_LENGTH   /**< @ref LINUX64_PGTAB_BIT   */
+	#define PGDIR_LENGTH  LINUX64_PGDIR_LENGTH   /**< @ref LINUX64_PGTAB_BIT   */
+	#define PTE_SIZE      LINUX64_PTE_SIZE       /**< @ref LINUX64_PTE_SIZE    */
+	#define PDE_SIZE      LINUX64_PDE_SIZE       /**< @ref LINUX64_PDE_SIZE    */
+	#define PAGE_SHIFT    LINUX64_PAGE_SHIFT     /**< @ref LINUX64_PAGE_SHIFT  */
+	#define PGTAB_SHIFT   LINUX64_PGTAB_SHIFT    /**< @ref LINUX64_PGTAB_SHIFT */
+	#define PAGE_MASK     LINUX64_PAGE_MASK      /**< @ref LINUX64_PAGE_MASK   */
+	#define PGTAB_MASK    LINUX64_PGTAB_MASK     /**< @ref LINUX64_PGTAB_MASK  */
+	#define PADDR_BIT     LINUX64_PADDR_BIT      /**< @ref LINUX64_PADDR_BIT   */
+	#define VADDR_BIT     LINUX64_VADDR_BIT      /**< @ref LINUX64_VADDR_BIT   */
+	#define PADDR_BYTE    LINUX64_PADDR_BYTE     /**< @ref LINUX64_PADDR_BYTE  */
+	#define VADDR_BYTE    LINUX64_VADDR_BYTE     /**< @ref LINUX64_VADDR_BYTE  */
 	/**@}*/
 
 	/**
