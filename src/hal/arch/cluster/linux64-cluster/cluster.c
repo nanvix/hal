@@ -66,8 +66,7 @@ PRIVATE NORETURN void linux64_cluster_slave_setup(void)
  */
 PRIVATE NORETURN void linux64_cluster_master_setup(void)
 {
-
-	kprintf("[hal] booting up cluster...");
+	kprintf("[hal][cluster] initializing cluster...");
 
 	for (int i = 1; i < LINUX64_CLUSTER_NUM_CORES; i++)
 		linux64_spinlock_lock(&cores[i].lock);
@@ -92,4 +91,12 @@ PUBLIC NORETURN void linux64_cluster_setup(void)
 		linux64_cluster_master_setup();
 
 	linux64_cluster_slave_setup();
+}
+
+/**
+ * @todo TODO: Provide a detailed description for this function.
+ */
+PUBLIC void linux64_cluster_shutdown(void)
+{
+	kprintf("[hal][cluster] powering off cluster...");
 }

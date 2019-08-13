@@ -23,41 +23,46 @@
  */
 
 /* Must come fist. */
-#define __NEED_CLUSTER_LINUX64
+#define __NEED_TARGET_UNIX64
 
-#include <arch/cluster/linux64-cluster.h>
+#include <arch/target/unix64/unix64.h>
 #include <nanvix/const.h>
-#include <pthread.h>
+#include <nanvix/klib.h>
 
 /**
- * @brief Lookup table for thread IDs.
+ * @brief Powers on the underlying target.
  */
-PUBLIC pthread_t linux64_cores_tab[LINUX64_CLUSTER_NUM_CORES];
-
-/**
- * @brief Entry point for slave core.
- */
-PRIVATE void *linux64_do_slave(void *args)
+PRIVATE int unix64_boot(void)
 {
-	UNUSED(args);
-	linux64_cluster_setup();
+	/*
+	 * Early initialization of Virtual
+	 * TTY device to help us debugging.
+	 */
+	tty_virt_init();
+
+	kprintf("[hal][target] powering on target...");
+
+	return (linux64_processor_boot());
 }
 
 /**
- * @todo TODO: provide a detailed description for this function.
+ * @brief Entry point.
+ *
+ * @param argc Number of arguments.
+ * @param argv Arguments list.
  */
-PUBLIC int linux64_cluster_boot(void)
+int main(int argc, char **argv)
 {
-	kprintf("[hal][cluster] powering on cluster...");
+	int ret;
 
-	/* Save ID of master core. */
-	linux64_cores_tab[0] = pthread_self();
+	UNUSED(argc);
+	UNUSED(argv);
 
-	for (int i = 1; i < LINUX64_CLUSTER_NUM_CORES; i++)
-	{
-		if (pthread_create(&linux64_cores_tab[i], NULL, linux64_do_slave, NULL))
-			return (-EINVAL);
-	}
+	/* Boot processor. */
+	if ((ret = unix64_boot()) < 0)
+		return (ret);
+
+	unix64_setup();
 
 	return (0);
 }

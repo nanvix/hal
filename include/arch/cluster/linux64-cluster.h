@@ -70,6 +70,11 @@
 	 */
 	EXTERN NORETURN void linux64_cluster_setup(void);
 
+	/**
+	 * @brief Powers off the underlying cluster.
+	 */
+	EXTERN void linux64_cluster_shutdown(void);
+
 #endif /* __NANVIX_HAL */
 
 /**@}*/
