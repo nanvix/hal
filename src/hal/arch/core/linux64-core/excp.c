@@ -59,18 +59,18 @@ PRIVATE int linux64_excp_signals[] = {
  * @endcond
  */
 PUBLIC struct exception_info exceptions[LINUX64_EXCP_NUM] = {
-	{NULL, NULL},
-	{NULL, NULL},
-	{NULL, NULL},
-	{NULL, NULL},
-	{linux64_do_exception, "Illegal instruction"},
-	{linux64_do_exception, "Trace/breakpoint trap"},
-	{NULL, NULL},
-	{NULL, NULL},
-	{linux64_do_exception, "Erroneous arithmetic operation"},
-	{NULL, NULL},
-	{linux64_do_exception, "Access to an undefined portion of a memory object"},
-	{linux64_do_exception, "Invalid memory reference"}
+	{ NULL,                  NULL                                               },
+	{ NULL,                  NULL                                               },
+	{ NULL,                  NULL                                               },
+	{ NULL,                  NULL                                               },
+	{ linux64_do_exception, "Illegal instruction"                               },
+	{ linux64_do_exception, "Trace/breakpoint trap"                             },
+	{ NULL,                  NULL                                               },
+	{ NULL,                  NULL                                               },
+	{ linux64_do_exception, "Erroneous arithmetic operation"                    },
+	{ NULL,                  NULL                                               },
+	{ linux64_do_exception, "Access to an undefined portion of a memory object" },
+	{ linux64_do_exception, "Invalid memory reference"                          }
 };
 
 /**
