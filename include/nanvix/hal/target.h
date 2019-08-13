@@ -59,5 +59,6 @@
 	#include <nanvix/hal/target/stdout.h>
 	#include <nanvix/hal/target/sync.h>
 	#include <nanvix/hal/target/mailbox.h>
+	#include <nanvix/hal/target/portal.h>
 
 #endif /* NANVIX_HAL_TARGET_H_ */
