@@ -35,12 +35,12 @@
 #if defined(__INTERFACE_CHECK) || defined(__INTERFACE_CHECK_TARGET_AL) || defined(__INTERFACE_CHECK_SYNC)
 
 	/* Feature Checking */
-	#ifndef TARGET_HAS_SYNC
-	#error "does this target feature a synchronization service?"
+	#ifndef __TARGET_HAS_SYNC
+	#error "does this target feature a synchronization interface?"
 	#endif
 
-	/* Has Stadard Output Device */
-	#if (TARGET_HAS_SYNC)
+	/* Has Sync Interface */
+	#if (__TARGET_HAS_SYNC)
 
 		/* Constants */
 		#ifndef SYNC_ONE_TO_ALL
@@ -100,7 +100,9 @@
  */
 /**@{*/
 
+	#include <nanvix/const.h>
 	#include <nanvix/klib.h>
+	#include <errno.h>
 
 	/**
 	 * @brief Allocates and configures the receiving side of the synchronization point.
@@ -111,7 +113,7 @@
 	 *
 	 * @return The tag of underlying resource ID.
 	 */
-#if (TARGET_HAS_SYNC)
+#if (__TARGET_HAS_SYNC)
 	EXTERN int sync_create(const int *nodes, int nnodes, int type);
 #else
 	static inline int sync_create(const int *nodes, int nnodes, int type)
@@ -120,7 +122,7 @@
 		UNUSED(nnodes);
 		UNUSED(type);
 
-		return (0);
+		return (-ENOSYS);
 	}
 #endif
 
@@ -129,12 +131,12 @@
 	 *
 	 * @return The tag of underlying resource ID.
 	 */
-#if (TARGET_HAS_SYNC)
+#if (__TARGET_HAS_SYNC)
 	EXTERN int sync_open(void);
 #else
 	static inline int sync_open(void)
 	{
-		return (0);
+		return (-ENOSYS);
 	}
 #endif
 
@@ -145,14 +147,14 @@
 	 *
 	 * @return Zero if free the resource and non zero otherwise.
 	 */
-#if (TARGET_HAS_SYNC)
+#if (__TARGET_HAS_SYNC)
 	EXTERN int sync_unlink(int syncid);
 #else
 	static inline int sync_unlink(int syncid)
 	{
 		UNUSED(syncid);
 
-		return (0);
+		return (-ENOSYS);
 	}
 #endif
 
@@ -163,14 +165,14 @@
 	 *
 	 * @return Zero if free the resource and non zero otherwise.
 	 */
-#if (TARGET_HAS_SYNC)
+#if (__TARGET_HAS_SYNC)
 	EXTERN int sync_close(int syncid);
 #else
 	static inline int sync_close(int syncid)
 	{
 		UNUSED(syncid);
 
-		return (0);
+		return (-ENOSYS);
 	}
 #endif
 
@@ -181,14 +183,14 @@
 	 *
 	 * @return Zero if wait signal correctly and non zero otherwise.
 	 */
-#if (TARGET_HAS_SYNC)
+#if (__TARGET_HAS_SYNC)
 	EXTERN int sync_wait(int syncid);
 #else
 	static inline int sync_wait(int syncid)
 	{
 		UNUSED(syncid);
 
-		return (0);
+		return (-ENOSYS);
 	}
 #endif
 
@@ -202,7 +204,7 @@
 	 *
 	 * @return Zero if send signal correctly and non zero otherwise.
 	 */
-#if (TARGET_HAS_SYNC)
+#if (__TARGET_HAS_SYNC)
 	EXTERN int sync_signal(int syncid, const int *nodes, int nnodes, int type);
 #else
 	static inline int sync_signal(int syncid, const int *nodes, int nnodes, int type)
@@ -212,7 +214,7 @@
 		UNUSED(nnodes);
 		UNUSED(type);
 
-		return (0);
+		return (-ENOSYS);
 	}
 #endif
 

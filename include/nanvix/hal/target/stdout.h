@@ -35,12 +35,12 @@
 #if defined(__INTERFACE_CHECK) || defined(__INTERFACE_CHECK_TARGET_AL) || defined(__INTERFACE_CHECK_STDOUT)
 
 	/* Feature Checking */
-	#ifndef TARGET_HAS_STDOUT
+	#ifndef __TARGET_HAS_STDOUT
 	#error "does this target feature a standard output device?"
 	#endif
 
 	/* Has Stadard Output Device */
-	#if (TARGET_HAS_STDOUT)
+	#if (__TARGET_HAS_STDOUT)
 
 		/* Functions */
 		#ifndef __stdout_init_fn
@@ -74,7 +74,7 @@
 	/**
 	 * @brief Initializes the standard output device.
 	 */
-#if (TARGET_HAS_STDOUT)
+#if (__TARGET_HAS_STDOUT)
 	EXTERN void stdout_init(void);
 #else
 	static inline void stdout_init(void)
@@ -90,7 +90,7 @@
 	 * @param buf Target buffer.
 	 * @param n   Number of bytes to write.
 	 */
-#if (TARGET_HAS_STDOUT)
+#if (__TARGET_HAS_STDOUT)
 	EXTERN void stdout_write(const char *buf, size_t n);
 #else
 	static inline void stdout_write(const char *buf, size_t n)

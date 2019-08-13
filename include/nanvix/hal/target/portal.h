@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 
-#ifndef NANVIX_HAL_TARGET_MAILBOX_H_
-#define NANVIX_HAL_TARGET_MAILBOX_H_
+#ifndef NANVIX_HAL_TARGET_PORTAL_H_
+#define NANVIX_HAL_TARGET_PORTAL_H_
 
 	/* Target Interface Implementation */
 	#include <nanvix/hal/target/_target.h>
@@ -32,50 +32,56 @@
  * Interface Implementation Checking                                          *
  *============================================================================*/
 
-#if defined(__INTERFACE_CHECK) || defined(__INTERFACE_CHECK_TARGET_AL) || defined(__INTERFACE_CHECK_MAILBOX)
+#if defined(__INTERFACE_CHECK) || defined(__INTERFACE_CHECK_TARGET_AL) || defined(__INTERFACE_CHECK_PORTAL)
 
 	/* Feature Checking */
-	#ifndef __TARGET_HAS_MAILBOX
-	#error "does this target feature a mailbox interface?"
+	#ifndef __TARGET_HAS_PORTAL
+	#error "does this target feature a portal interface?"
 	#endif
 
 	/* Has Mailbox Interface */
-	#if (__TARGET_HAS_MAILBOX)
+	#if (__TARGET_HAS_PORTAL)
 
 		/* Constants */
-		#ifndef MAILBOX_CREATE_MAX
-		#error "MAILBOX_CREATE_MAX not defined"
+		#ifndef PORTAL_CREATE_MAX
+		#error "PORTAL_CREATE_MAX not defined"
 		#endif
-		#ifndef MAILBOX_OPEN_MAX
-		#error "MAILBOX_OPEN_MAX not defined"
+		#ifndef PORTAL_OPEN_MAX
+		#error "PORTAL_OPEN_MAX not defined"
+		#endif
+		#ifndef PORTAL_MAX_SIZE
+		#error "PORTAL_MAX_SIZE not defined"
 		#endif
 
 		/* Functions */
-		#ifndef __mailbox_create_fn
+		#ifndef __portal_create_fn
 		#error "sync_create() not defined?"
 		#endif
-		#ifndef __mailbox_open_fn
+		#ifndef __portal_open_fn
 		#error "sync_open() not defined?"
 		#endif
-		#ifndef __mailbox_unlink_fn
+		#ifndef __portal_allow_fn
+		#error "sync_allow() not defined?"
+		#endif
+		#ifndef __portal_unlink_fn
 		#error "sync_unlink() not defined?"
 		#endif
-		#ifndef __mailbox_close_fn
+		#ifndef __portal_close_fn
 		#error "sync_close_() not defined?"
 		#endif
-		#ifndef __mailbox_write_fn
+		#ifndef __portal_write_fn
 		#error "sync_wait() not defined?"
 		#endif
-		#ifndef __mailbox_read_fn
+		#ifndef __portal_read_fn
 		#error "sync_signal() not defined?"
 		#endif
 
 	#else
 
 		/* Constants */
-		#define MAILBOX_CREATE_MAX 1
-		#define MAILBOX_OPEN_MAX   1
-		#define MAILBOX_MSG_SIZE   1
+		#define PORTAL_CREATE_MAX 1
+		#define PORTAL_OPEN_MAX   1
+		#define PORTAL_MAX_SIZE   1
 
 	#endif
 
@@ -98,18 +104,18 @@
 	#include <errno.h>
 
 	/**
-	 * @brief Creates a mailbox.
+	 * @brief Creates a portal.
 	 *
 	 * @param nodenum Logic ID of the underlying NoC node.
 	 *
 	 * @returns Upon successful completion, the ID of the newly created
-	 * mailbox is returned. Upon failure, a negative error code is
+	 * portal is returned. Upon failure, a negative error code is
 	 * returned instead.
 	 */
-#if (__TARGET_HAS_MAILBOX)
-	EXTERN int mailbox_create(int nodenum);
+#if (__TARGET_HAS_PORTAL)
+	EXTERN int portal_create(int nodenum);
 #else
-	static inline int mailbox_create(int nodenum)
+	static inline int portal_create(int nodenum)
 	{
 		UNUSED(nodenum);
 
@@ -118,18 +124,18 @@
 #endif
 
 	/**
-	 * @brief Opens a mailbox.
+	 * @brief Opens a portal.
 	 *
 	 * @param nodeid Logic ID of the target NoC node.
 	 *
-	 * @returns Upon successful completion, the ID of the target mailbox
+	 * @returns Upon successful completion, the ID of the target portal
 	 * is returned. Upon failure, a negative error code is returned
 	 * instead.
 	 */
-#if (__TARGET_HAS_MAILBOX)
-	EXTERN int mailbox_open(int nodenum);
+#if (__TARGET_HAS_PORTAL)
+	EXTERN int portal_open(int nodenum);
 #else
-	static inline int mailbox_open(int nodenum)
+	static inline int portal_open(int nodenum)
 	{
 		UNUSED(nodenum);
 
@@ -138,47 +144,68 @@
 #endif
 
 	/**
-	 * @brief Destroys a mailbox.
+	 * @brief Allows remote writes in a portal.
 	 *
-	 * @param mbxid ID of the target mailbox.
+	 * @param portalid ID of the target portal.
+	 * @param nodenum  Logic ID of the target NoC node.
+	 *
+	 * @reutrns Upon successful completion, zero is returned. Upon
+	 * failure, a negative error code is returned instead.
+	 */
+#if (__TARGET_HAS_PORTAL)
+	EXTERN int portal_allow(int portalid, int nodenum);
+#else
+	static inline int portal_allow(int portalid, int nodenum);
+	{
+		UNUSED(portalid);
+		UNUSED(nodenum);
+
+		return (-ENOSYS);
+	}
+#endif
+
+	/**
+	 * @brief Destroys a portal.
+	 *
+	 * @param portalid ID of the target portal.
 	 *
 	 * @returns Upon successful completion, zero is returned. Upon failure,
 	 * a negative error code is returned instead.
 	 */
-#if (__TARGET_HAS_MAILBOX)
-	EXTERN int mailbox_unlink(int mbxid);
+#if (__TARGET_HAS_PORTAL)
+	EXTERN int portal_unlink(int portalid);
 #else
-	static inline int mailbox_unlink(int mbxid)
+	static inline int portal_unlink(int portalid)
 	{
-		UNUSED(mbxid);
+		UNUSED(portalid);
 
 		return (-ENOSYS);
 	}
 #endif
 
 	/**
-	 * @brief Closes a mailbox.
+	 * @brief Closes a portal.
 	 *
-	 * @param mbxid ID of the target mailbox.
+	 * @param portalid ID of the target portal.
 	 *
 	 * @returns Upon successful completion, zero is returned. Upon
 	 * failure, a negative error code is returned instead.
 	 */
-#if (__TARGET_HAS_MAILBOX)
-	EXTERN int mailbox_close(int mbxid);
+#if (__TARGET_HAS_PORTAL)
+	EXTERN int portal_close(int portalid);
 #else
-	static inline int mailbox_close(int mbxid)
+	static inline int portal_close(int portalid)
 	{
-		UNUSED(mbxid);
+		UNUSED(portalid);
 
 		return (-ENOSYS);
 	}
 #endif
 
 	/**
-	 * @brief Writes data to a mailbox.
+	 * @brief Writes data to a portal.
 	 *
-	 * @param mbxid  ID of the target mailbox.
+	 * @param portalid  ID of the target portal.
 	 * @param buffer Buffer where the data should be read from.
 	 * @param size   Number of bytes to write.
 	 *
@@ -186,12 +213,12 @@
 	 * successfully written is returned. Upon failure, a negative error
 	 * code is returned instead.
 	 */
-#if (__TARGET_HAS_MAILBOX)
-	EXTERN int mailbox_write(int mbxid, const void * buffer, size_t size);
+#if (__TARGET_HAS_PORTAL)
+	EXTERN int portal_write(int portalid, const void * buffer, size_t size);
 #else
-	static inline int mailbox_write(int mbxid, const void * buffer, size_t size)
+	static inline int portal_write(int portalid, const void * buffer, size_t size)
 	{
-		UNUSED(mbxid);
+		UNUSED(portalid);
 		UNUSED(buffer);
 		UNUSED(size);
 
@@ -200,9 +227,9 @@
 #endif
 
 	/**
-	 * @brief Reads data from a mailbox.
+	 * @brief Reads data from a portal.
 	 *
-	 * @param mbxid  ID of the target mailbox.
+	 * @param portalid  ID of the target portal.
 	 * @param buffer Buffer where the data should be written to.
 	 * @param size   Number of bytes to read.
 	 *
@@ -210,12 +237,12 @@
 	 * successfully read is returned. Upon failure, a negative error code
 	 * is returned instead.
 	 */
-#if (__TARGET_HAS_MAILBOX)
-	EXTERN int mailbox_read(int mbxid, void * buffer, size_t size);
+#if (__TARGET_HAS_PORTAL)
+	EXTERN int portal_read(int portalid, void * buffer, size_t size);
 #else
-	static inline int mailbox_read(int mbxid, void * buffer, size_t size)
+	static inline int portal_read(int portalid, void * buffer, size_t size)
 	{
-		UNUSED(mbxid);
+		UNUSED(portalid);
 		UNUSED(buffer);
 		UNUSED(size);
 
@@ -225,4 +252,5 @@
 
 /**@}*/
 
-#endif /* NANVIX_HAL_TARGET_MAILBOX_H_ */
+#endif /* NANVIX_HAL_TARGET_PORTAL_H_ */
+

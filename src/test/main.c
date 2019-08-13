@@ -83,7 +83,7 @@ PRIVATE void test_processor_al(void)
  */
 PRIVATE void test_target_al(void)
 {
-#if (TARGET_HAS_SYNC)
+#if (__TARGET_HAS_SYNC)
 	test_sync();
 #endif
 }
