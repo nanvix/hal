@@ -87,7 +87,7 @@ PRIVATE void test_target_al(void)
 	test_sync();
 #endif
 
-#if (TARGET_HAS_MAILBOX)
+#if (__TARGET_HAS_MAILBOX)
 	test_mailbox();
 #endif
 }
