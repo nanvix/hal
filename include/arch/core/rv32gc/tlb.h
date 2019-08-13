@@ -87,6 +87,7 @@
 	 */
 	/**@{*/
 	#define __tlb_flush_fn /**< tlb_flush() */
+	#define __tlb_load_fn  /**< tlb_load()  */
 	/**@}*/
 
 #ifndef _ASM_FILE_
@@ -97,6 +98,14 @@
 	static inline int tlb_flush(void)
 	{
 		return (rv32gc_tlb_flush());
+	}
+
+	/**
+	 * @see rv32gc_tlb_load().
+	 */
+	static inline int tlb_load(paddr_t pgdir)
+	{
+		return (rv32gc_tlb_load(pgdir));
 	}
 
 #endif /* _ASM_FILE_ */

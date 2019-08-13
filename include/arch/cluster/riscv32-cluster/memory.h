@@ -46,12 +46,12 @@
 	 * @name Physical Memory Layout
 	 */
 	/**@{*/
-	#define RISCV32_CLUSTER_KERNEL_BASE_PHYS RISCV32_CLUSTER_DRAM_BASE_PHYS                        /**< Kernel Code and Data */
+	#define RISCV32_CLUSTER_KERNEL_BASE_PHYS RISCV32_CLUSTER_DRAM_BASE_PHYS                         /**< Kernel Code and Data */
 	#define RISCV32_CLUSTER_KERNEL_END_PHYS  (RISCV32_CLUSTER_KERNEL_BASE_PHYS + RV32GC_PGTAB_SIZE) /**< Kernel End           */
 	#define RISCV32_CLUSTER_KPOOL_BASE_PHYS  (RISCV32_CLUSTER_KERNEL_END_PHYS + RV32GC_PGTAB_SIZE)  /**< Kernel Page Pool     */
 	#define RISCV32_CLUSTER_KPOOL_END_PHYS   (RISCV32_CLUSTER_KPOOL_BASE_PHYS + RV32GC_PGTAB_SIZE)  /**< Kernel Pool End      */
-	#define RISCV32_CLUSTER_USER_BASE_PHYS   RISCV32_CLUSTER_KPOOL_END_PHYS                        /**< User Base            */
-	#define RISCV32_CLUSTER_USER_END_PHYS    RISCV32_CLUSTER_DRAM_END_PHYS                         /**< User End             */
+	#define RISCV32_CLUSTER_USER_BASE_PHYS   RISCV32_CLUSTER_KPOOL_END_PHYS                         /**< User Base            */
+	#define RISCV32_CLUSTER_USER_END_PHYS    RISCV32_CLUSTER_DRAM_END_PHYS                          /**< User End             */
 	/**@}*/
 
 	/**
@@ -68,6 +68,18 @@
 	#define RISCV32_CLUSTER_KPOOL_END_VIRT   RISCV32_CLUSTER_KPOOL_END_PHYS   /**< Kernel Pool End      */
 	#define RISCV32_CLUSTER_USER_BASE_VIRT   0x90000000                       /**< User Base            */
 	#define RISCV32_CLUSTER_USER_END_VIRT    0xf0000000                       /**< User End             */
+	/**@}*/
+
+	/**
+	 * @name Memory Regions Constants
+	 */
+	/**@{*/
+	#define RISCV32_CLUSTER_MEM_REGIONS            4                            /**< Memory Regions number.            */
+	#define RISCV32_CLUSTER_ROOT_PGTAB_NUM         RISCV32_CLUSTER_MEM_REGIONS  /**< Root page table size.             */
+	#define RISCV32_CLUSTER_MREGION_PT_ALIGN_START 0                            /**< MRegion start page table aligned. */
+	#define RISCV32_CLUSTER_MREGION_PT_ALIGN_END   2                            /**< MRegion end page table aligned.   */
+	#define RISCV32_CLUSTER_MREGION_PG_ALIGN_START 2                            /**< MRegion start page aligned.       */
+	#define RISCV32_CLUSTER_MREGION_PG_ALIGN_END   RISCV32_CLUSTER_MEM_REGIONS  /**< MRegion end page aligned.         */
 	/**@}*/
 
 	/**
@@ -110,15 +122,6 @@
 	EXTERN unsigned char __BSS_END;         /**< BSS End         */
 	/**@}*/
 
-#ifdef __NANVIX_HAL
-
-	/**
-	 * @brief Initializes the Memory Interface.
-	 */
-	EXTERN void riscv32_cluster_mem_setup(void);
-
-#endif /* __NANVIX_HAL */
-
 #endif /* _ASM_FILE_ */
 
 /**@}*/
@@ -134,19 +137,32 @@
 	/**
 	 * @name Exported Constants
 	 */
-	#define MEMORY_SIZE  RISCV32_CLUSTER_MEM_SIZE          /**< @see RISCV32_CLUSTER_MEM_SIZE         */
-	#define KMEM_SIZE    RISCV32_CLUSTER_KMEM_SIZE         /**< @see RISCV32_CLUSTER_KMEM_SIZE        */
-	#define UMEM_SIZE    RISCV32_CLUSTER_UMEM_SIZE         /**< @see RISCV32_CLUSTER_UMEM_SIZE        */
-	#define KSTACK_SIZE  RISCV32_CLUSTER_KSTACK_SIZE       /**< @see RISCV32_CLUSTER_KSTACK_SIZE      */
-	#define KPOOL_SIZE   RISCV32_CLUSTER_KPOOL_SIZE        /**< @see RISCV32_CLUSTER_KPOOL_SIZE       */
-	#define KBASE_PHYS   RISCV32_CLUSTER_KERNEL_BASE_PHYS  /**< @see RISCV32_CLUSTER_KERNEL_BASE_PHYS */
-	#define KPOOL_PHYS   RISCV32_CLUSTER_KPOOL_BASE_PHYS   /**< @see RISCV32_CLUSTER_KPOOL_BASE_PHYS  */
-	#define UBASE_PHYS   RISCV32_CLUSTER_USER_BASE_PHYS    /**< @see RISCV32_CLUSTER_USER_BASE_PHYS   */
-	#define USTACK_VIRT  RISCV32_CLUSTER_USTACK_BASE_VIRT  /**< @see RISCV32_CLUSTER_USTACK_BASE_VIRT */
-	#define UBASE_VIRT   RISCV32_CLUSTER_USER_BASE_VIRT    /**< @see RISCV32_CLUSTER_USER_BASE_VIRT   */
-	#define KBASE_VIRT   RISCV32_CLUSTER_KERNEL_BASE_VIRT  /**< @see RISCV32_CLUSTER_KERNEL_BASE_VIRT */
-	#define KPOOL_VIRT   RISCV32_CLUSTER_KPOOL_BASE_VIRT   /**< @see RISCV32_CLUSTER_KPOOL_BASE_VIRT  */
-	#define _UART_ADDR  RISCV32_CLUSTER_UART_PHYS          /**< @see UART Device                      */
+	#define MEMORY_SIZE RISCV32_CLUSTER_MEM_SIZE         /**< @see RISCV32_CLUSTER_MEM_SIZE         */
+	#define KMEM_SIZE   RISCV32_CLUSTER_KMEM_SIZE        /**< @see RISCV32_CLUSTER_KMEM_SIZE        */
+	#define UMEM_SIZE   RISCV32_CLUSTER_UMEM_SIZE        /**< @see RISCV32_CLUSTER_UMEM_SIZE        */
+	#define KSTACK_SIZE RISCV32_CLUSTER_KSTACK_SIZE      /**< @see RISCV32_CLUSTER_KSTACK_SIZE      */
+	#define KPOOL_SIZE  RISCV32_CLUSTER_KPOOL_SIZE       /**< @see RISCV32_CLUSTER_KPOOL_SIZE       */
+	#define KBASE_PHYS  RISCV32_CLUSTER_KERNEL_BASE_PHYS /**< @see RISCV32_CLUSTER_KERNEL_BASE_PHYS */
+	#define KPOOL_PHYS  RISCV32_CLUSTER_KPOOL_BASE_PHYS  /**< @see RISCV32_CLUSTER_KPOOL_BASE_PHYS  */
+	#define UBASE_PHYS  RISCV32_CLUSTER_USER_BASE_PHYS   /**< @see RISCV32_CLUSTER_USER_BASE_PHYS   */
+	#define USTACK_VIRT RISCV32_CLUSTER_USTACK_BASE_VIRT /**< @see RISCV32_CLUSTER_USTACK_BASE_VIRT */
+	#define UBASE_VIRT  RISCV32_CLUSTER_USER_BASE_VIRT   /**< @see RISCV32_CLUSTER_USER_BASE_VIRT   */
+	#define UEND_VIRT   RISCV32_CLUSTER_USER_END_VIRT    /**< @see RISCV32_CLUSTER_USER_END_VIRT    */
+	#define KBASE_VIRT  RISCV32_CLUSTER_KERNEL_BASE_VIRT /**< @see RISCV32_CLUSTER_KERNEL_BASE_VIRT */
+	#define KPOOL_VIRT  RISCV32_CLUSTER_KPOOL_BASE_VIRT  /**< @see RISCV32_CLUSTER_KPOOL_BASE_VIRT  */
+	#define _UART_ADDR  RISCV32_CLUSTER_UART_PHYS        /**< @see UART Device                      */
+	/**@}*/
+
+	/**
+	 * @name Exported Memory Region Constants
+	 */
+	/**@{*/
+	#define MEM_REGIONS            RISCV32_CLUSTER_MEM_REGIONS            /**< @see RISCV32_CLUSTER_MEM_REGIONS            */
+	#define ROOT_PGTAB_NUM         RISCV32_CLUSTER_ROOT_PGTAB_NUM         /**< @see RISCV32_CLUSTER_ROOT_PGTAB_NUM         */
+	#define MREGION_PT_ALIGN_START RISCV32_CLUSTER_MREGION_PT_ALIGN_START /**< @see RISCV32_CLUSTER_MREGION_PT_ALIGN_START */
+	#define MREGION_PT_ALIGN_END   RISCV32_CLUSTER_MREGION_PT_ALIGN_END   /**< @see RISCV32_CLUSTER_MREGION_PT_ALIGN_END   */
+	#define MREGION_PG_ALIGN_START RISCV32_CLUSTER_MREGION_PG_ALIGN_START /**< @see RISCV32_CLUSTER_MREGION_PG_ALIGN_START */
+	#define MREGION_PG_ALIGN_END   RISCV32_CLUSTER_MREGION_PG_ALIGN_END   /**< @see RISCV32_CLUSTER_MREGION_PG_ALIGN_END   */
 	/**@}*/
 
 /**@endcond*/

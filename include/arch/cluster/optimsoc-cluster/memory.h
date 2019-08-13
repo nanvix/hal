@@ -99,6 +99,29 @@
 	/**@}*/
 
 	/**
+	 * @name Memory Regions Constants
+	 */
+	/**@{*/
+	#define OPTIMSOC_CLUSTER_MEM_REGIONS            3                            /**< Memory Regions number.            */
+	#define OPTIMSOC_CLUSTER_ROOT_PGTAB_NUM         OPTIMSOC_CLUSTER_MEM_REGIONS /**< Root page table size.             */
+	#define OPTIMSOC_CLUSTER_MREGION_PT_ALIGN_START 0                            /**< MRegion start page table aligned. */
+	#define OPTIMSOC_CLUSTER_MREGION_PT_ALIGN_END   2                            /**< MRegion end page table aligned.   */
+	#define OPTIMSOC_CLUSTER_MREGION_PG_ALIGN_START 2                            /**< MRegion start page aligned.       */
+	#define OPTIMSOC_CLUSTER_MREGION_PG_ALIGN_END   OPTIMSOC_CLUSTER_MEM_REGIONS /**< MRegion end page aligned.         */
+	/**@}*/
+
+	/**
+	 * @name Memory Regions Constants Aliases
+	 */
+	/**@{*/
+	#define OR1K_CLUSTER_MEM_REGIONS            OPTIMSOC_CLUSTER_MEM_REGIONS            /**< Memory Regions number.            */
+	#define OR1K_CLUSTER_ROOT_PGTAB_NUM         OPTIMSOC_CLUSTER_MEM_REGIONS            /**< Root page table size.             */
+	#define OR1K_CLUSTER_MREGION_PT_ALIGN_START OPTIMSOC_CLUSTER_MREGION_PT_ALIGN_START /**< MRegion start page table aligned. */
+	#define OR1K_CLUSTER_MREGION_PT_ALIGN_END   OPTIMSOC_CLUSTER_MREGION_PT_ALIGN_END   /**< MRegion end page table aligned.   */
+	#define OR1K_CLUSTER_MREGION_PG_ALIGN_START OPTIMSOC_CLUSTER_MREGION_PG_ALIGN_START /**< MRegion start page aligned.       */
+	#define OR1K_CLUSTER_MREGION_PG_ALIGN_END   OPTIMSOC_CLUSTER_MREGION_PG_ALIGN_END   /**< MRegion end page aligned.         */
+
+	/**
 	 * @brief Memory size (in bytes).
 	 */
 	#define OPTIMSOC_CLUSTER_MEM_SIZE \
@@ -183,23 +206,6 @@
 	EXTERN unsigned char __BSS_END;         /**< BSS End         */
 	/**@}*/
 
-#ifdef __NANVIX_HAL
-
-	/**
-	 * @brief Initializes the Memory Interface.
-	 */
-	EXTERN void or1k_cluster_mem_setup(void);
-
-	/**
-	 * @see or1k_cluster_mem_setup()
-	 */
-	static inline void optimsoc_cluster_mem_setup(void)
-	{
-		or1k_cluster_mem_setup();
-	}
-
-#endif /* NANVIX_HAL */
-
 	/**
 	 * @brief TLB lookup address mask.
 	 */
@@ -251,9 +257,22 @@
 	#define UBASE_PHYS     OPTIMSOC_CLUSTER_USER_BASE_PHYS   /**< @see OPTIMSOC_CLUSTER_USER_BASE_PHYS   */
 	#define USTACK_VIRT    OPTIMSOC_CLUSTER_USTACK_BASE_VIRT /**< @see OPTIMSOC_CLUSTER_USTACK_BASE_VIRT */
 	#define UBASE_VIRT     OPTIMSOC_CLUSTER_USER_BASE_VIRT   /**< @see OPTIMSOC_CLUSTER_USER_BASE_VIRT   */
+	#define UEND_VIRT      OPTIMSOC_CLUSTER_USER_END_VIRT    /**< @see OPTIMSOC_CLUSTER_USER_END_VIRT    */
 	#define KBASE_VIRT     OPTIMSOC_CLUSTER_KERNEL_BASE_VIRT /**< @see OPTIMSOC_CLUSTER_KERNEL_BASE_VIRT */
 	#define KPOOL_VIRT     OPTIMSOC_CLUSTER_KPOOL_BASE_VIRT  /**< @see OPTIMSOC_CLUSTER_KPOOL_BASE_VIRT  */
-	#define TLB_VADDR_MASK OPTIMSOC_TLB_VADDR_MASK           /**< @see OR1K_TLB_VADDR_MASK               */
+	#define TLB_VADDR_MASK OPTIMSOC_TLB_VADDR_MASK           /**< @see OPTIMSOC_TLB_VADDR_MASK           */
+	/**@}*/
+
+	/**
+	 * @name Exported Memory Region Constants
+	 */
+	/**@{*/
+	#define MEM_REGIONS            OPTIMSOC_CLUSTER_MEM_REGIONS            /**< @see OPTIMSOC_CLUSTER_MEM_REGIONS            */
+	#define ROOT_PGTAB_NUM         OPTIMSOC_CLUSTER_ROOT_PGTAB_NUM         /**< @see OPTIMSOC_CLUSTER_ROOT_PGTAB_NUM         */
+	#define MREGION_PT_ALIGN_START OPTIMSOC_CLUSTER_MREGION_PT_ALIGN_START /**< @see OPTIMSOC_CLUSTER_MREGION_PT_ALIGN_START */
+	#define MREGION_PT_ALIGN_END   OPTIMSOC_CLUSTER_MREGION_PT_ALIGN_END   /**< @see OPTIMSOC_CLUSTER_MREGION_PT_ALIGN_END   */
+	#define MREGION_PG_ALIGN_START OPTIMSOC_CLUSTER_MREGION_PG_ALIGN_START /**< @see OPTIMSOC_CLUSTER_MREGION_PG_ALIGN_START */
+	#define MREGION_PG_ALIGN_END   OPTIMSOC_CLUSTER_MREGION_PG_ALIGN_END   /**< @see OPTIMSOC_CLUSTER_MREGION_PG_ALIGN_END   */
 	/**@}*/
 
 #ifndef _ASM_FILE_
@@ -263,6 +282,7 @@
 	 */
 	/**@{*/
 	#define __tlb_flush_fn          /**< tlb_flush()          */
+	#define __tlb_init_fn           /**< tlb_init()           */
 	#define __tlb_get_vaddr_info_fn /**< tlb_get_vaddr_info() */
 	#define __tlb_get_utlb_fn       /**< tlb_get_utlb()       */
 	/**@}*/
@@ -332,6 +352,14 @@
 			return (NULL);
 
 		return (optimsoc_cluster_tlb_get_utlb(tlb_type));
+	}
+
+	/**
+	 * @see or1k_cluster_tlb_init().
+	 */
+	static inline void tlb_init(void)
+	{
+		optimsoc_cluster_tlb_init();
 	}
 
 #endif /* _ASM_FILE_ */

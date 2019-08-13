@@ -38,6 +38,9 @@
 	#ifndef UBASE_VIRT
 	#error "UBASE_VIRT not defined"
 	#endif
+	#ifndef UEND_VIRT
+	#error "UEND_VIRT not defined"
+	#endif
 	#ifndef USTACK_VIRT
 	#error "USTACK_VIRT not defined"
 	#endif
@@ -69,6 +72,26 @@
 	#error "UMEM_SIZE not defined"
 	#endif
 
+	/* Memory regions constants. */
+	#ifndef MEM_REGIONS
+	#error "MEM_REGIONS not defined"
+	#endif
+	#ifndef MREGION_PG_ALIGN_START
+	#error "MREGION_PG_ALIGN_START not defined"
+	#endif
+	#ifndef MREGION_PG_ALIGN_END
+	#error "MREGION_PT_ALIGN_END not defined"
+	#endif
+	#ifndef MREGION_PT_ALIGN_START
+	#error "MREGION_PT_ALIGN_START not defined"
+	#endif
+	#ifndef MREGION_PT_ALIGN_END
+	#error "MREGION_PT_ALIGN_END not defined"
+	#endif
+	#ifndef ROOT_PGTAB_NUM
+	#error "ROOT_PGTAB_NUM not defined"
+	#endif
+
 	/*
 	 * Required interface for software-managed TLBs.
 	 */
@@ -82,13 +105,6 @@
 			#error "TLB_LENGTH not defined?"
 		#endif
 
-		/*
-		* Required interface for software- and hardware-managed TLBs.
-		*/
-		#ifndef __tlb_flush_fn
-			#error "tlb_flush() not defined?"
-		#endif
-
 		/* Functions */
 		#ifndef __tlb_get_utlb_fn
 			#error "tlb_get_utlb() not defined?"
@@ -97,6 +113,13 @@
 			#error "tlb_get_vaddr_info() not defined?"
 		#endif
 
+	#endif
+
+	/*
+	 * Required interface for software- and hardware-managed TLBs.
+	 */
+	#ifndef __tlb_flush_fn
+		#error "tlb_flush() not defined?"
 	#endif
 
 #endif
@@ -112,6 +135,27 @@
  * @brief Memory HAL Interface
  */
 /**@{*/
+
+	/**
+	 * @brief Memory region.
+	 */
+	struct memory_region
+	{
+		paddr_t pbase;      /**< Base physical address.  */
+		vaddr_t vbase;      /**< Base virtual address.   */
+		paddr_t pend;       /**< End physical address.   */
+		vaddr_t vend;       /**< End virtual address.    */
+		size_t size;        /**< Size.                   */
+		bool writable;      /**< Writable?               */
+		bool executable;    /**< Executable?             */
+		int root_pgtab_num; /**< Root page table number. */
+		const char *desc;   /**< Description.            */
+	};
+
+	/**
+	 * @brief Memory Layout
+	 */
+	EXTERN struct memory_region mem_layout[MEM_REGIONS];
 
 #ifndef __NANVIX_HAL
 
@@ -206,12 +250,83 @@
 #endif
 
 	/**
+	 * @brief Initialize the architectural TLB of the underlying core.
+	 */
+#ifdef __tlb_init_fn
+	EXTERN void tlb_init(void);
+#else
+	static inline void tlb_init(void)
+	{
+		noop();
+	}
+#endif
+
+	/**
+	 * @brief Loads the TLB
+	 *
+	 * The tlb_load() function loads the hardware TLB of the
+	 * underlying core with the page directory pointed to by @p pgdir.
+	 *
+	 * @returns This function always returns zero.
+	 */
+#ifdef __tlb_load_fn
+	EXTERN int tlb_load(paddr_t pgdir);
+#else
+	static inline int tlb_load(paddr_t pgdir)
+	{
+		UNUSED(pgdir);
+
+		return (0);
+	}
+#endif
+
+	/**
 	 * @brief Flushes changes in the TLB.
 	 *
 	 * @returns Upon successful completion, zero is returned. Upon
 	 * failure, a negative error code is returned instead.
 	 */
 	EXTERN int tlb_flush(void);
+
+	/**
+	 * @brief Does a memory warmup in the underlying cluster.
+	 */
+#ifdef __mem_warmup_fn
+	EXTERN void mem_warmup(void);
+#else
+	static inline void mem_warmup(void)
+	{
+		noop();
+	}
+#endif
+
+	/**
+	 * @brief Prints information about memory layout.
+	 */
+	EXTERN void mem_info(void);
+
+	/**
+	 * @brief Asserts the memory alignment.
+	 */
+	EXTERN void mem_check_align(void);
+
+	/**
+	 * @brief Checks if the memory is as expected, i.e,
+	 * if the virtual and physical memory are identity mapped.
+	 */
+	EXTERN void mem_check_layout(void);
+
+	/**
+	 * @brief Builds the memory map for the underlying
+	 * architecture.
+	 */
+	EXTERN void mem_map(void);
+
+	/**
+	 * @brief Initializes the Memory Interface of the underlying
+	 * cluster.
+	 */
+	EXTERN void mem_setup(void);
 
 /**@}*/
 

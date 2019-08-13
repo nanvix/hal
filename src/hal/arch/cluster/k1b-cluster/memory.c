@@ -22,28 +22,63 @@
  * SOFTWARE.
  */
 
+#include <nanvix/hal/cluster/memory.h>
 #include <arch/cluster/k1b-cluster/cores.h>
 #include <arch/cluster/k1b-cluster/memory.h>
 #include <nanvix/const.h>
 
 /**
- * @brief Number of memory regions.
+ * @brief Memory Layout.
  */
-#define K1B_CLUSTER_MEM_REGIONS 4
-
-/**
- * @brief Memory region.
- */
-struct memory_region
-{
-	paddr_t pbase; /**< Base physical address. */
-	vaddr_t vbase; /**< Base virtual address.  */
-	size_t size;   /**< Size.                  */
-	bool writable; /**< Writable?              */
+PUBLIC struct memory_region mem_layout[K1B_CLUSTER_MEM_REGIONS] = {
+	{
+		.pbase = K1B_CLUSTER_HYPER_LOW_BASE_PHYS,
+		.vbase = K1B_CLUSTER_HYPER_LOW_BASE_VIRT,
+		.pend  = K1B_CLUSTER_HYPER_LOW_END_PHYS,
+		.vend  = K1B_CLUSTER_HYPER_LOW_END_VIRT,
+		.size  = K1B_CLUSTER_HYPER_SIZE,
+		.writable = false,
+		.executable = true,
+		.root_pgtab_num = 0,
+		.desc = "hyper_low"
+	},
+	{
+		.pbase = K1B_CLUSTER_HYPER_HIGH_BASE_PHYS,
+		.vbase = K1B_CLUSTER_HYPER_HIGH_BASE_VIRT,
+		.pend  = K1B_CLUSTER_HYPER_HIGH_END_PHYS,
+		.vend  = K1B_CLUSTER_HYPER_HIGH_END_VIRT,
+		.size  = K1B_CLUSTER_HYPER_SIZE,
+		.writable = false,
+		.executable = true,
+		.root_pgtab_num = 0,
+		.desc = "hyper_high"
+	},
+	{
+		.pbase = K1B_CLUSTER_HYPER_LOW_END_PHYS,                      /**< @see K1B_CLUSTER_KERNEL_BASE_PHYS */
+		.vbase = K1B_CLUSTER_HYPER_LOW_END_VIRT,                      /**< @see K1B_CLUSTER_KERNEL_BASE_VIRT */
+		.pend  = K1B_PADDR(&_kend),                                   /**< @see K1B_CLUSTER_KERNEL_END_PHYS  */
+		.vend  = K1B_VADDR(&_kend),                                   /**< @see K1B_CLUSTER_KERNEL_END_VIRT  */
+		.size  = K1B_PADDR(&_kend) - K1B_CLUSTER_HYPER_LOW_END_PHYS,  /**< @see K1B_CLUSTER_KMEM_SIZE        */
+		.writable = true,
+		.executable = true,
+		.root_pgtab_num = 0,
+		.desc = "kernel"
+	},
+	{
+		.pbase = K1B_PADDR(&_kend),                          /**< @see K1B_CLUSTER_KPOOL_BASE_PHYS */
+		.vbase = K1B_VADDR(&_kend),                          /**< @see K1B_CLUSTER_KPOOL_BASE_VIRT */
+		.pend  = K1B_PADDR(&_kend) + K1B_CLUSTER_KPOOL_SIZE, /**< @see K1B_CLUSTER_KPOOL_END_PHYS  */
+		.vend  = K1B_VADDR(&_kend) + K1B_CLUSTER_KPOOL_SIZE, /**< @see K1B_CLUSTER_KPOOL_END_VIRT  */
+		.size  = K1B_CLUSTER_KPOOL_SIZE,
+		.writable = true,
+		.executable = false,
+		.root_pgtab_num = 0,
+		.desc = "kpool"
+	},
 };
 
 /*
- * Addresses should be alined to huge page boundaries.
+ * Addresses should be aligned to huge page boundaries.
  */
 #if (K1B_CLUSTER_HYPER_LOW_BASE_VIRT & (K1B_HUGE_PAGE_SIZE - 1))
 #error "bad memory layout"
@@ -51,31 +86,6 @@ struct memory_region
 #if (K1B_CLUSTER_HYPER_HIGH_BASE_VIRT & (K1B_HUGE_PAGE_SIZE - 1))
 #error "bad memory layout"
 #endif
-
-/**
- * @brief Root page directory.
- */
-PRIVATE struct pde k1b_root_pgdir[K1B_PGDIR_LENGTH] ALIGN(K1B_PAGE_SIZE);
-
-/**
- * @brief Root page table.
- */
-PRIVATE struct pte k1b_root_pgtab[K1B_PGTAB_LENGTH] ALIGN(K1B_PAGE_SIZE);
-
-/**
- * Alias to root page directory.
- */
-PUBLIC struct pde *root_pgdir = &k1b_root_pgdir[0];
-
-/**
- * Alias to kernel page table.
- */
-PUBLIC struct pte *kernel_pgtab = &k1b_root_pgtab[0];
-
-/**
- * Alias to kernel page pool page table.
- */
-PUBLIC struct pte *kpool_pgtab = &k1b_root_pgtab[0];
 
 /*
  * Physical Memory Layout
@@ -247,7 +257,7 @@ PUBLIC void k1b_tlbe_dump(int idx)
  * The k1b_cluster_tlb_init() initializes the architectural TLB of the
  * underlying k1b core.
  */
-PRIVATE void k1b_cluster_tlb_init(void)
+PUBLIC void k1b_cluster_tlb_init(void)
 {
 	int coreid;
 
@@ -338,7 +348,7 @@ PRIVATE int k1b_cluster_tlb_inval(vaddr_t vaddr, unsigned shift, unsigned way)
  *
  * @author Pedro Henrique Penna
  */
-PRIVATE void k1b_cluster_mem_warmup(void)
+PUBLIC void k1b_cluster_mem_warmup(void)
 {
 	vaddr_t start, end;
 
@@ -375,43 +385,6 @@ PRIVATE void k1b_cluster_mem_warmup(void)
 }
 
 /*============================================================================*
- * k1b_cluster_mem_info()                                                     *
- *============================================================================*/
-
-/**
- * @brief Print information about memory layout.
- *
- * @author Pedro Henrique Penna
- */
-PRIVATE void k1b_cluster_mem_info(void)
-{
-	kprintf("[hal] text = %d KB data = %d KB bss = %d KB",
-		(&__TEXT_END - &__TEXT_START)/KB,
-		(&__DATA_END - &__DATA_START)/KB,
-		(&__BSS_END  - &__BSS_START)/KB
-	);
-	kprintf("[hal] kernel_base=%x kernel_end=%x",
-		K1B_CLUSTER_KERNEL_BASE_VIRT,
-		K1B_CLUSTER_KERNEL_END_VIRT
-	);
-	kprintf("[hal]  kpool_base=%x  kpool_end=%x",
-		K1B_CLUSTER_KPOOL_BASE_VIRT,
-		K1B_CLUSTER_KPOOL_END_VIRT
-	);
-	kprintf("[hal]   user_base=%x   user_end=%x",
-		K1B_CLUSTER_USER_BASE_VIRT,
-		K1B_CLUSTER_USER_END_VIRT
-	);
-
-	kprintf("[hal] memsize=%d MB kmem=%d KB kpool=%d KB umem=%d KB",
-		K1B_CLUSTER_MEM_SIZE/MB,
-		K1B_CLUSTER_KMEM_SIZE/KB,
-		K1B_CLUSTER_KPOOL_SIZE/KB,
-		K1B_CLUSTER_UMEM_SIZE/KB
-	);
-}
-
-/*============================================================================*
  * k1b_cluster_mem_check_alignment()                                          *
  *============================================================================*/
 
@@ -420,7 +393,7 @@ PRIVATE void k1b_cluster_mem_info(void)
  *
  * @author Pedro Henrique Penna
  */
-PRIVATE void k1b_cluster_mem_check_alignment(void)
+PUBLIC void k1b_cluster_mem_check_alignment(void)
 {
 	if (K1B_CLUSTER_KERNEL_BASE_VIRT & (K1B_HUGE_PAGE_SIZE - 1))
 		kpanic("kernel base address misaligned");
@@ -445,7 +418,7 @@ PRIVATE void k1b_cluster_mem_check_alignment(void)
  *
  * @author Pedro Henrique Penna
  */
-PRIVATE void k1b_cluster_mem_check_layout(void)
+PUBLIC void k1b_cluster_mem_check_layout(void)
 {
 	size_t kstack_size;
 
@@ -456,92 +429,6 @@ PRIVATE void k1b_cluster_mem_check_layout(void)
 		kpanic("bad kernel stack base address");
 	if (kstack_size != K1B_CLUSTER_KSTACK_SIZE)
 		kpanic("bad kernel stack size");
-}
-
-/*============================================================================*
- * k1b_cluster_mem_map()                                                      *
- *============================================================================*/
-
-/**
- * @brief Builds the memory layout.
- *
- * @author Pedro Henrique Penna
- */
-PRIVATE void k1b_cluster_mem_map(void)
-{
-	struct memory_region k1b_cluster_mem_layout[K1B_CLUSTER_MEM_REGIONS] = {
-		{ K1B_CLUSTER_HYPER_LOW_BASE_PHYS,  K1B_CLUSTER_HYPER_LOW_BASE_VIRT,  K1B_CLUSTER_HYPER_SIZE, false },
-		{ K1B_CLUSTER_HYPER_HIGH_BASE_PHYS, K1B_CLUSTER_HYPER_HIGH_BASE_VIRT, K1B_CLUSTER_HYPER_SIZE, false },
-		{ K1B_CLUSTER_KERNEL_BASE_PHYS,     K1B_CLUSTER_KERNEL_BASE_VIRT,     K1B_CLUSTER_KMEM_SIZE,  true  },
-		{ K1B_CLUSTER_KPOOL_BASE_PHYS,      K1B_CLUSTER_KPOOL_BASE_VIRT,      K1B_CLUSTER_KPOOL_SIZE, true  },
-	};
-
-	/* Clean root page table. */
-	for (int i = 0; i < K1B_PGTAB_LENGTH; i++)
-		pte_clear(&k1b_root_pgtab[i]);
-
-	/* Clean root page directory. */
-	for (int i = 0; i < K1B_PGDIR_LENGTH; i++)
-		pde_clear(&k1b_root_pgdir[i]);
-
-	/* Build page tables. */
-	for (int i = 0; i < K1B_CLUSTER_MEM_REGIONS; i++)
-	{
-		paddr_t pbase = k1b_cluster_mem_layout[i].pbase;
-		vaddr_t vbase = k1b_cluster_mem_layout[i].vbase;
-		size_t size = k1b_cluster_mem_layout[i].size;
-		int w = k1b_cluster_mem_layout[i].writable;
-		paddr_t j = pbase;
-		vaddr_t k = vbase;
-
-		/* Map underlying pages. */
-		for (/* */; k < (pbase + size); j += K1B_PAGE_SIZE, k += K1B_PAGE_SIZE)
-			k1b_page_map(k1b_root_pgtab, j, k, w);
-	}
-
-	/* Build page directory. */
-	k1b_pgtab_map(
-			k1b_root_pgdir,
-			K1B_PADDR(k1b_root_pgtab),
-			K1B_CLUSTER_HYPER_LOW_BASE_VIRT
-	);
-}
-
-/*============================================================================*
- * k1b_cluster_mem_setup()                                                    *
- *============================================================================*/
-
-/**
- * The k1b_cluster_mem_setup() function initializes the Memory
- * Interface of the underlying Bostan Cluster.
- *
- * @author Pedro Henrique Penna
- */
-PUBLIC void k1b_cluster_mem_setup(void)
-{
-	int coreid;
-
-	coreid = k1b_core_get_id();
-
-	/*
-	 * Master core builds
-	 * root page directory.
-	 */
-	if (coreid == 0)
-	{
-		kprintf("[hal] initializing memory layout...");
-
-		k1b_cluster_mem_info();
-
-		/* Check for memory layout. */
-		k1b_cluster_mem_check_alignment();
-		k1b_cluster_mem_check_layout();
-
-		/* Build memory layout. */
-		k1b_cluster_mem_map();
-	}
-
-	k1b_cluster_mem_warmup();
-
-	k1b_cluster_tlb_init();
+	if (K1B_CLUSTER_KMEM_SIZE != ((K1B_PADDR(&_kend) - K1B_CLUSTER_HYPER_LOW_END_PHYS)))
+		kpanic("bad kernel memory size");
 }

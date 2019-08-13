@@ -79,6 +79,18 @@
 	/**@}*/
 
 	/**
+	 * @name Memory Regions Constants
+	 */
+	/**@{*/
+	#define OR1K_CLUSTER_MEM_REGIONS            5                         /**< Memory Regions number.            */
+	#define OR1K_CLUSTER_ROOT_PGTAB_NUM         OR1K_CLUSTER_MEM_REGIONS  /**< Root page table size.             */
+	#define OR1K_CLUSTER_MREGION_PT_ALIGN_START 0                         /**< MRegion start page table aligned. */
+	#define OR1K_CLUSTER_MREGION_PT_ALIGN_END   2                         /**< MRegion end page table aligned.   */
+	#define OR1K_CLUSTER_MREGION_PG_ALIGN_START 2                         /**< MRegion start page aligned.       */
+	#define OR1K_CLUSTER_MREGION_PG_ALIGN_END   OR1K_CLUSTER_MEM_REGIONS  /**< MRegion end page aligned.         */
+	/**@}*/
+
+	/**
 	 * @brief Memory size (in bytes).
 	 */
 	#define OR1K_CLUSTER_MEM_SIZE \
@@ -137,15 +149,6 @@
 	EXTERN unsigned char __BSS_START;       /**< BSS Start       */
 	EXTERN unsigned char __BSS_END;         /**< BSS End         */
 	/**@}*/
-
-#ifdef __NANVIX_HAL
-
-	/**
-	 * @brief Initializes the Memory Interface.
-	 */
-	EXTERN void or1k_cluster_mem_setup(void);
-
-#endif /* __NANVIX_HAL */
 
 	/**
 	 * @brief TLB lookup address mask.
@@ -209,10 +212,23 @@
 	#define UBASE_PHYS     OR1K_CLUSTER_USER_BASE_PHYS   /**< @see OR1K_CLUSTER_USER_BASE_PHYS   */
 	#define USTACK_VIRT    OR1K_CLUSTER_USTACK_BASE_VIRT /**< @see OR1K_CLUSTER_USTACK_BASE_VIRT */
 	#define UBASE_VIRT     OR1K_CLUSTER_USER_BASE_VIRT   /**< @see OR1K_CLUSTER_USER_BASE_VIRT   */
+	#define UEND_VIRT      OR1K_CLUSTER_USER_END_VIRT    /**< @see OR1K_CLUSTER_USER_END_VIRT    */
 	#define KBASE_VIRT     OR1K_CLUSTER_KERNEL_BASE_VIRT /**< @see OR1K_CLUSTER_KERNEL_BASE_VIRT */
 	#define KPOOL_VIRT     OR1K_CLUSTER_KPOOL_BASE_VIRT  /**< @see OR1K_CLUSTER_KPOOL_BASE_VIRT  */
 	#define _UART_ADDR     OR1K_CLUSTER_UART_BASE_PHYS   /**< @see OR1K_CLUSTER_UART_BASE_PHYS   */
 	#define TLB_VADDR_MASK OR1K_TLB_VADDR_MASK           /**< @see OR1K_TLB_VADDR_MASK           */
+	/**@}*/
+
+	/**
+	 * @name Exported Memory Region Constants
+	 */
+	/**@{*/
+	#define MEM_REGIONS            OR1K_CLUSTER_MEM_REGIONS            /**< @see OR1K_CLUSTER_MEM_REGIONS            */
+	#define ROOT_PGTAB_NUM         OR1K_CLUSTER_ROOT_PGTAB_NUM         /**< @see OR1K_CLUSTER_ROOT_PGTAB_NUM         */
+	#define MREGION_PT_ALIGN_START OR1K_CLUSTER_MREGION_PT_ALIGN_START /**< @see OR1K_CLUSTER_MREGION_PT_ALIGN_START */
+	#define MREGION_PT_ALIGN_END   OR1K_CLUSTER_MREGION_PT_ALIGN_END   /**< @see OR1K_CLUSTER_MREGION_PT_ALIGN_END   */
+	#define MREGION_PG_ALIGN_START OR1K_CLUSTER_MREGION_PG_ALIGN_START /**< @see OR1K_CLUSTER_MREGION_PG_ALIGN_START */
+	#define MREGION_PG_ALIGN_END   OR1K_CLUSTER_MREGION_PG_ALIGN_END   /**< @see OR1K_CLUSTER_MREGION_PG_ALIGN_END   */
 	/**@}*/
 
 #ifndef _ASM_FILE_
@@ -222,6 +238,7 @@
 	 */
 	/**@{*/
 	#define __tlb_flush_fn          /**< tlb_flush()          */
+	#define __tlb_init_fn           /**< tlb_init()           */
 	#define __tlb_get_vaddr_info_fn /**< tlb_get_vaddr_info() */
 	#define __tlb_get_utlb_fn       /**< tlb_get_utlb()       */
 	/**@}*/
@@ -232,6 +249,14 @@
 	static inline int tlb_flush(void)
 	{
 		return (or1k_cluster_tlb_flush());
+	}
+
+	/**
+	 * @brief Initializes the TLB in the underlying core.
+	 */
+	static inline void tlb_init(void)
+	{
+		or1k_cluster_tlb_init();
 	}
 
 	/**

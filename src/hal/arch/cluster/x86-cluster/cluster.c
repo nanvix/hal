@@ -56,7 +56,7 @@ PUBLIC void x86_cluster_setup(void)
 
 	kprintf("[hal] booting up cluster...");
 
-	x86_cluster_mem_setup();
+	mem_setup();
 
 	i486_core_setup();
 

@@ -85,7 +85,7 @@ PUBLIC void k1b_cluster_setup(void)
 	if (coreid == K1B_CLUSTER_COREID_MASTER)
 		kprintf("[hal] booting up cluster...");
 
-	k1b_cluster_mem_setup();
+	mem_setup();
 	k1b_core_setup(&excp_stacks[k1b_core_get_id()][EXCEPTION_STACK_SIZE]);
 }
 

@@ -48,14 +48,14 @@
 	 */
 	/**@{*/
 	#if defined(__ioddr__) || defined(__ioeth__)
-		#define K1B_HUGE_PAGE_SHIFT 16                  /**< Huge Page Shift   */
+		#define K1B_HUGE_PAGE_SHIFT 16                      /**< Huge Page Shift  */
 	#elif defined(__node__)
-		#define K1B_HUGE_PAGE_SHIFT 15                  /**< Huge Page Shift   */
+		#define K1B_HUGE_PAGE_SHIFT 15                      /**< Huge Page Shift  */
 	#endif
-	#define K1B_PAGE_SHIFT      12                      /**< Page Shift        */
-	#define K1B_PGTAB_SHIFT     22                      /**< Page Table Shift  */
-	#define K1B_PAGE_MASK       (~(K1B_PAGE_SIZE - 1))  /**< Page Mask         */
-	#define K1B_PGTAB_MASK      (~(K1B_PGTAB_SIZE - 1)) /**< Page Table Mask   */
+	#define K1B_PAGE_SHIFT          12                      /**< Page Shift       */
+	#define K1B_PGTAB_SHIFT         22                      /**< Page Table Shift */
+	#define K1B_PAGE_MASK           (~(K1B_PAGE_SIZE - 1))  /**< Page Mask        */
+	#define K1B_PGTAB_MASK          (~(K1B_PGTAB_SIZE - 1)) /**< Page Table Mask  */
 	/**@}*/
 
 	/**
@@ -63,10 +63,10 @@
 	 */
 	/**@{*/
 	#define K1B_HUGE_PAGE_SIZE (1 << K1B_HUGE_PAGE_SHIFT) /**< Huge Page Size (in bytes)            */
-	#define K1B_PAGE_SIZE  (1 << K1B_PAGE_SHIFT)          /**< Page Size (in bytes)                 */
-	#define K1B_PGTAB_SIZE (1 << K1B_PGTAB_SHIFT)         /**< Page Table Size (in bytes)           */
-	#define K1B_PTE_SIZE   4                              /**< Page Table Entry Size (in bytes)     */
-	#define K1B_PDE_SIZE   4                              /**< Page Directory Entry Size (in bytes) */
+	#define K1B_PAGE_SIZE      (1 << K1B_PAGE_SHIFT)      /**< Page Size (in bytes)                 */
+	#define K1B_PGTAB_SIZE     (1 << K1B_PGTAB_SHIFT)     /**< Page Table Size (in bytes)           */
+	#define K1B_PTE_SIZE       4                          /**< Page Table Entry Size (in bytes)     */
+	#define K1B_PDE_SIZE       4                          /**< Page Directory Entry Size (in bytes) */
 	/**@}*/
 
 	/**
@@ -191,19 +191,21 @@
 	 * @name Exported Constants
 	 */
 	/**@{*/
-	#define KPAGE_SIZE  K1B_HUGE_PAGE_SIZE /**< @ref K1B_PAGE_SIZE   */
-	#define PAGE_SIZE   K1B_PAGE_SIZE      /**< @ref K1B_PAGE_SIZE   */
-	#define PGTAB_SIZE  K1B_PGTAB_SIZE     /**< @ref K1B_PGTAB_BIT   */
-	#define PTE_SIZE    K1B_PTE_SIZE       /**< @ref K1B_PTE_SIZE    */
-	#define PDE_SIZE    K1B_PDE_SIZE       /**< @ref K1B_PDE_SIZE    */
-	#define PAGE_SHIFT  K1B_PAGE_SHIFT     /**< @ref K1B_PAGE_SHIFT  */
-	#define PGTAB_SHIFT K1B_PGTAB_SHIFT    /**< @ref K1B_PGTAB_SHIFT */
-	#define PAGE_MASK   K1B_PAGE_MASK      /**< @ref K1B_PAGE_MASK   */
-	#define PGTAB_MASK  K1B_PGTAB_MASK     /**< @ref K1B_PGTAB_MASK  */
-	#define PADDR_BIT   K1B_PADDR_BIT      /**< @ref K1B_PADDR_BIT   */
-	#define VADDR_BIT   K1B_VADDR_BIT      /**< @ref K1B_VADDR_BIT   */
-	#define PADDR_BYTE  K1B_PADDR_BYTE     /**< @ref K1B_PADDR_BYTE  */
-	#define VADDR_BYTE  K1B_VADDR_BYTE     /**< @ref K1B_VADDR_BYTE  */
+	#define KPAGE_SIZE   K1B_HUGE_PAGE_SIZE /**< @ref K1B_HUGE_PAGE_SIZE */
+	#define PAGE_SIZE    K1B_PAGE_SIZE      /**< @ref K1B_PAGE_SIZE      */
+	#define PGTAB_SIZE   K1B_PGTAB_SIZE     /**< @ref K1B_PGTAB_SIZE     */
+	#define PGTAB_LENGTH K1B_PGTAB_LENGTH   /**< @ref K1B_PGTAB_LENGTH   */
+	#define PGDIR_LENGTH K1B_PGDIR_LENGTH   /**< @ref K1B_PGDIR_LENGTH   */
+	#define PTE_SIZE     K1B_PTE_SIZE       /**< @ref K1B_PTE_SIZE       */
+	#define PDE_SIZE     K1B_PDE_SIZE       /**< @ref K1B_PDE_SIZE       */
+	#define PAGE_SHIFT   K1B_PAGE_SHIFT     /**< @ref K1B_PAGE_SHIFT     */
+	#define PGTAB_SHIFT  K1B_PGTAB_SHIFT    /**< @ref K1B_PGTAB_SHIFT    */
+	#define PAGE_MASK    K1B_PAGE_MASK      /**< @ref K1B_PAGE_MASK      */
+	#define PGTAB_MASK   K1B_PGTAB_MASK     /**< @ref K1B_PGTAB_MASK     */
+	#define PADDR_BIT    K1B_PADDR_BIT      /**< @ref K1B_PADDR_BIT      */
+	#define VADDR_BIT    K1B_VADDR_BIT      /**< @ref K1B_VADDR_BIT      */
+	#define PADDR_BYTE   K1B_PADDR_BYTE     /**< @ref K1B_PADDR_BYTE     */
+	#define VADDR_BYTE   K1B_VADDR_BYTE     /**< @ref K1B_VADDR_BYTE     */
 	/**@}*/
 
 	/**
@@ -228,37 +230,37 @@
 	 * @brief Exported Functions
 	 */
 	/**@{*/
-	#define __pde_clear_fn         /**< pde_clear()         */
-	#define __pde_frame_get_fn     /**< pde_frame_get()     */
-	#define __pde_frame_set_fn     /**< pde_frame_set()     */
-	#define __pde_get_fn           /**< pde_get()           */
-	#define __pde_is_present_fn    /**< pde_is_present()    */
-	#define __pde_is_user_fn       /**< pde_is_user()       */
-	#define __pde_is_read_fn       /**< pde_is_read()       */
-	#define __pde_is_write_fn      /**< pde_is_write()      */
-	#define __pde_is_exec_fn       /**< pde_is_exec()       */
-	#define __pde_present_set_fn   /**< pde_present_set()   */
-	#define __pde_user_set_fn      /**< pde_user_set()      */
-	#define __pde_read_set_fn      /**< pde_read_set()      */
-	#define __pde_write_set_fn     /**< pde_write_set()     */
-	#define __pde_exec_set_fn      /**< pde_exec_set()      */
-	#define __pte_clear_fn         /**< pte_clear()         */
-	#define __pte_frame_get_fn     /**< pte_frame_get()     */
-	#define __pte_frame_set_fn     /**< pte_frame_set()     */
-	#define __pte_get_fn           /**< pte_get()           */
-	#define __pte_is_present_fn    /**< pte_is_present()    */
-	#define __pte_is_user_fn       /**< pte_is_user()       */
-	#define __pte_is_read_fn       /**< pte_is_read()       */
-	#define __pte_is_write_fn      /**< pte_is_write()      */
-	#define __pte_is_exec_fn       /**< pte_is_exec()       */
-	#define __pte_present_set_fn   /**< pte_present_set()   */
-	#define __pte_user_set_fn      /**< pte_user_set()      */
-	#define __pte_read_set_fn      /**< pte_read_set()      */
-	#define __pte_write_set_fn     /**< pte_write_set()     */
-	#define __pte_exec_set_fn      /**< pte_exec_set()      */
-	#define __mmu_page_map_fn      /**< mmu_page_map()      */
-	#define __mmu_pgtab_map_fn     /**< mmu_pgtab_map()     */
-	#define __mmu_is_enabled_fn    /**< mmu_is_enabled()    */
+	#define __pde_clear_fn       /**< pde_clear()       */
+	#define __pde_frame_get_fn   /**< pde_frame_get()   */
+	#define __pde_frame_set_fn   /**< pde_frame_set()   */
+	#define __pde_get_fn         /**< pde_get()         */
+	#define __pde_is_present_fn  /**< pde_is_present()  */
+	#define __pde_is_user_fn     /**< pde_is_user()     */
+	#define __pde_is_read_fn     /**< pde_is_read()     */
+	#define __pde_is_write_fn    /**< pde_is_write()    */
+	#define __pde_is_exec_fn     /**< pde_is_exec()     */
+	#define __pde_present_set_fn /**< pde_present_set() */
+	#define __pde_user_set_fn    /**< pde_user_set()    */
+	#define __pde_read_set_fn    /**< pde_read_set()    */
+	#define __pde_write_set_fn   /**< pde_write_set()   */
+	#define __pde_exec_set_fn    /**< pde_exec_set()    */
+	#define __pte_clear_fn       /**< pte_clear()       */
+	#define __pte_frame_get_fn   /**< pte_frame_get()   */
+	#define __pte_frame_set_fn   /**< pte_frame_set()   */
+	#define __pte_get_fn         /**< pte_get()         */
+	#define __pte_is_present_fn  /**< pte_is_present()  */
+	#define __pte_is_user_fn     /**< pte_is_user()     */
+	#define __pte_is_read_fn     /**< pte_is_read()     */
+	#define __pte_is_write_fn    /**< pte_is_write()    */
+	#define __pte_is_exec_fn     /**< pte_is_exec()     */
+	#define __pte_present_set_fn /**< pte_present_set() */
+	#define __pte_user_set_fn    /**< pte_user_set()    */
+	#define __pte_read_set_fn    /**< pte_read_set()    */
+	#define __pte_write_set_fn   /**< pte_write_set()   */
+	#define __pte_exec_set_fn    /**< pte_exec_set()    */
+	#define __mmu_page_map_fn    /**< mmu_page_map()    */
+	#define __mmu_pgtab_map_fn   /**< mmu_pgtab_map()   */
+	#define __mmu_is_enabled_fn  /**< mmu_is_enabled()  */
 	/**@}*/
 
 #ifndef _ASM_FILE_

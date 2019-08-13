@@ -130,15 +130,15 @@
 	 */
 	struct pde
 	{
-		unsigned frame      : 22; /* Frame number.          */
-		unsigned last       :  1; /* Last PTE.              */
-		unsigned ppi        :  3; /* Page protection index. */
-		unsigned dirty      :  1; /* Dirty?                 */
-		unsigned accessed   :  1; /* Accessed?              */
-		unsigned wom        :  1; /* Weakly-Ordered Memory. */
-		unsigned wbc        :  1; /* Write-Back Cache.      */
-		unsigned present    :  1; /* Present in memory.     */
-		unsigned cc         :  1; /* Cache Coherency.       */
+		unsigned frame    : 22; /* Frame number.          */
+		unsigned last     :  1; /* Last PTE.              */
+		unsigned ppi      :  3; /* Page protection index. */
+		unsigned dirty    :  1; /* Dirty?                 */
+		unsigned accessed :  1; /* Accessed?              */
+		unsigned wom      :  1; /* Weakly-Ordered Memory. */
+		unsigned wbc      :  1; /* Write-Back Cache.      */
+		unsigned present  :  1; /* Present in memory.     */
+		unsigned cc       :  1; /* Cache Coherency.       */
 	};
 
 	/**
@@ -146,15 +146,15 @@
 	 */
 	struct pte
 	{
-		unsigned frame      : 22; /* Frame number.          */
-		unsigned last       :  1; /* Last PTE.              */
-		unsigned ppi        :  3; /* Page protection index. */
-		unsigned dirty      :  1; /* Dirty?                 */
-		unsigned accessed   :  1; /* Accessed?              */
-		unsigned wom        :  1; /* Weakly-Ordered Memory. */
-		unsigned wbc        :  1; /* Write-Back Cache.      */
-		unsigned present    :  1; /* Present in memory.     */
-		unsigned cc         :  1; /* Cache Coherency.       */
+		unsigned frame    : 22; /* Frame number.          */
+		unsigned last     :  1; /* Last PTE.              */
+		unsigned ppi      :  3; /* Page protection index. */
+		unsigned dirty    :  1; /* Dirty?                 */
+		unsigned accessed :  1; /* Accessed?              */
+		unsigned wom      :  1; /* Weakly-Ordered Memory. */
+		unsigned wbc      :  1; /* Write-Back Cache.      */
+		unsigned present  :  1; /* Present in memory.     */
+		unsigned cc       :  1; /* Cache Coherency.       */
 	};
 
 	/**
@@ -229,19 +229,21 @@
 	 * @name Exported Constants
 	 */
 	/**@{*/
-	#define KPAGE_SIZE  OR1K_PAGE_SIZE   /**< @ref OR1K_PAGE_SIZE   */
-	#define PAGE_SIZE   OR1K_PAGE_SIZE   /**< @ref OR1K_PAGE_SIZE   */
-	#define PGTAB_SIZE  OR1K_PGTAB_SIZE  /**< @ref OR1K_PGTAB_BIT   */
-	#define PTE_SIZE    OR1K_PTE_SIZE    /**< @ref OR1K_PTE_SIZE    */
-	#define PDE_SIZE    OR1K_PDE_SIZE    /**< @ref OR1K_PDE_SIZE    */
-	#define PAGE_SHIFT  OR1K_PAGE_SHIFT  /**< @ref OR1K_PAGE_SHIFT  */
-	#define PGTAB_SHIFT OR1K_PGTAB_SHIFT /**< @ref OR1K_PGTAB_SHIFT */
-	#define PAGE_MASK   OR1K_PAGE_MASK   /**< @ref OR1K_PAGE_MASK   */
-	#define PGTAB_MASK  OR1K_PGTAB_MASK  /**< @ref OR1K_PGTAB_MASK  */
-	#define PADDR_BIT   OR1K_PADDR_BIT   /**< @ref OR1K_PADDR_BIT   */
-	#define VADDR_BIT   OR1K_VADDR_BIT   /**< @ref OR1K_VADDR_BIT   */
-	#define PADDR_BYTE  OR1K_PADDR_BYTE  /**< @ref OR1K_PADDR_BYTE  */
-	#define VADDR_BYTE  OR1K_VADDR_BYTE  /**< @ref OR1K_VADDR_BYTE  */
+	#define KPAGE_SIZE   OR1K_PAGE_SIZE    /**< @ref OR1K_PAGE_SIZE    */
+	#define PAGE_SIZE    OR1K_PAGE_SIZE    /**< @ref OR1K_PAGE_SIZE    */
+	#define PGTAB_SIZE   OR1K_PGTAB_SIZE   /**< @ref OR1K_PGTAB_SIZE   */
+	#define PGTAB_LENGTH OR1K_PGTAB_LENGTH /**< @ref OR1K_PGTAB_LENGTH */
+	#define PGDIR_LENGTH OR1K_PGDIR_LENGTH /**< @ref OR1K_PGDIR_LENGTH */
+	#define PTE_SIZE     OR1K_PTE_SIZE     /**< @ref OR1K_PTE_SIZE     */
+	#define PDE_SIZE     OR1K_PDE_SIZE     /**< @ref OR1K_PDE_SIZE     */
+	#define PAGE_SHIFT   OR1K_PAGE_SHIFT   /**< @ref OR1K_PAGE_SHIFT   */
+	#define PGTAB_SHIFT  OR1K_PGTAB_SHIFT  /**< @ref OR1K_PGTAB_SHIFT  */
+	#define PAGE_MASK    OR1K_PAGE_MASK    /**< @ref OR1K_PAGE_MASK    */
+	#define PGTAB_MASK   OR1K_PGTAB_MASK   /**< @ref OR1K_PGTAB_MASK   */
+	#define PADDR_BIT    OR1K_PADDR_BIT    /**< @ref OR1K_PADDR_BIT    */
+	#define VADDR_BIT    OR1K_VADDR_BIT    /**< @ref OR1K_VADDR_BIT    */
+	#define PADDR_BYTE   OR1K_PADDR_BYTE   /**< @ref OR1K_PADDR_BYTE   */
+	#define VADDR_BYTE   OR1K_VADDR_BYTE   /**< @ref OR1K_VADDR_BYTE   */
 	/**@}*/
 
 	/**

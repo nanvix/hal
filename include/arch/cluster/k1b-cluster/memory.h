@@ -120,6 +120,7 @@
 		#define K1B_CLUSTER_HYPER_HIGH_BASE_PHYS 0x001f8000 /**< High Hypervisor Base */
 		#define K1B_CLUSTER_HYPER_HIGH_END_PHYS  0x00200000 /**< High Hypervisor End  */
 	#endif
+
 #ifndef _ASM_FILE_
 	EXTERN const paddr_t K1B_CLUSTER_KERNEL_BASE_PHYS;      /**< Kernel Base          */
 	EXTERN const paddr_t K1B_CLUSTER_KERNEL_END_PHYS;       /**< Kernel End           */
@@ -136,28 +137,43 @@
 	 */
 	/**@{*/
 	#if defined(__ioddr__) || defined(__ioeth__)
-		#define K1B_CLUSTER_HYPER_LOW_BASE_VIRT  0x00000000       /**< Low Hypervisor Base  */
-		#define K1B_CLUSTER_HYPER_LOW_END_VIRT   0x00010000       /**< Low Hypervisor End   */
-		#define K1B_CLUSTER_HYPER_HIGH_BASE_VIRT 0x001f0000       /**< High Hypervisor Base */
-		#define K1B_CLUSTER_HYPER_HIGH_END_VIRT  0x00200000       /**< High Hypervisor End  */
+		#define K1B_CLUSTER_HYPER_LOW_BASE_VIRT  0x00000000 /**< Low Hypervisor Base  */
+		#define K1B_CLUSTER_HYPER_LOW_END_VIRT   0x00010000 /**< Low Hypervisor End   */
+		#define K1B_CLUSTER_HYPER_HIGH_BASE_VIRT 0x001f0000 /**< High Hypervisor Base */
+		#define K1B_CLUSTER_HYPER_HIGH_END_VIRT  0x00200000 /**< High Hypervisor End  */
 	#elif defined(__node__)
-		#define K1B_CLUSTER_HYPER_LOW_BASE_VIRT  0x00000000       /**< Low Hypervisor Base  */
-		#define K1B_CLUSTER_HYPER_LOW_END_VIRT   0x00008000       /**< Low Hypervisor End   */
-		#define K1B_CLUSTER_HYPER_HIGH_BASE_VIRT 0x001f8000       /**< High Hypervisor Base */
-		#define K1B_CLUSTER_HYPER_HIGH_END_VIRT  0x00200000       /**< High Hypervisor End  */
+		#define K1B_CLUSTER_HYPER_LOW_BASE_VIRT  0x00000000 /**< Low Hypervisor Base  */
+		#define K1B_CLUSTER_HYPER_LOW_END_VIRT   0x00008000 /**< Low Hypervisor End   */
+		#define K1B_CLUSTER_HYPER_HIGH_BASE_VIRT 0x001f8000 /**< High Hypervisor Base */
+		#define K1B_CLUSTER_HYPER_HIGH_END_VIRT  0x00200000 /**< High Hypervisor End  */
 	#endif
+
 	#define K1B_CLUSTER_USTACK_BASE_VIRT K1B_CLUSTER_HYPER_HIGH_BASE_VIRT /**< User Stack   */
+
+	/**
+	 * @name Memory Regions Constants
+	 */
+	/**@{*/
+	#define K1B_CLUSTER_MEM_REGIONS            4                       /**< Memory Regions number.            */
+	#define K1B_CLUSTER_ROOT_PGTAB_NUM         1                       /**< Root page table size.             */
+	#define K1B_CLUSTER_MREGION_PT_ALIGN_START 0                       /**< MRegion start page table aligned. */
+	#define K1B_CLUSTER_MREGION_PT_ALIGN_END   0                       /**< MRegion end page table aligned.   */
+	#define K1B_CLUSTER_MREGION_PG_ALIGN_START 0                       /**< MRegion start page aligned.       */
+	#define K1B_CLUSTER_MREGION_PG_ALIGN_END   K1B_CLUSTER_MEM_REGIONS /**< MRegion end page aligned.         */
+	/**@}*/
+
 #ifndef _ASM_FILE_
-	EXTERN const vaddr_t K1B_CLUSTER_KERNEL_BASE_VIRT;            /**< Kernel Base          */
-	EXTERN const vaddr_t K1B_CLUSTER_KERNEL_END_VIRT;             /**< Kernel End           */
-	EXTERN const vaddr_t K1B_CLUSTER_KSTACK_BASE_VIRT;            /**< Kernel Stack Base    */
-	EXTERN const vaddr_t K1B_CLUSTER_KPOOL_BASE_VIRT;             /**< Kernel Pool Base     */
-	EXTERN const vaddr_t K1B_CLUSTER_KPOOL_END_VIRT;              /**< Kernel Pool End      */
-	EXTERN const vaddr_t K1B_CLUSTER_USER_BASE_VIRT;              /**< User Base            */
-	EXTERN const vaddr_t K1B_CLUSTER_USER_END_VIRT;               /**< User End             */
+	EXTERN const vaddr_t K1B_CLUSTER_KERNEL_BASE_VIRT;                 /**< Kernel Base                       */
+	EXTERN const vaddr_t K1B_CLUSTER_KERNEL_END_VIRT;                  /**< Kernel End                        */
+	EXTERN const vaddr_t K1B_CLUSTER_KSTACK_BASE_VIRT;                 /**< Kernel Stack Base                 */
+	EXTERN const vaddr_t K1B_CLUSTER_KPOOL_BASE_VIRT;                  /**< Kernel Pool Base                  */
+	EXTERN const vaddr_t K1B_CLUSTER_KPOOL_END_VIRT;                   /**< Kernel Pool End                   */
+	EXTERN const vaddr_t K1B_CLUSTER_USER_BASE_VIRT;                   /**< User Base                         */
+	EXTERN const vaddr_t K1B_CLUSTER_USER_END_VIRT;                    /**< User End                          */
 #endif
-	#define K1B_CLUSTER_USER_BASE_VIRT 0x80000000                 /**< User Base            */
-	#define K1B_CLUSTER_USER_END_VIRT  0xf0000000                 /**< User End             */
+
+	#define K1B_CLUSTER_USER_BASE_VIRT         0x80000000              /**< User Base                         */
+	#define K1B_CLUSTER_USER_END_VIRT          0xf0000000              /**< User End                          */
 	/**@}*/
 
 #ifndef _ASM_FILE_
@@ -173,15 +189,6 @@
 	EXTERN unsigned char __BSS_START;  /**< BSS Start  */
 	EXTERN unsigned char __BSS_END;    /**< BSS End    */
 	/**@}*/
-
-#ifdef __NANVIX_HAL
-
-	/**
-	 * @brief Initializes the Memory Interface.
-	 */
-	EXTERN void k1b_cluster_mem_setup(void);
-
-#endif /* __NANVIX_HAL */
 
 	/**
 	 * @brief TLB lookup address mask.
@@ -218,11 +225,31 @@
 	EXTERN int k1b_cluster_tlb_flush(void);
 
 	/**
+	 * @brief Initializes the architectural TLB.
+	 */
+	EXTERN void k1b_cluster_tlb_init(void);
+
+	/**
 	 * @brief Dumps a TLB entry.
 	 *
 	 * @param idx Index of target entry in the TLB.
 	 */
 	EXTERN void k1b_cluster_tlbe_dump(int idx);
+
+	/**
+	 * @brief Warmups the MMU.
+	 */
+	EXTERN void k1b_cluster_mem_warmup(void);
+
+	/**
+	 * @brief Asserts memory layout.
+	 */
+	EXTERN void k1b_cluster_mem_check_layout(void);
+
+	/**
+	 * @brief Assert memory alignment.
+	 */
+	EXTERN void k1b_cluster_mem_check_alignment(void);
 
 #endif /* _ASM_FILE_ */
 
@@ -247,11 +274,24 @@
 	#define KBASE_PHYS     K1B_CLUSTER_KERNEL_BASE_PHYS /**< @see K1B_CLUSTER_KERNEL_BASE_PHYS  */
 	#define KPOOL_PHYS     K1B_CLUSTER_KPOOL_BASE_PHYS  /**< @see K1B_CLUSTER_KPOOL_BASE_PHYS   */
 	#define UBASE_PHYS     K1B_CLUSTER_USER_BASE_PHYS   /**< @see K1B_CLUSTER_USER_BASE_PHYS    */
+	#define UEND_VIRT      K1B_CLUSTER_USER_END_VIRT    /**< @see K1B_CLUSTER_USER_END_VIRT     */
 	#define USTACK_VIRT    K1B_CLUSTER_USTACK_BASE_VIRT /**< @see K1B_CLUSTER_USTACK_BASE_VIRT  */
 	#define UBASE_VIRT     K1B_CLUSTER_USER_BASE_VIRT   /**< @see K1B_CLUSTER_USER_BASE_VIRT    */
 	#define KBASE_VIRT     K1B_CLUSTER_KERNEL_BASE_VIRT /**< @see K1B_CLUSTER_KERNEL_BASE_VIRT  */
 	#define KPOOL_VIRT     K1B_CLUSTER_KPOOL_BASE_VIRT  /**< @see K1B_CLUSTER_KPOOL_BASE_VIRT   */
 	#define TLB_VADDR_MASK K1B_TLB_VADDR_MASK           /**< @see K1B_TLB_VADDR_MASK            */
+	/**@}*/
+
+	/**
+	 * @name Exported Memory Region Constants
+	 */
+	/**@{*/
+	#define MEM_REGIONS            K1B_CLUSTER_MEM_REGIONS            /**< @see K1B_CLUSTER_MEM_REGIONS            */
+	#define ROOT_PGTAB_NUM         K1B_CLUSTER_ROOT_PGTAB_NUM         /**< @see K1B_CLUSTER_ROOT_PGTAB_NUM         */
+	#define MREGION_PT_ALIGN_START K1B_CLUSTER_MREGION_PT_ALIGN_START /**< @see K1B_CLUSTER_MREGION_PT_ALIGN_START */
+	#define MREGION_PT_ALIGN_END   K1B_CLUSTER_MREGION_PT_ALIGN_END   /**< @see K1B_CLUSTER_MREGION_PT_ALIGN_END   */
+	#define MREGION_PG_ALIGN_START K1B_CLUSTER_MREGION_PG_ALIGN_START /**< @see K1B_CLUSTER_MREGION_PG_ALIGN_START */
+	#define MREGION_PG_ALIGN_END   K1B_CLUSTER_MREGION_PG_ALIGN_END   /**< @see K1B_CLUSTER_MREGION_PG_ALIGN_END   */
 	/**@}*/
 
 #ifndef _ASM_FILE_
@@ -261,8 +301,18 @@
 	 */
 	/**@{*/
 	#define __tlb_flush_fn          /**< tlb_flush()          */
+	#define __tlb_init_fn           /**< tlb_init()           */
 	#define __tlb_get_vaddr_info_fn /**< tlb_get_vaddr_info() */
 	#define __tlb_get_utlb_fn       /**< tlb_get_utlb()       */
+	/**@}*/
+
+	/**
+	 * @brief Provided Memory Interface
+	 */
+	/**@{*/
+	#define __mem_warmup_fn        /**< mem_warmup()       */
+	#define __mem_check_layout_fn  /**< mem_check_layout() */
+	#define __mem_check_align_fn   /**< mem_check_align()  */
 	/**@}*/
 
 	/**
@@ -271,6 +321,14 @@
 	static inline int tlb_flush(void)
 	{
 		return (k1b_cluster_tlb_flush());
+	}
+
+	/**
+	 * @see k1b_cluster_tlb_init().
+	 */
+	static inline void tlb_init(void)
+	{
+		k1b_cluster_tlb_init();
 	}
 
 	/**
@@ -291,6 +349,30 @@
 			return (NULL);
 
 		return (k1b_cluster_tlb_get_utlb());
+	}
+
+	/**
+	 * @see k1b_cluster_mem_warmup().
+	 */
+	static inline void mem_warmup(void)
+	{
+		k1b_cluster_mem_warmup();
+	}
+
+	/**
+	 * @see k1b_cluster_mem_check_layout().
+	 */
+	static inline void mem_check_layout(void)
+	{
+		k1b_cluster_mem_check_layout();
+	}
+
+	/**
+	 * @see k1b_cluster_mem_check_alignment().
+	 */
+	static inline void mem_check_align(void)
+	{
+		k1b_cluster_mem_check_alignment();
 	}
 
 #endif /* _ASM_FILE_ */
