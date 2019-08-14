@@ -58,7 +58,7 @@ PUBLIC void x86_cluster_setup(void)
 
 	mem_setup();
 
-	i486_core_setup();
+	core_setup(NULL);
 
 	event_setup();
 

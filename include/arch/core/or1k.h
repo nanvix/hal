@@ -39,6 +39,7 @@
 	#include <arch/core/or1k/core.h>
 	#include <arch/core/or1k/excp.h>
 	#include <arch/core/or1k/int.h>
+	#include <arch/core/or1k/ivt.h>
 	#include <arch/core/or1k/mmu.h>
 	#include <arch/core/or1k/spinlock.h>
 	#include <arch/core/or1k/tlb.h>

@@ -55,11 +55,6 @@
 	}
 
 	/**
-	 * @brief Initializes the underlying core.
-	 */
-	EXTERN void i486_core_setup(void);
-
-	/**
 	 * @brief Powers off the underlying core.
 	 */
 	EXTERN NORETURN void i486_core_poweroff(void);
@@ -143,13 +138,6 @@
 	static inline NORETURN void core_poweroff(void)
 	{
 		i486_core_poweroff();
-	}
-
-	/**
-	 * @todo Implement this function.
-	 */
-	static inline void core_setup()
-	{
 	}
 
 #endif /* _ASM_FILE_ */

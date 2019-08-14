@@ -843,6 +843,18 @@
 		return (or1k_mfspr(OR1K_SPR_SR) & (OR1K_SPR_SR_DME | OR1K_SPR_SR_IME));
 	}
 
+#ifdef __NANVIX_HAL
+
+	/**
+	 * @brief Initializes the MMU.
+	 */
+	static inline void mmu_setup(void)
+	{
+		or1k_mmu_setup();
+	}
+
+#endif /* __NANVIX_HAL */
+
 #endif /* _ASM_FILE_ */
 
 /**@endcond*/

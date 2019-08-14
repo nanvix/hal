@@ -40,13 +40,6 @@
 #ifndef _ASM_FILE_
 
 	/**
-	 * @brief Initializes the underlying core.
-	 *
-	 * @param stack Stack for interrupts, exceptions and traps.
-	 */
-	EXTERN void k1b_core_setup(void *stack);
-
-	/**
 	 * @brief Powers off the underlying core.
 	 */
 	EXTERN NORETURN void k1b_core_poweroff(void);

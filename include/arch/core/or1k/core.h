@@ -48,11 +48,6 @@
 	EXTERN NORETURN void or1k_core_poweroff(void);
 
 	/**
-	 * @brief Initializes the underlying core.
-	 */
-	EXTERN void or1k_core_setup(void);
-
-	/**
 	 * @brief Gets the ID of the core.
 	 *
 	 * The or1k_core_get_id() returns the ID of the underlying core.

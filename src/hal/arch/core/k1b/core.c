@@ -22,37 +22,12 @@
  * SOFTWARE.
  */
 
-#include <nanvix/hal/core/interrupt.h>
 #include <arch/core/k1b/excp.h>
 #include <arch/core/k1b/int.h>
-#include <arch/core/k1b/ivt.h>
 #include <arch/core/k1b/mOS.h>
 #include <arch/core/k1b/perf.h>
 #include <arch/core/k1b/trap.h>
 #include <nanvix/const.h>
-
-/*============================================================================*
- * k1b_core_setup()                                                           *
- *============================================================================*/
-
-/**
- * @todo TODO provide a detailed description for this function.
- *
- * @author Pedro Henrique Penna
- */
-PUBLIC void k1b_core_setup(void *stack)
-{
-	kprintf("[hal] booting up core");
-
-	k1b_perf_setup();
-
-	k1b_ivt_setup(
-		do_interrupt,
-		_k1b_do_syscall,
-		_k1b_do_excp,
-		stack
-	);
-}
 
 /*============================================================================*
  * k1b_core_poweroff()                                                        *

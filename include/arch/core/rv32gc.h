@@ -34,11 +34,14 @@
 		#error "rv32gc core not required"
 	#endif
 
+	#define __NEED_CORE_IVT
+
 	#include <arch/core/rv32gc/cache.h>
 	#include <arch/core/rv32gc/timer.h>
 	#include <arch/core/rv32gc/core.h>
 	#include <arch/core/rv32gc/excp.h>
 	#include <arch/core/rv32gc/int.h>
+	#include <arch/core/rv32gc/ivt.h>
 	#include <arch/core/rv32gc/mmu.h>
 	#include <arch/core/rv32gc/spinlock.h>
 	#include <arch/core/rv32gc/tlb.h>

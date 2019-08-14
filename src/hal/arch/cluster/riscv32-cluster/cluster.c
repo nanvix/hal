@@ -55,7 +55,7 @@ PUBLIC void riscv32_cluster_setup(void)
 		kprintf("[hal] booting up cluster...");
 
 	mem_setup();
-	rv32gc_core_setup();
+	core_setup(NULL);
 }
 
 /*============================================================================*

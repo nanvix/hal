@@ -25,6 +25,7 @@
 /* Must come first. */
 #define __NEED_CORE_CONTEXT
 
+#include <nanvix/hal/core/interrupt.h>
 #include <arch/core/k1b/ctx.h>
 #include <arch/core/k1b/cache.h>
 #include <arch/core/k1b/int.h>
@@ -95,13 +96,20 @@ PRIVATE void __k1b_do_int(int intnum, __k1_vcontext_t *ctx)
 }
 
 /**
+ * @brief Initializes the interrupt vector table.
+ *
+ * @param hwint_handler Default hardware interrupt handler.
+ * @param swint_handler Default software interrupt handler.
+ * @param excp_handler  Default exception handler.
+ * @param stack         Stack for interrupts, exceptions and traps.
+ *
  * The k1b_ivt_setup() function initializes the interrupt vector table
  * in the k1b architecture. It traverses all entries of this table and
  * properly registers @p do_hwintm @p do_swint and do_excp as default
  * handlers for hardware interrupts, software interrupts and
  * exceptions, respectively.
  */
-PUBLIC void k1b_ivt_setup(
+PRIVATE void k1b_ivt_setup(
 	k1b_int_handler_fn hwint_handler,
 	k1b_swint_handler_fn swint_handler,
 	void (*excp_handler)(void),
@@ -122,4 +130,19 @@ PUBLIC void k1b_ivt_setup(
 	mOS_trap_enable_shadow_stack();
 
 	k1b_pic_setup();
+}
+
+/**
+ * @todo TODO provide a detailed description for this function.
+ *
+ * @author Pedro Henrique Penna
+ */
+PUBLIC void ivt_setup(void *stack)
+{
+	k1b_ivt_setup(
+		do_interrupt,
+		_k1b_do_syscall,
+		_k1b_do_excp,
+		stack
+	);
 }

@@ -22,55 +22,19 @@
  * SOFTWARE.
  */
 
-#ifndef ARCH_CORE_RV32GC_IVT_H_
-#define ARCH_CORE_RV32GC_IVT_H_
-
-	#ifndef __NEED_CORE_IVT
-		#error "do not include this file"
-	#endif
-
-	/* Must come first. */
-	#define __NEED_CORE_TYPES
+#ifndef ARCH_CORE_I486_IVT_H_
+#define ARCH_CORE_I486_IVT_H_
 
 /**
- * @addtogroup rv32gc-core-ivt IVT
- * @ingroup rv32gc-core
+ * @addtogroup i486-core-ivt IVT
+ * @ingroup i486-core
  *
  * @brief Interrupt Vector Table
  */
 /**@{*/
 
-	#include <arch/core/rv32gc/types.h>
 	#include <nanvix/const.h>
-
-#ifndef _ASM_FILE_
-
-	/**
-	 * @brief Event handler.
-	 */
-	typedef void (*rv32gc_handler_fn)(void);
-
-#ifdef __NANVIX_HAL
-
-	/**
-	 * @brief Set ups the interrupt vector table.
-	 *
-	 * @param do_event Event handler.
-	 *
-	 * @note We assume a direct vector table.
-	 */
-	static inline void rv32gc_mtvec_set(rv32gc_handler_fn do_event)
-	{
-		asm volatile (
-			"csrw mtvec, %0;"
-			:
-			: "r" (RV32GC_WORD(do_event))
-		);
-	}
-
-#endif /* __NANVIX_HAL */
-
-#endif /* !_ASM_FILE_ */
+	#include <nanvix/klib.h>
 
 /**@}*/
 
@@ -79,7 +43,7 @@
  *============================================================================*/
 
 /**
- * @cond rv32gc
+ * @cond i486
  */
 
 #ifndef _ASM_FILE_
@@ -88,11 +52,15 @@
 
 	/**
 	 * @brief Initializes the interrupt vector table.
+	 *
+	 * @param stack Interrupt/Exception stack.
 	 */
 	EXTERN void ivt_setup(void *stack);
 
 #endif /* __NANVIX_HAL */
 
-#endif /* !_ASM_FILE_ */
+#endif /* _ASM_FILE_ */
 
-#endif /* ARCH_CORE_RV32GC_IVT_H_ */
+/**@endcond*/
+
+#endif /* ARCH_CORE_I486_IVT_H_ */
