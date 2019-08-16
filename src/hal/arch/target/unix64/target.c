@@ -23,41 +23,28 @@
  */
 
 /* Must come fist. */
-#define __NEED_CLUSTER_LINUX64
+#define __NEED_TARGET_UNIX64
 
-#include <arch/cluster/linux64-cluster.h>
+#include <arch/target/unix64/unix64.h>
 #include <nanvix/const.h>
-#include <pthread.h>
+#include <nanvix/klib.h>
 
 /**
- * @brief Lookup table for thread IDs.
+ * @todo TODO: Provide a detailed description for this function.
  */
-PUBLIC pthread_t linux64_cores_tab[LINUX64_CLUSTER_NUM_CORES];
-
-/**
- * @brief Entry point for slave core.
- */
-PRIVATE void *linux64_do_slave(void *args)
+PUBLIC void unix64_setup(void)
 {
-	UNUSED(args);
-	linux64_cluster_setup();
+	kprintf("[hal][target] initializing target...");
+
+	linux64_processor_setup();
 }
 
 /**
- * @todo TODO: provide a detailed description for this function.
+ * @todo TODO: Provide a detailed description for this function.
  */
-PUBLIC int linux64_cluster_boot(void)
+PUBLIC void unix64_shutdown(void)
 {
-	kprintf("[hal][cluster] powering on cluster...");
+	kprintf("[hal][target] powering off target...");
 
-	/* Save ID of master core. */
-	linux64_cores_tab[0] = pthread_self();
-
-	for (int i = 1; i < LINUX64_CLUSTER_NUM_CORES; i++)
-	{
-		if (pthread_create(&linux64_cores_tab[i], NULL, linux64_do_slave, NULL))
-			return (-EINVAL);
-	}
-
-	return (0);
+	linux64_processor_shutdown();
 }

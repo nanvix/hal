@@ -44,10 +44,24 @@
 	#include <arch/processor/linux64/noc.h>
 	#include <nanvix/const.h>
 
+#ifdef __NANVIX_HAL
+
+	/**
+	 * @brief Powers on the underlying processor.
+	 */
+	EXTERN int linux64_processor_boot(void);
+
 	/**
 	 * @brief Initializes the underlying processor.
 	 */
 	EXTERN void linux64_processor_setup(void);
+
+	/**
+	 * @brief Powers off the underlying processor.
+	 */
+	EXTERN void linux64_processor_shutdown(void);
+
+#endif /* __NANVIX_HAL */
 
 /**@}*/
 

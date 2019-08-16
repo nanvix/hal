@@ -49,9 +49,6 @@
 		#ifndef NR_NOC_CNODES
 		#error "NR_NOC_CNODES not defined"
 		#endif
-		#ifndef NR_NOC_NODES
-		#error "NR_NOC_NODES not defined"
-		#endif
 
 		/* Functions */
 		#ifndef __processor_noc_is_ionode_fn

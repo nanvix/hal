@@ -26,22 +26,16 @@
 #define __NEED_PROCESSOR_LINUX64
 
 #include <arch/processor/linux64.h>
-#include <arch/stdout/tty-virt.h>
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
 #include <unistd.h>
-#include <errno.h>
-
-/*============================================================================*
- * Processor                                                                  *
- *============================================================================*/
 
 /**
- * @brief Boots up the underlying processor.
+ * @brief Powers on the underlying processor.
  */
-PRIVATE int linux64_processor_boot(void)
+PUBLIC int linux64_processor_boot(void)
 {
-	kprintf("[processor] creating virtual processor...");
+	kprintf("[hal][processor] powering on processor...");
 
 	linux64_processor_clusters_boot();
 	linux64_processor_noc_boot();
@@ -60,42 +54,5 @@ PRIVATE int linux64_processor_boot(void)
 			break;
 	}
 
-	return (0);
-}
-
-/*============================================================================*
- * main()                                                                     *
- *============================================================================*/
-
-/**
- * @brief Entry point.
- *
- * @param argc Number of arguments.
- * @param argv Arguments list.
- */
-int main(int argc, char **argv)
-{
-	int ret;
-
-	UNUSED(argc);
-	UNUSED(argv);
-
-	/*
-	 * Early initialization of Virtual
-	 * TTY device to help us debugging.
-	 */
-	tty_virt_init();
-
-
-	/* Boot processor. */
-	if ((ret = linux64_processor_boot()) < 0)
-		return (ret);
-
-	/* Boot clusters. */
-	if ((ret = linux64_cluster_boot()) < 0)
-		return (ret);
-
-	linux64_processor_setup();
-
-	return (ret);
+	return (linux64_cluster_boot());
 }
