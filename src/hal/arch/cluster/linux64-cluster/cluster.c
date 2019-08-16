@@ -21,12 +21,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
+/* Must come first. */
 #define __NEED_HAL_CLUSTER
+
 #include <nanvix/hal/cluster.h>
 #include <arch/cluster/linux64-cluster.h>
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
-#include <arch/stdout/tty-virt.h>
 
 /* Import definitions. */
 EXTERN NORETURN void kmain(int, const char *[]);
@@ -42,57 +44,52 @@ PUBLIC struct coreinfo cores[LINUX64_CLUSTER_NUM_CORES] = {
 };
 
 /**
- * @brief Setup the cluster.
+ * @todo TODO: provide a detailed description for this function.
  */
-PUBLIC void linux64_cluster_setup(void)
-{
-	int coreid;
-
-	coreid = linux64_core_get_id();
-
-	if (coreid == LINUX64_CLUSTER_COREID_MASTER)
-		kprintf("[hal] booting up cluster...");
-
-	if (coreid == LINUX64_CLUSTER_COREID_MASTER)
-	{
-		for(int i = 1; i < LINUX64_CLUSTER_NUM_CORES; i++)
-			linux64_spinlock_lock(&cores[i].lock);
-	}
-
-	/* Core setup */
-	linux64_core_setup();
-}
-
-/**
- * @brief Setup a slave core of the cluster.
- */
-PUBLIC NORETURN void linux64_cluster_slave_setup(void)
+PRIVATE NORETURN void linux64_cluster_slave_setup(void)
 {
 	cluster_fence_wait();
 
-	linux64_cluster_setup();
+	linux64_core_setup();
 
 	while(1)
 	{
 		core_idle();
 		core_run();
 	}
+
+	UNREACHABLE();
 }
 
 /**
- * @brief Setup the master core of the cluster.
+ * @todo TODO: provide a detailed description for this function.
  */
-PUBLIC NORETURN void linux64_cluster_master_setup(void)
+PRIVATE NORETURN void linux64_cluster_master_setup(void)
 {
-	/*
-	 * Early initialization of Virtual
-	 * TTY device to help us debugging.
-	 */
-	tty_virt_init();
 
-	linux64_cluster_setup();
+	kprintf("[hal] booting up cluster...");
+
+	for (int i = 1; i < LINUX64_CLUSTER_NUM_CORES; i++)
+		linux64_spinlock_lock(&cores[i].lock);
+
+	linux64_cluster_event_setup();
+	linux64_core_setup();
 
 	cluster_fence_release();
-
 	kmain(0, NULL);
+}
+
+/**
+ * @todo TODO: provide a detailed description for this function.
+ */
+PUBLIC NORETURN void linux64_cluster_setup(void)
+{
+	int coreid;
+
+	coreid = linux64_core_get_id();
+
+	if (coreid == LINUX64_CLUSTER_COREID_MASTER)
+		linux64_cluster_master_setup();
+
+	linux64_cluster_slave_setup();
 }

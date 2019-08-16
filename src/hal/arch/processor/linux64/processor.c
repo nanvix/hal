@@ -22,50 +22,18 @@
  * SOFTWARE.
  */
 
-#ifndef PROCESSOR_LINUX64_H_
-#define PROCESSOR_LINUX64_H_
+/* Must come fist. */
+#define __NEED_PROCESSOR_LINUX64
 
-	#ifndef __NEED_PROCESSOR_LINUX64
-		#error "bad processor configuration?"
-	#endif
-
-	/* Processor Interface Implementation */
-	#include <arch/processor/linux64/_linux64.h>
+#include <arch/processor/linux64.h>
+#include <nanvix/const.h>
 
 /**
- * @addtogroup processor Linux64
- * @ingroup processors
- *
- * @brief Linux64 Processor
+ * @todo Provide a detailed description for this function.
  */
-/**@*/
-
-	#include <arch/processor/linux64/clusters.h>
-	#include <arch/processor/linux64/noc.h>
-	#include <nanvix/const.h>
-
-	/**
-	 * @brief Initializes the underlying processor.
-	 */
-	EXTERN void linux64_processor_setup(void);
-
-/**@}*/
-
-/*============================================================================*
- * Provided Interface                                                         *
- *============================================================================*/
-/**
- * @cond Linux64
- */
-
-	/**
-	 * @name Provided Features
-	 */
-	/**@{*/
-	#define PROCESSOR_IS_MULTICLUSTER 1 /**< Multicluster feature */
-	#define PROCESSOR_HAS_NOC         1 /**< NoC feature          */
-	/**@}*/
-
-/**@endcond*/
-
-#endif /* PROCESSOR_LINUX64_H_ */
+PUBLIC void linux64_processor_setup(void)
+{
+	linux64_processor_clusters_setup();
+	linux64_processor_noc_setup();
+	linux64_cluster_setup();
+}

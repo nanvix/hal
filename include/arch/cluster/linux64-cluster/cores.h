@@ -36,6 +36,8 @@
  */
 /**@{*/
 
+	#include <nanvix/const.h>
+
 	/**
 	 * @brief Number of cores in the cluster.
 	 */

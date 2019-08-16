@@ -21,25 +21,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
+/* Must come fist. */
 #define __NEED_CLUSTER_LINUX64
+
 #include <arch/cluster/linux64-cluster.h>
 #include <nanvix/const.h>
-#include <nanvix/klib.h>
-#include <stdlib.h>
-#include <stdio.h>
-
-/* Import definitions. */
-EXTERN NORETURN void linux64_cluster_master_setup(void);
-EXTERN NORETURN void linux64_cluster_slave_setup(void);
-
-/**
- * @brief Start point of the threads
- */
-PRIVATE void *linux64_slaves_setup(void *args)
-{
-	UNUSED(args);
-	linux64_cluster_slave_setup();
-}
+#include <pthread.h>
 
 /**
  * @brief Lookup table for thread IDs.
@@ -47,37 +35,27 @@ PRIVATE void *linux64_slaves_setup(void *args)
 PUBLIC pthread_t linux64_cores_tab[LINUX64_CLUSTER_NUM_CORES];
 
 /**
- * @brief Lock for the array of the cores.
+ * @brief Entry point for slave core.
  */
-PUBLIC linux64_spinlock_t linux64_cores_lock;
+PRIVATE void *linux64_do_slave(void *args)
+{
+	UNUSED(args);
+	linux64_cluster_setup();
+}
 
 /**
- * @brief Entry point.
- *
- * @param argc Number of arguments.
- * @param argv Arguments list.
+ * @todo TODO: provide a detailed description for this function.
  */
-int main(int argc, char **argv)
+PUBLIC int linux64_cluster_boot(void)
 {
-	UNUSED(argc);
-	UNUSED(argv);
-
-	linux64_cluster_event_setup();
-
-	/**
-	 * Initialize the lookup table for Threads IDs.
-	 */
+	/* Save ID of master core. */
 	linux64_cores_tab[0] = pthread_self();
 
-	for(int i = 1; i < LINUX64_CLUSTER_NUM_CORES; i++)
-		if(pthread_create(&linux64_cores_tab[i], NULL, linux64_slaves_setup, NULL))
+	for (int i = 1; i < LINUX64_CLUSTER_NUM_CORES; i++)
+	{
+		if (pthread_create(&linux64_cores_tab[i], NULL, linux64_do_slave, NULL))
 			return (-EINVAL);
-
-	linux64_cluster_master_setup();
-
-	/*
-	 * TODO: grab some memory.
-	 */
+	}
 
 	return (0);
 }

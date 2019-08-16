@@ -28,6 +28,8 @@
 #include <errno.h>
 #include "../test.h"
 
+#if (__TARGET_HAS_SYNC)
+
 /**
  * @brief ID of master NoC node.
  */
@@ -356,3 +358,5 @@ PUBLIC void test_sync(void)
 		kprintf("[test][fault][sync] %s [passed]", sync_tests_fault[i].name);
 	}
 }
+
+#endif /* !__TARGET_HAS_SYNC */
