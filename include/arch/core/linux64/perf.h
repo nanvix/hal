@@ -93,7 +93,7 @@
 	 */
 	PRIVATE int perf_event_open(struct perf_event_attr *hw_event, pid_t pid, int cpu, int group_fd, unsigned long flags)
 	{
-		return (syscall5(__NR_perf_event_open, (dword_t) hw_event, pid, cpu, group_fd, flags));
+		return (kcall5(__NR_perf_event_open, (dword_t) hw_event, pid, cpu, group_fd, flags));
 	}
 
 	/**

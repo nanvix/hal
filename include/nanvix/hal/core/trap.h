@@ -35,23 +35,23 @@
 #if defined(__INTERFACE_CHECK) || defined(__INTERFACE_CHECK_CORE_AL) || defined(__INTERFACE_CHECK_TRAP)
 
 	/* Functions. */
-	#ifndef __syscall0_fn
-	#error "syscall0() not defined?"
+	#ifndef __kcall0_fn
+	#error "kcall0() not defined?"
 	#endif
-	#ifndef __syscall1_fn
-	#error "syscall1() not defined?"
+	#ifndef __kcall1_fn
+	#error "kcall1() not defined?"
 	#endif
-	#ifndef __syscall2_fn
-	#error "syscall2() not defined?"
+	#ifndef __kcall2_fn
+	#error "kcall2() not defined?"
 	#endif
-	#ifndef __syscall3_fn
-	#error "syscall3() not defined?"
+	#ifndef __kcall3_fn
+	#error "kcall3() not defined?"
 	#endif
-	#ifndef __syscall4_fn
-	#error "syscall4() not defined?"
+	#ifndef __kcall4_fn
+	#error "kcall4() not defined?"
 	#endif
-	#ifndef __syscall5_fn
-	#error "syscall5() not defined?"
+	#ifndef __kcall5_fn
+	#error "kcall5() not defined?"
 	#endif
 
 #endif
@@ -77,50 +77,50 @@
 	/**
 	 * @brief Issues a system call with no arguments.
 	 *
-	 * @param syscall_nr System call number.
+	 * @param kcall_nr System call number.
 	 *
 	 * @returns The system call return value.
 	 */
-	EXTERN TYPE syscall0(TYPE syscall_nr);
+	EXTERN TYPE kcall0(TYPE kcall_nr);
 
 	/**
 	 * @brief Issues a system call with one argument.
 	 *
-	 * @param syscall_nr System call number.
+	 * @param kcall_nr System call number.
 	 * @param arg0 System call number.
 	 *
 	 * @returns The system call return value.
 	 */
-	EXTERN TYPE syscall1(
-		TYPE syscall_nr,
+	EXTERN TYPE kcall1(
+		TYPE kcall_nr,
 		TYPE arg0);
 
 	/**
 	 * @brief Issues a system call with two arguments.
 	 *
-	 * @param syscall_nr System call number.
+	 * @param kcall_nr System call number.
 	 * @param arg0 System call number.
 	 * @param arg1 System call number.
 	 *
 	 * @returns The system call return value.
 	 */
-	EXTERN TYPE syscall2(
-		TYPE syscall_nr,
+	EXTERN TYPE kcall2(
+		TYPE kcall_nr,
 		TYPE arg0,
 		TYPE arg1);
 
 	/**
 	 * @brief Issues a system call with three arguments.
 	 *
-	 * @param syscall_nr System call number.
+	 * @param kcall_nr System call number.
 	 * @param arg0 System call number.
 	 * @param arg1 System call number.
 	 * @param arg2 System call number.
 	 *
 	 * @returns The system call return value.
 	 */
-	EXTERN TYPE syscall3(
-		TYPE syscall_nr,
+	EXTERN TYPE kcall3(
+		TYPE kcall_nr,
 		TYPE arg0,
 		TYPE arg1,
 		TYPE arg2);
@@ -128,7 +128,7 @@
 	/**
 	 * @brief Issues a system call with four arguments.
 	 *
-	 * @param syscall_nr System call number.
+	 * @param kcall_nr System call number.
 	 * @param arg0 System call number.
 	 * @param arg1 System call number.
 	 * @param arg2 System call number.
@@ -136,8 +136,8 @@
 	 *
 	 * @returns The system call return value.
 	 */
-	EXTERN TYPE syscall4(
-		TYPE syscall_nr,
+	EXTERN TYPE kcall4(
+		TYPE kcall_nr,
 		TYPE arg0,
 		TYPE arg1,
 		TYPE arg2,
@@ -146,7 +146,7 @@
 	/**
 	 * @brief Issues a system call with five arguments.
 	 *
-	 * @param syscall_nr System call number.
+	 * @param kcall_nr System call number.
 	 * @param arg0 System call number.
 	 * @param arg1 System call number.
 	 * @param arg2 System call number.
@@ -155,8 +155,8 @@
 	 *
 	 * @returns The system call return value.
 	 */
-	EXTERN TYPE syscall5(
-		TYPE syscall_nr,
+	EXTERN TYPE kcall5(
+		TYPE kcall_nr,
 		TYPE arg0,
 		TYPE arg1,
 		TYPE arg2,
@@ -166,13 +166,13 @@
 	/**
 	 * @brief Handles a system call.
 	 */
-	EXTERN int do_syscall(
+	EXTERN int do_kcall(
 		unsigned arg0,
 		unsigned arg1,
 		unsigned arg2,
 		unsigned arg3,
 		unsigned arg4,
-		unsigned syscall_nr);
+		unsigned kcall_nr);
 
 /**@}*/
 

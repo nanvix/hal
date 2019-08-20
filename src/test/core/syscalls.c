@@ -38,12 +38,12 @@
  * @brief Magic Numbers.
  */
 /**@{*/
-#define SYSCALL0_NR          1
-#define SYSCALL1_NR          2
-#define SYSCALL2_NR          3
-#define SYSCALL3_NR          4
-#define SYSCALL4_NR          5
-#define SYSCALL5_NR          6
+#define KCALL0_NR          1
+#define KCALL1_NR          2
+#define KCALL2_NR          3
+#define KCALL3_NR          4
+#define KCALL4_NR          5
+#define KCALL5_NR          6
 #define MAGIC0       0xbeefcace
 #define MAGIC1       0xC00010FF
 #define MAGIC2       0xcafebabe
@@ -61,36 +61,36 @@
  * @param arg3       Fourth system call argument.
  * @param arg4       Fifth system call argument.
  * @param arg5       Sixth system call argument.
- * @param syscall_nr System call number.
+ * @param kcall_nr System call number.
  *
  * @returns Upon successful completion, zero is returned. Upon
  * failure, a negative error code is returned instead.
  */
-PUBLIC int do_syscall(
+PUBLIC int do_kcall(
 	unsigned arg0,
 	unsigned arg1,
 	unsigned arg2,
 	unsigned arg3,
 	unsigned arg4,
-	unsigned syscall_nr)
+	unsigned kcall_nr)
 {
 
 #if (TEST_TRAP_VERBOSE)
-	kprintf("syscall() nr=%x", syscall_nr);
-	kprintf("syscall() arg0=%x arg1=%x", arg0, arg1);
-	kprintf("syscall() arg2=%x arg3=%x", arg2, arg3);
-	kprintf("syscall() arg4=%x", arg4);
+	kprintf("kcall() nr=%x", kcall_nr);
+	kprintf("kcall() arg0=%x arg1=%x", arg0, arg1);
+	kprintf("kcall() arg2=%x arg3=%x", arg2, arg3);
+	kprintf("kcall() arg4=%x", arg4);
 #endif
 
-	if (syscall_nr >= SYSCALL1_NR)
+	if (kcall_nr >= KCALL1_NR)
 		KASSERT(arg0 == MAGIC0);
-	if (syscall_nr >= SYSCALL2_NR)
+	if (kcall_nr >= KCALL2_NR)
 		KASSERT(arg1 == MAGIC1);
-	if (syscall_nr >= SYSCALL3_NR)
+	if (kcall_nr >= KCALL3_NR)
 		KASSERT(arg2 == MAGIC2);
-	if (syscall_nr >= SYSCALL4_NR)
+	if (kcall_nr >= KCALL4_NR)
 		KASSERT(arg3 == MAGIC3);
-	if (syscall_nr >= SYSCALL5_NR)
+	if (kcall_nr >= KCALL5_NR)
 		KASSERT(arg4 == MAGIC4);
 
 	return (MAGIC5);
@@ -109,8 +109,8 @@ PUBLIC int do_syscall(
  */
 PRIVATE void test_trap_issue0(void)
 {
-	KASSERT(syscall0(
-		SYSCALL0_NR
+	KASSERT(kcall0(
+		KCALL0_NR
 	  ) == MAGIC5
 	);
 }
@@ -124,8 +124,8 @@ PRIVATE void test_trap_issue0(void)
  */
 PRIVATE void test_trap_issue1(void)
 {
-	KASSERT(syscall1(
-		SYSCALL1_NR,
+	KASSERT(kcall1(
+		KCALL1_NR,
 		MAGIC0
 	  ) == MAGIC5
 	);
@@ -140,8 +140,8 @@ PRIVATE void test_trap_issue1(void)
  */
 PRIVATE void test_trap_issue2(void)
 {
-	KASSERT(syscall2(
-		SYSCALL2_NR,
+	KASSERT(kcall2(
+		KCALL2_NR,
 		MAGIC0,
 		MAGIC1
 	  ) == MAGIC5
@@ -157,8 +157,8 @@ PRIVATE void test_trap_issue2(void)
  */
 PRIVATE void test_trap_issue3(void)
 {
-	KASSERT(syscall3(
-		SYSCALL3_NR,
+	KASSERT(kcall3(
+		KCALL3_NR,
 		MAGIC0,
 		MAGIC1,
 		MAGIC2
@@ -175,8 +175,8 @@ PRIVATE void test_trap_issue3(void)
  */
 PRIVATE void test_trap_issue4(void)
 {
-	KASSERT(syscall4(
-		SYSCALL4_NR,
+	KASSERT(kcall4(
+		KCALL4_NR,
 		MAGIC0,
 		MAGIC1,
 		MAGIC2,
@@ -194,8 +194,8 @@ PRIVATE void test_trap_issue4(void)
  */
 PRIVATE void test_trap_issue5(void)
 {
-	KASSERT(syscall5(
-		SYSCALL5_NR,
+	KASSERT(kcall5(
+		KCALL5_NR,
 		MAGIC0,
 		MAGIC1,
 		MAGIC2,
@@ -247,15 +247,15 @@ PUBLIC void test_trap(void)
 /**
  * The trap_test() functions launches testing units on the trap interface of the HAL.
  * 
- * TODO : Add tests for syscall1, 2, 4 and 5
+ * TODO : Add tests for kcall1, 2, 4 and 5
  */
 PUBLIC void test_trap(void)
 {
-	KASSERT(syscall0(SYS_gettid) > 0);
-	kprintf("[test][api][trap] syscall0 [passed]");
+	KASSERT(kcall0(SYS_gettid) > 0);
+	kprintf("[test][api][trap] kcall0 [passed]");
 
-	KASSERT(syscall3(SYS_write, 1, (dword_t)"", 1) == 1);
-	kprintf("[test][api][trap] syscall3 [passed]");
+	KASSERT(kcall3(SYS_write, 1, (dword_t)"", 1) == 1);
+	kprintf("[test][api][trap] kcall3 [passed]");
 }
 
 #endif

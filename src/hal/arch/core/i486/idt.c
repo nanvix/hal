@@ -119,7 +119,7 @@ PUBLIC void idt_setup(void)
 	set_idte(47, (unsigned)_do_hwint15, KERNEL_CS, 0x8, IDT_INT32);
 
 	/* Set system call interrupt. */
-	set_idte(I486_TRAP_GATE, (unsigned)i486_syscall, KERNEL_CS, 0xe, IDT_INT32);
+	set_idte(I486_TRAP_GATE, (unsigned)i486_kcall, KERNEL_CS, 0xe, IDT_INT32);
 
 	/* Set IDT pointer. */
 	idtptr.size = sizeof(idt) - 1;

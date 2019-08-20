@@ -141,7 +141,7 @@ PUBLIC void ivt_setup(void *stack)
 {
 	k1b_ivt_setup(
 		do_interrupt,
-		_k1b_do_syscall,
+		_k1b_do_kcall,
 		_k1b_do_excp,
 		stack
 	);

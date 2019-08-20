@@ -57,7 +57,7 @@ rv32gc_upcall_ret:
 	addi  t0, t0, 2*RV32GC_WORD_SIZE  // argsize + fn
 	add   sp, sp, t0
 
-	// Call special syscall
+	// Call special kcall
 	li  a0, RV32GC_NR_upcall_ret
 	mv  a1, sp
 	j   _rv32gc_do_kcall

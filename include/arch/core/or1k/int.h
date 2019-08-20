@@ -61,7 +61,7 @@
 	/**
 	 * @brief System Call Hook
 	 */
-	EXTERN void syscall(void);
+	EXTERN void kcall(void);
 
 	/**
 	 * @name Hardware Interrupt Hooks

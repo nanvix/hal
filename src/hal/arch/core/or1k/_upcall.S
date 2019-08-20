@@ -55,7 +55,7 @@ or1k_upcall_ret:
 	l.addi r3, r3, 2*OR1K_WORD_SIZE
 	l.add  sp, sp, r3
 
-	/* Call special syscall. */
+	/* Call special kcall. */
 	l.ori r11, r0, OR1K_NR_upcall_ret
 	l.ori r3,  sp, 0
 	l.sys 1
