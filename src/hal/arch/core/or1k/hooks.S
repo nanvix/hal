@@ -98,7 +98,7 @@ _do_handler 0x800, _do_hwint, OR1K_INT_EXTERNAL             /* External Interrup
 _do_handler 0x900, _do_excp,  OR1K_EXCP_DTLB_FAULT          /* DTLB Fault.             */
 _do_handler 0xa00, _do_excp,  OR1K_EXCP_ITLB_FAULT          /* ITLB Fault.             */
 _do_handler 0xb00, _do_excp,  OR1K_EXCP_RANGE               /* Range.                  */
-_do_handler 0xc00, _syscall,  0                             /* Syscall.                */
+_do_handler 0xc00, _kcall,  0                             /* Syscall.                */
 _do_handler 0xd00, _do_excp,  OR1K_EXCP_FLOAT_POINT         /* Floating point.         */
 _do_handler 0xe00, _do_excp,  OR1K_EXCP_TRAP                /* Trap.                   */
 
@@ -230,23 +230,23 @@ _do_hwint:
 	l.nop
 
 /*===========================================================================*
- * _syscall()                                                                *
+ * _kcall()                                                                *
  *===========================================================================*/
 
 /*
  * System call hook.
  */
-_syscall:
+_kcall:
 
 	l.sfeqi r11, OR1K_NR_upcall_ret
-	l.bnf _do_syscall.continue
+	l.bnf _do_kcall.continue
 	l.nop
 
 		l.ori sp, r3, 0
-		l.j _do_syscall.out
+		l.j _do_kcall.out
 		l.nop
 
-	_do_syscall.continue:
+	_do_kcall.continue:
 
 		_do_prologue
 		redzone_alloc
@@ -261,7 +261,7 @@ _syscall:
 		/*
 		 * Syscall parameters.
 		 */
-		l.lwz r8, OR1K_CONTEXT_R11(sp) /* syscall_nr. */
+		l.lwz r8, OR1K_CONTEXT_R11(sp) /* kcall_nr. */
 		l.lwz r7, OR1K_CONTEXT_R7(sp)  /* arg4.       */
 		l.lwz r6, OR1K_CONTEXT_R6(sp)  /* arg3.       */
 		l.lwz r5, OR1K_CONTEXT_R5(sp)  /* arg2.       */
@@ -269,15 +269,15 @@ _syscall:
 		l.lwz r3, OR1K_CONTEXT_R3(sp)  /* arg0.       */
 
 		/*
-		 * Call syscall handler.
+		 * Call kcall handler.
 		 */
-		l.jal do_syscall
+		l.jal do_kcall
 		l.nop
 
 		/* Copy return value to the user stack. */
 		l.sw OR1K_CONTEXT_R11(sp), r11
 
-	_do_syscall.out:
+	_do_kcall.out:
 
 		/*
 		 * Restore saved execution context.

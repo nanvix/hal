@@ -34,7 +34,7 @@
 #include <arch/core/k1b/upcall.h>
 #include <arch/core/k1b/mOS.h>
 
-.global _k1b_do_syscall
+.global _k1b_do_kcall
 .global _k1b_do_excp
 
 .section .text
@@ -59,16 +59,16 @@
 .endm
 
 /*===========================================================================*
- * _do_syscall()                                                             *
+ * _do_kcall()                                                             *
  *===========================================================================*/
 
 /*
  * System call hook.
  */
 .align 8
-_k1b_do_syscall:
+_k1b_do_kcall:
 
-	cb.nez $r7, _do_syscall.continue
+	cb.nez $r7, _do_kcall.continue
 	;;
 
 		copy $sp, $r1
@@ -93,10 +93,10 @@ _k1b_do_syscall:
 		k1b_context_restore
 		;;
 
-		goto _do_syscall.out
+		goto _do_kcall.out
 		;;
 
-	_do_syscall.continue:
+	_do_kcall.continue:
 
 		/* Save preserved registers. */
 		_do_prologue
@@ -116,7 +116,7 @@ _k1b_do_syscall:
 		 */
 		redzone_alloc
 		;;
-		call do_syscall
+		call do_kcall
 		;;
 		redzone_free
 		;;
@@ -125,7 +125,7 @@ _k1b_do_syscall:
 		_do_epilogue
 		;;
 
-	_do_syscall.out:
+	_do_kcall.out:
 
 		scall MOS_VC_RFE
 		;;

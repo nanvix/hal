@@ -59,7 +59,7 @@ i486_upcall_ret:
 	popl %eax                  // argsize
 	addl %eax, %esp            // arg
 
-	/* Call special syscall. */
+	/* Call special kcall. */
 	movl $I486_NR_upcall_ret, %eax
 	movl %esp, %ebx
 	int $I486_TRAP_GATE

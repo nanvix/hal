@@ -44,20 +44,20 @@
 	/**
 	 * @brief Low-level trap dispatcher.
 	 */
-	EXTERN void _k1b_do_syscall(void);
+	EXTERN void _k1b_do_kcall(void);
 
 	/**
 	 * @brief Issues a system call with no arguments.
 	 *
-	 * @param syscall_nr System call number.
+	 * @param kcall_nr System call number.
 	 *
 	 * @returns The system call return value.
 	 */
-	static inline word_t k1b_syscall0(word_t syscall_nr)
+	static inline word_t k1b_kcall0(word_t kcall_nr)
 	{
 		word_t ret;
 
-		ret = __k1_club_syscall0(syscall_nr);
+		ret = __k1_club_syscall0(kcall_nr);
 
 		return (ret);
 	}
@@ -65,19 +65,19 @@
 	/**
 	 * @brief Issues a system call with one argument.
 	 *
-	 * @param syscall_nr System call number.
+	 * @param kcall_nr System call number.
 	 * @param arg0 System call number.
 	 *
 	 * @returns The system call return value.
 	 */
-	static inline word_t k1b_syscall1(
-		word_t syscall_nr,
+	static inline word_t k1b_kcall1(
+		word_t kcall_nr,
 		word_t arg0)
 	{
 		word_t ret;
 
 		ret = __k1_club_syscall1(
-			syscall_nr,
+			kcall_nr,
 			arg0
 		);
 
@@ -87,21 +87,21 @@
 	/**
 	 * @brief Issues a system call with two arguments.
 	 *
-	 * @param syscall_nr System call number.
+	 * @param kcall_nr System call number.
 	 * @param arg0 System call number.
 	 * @param arg1 System call number.
 	 *
 	 * @returns The system call return value.
 	 */
-	static inline word_t k1b_syscall2(
-		word_t syscall_nr,
+	static inline word_t k1b_kcall2(
+		word_t kcall_nr,
 		word_t arg0,
 		word_t arg1)
 	{
 		word_t ret;
 
 		ret = __k1_club_syscall2(
-			syscall_nr,
+			kcall_nr,
 			arg0,
 			arg1
 		);
@@ -112,15 +112,15 @@
 	/**
 	 * @brief Issues a system call with three arguments.
 	 *
-	 * @param syscall_nr System call number.
+	 * @param kcall_nr System call number.
 	 * @param arg0 System call number.
 	 * @param arg1 System call number.
 	 * @param arg2 System call number.
 	 *
 	 * @returns The system call return value.
 	 */
-	static inline word_t k1b_syscall3(
-		word_t syscall_nr,
+	static inline word_t k1b_kcall3(
+		word_t kcall_nr,
 		word_t arg0,
 		word_t arg1,
 		word_t arg2)
@@ -128,7 +128,7 @@
 		word_t ret;
 
 		ret = __k1_club_syscall3(
-			syscall_nr,
+			kcall_nr,
 			arg0,
 			arg1,
 			arg2
@@ -140,7 +140,7 @@
 	/**
 	 * @brief Issues a system call with four arguments.
 	 *
-	 * @param syscall_nr System call number.
+	 * @param kcall_nr System call number.
 	 * @param arg0 System call number.
 	 * @param arg1 System call number.
 	 * @param arg2 System call number.
@@ -148,8 +148,8 @@
 	 *
 	 * @returns The system call return value.
 	 */
-	static inline word_t k1b_syscall4(
-		word_t syscall_nr,
+	static inline word_t k1b_kcall4(
+		word_t kcall_nr,
 		word_t arg0,
 		word_t arg1,
 		word_t arg2,
@@ -158,7 +158,7 @@
 		word_t ret;
 
 		ret = __k1_club_syscall4(
-			syscall_nr,
+			kcall_nr,
 			arg0,
 			arg1,
 			arg2,
@@ -171,7 +171,7 @@
 	/**
 	 * @brief Issues a system call with five arguments.
 	 *
-	 * @param syscall_nr System call number.
+	 * @param kcall_nr System call number.
 	 * @param arg0 System call number.
 	 * @param arg1 System call number.
 	 * @param arg2 System call number.
@@ -180,8 +180,8 @@
 	 *
 	 * @returns The system call return value.
 	 */
-	static inline word_t k1b_syscall5(
-		word_t syscall_nr,
+	static inline word_t k1b_kcall5(
+		word_t kcall_nr,
 		word_t arg0,
 		word_t arg1,
 		word_t arg2,
@@ -191,7 +191,7 @@
 		word_t ret;
 
 		ret = __k1_club_syscall5(
-			syscall_nr,
+			kcall_nr,
 			arg0,
 			arg1,
 			arg2,
@@ -205,7 +205,7 @@
 	/**
 	 * @brief System Call Hook
 	 */
-	EXTERN void k1b_syscall(void);
+	EXTERN void k1b_kcall(void);
 
 #endif /* !_ASM_FILE_ */
 
@@ -223,52 +223,52 @@
 	 * @name Exported Functions
 	 */
 	/**@{*/
-	#define __syscall0_fn /**< k1b_syscall0() */
-	#define __syscall1_fn /**< k1b_syscall1() */
-	#define __syscall2_fn /**< k1b_syscall2() */
-	#define __syscall3_fn /**< k1b_syscall3() */
-	#define __syscall4_fn /**< k1b_syscall4() */
-	#define __syscall5_fn /**< k1b_syscall5() */
+	#define __kcall0_fn /**< k1b_kcall0() */
+	#define __kcall1_fn /**< k1b_kcall1() */
+	#define __kcall2_fn /**< k1b_kcall2() */
+	#define __kcall3_fn /**< k1b_kcall3() */
+	#define __kcall4_fn /**< k1b_kcall4() */
+	#define __kcall5_fn /**< k1b_kcall5() */
 	/**@}*/
 
 #ifndef _ASM_FILE_
 
 	/**
-	 * @see k1b_syscall_0()
+	 * @see k1b_kcall_0()
 	 */
-	static inline word_t syscall0(word_t syscall_nr)
+	static inline word_t kcall0(word_t kcall_nr)
 	{
 		return (
-			k1b_syscall0(syscall_nr)
+			k1b_kcall0(kcall_nr)
 		);
 	}
 
 	/**
-	 * @see k1b_syscall_1()
+	 * @see k1b_kcall_1()
 	 */
-	static inline word_t syscall1(
-		word_t syscall_nr,
+	static inline word_t kcall1(
+		word_t kcall_nr,
 		word_t arg0)
 	{
 		return (
-			k1b_syscall1(
-				syscall_nr,
+			k1b_kcall1(
+				kcall_nr,
 				arg0
 			)
 		);
 	}
 
 	/**
-	 * @see k1b_syscall_2()
+	 * @see k1b_kcall_2()
 	 */
-	static inline word_t syscall2(
-		word_t syscall_nr,
+	static inline word_t kcall2(
+		word_t kcall_nr,
 		word_t arg0,
 		word_t arg1)
 	{
 		return (
-			k1b_syscall2(
-				syscall_nr,
+			k1b_kcall2(
+				kcall_nr,
 				arg0,
 				arg1
 			)
@@ -276,17 +276,17 @@
 	}
 
 	/**
-	 * @see k1b_syscall_3()
+	 * @see k1b_kcall_3()
 	 */
-	static inline word_t syscall3(
-		word_t syscall_nr,
+	static inline word_t kcall3(
+		word_t kcall_nr,
 		word_t arg0,
 		word_t arg1,
 		word_t arg2)
 	{
 		return (
-			k1b_syscall3(
-				syscall_nr,
+			k1b_kcall3(
+				kcall_nr,
 				arg0,
 				arg1,
 				arg2
@@ -295,18 +295,18 @@
 	}
 
 	/**
-	 * @see k1b_syscall_4()
+	 * @see k1b_kcall_4()
 	 */
-	static inline word_t syscall4(
-		word_t syscall_nr,
+	static inline word_t kcall4(
+		word_t kcall_nr,
 		word_t arg0,
 		word_t arg1,
 		word_t arg2,
 		word_t arg3)
 	{
 		return (
-			k1b_syscall4(
-				syscall_nr,
+			k1b_kcall4(
+				kcall_nr,
 				arg0,
 				arg1,
 				arg2,
@@ -316,10 +316,10 @@
 	}
 
 	/**
-	 * @see k1b_syscall_5()
+	 * @see k1b_kcall_5()
 	 */
-	static inline word_t syscall5(
-		word_t syscall_nr,
+	static inline word_t kcall5(
+		word_t kcall_nr,
 		word_t arg0,
 		word_t arg1,
 		word_t arg2,
@@ -327,8 +327,8 @@
 		word_t arg4)
 	{
 		return (
-			k1b_syscall5(
-				syscall_nr,
+			k1b_kcall5(
+				kcall_nr,
 				arg0,
 				arg1,
 				arg2,

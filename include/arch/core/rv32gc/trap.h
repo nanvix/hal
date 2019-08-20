@@ -43,42 +43,42 @@
 	/**
 	 * @brief Issues a system call with no arguments.
 	 *
-	 * @param syscall_nr System call number.
+	 * @param kcall_nr System call number.
 	 *
 	 * @returns The system call return value.
 	 */
-	EXTERN rv32gc_word_t rv32gc_kcall0(rv32gc_word_t syscall_nr);
+	EXTERN rv32gc_word_t rv32gc_kcall0(rv32gc_word_t kcall_nr);
 
 	/**
 	 * @brief Issues a system call with one argument.
 	 *
-	 * @param syscall_nr System call number.
+	 * @param kcall_nr System call number.
 	 * @param arg0       Argument 0.
 	 *
 	 * @returns The system call return value.
 	 */
 	EXTERN rv32gc_word_t rv32gc_kcall1(
-		rv32gc_word_t syscall_nr,
+		rv32gc_word_t kcall_nr,
 		rv32gc_word_t arg0);
 
 	/**
 	 * @brief Issues a system call with two arguments.
 	 *
-	 * @param syscall_nr System call number.
+	 * @param kcall_nr System call number.
 	 * @param arg0       Argument 0.
 	 * @param arg1       Argument 1.
 	 *
 	 * @returns The system call return value.
 	 */
 	EXTERN rv32gc_word_t rv32gc_kcall2(
-		rv32gc_word_t syscall_nr,
+		rv32gc_word_t kcall_nr,
 		rv32gc_word_t arg0,
 		rv32gc_word_t arg1);
 
 	/**
 	 * @brief Issues a system call with three arguments.
 	 *
-	 * @param syscall_nr System call number.
+	 * @param kcall_nr System call number.
 	 * @param arg0       Argument 0.
 	 * @param arg1       Argument 1.
 	 * @param arg2       Argument 2.
@@ -86,7 +86,7 @@
 	 * @returns The system call return value.
 	 */
 	EXTERN rv32gc_word_t rv32gc_kcall3(
-		rv32gc_word_t syscall_nr,
+		rv32gc_word_t kcall_nr,
 		rv32gc_word_t arg0,
 		rv32gc_word_t arg1,
 		rv32gc_word_t arg2);
@@ -94,7 +94,7 @@
 	/**
 	 * @brief Issues a system call with four arguments.
 	 *
-	 * @param syscall_nr System call number.
+	 * @param kcall_nr System call number.
 	 * @param arg0       Argument 0.
 	 * @param arg1       Argument 1.
 	 * @param arg2       Argument 2.
@@ -103,7 +103,7 @@
 	 * @returns The system call return value.
 	 */
 	EXTERN rv32gc_word_t rv32gc_kcall4(
-		rv32gc_word_t syscall_nr,
+		rv32gc_word_t kcall_nr,
 		rv32gc_word_t arg0,
 		rv32gc_word_t arg1,
 		rv32gc_word_t arg2,
@@ -112,7 +112,7 @@
 	/**
 	 * @brief Issues a system call with five arguments.
 	 *
-	 * @param syscall_nr System call number.
+	 * @param kcall_nr System call number.
 	 * @param arg0       Argument 0.
 	 * @param arg1       Argument 1.
 	 * @param arg2       Argument 2.
@@ -122,7 +122,7 @@
 	 * @returns The system call return value.
 	 */
 	EXTERN rv32gc_word_t rv32gc_kcall5(
-		rv32gc_word_t syscall_nr,
+		rv32gc_word_t kcall_nr,
 		rv32gc_word_t arg0,
 		rv32gc_word_t arg1,
 		rv32gc_word_t arg2,
@@ -145,12 +145,12 @@
 	 * @name Exported Functions
 	 */
 	/**@{*/
-	#define __syscall0_fn /**< rv32gc_kcall0() */
-	#define __syscall1_fn /**< rv32gc_kcall1() */
-	#define __syscall2_fn /**< rv32gc_kcall2() */
-	#define __syscall3_fn /**< rv32gc_kcall3() */
-	#define __syscall4_fn /**< rv32gc_kcall4() */
-	#define __syscall5_fn /**< rv32gc_kcall5() */
+	#define __kcall0_fn /**< rv32gc_kcall0() */
+	#define __kcall1_fn /**< rv32gc_kcall1() */
+	#define __kcall2_fn /**< rv32gc_kcall2() */
+	#define __kcall3_fn /**< rv32gc_kcall3() */
+	#define __kcall4_fn /**< rv32gc_kcall4() */
+	#define __kcall5_fn /**< rv32gc_kcall5() */
 	/**@}*/
 
 #ifndef _ASM_FILE_
@@ -158,23 +158,23 @@
 	/**
 	 * @see rv32gc_kcall0()
 	 */
-	static inline rv32gc_word_t syscall0(rv32gc_word_t syscall_nr)
+	static inline rv32gc_word_t kcall0(rv32gc_word_t kcall_nr)
 	{
 		return (
-			rv32gc_kcall0(syscall_nr)
+			rv32gc_kcall0(kcall_nr)
 		);
 	}
 
 	/**
 	 * @see rv32gc_kcall1()
 	 */
-	static inline rv32gc_word_t syscall1(
-		rv32gc_word_t syscall_nr,
+	static inline rv32gc_word_t kcall1(
+		rv32gc_word_t kcall_nr,
 		rv32gc_word_t arg0)
 	{
 		return (
 			rv32gc_kcall1(
-				syscall_nr,
+				kcall_nr,
 				arg0
 			)
 		);
@@ -183,14 +183,14 @@
 	/**
 	 * @see rv32gc_kcall2()
 	 */
-	static inline rv32gc_word_t syscall2(
-		rv32gc_word_t syscall_nr,
+	static inline rv32gc_word_t kcall2(
+		rv32gc_word_t kcall_nr,
 		rv32gc_word_t arg0,
 		rv32gc_word_t arg1)
 	{
 		return (
 			rv32gc_kcall2(
-				syscall_nr,
+				kcall_nr,
 				arg0,
 				arg1
 			)
@@ -200,15 +200,15 @@
 	/**
 	 * @see rv32gc_kcall3()
 	 */
-	static inline rv32gc_word_t syscall3(
-		rv32gc_word_t syscall_nr,
+	static inline rv32gc_word_t kcall3(
+		rv32gc_word_t kcall_nr,
 		rv32gc_word_t arg0,
 		rv32gc_word_t arg1,
 		rv32gc_word_t arg2)
 	{
 		return (
 			rv32gc_kcall3(
-				syscall_nr,
+				kcall_nr,
 				arg0,
 				arg1,
 				arg2
@@ -219,8 +219,8 @@
 	/**
 	 * @see rv32gc_kcall4()
 	 */
-	static inline rv32gc_word_t syscall4(
-		rv32gc_word_t syscall_nr,
+	static inline rv32gc_word_t kcall4(
+		rv32gc_word_t kcall_nr,
 		rv32gc_word_t arg0,
 		rv32gc_word_t arg1,
 		rv32gc_word_t arg2,
@@ -228,7 +228,7 @@
 	{
 		return (
 			rv32gc_kcall4(
-				syscall_nr,
+				kcall_nr,
 				arg0,
 				arg1,
 				arg2,
@@ -240,8 +240,8 @@
 	/**
 	 * @see rv32gc_kcall5()
 	 */
-	static inline rv32gc_word_t syscall5(
-		rv32gc_word_t syscall_nr,
+	static inline rv32gc_word_t kcall5(
+		rv32gc_word_t kcall_nr,
 		rv32gc_word_t arg0,
 		rv32gc_word_t arg1,
 		rv32gc_word_t arg2,
@@ -250,7 +250,7 @@
 	{
 		return (
 			rv32gc_kcall5(
-				syscall_nr,
+				kcall_nr,
 				arg0,
 				arg1,
 				arg2,

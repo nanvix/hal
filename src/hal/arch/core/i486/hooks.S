@@ -57,7 +57,7 @@
 .globl _i486_do_excp19
 .globl _i486_do_excp20
 .globl _i486_do_excp30
-.globl i486_syscall
+.globl i486_kcall
 .globl _do_hwint0
 .globl _do_hwint1
 .globl _do_hwint2
@@ -169,21 +169,21 @@ _i486_do_excp:
 	iret
 
 /*============================================================================*
- * syscall()                                                                  *
+ * kcall()                                                                  *
  *============================================================================*/
 
 /*
  * System call hook.
  */
-i486_syscall:
+i486_kcall:
 
 	cmpl $I486_NR_upcall_ret, %eax
-	jnz _do_syscall.continue
+	jnz _do_kcall.continue
 
 		movl %ebx, %esp
-		jmp _do_syscall.out
+		jmp _do_kcall.out
 
-	_do_syscall.continue:
+	_do_kcall.continue:
 
 		/* Save system call context. */
 		i486_context_save %ebx
@@ -203,7 +203,7 @@ i486_syscall:
 		pushl %eax
 
 		/* Handle system call. */
-		call do_syscall
+		call do_kcall
 
 		/* Wipe out system call parameters. */
 		addl $6*I486_WORD_SIZE, %esp
@@ -211,7 +211,7 @@ i486_syscall:
 		/* Copy return value to user stack. */
 		movl %eax, I486_CONTEXT_EAX(%esp)
 
-	_do_syscall.out:
+	_do_kcall.out:
 
 		/* restore system call context. */
 		i486_context_restore

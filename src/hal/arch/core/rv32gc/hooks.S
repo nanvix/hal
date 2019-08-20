@@ -134,7 +134,7 @@ rv32gc_do_strap:
 		lw a4, RV32GC_CONTEXT_A5(fp) /* Argument 4         */
 
 		/* Call high-level dispatcher. */
-		call do_syscall
+		call do_kcall
 
 		/* Copy return value to the user stack. */
 		sw a0, RV32GC_CONTEXT_A0(fp)
@@ -224,7 +224,7 @@ _rv32gc_do_kcall:
 
 		// Forward kernel call
 		// to high-level dispatcher.
-		call  do_syscall
+		call  do_kcall
 
 		// Copy return value to user stack.
 		sw  a0, RV32GC_CONTEXT_A0(sp)
