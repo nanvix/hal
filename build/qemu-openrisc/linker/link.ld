@@ -33,7 +33,7 @@ SECTIONS
 
 	EXCEPTIONS = .;
 
-	KSTART_CODE = .;
+	KERNEL_CODE_START = .;
 
 	/* Kernel code section. */
 	.bootstrap : AT(ADDR(.bootstrap))
@@ -54,7 +54,11 @@ SECTIONS
 		__TEXT_END = .;
 	}
 
-	KSTART_DATA = ALIGN(8192);
+	KERNEL_CODE_END = .;
+
+	. = ALIGN(8192);
+
+	KERNEL_DATA_START = .;
 
 	/* Initialized kernel data section. */
 	.data ALIGN(8192) : AT(ADDR(.data))
@@ -74,9 +78,9 @@ SECTIONS
 		__BSS_END = .;
 	}
 
-	. =ALIGN(8192);
+	KERNEL_DATA_END = .;
 
-	KDATA_END = .;
+	. =ALIGN(8192);
 
 	/* Discarded. */
 	/DISCARD/ :

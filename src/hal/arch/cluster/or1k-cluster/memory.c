@@ -169,8 +169,8 @@ PUBLIC int or1k_cluster_tlb_get_vaddr_info(vaddr_t vaddr)
 	volatile vaddr_t kdata; /* Kernel data start address. */
 	int info;               /* User address.              */
 
-	kcode = (vaddr_t)&KSTART_CODE;
-	kdata = (vaddr_t)&KSTART_DATA;
+	kcode = (vaddr_t)&KERNEL_CODE_START;
+	kdata = (vaddr_t)&KERNEL_DATA_START;
 
 	/* Kernel address. */
 	if (WITHIN(vaddr, kcode, KMEM_SIZE))

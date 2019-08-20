@@ -210,8 +210,8 @@
 	/**
 	 * Kernel code and data addresses.
 	 */
-	EXTERN unsigned KSTART_CODE;
-	EXTERN unsigned KSTART_DATA;
+	EXTERN unsigned KERNEL_CODE_START;
+	EXTERN unsigned KERNEL_DATA_START;
 
 #endif /* _ASM_FILE_ */
 
