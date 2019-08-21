@@ -31,9 +31,11 @@
 /**
  * @brief Launch unit tests on performance interface?
  */
+#ifdef __unix64__
 #define TEST_PERF 0
-
-#ifndef __unix64__
+#else
+#define TEST_PERF 1
+#endif
 
 /**
  * @brief Timer frequency (in Hz).
@@ -51,8 +53,10 @@ PRIVATE void test_core_al(void)
 	test_mmu();
 	test_tlb();
 	test_trap();
+#ifndef __unix64__
 	test_upcall();
-#if (CORE_HAS_PERF)
+#endif
+#if (CORE_HAS_PERF) && (TEST_PERF)
 	test_perf();
 #endif
 }
@@ -90,7 +94,11 @@ PRIVATE void test_target_al(void)
 #if (__TARGET_HAS_MAILBOX)
 	test_mailbox();
 #endif
+
+	test_portal();
 }
+
+#ifndef __unix64__
 
 /**
  * @brief Dummy main function.
@@ -110,11 +118,11 @@ PUBLIC int main(int argc, const char *argv[])
  */
 PUBLIC NORETURN void kmain(int argc, const char *argv[])
 {
-#ifndef __unix64__
-
 	const char *arg;
 
 	arg = (argc < 2) ? "--all" : argv[1];
+
+#ifndef __unix64__
 
 	/*
 	 * Initializes the HAL. Must come
@@ -124,38 +132,20 @@ PUBLIC NORETURN void kmain(int argc, const char *argv[])
 
 	timer_init(TIMER_FREQ);
 
-	/* Run unit tests. */
-	if ((!kstrcmp(arg, "--all")) || (!kstrcmp(arg, "--core")))
-		test_core_al();
-	if ((!kstrcmp(arg, "--all")) || (!kstrcmp(arg, "--cluster")))
-		test_cluster_al();
-	if ((!kstrcmp(arg, "--all")) || (!kstrcmp(arg, "--processor")))
-		test_processor_al();
-	if ((!kstrcmp(arg, "--all")) || (!kstrcmp(arg, "--target")))
-		test_target_al();
-
-#else
-
-	UNUSED(argc);
-	UNUSED(argv);
-
-	test_core();
-	test_mmu();
-	test_spinlock();
-	test_timer();
-
-	test_tlb();
-
-	test_trap();
-
-	test_exception();
-	test_interrupt();
-
-#if (defined(TEST_PERF) && (TEST_PERF))
-	test_perf();
 #endif
 
-#endif
+	if (cluster_get_id() == PROCESSOR_CLUSTERID_MASTER)
+	{
+		/* Run unit tests. */
+		if ((!kstrcmp(arg, "--all")) || (!kstrcmp(arg, "--core")))
+			test_core_al();
+		if ((!kstrcmp(arg, "--all")) || (!kstrcmp(arg, "--cluster")))
+			test_cluster_al();
+		if ((!kstrcmp(arg, "--all")) || (!kstrcmp(arg, "--processor")))
+			test_processor_al();
+		if ((!kstrcmp(arg, "--all")) || (!kstrcmp(arg, "--target")))
+			test_target_al();
+	}
 
 	core_poweroff();
 }
