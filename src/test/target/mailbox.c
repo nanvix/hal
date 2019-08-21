@@ -28,12 +28,14 @@
 #include <errno.h>
 #include "../test.h"
 
+#if (__TARGET_HAS_MAILBOX)
+
 /**
  * @brief ID of master NoC node.
  */
-#define NODES_AMOUNT    2
-#define NODENUM_MASTER 16
-#define NODENUM_SLAVE   0
+#define NODES_AMOUNT   2
+#define NODENUM_MASTER 0
+#define NODENUM_SLAVE  1
 
 /*============================================================================*
  * API Tests                                                                  *
@@ -45,11 +47,8 @@
 static void test_mailbox_create_unlink(void)
 {
 	int mbxid;
-	int local;
 
-	local = processor_node_get_num(processor_node_get_id());
-
-	KASSERT((mbxid = mailbox_create(local)) >= 0);
+	KASSERT((mbxid = mailbox_create(NODENUM_MASTER)) >= 0);
 	KASSERT(mailbox_unlink(mbxid) == 0);
 }
 
@@ -59,14 +58,8 @@ static void test_mailbox_create_unlink(void)
 static void test_mailbox_open_close(void)
 {
 	int mbxid;
-	int remote;
 
-	if (processor_node_get_num(processor_node_get_id()) == NODENUM_MASTER)
-		remote = NODENUM_SLAVE;
-	else
-		remote = NODENUM_MASTER;
-
-	KASSERT((mbxid = mailbox_open(remote)) >= 0);
+	KASSERT((mbxid = mailbox_open(NODENUM_SLAVE)) >= 0);
 	KASSERT(mailbox_close(mbxid) == 0);
 }
 
@@ -91,7 +84,8 @@ struct test mailbox_tests_api[] = {
  */
 static void test_mailbox_invalid_create(void)
 {
-
+	KASSERT(mailbox_create(-1) == -EINVAL);
+	KASSERT(mailbox_create(PROCESSOR_NOC_NODES_NUM) == -EINVAL);
 }
 
 /**
@@ -99,7 +93,8 @@ static void test_mailbox_invalid_create(void)
  */
 static void test_mailbox_invalid_open(void)
 {
-
+	KASSERT(mailbox_open(-1) == -EINVAL);
+	KASSERT(mailbox_open(PROCESSOR_NOC_NODES_NUM) == -EINVAL);
 }
 
 /**
@@ -107,23 +102,8 @@ static void test_mailbox_invalid_open(void)
  */
 static void test_mailbox_invalid_unlink(void)
 {
-
-}
-
-/**
- * @brief Fault Injection Test: Mailbox Bad Unlink
- */
-static void test_mailbox_bad_unlink(void)
-{
-
-}
-
-/**
- * @brief Fault Injection Test: Mailbox Double Unlink
- */
-static void test_mailbox_double_unlink(void)
-{
-
+	KASSERT(mailbox_unlink(-1) == -EINVAL);
+	KASSERT(mailbox_unlink(MAILBOX_CREATE_MAX) == -EINVAL);
 }
 
 /**
@@ -131,7 +111,57 @@ static void test_mailbox_double_unlink(void)
  */
 static void test_mailbox_invalid_close(void)
 {
+	KASSERT(mailbox_close(-1) == -EINVAL);
+	KASSERT(mailbox_close(MAILBOX_OPEN_MAX) == -EINVAL);
+}
 
+/**
+ * @brief Fault Injection Test: Mailbox Invalid Read
+ */
+static void test_mailbox_invalid_read(void)
+{
+	char msg[MAILBOX_MSG_SIZE];
+
+	KASSERT(mailbox_read(-1, msg, MAILBOX_MSG_SIZE) == -EINVAL);
+	KASSERT(mailbox_read(0, NULL, MAILBOX_MSG_SIZE) == -EINVAL);
+	KASSERT(mailbox_read(0, msg, 0) == -EINVAL);
+}
+
+/**
+ * @brief Fault Injection Test: Mailbox Invalid Write
+ */
+static void test_mailbox_invalid_write(void)
+{
+	char msg[MAILBOX_MSG_SIZE];
+
+	KASSERT(mailbox_write(-1, msg, MAILBOX_MSG_SIZE) == -EINVAL);
+	KASSERT(mailbox_write(0, NULL, MAILBOX_MSG_SIZE) == -EINVAL);
+	KASSERT(mailbox_write(0, msg, 0) == -EINVAL);
+}
+
+/**
+ * @brief Fault Injection Test: Mailbox Bad Create
+ */
+static void test_mailbox_bad_create(void)
+{
+	KASSERT(mailbox_create(NODENUM_SLAVE) == -EINVAL);
+}
+
+/**
+ * @brief Fault Injection Test: Mailbox Bad Open
+ */
+static void test_mailbox_bad_open(void)
+{
+	KASSERT(mailbox_open(NODENUM_MASTER) == -EINVAL);
+}
+
+/**
+ * @brief Fault Injection Test: Mailbox Bad Unlink
+ */
+static void test_mailbox_bad_unlink(void)
+{
+	KASSERT(mailbox_unlink(0) == -EINVAL);
+	KASSERT(mailbox_unlink(MAILBOX_CREATE_MAX - 1) == -EINVAL);
 }
 
 /**
@@ -139,7 +169,20 @@ static void test_mailbox_invalid_close(void)
  */
 static void test_mailbox_bad_close(void)
 {
+	KASSERT(mailbox_close(0) == -EINVAL);
+	KASSERT(mailbox_close(MAILBOX_OPEN_MAX - 1) == -EINVAL);
+}
 
+/**
+ * @brief Fault Injection Test: Mailbox Double Unlink
+ */
+static void test_mailbox_double_unlink(void)
+{
+	int mbxid;
+
+	KASSERT((mbxid = mailbox_create(NODENUM_MASTER)) >= 0);
+	KASSERT(mailbox_unlink(mbxid) == 0);
+	KASSERT(mailbox_unlink(mbxid) == -EINVAL);
 }
 
 /**
@@ -147,58 +190,60 @@ static void test_mailbox_bad_close(void)
  */
 static void test_mailbox_double_close(void)
 {
+	int mbxid;
 
+	KASSERT((mbxid = mailbox_open(NODENUM_SLAVE)) >= 0);
+	KASSERT(mailbox_close(mbxid) == 0);
+	KASSERT(mailbox_close(mbxid) == -EINVAL);
 }
 
 /**
- * @brief Fault Injection Test: Mailbox Invalid Signal
+ * @brief Fault Injection Test: Mailbox Bad Write
  */
-static void test_mailbox_invalid_signal(void)
+static void test_mailbox_bad_read(void)
 {
+	int mbxid;
+	char msg[MAILBOX_MSG_SIZE];
 
+	KASSERT((mbxid = mailbox_create(NODENUM_MASTER)) >= 0);
+	KASSERT(mailbox_write(mbxid, NULL, MAILBOX_MSG_SIZE) == -EINVAL);
+	KASSERT(mailbox_write(mbxid, msg, 0) == -EINVAL);
+	KASSERT(mailbox_unlink(mbxid) == 0);
 }
 
 /**
- * @brief Fault Injection Test: Mailbox Bad Signal
+ * @brief Fault Injection Test: Mailbox Bad Write
  */
-static void test_mailbox_bad_signal(void)
+static void test_mailbox_bad_write(void)
 {
+	int mbxid;
+	char msg[MAILBOX_MSG_SIZE];
 
-}
-
-/**
- * @brief Fault Injection Test: Mailbox Invalid Wait
- */
-static void test_mailbox_invalid_wait(void)
-{
-
-}
-
-/**
- * @brief Fault Injection Test: Mailbox Bad Signal
- */
-static void test_mailbox_bad_wait(void)
-{
-
+	KASSERT((mbxid = mailbox_open(NODENUM_SLAVE)) >= 0);
+	KASSERT(mailbox_read(mbxid, NULL, MAILBOX_MSG_SIZE) == -EINVAL);
+	KASSERT(mailbox_read(mbxid, msg, 0) == -EINVAL);
+	KASSERT(mailbox_close(mbxid) == 0);
 }
 
 /**
  * @brief Unit tests.
  */
 struct test mailbox_tests_fault[] = {
-	{NULL,                     NULL             },
 	{test_mailbox_invalid_create, "Invalid Create" },
 	{test_mailbox_invalid_open,   "Invalid Open"   },
 	{test_mailbox_invalid_unlink, "Invalid Unlink" },
-	{test_mailbox_bad_unlink,     "Bad Unlink"     },
-	{test_mailbox_double_unlink,  "Double Unlink"  },
 	{test_mailbox_invalid_close,  "Invalid Close"  },
+	{test_mailbox_invalid_read,   "Invalid Read"   },
+	{test_mailbox_invalid_write,  "Invalid Write"  },
+	{test_mailbox_bad_create,     "Bad Create"     },
+	{test_mailbox_bad_open,       "Bad Open"       },
+	{test_mailbox_bad_unlink,     "Bad Unlink"     },
 	{test_mailbox_bad_close,      "Bad Close"      },
+	{test_mailbox_double_unlink,  "Double Unlink"  },
 	{test_mailbox_double_close,   "Double Close"   },
-	{test_mailbox_invalid_signal, "Invalid Signal" },
-	{test_mailbox_bad_signal,     "Bad Signal"     },
-	{test_mailbox_invalid_wait,   "Invalid Wait"   },
-	{test_mailbox_bad_wait,       "Bad Wait"       },
+	{test_mailbox_bad_read,       "Bad Read"       },
+	{test_mailbox_bad_write,      "Bad Write"      },
+	{NULL,                         NULL            },
 };
 
 /*============================================================================*
@@ -227,3 +272,5 @@ PUBLIC void test_mailbox(void)
 		kprintf("[test][fault][mailbox] %s [passed]", mailbox_tests_fault[i].name);
 	}
 }
+
+#endif /* __TARGET_HAS_MAILBOX */
