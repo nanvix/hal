@@ -64,11 +64,10 @@
 	 * @param nodes  IDs of target NoC nodes.
 	 * @param nnodes Number of target NoC nodes.
 	 * @param type   Type of synchronization point.
-	 * @param aiocb  Asynchronous operation control.
 	 *
 	 * @return The tag of underlying resource ID.
 	 */
-	EXTERN int mppa256_sync_create(const int *nodes, int nnodes, int type, struct aiocb * aiocb);
+	EXTERN int mppa256_sync_create(const int *nodes, int nnodes, int type);
 
 	/**
 	 * @brief Allocates and configures the sending side of the synchronization point.
@@ -98,11 +97,11 @@
 	/**
 	 * @brief Wait signal on a specific synchronization point.
 	 *
-	 * @param aiocb Asynchronous operation control.
+	 * @param syncid ID of the Target Sync.
 	 *
 	 * @return Zero if wait signal correctly and non zero otherwise.
 	 */
-	EXTERN int mppa256_sync_wait(struct aiocb * aiocb);
+	EXTERN int mppa256_sync_wait(int syncid);
 
 	/**
 	 * @brief Send signal on a specific synchronization point.
@@ -153,9 +152,9 @@
 	/**
 	 * @see mppa256_sync_create()
 	 */
-	static inline int sync_create(const int *nodes, int nnodes, int type, struct aiocb * aiocb)
+	static inline int sync_create(const int *nodes, int nnodes, int type)
 	{
-		return mppa256_sync_create(nodes, nnodes, type, aiocb);
+		return mppa256_sync_create(nodes, nnodes, type);
 	}
 
 	/**
@@ -185,9 +184,9 @@
 	/**
 	 * @see mppa256_sync_wait()
 	 */
-	static inline int sync_wait(struct aiocb * aiocb)
+	static inline int sync_wait(int syncid)
 	{
-		return mppa256_sync_wait(aiocb);
+		return mppa256_sync_wait(syncid);
 	}
 
 	/**

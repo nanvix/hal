@@ -98,12 +98,11 @@
 	 * @param mbxid  ID of the target mailbox.
 	 * @param buffer Buffer where the data should be read from.
 	 * @param size   Number of bytes to write.
-	 * @param aiocb  Asynchronous operation control.
 	 *
 	 * @returns Upon successful completion, 0 is returned
 	 * and non zero otherwise.
 	 */
-	EXTERN int mppa256_mailbox_awrite(int mbxid, const void * buffer, uint64_t size, struct aiocb * aiocb);
+	EXTERN int mppa256_mailbox_awrite(int mbxid, const void * buffer, uint64_t size);
 
 	/**
 	 * @brief Reads data from a mailbox.
@@ -111,21 +110,20 @@
 	 * @param mbxid  ID of the target mailbox.
 	 * @param buffer Buffer where the data should be written to.
 	 * @param size   Number of bytes to read.
-	 * @param aiocb  Asynchronous operation control.
 	 *
 	 * @returns Upon successful completion, 0 is returned
 	 * and non zero otherwise.
 	 */
-	EXTERN int mppa256_mailbox_aread(int mbxid, void * buffer, uint64_t size, struct aiocb * aiocb);
+	EXTERN int mppa256_mailbox_aread(int mbxid, void * buffer, uint64_t size);
 
 	/**
 	 * @brief Waits asynchronous operation.
 	 *
-	 * @param aiocb Asynchronous operation control.
+	 * @param mbxid ID of the Target Mailbox.
 	 *
 	 * @return Zero if wait read correctly and non zero otherwise.
 	 */
-	EXTERN int mppa256_mailbox_wait(struct aiocb * aiocb);
+	EXTERN int mppa256_mailbox_wait(int mbxid);
 
 /*============================================================================*
  *                              Exported Interface                            *
@@ -139,8 +137,8 @@
 	#define __mailbox_open_fn      /**< mailbox_open()   */
 	#define __mailbox_unlink_fn    /**< mailbox_unlink() */
 	#define __mailbox_close_fn     /**< mailbox_close()  */
-	#define __mailbox_awrite_fn     /**< mailbox_awrite()  */
-	#define __mailbox_aread_fn      /**< mailbox_aread()   */
+	#define __mailbox_awrite_fn    /**< mailbox_awrite() */
+	#define __mailbox_aread_fn     /**< mailbox_aread()  */
 	#define __mailbox_wait_fn      /**< mailbox_wait()   */
 	/**@}*/
 
@@ -195,25 +193,25 @@
 	/**
 	 * @see mppa256_mailbox_awrite()
 	 */
-	static inline int mailbox_awrite(int mbxid, const void * buffer, uint64_t size, struct aiocb * aiocb)
+	static inline int mailbox_awrite(int mbxid, const void * buffer, uint64_t size)
 	{
-		return mppa256_mailbox_awrite(mbxid, buffer, size, aiocb);
+		return mppa256_mailbox_awrite(mbxid, buffer, size);
 	}
 
 	/**
 	 * @see mppa256_mailbox_aread()
 	 */
-	static inline int mailbox_aread(int mbxid, void * buffer, uint64_t size, struct aiocb * aiocb)
+	static inline int mailbox_aread(int mbxid, void * buffer, uint64_t size)
 	{
-		return mppa256_mailbox_aread(mbxid, buffer, size, aiocb);
+		return mppa256_mailbox_aread(mbxid, buffer, size);
 	}
 
 	/**
 	 * @see mppa256_mailbox_wait()
 	 */
-	static inline int mailbox_wait(struct aiocb * aiocb)
+	static inline int mailbox_wait(int mbxid)
 	{
-		return mppa256_mailbox_wait(aiocb);
+		return mppa256_mailbox_wait(mbxid);
 	}
 
 #endif /* TARGET_KALRAY_MPPA256_MAILBOX_H_ */

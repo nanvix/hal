@@ -40,7 +40,7 @@ PRIVATE struct sync
 		struct resource resource; /**< Control flags.  */
 		uint64_t mask;            /**< Initial value.  */
 		k1b_spinlock_t lock;      /**< Wait condition. */
-	} rxs[MPPA256_SYNC_CREATE_MAX];
+	} ALIGN(sizeof(dword_t)) rxs[MPPA256_SYNC_CREATE_MAX];
 
 	/**
 	 * @brief Sender Synchronization Points
@@ -52,7 +52,7 @@ PRIVATE struct sync
 		int ntargets;                     /**< Number of targets.  */
 		int target_tag;                   /**< Master tag.         */
 		uint64_t mask;                    /**< Signal mask.        */
-	} txs[MPPA256_SYNC_OPEN_MAX];
+	} ALIGN(sizeof(dword_t)) txs[MPPA256_SYNC_OPEN_MAX];
 } synctab = {
 	.rxs[0 ... MPPA256_SYNC_CREATE_MAX-1] = { {0}, 0, K1B_SPINLOCK_UNLOCKED },
 	.txs[0 ... MPPA256_SYNC_OPEN_MAX-1]   = { {0}, {0, }, 0, 0, 0ULL }
@@ -65,16 +65,26 @@ PRIVATE struct syncpools
 {
 	const struct resource_pool rx_pool;
 	const struct resource_pool tx_pool;
-} syncpools = {
+} ALIGN(sizeof(dword_t)) syncpools = {
 	.rx_pool = {synctab.rxs, MPPA256_SYNC_CREATE_MAX, sizeof(struct rx)},
 	.tx_pool = {synctab.txs, MPPA256_SYNC_OPEN_MAX,   sizeof(struct tx)},
 };
 
 /**
+ * @name File descriptor offset.
+ */
+/**@{*/
+#define MPPA256_SYNC_CREATE_OFFSET 0                       /**< Initial File Descriptor ID for Creates. */
+#define MPPA256_SYNC_OPEN_OFFSET   MPPA256_SYNC_CREATE_MAX /**< Initial File Descriptor ID for Opens.   */
+/**@}*/
+
+/**
  * @name Gets syncid.
  */
+/**@{*/
 #define RESOURCEID_RX(interface, tag) ((interface * BOSTAN_SYNC_CREATE_PER_DMA) + (tag - BOSTAN_SYNC_RX_OFF)) /**< synctab.rxs' index. */
 #define RESOURCEID_TX(interface)      (interface * BOSTAN_SYNC_OPEN_PER_DMA)                                /**< synctab.txs' index. */
+/**@}*/
 
 /**
  * @name Gets underlying resource IDs.
@@ -94,7 +104,7 @@ PRIVATE struct syncpools
  */
 PRIVATE int mppa256_sync_rx_is_valid(int syncid)
 {
-	return WITHIN(syncid, 0, MPPA256_SYNC_CREATE_MAX);
+	return WITHIN(syncid, MPPA256_SYNC_CREATE_OFFSET, (MPPA256_SYNC_CREATE_OFFSET + MPPA256_SYNC_CREATE_MAX));
 }
 
 /**
@@ -105,7 +115,7 @@ PRIVATE int mppa256_sync_rx_is_valid(int syncid)
  */
 PRIVATE int mppa256_sync_tx_is_valid(int syncid)
 {
-	return WITHIN(syncid, 0, MPPA256_SYNC_OPEN_MAX);
+	return WITHIN(syncid, MPPA256_SYNC_OPEN_OFFSET, (MPPA256_SYNC_OPEN_OFFSET + MPPA256_SYNC_OPEN_MAX));
 }
 
 /**
@@ -172,10 +182,12 @@ PRIVATE void mppa256_sync_it_handler(int interface, int tag)
 	syncid = RESOURCEID_RX(interface, tag);
 
 	if (resource_is_used(&synctab.rxs[syncid].resource))
+	{
 		k1b_spinlock_unlock(&synctab.rxs[syncid].lock);
 	
-	if (bostan_dma_control_config(interface, tag, synctab.rxs[syncid].mask, mppa256_sync_it_handler) < 0)
-		kpanic("[hal][sync] Reconfiguration of the sync falied!");
+		if (bostan_dma_control_config(interface, tag, synctab.rxs[syncid].mask, mppa256_sync_it_handler) < 0)
+			kpanic("[hal][sync] Reconfiguration of the sync falied!");
+	}
 }
 
 /**
@@ -219,11 +231,10 @@ PRIVATE int mppa256_sync_select_rx_interface(const int *nodes, int nnodes)
  * @param nodes  IDs of target NoC nodes.
  * @param nnodes Number of target NoC nodes.
  * @param type   Type of synchronization point.
- * @param aiocb  Asynchronous operation control.
  *
  * @return The tag of underlying resource ID.
  */
-PUBLIC int mppa256_sync_create(const int *nodes, int nnodes, int type, struct aiocb * aiocb)
+PUBLIC int mppa256_sync_create(const int *nodes, int nnodes, int type)
 {
 	int ret;
 	int tag;
@@ -232,7 +243,7 @@ PUBLIC int mppa256_sync_create(const int *nodes, int nnodes, int type, struct ai
 	int interface;
 	uint64_t mask;
 
-	if (nodes == NULL || aiocb == NULL)
+	if (nodes == NULL)
 		return (-EINVAL);
 	
 	if (!WITHIN(nnodes, 2, BOSTAN_NR_NOC_NODES))
@@ -252,7 +263,7 @@ PUBLIC int mppa256_sync_create(const int *nodes, int nnodes, int type, struct ai
 		if (!mppa256_sync_is_remote(nodenum, nodes, nnodes))
 			return (-ECONNREFUSED);
 
-		mask = 0;
+		mask = (1ULL);
 	}
 
 	/* Gather. */
@@ -283,11 +294,7 @@ PUBLIC int mppa256_sync_create(const int *nodes, int nnodes, int type, struct ai
 	resource_set_async(&synctab.rxs[syncid].resource);
 	resource_set_notbusy(&synctab.rxs[syncid].resource);
 
-	aiocb->fd   = syncid;
-	aiocb->type = BOSTAN_NOC_RX_TYPE;
-	aiocb->lock = &synctab.rxs[syncid].lock;
-
-	return (syncid);
+	return (MPPA256_SYNC_CREATE_OFFSET + syncid);
 }
 
 /**
@@ -363,7 +370,7 @@ PUBLIC int mppa256_sync_open(const int *nodes, int nnodes, int type)
 #endif
 		kmemcpy(synctab.txs[syncid].targets, &_nodes[1], (nnodes - 1));
 		synctab.txs[syncid].ntargets = (nnodes - 1);
-		synctab.txs[syncid].mask     = ~(0ULL);
+		synctab.txs[syncid].mask     = ~(1ULL);
 	}
 
 	/* Unicast. */
@@ -374,7 +381,7 @@ PUBLIC int mppa256_sync_open(const int *nodes, int nnodes, int type)
 
 		kmemcpy(synctab.txs[syncid].targets, &_nodes[0], 1);
 		synctab.txs[syncid].ntargets = 1;
-		synctab.txs[syncid].mask     = 1ULL << (nodenum);
+		synctab.txs[syncid].mask     = (1ULL << (nodenum));
 	}
 
 	synctab.txs[syncid].target_tag = bostan_node_sync_tag(_nodes[0]);
@@ -388,7 +395,7 @@ PUBLIC int mppa256_sync_open(const int *nodes, int nnodes, int type)
 	resource_set_sync(&synctab.txs[syncid].resource);
 	resource_set_notbusy(&synctab.txs[syncid].resource);
 
-	return (syncid);
+	return (MPPA256_SYNC_OPEN_OFFSET + syncid);
 }
 
 /**
@@ -402,6 +409,8 @@ PUBLIC int mppa256_sync_unlink(int syncid)
 
 	if (!mppa256_sync_rx_is_valid(syncid))
 		return (-EBADF);
+	
+	syncid = syncid - MPPA256_SYNC_CREATE_OFFSET;
 
 	/* Bad sync. */
 	if (!resource_is_used(&synctab.rxs[syncid].resource))
@@ -434,10 +443,13 @@ PUBLIC int mppa256_sync_close(int syncid)
 
 	if (!mppa256_sync_tx_is_valid(syncid))
 		return (-EBADF);
+	
+	syncid = syncid - MPPA256_SYNC_OPEN_OFFSET;
 
 	/* Bad sync. */
 	if (!resource_is_used(&synctab.txs[syncid].resource))
 		return (-EACCES);
+
 	tag       = UNDERLYING_TX_TAG(syncid);
 	interface = UNDERLYING_TX_INTERFACE(syncid);
 
@@ -452,33 +464,28 @@ PUBLIC int mppa256_sync_close(int syncid)
 /**
  * @brief Wait signal on a specific synchronization point.
  *
- * @param aiocb Asynchronous operation control.
+ * @param syncid ID of the synchronization point.
  *
  * @return Zero if wait signal correctly and non zero otherwise.
  * 
  * @todo How make the slave wait on lock without the need to
  * access the master's private structures? (microkernel approach)
  */
-PUBLIC int mppa256_sync_wait(struct aiocb * aiocb)
+PUBLIC int mppa256_sync_wait(int syncid)
 {
-	/* Bad aiocb. */
-	if (aiocb == NULL)
-		return (-EINVAL);
-	
-	k1b_dcache_inval();
-
-	if (!mppa256_sync_rx_is_valid(aiocb->fd))
+	if (!mppa256_sync_rx_is_valid(syncid))
 		return (-EBADF);
-	
-	if (aiocb->type != BOSTAN_NOC_RX_TYPE)
-		return (-EINVAL);
-	
-	/* Bad lock. */
-	if (aiocb->lock == NULL)
-		return (-EINVAL);
+
+	syncid = syncid - MPPA256_SYNC_CREATE_OFFSET;
+
+#if 1 /* Is the slave with correct data cached? */
+	/* Bad sync. */
+	if (!resource_is_used(&synctab.rxs[syncid].resource))
+		return (-EACCES);
+#endif
 
 	/* Waits for the handler release the lock. */
-	k1b_spinlock_lock(aiocb->lock);
+	k1b_spinlock_lock(&synctab.rxs[syncid].lock);
 
 	return (0);
 }
@@ -497,6 +504,8 @@ PUBLIC int mppa256_sync_signal(int syncid)
 
 	if (!mppa256_sync_tx_is_valid(syncid))
 		return (-EBADF);
+	
+	syncid = syncid - MPPA256_SYNC_OPEN_OFFSET;
 
 	/* Bad sync. */
 	if (!resource_is_used(&synctab.txs[syncid].resource))

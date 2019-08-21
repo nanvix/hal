@@ -29,13 +29,21 @@
 #include <errno.h>
 
 /**
+ * @name File descriptor offset.
+ */
+/**@{*/
+#define MPPA256_MAILBOX_CREATE_OFFSET 0                          /**< Initial File Descriptor ID for Creates. */
+#define MPPA256_MAILBOX_OPEN_OFFSET   MPPA256_MAILBOX_CREATE_MAX /**< Initial File Descriptor ID for Opens.   */
+/**@}*/
+
+/**
  * @name Message Queue constants.
  */
 /**@{*/
-#define MQUEUE_MSG_SIZE   (sizeof(struct underliyng_message)) /**< Size of the underlying message.      */
-#define MQUEUE_MIN_SIZE   (MQUEUE_MSG_SIZE)                   /**< Minimum size of the Message Queue.   */
-#define MQUEUE_MAX_SIZE   (NR_NOC_NODES * MQUEUE_MIN_SIZE)    /**< Maximum size of the Message Queue.   */
-#define MQUEUE_MSG_AMOUNT (MQUEUE_MAX_SIZE / MQUEUE_MIN_SIZE) /**< Message amount in the Message Queue. */
+#define MQUEUE_MSG_SIZE   (sizeof(struct underliyng_message))        /**< Size of the underlying message.      */
+#define MQUEUE_MIN_SIZE   (MQUEUE_MSG_SIZE)                          /**< Minimum size of the Message Queue.   */
+#define MQUEUE_MAX_SIZE   (PROCESSOR_NOC_NODES_NUM* MQUEUE_MIN_SIZE) /**< Maximum size of the Message Queue.   */
+#define MQUEUE_MSG_AMOUNT (MQUEUE_MAX_SIZE / MQUEUE_MIN_SIZE)        /**< Message amount in the Message Queue. */
 /**@}*/
 
 /**
@@ -91,7 +99,7 @@ PRIVATE struct mailbox
 		/* Receiver requisition on hold. */
 		k1b_spinlock_t lock;                                   /**< Receiver request barrier. */
 		void * buffer;                                         /**< Receiver buffer.          */
-	} rxs[MPPA256_MAILBOX_CREATE_MAX];
+	} ALIGN(sizeof(dword_t)) rxs[MPPA256_MAILBOX_CREATE_MAX];
 
 	/**
 	 * @brief Mailbox sender
@@ -111,7 +119,7 @@ PRIVATE struct mailbox
 		k1b_byte_t unused       : 5;       /**< Unused.                                                   */
 		k1b_spinlock_t lock;               /**< Receiver request barrier.                                 */
 		struct underliyng_message message; /**< Underlying buffer for sending asynchronously.             */
-	} txs[MPPA256_MAILBOX_OPEN_MAX];
+	} ALIGN(sizeof(dword_t)) txs[MPPA256_MAILBOX_OPEN_MAX];
 } mbxtab = {
 	.rxs[0 ... MPPA256_MAILBOX_CREATE_MAX-1] = { {0}, {{0}}, 0, 0, K1B_SPINLOCK_UNLOCKED, NULL },
 	.txs[0 ... MPPA256_MAILBOX_OPEN_MAX-1]   = { {0}, 0, 0, 0, 0, 0, 0, K1B_SPINLOCK_UNLOCKED, {0} }
@@ -124,7 +132,7 @@ PRIVATE struct mbxpools
 {
 	const struct resource_pool rx_pool;
 	const struct resource_pool tx_pool;
-} mbxpools = {
+} ALIGN(sizeof(dword_t)) mbxpools = {
 	.rx_pool = {mbxtab.rxs, MPPA256_MAILBOX_CREATE_MAX, sizeof(struct rx)},
 	.tx_pool = {mbxtab.txs, MPPA256_MAILBOX_OPEN_MAX,   sizeof(struct tx)},
 };
@@ -159,7 +167,7 @@ PRIVATE int mppa256_mailbox_node_is_local(int nodenum)
  */
 PRIVATE int mppa256_mailbox_rx_is_valid(int mbxid)
 {
-	return WITHIN(mbxid, 0, MPPA256_MAILBOX_CREATE_MAX);
+	return WITHIN(mbxid, MPPA256_MAILBOX_CREATE_OFFSET, (MPPA256_MAILBOX_CREATE_OFFSET + MPPA256_MAILBOX_CREATE_MAX));
 }
 
 /**
@@ -176,7 +184,24 @@ PRIVATE int mppa256_mailbox_rx_is_valid(int mbxid)
  */
 PRIVATE int mppa256_mailbox_tx_is_valid(int mbxid)
 {
-	return WITHIN(mbxid, 0, MPPA256_MAILBOX_OPEN_MAX);
+	return WITHIN(mbxid, MPPA256_MAILBOX_OPEN_OFFSET, (MPPA256_MAILBOX_OPEN_OFFSET + MPPA256_MAILBOX_OPEN_MAX));
+}
+
+/**
+ * @brief Asserts whether or not a sender mailbox is valid.
+ *
+ * @param mbxid ID of the target mailbox.
+ *
+ * @returns One if the target mailbox is valid, and false
+ * otherwise.
+ *
+ * @note This function is non-blocking.
+ * @note This function is thread-safe.
+ * @note This function is reentrant.
+ */
+PRIVATE int mppa256_node_is_valid(int nodenum)
+{
+	return WITHIN(nodenum, 0, PROCESSOR_CLUSTERS_NUM);
 }
 
 /**
@@ -262,6 +287,9 @@ PUBLIC int mppa256_mailbox_create(int nodenum)
 	/* Invalid NoC node ID. */
 	if (!mppa256_mailbox_node_is_local(nodenum))
 		return (-EINVAL);
+	
+	if (!mppa256_node_is_valid(nodenum))
+		return (-EINVAL);
 
 	/* Gets Mailbox index. */
 	mbxid = RESOURCEID_RX(nodenum);
@@ -317,7 +345,7 @@ PUBLIC int mppa256_mailbox_create(int nodenum)
 	resource_set_used(&mbxtab.rxs[mbxid].resource);
 	resource_set_notbusy(&mbxtab.rxs[mbxid].resource);
 
-	return (mbxid);
+	return (mbxid + MPPA256_MAILBOX_CREATE_OFFSET);
 }
 
 /**
@@ -337,7 +365,10 @@ PUBLIC int mppa256_mailbox_open(int nodenum)
 	int nodeid;
 	int target_node;
 	int interface;
-	// uint64_t mask;
+
+	/* Is nodenum valid? */
+	if (!mppa256_node_is_valid(nodenum))
+		return (-EINVAL);
 
 	/* Is nodenum in the local cluster? */
 	if (mppa256_mailbox_node_is_local(nodenum))
@@ -390,7 +421,7 @@ PUBLIC int mppa256_mailbox_open(int nodenum)
 
 	resource_set_notbusy(&mbxtab.txs[mbxid].resource);
 
-	return (mbxid);
+	return (mbxid + MPPA256_MAILBOX_OPEN_OFFSET);
 }
 
 /**
@@ -409,6 +440,8 @@ PUBLIC int mppa256_mailbox_unlink(int mbxid)
 	/* Invalid mailbox. */
 	if (!mppa256_mailbox_rx_is_valid(mbxid))
 		return (-EBADF);
+	
+	mbxid = mbxid - MPPA256_MAILBOX_CREATE_OFFSET;
 
 	/* Bad mailbox. */
 	if (!resource_is_used(&mbxtab.rxs[mbxid].resource))
@@ -451,6 +484,8 @@ PUBLIC int mppa256_mailbox_close(int mbxid)
 	/* Invalid mailbox. */
 	if (!mppa256_mailbox_tx_is_valid(mbxid))
 		return (-EBADF);
+	
+	mbxid = mbxid - MPPA256_MAILBOX_OPEN_OFFSET;
 
 	/* Bad mailbox. */
 	if (!resource_is_used(&mbxtab.txs[mbxid].resource))
@@ -538,12 +573,11 @@ PRIVATE int mppa256_mailbox_send_msg(int mbxid)
  * @param mbxid  ID of the target mailbox.
  * @param buffer Buffer where the data should be read from.
  * @param size   Number of bytes to write.
- * @param aiocb  Asynchronous operation control.
  *
  * @returns Upon successful completion, 0 is retuned
  * and non zero oterwise.
  */
-PUBLIC int mppa256_mailbox_awrite(int mbxid, const void * buffer, uint64_t size, struct aiocb * aiocb)
+PUBLIC int mppa256_mailbox_awrite(int mbxid, const void * buffer, uint64_t size)
 {
 	/* Invalid mailbox. */
 	if (!mppa256_mailbox_tx_is_valid(mbxid))
@@ -556,6 +590,8 @@ PUBLIC int mppa256_mailbox_awrite(int mbxid, const void * buffer, uint64_t size,
 	/* Invalid write size. */
 	if (size != MPPA256_MAILBOX_MSG_SIZE)
 		return (-EINVAL);
+	
+	mbxid = mbxid - MPPA256_MAILBOX_OPEN_OFFSET;
 
 	/* Bad mailbox. */
 	if (!resource_is_used(&mbxtab.txs[mbxid].resource))
@@ -573,10 +609,6 @@ PUBLIC int mppa256_mailbox_awrite(int mbxid, const void * buffer, uint64_t size,
 	kmemcpy(&mbxtab.txs[mbxid].message.buffer, buffer, MPPA256_MAILBOX_MSG_SIZE);
 	resource_set_busy(&mbxtab.txs[mbxid].resource);
 	mbxtab.txs[mbxid].commit = 1;
-
-	aiocb->fd   = mbxid;
-	aiocb->type = BOSTAN_NOC_TX_TYPE;
-	aiocb->lock = &mbxtab.txs[mbxid].lock;
 
 	/* Is this the first message? Then we send the message. */
 	if (mbxtab.txs[mbxid].is_first_msg)
@@ -681,12 +713,11 @@ PRIVATE int mppa256_mailbox_msg_copy(int mbxid)
  * @param mbxid  ID of the target mailbox.
  * @param buffer Buffer where the data should be written to.
  * @param size   Number of bytes to read.
- * @param aiocb  Asynchronous operation control.
  *
  * @returns Upon successful completion, 0 is retuned
  * and non zero oterwise.
  */
-PUBLIC int mppa256_mailbox_aread(int mbxid, void * buffer, uint64_t size, struct aiocb * aiocb)
+PUBLIC int mppa256_mailbox_aread(int mbxid, void * buffer, uint64_t size)
 {
 	/* Invalid mailbox. */
 	if (!mppa256_mailbox_rx_is_valid(mbxid))
@@ -699,6 +730,8 @@ PUBLIC int mppa256_mailbox_aread(int mbxid, void * buffer, uint64_t size, struct
 	/* Invalid read size. */
 	if (size != MPPA256_MAILBOX_MSG_SIZE)
 		return (-EINVAL);
+	
+	mbxid = mbxid - MPPA256_MAILBOX_CREATE_OFFSET;
 
 	/* Bad mailbox. */
 	if (!resource_is_used(&mbxtab.rxs[mbxid].resource))
@@ -713,10 +746,6 @@ PUBLIC int mppa256_mailbox_aread(int mbxid, void * buffer, uint64_t size, struct
 	mbxtab.rxs[mbxid].buffer = buffer;
 	resource_set_busy(&mbxtab.rxs[mbxid].resource);
 
-	aiocb->fd   = mbxid;
-	aiocb->type = BOSTAN_NOC_RX_TYPE;
-	aiocb->lock = &mbxtab.rxs[mbxid].lock;
-
 	/* Is the message queue not empty? */
 	if (mbxtab.rxs[mbxid].message_count > 0)
 		mppa256_mailbox_msg_copy(mbxid);
@@ -729,42 +758,47 @@ PUBLIC int mppa256_mailbox_aread(int mbxid, void * buffer, uint64_t size, struct
 /**
  * @brief Waits asynchronous operation.
  *
- * @param aiocb Asynchronous operation control.
+ * @param mbxid ID of the Target Mailbox.
  *
  * @return Zero if wait read correctly and non zero otherwise.
  */
-PUBLIC int mppa256_mailbox_wait(struct aiocb * aiocb)
+PUBLIC int mppa256_mailbox_wait(int mbxid)
 {
-	/* Bad aiocb. */
-	if (aiocb == NULL)
-		return (-EINVAL);
-
-	k1b_dcache_inval();
-
 	/* Is it a rx operation? */
-	if (aiocb->type == BOSTAN_NOC_RX_TYPE)
+	if (mbxid < MPPA256_MAILBOX_OPEN_OFFSET)
 	{
-		if (!mppa256_mailbox_rx_is_valid(aiocb->fd))
+		if (!mppa256_mailbox_rx_is_valid(mbxid))
 			return (-EBADF);
+		
+		mbxid = mbxid - MPPA256_MAILBOX_CREATE_OFFSET;
+
+		#if 1 /* Is the slave with correct data cached? */
+			/* Bad sync. */
+			if (!resource_is_used(&mbxtab.rxs[mbxid].resource))
+				return (-EACCES);
+		#endif
+
+		/* Waits for the handler release the lock. */
+		k1b_spinlock_lock(&mbxtab.rxs[mbxid].lock);
 	}
 
 	/* Is it a tx operation? */
-	else if (aiocb->type == BOSTAN_NOC_TX_TYPE)
-	{
-		if (!mppa256_mailbox_tx_is_valid(aiocb->fd))
-			return (-EBADF);
-	}
-
-	/* Invalid operation type. */
 	else
-		return (-EINVAL);
+	{
+		if (!mppa256_mailbox_tx_is_valid(mbxid))
+			return (-EBADF);
+		
+		mbxid = mbxid - MPPA256_MAILBOX_OPEN_OFFSET;
 
-	/* Bad lock. */
-	if (aiocb->lock == NULL)
-		return (-EINVAL);
+		#if 1 /* Is the slave with correct data cached? */
+			/* Bad sync. */
+			if (!resource_is_used(&mbxtab.txs[mbxid].resource))
+				return (-EACCES);
+		#endif
 
-	/* Waits for the handler release the lock. */
-	k1b_spinlock_lock(aiocb->lock);
+		/* Waits for the handler release the lock. */
+		k1b_spinlock_lock(&mbxtab.txs[mbxid].lock);
+	}
 
 	return (0);
 }
