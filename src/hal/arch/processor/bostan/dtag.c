@@ -403,7 +403,7 @@ static inline void bostan_dnoc_rx_update_notify(int interface, int tag, int even
 }
 
 /*============================================================================*
- * bostan_cnoc_setup()                                                        *
+ * bostan_dnoc_it_handler()                                                   *
  *============================================================================*/
 
 /**
@@ -517,10 +517,10 @@ PUBLIC void bostan_dnoc_setup(void)
 			bostan_dnoc_uc_path[interface][tag].header_ext.dword      = 0ULL;
 			bostan_dnoc_uc_path[interface][tag].min_max_task_id.dword = 0ULL;
 #endif
+			bostan_dnoc_rx_update_notify(interface, tag, BOSTAN_DNOC_EVENTS, 0);
 
 			/* Maybe this is not necessary but in some mOS functions, they set the activation register. */
 			mOS_async_uc_get_cfg_perm(interface, tag, BOSTAN_DNOC_EVENTS);
-
 			if (mOS_async_uc_rda_event_waitclear(BOSTAN_DNOC_EVENTS) != 0)
 				kpanic("Error on ucore configuration!");
 

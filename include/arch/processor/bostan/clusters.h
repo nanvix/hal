@@ -74,6 +74,11 @@
 	/**@}*/
 
 	/**
+	 * @brief ID of master cluster.
+	 */
+	#define BOSTAN_CLUSTERID_MASTER BOSTAN_IOCLUSTER0
+
+	/**
 	 * @brief Gets the ID of the underling cluster.
 	 *
 	 * @returns The ID of the underlying cluster.
@@ -133,8 +138,9 @@
 	 * @name Provided Constants
 	 */
 	/**@{*/
-	#define PROCESSOR_CCLUSTERS_NUM  BOSTAN_CCLUSTERS_NUM  /**< @see BOSTAN_CCLUSTERS_NUM  */
-	#define PROCESSOR_IOCLUSTERS_NUM BOSTAN_IOCLUSTERS_NUM /**< @see BOSTAN_IOCLUSTERS_NUM */
+	#define PROCESSOR_CCLUSTERS_NUM  BOSTAN_CCLUSTERS_NUM      /**< @see BOSTAN_CCLUSTERS_NUM    */
+	#define PROCESSOR_IOCLUSTERS_NUM BOSTAN_IOCLUSTERS_NUM     /**< @see BOSTAN_IOCLUSTERS_NUM   */
+	#define PROCESSOR_CLUSTERID_MASTER BOSTAN_CLUSTERID_MASTER /**< @see BOSTAN_CLUSTERID_MASTER */
 	/**@}*/
 
 	/**

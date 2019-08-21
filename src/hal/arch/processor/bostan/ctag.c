@@ -35,8 +35,8 @@
  * @name Resource flags.
  */
 /**@{*/
-#define BOSTAN_CNOC_TAG_USED  1ULL /**< Used tag?          */
-#define BOSTAN_CNOC_IT_ENABLE 1ULL /**< Enabled interrupt? */
+#define BOSTAN_CNOC_TAG_USED  0x1ULL /**< Used tag?          */
+#define BOSTAN_CNOC_IT_ENABLE 0x1ULL /**< Enabled interrupt? */
 /**@}*/
 
 /**
@@ -68,17 +68,17 @@
  * @name Reciever resources.
  */
 /**@{*/
-PRIVATE uint64_t bostan_cnoc_rx_tags[BOSTAN_NR_INTERFACES][BOSTAN_CNOC_RX_BIT_FIELD_AMOUNT]       ALIGN(sizeof(uint64_t)); /**< Receiver tags.                  */
-PRIVATE uint64_t bostan_cnoc_barrier_modes[BOSTAN_NR_INTERFACES][BOSTAN_CNOC_RX_BIT_FIELD_AMOUNT] ALIGN(sizeof(uint64_t)); /**< Receiver tags modes.            */
-PRIVATE uint64_t bostan_cnoc_rx_its[BOSTAN_NR_INTERFACES][BOSTAN_CNOC_RX_BIT_FIELD_AMOUNT]        ALIGN(sizeof(uint64_t)); /**< Receiver tags interrupt status. */
-PRIVATE bostan_noc_handler_fn bostan_cnoc_rx_handlers[BOSTAN_NR_INTERFACES][BOSTAN_CNOC_RX_MAX]   ALIGN(sizeof(uint64_t)); /**< Receiver tags handlers.         */
+PRIVATE uint64_t bostan_cnoc_rx_tags[BOSTAN_NR_INTERFACES][BOSTAN_CNOC_RX_BIT_FIELD_AMOUNT]       ALIGN(sizeof(dword_t)); /**< Receiver tags.                  */
+PRIVATE uint64_t bostan_cnoc_barrier_modes[BOSTAN_NR_INTERFACES][BOSTAN_CNOC_RX_BIT_FIELD_AMOUNT] ALIGN(sizeof(dword_t)); /**< Receiver tags modes.            */
+PRIVATE uint64_t bostan_cnoc_rx_its[BOSTAN_NR_INTERFACES][BOSTAN_CNOC_RX_BIT_FIELD_AMOUNT]        ALIGN(sizeof(dword_t)); /**< Receiver tags interrupt status. */
+PRIVATE bostan_noc_handler_fn bostan_cnoc_rx_handlers[BOSTAN_NR_INTERFACES][BOSTAN_CNOC_RX_MAX]   ALIGN(sizeof(dword_t)); /**< Receiver tags handlers.         */
 /**@}*/
 
 /**
  * @name Transfer resources.
  */
 /**@{*/
-PRIVATE uint8_t bostan_cnoc_tx_tags[BOSTAN_NR_INTERFACES] ALIGN(sizeof(uint64_t)); /**< Transfer tags. */
+PRIVATE uint8_t bostan_cnoc_tx_tags[BOSTAN_NR_INTERFACES] ALIGN(sizeof(dword_t)); /**< Transfer tags. */
 /**@}*/
 
 /*============================================================================*
@@ -133,7 +133,7 @@ static inline void bostan_cnoc_rx_set_unused(int interface, int tag)
  */
 static inline void bostan_cnoc_rx_enable_it(int interface, int tag)
 {
-	bostan_cnoc_rx_tags[interface][FIELD(tag)] |= (BOSTAN_CNOC_IT_ENABLE << OFFSET(tag));
+	bostan_cnoc_rx_its[interface][FIELD(tag)] |= (BOSTAN_CNOC_IT_ENABLE << OFFSET(tag));
 }
 
 /**
@@ -144,7 +144,7 @@ static inline void bostan_cnoc_rx_enable_it(int interface, int tag)
  */
 static inline void bostan_cnoc_rx_disable_it(int interface, int tag)
 {
-	bostan_cnoc_rx_tags[interface][FIELD(tag)] &= ~(BOSTAN_CNOC_IT_ENABLE << OFFSET(tag));
+	bostan_cnoc_rx_its[interface][FIELD(tag)] &= ~(BOSTAN_CNOC_IT_ENABLE << OFFSET(tag));
 }
 
 /*----------------------------------------------------------------------------*
@@ -240,23 +240,11 @@ static inline int bostan_cnoc_tx_is_used(const int interface, int tag)
  */
 static inline void bostan_cnoc_rx_update_notify(int interface, int tag, int events, int cores_mask)
 {
-	mppa_cnoc_mailbox_notif_t notif;
-
-	notif.dword    = 0ULL;
-	notif._.enable = 1;
-	notif._.evt_en = (events == BOSTAN_CNOC_EVENTS);
-	notif._.it_en  = (events != BOSTAN_CNOC_EVENTS);
-#ifdef __k1dp__
-	notif._.pe     = cores_mask;
-#else
-	notif._.rm     = cores_mask;
-#endif
-
-	mppa_cnoc[interface]->message_mailbox_notif[tag].dword = notif.dword;
+	mOS_mb_cfg_line(interface, tag, events, cores_mask);
 }
 
 /*============================================================================*
- * bostan_cnoc_setup()                                                       *
+ * bostan_cnoc_it_handler()                                                   *
  *============================================================================*/
 
 /**
@@ -277,33 +265,36 @@ PRIVATE void bostan_cnoc_it_handler(int ev_src)
 
 	UNUSED(ev_src);
 
+	kprintf("[hal[processor][bostan][cnoc] Interrupt Handler triggered!");
+
 	for (unsigned int interface = 0; interface < BOSTAN_NR_INTERFACES; interface++)
 	{
 		for (unsigned int field = 0; field < BOSTAN_CNOC_RX_BIT_FIELD_AMOUNT; field++)
 		{
 			/* Gets the set of tags that generated an interrupt. */
 			tags_set = mppa_cnoc[interface]->message_rx.status[field].dword;
-			tags_set &= ~(bostan_cnoc_rx_its[interface][field]);
 
 			if (tags_set)
 			{
 				/* Cleans RX Tags flags for incoming interrupts. */
 				__k1_io_write64((void *)(&mppa_cnoc[interface]->message_rx.status_clear[field]), tags_set);
 				__k1_cnoc_clear_it_status(interface);
+			}
 
-				/* For each tag that generated an interrupt, executes the call of its specific handler. */
-				while (tags_set)
-				{
-					offset    = __builtin_k1_ctzdl(tags_set);
-					tags_set &= ~(0x1ULL << offset);
+			tags_set &= ~(bostan_cnoc_rx_its[interface][field]);
 
-					tag = field * (sizeof(uint64_t) * 8) + offset;
+			/* For each tag that generated an interrupt, executes the call of its specific handler. */
+			while (tags_set)
+			{
+				offset    = __builtin_k1_ctzdl(tags_set);
+				tags_set &= ~(0x1ULL << offset);
 
-					handler = bostan_cnoc_rx_handlers[interface][tag];
+				tag = field * (sizeof(uint64_t) * 8) + offset;
 
-					if (handler)
-						handler(interface, tag);
-				}
+				handler = bostan_cnoc_rx_handlers[interface][tag];
+
+				if (handler != NULL)
+					handler(interface, tag);
 			}
 		}
 	}
@@ -319,24 +310,44 @@ PRIVATE void bostan_cnoc_it_handler(int ev_src)
  */
 PUBLIC void bostan_cnoc_setup(void)
 {
+	__k1_cnoc_initialize_rights_allopen();
+
 	interrupt_register(K1B_INT_CNOC, bostan_cnoc_it_handler);
 
 	for (int interface = 0; interface < BOSTAN_NR_INTERFACES; interface++)
 	{
+		mOS_async_mailbox_get_cfg_perm(interface, BOSTAN_CNOC_EVENTS);
+		if (mOS_async_mailbox_rda_event_waitclear(BOSTAN_CNOC_EVENTS) != 0)
+			kpanic("[hal][processor][bostan][cnoc] Core cannot configures the mailbox notification!");
+
 		/* All tags are unused. */
 		for (unsigned int field = 0; field < BOSTAN_CNOC_RX_BIT_FIELD_AMOUNT; field++)
-			bostan_cnoc_rx_tags[interface][field] = 0ULL;
+		{
+			bostan_cnoc_rx_tags[interface][field]       = 0ULL;
+			bostan_cnoc_rx_its[interface][field]        = 0ULL;
+			bostan_cnoc_barrier_modes[interface][field] = ~(0ULL);
+			mppa_cnoc[interface]->message_rx.barrier_mode[field].dword = bostan_cnoc_barrier_modes[interface][field];
 
-		/* All tags do not have handlers. */
-		for (unsigned int field = 0; field < BOSTAN_CNOC_RX_BIT_FIELD_AMOUNT; field++)
-			bostan_cnoc_rx_its[interface][field] = 0ULL;
+			__k1_io_write64((void *)(&mppa_cnoc[interface]->message_rx.status_clear[field]), ~(0ULL));
+		}
 
-		for (unsigned int tag = 0; tag < BOSTAN_CNOC_RX_BIT_FIELD_AMOUNT; tag++)
-			bostan_cnoc_rx_handlers[interface][tag] = NULL;
+		__k1_cnoc_clear_it_status(interface);
 
 		__builtin_k1_wpurge();
 		__builtin_k1_fence();
+
+		for (unsigned int tag = 0; tag < BOSTAN_CNOC_RX_BIT_FIELD_AMOUNT; tag++)
+		{
+			bostan_cnoc_rx_handlers[interface][tag] = NULL;
+			bostan_cnoc_rx_update_notify(interface, tag, BOSTAN_CNOC_INTERRUPTS, (1 << core_get_id()));
+
+			/* Sets initial value. */
+			mppa_cnoc[interface]->message_ram[tag].dword = 0x0ULL;
+		}
 	}
+
+	__builtin_k1_wpurge();
+	__builtin_k1_fence();
 }
 
 /*============================================================================*
@@ -378,11 +389,35 @@ PUBLIC int bostan_cnoc_rx_alloc(int interface, int tag)
  */
 PUBLIC int bostan_cnoc_rx_free(int interface, int tag)
 {
+	int field;
+	int offset;
+
 	if (!bostan_cnoc_rx_is_valid(interface, tag))
 		return (-EINVAL);
 
 	if (!bostan_cnoc_rx_is_used(interface, tag))
 		return (-EINVAL);
+
+	mOS_async_mailbox_get_cfg_perm(interface, BOSTAN_CNOC_EVENTS);
+
+	field  = FIELD(tag);
+	offset = OFFSET(tag);
+
+	if (mOS_async_mailbox_rda_event_waitclear(BOSTAN_CNOC_EVENTS) != 0)
+		kpanic("[hal][processor][bostan][cnoc] Core cannot configures the mailbox notification!");
+
+	/* Updates mailbox modes of the tags field. */
+	bostan_cnoc_barrier_modes[interface][field] |= (0x1ULL << offset);
+	mppa_cnoc[interface]->message_rx.barrier_mode[field].dword = bostan_cnoc_barrier_modes[interface][field];
+
+	__builtin_k1_wpurge();
+	__builtin_k1_fence();
+
+	__k1_io_write64((void *)(&mppa_cnoc[interface]->message_rx.status_clear[field]), (1ULL << offset));
+	__k1_cnoc_clear_it_status(interface);
+
+	/* Sets initial value. */
+	mppa_cnoc[interface]->message_ram[tag].dword = 0x0ULL;
 
 	bostan_cnoc_rx_set_unused(interface, tag);
 
@@ -393,7 +428,8 @@ PUBLIC int bostan_cnoc_rx_free(int interface, int tag)
 	}
 
 	/* Configures the tag to generate an event but the event does not notify anyone. */
-	bostan_cnoc_rx_update_notify(interface, tag, BOSTAN_CNOC_EVENTS, 0);
+	// bostan_cnoc_rx_update_notify(interface, tag, BOSTAN_CNOC_EVENTS, 0);
+	bostan_cnoc_rx_update_notify(interface, tag, BOSTAN_CNOC_INTERRUPTS, (1 << core_get_id()));
 
 	return (0);
 }
@@ -477,6 +513,10 @@ PUBLIC int bostan_cnoc_rx_config(
 	field  = FIELD(tag);
 	offset = OFFSET(tag);
 
+	mOS_async_mailbox_get_cfg_perm(interface, BOSTAN_CNOC_EVENTS);
+	if (mOS_async_mailbox_rda_event_waitclear(BOSTAN_CNOC_EVENTS) != 0)
+		kpanic("[hal][processor][bostan][cnoc] Core cannot configures the mailbox notification!");
+
 	/* Updates barrier modes of the tags field. */
 	if (mode == BOSTAN_CNOC_BARRIER_MODE)
 		bostan_cnoc_barrier_modes[interface][field] |= (0x1ULL << offset);
@@ -488,10 +528,18 @@ PUBLIC int bostan_cnoc_rx_config(
 	__builtin_k1_wpurge();
 	__builtin_k1_fence();
 
+	/**
+	 * The resource may not have received a signal and has not been handled,
+	 * so it must be cleared if it does not generate a SIGTRAP on RM.
+	 */
+	__k1_io_write64((void *)(&mppa_cnoc[interface]->message_rx.status_clear[field]), (1ULL << offset));
+	__k1_cnoc_clear_it_status(interface);
+	__k1_cnoc_event_clear1_barrier(interface);
+
 	/* Sets initial value. */
 	mppa_cnoc[interface]->message_ram[tag].dword = mask;
 
-	/* Configures notification mode. */
+	/* Configures notification mode with interrupts for a specific cpu. */
 	if (handler != NULL)
 	{
 		bostan_cnoc_rx_handlers[interface][tag] = handler;
@@ -499,12 +547,14 @@ PUBLIC int bostan_cnoc_rx_config(
 		bostan_cnoc_rx_enable_it(interface, tag);
 		bostan_cnoc_rx_update_notify(interface, tag, BOSTAN_CNOC_INTERRUPTS, (1 << core_get_id()));
 	}
+
+	/**
+	 * Configures notification mode with events for a all cpu because
+	 * perhaps another cpu, other than the master, waits for the event.
+	 */
 	else
 		bostan_cnoc_rx_update_notify(interface, tag, BOSTAN_CNOC_EVENTS, (~0));
-
-	__builtin_k1_wpurge();
-	__builtin_k1_fence();
-
+	
 	return (0);
 }
 

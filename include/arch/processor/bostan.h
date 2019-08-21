@@ -40,16 +40,6 @@
  */
 /**@*/
 
-	/**
-	 * @brief Asynchronous IO Control Structure
-	 */
-	struct aiocb
-	{
-		int fd;            /**< File descriptor.           */
-		int type;          /**< Type of operation (RX/TX). */
-		spinlock_t * lock; /**< Operation lock.            */
-	};
-
 	#include <arch/processor/bostan/clusters.h>
 	#include <arch/processor/bostan/noc.h>
 
@@ -62,13 +52,6 @@
 /**
  * @cond bostan
  */
-
-	/**
-	 * @name Exported Structures
-	 */
-	/**@{*/
-	#define __aiocb_struct /**< @see aiocb */
-	/**@}*/
 
 	/**
 	 * @name Provided Features
