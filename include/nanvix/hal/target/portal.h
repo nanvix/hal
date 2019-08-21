@@ -218,9 +218,9 @@
 	 * code is returned instead.
 	 */
 #if (__TARGET_HAS_PORTAL)
-	EXTERN ssize_t portal_awrite(int portalid, const void * buffer, uint64_t size);
+	EXTERN ssize_t portal_awrite(int portalid, const void *buffer, uint64_t size);
 #else
-	static inline ssize_t portal_awrite(int portalid, const void * buffer, uint64_t size)
+	static inline ssize_t portal_awrite(int portalid, const void *buffer, uint64_t size)
 	{
 		UNUSED(portalid);
 		UNUSED(buffer);
@@ -241,9 +241,9 @@
 	 * and non zero otherwise.
 	 */
 #if (__TARGET_HAS_PORTAL)
-	EXTERN ssize_t portal_aread(int portalid, void * buffer, uint64_t size);
+	EXTERN ssize_t portal_aread(int portalid, void *buffer, uint64_t size);
 #else
-	static inline ssize_t portal_aread(int portalid, void * buffer, uint64_t size)
+	static inline ssize_t portal_aread(int portalid, void *buffer, uint64_t size)
 	{
 		UNUSED(portalid);
 		UNUSED(buffer);
