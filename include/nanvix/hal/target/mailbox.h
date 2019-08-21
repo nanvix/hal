@@ -50,11 +50,6 @@
 		#error "MAILBOX_OPEN_MAX not defined"
 		#endif
 
-		/* Structures */
-		#ifndef __aiocb_struct
-		#error "struct aiocb not defined?"
-		#endif
-
 		/* Functions */
 		#ifndef __mailbox_create_fn
 		#error "mailbox_create() not defined?"
@@ -189,20 +184,18 @@
 	 * @param mbxid  ID of the target mailbox.
 	 * @param buffer Buffer where the data should be read from.
 	 * @param size   Number of bytes to write.
-	 * @param aiocb  Asynchronous operation control.
 	 *
 	 * @returns Upon successful completion, 0 is returned
 	 * and non zero otherwise.
 	 */
 #if (__TARGET_HAS_MAILBOX)
-	EXTERN int mailbox_write(int mbxid, const void * buffer, uint64_t size, struct aiocb * aiocb);
+	EXTERN ssize_t mailbox_awrite(int mbxid, const void *buffer, uint64_t size);
 #else
-	static inline int mailbox_awrite(int mbxid, const void * buffer, uint64_t size, struct aiocb * aiocb)
+	static inline ssize_t mailbox_awrite(int mbxid, const void *buffer, uint64_t size)
 	{
 		UNUSED(mbxid);
 		UNUSED(buffer);
 		UNUSED(size);
-		UNUSED(aiocb);
 
 		return (-ENOSYS);
 	}
@@ -214,20 +207,18 @@
 	 * @param mbxid  ID of the target mailbox.
 	 * @param buffer Buffer where the data should be written to.
 	 * @param size   Number of bytes to read.
-	 * @param aiocb  Asynchronous operation control.
 	 *
 	 * @returns Upon successful completion, 0 is returned
 	 * and non zero otherwise.
 	 */
 #if (__TARGET_HAS_MAILBOX)
-	EXTERN int mailbox_aread(int mbxid, void * buffer, uint64_t size, struct aiocb * aiocb);
+	EXTERN ssize_t mailbox_aread(int mbxid, void *buffer, uint64_t size);
 #else
-	static inline int mailbox_aread(int mbxid, void * buffer, uint64_t size, struct aiocb * aiocb)
+	static inline ssize_t mailbox_aread(int mbxid, void *buffer, uint64_t size)
 	{
 		UNUSED(mbxid);
 		UNUSED(buffer);
 		UNUSED(size);
-		UNUSED(aiocb);
 
 		return (-ENOSYS);
 	}
@@ -236,16 +227,16 @@
 	/**
 	 * @brief Waits asynchronous operation.
 	 *
-	 * @param aiocb Asynchronous operation control.
+	 * @param mbxid ID of the target mailbox.
 	 *
 	 * @return Zero if wait read correctly and non zero otherwise.
 	 */
 #if (__TARGET_HAS_MAILBOX)
-	EXTERN int mailbox_wait(struct aiocb * aiocb);
+	EXTERN int mailbox_wait(int mbxid);
 #else
-	static inline int mailbox_wait(struct aiocb * aiocb)
+	static inline int mailbox_wait(int mbxid)
 	{
-		UNUSED(aiocb);
+		UNUSED(mbxid);
 
 		return (0);
 	}

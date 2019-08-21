@@ -53,11 +53,6 @@
 		#error "PORTAL_MAX_SIZE not defined"
 		#endif
 
-		/* Structures */
-		#ifndef __aiocb_struct
-		#error "struct aiocb not defined?"
-		#endif
-
 		/* Functions */
 		#ifndef __portal_create_fn
 		#error "portal_create() not defined?"
@@ -223,14 +218,13 @@
 	 * code is returned instead.
 	 */
 #if (__TARGET_HAS_PORTAL)
-	EXTERN int portal_awrite(int portalid, const void * buffer, uint64_t size, struct aiocb * aiocb);
+	EXTERN ssize_t portal_awrite(int portalid, const void * buffer, uint64_t size);
 #else
-	static inline int portal_awrite(int portalid, const void * buffer, uint64_t size, struct aiocb * aiocb)
+	static inline ssize_t portal_awrite(int portalid, const void * buffer, uint64_t size)
 	{
 		UNUSED(portalid);
 		UNUSED(buffer);
 		UNUSED(size);
-		UNUSED(aiocb);
 
 		return (-ENOSYS);
 	}
@@ -242,20 +236,18 @@
 	 * @param portalid  ID of the target portal.
 	 * @param buffer Buffer where the data should be written to.
 	 * @param size   Number of bytes to read.
-	 * @param aiocb  Asynchronous operation control.
 	 *
 	 * @returns Upon successful completion, 0 is returned
 	 * and non zero otherwise.
 	 */
 #if (__TARGET_HAS_PORTAL)
-	EXTERN int portal_aread(int portalid, void * buffer, uint64_t size, struct aiocb * aiocb);
+	EXTERN ssize_t portal_aread(int portalid, void * buffer, uint64_t size);
 #else
-	static inline int portal_aread(int portalid, void * buffer, uint64_t size, struct aiocb * aiocb)
+	static inline ssize_t portal_aread(int portalid, void * buffer, uint64_t size)
 	{
 		UNUSED(portalid);
 		UNUSED(buffer);
 		UNUSED(size);
-		UNUSED(aiocb);
 
 		return (-ENOSYS);
 	}
@@ -264,16 +256,16 @@
 	/**
 	 * @brief Waits asynchronous operation.
 	 *
-	 * @param aiocb Asynchronous operation control.
+	 * @param portalid ID of the target portal.
 	 *
 	 * @return Zero if wait read correctly and non zero otherwise.
 	 */
 #if (__TARGET_HAS_PORTAL)
-	EXTERN int portal_wait(struct aiocb * aiocb);
+	EXTERN int portal_wait(int portalid);
 #else
-	static inline int portal_wait(struct aiocb * aiocb)
+	static inline int portal_wait(int portalid)
 	{
-		UNUSED(aiocb);
+		UNUSED(portalid);
 
 		return (-ENOSYS);
 	}
