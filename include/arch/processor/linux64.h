@@ -48,8 +48,13 @@
 
 	/**
 	 * @brief Powers on the underlying processor.
+	 *
+	 * @param nclusters Number of clusters to power on.
+	 *
+	 * @returns Upon successful completion, zero is returned. Upon
+	 * failure, a negative error code is returned instead.
 	 */
-	EXTERN int linux64_processor_boot(void);
+	EXTERN int linux64_processor_boot(int nclusters);
 
 	/**
 	 * @brief Initializes the underlying processor.

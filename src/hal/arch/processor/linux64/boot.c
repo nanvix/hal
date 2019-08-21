@@ -31,9 +31,9 @@
 #include <unistd.h>
 
 /**
- * @brief Powers on the underlying processor.
+ * @todo TODO: provide a detailed description for this function.
  */
-PUBLIC int linux64_processor_boot(void)
+PUBLIC int linux64_processor_boot(int nclusters)
 {
 	kprintf("[hal][processor] powering on processor...");
 
@@ -44,6 +44,10 @@ PUBLIC int linux64_processor_boot(void)
 	for (int i = 1; i < LINUX64_PROCESSOR_CLUSTERS_NUM; i++)
 	{
 		pid_t pid;
+
+		/* Enough clusters are powered on. */
+		if (i == nclusters)
+			break;
 
 		/* Cannot power on slave cluster. */
 		if ((pid = fork()) < 0)

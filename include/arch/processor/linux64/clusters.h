@@ -36,6 +36,8 @@
  */
 /**@*/
 
+	#include <nanvix/const.h>
+
 	/**
 	 * @brief Number of IO Clusters.
 	 */
@@ -82,12 +84,12 @@
 	 */
 	EXTERN void linux64_processor_clusters_setup(void);
 
+#endif /* __NANVIX_HAL */
+
 	/**
 	 * @brief Retrieves the ID of the underlying cluster.
 	 */
 	EXTERN int linux64_cluster_get_id(void);
-
-#endif /* __NANVIX_HAL */
 
 	/**
 	 * @brief Retrieves the logical number of the underlying cluster.
@@ -127,18 +129,28 @@
 	 * @name Provided Constants
 	 */
 	/**@{*/
-	#define PROCESSOR_CCLUSTERS_NUM  LINUX64_PROCESSOR_CCLUSTERS_NUM  /**< @see LINUX64_PROCESSOR_CCLUSTERS_NUM  */
-	#define PROCESSOR_IOCLUSTERS_NUM LINUX64_PROCESSOR_IOCLUSTERS_NUM /**< @see LINUX64_PROCESSOR_IOCLUSTERS_NUM */
+	#define PROCESSOR_CCLUSTERS_NUM  LINUX64_PROCESSOR_CCLUSTERS_NUM      /**< @see LINUX64_PROCESSOR_CCLUSTERS_NUM  */
+	#define PROCESSOR_IOCLUSTERS_NUM LINUX64_PROCESSOR_IOCLUSTERS_NUM     /**< @see LINUX64_PROCESSOR_IOCLUSTERS_NUM */
+	#define PROCESSOR_CLUSTERID_MASTER LINUX64_PROCESSOR_CLUSTERID_MASTER /**< @see LINUX64_PROCESSOR_CLUSTERID_MASTER */
 	/**@}*/
 
 	/**
 	 * @name Provided Functions
 	 */
 	/**@{*/
-	#define __cluster_get_id_fn       /**< linux64_cluster_cluster_get_id() */
-	#define __cluster_is_ccluster_fn  /**< linux64_cluster_is_compute()     */
-	#define __cluster_is_iocluster_fn /**< linux64_cluster_is_io()          */
+	#define __cluster_get_id_fn       /**< linux64_cluster_cluster_get_id()  */
+	#define __cluster_get_num_fn      /**< linux64_cluster_cluster_get_num() */
+	#define __cluster_is_ccluster_fn  /**< linux64_cluster_is_compute()      */
+	#define __cluster_is_iocluster_fn /**< linux64_cluster_is_io()           */
 	/**@}*/
+
+	/**
+	 * @see linux64_processor_cluster_get_id().
+	 */
+	static inline int cluster_get_id(void)
+	{
+		return (linux64_cluster_get_id());
+	}
 
 	/**
 	 * @see linux64_processor_cluster_get_num().
