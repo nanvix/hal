@@ -42,6 +42,7 @@
 
 	#include <nanvix/const.h>
 	#include <arch/target/unix64/unix64/sync.h>
+	#include <arch/target/unix64/unix64/mailbox.h>
 	#include <arch/target/unix64/unix64/stdout.h>
 
 #ifdef __NANVIX_HAL
@@ -74,7 +75,7 @@
 	/**@{*/
 	#define __TARGET_HAS_STDOUT  1 /**< Standard Output feature */
 	#define __TARGET_HAS_SYNC    1 /**< Synchronization feature */
-	#define __TARGET_HAS_MAILBOX 0 /**< Mailbox feature         */
+	#define __TARGET_HAS_MAILBOX 1 /**< Mailbox feature         */
 	#define __TARGET_HAS_PORTAL  0 /**< Portal feature          */
 	/**@}*/
 
