@@ -49,6 +49,9 @@
 		#ifndef PROCESSOR_IOCLUSTERS_NUM
 		#error "PROCESSOR_IOCLUSTERS_NUM not defined"
 		#endif
+		#ifndef PROCESSOR_CLUSTERID_MASTER
+		#error "PROCESSOR_CLUSTERID_MASTER not defined"
+		#endif
 
 		/* Functions */
 		#ifndef __cluster_get_id_fn
@@ -64,8 +67,9 @@
 	#else
 
 		/* Constants */
-		#define PROCESSOR_CCLUSTERS_NUM  0
-		#define PROCESSOR_IOCLUSTERS_NUM 1
+		#define PROCESSOR_CCLUSTERS_NUM    0
+		#define PROCESSOR_IOCLUSTERS_NUM   1
+		#define PROCESSOR_CLUSTERID_MASTER 0
 
 	#endif
 

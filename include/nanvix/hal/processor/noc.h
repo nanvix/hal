@@ -43,11 +43,14 @@
 	#if (PROCESSOR_HAS_NOC)
 
 		/* Constants */
-		#ifndef NR_NOC_IONODES
-		#error "NR_NOC_IONODES not defined"
+		#ifndef PROCESSOR_NOC_IONODES_NUM
+		#error "PROCESSOR_NOC_IONODES not defined"
 		#endif
-		#ifndef NR_NOC_CNODES
-		#error "NR_NOC_CNODES not defined"
+		#ifndef PROCESSOR_NOC_CNODES_NUM
+		#error "PROCESSOR_NOC_CNODES not defined"
+		#endif
+		#ifndef PROCESSOR_NOC_NODES_NUM
+		#error "PROCESSOR_NOC_NODES not defined"
 		#endif
 
 		/* Functions */
@@ -67,8 +70,9 @@
 	#else
 
 		/* Dummy Constants */
-		#define NR_NOC_IONODES 1
-		#define NR_NOC_CNODES  0
+		#define PROCESSOR_NOC_IONODES_NUM 1
+		#define PROCESSOR_NOC_CNODES_NUM  0
+		#define PROCESSOR_NOC_NODES_NUM   1
 
 	#endif
 
