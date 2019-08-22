@@ -97,7 +97,7 @@ PRIVATE uint8_t bostan_cnoc_tx_tags[BOSTAN_NR_INTERFACES] ALIGN(sizeof(dword_t))
  *
  * @return Zero if tag is valid non zero otherwise.
  */
-static inline int bostan_cnoc_rx_is_valid(int interface, int tag)
+PRIVATE inline int bostan_cnoc_rx_is_valid(int interface, int tag)
 {
 	return WITHIN(interface, 0, BOSTAN_NR_INTERFACES)
 		&& WITHIN(tag, BOSTAN_CNOC_RX_BASE, BOSTAN_NR_CNOC_RX);
@@ -109,7 +109,7 @@ static inline int bostan_cnoc_rx_is_valid(int interface, int tag)
  * @param interface Underlying DMA interface.
  * @param tag       Underlying resource ID.
  */
-static inline void bostan_cnoc_rx_set_used(int interface, int tag)
+PRIVATE inline void bostan_cnoc_rx_set_used(int interface, int tag)
 {
 	bostan_cnoc_rx_tags[interface][FIELD(tag)] |= (BOSTAN_CNOC_TAG_USED << OFFSET(tag));
 }
@@ -120,7 +120,7 @@ static inline void bostan_cnoc_rx_set_used(int interface, int tag)
  * @param interface Underlying DMA interface.
  * @param tag       Underlying resource ID.
  */
-static inline void bostan_cnoc_rx_set_unused(int interface, int tag)
+PRIVATE inline void bostan_cnoc_rx_set_unused(int interface, int tag)
 {
 	bostan_cnoc_rx_tags[interface][FIELD(tag)] &= ~(BOSTAN_CNOC_TAG_USED << OFFSET(tag));
 }
@@ -131,7 +131,7 @@ static inline void bostan_cnoc_rx_set_unused(int interface, int tag)
  * @param interface Underlying DMA interface.
  * @param tag       Underlying resource ID.
  */
-static inline void bostan_cnoc_rx_enable_it(int interface, int tag)
+PRIVATE inline void bostan_cnoc_rx_enable_it(int interface, int tag)
 {
 	bostan_cnoc_rx_its[interface][FIELD(tag)] |= (BOSTAN_CNOC_IT_ENABLE << OFFSET(tag));
 }
@@ -142,7 +142,7 @@ static inline void bostan_cnoc_rx_enable_it(int interface, int tag)
  * @param interface Underlying DMA interface.
  * @param tag       Underlying resource ID.
  */
-static inline void bostan_cnoc_rx_disable_it(int interface, int tag)
+PRIVATE inline void bostan_cnoc_rx_disable_it(int interface, int tag)
 {
 	bostan_cnoc_rx_its[interface][FIELD(tag)] &= ~(BOSTAN_CNOC_IT_ENABLE << OFFSET(tag));
 }
@@ -159,7 +159,7 @@ static inline void bostan_cnoc_rx_disable_it(int interface, int tag)
  *
  * @return Zero if tag is valid non zero otherwise.
  */
-static inline int bostan_cnoc_tx_is_valid(int interface, int tag)
+PRIVATE inline int bostan_cnoc_tx_is_valid(int interface, int tag)
 {
 	return WITHIN(interface, 0, BOSTAN_NR_INTERFACES)
 		&& WITHIN(tag, BOSTAN_CNOC_TX_BASE, BOSTAN_NR_CNOC_TX);
@@ -171,7 +171,7 @@ static inline int bostan_cnoc_tx_is_valid(int interface, int tag)
  * @param interface Underlying DMA interface.
  * @param tag       Underlying resource ID.
  */
-static inline void bostan_cnoc_tx_set_used(int interface, int tag)
+PRIVATE inline void bostan_cnoc_tx_set_used(int interface, int tag)
 {
 	bostan_cnoc_tx_tags[interface] |= (BOSTAN_CNOC_TAG_USED << tag);
 }
@@ -182,7 +182,7 @@ static inline void bostan_cnoc_tx_set_used(int interface, int tag)
  * @param interface Underlying DMA interface.
  * @param tag       Underlying resource ID.
  */
-static inline void bostan_cnoc_tx_set_unused(int interface, int tag)
+PRIVATE inline void bostan_cnoc_tx_set_unused(int interface, int tag)
 {
 	bostan_cnoc_tx_tags[interface] &= ~(BOSTAN_CNOC_TAG_USED << tag);
 }
@@ -195,7 +195,7 @@ static inline void bostan_cnoc_tx_set_unused(int interface, int tag)
  *
  * @returns Non zero if the target resource is in used, and zero otherwise.
  */
-static inline int bostan_cnoc_rx_is_used(const int interface, int tag)
+PRIVATE inline int bostan_cnoc_rx_is_used(const int interface, int tag)
 {
 	return ((bostan_cnoc_rx_tags[interface][FIELD(tag)] >> OFFSET(tag)) & BOSTAN_CNOC_TAG_USED);
 }
@@ -208,7 +208,7 @@ static inline int bostan_cnoc_rx_is_used(const int interface, int tag)
  *
  * @returns Non zero if the target interrupt is enabled, and zero otherwise.
  */
-static inline int bostan_cnoc_rx_it_is_enable(const int interface, int tag)
+PRIVATE inline int bostan_cnoc_rx_it_is_enable(const int interface, int tag)
 {
 	return ((bostan_cnoc_rx_its[interface][FIELD(tag)] >> OFFSET(tag)) & BOSTAN_CNOC_IT_ENABLE);
 }
@@ -221,7 +221,7 @@ static inline int bostan_cnoc_rx_it_is_enable(const int interface, int tag)
  *
  * @returns Non zero if the target resource is in used, and zero otherwise.
  */
-static inline int bostan_cnoc_tx_is_used(const int interface, int tag)
+PRIVATE inline int bostan_cnoc_tx_is_used(const int interface, int tag)
 {
 	return ((bostan_cnoc_tx_tags[interface] >> tag) & BOSTAN_CNOC_TAG_USED);
 }
@@ -238,9 +238,44 @@ static inline int bostan_cnoc_tx_is_used(const int interface, int tag)
  * @param events    0 to use events, 1 to use interrupts.
  * @param core_mask Defines which cores will be notified.
  */
-static inline void bostan_cnoc_rx_update_notify(int interface, int tag, int events, int cores_mask)
+PRIVATE inline void bostan_cnoc_rx_update_notify(
+	int interface,
+	int tag,
+	int events,
+	int cores_mask
+)
 {
 	mOS_mb_cfg_line(interface, tag, events, cores_mask);
+}
+
+/*============================================================================*
+ * bostan_cnoc_clear_interface_flags()                                        *
+ *============================================================================*/
+
+/**
+ * @brief Cleans the interrupts flags of the current core.
+ *
+ * @param interface Underlying DMA interface.
+ */
+PRIVATE inline void bostan_cnoc_clear_interface_flags(int interface)
+{
+	int cpuid;
+	mppa_cnoc_it_status_t core_mask;
+
+	cpuid = core_get_id();
+
+#ifdef __node__
+	core_mask._.pe = (1ULL << cpuid);
+#else
+	core_mask._.rm = (1ULL << cpuid);
+#endif
+
+	/* Interrupts Flags. */
+	mppa_cnoc[interface]->message_rx.it_status_clear.dword       = core_mask.dword;
+	mppa_cnoc[interface]->message_rx.it_error_status_clear.dword = core_mask.dword;
+
+	/* Events Flags. */
+	__k1_cnoc_event_clear1_barrier(interface);
 }
 
 /*============================================================================*
@@ -265,8 +300,6 @@ PRIVATE void bostan_cnoc_it_handler(int ev_src)
 
 	UNUSED(ev_src);
 
-	kprintf("[hal[processor][bostan][cnoc] Interrupt Handler triggered!");
-
 	for (unsigned int interface = 0; interface < BOSTAN_NR_INTERFACES; interface++)
 	{
 		for (unsigned int field = 0; field < BOSTAN_CNOC_RX_BIT_FIELD_AMOUNT; field++)
@@ -276,25 +309,36 @@ PRIVATE void bostan_cnoc_it_handler(int ev_src)
 
 			if (tags_set)
 			{
-				/* Cleans RX Tags flags for incoming interrupts. */
-				__k1_io_write64((void *)(&mppa_cnoc[interface]->message_rx.status_clear[field]), tags_set);
-				__k1_cnoc_clear_it_status(interface);
-			}
+				/* Cleans RX Tags Flags for incoming interrupts. */
+				mppa_cnoc[interface]->message_rx.status_clear[field].dword = tags_set;
 
-			tags_set &= ~(bostan_cnoc_rx_its[interface][field]);
+				/* Cleans CNoC Interrupt Flags on current interface. */
+				bostan_cnoc_clear_interface_flags(interface);
 
-			/* For each tag that generated an interrupt, executes the call of its specific handler. */
-			while (tags_set)
-			{
-				offset    = __builtin_k1_ctzdl(tags_set);
-				tags_set &= ~(0x1ULL << offset);
+				/* Gets only tags that are with interrupt handler enable. */
+				tags_set &= __k1_umem_read64((void *) &bostan_cnoc_rx_its[interface][field]);
 
-				tag = field * (sizeof(uint64_t) * 8) + offset;
+				/**
+				 * For each tag that generated an interrupt, executes the
+				 * call of its specific handler.
+				 */
+				while (tags_set)
+				{
+					/**
+					 * Find the next bit enabled that represents the
+					 * triggered tag.
+					 */
+					offset    = __builtin_k1_ctzdl(tags_set);
+					tags_set &= ~(0x1ULL << offset);
 
-				handler = bostan_cnoc_rx_handlers[interface][tag];
+					tag = field * (sizeof(uint64_t) * 8) + offset;
 
-				if (handler != NULL)
+					handler = (bostan_noc_handler_fn) __k1_umem_read32(
+						(void *) &bostan_cnoc_rx_handlers[interface][tag]
+					);
+
 					handler(interface, tag);
+				}
 			}
 		}
 	}
@@ -312,40 +356,45 @@ PUBLIC void bostan_cnoc_setup(void)
 {
 	__k1_cnoc_initialize_rights_allopen();
 
+	/* Registers the underlying handler of the CNoC interrupts. */
 	interrupt_register(K1B_INT_CNOC, bostan_cnoc_it_handler);
 
 	for (int interface = 0; interface < BOSTAN_NR_INTERFACES; interface++)
 	{
 		mOS_async_mailbox_get_cfg_perm(interface, BOSTAN_CNOC_EVENTS);
 		if (mOS_async_mailbox_rda_event_waitclear(BOSTAN_CNOC_EVENTS) != 0)
-			kpanic("[hal][processor][bostan][cnoc] Core cannot configures the mailbox notification!");
+			kpanic("[hal][processor][bostan] Core cannot configures the RX CNoC!");
 
 		/* All tags are unused. */
 		for (unsigned int field = 0; field < BOSTAN_CNOC_RX_BIT_FIELD_AMOUNT; field++)
 		{
 			bostan_cnoc_rx_tags[interface][field]       = 0ULL;
 			bostan_cnoc_rx_its[interface][field]        = 0ULL;
-			bostan_cnoc_barrier_modes[interface][field] = ~(0ULL);
-			mppa_cnoc[interface]->message_rx.barrier_mode[field].dword = bostan_cnoc_barrier_modes[interface][field];
+			bostan_cnoc_barrier_modes[interface][field] = 0ULL;
 
-			__k1_io_write64((void *)(&mppa_cnoc[interface]->message_rx.status_clear[field]), ~(0ULL));
+			/* Sets default mode (mailbox mode). */
+			mppa_cnoc[interface]->message_rx.barrier_mode[field].dword = 
+				bostan_cnoc_barrier_modes[interface][field];
+
+			/* Cleans status and error flags of the current field (64 tags). */
+			mppa_cnoc[interface]->message_rx.status_clear[field].dword = (~0ULL);
+			mppa_cnoc[interface]->message_rx.error_clear[field].dword  = (~0ULL);
 		}
 
-		__k1_cnoc_clear_it_status(interface);
+		/* Cleans underlying flags. */
+		bostan_cnoc_clear_interface_flags(interface);
 
-		__builtin_k1_wpurge();
-		__builtin_k1_fence();
-
+		/* Sets default notification method and default message value. */
 		for (unsigned int tag = 0; tag < BOSTAN_CNOC_RX_BIT_FIELD_AMOUNT; tag++)
 		{
 			bostan_cnoc_rx_handlers[interface][tag] = NULL;
-			bostan_cnoc_rx_update_notify(interface, tag, BOSTAN_CNOC_INTERRUPTS, (1 << core_get_id()));
+			bostan_cnoc_rx_update_notify(interface, tag, BOSTAN_CNOC_INTERRUPTS, 0);
 
-			/* Sets initial value. */
-			mppa_cnoc[interface]->message_ram[tag].dword = 0x0ULL;
+			mppa_cnoc[interface]->message_ram[tag].dword = (0ULL);
 		}
 	}
 
+	/* Flush dcache to sram. */
 	__builtin_k1_wpurge();
 	__builtin_k1_fence();
 }
@@ -400,25 +449,22 @@ PUBLIC int bostan_cnoc_rx_free(int interface, int tag)
 
 	mOS_async_mailbox_get_cfg_perm(interface, BOSTAN_CNOC_EVENTS);
 
-	field  = FIELD(tag);
-	offset = OFFSET(tag);
+		field  = FIELD(tag);
+		offset = OFFSET(tag);
 
 	if (mOS_async_mailbox_rda_event_waitclear(BOSTAN_CNOC_EVENTS) != 0)
-		kpanic("[hal][processor][bostan][cnoc] Core cannot configures the mailbox notification!");
+		kpanic("[hal][processor][bostan] Core cannot configures the RX CNoC!");
 
-	/* Updates mailbox modes of the tags field. */
-	bostan_cnoc_barrier_modes[interface][field] |= (0x1ULL << offset);
-	mppa_cnoc[interface]->message_rx.barrier_mode[field].dword = bostan_cnoc_barrier_modes[interface][field];
+	/* Cleans interrupt flags. */
+	bostan_cnoc_clear_interface_flags(interface);
 
-	__builtin_k1_wpurge();
-	__builtin_k1_fence();
-
-	__k1_io_write64((void *)(&mppa_cnoc[interface]->message_rx.status_clear[field]), (1ULL << offset));
-	__k1_cnoc_clear_it_status(interface);
+	/* Cleans RX Tags Flags for incoming interrupts. */
+	mppa_cnoc[interface]->message_rx.status_clear[field].dword = (1ULL << offset);
 
 	/* Sets initial value. */
-	mppa_cnoc[interface]->message_ram[tag].dword = 0x0ULL;
+	mppa_cnoc[interface]->message_ram[tag].dword = (0ULL);
 
+	/* Releases tag. */
 	bostan_cnoc_rx_set_unused(interface, tag);
 
 	if (bostan_cnoc_rx_it_is_enable(interface, tag))
@@ -427,9 +473,11 @@ PUBLIC int bostan_cnoc_rx_free(int interface, int tag)
 		bostan_cnoc_rx_disable_it(interface, tag);
 	}
 
-	/* Configures the tag to generate an event but the event does not notify anyone. */
-	// bostan_cnoc_rx_update_notify(interface, tag, BOSTAN_CNOC_EVENTS, 0);
-	bostan_cnoc_rx_update_notify(interface, tag, BOSTAN_CNOC_INTERRUPTS, (1 << core_get_id()));
+	/**
+	 * Configures the tag to generate an event but the event does not
+	 * notify anyone.
+	 */
+	bostan_cnoc_rx_update_notify(interface, tag, BOSTAN_CNOC_EVENTS, 0);
 
 	return (0);
 }
@@ -510,34 +558,32 @@ PUBLIC int bostan_cnoc_rx_config(
 	if (!bostan_cnoc_rx_is_used(interface, tag))
 		return (-EINVAL);
 
-	field  = FIELD(tag);
-	offset = OFFSET(tag);
-
 	mOS_async_mailbox_get_cfg_perm(interface, BOSTAN_CNOC_EVENTS);
+
+		field  = FIELD(tag);
+		offset = OFFSET(tag);
+
+		/* Updates barrier modes of the tags field. */
+		if (mode == BOSTAN_CNOC_BARRIER_MODE)
+			bostan_cnoc_barrier_modes[interface][field] |= (0x1ULL << offset);
+		else
+			bostan_cnoc_barrier_modes[interface][field] &= ~(0x1ULL << offset);
+
 	if (mOS_async_mailbox_rda_event_waitclear(BOSTAN_CNOC_EVENTS) != 0)
-		kpanic("[hal][processor][bostan][cnoc] Core cannot configures the mailbox notification!");
+		kpanic("[hal][processor][bostan] Core cannot configures the RX CNoC!");
 
-	/* Updates barrier modes of the tags field. */
-	if (mode == BOSTAN_CNOC_BARRIER_MODE)
-		bostan_cnoc_barrier_modes[interface][field] |= (0x1ULL << offset);
-	else
-		bostan_cnoc_barrier_modes[interface][field] &= ~(0x1ULL << offset);
-
-	mppa_cnoc[interface]->message_rx.barrier_mode[field].dword = bostan_cnoc_barrier_modes[interface][field];
-
-	__builtin_k1_wpurge();
-	__builtin_k1_fence();
-
-	/**
-	 * The resource may not have received a signal and has not been handled,
-	 * so it must be cleared if it does not generate a SIGTRAP on RM.
-	 */
-	__k1_io_write64((void *)(&mppa_cnoc[interface]->message_rx.status_clear[field]), (1ULL << offset));
-	__k1_cnoc_clear_it_status(interface);
-	__k1_cnoc_event_clear1_barrier(interface);
-
-	/* Sets initial value. */
+	/* Sets inital value. */
 	mppa_cnoc[interface]->message_ram[tag].dword = mask;
+
+	/* Sets mode. */
+	mppa_cnoc[interface]->message_rx.barrier_mode[field].dword =
+		bostan_cnoc_barrier_modes[interface][field];
+
+	/* Cleans RX Tags Flags for incoming interrupts. */
+	mppa_cnoc[interface]->message_rx.status_clear[field].dword = (1ULL << offset);
+
+	/* Cleans CNoC Interface Flags. */
+	bostan_cnoc_clear_interface_flags(interface);
 
 	/* Configures notification mode with interrupts for a specific cpu. */
 	if (handler != NULL)
@@ -545,7 +591,12 @@ PUBLIC int bostan_cnoc_rx_config(
 		bostan_cnoc_rx_handlers[interface][tag] = handler;
 
 		bostan_cnoc_rx_enable_it(interface, tag);
-		bostan_cnoc_rx_update_notify(interface, tag, BOSTAN_CNOC_INTERRUPTS, (1 << core_get_id()));
+		bostan_cnoc_rx_update_notify(
+			interface,
+			tag,
+			BOSTAN_CNOC_INTERRUPTS,
+			(1 << core_get_id())
+		);
 	}
 
 	/**
@@ -673,8 +724,15 @@ PUBLIC int bostan_cnoc_tx_config(
  * @param tag       Number tag.
  * @param value     Data to send.
  */
-PUBLIC void bostan_cnoc_tx_write(int interface, int tag, uint64_t value)
+PUBLIC int bostan_cnoc_tx_write(int interface, int tag, uint64_t value)
 {
-	if (bostan_cnoc_tx_is_valid(interface, tag) && bostan_cnoc_tx_is_used(interface, tag))
-		mppa_cnoc[interface]->message_tx[tag].push_eot.dword = value;
+	if (!bostan_cnoc_tx_is_valid(interface, tag))
+		return (-EINVAL);
+	
+	if (!bostan_cnoc_tx_is_used(interface, tag))
+		return (-EINVAL);
+
+	mppa_cnoc[interface]->message_tx[tag].push_eot.dword = value;
+
+	return (0);
 }

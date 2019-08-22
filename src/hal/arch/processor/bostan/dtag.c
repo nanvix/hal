@@ -154,7 +154,7 @@ static inline void bostan_dnoc_rx_set_unused(int interface, int tag)
  */
 static inline void bostan_dnoc_rx_enable_it(int interface, int tag)
 {
-	bostan_dnoc_rx_tags[interface][FIELD(tag)] |= (BOSTAN_DNOC_IT_ENABLE << OFFSET(tag));
+	bostan_dnoc_rx_its[interface][FIELD(tag)] |= (BOSTAN_DNOC_IT_ENABLE << OFFSET(tag));
 }
 
 /**
@@ -165,7 +165,7 @@ static inline void bostan_dnoc_rx_enable_it(int interface, int tag)
  */
 static inline void bostan_dnoc_rx_disable_it(int interface, int tag)
 {
-	bostan_dnoc_rx_tags[interface][FIELD(tag)] &= ~(BOSTAN_DNOC_IT_ENABLE << OFFSET(tag));
+	bostan_dnoc_rx_its[interface][FIELD(tag)] &= ~(BOSTAN_DNOC_IT_ENABLE << OFFSET(tag));
 }
 
 /**
@@ -189,7 +189,7 @@ static inline int bostan_dnoc_rx_is_used(const int interface, int tag)
  *
  * @returns Non zero if the target interrupt is enabled, and zero otherwise.
  */
-static inline int bostan_dnoc_rx_it_enable(const int interface, int tag)
+static inline int bostan_dnoc_rx_it_is_enable(const int interface, int tag)
 {
 	return ((bostan_dnoc_rx_its[interface][FIELD(tag)] >> OFFSET(tag)) & BOSTAN_DNOC_IT_ENABLE);
 }
@@ -419,8 +419,9 @@ PRIVATE void bostan_dnoc_it_handler(int ev_src)
 {
 	int tag;
 	int offset;
+	uint64_t its_enabled;
 	uint64_t tags_set;
-	uint64_t tags_set_release;
+	uint64_t tags_set_it;
 	bostan_noc_handler_fn handler;
 
 	UNUSED(ev_src);
@@ -431,14 +432,19 @@ PRIVATE void bostan_dnoc_it_handler(int ev_src)
 		{
 			/* Gets the set of tags that generated an interrupt. */
 			tags_set = mppa_dnoc[interface]->rx_global.events[field].dword;
-			tags_set &= ~(bostan_dnoc_rx_its[interface][field]);
-			tags_set_release = tags_set;
+
+			/* Ignores untriggered tags. */
+			if (!tags_set)
+				continue;
+
+			its_enabled = __k1_umem_read64((void *) &bostan_dnoc_rx_its[interface][field]);
+			tags_set_it = (tags_set & its_enabled);
 
 			/* For each tag that generated an interrupt, cleans its flags. */
-			while (tags_set_release)
+			while (tags_set)
 			{
-				offset = __builtin_k1_ctzdl(tags_set_release);
-				tags_set_release &= ~(1ULL << offset);
+				offset = __builtin_k1_ctzdl(tags_set);
+				tags_set &= ~(1ULL << offset);
 
 				tag = field * (sizeof(uint64_t) * 8) + offset;
 
@@ -449,17 +455,18 @@ PRIVATE void bostan_dnoc_it_handler(int ev_src)
 			 * For each tag that generated an interrupt, executes the call
 			 * of its specific handler.
 			 */
-			while (tags_set)
+			while (tags_set_it)
 			{
-				offset = __builtin_k1_ctzdl(tags_set);
-				tags_set &= ~(1ULL << offset);
+				offset = __builtin_k1_ctzdl(tags_set_it);
+				tags_set_it &= ~(1ULL << offset);
 
 				tag = field * (sizeof(uint64_t) * 8) + offset;
 
-				handler = bostan_dnoc_rx_handlers[interface][tag];
+				handler = (bostan_noc_handler_fn) __k1_umem_read32(
+					(void *) &bostan_dnoc_rx_handlers[interface][tag]
+				);
 
-				if (handler)
-					handler(interface, tag);
+				handler(interface, tag);
 			}
 		}
 	}
@@ -480,9 +487,9 @@ PUBLIC void bostan_dnoc_setup(void)
 	for (int interface = 0; interface < BOSTAN_NR_INTERFACES; interface++)
 	{
 		/* IO Cluster need initializes the boot status of the interface. */
-		#ifdef __k1io__
-			mOS_dnoc_set_boot_status(interface, 1);
-		#endif
+#ifdef __k1io__
+		mOS_dnoc_set_boot_status(interface, 1);
+#endif
 
 		/* All RX tags are unused. */
 		for (unsigned int field = 0; field < BOSTAN_DNOC_RX_BIT_FIELD_AMOUNT; field++)
@@ -524,10 +531,14 @@ PUBLIC void bostan_dnoc_setup(void)
 			if (mOS_async_uc_rda_event_waitclear(BOSTAN_DNOC_EVENTS) != 0)
 				kpanic("Error on ucore configuration!");
 
-			__k1_io_write32((void *) &mppa_dnoc[interface]->threads[tag].activation.word, _K1_NOCV2_ENABLE_DIRECT_UCORE);
+			__k1_io_write32(
+				(void *) &mppa_dnoc[interface]->threads[tag].activation.word,
+				_K1_NOCV2_ENABLE_DIRECT_UCORE
+			);
 		}
 	}
 
+	/* Flush dcache to sram. */
 	__builtin_k1_wpurge();
 	__builtin_k1_fence();
 }
@@ -583,7 +594,7 @@ PUBLIC int bostan_dnoc_rx_free(int interface, int tag)
 
 	bostan_dnoc_rx_set_unused(interface, tag);
 
-	if (bostan_dnoc_rx_it_enable(interface, tag))
+	if (bostan_dnoc_rx_it_is_enable(interface, tag))
 	{
 		bostan_dnoc_rx_handlers[interface][tag] = NULL;
 		bostan_dnoc_rx_disable_it(interface, tag);
@@ -639,6 +650,7 @@ PUBLIC int bostan_dnoc_rx_wait(int interface, int tag)
 	/* Cleans event counter. */
 	mppa_dnoc[interface]->rx_queues[tag].event_lac.hword;
 
+	/* Invalites the dcache for get the incoming data. */
 	dcache_invalidate();
 
 	return (0);
@@ -725,9 +737,6 @@ PUBLIC int bostan_dnoc_rx_config(
 	}
 	else
 		bostan_dnoc_rx_update_notify(interface, tag, BOSTAN_DNOC_EVENTS, (~0));
-
-	__builtin_k1_wpurge();
-	__builtin_k1_fence();
 
 	return (0);
 }
@@ -876,6 +885,7 @@ PUBLIC int bostan_dnoc_tx_config(
 	/* Updates first direction of source_tag. */
 	bostan_dnoc_tx_old_fdir[interface][source_tag] = config._.first_dir;
 
+	/* Flush dcache to sram. */
 	__builtin_k1_wpurge();
 	__builtin_k1_fence();
 
@@ -1569,8 +1579,7 @@ PRIVATE inline void bostan_dnoc_uc_commit_job(
 )
 {
 	/* Flush cached values. */
-	__builtin_k1_wpurge();
-	__builtin_k1_fence();
+	dcache_invalidate();
 
 #ifdef __k1dp__
 	UNUSED(interface);

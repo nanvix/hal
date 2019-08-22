@@ -184,7 +184,7 @@
 	 * @param tag       Number tag.
 	 * @param value     Data to send.
 	 */
-	EXTERN void bostan_cnoc_tx_write(int interface, int tag, uint64_t value);
+	EXTERN int bostan_cnoc_tx_write(int interface, int tag, uint64_t value);
 
 	/**
 	 * @brief Configure C-NoC transfer buffer.

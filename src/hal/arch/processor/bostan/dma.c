@@ -78,9 +78,10 @@ PUBLIC int bostan_dma_control_signal(
 	for (int i = 0; i < ntargets; i++)
 	{
 		if (bostan_cnoc_tx_config(interface, source_node, tag, target_nodes[i], target_tag))
-			return (-ECONNABORTED);
+			return (-EINVAL);
 
-		bostan_cnoc_tx_write(interface, tag, mask);
+		if (bostan_cnoc_tx_write(interface, tag, mask) != 0)
+			return (-EINVAL);
 	}
 
 	return (0);
