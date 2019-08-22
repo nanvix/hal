@@ -426,6 +426,8 @@ PRIVATE void test_cluster_core_api_start_slave(void)
  * Stop Execution in a Slave Core                                             *
  *----------------------------------------------------------------------------*/
 
+#ifndef __unix64__
+
 /**
  * @brief API Test: Stop Execution in a Slave Core
  */
@@ -481,6 +483,8 @@ PRIVATE void test_cluster_core_api_reset_slave(void)
 	while (slave_nstarts != 2);
 }
 
+#endif /* !__unix64__ */
+
 /*----------------------------------------------------------------------------*
  * Suspend and Resume from Master                                             *
  *----------------------------------------------------------------------------*/
@@ -491,7 +495,7 @@ PRIVATE void test_cluster_core_api_reset_slave(void)
 PRIVATE void test_cluster_core_api_sleep_wakeup_slave(void)
 {
 	int coreid;
-	
+
 	coreid = 0;
 
 	/* Start one slave core. */
@@ -608,7 +612,7 @@ PRIVATE void test_cluster_core_api_sleep_wakeup_leader(void)
  *----------------------------------------------------------------------------*/
 
 /**
- * @brief Fault Injection Tests: Start the Master Core 
+ * @brief Fault Injection Tests: Start the Master Core
  */
 PRIVATE void test_cluster_core_fault_start_master(void)
 {
@@ -639,7 +643,7 @@ PRIVATE void test_cluster_core_fault_start_bad(void)
  *----------------------------------------------------------------------------*/
 
 /**
- * @brief Fault Injection Tests: Start an Invalid Execution Flow 
+ * @brief Fault Injection Tests: Start an Invalid Execution Flow
  */
 PRIVATE void test_cluster_core_fault_start_inval(void)
 {
@@ -901,8 +905,10 @@ PRIVATE void test_cluster_cores_stress_spinlocks(void)
  */
 PRIVATE struct test core_tests_api[] = {
 	{ test_cluster_core_api_start_slave,         "start execution in a slave core    " },
-	{ test_cluster_core_api_sleep_wakeup_slave,  "suspend and resume a slave core    " },
+#ifndef __unix64__
 	{ test_cluster_core_api_reset_slave,         "reset slave a core                 " },
+#endif /* !__unix64__ */
+	{ test_cluster_core_api_sleep_wakeup_slave,  "suspend and resume a slave core    " },
 	{ test_cluster_core_api_start_leader,        "start execution from slave         " },
 	{ test_cluster_core_api_sleep_wakeup_leader, "suspend and resume from slave core " },
 	{ NULL,                                       NULL                                 },
