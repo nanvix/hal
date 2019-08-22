@@ -111,7 +111,7 @@
 	 * @returns Upon successful completion, 0 is returned
 	 * and non zero otherwise.
 	 */
-	EXTERN int mppa256_portal_awrite(int portalid, const void * buffer, uint64_t size);
+	EXTERN ssize_t mppa256_portal_awrite(int portalid, const void * buffer, uint64_t size);
 
 	/**
 	 * @brief Reads data from a portal.
@@ -123,7 +123,7 @@
 	 * @returns Upon successful completion, 0 is returned
 	 * and non zero otherwise.
 	 */
-	EXTERN int mppa256_portal_aread(int portalid, void * buffer, uint64_t size);
+	EXTERN ssize_t mppa256_portal_aread(int portalid, void * buffer, uint64_t size);
 
 	/**
 	 * @brief Waits asynchronous operation.
@@ -206,7 +206,7 @@
 	/**
 	 * @see mppa256_portal_write()
 	 */
-	static inline int portal_awrite(int portalid, const void * buffer, uint64_t size)
+	static inline ssize_t portal_awrite(int portalid, const void * buffer, uint64_t size)
 	{
 		return mppa256_portal_awrite(portalid, buffer, size);
 	}
@@ -214,7 +214,7 @@
 	/**
 	 * @see mppa256_portal_aread()
 	 */
-	static inline int portal_aread(int portalid, void * buffer, uint64_t size)
+	static inline ssize_t portal_aread(int portalid, void * buffer, uint64_t size)
 	{
 		return mppa256_portal_aread(portalid, buffer, size);
 	}

@@ -102,7 +102,7 @@
 	 * @returns Upon successful completion, 0 is returned
 	 * and non zero otherwise.
 	 */
-	EXTERN int mppa256_mailbox_awrite(int mbxid, const void * buffer, uint64_t size);
+	EXTERN ssize_t mppa256_mailbox_awrite(int mbxid, const void * buffer, uint64_t size);
 
 	/**
 	 * @brief Reads data from a mailbox.
@@ -114,7 +114,7 @@
 	 * @returns Upon successful completion, 0 is returned
 	 * and non zero otherwise.
 	 */
-	EXTERN int mppa256_mailbox_aread(int mbxid, void * buffer, uint64_t size);
+	EXTERN ssize_t mppa256_mailbox_aread(int mbxid, void * buffer, uint64_t size);
 
 	/**
 	 * @brief Waits asynchronous operation.
@@ -193,7 +193,7 @@
 	/**
 	 * @see mppa256_mailbox_awrite()
 	 */
-	static inline int mailbox_awrite(int mbxid, const void * buffer, uint64_t size)
+	static inline ssize_t mailbox_awrite(int mbxid, const void * buffer, uint64_t size)
 	{
 		return mppa256_mailbox_awrite(mbxid, buffer, size);
 	}
@@ -201,7 +201,7 @@
 	/**
 	 * @see mppa256_mailbox_aread()
 	 */
-	static inline int mailbox_aread(int mbxid, void * buffer, uint64_t size)
+	static inline ssize_t mailbox_aread(int mbxid, void * buffer, uint64_t size)
 	{
 		return mppa256_mailbox_aread(mbxid, buffer, size);
 	}

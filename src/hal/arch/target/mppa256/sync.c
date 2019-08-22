@@ -198,24 +198,34 @@ PRIVATE void mppa256_sync_it_handler(int interface, int tag)
  *
  * @return Interface ID [0..(K1BIO_CORES_NUM-1)]
  */
-PRIVATE int mppa256_sync_select_rx_interface(const int *nodes, int nnodes)
+PRIVATE int mppa256_sync_select_rx_interface(const int *nodes, int nnodes, int type)
 {
-	int clusterid;
-	int _nodes[BOSTAN_NR_NOC_NODES];
+	int i;
+	int tag;
+	int syncid;
+	int interface;
+	int clusternum;
 
-	clusterid = bostan_cluster_get_id();
+	clusternum = bostan_node_get_num(bostan_cluster_get_id());
 
-	/* Logic IDs are correctly. */
-	if (bostan_nodes_convert(_nodes, nodes, nnodes) < 0)
-		return (-EINVAL);
-
-	for (int i = 0; i < nnodes; i++)
+	/* Searchs on local IDs? */
+	if (type == MPPA256_SYNC_ALL_TO_ONE)
 	{
-		if (WITHIN(_nodes[i], clusterid, clusterid + BOSTAN_NR_INTERFACES))
+		i = 0;
+		nnodes = 1;
+	}
+	
+	/* Searchs on Remote IDs? */
+	else
+		i = 1;
+
+	for (; i < nnodes; i++)
+	{
+		if (WITHIN(nodes[i], clusternum, clusternum + BOSTAN_NR_INTERFACES))
 		{
-			int interface = _nodes[i] - clusterid;
-			int tag = bostan_node_sync_tag(_nodes[i]);
-			int syncid = RESOURCEID_RX(interface, tag);
+			tag       = bostan_node_sync_tag(bostan_node_convert_id(nodes[i]));
+			interface = (nodes[i] - clusternum);
+			syncid    = RESOURCEID_RX(interface, tag);
 
 			if (!resource_is_used(&synctab.rxs[syncid].resource))
 				return (interface);
@@ -252,7 +262,7 @@ PUBLIC int mppa256_sync_create(const int *nodes, int nnodes, int type)
 	if (type != MPPA256_SYNC_ALL_TO_ONE && type != MPPA256_SYNC_ONE_TO_ALL)
 		return (-EINVAL);
 
-	if ((interface = mppa256_sync_select_rx_interface(nodes, nnodes)) < 0)
+	if ((interface = mppa256_sync_select_rx_interface(nodes, nnodes, type)) < 0)
 		return (-EBUSY);
 
 	nodenum = bostan_node_get_num(bostan_cluster_get_id() + interface);
@@ -282,7 +292,7 @@ PUBLIC int mppa256_sync_create(const int *nodes, int nnodes, int type)
 	syncid = RESOURCEID_RX(interface, tag);
 
 	if (resource_is_used(&synctab.rxs[syncid].resource))
-		return (-EALREADY);
+		return (-EBADF);
 
 	if ((ret = bostan_dma_control_create(interface, tag, mask, mppa256_sync_it_handler)) < 0)
 		return (ret);
@@ -305,18 +315,32 @@ PUBLIC int mppa256_sync_create(const int *nodes, int nnodes, int type)
  *
  * @return Interface ID [0..(K1BIO_CORES_NUM-1)]
  */
-PRIVATE int mppa256_sync_select_tx_interface(const int *_nodes, int nnodes)
+PRIVATE int mppa256_sync_select_tx_interface(const int *nodes, int nnodes, int type)
 {
-	int clusterid;
+	int i;
+	int syncid;
+	int interface;
+	int clusternum;
 
-	clusterid = bostan_cluster_get_id();
+	clusternum = bostan_node_get_num(bostan_cluster_get_id());
 
-	for (int i = 0; i < nnodes; i++)
+	/* Searchs on local IDs? */
+	if (type == MPPA256_SYNC_ONE_TO_ALL)
 	{
-		if (WITHIN(_nodes[i], clusterid, clusterid + BOSTAN_NR_INTERFACES))
+		i = 0;
+		nnodes = 1;
+	}
+	
+	/* Searchs on Remote IDs? */
+	else
+		i = 1;
+
+	for (; i < nnodes; i++)
+	{
+		if (WITHIN(nodes[i], clusternum, clusternum + BOSTAN_NR_INTERFACES))
 		{
-			int interface = _nodes[i] - clusterid;
-			int syncid = RESOURCEID_TX(interface);
+			interface = (nodes[i] - clusternum);
+			syncid    = RESOURCEID_TX(interface);
 
 			if (!resource_is_used(&synctab.txs[syncid].resource))
 				return (interface);
@@ -345,11 +369,11 @@ PUBLIC int mppa256_sync_open(const int *nodes, int nnodes, int type)
 	if (type != MPPA256_SYNC_ALL_TO_ONE && type != MPPA256_SYNC_ONE_TO_ALL)
 		return (-EINVAL);
 
+	if ((interface = mppa256_sync_select_tx_interface(nodes, nnodes, type)) < 0)
+		return (-EBUSY);
+
 	if (bostan_nodes_convert(_nodes, nodes, nnodes) < 0)
 		return (-EINVAL);
-
-	if ((interface = mppa256_sync_select_tx_interface(_nodes, nnodes)) < 0)
-		return (-EBUSY);
 
 	syncid    = RESOURCEID_TX(interface);
 	clusterid = bostan_cluster_get_id();
@@ -384,8 +408,7 @@ PUBLIC int mppa256_sync_open(const int *nodes, int nnodes, int type)
 		synctab.txs[syncid].mask     = (1ULL << (nodenum));
 	}
 
-	synctab.txs[syncid].target_tag = bostan_node_sync_tag(_nodes[0]);
-	
+	synctab.txs[syncid].target_tag = bostan_node_sync_tag(_nodes[0]);	
 	tag = UNDERLYING_TX_TAG(syncid);
 
 	if ((ret = bostan_dma_control_open(interface, tag)) < 0)
@@ -414,7 +437,7 @@ PUBLIC int mppa256_sync_unlink(int syncid)
 
 	/* Bad sync. */
 	if (!resource_is_used(&synctab.rxs[syncid].resource))
-		return (-EACCES);
+		return (-EBADF);
 
 	tag       = UNDERLYING_RX_TAG(syncid);
 	interface = UNDERLYING_RX_INTERFACE(syncid);
@@ -448,7 +471,7 @@ PUBLIC int mppa256_sync_close(int syncid)
 
 	/* Bad sync. */
 	if (!resource_is_used(&synctab.txs[syncid].resource))
-		return (-EACCES);
+		return (-EBADF);
 
 	tag       = UNDERLYING_TX_TAG(syncid);
 	interface = UNDERLYING_TX_INTERFACE(syncid);
@@ -481,7 +504,7 @@ PUBLIC int mppa256_sync_wait(int syncid)
 #if 1 /* Is the slave with correct data cached? */
 	/* Bad sync. */
 	if (!resource_is_used(&synctab.rxs[syncid].resource))
-		return (-EACCES);
+		return (-EBADF);
 #endif
 
 	/* Waits for the handler release the lock. */
@@ -509,7 +532,7 @@ PUBLIC int mppa256_sync_signal(int syncid)
 
 	/* Bad sync. */
 	if (!resource_is_used(&synctab.txs[syncid].resource))
-		return (-EACCES);
+		return (-EBADF);
 
 	tag       = UNDERLYING_TX_TAG(syncid);
 	interface = UNDERLYING_TX_INTERFACE(syncid);

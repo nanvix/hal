@@ -42,7 +42,7 @@
 /**@{*/
 #define MQUEUE_MSG_SIZE   (sizeof(struct underliyng_message))        /**< Size of the underlying message.      */
 #define MQUEUE_MIN_SIZE   (MQUEUE_MSG_SIZE)                          /**< Minimum size of the Message Queue.   */
-#define MQUEUE_MAX_SIZE   (PROCESSOR_NOC_NODES_NUM* MQUEUE_MIN_SIZE) /**< Maximum size of the Message Queue.   */
+#define MQUEUE_MAX_SIZE   (PROCESSOR_NOC_NODES_NUM * MQUEUE_MIN_SIZE) /**< Maximum size of the Message Queue.   */
 #define MQUEUE_MSG_AMOUNT (MQUEUE_MAX_SIZE / MQUEUE_MIN_SIZE)        /**< Message amount in the Message Queue. */
 /**@}*/
 
@@ -201,7 +201,7 @@ PRIVATE int mppa256_mailbox_tx_is_valid(int mbxid)
  */
 PRIVATE int mppa256_node_is_valid(int nodenum)
 {
-	return WITHIN(nodenum, 0, PROCESSOR_CLUSTERS_NUM);
+	return WITHIN(nodenum, 0, PROCESSOR_NOC_NODES_NUM);
 }
 
 /**
@@ -296,7 +296,7 @@ PUBLIC int mppa256_mailbox_create(int nodenum)
 
 	/* Mailbox is used. */
 	if (resource_is_used(&mbxtab.rxs[mbxid].resource))
-		return (-EINVAL);
+		return (-EBADF);
 
 	/* Gets underlying parameters. */
 	tag       = UNDERLYING_CREATE_TAG(mbxid);
@@ -445,7 +445,7 @@ PUBLIC int mppa256_mailbox_unlink(int mbxid)
 
 	/* Bad mailbox. */
 	if (!resource_is_used(&mbxtab.rxs[mbxid].resource))
-		return (-EINVAL);
+		return (-EBADF);
 
 	/* Gets underlying parameters. */
 	tag       = UNDERLYING_CREATE_TAG(mbxid);
@@ -489,7 +489,7 @@ PUBLIC int mppa256_mailbox_close(int mbxid)
 
 	/* Bad mailbox. */
 	if (!resource_is_used(&mbxtab.txs[mbxid].resource))
-		return (-EINVAL);
+		return (-EBADF);
 
 	/* Data parameters. */
 	dtag      = UNDERLYING_OPEN_TAG(mbxid);
@@ -577,7 +577,7 @@ PRIVATE int mppa256_mailbox_send_msg(int mbxid)
  * @returns Upon successful completion, 0 is retuned
  * and non zero oterwise.
  */
-PUBLIC int mppa256_mailbox_awrite(int mbxid, const void * buffer, uint64_t size)
+PUBLIC ssize_t mppa256_mailbox_awrite(int mbxid, const void * buffer, uint64_t size)
 {
 	/* Invalid mailbox. */
 	if (!mppa256_mailbox_tx_is_valid(mbxid))
@@ -591,11 +591,11 @@ PUBLIC int mppa256_mailbox_awrite(int mbxid, const void * buffer, uint64_t size)
 	if (size != MPPA256_MAILBOX_MSG_SIZE)
 		return (-EINVAL);
 	
-	mbxid = mbxid - MPPA256_MAILBOX_OPEN_OFFSET;
+	mbxid -= MPPA256_MAILBOX_OPEN_OFFSET;
 
 	/* Bad mailbox. */
 	if (!resource_is_used(&mbxtab.txs[mbxid].resource))
-		return (-EINVAL);
+		return (-EBADF);
 
 	/* Busy mailbox */
 	if (resource_is_busy(&mbxtab.txs[mbxid].resource))
@@ -717,7 +717,7 @@ PRIVATE int mppa256_mailbox_msg_copy(int mbxid)
  * @returns Upon successful completion, 0 is retuned
  * and non zero oterwise.
  */
-PUBLIC int mppa256_mailbox_aread(int mbxid, void * buffer, uint64_t size)
+PUBLIC ssize_t mppa256_mailbox_aread(int mbxid, void * buffer, uint64_t size)
 {
 	/* Invalid mailbox. */
 	if (!mppa256_mailbox_rx_is_valid(mbxid))
@@ -731,11 +731,11 @@ PUBLIC int mppa256_mailbox_aread(int mbxid, void * buffer, uint64_t size)
 	if (size != MPPA256_MAILBOX_MSG_SIZE)
 		return (-EINVAL);
 	
-	mbxid = mbxid - MPPA256_MAILBOX_CREATE_OFFSET;
+	mbxid -= MPPA256_MAILBOX_CREATE_OFFSET;
 
 	/* Bad mailbox. */
 	if (!resource_is_used(&mbxtab.rxs[mbxid].resource))
-		return (-EINVAL);
+		return (-EBADF);
 
 	/* Busy mailbox. */
 	if (resource_is_busy(&mbxtab.rxs[mbxid].resource))
@@ -770,12 +770,12 @@ PUBLIC int mppa256_mailbox_wait(int mbxid)
 		if (!mppa256_mailbox_rx_is_valid(mbxid))
 			return (-EBADF);
 		
-		mbxid = mbxid - MPPA256_MAILBOX_CREATE_OFFSET;
+		mbxid -= MPPA256_MAILBOX_CREATE_OFFSET;
 
 		#if 1 /* Is the slave with correct data cached? */
 			/* Bad sync. */
 			if (!resource_is_used(&mbxtab.rxs[mbxid].resource))
-				return (-EACCES);
+				return (-EBADF);
 		#endif
 
 		/* Waits for the handler release the lock. */
@@ -788,12 +788,12 @@ PUBLIC int mppa256_mailbox_wait(int mbxid)
 		if (!mppa256_mailbox_tx_is_valid(mbxid))
 			return (-EBADF);
 		
-		mbxid = mbxid - MPPA256_MAILBOX_OPEN_OFFSET;
+		mbxid -= MPPA256_MAILBOX_OPEN_OFFSET;
 
 		#if 1 /* Is the slave with correct data cached? */
 			/* Bad sync. */
 			if (!resource_is_used(&mbxtab.txs[mbxid].resource))
-				return (-EACCES);
+				return (-EBADF);
 		#endif
 
 		/* Waits for the handler release the lock. */
