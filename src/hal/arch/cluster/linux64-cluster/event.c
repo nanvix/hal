@@ -32,7 +32,7 @@ PRIVATE linux64_spinlock_t locks[LINUX64_CLUSTER_NUM_CORES];
 /**
  * Table of pending events.
  */
-PRIVATE pthread_cond_t events[LINUX64_CLUSTER_NUM_CORES];
+PRIVATE volatile int pending[LINUX64_CLUSTER_NUM_CORES];
 
 /**
  * @brief Notifies a local core about an event.
@@ -40,17 +40,11 @@ PRIVATE pthread_cond_t events[LINUX64_CLUSTER_NUM_CORES];
  */
 PUBLIC void linux64_cluster_event_notify(int coreid)
 {
-    int self = linux64_core_get_id();
-    
-    KASSERT(coreid >= 0 && self >= 0 && coreid < LINUX64_CLUSTER_NUM_CORES
-            && self < LINUX64_CLUSTER_NUM_CORES
-            && coreid != self);
+	linux64_spinlock_lock(&locks[coreid]);
 
-    linux64_spinlock_lock(&locks[coreid]);
+		pending[coreid] = 1;
 
-    pthread_cond_signal(&events[coreid]);
-
-    linux64_spinlock_unlock(&locks[coreid]);
+	linux64_spinlock_unlock(&locks[coreid]);
 }
 
 /**
@@ -58,13 +52,20 @@ PUBLIC void linux64_cluster_event_notify(int coreid)
  */
 PUBLIC void linux64_cluster_event_wait(void)
 {
-    int self = linux64_core_get_id();
+	int self = linux64_core_get_id();
 
-    KASSERT(self >= 0 && self < LINUX64_CLUSTER_NUM_CORES);
+		while (1)
+		{
+			linux64_spinlock_lock(&locks[self]);
 
-    linux64_spinlock_lock(&locks[self]);
-    pthread_cond_wait(&events[self], &locks[self]);
-    linux64_spinlock_unlock(&locks[self]);
+			if (pending[self])
+				break;
+
+			linux64_spinlock_unlock(&locks[self]);
+		}
+		pending[self] = 0;
+
+	linux64_spinlock_unlock(&locks[self]);
 }
 
 /**
@@ -72,11 +73,11 @@ PUBLIC void linux64_cluster_event_wait(void)
  */
 PUBLIC void linux64_cluster_event_setup(void)
 {
-    for(int i = 0; i < LINUX64_CLUSTER_NUM_CORES; i++)
-    {
-        linux64_spinlock_init(&locks[i]);
-        pthread_cond_init(&events[i], NULL);
-    }
+	for(int i = 0; i < LINUX64_CLUSTER_NUM_CORES; i++)
+	{
+		pending[i] = 0;
+		linux64_spinlock_init(&locks[i]);
+	}
 }
 
 /**
@@ -84,5 +85,5 @@ PUBLIC void linux64_cluster_event_setup(void)
  */
 PUBLIC void linux64_cluster_event_drop(void)
 {
-    linux64_cluster_event_setup();
+	linux64_cluster_event_setup();
 }
