@@ -47,17 +47,6 @@
 	#include <arch/cluster/linux64-cluster/cores.h>
 	#include <arch/cluster/linux64-cluster/event.h>
 
-	/**
-	 * @name Provided Features
-	 */
-	/**@{*/
-	#define CLUSTER_IS_MULTICORE  1 /**< Multicore Cluster */
-	#define CLUSTER_IS_IO         1 /**< I/O Cluster       */
-	#define CLUSTER_IS_COMPUTE    0 /**< Compute Cluster   */
-	#define CLUSTER_HAS_EVENTS    0 /**< Event Support?    */
-	#define CLUSTER_HAS_RTC       1 /**< RTC Support?      */
-	/**@}*/
-
 #ifdef __NANVIX_HAL
 
 	/**
@@ -70,13 +59,29 @@
 	 */
 	EXTERN NORETURN void linux64_cluster_setup(void);
 
-	/**
-	 * @brief Powers off the underlying cluster.
-	 */
-	EXTERN void linux64_cluster_shutdown(void);
-
 #endif /* __NANVIX_HAL */
 
 /**@}*/
+
+/*============================================================================*
+ * Provided Interface                                                         *
+ *============================================================================*/
+
+/**
+ * @cond linux64_cluster
+ */
+
+	/**
+	 * @name Provided Features
+	 */
+	/**@{*/
+	#define CLUSTER_IS_MULTICORE  1 /**< Multicore Cluster */
+	#define CLUSTER_IS_IO         1 /**< I/O Cluster       */
+	#define CLUSTER_IS_COMPUTE    0 /**< Compute Cluster   */
+	#define CLUSTER_HAS_EVENTS    0 /**< Event Support?    */
+	#define CLUSTER_HAS_RTC       1 /**< RTC Support?      */
+	/**@}*/
+
+/**@endcond*/
 
 #endif /* CLUSTER_LINUX64_CLUSTER_H_ */

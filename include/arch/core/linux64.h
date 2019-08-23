@@ -25,16 +25,19 @@
 #ifndef CORE_LINUX64_H_
 #define CORE_LINUX64_H_
 
-	/**
-	 * @addtogroup linux64-core Linux64 Core
-	 * @ingroup cores
-	 */
-
 	#ifndef __NEED_CORE_LINUX64
 		#error "linux64 core not required"
 	#endif
 
+/**
+ * @addtogroup linux64-core Linux64 Core
+ * @ingroup cores
+ *
+ * @brief Linux64 Cluster
+ */
+/**@{*/
 
+	#include <nanvix/const.h>
 	#include <arch/core/linux64/core.h>
 	#include <arch/core/linux64/cache.h>
 	#include <arch/core/linux64/excp.h>
@@ -48,12 +51,23 @@
 	#include <arch/core/linux64/perf.h>
 	#include <arch/core/linux64/upcall.h>
 
+	/**
+	 * @brief Powers off the underlying core.
+	 */
+	EXTERN NORETURN void linux64_core_poweroff(void);
+
+/**@}*/
+
+/*============================================================================*
+ * Provided Interface                                                         *
+ *============================================================================*/
+
 /**
- * @cond linux64
+ * @cond linux64_cluster
  */
 
 	/**
-	 * @name Core Features
+	 * @name Provided Features
 	 */
 	/**@{*/
 	#define CORE_HAS_PERF         1 /**< Has Performance Monitors?   */
@@ -64,6 +78,21 @@
 	#define CORE_HAS_HUGE_PAGES   0 /**< Are Huge Pages Supported?   */
 	#define CORE_IS_LITTLE_ENDIAN 0 /**< Is Little Endian?           */
 	/**@}*/
+
+	/**
+	 * @brief Provided Functions
+	 */
+	/**@{*/
+	#define __core_poweroff_fn /**< core_poweroff() */
+	/**@}*/
+
+	/**
+	 * @see linux64_core_poweroff().
+	 */
+	static inline NORETURN void core_poweroff(void)
+	{
+		linux64_core_poweroff();
+	}
 
 /**@endcond*/
 

@@ -97,7 +97,13 @@ PUBLIC NORETURN void linux64_cluster_setup(void)
 /**
  * @todo TODO: Provide a detailed description for this function.
  */
-PUBLIC void linux64_cluster_shutdown(void)
+PUBLIC NORETURN void linux64_core_poweroff(void)
 {
-	kprintf("[hal][cluster] powering off cluster...");
+	if (linux64_core_get_id() == LINUX64_CLUSTER_COREID_MASTER)
+	{
+		kprintf("[hal] powering off...");
+		exit(0);
+	}
+
+	pthread_exit(NULL);
 }

@@ -28,11 +28,55 @@
 #include <arch/target/unix64/unix64.h>
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
+#include <string.h>
+#include <stdio.h>
+
+/**
+ * @brief Boot arguments.
+ */
+PRIVATE struct
+{
+	int nclusters; /**< Number of Clusters */
+} boot_args = {
+	1
+};
+
+/**
+ * @brief Parses boot arguments.
+ *
+ * @param argc Argument count.
+ * @param argv Argument list.
+ */
+PRIVATE void unix64_parse_boot_args(int argc, const char **argv)
+{
+	for (int i = 1; i < argc; /* noop*/)
+	{
+		/* Unkonwn argument. */
+		if (strcmp(argv[i], "--nclusters"))
+			exit(-EINVAL);
+
+		/* Missing argument. */
+		if ((i + 1) > argc)
+			exit(-EINVAL);
+
+		sscanf(argv[i + 1], "%d", &boot_args.nclusters);
+
+		fprintf(stderr, "[unix64] argv[%d]: %s %s\n", i, argv[i], argv[i + 1]);
+
+		i += 2;
+	}
+
+	/* Bad argument. */
+	if ((boot_args.nclusters < 1) || (boot_args.nclusters > LINUX64_PROCESSOR_CCLUSTERS_NUM))
+		exit(-EINVAL);
+}
 
 /**
  * @brief Powers on the underlying target.
+ *
+ * @param nclusters Number of clusters to power on.
  */
-PRIVATE int unix64_boot(void)
+PRIVATE int unix64_boot(int nclusters)
 {
 	/*
 	 * Early initialization of Virtual
@@ -42,7 +86,7 @@ PRIVATE int unix64_boot(void)
 
 	kprintf("[hal][target] powering on target...");
 
-	return (linux64_processor_boot());
+	return (linux64_processor_boot(nclusters));
 }
 
 /**
@@ -51,18 +95,19 @@ PRIVATE int unix64_boot(void)
  * @param argc Number of arguments.
  * @param argv Arguments list.
  */
-int main(int argc, char **argv)
+int main(int argc, const char **argv)
 {
-	int ret;
+	int error;
 
-	UNUSED(argc);
-	UNUSED(argv);
+	unix64_parse_boot_args(argc, argv);
 
 	/* Boot processor. */
-	if ((ret = unix64_boot()) < 0)
-		return (ret);
+	if ((error = unix64_boot(boot_args.nclusters)) < 0)
+		return (error);
 
 	unix64_setup();
+
+	UNREACHABLE();
 
 	return (0);
 }

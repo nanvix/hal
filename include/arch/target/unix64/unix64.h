@@ -53,11 +53,6 @@
 	 */
 	EXTERN void unix64_setup(void);
 
-	/**
-	 * @brief Powers off the underlying target.
-	 */
-	EXTERN void unix64_shutdown(void);
-
 #endif /* __NANVIX_HAL */
 
 /**@}*/
@@ -67,7 +62,7 @@
  *============================================================================*/
 
 /**
- * @cond or1k
+ * @cond unix64
  */
 
 	/**

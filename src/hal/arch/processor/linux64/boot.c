@@ -23,9 +23,9 @@
  */
 
 /* Must come fist. */
-#define __NEED_PROCESSOR_LINUX64
+#define __NEED_HAL_PROCESSOR
 
-#include <arch/processor/linux64.h>
+#include <nanvix/hal/processor.h>
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
 #include <unistd.h>
@@ -59,4 +59,18 @@ PUBLIC int linux64_processor_boot(int nclusters)
 	}
 
 	return (linux64_cluster_boot());
+}
+
+/**
+ * @todo TODO: Provide a detailed description for this function.
+ */
+PUBLIC NORETURN void linux64_processor_poweroff(void)
+{
+	if (cluster_get_num() == PROCESSOR_CLUSTERID_MASTER)
+		kprintf("[hal][processor] powering off...");
+
+	linux64_processor_noc_shutdown();
+	linux64_processor_clusters_shutdown();
+
+	cluster_poweroff();
 }

@@ -38,13 +38,3 @@ PUBLIC void unix64_setup(void)
 
 	linux64_processor_setup();
 }
-
-/**
- * @todo TODO: Provide a detailed description for this function.
- */
-PUBLIC void unix64_shutdown(void)
-{
-	kprintf("[hal][target] powering off target...");
-
-	linux64_processor_shutdown();
-}
