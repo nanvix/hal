@@ -66,11 +66,6 @@
 	 */
 	EXTERN void linux64_processor_noc_shutdown(void);
 
-	/**
-	 * @brief Initializes the NoC.
-	 */
-	EXTERN void linux64_processor_noc_setup(void);
-
 #endif /* __NANVIX_HAL */
 
 	/**
