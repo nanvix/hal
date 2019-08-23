@@ -122,13 +122,13 @@ PUBLIC NORETURN void kmain(int argc, const char *argv[])
 
 	arg = (argc < 2) ? "--all" : argv[1];
 
-#ifndef __unix64__
-
 	/*
 	 * Initializes the HAL. Must come
 	 * before everything else.
 	 */
 	hal_init();
+
+#ifndef __unix64__
 
 	timer_init(TIMER_FREQ);
 
