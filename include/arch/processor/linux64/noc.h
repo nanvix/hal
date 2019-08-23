@@ -131,9 +131,10 @@
 	 */
 	/**@{*/
 	#define __processor_node_get_id_fn   /**< processor_node_get_id()   */
-	#define __processor_node_get_num_fn   /**< processor_node_get_num()   */
-	#define __processor_noc_is_ionode_fn /**< processor_noc_is_ionode()  */
-	#define __processor_noc_is_cnode_fn  /**< processor_noc_is_cnode()   */
+	#define __processor_node_get_num_fn  /**< processor_node_get_num()  */
+	#define __processor_noc_is_ionode_fn /**< processor_noc_is_ionode() */
+	#define __processor_noc_is_cnode_fn  /**< processor_noc_is_cnode()  */
+	#define __processor_noc_setup_fn     /**< processor_noc_setup()     */
 	/**@}*/
 
 	/**
@@ -166,6 +167,13 @@
 	static inline int processor_noc_is_cnode(int nodenum)
 	{
 		return (linux64_processor_noc_is_cnode(nodenum));
+	}
+
+	/**
+	 * @brief Dummy operation.
+	 */
+	static inline void processor_noc_setup(void)
+	{
 	}
 
 /**@endcond*/
