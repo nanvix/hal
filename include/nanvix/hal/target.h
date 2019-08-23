@@ -46,19 +46,34 @@
 #endif
 
 /*============================================================================*
- * Provided Interface                                                         *
+ * Target Interface                                                           *
  *============================================================================*/
 
-	/**
-	 * @defgroup kernel-hal-target Target
-	 * @ingroup kernel-hal
-	 *
-	 * @brief Target HAL Interface
-	 */
+/**
+ * @defgroup kernel-hal-target Target
+ * @ingroup kernel-hal
+ *
+ * @brief Target HAL Interface
+ */
+/**@{*/
 
 	#include <nanvix/hal/target/stdout.h>
 	#include <nanvix/hal/target/sync.h>
 	#include <nanvix/hal/target/mailbox.h>
 	#include <nanvix/hal/target/portal.h>
+
+	/**
+	 * @brief Powers off the underlying target.
+	 */
+	#ifdef __target_poweroff_fn
+	EXTERN NORETURN void target_poweroff(void);
+	#else
+	static inline NORETURN void target_poweroff(void)
+	{
+		processor_poweroff();
+	}
+	#endif
+
+/**@}*/
 
 #endif /* NANVIX_HAL_TARGET_H_ */

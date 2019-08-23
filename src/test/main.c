@@ -147,5 +147,5 @@ PUBLIC NORETURN void kmain(int argc, const char *argv[])
 			test_target_al();
 	}
 
-	core_poweroff();
+	target_poweroff();
 }

@@ -32,14 +32,6 @@
 	/* Cluster Interface Implementation */
 	#include <nanvix/hal/cluster/_cluster.h>
 
-	#include <nanvix/hal/cluster/timer.h>
-	#include <nanvix/hal/cluster/event.h>
-	#include <nanvix/hal/cluster/memory.h>
-#ifndef __unix64__
-	#include <nanvix/hal/cluster/mmio.h>
-#endif
-	#include <nanvix/const.h>
-
 /*============================================================================*
  * Interface Implementation Checking                                          *
  *============================================================================*/
@@ -89,6 +81,14 @@
  * @brief Cluster HAL Interface
  */
 /**@{*/
+
+	#include <nanvix/hal/cluster/timer.h>
+	#include <nanvix/hal/cluster/event.h>
+	#include <nanvix/hal/cluster/memory.h>
+#ifndef __unix64__
+	#include <nanvix/hal/cluster/mmio.h>
+#endif
+	#include <nanvix/const.h>
 
 	/**
 	 * @name Types of Cluster
@@ -193,7 +193,7 @@
 	 */
 	EXTERN void core_idle(void);
 
-#endif
+#endif /* __NANVIX_HAL */
 
 	/**
 	 * @brief Suspends instruction execution in the underling core.
@@ -233,10 +233,20 @@
 
 	/**
 	 * @brief Shutdowns the underlying core.
-	 *
-	 * @param status Shutdown status.
 	 */
-	EXTERN void core_shutdown(int status);
+	EXTERN NORETURN void core_shutdown(void);
+
+	/**
+	 * @brief Powers off the underlying cluster.
+	 */
+	#ifdef __cluster_poweroff_fn
+	EXTERN NORETURN void cluster_poweroff(void);
+	#else
+	static inline NORETURN void cluster_poweroff(void)
+	{
+		core_shutdown();
+	}
+	#endif
 
 /**@}*/
 

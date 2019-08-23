@@ -383,11 +383,9 @@ PUBLIC int core_reset(void)
  *
  * @author Pedro Henrique Penna and Davidson Francis
  */
-PUBLIC void core_shutdown(int status)
+PUBLIC NORETURN void core_shutdown(void)
 {
 	int coreid = core_get_id();
-
-	UNUSED(status);
 
 	spinlock_lock(&cores[coreid].lock);
 
