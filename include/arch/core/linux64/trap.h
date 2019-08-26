@@ -36,8 +36,25 @@
 	#define __NEED_CORE_TYPES
 
 	#include <arch/core/linux64/types.h>
-	#include <unistd.h>
-	#include <sys/syscall.h>
+	#include <nanvix/const.h>
+
+	/**
+	 * @brief Low-level kernel call dispatcher.
+	 *
+	 * @param arg0     First kernel call argument.
+	 * @param arg1     Second kernel call argument.
+	 * @param arg2     Third kernel call argument.
+	 * @param arg3     Fourth kernel call argument.
+	 * @param arg4     Fifth kernel call argument.
+	 * @param kcall_nr Kernel call number.
+	 */
+	EXTERN linux64_word_t linux64_core_do_kcall(
+		linux64_word_t arg0,
+		linux64_word_t arg1,
+		linux64_word_t arg2,
+		linux64_word_t arg3,
+		linux64_word_t arg4,
+		linux64_word_t kcall_nr);
 
 	/**
 	 * @brief Issues a system call with no arguments.
@@ -46,9 +63,9 @@
 	 *
 	 * @returns The system call return value.
 	 */
-	static inline linux64_dword_t linux64_kcall0(linux64_dword_t kcall_nr)
+	static inline linux64_word_t linux64_kcall0(linux64_word_t kcall_nr)
 	{
-		return (syscall(kcall_nr));
+		return (linux64_core_do_kcall(0, 0, 0, 0, 0, kcall_nr));
 	}
 
 	/**
@@ -59,11 +76,11 @@
 	 *
 	 * @returns The system call return value.
 	 */
-	static inline linux64_dword_t linux64_kcall1(
-		linux64_dword_t kcall_nr,
-		linux64_dword_t arg0)
+	static inline linux64_word_t linux64_kcall1(
+		linux64_word_t kcall_nr,
+		linux64_word_t arg0)
 	{
-		return (syscall(kcall_nr, arg0));
+		return (linux64_core_do_kcall(arg0, 0, 0, 0, 0, kcall_nr));
 	}
 
 	/**
@@ -75,12 +92,12 @@
 	 *
 	 * @returns The system call return value.
 	 */
-	static inline linux64_dword_t linux64_kcall2(
-		linux64_dword_t kcall_nr,
-		linux64_dword_t arg0,
-		linux64_dword_t arg1)
+	static inline linux64_word_t linux64_kcall2(
+		linux64_word_t kcall_nr,
+		linux64_word_t arg0,
+		linux64_word_t arg1)
 	{
-		return (syscall(kcall_nr, arg0, arg1));
+		return (linux64_core_do_kcall(arg0, arg1, 0, 0, 0, kcall_nr));
 	}
 
 	/**
@@ -93,13 +110,13 @@
 	 *
 	 * @returns The system call return value.
 	 */
-	static inline linux64_dword_t linux64_kcall3(
-		linux64_dword_t kcall_nr,
-		linux64_dword_t arg0,
-		linux64_dword_t arg1,
-		linux64_dword_t arg2)
+	static inline linux64_word_t linux64_kcall3(
+		linux64_word_t kcall_nr,
+		linux64_word_t arg0,
+		linux64_word_t arg1,
+		linux64_word_t arg2)
 	{
-		return (syscall(kcall_nr, arg0, arg1, arg2));
+		return (linux64_core_do_kcall(arg0, arg1, arg2, 0, 0, kcall_nr));
 	}
 
 	/**
@@ -113,14 +130,14 @@
 	 *
 	 * @returns The system call return value.
 	 */
-	static inline linux64_dword_t linux64_kcall4(
-		linux64_dword_t kcall_nr,
-		linux64_dword_t arg0,
-		linux64_dword_t arg1,
-		linux64_dword_t arg2,
-		linux64_dword_t arg3)
+	static inline linux64_word_t linux64_kcall4(
+		linux64_word_t kcall_nr,
+		linux64_word_t arg0,
+		linux64_word_t arg1,
+		linux64_word_t arg2,
+		linux64_word_t arg3)
 	{
-		return (syscall(kcall_nr, arg0, arg1, arg2, arg3));
+		return (linux64_core_do_kcall(arg0, arg1, arg2, arg3, 0, kcall_nr));
 	}
 
 	/**
@@ -135,15 +152,15 @@
 	 *
 	 * @returns The system call return value.
 	 */
-	static inline linux64_dword_t linux64_kcall5(
-		linux64_dword_t kcall_nr,
-		linux64_dword_t arg0,
-		linux64_dword_t arg1,
-		linux64_dword_t arg2,
-		linux64_dword_t arg3,
-		linux64_dword_t arg4)
+	static inline linux64_word_t linux64_kcall5(
+		linux64_word_t kcall_nr,
+		linux64_word_t arg0,
+		linux64_word_t arg1,
+		linux64_word_t arg2,
+		linux64_word_t arg3,
+		linux64_word_t arg4)
 	{
-		return (syscall(kcall_nr, arg0, arg1, arg2, arg3, arg4));
+		return (linux64_core_do_kcall(arg0, arg1, arg2, arg3, arg4, kcall_nr));
 	}
 
 /**@}*/
@@ -171,7 +188,7 @@
 	/**
 	 * @see linux64_kcall_0()
 	 */
-	static inline dword_t kcall0(dword_t kcall_nr)
+	static inline word_t kcall0(word_t kcall_nr)
 	{
 		return (
 			linux64_kcall0(kcall_nr)
@@ -181,9 +198,9 @@
 	/**
 	 * @see linux64_kcall_1()
 	 */
-	static inline dword_t kcall1(
-		dword_t kcall_nr,
-		dword_t arg0)
+	static inline word_t kcall1(
+		word_t kcall_nr,
+		word_t arg0)
 	{
 		return (
 			linux64_kcall1(
@@ -196,10 +213,10 @@
 	/**
 	 * @see linux64_kcall_2()
 	 */
-	static inline dword_t kcall2(
-		dword_t kcall_nr,
-		dword_t arg0,
-		dword_t arg1)
+	static inline word_t kcall2(
+		word_t kcall_nr,
+		word_t arg0,
+		word_t arg1)
 	{
 		return (
 			linux64_kcall2(
@@ -213,11 +230,11 @@
 	/**
 	 * @see linux64_kcall_3()
 	 */
-	static inline dword_t kcall3(
-		dword_t kcall_nr,
-		dword_t arg0,
-		dword_t arg1,
-		dword_t arg2)
+	static inline word_t kcall3(
+		word_t kcall_nr,
+		word_t arg0,
+		word_t arg1,
+		word_t arg2)
 	{
 		return (
 			linux64_kcall3(
@@ -232,12 +249,12 @@
 	/**
 	 * @see linux64_kcall_4()
 	 */
-	static inline dword_t kcall4(
-		dword_t kcall_nr,
-		dword_t arg0,
-		dword_t arg1,
-		dword_t arg2,
-		dword_t arg3)		
+	static inline word_t kcall4(
+		word_t kcall_nr,
+		word_t arg0,
+		word_t arg1,
+		word_t arg2,
+		word_t arg3)
 	{
 		return (
 			linux64_kcall4(
@@ -253,13 +270,13 @@
 	/**
 	 * @see linux64_kcall_5()
 	 */
-	static inline dword_t kcall5(
-		dword_t kcall_nr,
-		dword_t arg0,
-		dword_t arg1,
-		dword_t arg2,
-		dword_t arg3,
-		dword_t arg4)
+	static inline word_t kcall5(
+		word_t kcall_nr,
+		word_t arg0,
+		word_t arg1,
+		word_t arg2,
+		word_t arg3,
+		word_t arg4)
 	{
 		return (
 			linux64_kcall5(
