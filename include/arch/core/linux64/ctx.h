@@ -37,11 +37,13 @@
  */
 
 	#include <arch/core/linux64/core.h>
+	#include <nanvix/const.h>
+	#include <nanvix/klib.h>
 
 	/**
 	 * @brief Execution context size (in bytes).
 	 */
-	#define LINUX64_CONTEXT_SIZE 1
+	#define LINUX64_CONTEXT_SIZE 8
 
 	/**@}*/
 
@@ -103,10 +105,55 @@
 	 */
 	/**@{*/
 	#define __context_get_id_fn /**< context_get_id() */
+	#define __context_get_sp_fn /**< context_get_sp() */
+	#define __context_get_pc_fn /**< context_get_pc() */
+	#define __context_set_sp_fn /**< context_set_sp() */
+	#define __context_set_pc_fn /**< context_set_pc() */
+	#define __context_dump_fn   /**< context_dump()   */
 	/**@}*/
 
 	/**
-	 * @see linux64_context_get_sp().
+	 * @brief Dummy function.
+	 */
+	static inline word_t context_get_sp(const struct context *ctx)
+	{
+		UNUSED(ctx);
+
+		return (0);
+	}
+
+	/**
+	 * @brief Dummy function.
+	 */
+	static inline word_t context_get_pc(const struct context *ctx)
+	{
+		UNUSED(ctx);
+
+		return (0);
+	}
+
+	/**
+	 * @brief Dummy function.
+	 */
+	static inline void context_set_sp(struct context *ctx, word_t val)
+	{
+		UNUSED(ctx);
+		UNUSED(val);
+	}
+
+	/**
+	 * @brief Dummy function.
+	 */
+	static inline void context_set_pc(struct context *ctx, word_t val)
+	{
+		UNUSED(ctx);
+		UNUSED(val);
+	}
+
+	/**
+	 * @brief Get the value of the core.
+	 *
+	 * @param ctx Target context.
 	 */
 	static inline dword_t context_get_id(const struct context *ctx)
 	{
