@@ -148,24 +148,24 @@
 	/**@}*/
 
 	/**
-	 * @see linux64_core_dcache_line_size_log2().
+	 * @see Dummy cache line size log2.
 	 */
-	#define CACHE_LINE_SIZE_LOG2 linux64_core_dcache_line_size_log2_get()
+	#define CACHE_LINE_SIZE_LOG2 6
 
 	/**
-	 * @see linux64_core_dcache_line_size().
+	 * @see Dummy cache line size (in bytes).
 	 */
-	#define CACHE_LINE_SIZE linux64_core_dcache_line_size_get()
+	#define CACHE_LINE_SIZE (1 << CACHE_LINE_SIZE_LOG2)
 
 	/**
-	 * @see linux64_core_dcache_size_log2().
+	 * @see Dummy cache size log2.
 	 */
-	#define CACHE_SIZE_LOG2 linux64_core_dcache_size_log2_get()
+	#define CACHE_SIZE_LOG2 15
 
 	/**
-	 * @see linux64_core_dcache_size().
+	 * @see Dummy cache size (in bytes).
 	 */
-	#define CACHE_SIZE linux64_core_dcache_size_get()
+	#define CACHE_SIZE (1 << CACHE_SIZE_LOG2)
 
 	/**
 	 * @see linux_core_dcache_invalidate().
