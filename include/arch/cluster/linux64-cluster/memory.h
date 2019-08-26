@@ -44,7 +44,7 @@
 	/**
 	 * @brief Kernel memory size (in bytes).
 	 */
-	#define LINUX64_KMEM_SIZE (16*1024*1024)
+	#define LINUX64_KMEM_SIZE (4*1024*1024)
 
 	/**
 	 * @brief Kernel page pool size (in bytes).
@@ -54,7 +54,7 @@
 	/**
 	 * @brief User memory size (in bytes).
 	 */
-	#define LINUX64_UMEM_SIZE (LINUX64_MEM_SIZE - LINUX64_KMEM_SIZE - LINUX64_KPOOL_SIZE)
+	#define LINUX64_UMEM_SIZE (16*1024*1024)
 
 	/**
 	 * @brief Kernel stack size (in bytes).
@@ -65,11 +65,11 @@
 	 * @name Virtual Memory Layout
 	 */
 	/**@{*/
-	#define LINUX64_USER_BASE_VIRT   0x02000000                                   /**< User Base             */
-	#define LINUX64_USER_END_VIRT    (LINUX64_USER_BASE_VIRT + LINUX64_UMEM_SIZE) /**< User End              */
-	#define LINUX64_USTACK_BASE_VIRT 0xc0000000                                   /**< User Stack Base       */
-	#define LINUX64_KERNEL_BASE_VIRT 0xc0000000                                   /**< Kernel Base           */
-	#define LINUX64_KPOOL_BASE_VIRT  0xc1000000                                   /**< Kernel Page Pool Base */
+	EXTERN vaddr_t LINUX64_USER_BASE_VIRT;   /**< User Base             */
+	EXTERN vaddr_t LINUX64_USER_END_VIRT;    /**< User End              */
+	EXTERN vaddr_t LINUX64_USTACK_BASE_VIRT; /**< User Stack Base       */
+	EXTERN vaddr_t LINUX64_KERNEL_BASE_VIRT; /**< Kernel Base           */
+	EXTERN vaddr_t LINUX64_KPOOL_BASE_VIRT;  /**< Kernel Page Pool Base */
 	/**@}*/
 
 	/**
@@ -87,7 +87,7 @@
 	 * @name Memory Regions Constants
 	 */
 	/**@{*/
-	#define LINUX64_CLUSTER_MEM_REGIONS            1                            /**< Memory Regions number.            */
+	#define LINUX64_CLUSTER_MEM_REGIONS            2                            /**< Memory Regions number.            */
 	#define LINUX64_CLUSTER_ROOT_PGTAB_NUM         LINUX64_CLUSTER_MEM_REGIONS  /**< Root page table size.             */
 	#define LINUX64_CLUSTER_MREGION_PT_ALIGN_START 0                            /**< MRegion start page table aligned. */
 	#define LINUX64_CLUSTER_MREGION_PT_ALIGN_END   0                            /**< MRegion end page table aligned.   */
@@ -144,6 +144,15 @@
 	EXTERN unsigned char __BSS_START;       /**< BSS Start       */
 	EXTERN unsigned char __BSS_END;         /**< BSS End         */
 	/**@}*/
+
+#ifdef __NANVIX_HAL
+
+	/**
+	 * @brief Powers of the virtual memory.
+	 */
+	EXTERN void linux64_cluster_memory_boot(void);
+
+#endif /* __NANVIX_HAL */
 
 /**@}*/
 

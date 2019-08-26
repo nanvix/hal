@@ -50,6 +50,8 @@ PUBLIC int linux64_cluster_boot(void)
 {
 	kprintf("[hal][cluster] powering on cluster...");
 
+	linux64_cluster_memory_boot();
+
 	/* Save ID of master core. */
 	linux64_cores_tab[0] = pthread_self();
 

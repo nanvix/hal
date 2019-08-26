@@ -50,6 +50,8 @@ PUBLIC void hal_init(void)
 	KASSERT(ALIGNED(sizeof(struct context), DWORD_SIZE));
 	KASSERT_SIZE(sizeof(struct exception), EXCEPTION_SIZE);
 	KASSERT(ALIGNED(sizeof(struct exception), DWORD_SIZE));
+	KASSERT_SIZE(sizeof(struct pte), PTE_SIZE);
+	KASSERT_SIZE(sizeof(struct pde), PDE_SIZE);
 
 	exception_setup();
 	interrupt_setup();
