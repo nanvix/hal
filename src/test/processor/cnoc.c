@@ -148,6 +148,78 @@ PRIVATE void test_cnoc_loopback_with_interrupts(void)
 	KASSERT(bostan_dma_control_unlink(INTERFACE, RX_TAG) == 0);
 }
 
+/**
+ * @brief API Test: Synchronization Point With Events
+ */
+static void test_cnoc_stress_with_events(void)
+{
+	int clusterid;
+
+	clusterid = cluster_get_id();
+
+	KASSERT(bostan_dma_control_create(INTERFACE, RX_TAG, RX_MASK, NULL) == 0);
+	KASSERT(bostan_dma_control_open(INTERFACE, TX_TAG) == 0);
+
+	for (int i = 0; i < 10; ++i)
+	{
+		KASSERT(
+			bostan_dma_control_signal(
+				INTERFACE,
+				TX_TAG,
+				&clusterid,
+				1,
+				RX_TAG,
+				TX_MASK
+			) == 0
+		);
+
+		KASSERT(bostan_dma_control_wait(INTERFACE, RX_TAG) == 0);
+
+		KASSERT(bostan_dma_control_config(INTERFACE, RX_TAG, RX_MASK, NULL) == 0);
+	}
+
+	KASSERT(bostan_dma_control_close(INTERFACE, TX_TAG) == 0);
+	KASSERT(bostan_dma_control_unlink(INTERFACE, RX_TAG) == 0);
+}
+
+/**
+ * @brief API Test: Synchronization Point With Interrupts
+ */
+static void test_cnoc_stress_with_interrupts(void)
+{
+	int clusterid;
+
+	clusterid = cluster_get_id();
+
+	KASSERT(bostan_dma_control_create(INTERFACE, RX_TAG, RX_MASK, test_cnoc_dummy_handler) == 0);
+	KASSERT(bostan_dma_control_open(INTERFACE, TX_TAG) == 0);
+
+	interrupts_enable();
+
+		for (int i = 0; i < 10; ++i)
+		{
+			KASSERT(
+				bostan_dma_control_signal(
+					INTERFACE,
+					TX_TAG,
+					&clusterid,
+					1,
+					RX_TAG,
+					TX_MASK
+				) == 0
+			);
+
+			spinlock_lock(&test_cnoc_lock);
+
+			KASSERT(bostan_dma_control_config(INTERFACE, RX_TAG, RX_MASK, test_cnoc_dummy_handler) == 0);
+		}
+
+	interrupts_disable();
+
+	KASSERT(bostan_dma_control_close(INTERFACE, TX_TAG) == 0);
+	KASSERT(bostan_dma_control_unlink(INTERFACE, RX_TAG) == 0);
+}
+
 /*============================================================================*
  * Test Driver                                                                *
  *============================================================================*/
@@ -155,12 +227,15 @@ PRIVATE void test_cnoc_loopback_with_interrupts(void)
 /**
  * @brief Unit tests.
  */
-PRIVATE struct test cnoc_tests_api[] = {
-	{ test_cnoc_create_unlink,            "create unlink                    " },
-	{ test_cnoc_open_close,               "open close                       " },
-	{ test_cnoc_loopback_with_events,     "loopback a signal with events    " },
-	{ test_cnoc_loopback_with_interrupts, "loopback a signal with interrupts" },
-	{ NULL,                                NULL                               },
+struct test cnoc_tests_api[] = {
+	/* Intra-Cluster API Tests */
+	{test_cnoc_create_unlink,            "Create Unlink"                     },
+	{test_cnoc_open_close,               "Open Close"                        },
+	{test_cnoc_loopback_with_events,     "Loopback a signal with events"     },
+	{test_cnoc_loopback_with_interrupts, "Loopback a signal with interrupts" },
+	{test_cnoc_stress_with_events,       "Stress a signal with events    "   },
+	{test_cnoc_stress_with_interrupts,   "Stress a signal with interrupts"   },
+	{NULL,                               NULL                                },
 };
 
 /**
