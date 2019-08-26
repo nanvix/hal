@@ -74,8 +74,6 @@
 
 	#include <nanvix/const.h>
 
-#ifndef __unix64__
-
 	/**
 	 * @brief Execution context.
 	 */
@@ -117,7 +115,6 @@
 	 */
 	EXTERN void context_set_pc(struct context *ctx, word_t val);
 
-#endif /* __unix64__ */
 
 /**@}*/
 
