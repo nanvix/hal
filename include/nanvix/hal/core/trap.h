@@ -68,12 +68,6 @@
  */
 /**@{*/
 
-#ifdef __unix64__
-	#define TYPE dword_t
-#else
-	#define TYPE word_t
-#endif
-
 	/**
 	 * @brief Issues a system call with no arguments.
 	 *
@@ -81,7 +75,7 @@
 	 *
 	 * @returns The system call return value.
 	 */
-	EXTERN TYPE kcall0(TYPE kcall_nr);
+	EXTERN word_t kcall0(word_t kcall_nr);
 
 	/**
 	 * @brief Issues a system call with one argument.
@@ -91,9 +85,9 @@
 	 *
 	 * @returns The system call return value.
 	 */
-	EXTERN TYPE kcall1(
-		TYPE kcall_nr,
-		TYPE arg0);
+	EXTERN word_t kcall1(
+		word_t kcall_nr,
+		word_t arg0);
 
 	/**
 	 * @brief Issues a system call with two arguments.
@@ -104,10 +98,10 @@
 	 *
 	 * @returns The system call return value.
 	 */
-	EXTERN TYPE kcall2(
-		TYPE kcall_nr,
-		TYPE arg0,
-		TYPE arg1);
+	EXTERN word_t kcall2(
+		word_t kcall_nr,
+		word_t arg0,
+		word_t arg1);
 
 	/**
 	 * @brief Issues a system call with three arguments.
@@ -119,11 +113,11 @@
 	 *
 	 * @returns The system call return value.
 	 */
-	EXTERN TYPE kcall3(
-		TYPE kcall_nr,
-		TYPE arg0,
-		TYPE arg1,
-		TYPE arg2);
+	EXTERN word_t kcall3(
+		word_t kcall_nr,
+		word_t arg0,
+		word_t arg1,
+		word_t arg2);
 
 	/**
 	 * @brief Issues a system call with four arguments.
@@ -136,12 +130,12 @@
 	 *
 	 * @returns The system call return value.
 	 */
-	EXTERN TYPE kcall4(
-		TYPE kcall_nr,
-		TYPE arg0,
-		TYPE arg1,
-		TYPE arg2,
-		TYPE arg3);
+	EXTERN word_t kcall4(
+		word_t kcall_nr,
+		word_t arg0,
+		word_t arg1,
+		word_t arg2,
+		word_t arg3);
 
 	/**
 	 * @brief Issues a system call with five arguments.
@@ -155,24 +149,24 @@
 	 *
 	 * @returns The system call return value.
 	 */
-	EXTERN TYPE kcall5(
-		TYPE kcall_nr,
-		TYPE arg0,
-		TYPE arg1,
-		TYPE arg2,
-		TYPE arg3,
-		TYPE arg4);
+	EXTERN word_t kcall5(
+		word_t kcall_nr,
+		word_t arg0,
+		word_t arg1,
+		word_t arg2,
+		word_t arg3,
+		word_t arg4);
 
 	/**
 	 * @brief Handles a system call.
 	 */
 	EXTERN int do_kcall(
-		unsigned arg0,
-		unsigned arg1,
-		unsigned arg2,
-		unsigned arg3,
-		unsigned arg4,
-		unsigned kcall_nr);
+		word_t arg0,
+		word_t arg1,
+		word_t arg2,
+		word_t arg3,
+		word_t arg4,
+		word_t kcall_nr);
 
 /**@}*/
 

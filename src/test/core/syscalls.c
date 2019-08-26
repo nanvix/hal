@@ -32,7 +32,6 @@
  */
 #define TEST_TRAP_VERBOSE 0
 
-#ifndef __unix64__
 
 /**
  * @brief Magic Numbers.
@@ -67,12 +66,12 @@
  * failure, a negative error code is returned instead.
  */
 PUBLIC int do_kcall(
-	unsigned arg0,
-	unsigned arg1,
-	unsigned arg2,
-	unsigned arg3,
-	unsigned arg4,
-	unsigned kcall_nr)
+	word_t arg0,
+	word_t arg1,
+	word_t arg2,
+	word_t arg3,
+	word_t arg4,
+	word_t kcall_nr)
 {
 
 #if (TEST_TRAP_VERBOSE)
@@ -109,9 +108,9 @@ PUBLIC int do_kcall(
  */
 PRIVATE void test_trap_issue0(void)
 {
-	KASSERT(kcall0(
+	KASSERT((kcall0(
 		KCALL0_NR
-	  ) == MAGIC5
+	  ) & 0xffffffff) == MAGIC5
 	);
 }
 
@@ -124,10 +123,10 @@ PRIVATE void test_trap_issue0(void)
  */
 PRIVATE void test_trap_issue1(void)
 {
-	KASSERT(kcall1(
+	KASSERT((kcall1(
 		KCALL1_NR,
 		MAGIC0
-	  ) == MAGIC5
+	  ) & 0xffffffff) == MAGIC5
 	);
 }
 
@@ -140,11 +139,11 @@ PRIVATE void test_trap_issue1(void)
  */
 PRIVATE void test_trap_issue2(void)
 {
-	KASSERT(kcall2(
+	KASSERT((kcall2(
 		KCALL2_NR,
 		MAGIC0,
 		MAGIC1
-	  ) == MAGIC5
+	  ) & 0xffffffff) == MAGIC5
 	);
 }
 
@@ -157,12 +156,12 @@ PRIVATE void test_trap_issue2(void)
  */
 PRIVATE void test_trap_issue3(void)
 {
-	KASSERT(kcall3(
+	KASSERT((kcall3(
 		KCALL3_NR,
 		MAGIC0,
 		MAGIC1,
 		MAGIC2
-	  ) == MAGIC5
+	  ) & 0xffffffff) == MAGIC5
 	);
 }
 
@@ -175,13 +174,13 @@ PRIVATE void test_trap_issue3(void)
  */
 PRIVATE void test_trap_issue4(void)
 {
-	KASSERT(kcall4(
+	KASSERT((kcall4(
 		KCALL4_NR,
 		MAGIC0,
 		MAGIC1,
 		MAGIC2,
 		MAGIC3
-	  ) == MAGIC5
+	  ) & 0xffffffff) == MAGIC5
 	);
 }
 
@@ -194,14 +193,14 @@ PRIVATE void test_trap_issue4(void)
  */
 PRIVATE void test_trap_issue5(void)
 {
-	KASSERT(kcall5(
+	KASSERT((kcall5(
 		KCALL5_NR,
 		MAGIC0,
 		MAGIC1,
 		MAGIC2,
 		MAGIC3,
 		MAGIC4
-	  ) == MAGIC5
+	  ) & 0xffffffff) == MAGIC5
 	);
 }
 
@@ -241,21 +240,3 @@ PUBLIC void test_trap(void)
 		kprintf("[test][api][trap] %s [passed]", trap_tests_api[i].name);
 	}
 }
-
-#else
-
-/**
- * The trap_test() functions launches testing units on the trap interface of the HAL.
- * 
- * TODO : Add tests for kcall1, 2, 4 and 5
- */
-PUBLIC void test_trap(void)
-{
-	KASSERT(kcall0(SYS_gettid) > 0);
-	kprintf("[test][api][trap] kcall0 [passed]");
-
-	KASSERT(kcall3(SYS_write, 1, (dword_t)"", 1) == 1);
-	kprintf("[test][api][trap] kcall3 [passed]");
-}
-
-#endif
