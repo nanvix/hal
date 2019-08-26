@@ -35,6 +35,8 @@
 
 	#include <linux/perf_event.h>
 	#include <sys/ioctl.h>
+	#include <syscall.h>
+	#include <unistd.h>
 
 	/**
 	 * @brief Number of performance events.
@@ -50,50 +52,50 @@
 	 * @name Performance Events
 	 */
 	/**@{*/
-	#define LINUX64_PERF_CYCLES         PERF_COUNT_HW_CPU_CYCLES					/**< Timer Cycles                    */
+	#define LINUX64_PERF_CYCLES         PERF_COUNT_HW_CPU_CYCLES                      /**< Timer Cycles                    */
 	#define LINUX64_PERF_ICACHE_HITS    (PERF_COUNT_HW_CACHE_L1I) |\
-										(PERF_COUNT_HW_CACHE_OP_READ << 8) |\
-										(PERF_COUNT_HW_CACHE_RESULT_MISS << 16)		/**< Instruction Cache Hits          */
+											(PERF_COUNT_HW_CACHE_OP_READ << 8) |\
+											(PERF_COUNT_HW_CACHE_RESULT_MISS << 16)   /**< Instruction Cache Hits          */
 	#define LINUX64_PERF_ICACHE_MISSES  (PERF_COUNT_HW_CACHE_L1I) |\
-										(PERF_COUNT_HW_CACHE_OP_READ << 8) |\
-										(PERF_COUNT_HW_CACHE_RESULT_ACCESS << 16)	/**< Instruction Cache Misses        */
+											(PERF_COUNT_HW_CACHE_OP_READ << 8) |\
+											(PERF_COUNT_HW_CACHE_RESULT_ACCESS << 16) /**< Instruction Cache Misses        */
 	#define LINUX64_PERF_ICACHE_STALLS  (PERF_COUNT_HW_CACHE_L1I) |\
-										(PERF_COUNT_HW_CACHE_OP_READ << 8) |\
-										(PERF_COUNT_HW_CACHE_RESULT_MISS << 16)		/**< Instruction Cache Misses Stalls */
+											(PERF_COUNT_HW_CACHE_OP_READ << 8) |\
+											(PERF_COUNT_HW_CACHE_RESULT_MISS << 16)   /**< Instruction Cache Misses Stalls */
 	#define LINUX64_PERF_DCACHE_HITS    (PERF_COUNT_HW_CACHE_L1D) |\
-										(PERF_COUNT_HW_CACHE_OP_READ << 8) |\
-										(PERF_COUNT_HW_CACHE_RESULT_MISS << 16)		/**< Data Cache Hits          */
+											(PERF_COUNT_HW_CACHE_OP_READ << 8) |\
+											(PERF_COUNT_HW_CACHE_RESULT_MISS << 16)   /**< Data Cache Hits                 */
 	#define LINUX64_PERF_DCACHE_MISSES  (PERF_COUNT_HW_CACHE_L1D) |\
-										(PERF_COUNT_HW_CACHE_OP_READ << 8) |\
-										(PERF_COUNT_HW_CACHE_RESULT_ACCESS << 16)	/**< Data Cache Misses        */
+											(PERF_COUNT_HW_CACHE_OP_READ << 8) |\
+											(PERF_COUNT_HW_CACHE_RESULT_ACCESS << 16) /**< Data Cache Misses               */
 	#define LINUX64_PERF_DCACHE_STALLS  (PERF_COUNT_HW_CACHE_L1D) |\
-										(PERF_COUNT_HW_CACHE_OP_READ << 8) |\
-										(PERF_COUNT_HW_CACHE_RESULT_MISS << 16)		/**< Data Cache Misses Stalls */
-	#define LINUX64_PERF_BUNDLES        0											/**< Bundles Executed                */
-	#define LINUX64_PERF_BRANCH_TAKEN   PERF_COUNT_HW_BRANCH_INSTRUCTIONS			/**< Branches Taken                  */
-	#define LINUX64_PERF_BRANCH_STALLS  PERF_COUNT_HW_BRANCH_MISSES					/**< Branches Stalled                */
-	#define LINUX64_PERF_REG_STALLS     PERF_SAMPLE_REGS_INTR						/**< Register Dependence Stalls      */
-	#define LINUX64_PERF_ITLB_STALLS    PERF_COUNT_HW_CACHE_ITLB) |\
-										(PERF_COUNT_HW_CACHE_OP_READ << 8) |\
-										(PERF_COUNT_HW_CACHE_RESULT_MISS << 16)		/**< Instruction TLB Stalls          */
+											(PERF_COUNT_HW_CACHE_OP_READ << 8) |\
+											(PERF_COUNT_HW_CACHE_RESULT_MISS << 16)   /**< Data Cache Misses Stalls        */
+	#define LINUX64_PERF_BUNDLES        0                                             /**< Bundles Executed                */
+	#define LINUX64_PERF_BRANCH_TAKEN   PERF_COUNT_HW_BRANCH_INSTRUCTIONS             /**< Branches Taken                  */
+	#define LINUX64_PERF_BRANCH_STALLS  PERF_COUNT_HW_BRANCH_MISSES                   /**< Branches Stalled                */
+	#define LINUX64_PERF_REG_STALLS     PERF_SAMPLE_REGS_INTR                         /**< Register Dependence Stalls      */
+	#define LINUX64_PERF_ITLB_STALLS    (PERF_COUNT_HW_CACHE_ITLB) |\
+											(PERF_COUNT_HW_CACHE_OP_READ << 8) |\
+											(PERF_COUNT_HW_CACHE_RESULT_MISS << 16)   /**< Instruction TLB Stalls          */
 	#define LINUX64_PERF_DTLB_STALLS    (PERF_COUNT_HW_CACHE_DTLB) |\
-										(PERF_COUNT_HW_CACHE_OP_READ << 8) |\
-										(PERF_COUNT_HW_CACHE_RESULT_MISS << 16)		/**< Data TLB Stalls                 */
-	#define LINUX64_PERF_STREAM_STALLS  PERF_SAMPLE_REGS_INTR						/**< Stream Buffer Stalls            */
-	#define LINUX64_PERF_NUM_INSTRUCTIONS PERF_COUNT_HW_INSTRUCTIONS				/**< Hardware Instructions 			 */
+											(PERF_COUNT_HW_CACHE_OP_READ << 8) |\
+											(PERF_COUNT_HW_CACHE_RESULT_MISS << 16)   /**< Data TLB Stalls                 */
+	#define LINUX64_PERF_STREAM_STALLS  PERF_SAMPLE_REGS_INTR                         /**< Stream Buffer Stalls            */
+	#define LINUX64_PERF_NUM_INSTRUCTIONS PERF_COUNT_HW_INSTRUCTIONS                 /**< Hardware Instructions            */
 	/**@}*/
 
-	#define LINUX64_PERF_ARG1 0		/**< Default arg1 */
-	#define LINUX64_PERF_ARG2 -1	/**< Default arg2 */
-	#define LINUX64_PERF_ARG3 -1 	/**< Default arg3 */
-	#define LINUX64_PERF_ARG4 0 	/**< Default arg4 */
+	#define LINUX64_PERF_ARG1  0 /**< Default arg1 */
+	#define LINUX64_PERF_ARG2 -1 /**< Default arg2 */
+	#define LINUX64_PERF_ARG3 -1 /**< Default arg3 */
+	#define LINUX64_PERF_ARG4  0 /**< Default arg4 */
 
 	/**
 	 * @Brief Function to call to configure a perf
 	 */
 	PRIVATE int perf_event_open(struct perf_event_attr *hw_event, pid_t pid, int cpu, int group_fd, unsigned long flags)
 	{
-		return (kcall5(__NR_perf_event_open, (dword_t) hw_event, pid, cpu, group_fd, flags));
+		return (syscall(__NR_perf_event_open, (dword_t) hw_event, pid, cpu, group_fd, flags));
 	}
 
 	/**
@@ -138,9 +140,9 @@
 	 */
 	static inline int linux64_perf_start(int perf, int event)
     {
-		if(!perf_isvalid(perf) || !event_isvalid(event))
+		if (!perf_isvalid(perf) || !event_isvalid(event))
 			return (-EINVAL);
-		
+
 		struct perf_event_attr attr;
 		kmemset(&attr, 0, sizeof(struct perf_event_attr));
 		attr.type = PERF_TYPE_HARDWARE;
@@ -154,10 +156,10 @@
 													LINUX64_PERF_ARG2,
 													LINUX64_PERF_ARG3,
 													LINUX64_PERF_ARG4);
-		
-		if(linux64_perf_monitors[perf] == -1)
+
+		if (linux64_perf_monitors[perf] == -1)
 			return (-EINVAL);
-		
+
 		ioctl(linux64_perf_monitors[perf], PERF_EVENT_IOC_RESET, 0);
         ioctl(linux64_perf_monitors[perf], PERF_EVENT_IOC_ENABLE, 0);
 		return (0);
@@ -173,7 +175,7 @@
 	 */
 	static inline int linux64_perf_stop(int perf)
 	{
-		if(!perf_isvalid(perf))
+		if (!perf_isvalid(perf))
 			return (-EINVAL);
 
 		ioctl(linux64_perf_monitors[perf], PERF_EVENT_IOC_DISABLE, 0);
@@ -190,9 +192,9 @@
 	 */
 	static inline int linux64_perf_restart(int perf)
 	{
-		if(!perf_isvalid(perf))
+		if (!perf_isvalid(perf))
 			return (-1);
-		
+
 		ioctl(linux64_perf_monitors[perf], PERF_EVENT_IOC_RESET, 0);
 		return (0);
 	}
@@ -207,11 +209,11 @@
 	 */
 	static inline uint64_t linux64_perf_read(int perf)
 	{
-		if(!perf_isvalid(perf))
+		if (!perf_isvalid(perf))
 			return (-1);
 
 		uint64_t res = 0;
-		if(read(linux64_perf_monitors[perf], &res, sizeof(unsigned long)) < 1)
+		if (read(linux64_perf_monitors[perf], &res, sizeof(unsigned long)) < 1)
 			return (0);
 		else
 			return (res);
@@ -231,24 +233,24 @@
 	 * @name Exported Constants
 	 */
 	/**@{*/
-	#define PERF_MONITORS_NUM  LINUX64_PERF_MONITORS_NUM   		/**< @ref LINUX64_PERF_MONITORS_NUM  */
-	#define PERF_EVENTS_NUM    LINUX64_PERF_EVENTS_NUM     		/**< @ref LINUX64_PERF_EVENTS_NUM    */
-	#define PERF_CYCLES        LINUX64_PERF_CYCLES         		/**< @ref LINUX64_PERF_CYCLES        */
-	#define PERF_ICACHE_HITS   LINUX64_PERF_ICACHE_HITS    		/**< @ref LINUX64_PERF_ICACHE_HITS   */
-	#define PERF_ICACHE_MISSES LINUX64_PERF_ICACHE_MISSES  		/**< @ref LINUX64_PERF_ICACHE_MISSES */
-	#define PERF_ICACHE_STALLS LINUX64_PERF_ICACHE_STALLS  		/**< @ref LINUX64_PERF_ICACHE_STALLS */
-	#define PERF_DCACHE_HITS   LINUX64_PERF_DCACHE_HITS    		/**< @ref LINUX64_PERF_DCACHE_HITS   */
-	#define PERF_DCACHE_MISSES LINUX64_PERF_DCACHE_MISSES  		/**< @ref LINUX64_PERF_DCACE_MISSES  */
-	#define PERF_DCACHE_STALLS LINUX64_PERF_DCACHE_STALLS  		/**< @ref LINUX64_PERF_DCACHE_STALLS */
-	#define PERF_BUNDLES       LINUX64_PERF_BUNDLES        		/**< @ref LINUX64_PERF_BUNDLES       */
-	#define PERF_BRANCH_TAKEN  LINUX64_PERF_BRANCH_TAKEN   		/**< @ref LINUX64_PERF_BRANCH_TAKEN  */
-	#define PERF_BRANCH_STALLS LINUX64_PERF_BRANCH_STALLS  		/**< @ref LINUX64_PERF_BRANCH_STALLS */
-	#define PERF_REG_STALLS    LINUX64_PERF_REG_STALLS     		/**< @ref LINUX64_PERF_REG_STALLS    */
-	#define PERF_ITLB_STALLS   LINUX64_PERF_ITLB_STALLS    		/**< @ref LINUX64_PERF_ITLB_STALLS   */
-	#define PERF_DTLB_STALLS   LINUX64_PERF_DTLB_STALLS    		/**< @ref LINUX64_PERF_DTLB_STALLS   */
-	#define PERF_STREAM_STALLS LINUX64_PERF_STREAM_STALLS  		/**< @ref LINUX64_PERF_STREAM_STALLS */
+	#define PERF_MONITORS_NUM  LINUX64_PERF_MONITORS_NUM        /**< @ref LINUX64_PERF_MONITORS_NUM     */
+	#define PERF_EVENTS_NUM    LINUX64_PERF_EVENTS_NUM          /**< @ref LINUX64_PERF_EVENTS_NUM       */
+	#define PERF_CYCLES        LINUX64_PERF_CYCLES              /**< @ref LINUX64_PERF_CYCLES           */
+	#define PERF_ICACHE_HITS   LINUX64_PERF_ICACHE_HITS         /**< @ref LINUX64_PERF_ICACHE_HITS      */
+	#define PERF_ICACHE_MISSES LINUX64_PERF_ICACHE_MISSES       /**< @ref LINUX64_PERF_ICACHE_MISSES    */
+	#define PERF_ICACHE_STALLS LINUX64_PERF_ICACHE_STALLS       /**< @ref LINUX64_PERF_ICACHE_STALLS    */
+	#define PERF_DCACHE_HITS   LINUX64_PERF_DCACHE_HITS         /**< @ref LINUX64_PERF_DCACHE_HITS      */
+	#define PERF_DCACHE_MISSES LINUX64_PERF_DCACHE_MISSES       /**< @ref LINUX64_PERF_DCACE_MISSES     */
+	#define PERF_DCACHE_STALLS LINUX64_PERF_DCACHE_STALLS       /**< @ref LINUX64_PERF_DCACHE_STALLS    */
+	#define PERF_BUNDLES       LINUX64_PERF_BUNDLES             /**< @ref LINUX64_PERF_BUNDLES          */
+	#define PERF_BRANCH_TAKEN  LINUX64_PERF_BRANCH_TAKEN        /**< @ref LINUX64_PERF_BRANCH_TAKEN     */
+	#define PERF_BRANCH_STALLS LINUX64_PERF_BRANCH_STALLS       /**< @ref LINUX64_PERF_BRANCH_STALLS    */
+	#define PERF_REG_STALLS    LINUX64_PERF_REG_STALLS          /**< @ref LINUX64_PERF_REG_STALLS       */
+	#define PERF_ITLB_STALLS   LINUX64_PERF_ITLB_STALLS         /**< @ref LINUX64_PERF_ITLB_STALLS      */
+	#define PERF_DTLB_STALLS   LINUX64_PERF_DTLB_STALLS         /**< @ref LINUX64_PERF_DTLB_STALLS      */
+	#define PERF_STREAM_STALLS LINUX64_PERF_STREAM_STALLS       /**< @ref LINUX64_PERF_STREAM_STALLS    */
 	#define PERF_NUM_INSTRUCTIONS LINUX64_PERF_NUM_INSTRUCTIONS /**< @ref LINUX64_PERF_NUM_INSTRUCTIONS */
-	
+
 	/**@}*/
 
 	/**
