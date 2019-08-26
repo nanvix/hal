@@ -73,14 +73,12 @@
 	#endif
 
 	/* Functions */
-#ifndef __unix64__
 	#ifndef __exception_get_addr_fn
 	#error "exception_get_addr() not defined?"
 	#endif
 	#ifndef __exception_get_instr_fn
 	#error "exception_get_instr() not defined?"
 	#endif
-#endif
 	#ifndef __exception_get_num_fn
 	#error "exception_get_num() not defined?"
 	#endif
