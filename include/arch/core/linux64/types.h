@@ -151,7 +151,7 @@
 		/**@{*/
 		typedef uint8_t linux64_byte_t;   /**< Byte        */
 		typedef uint16_t linux64_hword_t; /**< Half Word   */
-		typedef uint32_t linux64_word_t;  /**< Word        */
+		typedef uint64_t linux64_word_t;  /**< Word        */
 		typedef uint64_t linux64_dword_t; /**< Double Word */
 		/**@}*/
 
