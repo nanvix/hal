@@ -64,7 +64,8 @@
 	 	*/
 		struct exception
 		{
-			unsigned num;			/**< Exception number.     */
+			unsigned num;               /**< Exception number. */
+			linux64_byte_t RESERVED[4]; /**< Required padding. */
 		} PACK;
 
 	/**@endcond*/
@@ -136,6 +137,8 @@
 	 * @name Exported Functions
 	 */
 	/**@{*/
+	#define __exception_get_addr_fn  /**< @ref exception_get_addr()  */
+	#define __exception_get_instr_fn /**< @ref exception_get_instr() */
 	#define __exception_get_num_fn   /**< @ref exception_get_num()   */
 	#define __exception_dump_fn      /**< @ref exception_dump()      */
 	/**@}*/
@@ -153,6 +156,34 @@
 	static inline int exception_get_num(const struct exception *excp)
 	{
 		return (linux64_excp_get_num(excp));
+	}
+
+	/**
+	 * @brief Dummy operation.
+	 *
+	 * @param excp Unused parameter.
+	 *
+	 * @returns Always zero.
+	 */
+	static inline vaddr_t exception_get_addr(const struct exception *excp)
+	{
+		UNUSED(excp);
+
+		return (0);
+	}
+
+	/**
+	 * @brief Dummy operation.
+	 *
+	 * @param excp Unused parameter.
+	 *
+	 * @returns Always zero.
+	 */
+	static inline int exception_get_instr(const struct exception *excp)
+	{
+		UNUSED(excp);
+
+		return (0);
 	}
 
 	/**
