@@ -71,6 +71,7 @@ PRIVATE NORETURN void linux64_cluster_master_setup(void)
 	for (int i = 1; i < LINUX64_CLUSTER_NUM_CORES; i++)
 		linux64_spinlock_lock(&cores[i].lock);
 
+	mem_setup();
 	linux64_cluster_event_setup();
 	linux64_core_setup();
 

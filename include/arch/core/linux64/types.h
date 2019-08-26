@@ -79,16 +79,16 @@
 	 * @name Bit-Length of Memory Types
 	 */
 	/**@{*/
-	#define LINUX64_PADDR_BIT  64 /**< Physical Address */
-	#define LINUX64_VADDR_BIT  64 /**< Virtual Address  */
+	#define LINUX64_PADDR_BIT  48 /**< Physical Address */
+	#define LINUX64_VADDR_BIT  48 /**< Virtual Address  */
 	/**@}*/
 
 	/**
 	 * @name Byte-Length of Memory Types
 	 */
 	/**@{*/
-	#define LINUX64_PADDR_BYTE 8 /**< Physical Address */
-	#define LINUX64_VADDR_BYTE 8 /**< Virtual Address  */
+	#define LINUX64_PADDR_BYTE 6 /**< Physical Address */
+	#define LINUX64_VADDR_BYTE 6 /**< Virtual Address  */
 	/**@}*/
 
 #endif
