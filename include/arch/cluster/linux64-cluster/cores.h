@@ -72,6 +72,11 @@
 	EXTERN int linux64_core_get_id(void);
 
 	/**
+	 * @brief Resets the underlying core.
+	 */
+	EXTERN NORETURN void _linux64_core_reset(void);
+
+	/**
 	 * @brief Gets the number of cores.
 	 *
 	 * The linux64_cluster_get_num_cores() gets the number of cores in the
@@ -116,11 +121,11 @@
 
 
 	/**
-	 * @TODO Implement this fn
+	 * @see _linux_core_reset().
 	 */
-	static inline void _core_reset(void)
+	static NORETURN inline void _core_reset(void)
 	{
-
+		_linux64_core_reset();
 	}
 
 	/**
