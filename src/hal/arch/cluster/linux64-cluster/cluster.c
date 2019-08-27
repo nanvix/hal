@@ -72,7 +72,7 @@ PRIVATE NORETURN void linux64_cluster_master_setup(void)
 		linux64_spinlock_lock(&cores[i].lock);
 
 	mem_setup();
-	linux64_cluster_event_setup();
+	event_setup();
 	linux64_core_setup();
 
 	cluster_fence_release();
