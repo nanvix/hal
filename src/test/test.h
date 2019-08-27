@@ -114,4 +114,9 @@
 	 */
 	EXTERN void test_mailbox(void);
 
+	/**
+	 * @brief Test driver for the Portal Interface
+	 */
+	EXTERN void test_portal(void);
+
 #endif /* _HAL_TEST_H_ */

@@ -56,11 +56,6 @@
 		#error "SYNC_OPEN_MAX not defined"
 		#endif
 
-		/* Structures */
-		#ifndef __aiocb_struct
-		#error "struct aiocb not defined?"
-		#endif
-
 		/* Functions */
 		#ifndef __sync_create_fn
 		#error "sync_create() not defined?"
@@ -115,19 +110,17 @@
 	 * @param nodes  IDs of target NoC nodes.
 	 * @param nnodes Number of target NoC nodes.
 	 * @param type   Type of synchronization point.
-	 * @param aiocb  Asynchronous operation control.
 	 *
 	 * @return The tag of underlying resource ID.
 	 */
 #if (__TARGET_HAS_SYNC)
-	EXTERN int sync_create(const int *nodes, int nnodes, int type, struct aiocb * aiocb);
+	EXTERN int sync_create(const int *nodes, int nnodes, int type);
 #else
-	static inline int sync_create(const int *nodes, int nnodes, int type, struct aiocb * aiocb)
+	static inline int sync_create(const int *nodes, int nnodes, int type)
 	{
 		UNUSED(nodes);
 		UNUSED(nnodes);
 		UNUSED(type);
-		UNUSED(aiocb);
 
 		return (-ENOSYS);
 	}
@@ -190,16 +183,16 @@
 	/**
 	 * @brief Wait signal on a specific synchronization point.
 	 *
-	 * @param aiocb Asynchronous operation control.
+	 * @param syncid ID of the Target Sync.
 	 *
 	 * @return Zero if wait signal correctly and non zero otherwise.
 	 */
 #if (__TARGET_HAS_SYNC)
-	EXTERN int sync_wait(struct aiocb * aiocb);
+	EXTERN int sync_wait(int syncid);
 #else
-	static inline int sync_wait(struct aiocb * aiocb)
+	static inline int sync_wait(int syncid)
 	{
-		UNUSED(aiocb);
+		UNUSED(syncid);
 
 		return (-ENOSYS);
 	}

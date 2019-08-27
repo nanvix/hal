@@ -32,9 +32,6 @@
 	/* Processor Interface Implementation */
 	#include <nanvix/hal/processor/_processor.h>
 
-	#include <nanvix/hal/processor/clusters.h>
-	#include <nanvix/hal/processor/noc.h>
-
 /*============================================================================*
  * Processor Interface                                                        *
  *============================================================================*/
@@ -47,11 +44,26 @@
  */
 /**@{*/
 
+	#include <nanvix/hal/processor/clusters.h>
+	#include <nanvix/hal/processor/noc.h>
+
 	/**
 	 * @brief Total number of clusters in the processor.
 	 */
 	#define PROCESSOR_CLUSTERS_NUM \
 		(PROCESSOR_IOCLUSTERS_NUM + PROCESSOR_CCLUSTERS_NUM)
+
+	/**
+	 * @brief Powers off the underlying processor.
+	 */
+	#ifdef __processor_poweroff_fn
+	EXTERN NORETURN void processor_poweroff(void);
+	#else
+	static inline NORETURN void processor_poweroff(void)
+	{
+		cluster_poweroff();
+	}
+	#endif
 
 /**@}*/
 

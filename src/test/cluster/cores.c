@@ -61,7 +61,7 @@ PRIVATE void fence_init(struct fence *b, int ncores)
 {
 	b->nreached = 0;
 	b->ncores = ncores;
-	b->lock = SPINLOCK_UNLOCKED;
+	spinlock_init(&b->lock);
 	dcache_invalidate();
 }
 

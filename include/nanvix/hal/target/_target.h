@@ -75,11 +75,4 @@
 	#define __NEED_HAL_PROCESSOR
 	#include <nanvix/hal/processor.h>
 
-	#if !(__TARGET_HAS_SYNC) && !(__TARGET_HAS_MAILBOX) || !(__TARGET_HAS_PORTAL)
-		/* Structures */
-		struct aiocb {
-			char unused;
-		};
-	#endif
-
 #endif /* _NANVIX_HAL_TARGET_TARGET_H_ */

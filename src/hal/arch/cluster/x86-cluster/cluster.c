@@ -37,7 +37,7 @@ EXTERN NORETURN void kmain(int, const char *[]);
  * @brief Cores table.
  */
 PUBLIC struct coreinfo ALIGN(I486_CACHE_LINE_SIZE) cores[X86_CLUSTER_NUM_CORES] = {
-	{ true,  CORE_RUNNING,   0, NULL, I486_SPINLOCK_LOCKED }, /* Master Core   */
+	{ true,  CORE_RUNNING,   0, NULL, I486_SPINLOCK_UNLOCKED }, /* Master Core   */
 };
 
 /*============================================================================*
