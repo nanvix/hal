@@ -126,7 +126,7 @@ PUBLIC void event_wait(void)
 		/* Clear event. */
 		for (int i = 0; i < CORES_NUM; i++)
 		{
-			if (events[mycoreid].lock & (1 << i))
+			if (events[mycoreid].pending & (1 << i))
 			{
 				events[mycoreid].pending &= ~(1 << i);
 				break;
