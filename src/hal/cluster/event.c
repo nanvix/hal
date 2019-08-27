@@ -56,7 +56,7 @@ PUBLIC void event_setup(void)
 	for (i = 0; i < CORES_NUM; i++)
 	{
 		events[i].pending = 0;
-		events[i].lock = SPINLOCK_UNLOCKED;
+		spinlock_init(&events[i].lock);
 	}
 }
 
