@@ -23,17 +23,17 @@
  */
 
 /* Must come fist. */
-#define __NEED_PROCESSOR_LINUX64
+#define __NEED_HAL_PROCESSOR
 
-#include <arch/processor/linux64.h>
+#include <nanvix/hal/processor.h>
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
 #include <unistd.h>
 
 /**
- * @brief Powers on the underlying processor.
+ * @todo TODO: provide a detailed description for this function.
  */
-PUBLIC int linux64_processor_boot(void)
+PUBLIC int linux64_processor_boot(int nclusters)
 {
 	kprintf("[hal][processor] powering on processor...");
 
@@ -45,6 +45,10 @@ PUBLIC int linux64_processor_boot(void)
 	{
 		pid_t pid;
 
+		/* Enough clusters are powered on. */
+		if (i == nclusters)
+			break;
+
 		/* Cannot power on slave cluster. */
 		if ((pid = fork()) < 0)
 			return (pid);
@@ -55,4 +59,18 @@ PUBLIC int linux64_processor_boot(void)
 	}
 
 	return (linux64_cluster_boot());
+}
+
+/**
+ * @todo TODO: Provide a detailed description for this function.
+ */
+PUBLIC NORETURN void linux64_processor_poweroff(void)
+{
+	if (cluster_get_num() == PROCESSOR_CLUSTERID_MASTER)
+		kprintf("[hal][processor] powering off...");
+
+	linux64_processor_noc_shutdown();
+	linux64_processor_clusters_shutdown();
+
+	cluster_poweroff();
 }

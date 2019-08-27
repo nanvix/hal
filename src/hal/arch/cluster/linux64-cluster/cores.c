@@ -53,39 +53,6 @@ PUBLIC int linux64_core_get_id(void)
 }
 
 /**
- * @brief Shutdown the underlying core.
- */
-PUBLIC NORETURN void linux64_core_poweroff(void)
-{
-	int is_master = false;
-
-	kprintf("[hal] powering off...");
-
-	linux64_spinlock_lock(&linux64_cores_lock);
-
-		/* Search for target core. */
-		for (int i = 0; i < LINUX64_CLUSTER_NUM_CORES; i++)
-		{
-			/* Found. */
-			if (linux64_cores_tab[i] == pthread_self())
-			{
-				linux64_cores_tab[i] = 0;
-				linux64_spinlock_unlock(&linux64_cores_lock);
-				is_master = (i == LINUX64_CLUSTER_COREID_MASTER) ? true : false;
-			}
-		}
-
-	linux64_spinlock_unlock(&linux64_cores_lock);
-
-	if (is_master)
-		exit(0);
-	else
-		pthread_exit(NULL);
-
-	UNREACHABLE();
-}
-
-/**
  * @brief Create an context struct.
  */
 PUBLIC struct context linux64_create_context(void)

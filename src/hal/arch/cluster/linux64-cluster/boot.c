@@ -23,9 +23,9 @@
  */
 
 /* Must come fist. */
-#define __NEED_CLUSTER_LINUX64
+#define __NEED_HAL_CLUSTER
 
-#include <arch/cluster/linux64-cluster.h>
+#include <nanvix/hal/cluster.h>
 #include <nanvix/const.h>
 #include <pthread.h>
 

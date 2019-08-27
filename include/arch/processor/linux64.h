@@ -48,28 +48,34 @@
 
 	/**
 	 * @brief Powers on the underlying processor.
+	 *
+	 * @param nclusters Number of clusters to power on.
+	 *
+	 * @returns Upon successful completion, zero is returned. Upon
+	 * failure, a negative error code is returned instead.
 	 */
-	EXTERN int linux64_processor_boot(void);
+	EXTERN int linux64_processor_boot(int nclusters);
 
 	/**
 	 * @brief Initializes the underlying processor.
 	 */
 	EXTERN void linux64_processor_setup(void);
 
+#endif /* __NANVIX_HAL */
+
 	/**
 	 * @brief Powers off the underlying processor.
 	 */
-	EXTERN void linux64_processor_shutdown(void);
-
-#endif /* __NANVIX_HAL */
+	EXTERN NORETURN void linux64_processor_poweroff(void);
 
 /**@}*/
 
 /*============================================================================*
  * Provided Interface                                                         *
  *============================================================================*/
+
 /**
- * @cond Linux64
+ * @cond linux64_processor
  */
 
 	/**
@@ -79,6 +85,21 @@
 	#define PROCESSOR_IS_MULTICLUSTER 1 /**< Multicluster feature */
 	#define PROCESSOR_HAS_NOC         1 /**< NoC feature          */
 	/**@}*/
+
+	/**
+	 * @brief Provided Functions
+	 */
+	/**@{*/
+	#define __processor_poweroff_fn /**< processor_poweroff() */
+	/**@}*/
+
+	/**
+	 * @see linux64_processor_poweroff().
+	 */
+	static inline NORETURN void processor_poweroff(void)
+	{
+		linux64_processor_poweroff();
+	}
 
 /**@endcond*/
 

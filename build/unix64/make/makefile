@@ -43,12 +43,12 @@ export LD = ld
 export AR = ar
 
 # Timeout Variable
-export TIMEOUT ?= 5
+export TIMEOUT ?= 20
 
 # Compiler Options
 export CFLAGS  = -D __unix64__ -D__linux64__
 export CFLAGS += -D_GNU_SOURCE
-export CFLAGS += -ansi -pedantic-errors
+export CFLAGS += -ansi -pedantic -Wno-error=pedantic
 export CFLAGS += -Wstack-usage=4096
 export CFLAGS += -D __HAS_HW_DIVISION
 export CFLAGS += -D __INTERFACE_CHECK_CORE_AL

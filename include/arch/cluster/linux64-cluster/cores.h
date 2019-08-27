@@ -61,11 +61,6 @@
 	/**
 	 * @brief Powers off the underlying core.
 	 */
-	EXTERN NORETURN void linux64_core_poweroff(void);
-
-	/**
-	 * @brief Powers off the underlying core.
-	 */
 	EXTERN void linux64_core_setup(void);
 
 	/**
@@ -134,14 +129,6 @@
 	static inline int core_get_id(void)
 	{
 		return (linux64_core_get_id());
-	}
-
-	/**
-	 * @see linux64_core_poweroff().
-	 */
-	static inline NORETURN void core_poweroff(void)
-	{
-		linux64_core_poweroff();
 	}
 
 	/**

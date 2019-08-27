@@ -62,16 +62,21 @@ struct noc_node
  */
 struct
 {
+	/**
+	 * @brief Virtual NoC file descriptor.
+	 */
+	int shm;
+
 	sem_t *lock;                                       /* Lock          */
 	struct noc_node *nodes;                            /* Nodes         */
 	int configuration[LINUX64_PROCESSOR_CLUSTERS_NUM]; /* Configuration */
 } noc = {
-	NULL, /* Lock  */
-	NULL, /* Nodes */
+	.shm = -1,
+	.lock = NULL,
+	.nodes = NULL,
 
-	/* Configuration. */
 	/* TODO check if sums up number of nodes */
-	{
+	.configuration = {
 		/* IO clusters. */
 		1, 1,
 
@@ -132,44 +137,6 @@ PRIVATE int linux64_processor_noc_node_to_cluster_num(int nodenum)
 	}
 
 	return (0);
-}
-
-/*============================================================================*
- * linux64_processor_noc_attach()                                             *
- *============================================================================*/
-
-/**
- * @brief Attaches calling process to virtual NoC device.
- */
-PRIVATE void linux64_processor_noc_attach(void)
-{
-	int shm;
-	void *p;
-	size_t nodes_sz = LINUX64_PROCESSOR_NOC_NODES_NUM*sizeof(struct noc_node);
-
-	kprintf("[noc] attaching process to virtual network-on-chip...");
-
-	/* Open virtual NoC. */
-	KASSERT((shm = shm_open(UNIX64_NOC_NAME, O_RDWR, S_IRUSR | S_IWUSR)) != -1);
-
-	linux64_processor_noc_lock();
-
-		/* Attach virtual NoC. */
-		if (linux64_cluster_get_id() != LINUX64_PROCESSOR_CLUSTERID_MASTER)
-		{
-			KASSERT((p =
-				mmap(NULL,
-					nodes_sz,
-					PROT_READ | PROT_WRITE,
-					MAP_SHARED,
-					shm,
-					0)
-				) != NULL
-			);
-			noc.nodes = p;
-		}
-
-	linux64_processor_noc_unlock();
 }
 
 /*============================================================================*
@@ -239,7 +206,6 @@ PUBLIC int linux64_processor_noc_is_cnode(int nodenum)
  */
 PUBLIC void linux64_processor_noc_boot(void)
 {
-	int shm;
 	void *p;
 	size_t nodes_sz = LINUX64_PROCESSOR_NOC_NODES_NUM*sizeof(struct noc_node);
 
@@ -254,7 +220,7 @@ PUBLIC void linux64_processor_noc_boot(void)
 	kprintf("[noc] creating virtual network-on-chip...");
 
 	/* Open virtual NoC. */
-	KASSERT((shm =
+	KASSERT((noc.shm =
 		shm_open(UNIX64_NOC_NAME,
 			O_RDWR | O_CREAT,
 			S_IRUSR | S_IWUSR)
@@ -262,14 +228,14 @@ PUBLIC void linux64_processor_noc_boot(void)
 	);
 
 	/* Allocate virtual NoC. */
-	KASSERT(ftruncate(shm, nodes_sz) != -1);
+	KASSERT(ftruncate(noc.shm, nodes_sz) != -1);
 
 	KASSERT((p =
 		mmap(NULL,
 			nodes_sz,
 			PROT_READ | PROT_WRITE,
 			MAP_SHARED,
-			shm,
+			noc.shm,
 			0)
 		) != NULL
 	);
@@ -295,18 +261,12 @@ PUBLIC void linux64_processor_noc_shutdown(void)
 	size_t nodes_sz = LINUX64_PROCESSOR_NOC_NODES_NUM*sizeof(struct noc_node);
 
 	KASSERT(munmap(noc.nodes, nodes_sz) != -1);
-	KASSERT(shm_unlink(UNIX64_NOC_NAME) != -1);
-	KASSERT(sem_unlink(UNIX64_NOC_LOCK_NAME) != -1);
-}
+	KASSERT(close(noc.shm) != -1);
+	KASSERT(sem_close(noc.lock) != -1);
 
-/*============================================================================*
- * linux64_processor_noc_setup()                                              *
- *============================================================================*/
-
-/**
- * @todo TODO: Provide a detailed description to this function.
- */
-PUBLIC void linux64_processor_noc_setup(void)
-{
-	linux64_processor_noc_attach();
+	if (linux64_cluster_get_id() == LINUX64_PROCESSOR_CLUSTERID_MASTER)
+	{
+		KASSERT(shm_unlink(UNIX64_NOC_NAME) != -1);
+		KASSERT(sem_unlink(UNIX64_NOC_LOCK_NAME) != -1);
+	}
 }

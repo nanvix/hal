@@ -38,11 +38,6 @@
 	#include <nanvix/const.h>
 	#include <nanvix/klib.h>
 
-	/**
-	 * @brief Powers off the underlying core.
-	 */
-	EXTERN NORETURN void linux64_core_poweroff(void);
-
 /**@}*/
 
 /*============================================================================*

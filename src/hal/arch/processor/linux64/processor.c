@@ -36,16 +36,5 @@ PUBLIC void linux64_processor_setup(void)
 	kprintf("[hal][processor] initializing processor...");
 
 	linux64_processor_clusters_setup();
-	linux64_processor_noc_setup();
 	linux64_cluster_setup();
-}
-
-/**
- * @todo TODO: Provide a detailed description for this function.
- */
-PUBLIC void linux64_processor_shutdown(void)
-{
-	kprintf("[hal][processor] powering off processor...");
-
-	linux64_cluster_shutdown();
 }

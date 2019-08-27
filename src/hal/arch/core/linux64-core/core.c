@@ -39,4 +39,3 @@ PUBLIC void linux64_core_setup(void)
 	linux64_interrupts_enable();
 	linux64_perf_setup();
 }
-

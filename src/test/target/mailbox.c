@@ -122,9 +122,9 @@ static void test_mailbox_invalid_read(void)
 {
 	char msg[MAILBOX_MSG_SIZE];
 
-	KASSERT(mailbox_read(-1, msg, MAILBOX_MSG_SIZE) == -EINVAL);
-	KASSERT(mailbox_read(0, NULL, MAILBOX_MSG_SIZE) == -EINVAL);
-	KASSERT(mailbox_read(0, msg, 0) == -EINVAL);
+	KASSERT(mailbox_aread(-1, msg, MAILBOX_MSG_SIZE) == -EINVAL);
+	KASSERT(mailbox_aread(0, NULL, MAILBOX_MSG_SIZE) == -EINVAL);
+	KASSERT(mailbox_aread(0, msg, 0) == -EINVAL);
 }
 
 /**
@@ -134,9 +134,9 @@ static void test_mailbox_invalid_write(void)
 {
 	char msg[MAILBOX_MSG_SIZE];
 
-	KASSERT(mailbox_write(-1, msg, MAILBOX_MSG_SIZE) == -EINVAL);
-	KASSERT(mailbox_write(0, NULL, MAILBOX_MSG_SIZE) == -EINVAL);
-	KASSERT(mailbox_write(0, msg, 0) == -EINVAL);
+	KASSERT(mailbox_awrite(-1, msg, MAILBOX_MSG_SIZE) == -EINVAL);
+	KASSERT(mailbox_awrite(0, NULL, MAILBOX_MSG_SIZE) == -EINVAL);
+	KASSERT(mailbox_awrite(0, msg, 0) == -EINVAL);
 }
 
 /**
@@ -206,8 +206,8 @@ static void test_mailbox_bad_read(void)
 	char msg[MAILBOX_MSG_SIZE];
 
 	KASSERT((mbxid = mailbox_create(NODENUM_MASTER)) >= 0);
-	KASSERT(mailbox_write(mbxid, NULL, MAILBOX_MSG_SIZE) == -EINVAL);
-	KASSERT(mailbox_write(mbxid, msg, 0) == -EINVAL);
+	KASSERT(mailbox_awrite(mbxid, NULL, MAILBOX_MSG_SIZE) == -EINVAL);
+	KASSERT(mailbox_awrite(mbxid, msg, 0) == -EINVAL);
 	KASSERT(mailbox_unlink(mbxid) == 0);
 }
 
@@ -220,8 +220,8 @@ static void test_mailbox_bad_write(void)
 	char msg[MAILBOX_MSG_SIZE];
 
 	KASSERT((mbxid = mailbox_open(NODENUM_SLAVE)) >= 0);
-	KASSERT(mailbox_read(mbxid, NULL, MAILBOX_MSG_SIZE) == -EINVAL);
-	KASSERT(mailbox_read(mbxid, msg, 0) == -EINVAL);
+	KASSERT(mailbox_aread(mbxid, NULL, MAILBOX_MSG_SIZE) == -EINVAL);
+	KASSERT(mailbox_aread(mbxid, msg, 0) == -EINVAL);
 	KASSERT(mailbox_close(mbxid) == 0);
 }
 
