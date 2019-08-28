@@ -44,7 +44,7 @@
 /**
  * @brief Lock used for wait the completion of Control NoC operations.
  */
-static spinlock_t test_cnoc_lock = SPINLOCK_LOCKED;
+static spinlock_t test_cnoc_lock = K1B_SPINLOCK_LOCKED;
 
 /**
  * @brief Interrupt handler: Control NoC handler to perform the unlock.

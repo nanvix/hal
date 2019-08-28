@@ -145,7 +145,6 @@
 	 */
 	/**@{*/
 	#define SPINLOCK_UNLOCKED I486_SPINLOCK_UNLOCKED /**< @see I486_SPINLOCK_UNLOCKED */
-	#define SPINLOCK_LOCKED   I486_SPINLOCK_LOCKED   /**< @see I486_SPINLOCK_LOCKED   */
 	/**@}*/
 
 #ifndef _ASM_FILE_

@@ -58,7 +58,7 @@ static uint64_t data_exchange_sizes[] = {
 /**
  * @brief Lock used for wait the completion of Data NoC operations.
  */
-static spinlock_t test_dnoc_lock = SPINLOCK_LOCKED;
+static spinlock_t test_dnoc_lock = K1B_SPINLOCK_LOCKED;
 
 /**
  * @brief Interrupt handler: Data NoC handler to perform the unlock.

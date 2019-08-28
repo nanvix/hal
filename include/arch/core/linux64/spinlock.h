@@ -108,7 +108,7 @@
 	 * @name Exported Types
 	 */
 	/**@{*/
-	#define __spinlock_t 		  /**< @see spinlock_t */
+	#define __spinlock_t          /**< @see spinlock_t */
 	#define __spinlock_init_fn    /**< spinlock_init()    */
 	#define __spinlock_lock_fn    /**< spinlock_lock()    */
 	#define __spinlock_trylock_fn /**< spinlock_trylock() */
@@ -119,8 +119,7 @@
 	 * @name Spinlock State
 	 */
 	/**@{*/
-	#define SPINLOCK_UNLOCKED LINUX64_SPINLOCK_UNLOCKED /**< @see LINUX64_SPINLOCK_UNLOCKED    */
-	#define SPINLOCK_LOCKED   LINUX64_SPINLOCK_UNLOCKED /**< Cannot declare satic locked mutex */
+	#define SPINLOCK_UNLOCKED LINUX64_SPINLOCK_UNLOCKED /**< @see LINUX64_SPINLOCK_UNLOCKED */
 	/**@}*/
 
 	/**
