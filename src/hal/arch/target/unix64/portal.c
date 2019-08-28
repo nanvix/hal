@@ -50,8 +50,8 @@
  */
 struct portal_buffer
 {
-	int busy;                          /**< Busy?  */
-	int ready;                         /**< Ready? */
+	volatile int busy;                 /**< Busy?  */
+	volatile int ready;                /**< Ready? */
 	char data[UNIX64_PORTAL_MAX_SIZE]; /**< Data   */
 };
 
