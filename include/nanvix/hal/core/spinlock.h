@@ -35,9 +35,6 @@
 #if defined(__INTERFACE_CHECK) || defined(__INTERFACE_CHECK_CORE_AL) || defined(__INTERFACE_CHECK_SPINLOCK)
 
 	/* Constants */
-	#ifndef SPINLOCK_LOCKED
-	#error "SPINLOCK_LOCKED not defined"
-	#endif
 	#ifndef SPINLOCK_UNLOCKED
 	#error "SPINLOCK_UNLOCKED not defined"
 	#endif

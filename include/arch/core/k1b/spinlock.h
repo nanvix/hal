@@ -129,7 +129,6 @@
 	 */
 	/**@{*/
 	#define SPINLOCK_UNLOCKED K1B_SPINLOCK_UNLOCKED /**< @see K1B_SPINLOCK_UNLOCKED */
-	#define SPINLOCK_LOCKED   K1B_SPINLOCK_LOCKED   /**< @see K1B_SPINLOCK_LOCKED   */
 	/**@}*/
 
 #ifndef _ASM_FILE_

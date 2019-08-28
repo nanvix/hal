@@ -139,7 +139,6 @@
 	 */
 	/**@{*/
 	#define SPINLOCK_UNLOCKED OR1K_SPINLOCK_UNLOCKED /**< @see OR1K_SPINLOCK_UNLOCKED */
-	#define SPINLOCK_LOCKED   OR1K_SPINLOCK_LOCKED   /**< @see OR1K_SPINLOCK_LOCKED   */
 	/**@}*/
 
 #ifndef _ASM_FILE_
