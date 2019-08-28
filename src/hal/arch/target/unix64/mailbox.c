@@ -463,6 +463,7 @@ again:
 				err = -EAGAIN;
 				goto error2;
 			}
+			mq_unlink(mailboxtab.txs[mbxid].pathname);
 
 			/* Re-acquire lock. */
 			unix64_mailbox_lock();
