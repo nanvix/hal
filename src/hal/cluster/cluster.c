@@ -266,6 +266,7 @@ again:
 		if (ntrials++ < CORE_START_NTRIALS)
 			goto again;
 
+		kprintf("[hal][cluster] failed to start core");
 		goto error;
 	}
 
