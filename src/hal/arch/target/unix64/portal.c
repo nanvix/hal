@@ -725,6 +725,7 @@ again:
 		/* No data is available. */
 		if (!portaltab.rxs[portalid].buffers[remote]->busy)
 		{
+			resource_set_notbusy(&portaltab.rxs[portalid].resource);
 			unix64_portal_unlock(&portaltab.rxs[portalid]);
 			goto again;
 		}
@@ -812,10 +813,10 @@ again:
 		/* Remote is not ready. */
 		if (!portaltab.txs[portalid].buffers[local]->ready)
 		{
+			resource_set_notbusy(&portaltab.txs[portalid].resource);
 			unix64_portal_unlock(&portaltab.txs[portalid]);
 			goto again;
 		}
-
 
 		kmemcpy(portaltab.txs[portalid].buffers[local]->data, buf, nwrite = n);
 
