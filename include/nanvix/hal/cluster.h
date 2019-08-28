@@ -116,17 +116,17 @@
 	 */
 	struct coreinfo
 	{
-		bool initialized;    /**< Initialized?      */
-		int state;           /**< State.            */
-		int wakeups;         /**< Wakeup signals.   */
-		void (*start)(void); /**< Starting routine. */
-		spinlock_t lock;     /**< Lock.             */
+		volatile bool initialized; /**< Initialized?      */
+		volatile int state;        /**< State.            */
+		volatile int wakeups;      /**< Wakeup signals.   */
+		void (*start)(void);       /**< Starting routine. */
+		spinlock_t lock;           /**< Lock.             */
 	};
 
 	/**
 	 * @brief Cores table.
 	 */
-	EXTERN struct coreinfo cores[];
+	EXTERN struct coreinfo cores[CORES_NUM];
 
 #endif /* __NANVIX_HAL */
 

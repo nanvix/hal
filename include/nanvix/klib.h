@@ -63,7 +63,7 @@
 	 *
 	 * @param fmt Panic message.
 	 */
-	EXTERN void kpanic(const char *fmt, ...);
+	EXTERN NORETURN void kpanic(const char *fmt, ...);
 
 	/* Forward definitions. */
 	EXTERN void kprintf(const char *, ...);

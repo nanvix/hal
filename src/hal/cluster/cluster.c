@@ -101,6 +101,7 @@ PUBLIC void core_idle(void)
 		int coreid = core_get_id();
 
 		cores[coreid].state = CORE_IDLE;
+		dcache_invalidate();
 
 		/*
 		 * The lock of this core was
@@ -108,7 +109,6 @@ PUBLIC void core_idle(void)
 		 * core_reset().
 		 */
 
-	dcache_invalidate();
 	spinlock_unlock(&cores[coreid].lock);
 
 	while (true)
@@ -266,6 +266,7 @@ again:
 		if (ntrials++ < CORE_START_NTRIALS)
 			goto again;
 
+		kprintf("[hal][cluster] failed to start core");
 		goto error;
 	}
 
@@ -352,10 +353,8 @@ PUBLIC int core_reset(void)
 		return (-EINVAL);
 
 	spinlock_lock(&cores[coreid].lock);
-	dcache_invalidate();
 
 		cores[coreid].state = CORE_RESETTING;
-
 		dcache_invalidate();
 
 		_core_reset();

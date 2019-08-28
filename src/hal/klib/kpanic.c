@@ -33,7 +33,7 @@
  * mode, all interrupts are disabled in the underlying core, and
  * execution loops indefinitely.
  */
-PUBLIC void kpanic(const char *fmt, ...)
+PUBLIC NORETURN void kpanic(const char *fmt, ...)
 {
 	size_t len;                    /* String length.           */
 	va_list args;                  /* Variable arguments list. */
@@ -54,6 +54,5 @@ PUBLIC void kpanic(const char *fmt, ...)
 	interrupts_disable();
 
 	/* Stay here, forever. */
-	while (true)
-		noop();
+	UNREACHABLE();
 }
