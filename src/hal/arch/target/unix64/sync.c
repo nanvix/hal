@@ -725,6 +725,7 @@ again:
 
 		if (mq_close(synctab.txs[syncid].fd) < 0)
 			goto error1;
+		mq_unlink(synctab.txs[syncid].pathname);
 
 		resource_free(&pool.tx, syncid);
 
