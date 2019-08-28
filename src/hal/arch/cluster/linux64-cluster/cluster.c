@@ -29,6 +29,7 @@
 #include <arch/cluster/linux64-cluster.h>
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
+#include <setjmp.h>
 
 /* Import definitions. */
 EXTERN NORETURN void kmain(int, const char *[]);
@@ -44,22 +45,44 @@ PUBLIC struct coreinfo cores[LINUX64_CLUSTER_NUM_CORES] = {
 };
 
 /**
+ * @brief Reset buffers
+ */
+PRIVATE jmp_buf reset_buffers[LINUX64_CLUSTER_NUM_CORES];
+
+/**
  * @todo TODO: provide a detailed description for this function.
  */
 PRIVATE NORETURN void linux64_cluster_slave_setup(void)
 {
+	int coreid;
+
 	cluster_fence_wait();
 
 	linux64_core_setup();
 
+	coreid = linux64_core_get_id();
+
 	while(1)
 	{
+		setjmp(reset_buffers[coreid]);
 		core_idle();
 		core_run();
 	}
 
 	UNREACHABLE();
 }
+
+/**
+ * @todo TODO: Provide a detailed description for this function.
+ */
+PUBLIC NORETURN void _linux64_core_reset(void)
+{
+	int coreid;
+
+	coreid = linux64_core_get_id();
+	longjmp(reset_buffers[coreid], 0);
+}
+
 
 /**
  * @todo TODO: provide a detailed description for this function.
