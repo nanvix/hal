@@ -56,7 +56,7 @@ PUBLIC void event_setup(void)
 	for (i = 0; i < CORES_NUM; i++)
 	{
 		events[i].pending = 0;
-		events[i].lock = SPINLOCK_UNLOCKED;
+		spinlock_init(&events[i].lock);
 	}
 }
 
@@ -126,7 +126,7 @@ PUBLIC void event_wait(void)
 		/* Clear event. */
 		for (int i = 0; i < CORES_NUM; i++)
 		{
-			if (events[mycoreid].lock & (1 << i))
+			if (events[mycoreid].pending & (1 << i))
 			{
 				events[mycoreid].pending &= ~(1 << i);
 				break;
