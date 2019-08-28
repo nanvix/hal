@@ -88,6 +88,8 @@
  * Provided Interface                                                         *
  *============================================================================*/
 
+#if (__TARGET_HAS_MAILBOX)
+
 /**
  * @defgroup kernel-hal-target-sync Syncrhonization service
  * @ingroup kernel-hal-target
@@ -109,16 +111,7 @@
 	 * mailbox is returned. Upon failure, a negative error code is
 	 * returned instead.
 	 */
-#if (__TARGET_HAS_MAILBOX)
 	EXTERN int mailbox_create(int nodenum);
-#else
-	static inline int mailbox_create(int nodenum)
-	{
-		UNUSED(nodenum);
-
-		return (-ENOSYS);
-	}
-#endif
 
 	/**
 	 * @brief Opens a mailbox.
@@ -129,16 +122,7 @@
 	 * is returned. Upon failure, a negative error code is returned
 	 * instead.
 	 */
-#if (__TARGET_HAS_MAILBOX)
 	EXTERN int mailbox_open(int nodenum);
-#else
-	static inline int mailbox_open(int nodenum)
-	{
-		UNUSED(nodenum);
-
-		return (-ENOSYS);
-	}
-#endif
 
 	/**
 	 * @brief Destroys a mailbox.
@@ -148,16 +132,7 @@
 	 * @returns Upon successful completion, zero is returned. Upon failure,
 	 * a negative error code is returned instead.
 	 */
-#if (__TARGET_HAS_MAILBOX)
 	EXTERN int mailbox_unlink(int mbxid);
-#else
-	static inline int mailbox_unlink(int mbxid)
-	{
-		UNUSED(mbxid);
-
-		return (-ENOSYS);
-	}
-#endif
 
 	/**
 	 * @brief Closes a mailbox.
@@ -167,16 +142,7 @@
 	 * @returns Upon successful completion, zero is returned. Upon
 	 * failure, a negative error code is returned instead.
 	 */
-#if (__TARGET_HAS_MAILBOX)
 	EXTERN int mailbox_close(int mbxid);
-#else
-	static inline int mailbox_close(int mbxid)
-	{
-		UNUSED(mbxid);
-
-		return (-ENOSYS);
-	}
-#endif
 
 	/**
 	 * @brief Writes data to a mailbox.
@@ -188,18 +154,7 @@
 	 * @returns Upon successful completion, 0 is returned
 	 * and non zero otherwise.
 	 */
-#if (__TARGET_HAS_MAILBOX)
 	EXTERN ssize_t mailbox_awrite(int mbxid, const void *buffer, uint64_t size);
-#else
-	static inline ssize_t mailbox_awrite(int mbxid, const void *buffer, uint64_t size)
-	{
-		UNUSED(mbxid);
-		UNUSED(buffer);
-		UNUSED(size);
-
-		return (-ENOSYS);
-	}
-#endif
 
 	/**
 	 * @brief Reads data from a mailbox.
@@ -211,18 +166,7 @@
 	 * @returns Upon successful completion, 0 is returned
 	 * and non zero otherwise.
 	 */
-#if (__TARGET_HAS_MAILBOX)
 	EXTERN ssize_t mailbox_aread(int mbxid, void *buffer, uint64_t size);
-#else
-	static inline ssize_t mailbox_aread(int mbxid, void *buffer, uint64_t size)
-	{
-		UNUSED(mbxid);
-		UNUSED(buffer);
-		UNUSED(size);
-
-		return (-ENOSYS);
-	}
-#endif
 
 	/**
 	 * @brief Waits asynchronous operation.
@@ -231,16 +175,9 @@
 	 *
 	 * @return Zero if wait read correctly and non zero otherwise.
 	 */
-#if (__TARGET_HAS_MAILBOX)
 	EXTERN int mailbox_wait(int mbxid);
-#else
-	static inline int mailbox_wait(int mbxid)
-	{
-		UNUSED(mbxid);
 
-		return (0);
-	}
-#endif
+#endif /* __TARGET_HAS_MAILBOX */
 
 /**@}*/
 
