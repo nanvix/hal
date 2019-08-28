@@ -272,7 +272,7 @@ PRIVATE void unix64_portal_buffer_close(struct portal *portal, int bufferid)
 	);
 
 	/* Destroy portal buffers. */
-	KASSERT(shm_unlink(portal->portalname) != -1);
+	shm_unlink(portal->portalname);
 }
 
 /*============================================================================*
@@ -331,7 +331,7 @@ PRIVATE void unix64_portal_lock_tx_open(struct portal *portal, int remote)
 PRIVATE void unix64_portal_lock_close(struct portal *portal)
 {
 	KASSERT(sem_close(portal->lock) != -1);
-	KASSERT(sem_unlink(portal->lockname) != -1);
+	sem_unlink(portal->lockname);
 }
 
 /*============================================================================*
