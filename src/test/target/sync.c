@@ -51,7 +51,7 @@ PRIVATE void test_sync_create_unlink(void)
 	int syncid;
 	int nodes[NODES_AMOUNT];
 
-	nodenum = processor_node_get_num(processor_node_get_id());
+	nodenum = processor_node_get_num();
 	nodes[0] = nodenum;
 	nodes[1] = nodenum == NODENUM_MASTER ? NODENUM_SLAVE : NODENUM_MASTER;
 
@@ -76,7 +76,7 @@ PRIVATE void test_sync_open_close(void)
 	int nodenum;
 	int nodes[NODES_AMOUNT];
 
-	nodenum = processor_node_get_num(processor_node_get_id());
+	nodenum = processor_node_get_num();
 	nodes[0] = nodenum;
 	nodes[1] = nodenum == NODENUM_MASTER ? NODENUM_SLAVE : NODENUM_MASTER;
 
@@ -105,7 +105,7 @@ PRIVATE void test_sync_invalid_create(void)
 	int nodenum;
 	int nodes[NODES_AMOUNT];
 
-	nodenum = processor_node_get_num(processor_node_get_id());
+	nodenum = processor_node_get_num();
 	nodes[0] = nodenum == NODENUM_MASTER ? NODENUM_SLAVE : NODENUM_MASTER;
 	nodes[1] = nodenum;
 
@@ -150,7 +150,7 @@ PRIVATE void test_sync_invalid_open(void)
 	int nodenum;
 	int nodes[NODES_AMOUNT];
 
-	nodenum = processor_node_get_num(processor_node_get_id());
+	nodenum = processor_node_get_num();
 	nodes[0] = nodenum;
 	nodes[1] = nodenum == NODENUM_MASTER ? NODENUM_SLAVE : NODENUM_MASTER;
 
@@ -196,7 +196,7 @@ PRIVATE void test_sync_bad_unlink(void)
 	int nodenum;
 	int nodes[NODES_AMOUNT];
 
-	nodenum = processor_node_get_num(processor_node_get_id());
+	nodenum = processor_node_get_num();
 	nodes[0] = nodenum;
 	nodes[1] = nodenum == NODENUM_MASTER ? NODENUM_SLAVE : NODENUM_MASTER;
 
@@ -214,7 +214,7 @@ PRIVATE void test_sync_double_unlink(void)
 	int syncid;
 	int nodes[NODES_AMOUNT];
 
-	nodenum = processor_node_get_num(processor_node_get_id());
+	nodenum = processor_node_get_num();
 	nodes[0] = nodenum;
 	nodes[1] = nodenum == NODENUM_MASTER ? NODENUM_SLAVE : NODENUM_MASTER;
 
@@ -242,7 +242,7 @@ PRIVATE void test_sync_bad_close(void)
 	int syncid;
 	int nodes[NODES_AMOUNT];
 
-	nodenum = processor_node_get_num(processor_node_get_id());
+	nodenum = processor_node_get_num();
 	nodes[0] = nodenum;
 	nodes[1] = nodenum == NODENUM_MASTER ? NODENUM_SLAVE : NODENUM_MASTER;
 
@@ -260,7 +260,7 @@ PRIVATE void test_sync_double_close(void)
 	int nodenum;
 	int nodes[NODES_AMOUNT];
 
-	nodenum = processor_node_get_num(processor_node_get_id());
+	nodenum = processor_node_get_num();
 	nodes[0] = nodenum;
 	nodes[1] = nodenum == NODENUM_MASTER ? NODENUM_SLAVE : NODENUM_MASTER;
 
@@ -287,7 +287,7 @@ PRIVATE void test_sync_bad_signal(void)
 	int syncid;
 	int nodes[NODES_AMOUNT];
 
-	nodenum = processor_node_get_num(processor_node_get_id());
+	nodenum = processor_node_get_num();
 	nodes[0] = nodenum;
 	nodes[1] = nodenum == NODENUM_MASTER ? NODENUM_SLAVE : NODENUM_MASTER;
 
