@@ -50,8 +50,8 @@
  */
 struct portal_buffer
 {
-	int busy;                          /**< Busy?  */
-	int ready;                         /**< Ready? */
+	volatile int busy;                 /**< Busy?  */
+	volatile int ready;                /**< Ready? */
 	char data[UNIX64_PORTAL_MAX_SIZE]; /**< Data   */
 };
 
@@ -272,7 +272,7 @@ PRIVATE void unix64_portal_buffer_close(struct portal *portal, int bufferid)
 	);
 
 	/* Destroy portal buffers. */
-	KASSERT(shm_unlink(portal->portalname) != -1);
+	shm_unlink(portal->portalname);
 }
 
 /*============================================================================*
@@ -331,7 +331,7 @@ PRIVATE void unix64_portal_lock_tx_open(struct portal *portal, int remote)
 PRIVATE void unix64_portal_lock_close(struct portal *portal)
 {
 	KASSERT(sem_close(portal->lock) != -1);
-	KASSERT(sem_unlink(portal->lockname) != -1);
+	sem_unlink(portal->lockname);
 }
 
 /*============================================================================*
@@ -725,6 +725,7 @@ again:
 		/* No data is available. */
 		if (!portaltab.rxs[portalid].buffers[remote]->busy)
 		{
+			resource_set_notbusy(&portaltab.rxs[portalid].resource);
 			unix64_portal_unlock(&portaltab.rxs[portalid]);
 			goto again;
 		}
@@ -812,10 +813,10 @@ again:
 		/* Remote is not ready. */
 		if (!portaltab.txs[portalid].buffers[local]->ready)
 		{
+			resource_set_notbusy(&portaltab.txs[portalid].resource);
 			unix64_portal_unlock(&portaltab.txs[portalid]);
 			goto again;
 		}
-
 
 		kmemcpy(portaltab.txs[portalid].buffers[local]->data, buf, nwrite = n);
 
