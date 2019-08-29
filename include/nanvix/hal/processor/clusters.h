@@ -49,13 +49,13 @@
 		#ifndef PROCESSOR_IOCLUSTERS_NUM
 		#error "PROCESSOR_IOCLUSTERS_NUM not defined"
 		#endif
-		#ifndef PROCESSOR_CLUSTERID_MASTER
-		#error "PROCESSOR_CLUSTERID_MASTER not defined"
+		#ifndef PROCESSOR_CLUSTERNUM_MASTER
+		#error "PROCESSOR_CLUSTERNUM_MASTER not defined"
 		#endif
 
 		/* Functions */
-		#ifndef __cluster_get_id_fn
-		#error "cluster_get_id() not defined?"
+		#ifndef __cluster_get_num_fn
+		#error "cluster_get_num() not defined?"
 		#endif
 		#ifndef __cluster_is_ccluster_fn
 		#error "cluster_is_ccluster() not defined?"
@@ -67,9 +67,9 @@
 	#else
 
 		/* Constants */
-		#define PROCESSOR_CCLUSTERS_NUM    0
-		#define PROCESSOR_IOCLUSTERS_NUM   1
-		#define PROCESSOR_CLUSTERID_MASTER 0
+		#define PROCESSOR_IOCLUSTERS_NUM    1
+		#define PROCESSOR_CCLSUTERS_NUM     0
+		#define PROCESSOR_CLUSTERNUM_MASTER 0
 
 	#endif
 
@@ -90,14 +90,20 @@
 	#include <nanvix/klib.h>
 
 	/**
-	 * @brief Gets the ID of the underlying cluster.
+	 * @brief Total number of clusters in the processor.
+	 */
+	#define PROCESSOR_CLUSTERS_NUM \
+		(PROCESSOR_IOCLUSTERS_NUM + PROCESSOR_CCLUSTERS_NUM)
+
+	/**
+	 * @brief Gets the logical ID of the underlying cluster.
 	 *
 	 * @returns The ID of the underlying cluster.
 	 */
 #if (PROCESSOR_IS_MULTICLUSTER)
-	EXTERN int cluster_get_id(void);
+	EXTERN int cluster_get_num(void);
 #else
-	static inline int cluster_get_id(void)
+	static inline int cluster_get_num(void)
 	{
 		return (0);
 	}

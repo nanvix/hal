@@ -41,7 +41,7 @@ PUBLIC int linux64_processor_boot(int nclusters)
 	linux64_processor_noc_boot();
 
 	/* Power on clusters. */
-	for (int i = 1; i < LINUX64_PROCESSOR_CLUSTERS_NUM; i++)
+	for (int i = 1; i < PROCESSOR_CLUSTERS_NUM; i++)
 	{
 		pid_t pid;
 
@@ -66,7 +66,7 @@ PUBLIC int linux64_processor_boot(int nclusters)
  */
 PUBLIC NORETURN void linux64_processor_poweroff(void)
 {
-	if (cluster_get_num() == PROCESSOR_CLUSTERID_MASTER)
+	if (cluster_get_num() == PROCESSOR_CLUSTERNUM_MASTER)
 		kprintf("[hal][processor] powering off...");
 
 	linux64_processor_noc_shutdown();

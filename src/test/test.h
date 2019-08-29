@@ -124,4 +124,9 @@
 	 */
 	EXTERN void test_portal(void);
 
+	/**
+	 * @brief Test driver for the Clusters Interface
+	 */
+	EXTERN void test_clusters(void);
+
 #endif /* _HAL_TEST_H_ */

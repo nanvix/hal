@@ -26,7 +26,6 @@ export LDFLAGS  +=
 # Filter C Source List
 C_SRC := $(filter-out $(wildcard core/*.c), $(C_SRC))
 C_SRC := $(filter-out $(wildcard cluster/*.c), $(C_SRC))
-C_SRC := $(filter-out $(wildcard processor/*.c), $(C_SRC))
 C_SRC += core/core.c
 C_SRC += core/mmu.c
 C_SRC += core/spinlock.c
