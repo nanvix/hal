@@ -164,9 +164,9 @@
 	 * failure, a negative error code is returned instead.
 	 */
 #if (PROCESSOR_HAS_NOC)
-	EXTERN int processor_nodes_convert(int *_nodes, const int *nodes, int nnodes);
+	EXTERN int processor_node_convert_nums_to_ids(int *_nodes, const int *nodes, int nnodes);
 #else
-	static inline int processor_nodes_convert(int *_nodes, const int *nodes, int nnodes)
+	static inline int processor_node_convert_nums_to_ids(int *_nodes, const int *nodes, int nnodes)
 	{
 		kmemcpy(_nodes, nodes, nnodes);
 

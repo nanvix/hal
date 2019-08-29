@@ -36,33 +36,38 @@
  */
 /**@{*/
 
-	#include <arch/processor/bostan/noc/node.h>
+	#include <arch/processor/bostan/noc/dma.h>
 
 	/**
 	 * @name Number of NoC nodes attached to an IO device.
 	 */
-	#define BOSTAN_NR_NOC_IONODES 8
+	#define BOSTAN_PROCESSOR_NOC_IONODES_NUM 8
 
 	/**
 	 * @name Number of NoC nodes not attached to an IO device.
 	 */
-	#define BOSTAN_NR_NOC_CNODES 16
+	#define BOSTAN_PROCESSOR_NOC_CNODES_NUM 16
 
 	/**
-	 * @name Number of NoC nodes.
+	 * @name Number of NoC nodes not attached to an IO device.
 	 */
-	#define BOSTAN_NR_NOC_NODES (BOSTAN_NR_NOC_IONODES + BOSTAN_NR_NOC_CNODES)
+	#define BOSTAN_PROCESSOR_NOC_NODES_NUM (BOSTAN_PROCESSOR_NOC_IONODES_NUM + BOSTAN_PROCESSOR_NOC_CNODES_NUM)
+
+	/**
+	 * @brief Logical NoC node ID of master.
+	 */
+	#define BOSTAN_PROCESSOR_NODENUM_MASTER 0
 
 	/**
 	 * @name Number of NoC nodes per DMA Channel.
 	 */
 	/**@{*/
-	#define BOSTAN_MAILBOX_CREATE_PER_DMA 1                   /**< 1 D-NoC RX and 1 C-NoC TX */
-	#define BOSTAN_MAILBOX_OPEN_PER_DMA   4                   /**< 1 D-NoC TX and 1 C-NoC RX */
-	#define BOSTAN_PORTAL_CREATE_PER_DMA  2                   /**< 1 D-NoC RX and 1 C-NoC TX */
-	#define BOSTAN_PORTAL_OPEN_PER_DMA    4                   /**< 1 D-NoC TX and 1 C-NoC RX */
-	#define BOSTAN_SYNC_CREATE_PER_DMA    BOSTAN_NR_NOC_NODES /**< 1 C-NoC RX */
-	#define BOSTAN_SYNC_OPEN_PER_DMA      1                   /**< 1 C-NoC TX */
+	#define BOSTAN_MAILBOX_CREATE_PER_DMA 1                              /**< 1 D-NoC RX and 1 C-NoC TX */
+	#define BOSTAN_MAILBOX_OPEN_PER_DMA   4                              /**< 1 D-NoC TX and 1 C-NoC RX */
+	#define BOSTAN_PORTAL_CREATE_PER_DMA  2                              /**< 1 D-NoC RX and 1 C-NoC TX */
+	#define BOSTAN_PORTAL_OPEN_PER_DMA    4                              /**< 1 D-NoC TX and 1 C-NoC RX */
+	#define BOSTAN_SYNC_CREATE_PER_DMA    BOSTAN_PROCESSOR_NOC_NODES_NUM /**< 1 C-NoC RX                */
+	#define BOSTAN_SYNC_OPEN_PER_DMA      1                              /**< 1 C-NoC TX                */
 	/**@}*/
 
 	/**
@@ -74,16 +79,16 @@
 	 * thus are skipped.
 	 */
 	/**@{*/
-	#define BOSTAN_MAILBOX_RX_OFF  BOSTAN_NR_RESERVED_RX_TAGS                   /**< Mailbox. */
-	#define BOSTAN_PORTAL_RX_OFF  (BOSTAN_MAILBOX_RX_OFF + BOSTAN_NR_NOC_NODES) /**< Portal.  */
-	#define BOSTAN_SYNC_RX_OFF    (BOSTAN_PORTAL_RX_OFF + BOSTAN_NR_NOC_NODES)  /**< Sync.    */
+	#define BOSTAN_MAILBOX_RX_OFF (BOSTAN_PROCESSOR_NOC_RESERVED_RXS_NUM)                   /**< Mailbox. */
+	#define BOSTAN_PORTAL_RX_OFF  (BOSTAN_MAILBOX_RX_OFF + BOSTAN_PROCESSOR_NOC_NODES_NUM) /**< Portal.  */
+	#define BOSTAN_SYNC_RX_OFF    (BOSTAN_PORTAL_RX_OFF + BOSTAN_PROCESSOR_NOC_NODES_NUM)  /**< Sync.    */
 	/**@}*/
 
 	/**
 	 * @brief Transfer C-NoC tags offsets.
 	 */
 	/**@{*/
-	#define BOSTAN_MAILBOX_CNOC_TX_OFF  BOSTAN_NR_RESERVED_TX_TAGS                              /**< Mailbox. */
+	#define BOSTAN_MAILBOX_CNOC_TX_OFF (BOSTAN_PROCESSOR_NOC_RESERVED_TXS_NUM)                   /**< Mailbox. */
 	#define BOSTAN_PORTAL_CNOC_TX_OFF  (BOSTAN_MAILBOX_CNOC_TX_OFF + BOSTAN_MAILBOX_CREATE_MAX) /**< Portal.  */
 	#define BOSTAN_SYNC_CNOC_TX_OFF    (BOSTAN_PORTAL_CNOC_TX_OFF + BOSTAN_PORTAL_CREATE_MAX)   /**< Sync.    */
 	/**@}*/
@@ -92,74 +97,36 @@
 	 * @brief Transfer D-NoC tags offsets.
 	 */
 	/**@{*/
-	#define BOSTAN_MAILBOX_DNOC_TX_OFF  BOSTAN_NR_RESERVED_TX_TAGS                            /**< Mailbox. */
+	#define BOSTAN_MAILBOX_DNOC_TX_OFF (BOSTAN_PROCESSOR_NOC_RESERVED_TXS_NUM)                 /**< Mailbox. */
 	#define BOSTAN_PORTAL_DNOC_TX_OFF  (BOSTAN_MAILBOX_DNOC_TX_OFF + BOSTAN_MAILBOX_OPEN_MAX) /**< Portal.  */
 	/**@}*/
 
 	/**
-	 * @brief IDs of NoC nodes.
+	 * @brief Gets the logic number of the target NoC node.
+	 *
+	 * @returns The logic number of the target NoC node.
 	 */
-	EXTERN const int bostan_noc_nodes[BOSTAN_NR_NOC_NODES];
-
-	/**
-	 * @brief Asserts whether a NoC node is attached to IO cluster 0.
-	 *
-	 * @param nodeid ID of the target NoC node.
-	 *
-	 * @returns One if the target NoC node is attached to IO cluster 0,
-	 * and zero otherwise.
-	 */
-	static inline int bostan_noc_is_ionode0(int nodeid)
-	{
-		return WITHIN(nodeid, BOSTAN_IOCLUSTER0, BOSTAN_IOCLUSTER0 + K1BIO_CORES_NUM);
-	}
-
-	/**
-	 * @brief Asserts whether a NoC node is attached to IO cluster 1.
-	 *
-	 * @param nodeid ID of the target NoC node.
-	 *
-	 * @returns One if the target NoC node is attached to IO cluster 1,
-	 * and zero otherwise.
-	 */
-	static inline int bostan_noc_is_ionode1(int nodeid)
-	{
-		return WITHIN(nodeid, BOSTAN_IOCLUSTER1, BOSTAN_IOCLUSTER1 + K1BIO_CORES_NUM);
-	}
+	EXTERN int bostan_processor_node_get_num(void);
 
 	/**
 	 * @brief Asserts whether a NoC node is attached to an IO cluster.
 	 *
-	 * @param nodeid ID of the target NoC node.
+	 * @param nodenum Logical ID of the target NoC node.
 	 *
 	 * @returns One if the target NoC node is attached to an IO cluster,
 	 * and zero otherwise.
 	 */
-	static inline int bostan_noc_is_ionode(int nodeid)
-	{
-		return (bostan_noc_is_ionode0(nodeid) || bostan_noc_is_ionode1(nodeid));
-	}
+	EXTERN int bostan_processor_noc_is_ionode(int nodenum);
 
 	/**
 	 * @brief Asserts whether a NoC node is attached to a compute cluster.
 	 *
-	 * @param nodeid ID of the target NoC node.
+	 * @param nodenum Logical ID of the target NoC node.
 	 *
 	 * @returns One if the target NoC node is attached to a compute
 	 * cluster, and zero otherwise.
 	 */
-	static inline int bostan_noc_is_cnode(int nodeid)
-	{
-		return WITHIN(nodeid, BOSTAN_CCLUSTER0, BOSTAN_CCLUSTER15 + 1);
-	}
-
-	/**
-	 * @brief Gets the logic number of the target NoC node.
-	 *
-	 * @param nodeid ID of the target NoC node.
-	 * @returns The logic number of the target NoC node.
-	 */
-	EXTERN int bostan_node_get_num(int nodeid);
+	EXTERN int bostan_processor_noc_is_cnode(int nodenum);
 
 	/**
 	 * @brief Converts a nodes list.
@@ -171,47 +138,63 @@
 	 * @returns Upon successful completion, zero is returned. Upon
 	 * failure, a negative error code is returned instead.
 	 */
-	EXTERN int bostan_nodes_convert(int *_nodes, const int *nodes, int nnodes);
+	EXTERN int bostan_processor_noc_node_num_to_id(int nodenum);
 
 	/**
-	 * @brief Gets the virtual number of the target NoC node.
+	 * @brief Converts a cluster number to NoC node number.
 	 *
-	 * @param nodenum Logic ID of the target NoC node.
-	 * @returns The virtual number of the target NoC node.
+	 * @param clusternum Target node number.
+	 *
+	 * @returns The logical cluster number in which the node number @p
+	 * nodenum is located.
 	 */
-	EXTERN int bostan_node_convert_id(int nodenum);
+	EXTERN int bostan_processor_noc_cluster_to_node_num(int clusternum);
+
+
+	/**
+	 * @brief Converts a NoC node number to cluster number.
+	 *
+	 * @param nodenum Target node number.
+	 *
+	 * @returns The logical cluster number in which the node number @p
+	 * nodenum is located.
+	 */
+	EXTERN int bostan_processor_noc_node_to_cluster_num(int nodenum);
 
 	/**
 	 * @brief Returns the synchronization NoC tag for a target NoC node ID.
 	 *
-	 * @param nodeid ID of the target NoC node.
+	 * @param nodenum Logical ID of the target NoC node.
+	 *
 	 * @returns The NoC tag attached to the underlying node ID is
 	 * returned.
 	 */
-	EXTERN int bostan_node_sync_tag(int nodeid);
+	EXTERN int bostan_processor_node_sync_tag(int nodenum);
 
     /**
 	 * @brief Returns the mailbox NoC tag for a target NoC node ID.
 	 *
-	 * @param nodeid ID of the target NoC node.
+	 * @param nodenum Logical ID of the target NoC node.
+	 *
 	 * @returns The NoC tag attached to the underlying node ID is
 	 * returned.
 	 */
-	EXTERN int bostan_node_mailbox_tag(int nodeid);
+	EXTERN int bostan_processor_node_mailbox_tag(int nodenum);
 
     /**
 	 * @brief Returns the portal NoC tag for a target NoC node ID.
 	 *
-	 * @param nodeid ID of the target NoC node.
+	 * @param nodenum Logical ID of the target NoC node.
+	 *
 	 * @returns The NoC tag attached to the underlying node ID is
 	 * returned.
 	 */
-	EXTERN int bostan_node_portal_tag(int nodeid);
+	EXTERN int bostan_processor_node_portal_tag(int nodenum);
 
 	/**
-	 * @todo TODO: Provide a detailed description to this function.
+	 * @todo Provide a detailed description to this function.
 	 */
-	static inline void bostan_noc_setup(void)
+	static inline void bostan_processor_noc_setup(void)
 	{
 		bostan_dma_init();
 	}
@@ -230,77 +213,51 @@
 	 * @name Exported Constans
 	 */
 	/**@{*/
-	#define PROCESSOR_NOC_IONODES_NUM BOSTAN_NR_NOC_IONODES
-	#define PROCESSOR_NOC_CNODES_NUM BOSTAN_NR_NOC_CNODES
-	#define PROCESSOR_NOC_NODES_NUM BOSTAN_NR_NOC_NODES
+	#define PROCESSOR_NOC_IONODES_NUM BOSTAN_PROCESSOR_NOC_IONODES_NUM /**< BOSTAN_PROCESSOR_NOC_IONODES_NUM */
+	#define PROCESSOR_NOC_CNODES_NUM  BOSTAN_PROCESSOR_NOC_CNODES_NUM  /**< BOSTAN_PROCESSOR_NOC_CNODES_NUM  */
+	#define PROCESSOR_NODENUM_MASTER  BOSTAN_PROCESSOR_NODENUM_MASTER  /**< BOSTAN_PROCESSOR_NODENUM_MASTER  */
 	/**@}*/
 
 	/**
 	 * @name Exported Functions
 	 */
 	/**@{*/
-	#define __processor_noc_is_ionode0_fn /**< processor_noc_is_ionode0() */
-	#define __processor_noc_is_ionode1_fn /**< processor_noc_is_ionode1() */
-	#define __processor_noc_is_ionode_fn  /**< processor_noc_is_ionode()  */
-	#define __processor_noc_is_cnode_fn   /**< processor_noc_is_cnode()   */
-	#define __processor_node_get_num_fn   /**< processor_node_get_num()   */
-	#define __processor_nodes_convert_fn  /**< processor_nodes_convert()  */
+	#define __processor_node_get_num_fn  /**< processor_node_get_num()  */
+	#define __processor_noc_is_ionode_fn /**< processor_noc_is_ionode() */
+	#define __processor_noc_is_cnode_fn  /**< processor_noc_is_cnode()  */
+	#define __processor_noc_setup_fn     /**< processor_noc_setup()     */
 	/**@}*/
 
 	/**
-	 * @see bostan_noc_is_ionode0()
+	 * @see bostan_processor_node_get_num()
 	 */
-	static inline int processor_noc_is_ionode0(int nodeid)
+	static inline int processor_node_get_num(void)
 	{
-		return (bostan_noc_is_ionode0(nodeid));
+		return bostan_processor_node_get_num();
 	}
 
 	/**
-	 * @see bostan_noc_is_ionode1()
+	 * @see bostan_processor_noc_is_ionode()
 	 */
-	static inline int processor_noc_is_ionode1(int nodeid)
+	static inline int processor_noc_is_ionode(int nodenum)
 	{
-		return (bostan_noc_is_ionode1(nodeid));
+		return (bostan_processor_noc_is_ionode(nodenum));
 	}
 
 	/**
-	 * @see bostan_noc_is_ionode()
+	 * @see bostan_processor_noc_is_cnode()
 	 */
-	static inline int processor_noc_is_ionode(int nodeid)
+	static inline int processor_noc_is_cnode(int nodenum)
 	{
-		return (bostan_noc_is_ionode(nodeid));
+		return (bostan_processor_noc_is_cnode(nodenum));
 	}
 
 	/**
-	 * @see bostan_noc_is_cnode()
-	 */
-	static inline int processor_noc_is_cnode(int nodeid)
-	{
-		return (bostan_noc_is_cnode(nodeid));
-	}
-
-	/**
-	 * @see bostan_node_get_num()
-	 */
-	static inline int processor_node_get_num(int nodeid)
-	{
-		return bostan_node_get_num(nodeid);
-	}
-
-	/**
-	 * @see bostan_nodes_convert()
-	 */
-	static inline int processor_nodes_convert(int *_nodes, const int *nodes, int nnodes)
-	{
-		return bostan_nodes_convert(_nodes, nodes, nnodes);
-	}
-
-	/**
-	 * @see bostan_noc_setup()
+	 * @see bostan_processor_noc_setup()
 	 */
 	static inline void processor_noc_setup(void)
 	{
-		bostan_noc_setup();
+		bostan_processor_noc_setup();
 	}
 
 /**@endcond*/
