@@ -48,12 +48,6 @@
 	 */
 	#define LINUX64_PROCESSOR_NOC_CNODES_NUM 16
 
-	/**
-	 * @name Total number of NoC nodes.
-	 */
-	#define LINUX64_PROCESSOR_NOC_NODES_NUM \
-		(LINUX64_PROCESSOR_NOC_IONODES_NUM + LINUX64_PROCESSOR_NOC_CNODES_NUM)
-
 #ifdef __NANVIX_HAL
 
 	/**
@@ -69,23 +63,12 @@
 #endif /* __NANVIX_HAL */
 
 	/**
-	 * @brief Gets the ID of the NoC node attached to the underlying core.
-	 *
-	 * @returns The ID of the NoC node attached to the underlying core is
-	 * returned.
-	 *
-	 * @note This function is blocking.
-	 * @note This function is thread-safe.
-	 */
-	EXTERN int linux64_processor_node_get_id(void);
-
-	/**
 	 * @brief Gets the logic number of the target NoC node.
 	 *
 	 * @param nodeid ID of the target NoC node.
 	 * @returns The logic number of the target NoC node.
 	 */
-	EXTERN int linux64_processor_node_get_num(int nodeid);
+	EXTERN int linux64_processor_node_get_num(void);
 
 	/**
 	 * @brief Asserts whether a NoC node is attached to an IO cluster.
@@ -123,14 +106,12 @@
 	/**@{*/
 	#define PROCESSOR_NOC_IONODES_NUM LINUX64_PROCESSOR_NOC_IONODES_NUM
 	#define PROCESSOR_NOC_CNODES_NUM  LINUX64_PROCESSOR_NOC_CNODES_NUM
-	#define PROCESSOR_NOC_NODES_NUM   LINUX64_PROCESSOR_NOC_NODES_NUM
 	/**@}*/
 
 	/**
 	 * @name Exported Functions
 	 */
 	/**@{*/
-	#define __processor_node_get_id_fn   /**< processor_node_get_id()   */
 	#define __processor_node_get_num_fn  /**< processor_node_get_num()  */
 	#define __processor_noc_is_ionode_fn /**< processor_noc_is_ionode() */
 	#define __processor_noc_is_cnode_fn  /**< processor_noc_is_cnode()  */
@@ -138,19 +119,11 @@
 	/**@}*/
 
 	/**
-	 * @see linux64_processor_node_get_id().
-	 */
-	static inline int processor_node_get_id(void)
-	{
-		return (linux64_processor_node_get_id());
-	}
-
-	/**
 	 * @see linux64_processor_node_get_num().
 	 */
-	static inline int processor_node_get_num(int nodeid)
+	static inline int processor_node_get_num(void)
 	{
-		return (linux64_processor_node_get_num(nodeid));
+		return (linux64_processor_node_get_num());
 	}
 
 	/**

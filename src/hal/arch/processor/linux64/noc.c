@@ -125,7 +125,7 @@ PRIVATE void linux64_processor_noc_unlock(void)
  */
 PRIVATE int linux64_processor_noc_node_to_cluster_num(int nodenum)
 {
-	KASSERT((nodenum >= 0) && (nodenum <= LINUX64_PROCESSOR_NOC_NODES_NUM));
+	KASSERT((nodenum >= 0) && (nodenum <= PROCESSOR_NOC_NODES_NUM));
 
 	/* Search for node number. */
 	for (int i = 0, j = 0; i < PROCESSOR_CLUSTERS_NUM; i++)
@@ -147,7 +147,7 @@ PRIVATE int linux64_processor_noc_node_to_cluster_num(int nodenum)
 /**
  * @todo TODO: Provide a detailed description to this function.
  */
-PUBLIC int linux64_processor_node_get_id(void)
+PRIVATE int linux64_processor_node_get_id(void)
 {
 	return (linux64_cluster_get_num());
 }
@@ -159,11 +159,9 @@ PUBLIC int linux64_processor_node_get_id(void)
 /**
  * @todo TODO: Provnume a detailed description to this function.
  */
-PUBLIC int linux64_processor_node_get_num(int nodeid)
+PUBLIC int linux64_processor_node_get_num(void)
 {
-	KASSERT((nodeid >= 0) && (nodeid <= LINUX64_PROCESSOR_NOC_NODES_NUM));
-
-	return (nodeid);
+	return (linux64_processor_node_get_id());
 }
 
 /*============================================================================*
@@ -208,7 +206,7 @@ PUBLIC int linux64_processor_noc_is_cnode(int nodenum)
 PUBLIC void linux64_processor_noc_boot(void)
 {
 	void *p;
-	size_t nodes_sz = LINUX64_PROCESSOR_NOC_NODES_NUM*sizeof(struct noc_node);
+	size_t nodes_sz = PROCESSOR_NOC_NODES_NUM*sizeof(struct noc_node);
 
 	KASSERT((noc.lock =
 		sem_open(UNIX64_NOC_LOCK_NAME,
@@ -243,7 +241,7 @@ PUBLIC void linux64_processor_noc_boot(void)
 	noc.nodes = p;
 
 	/* Initialize nodes. */
-	for (int i = 0; i < LINUX64_PROCESSOR_NOC_NODES_NUM; i++)
+	for (int i = 0; i < PROCESSOR_NOC_NODES_NUM; i++)
 	{
 		noc.nodes[i].buffer.head = 0;
 		noc.nodes[i].buffer.tail = 0;
@@ -259,7 +257,7 @@ PUBLIC void linux64_processor_noc_boot(void)
  */
 PUBLIC void linux64_processor_noc_shutdown(void)
 {
-	size_t nodes_sz = LINUX64_PROCESSOR_NOC_NODES_NUM*sizeof(struct noc_node);
+	size_t nodes_sz = PROCESSOR_NOC_NODES_NUM*sizeof(struct noc_node);
 
 	KASSERT(munmap(noc.nodes, nodes_sz) != -1);
 	KASSERT(close(noc.shm) != -1);

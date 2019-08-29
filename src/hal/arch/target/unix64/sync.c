@@ -23,10 +23,10 @@
  */
 
 /* Must come first. */
-#define __NEED_PROCESSOR_LINUX64
+#define __NEED_HAL_PROCESSOR
 
-#include <arch/processor/linux64.h>
 #include <arch/target/unix64/unix64/sync.h>
+#include <nanvix/hal/processor.h>
 #include <nanvix/hal/resource.h>
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
@@ -46,12 +46,12 @@
  */
 struct sync
 {
-	struct resource resource;                   /**< Underlying resource.            */
-	int type;                                   /**< Type.                           */
-	mqd_t fd;                                   /**< Underlying file descriptor.     */
-	int ncount;                                 /**< Number of remotes in broadcast. */
-	char pathname[UNIX64_SYNC_NAME_LENGTH];     /**< Name of underlying mqueue.      */
-	int nodes[LINUX64_PROCESSOR_NOC_NODES_NUM]; /**< IDs of attached nodes.          */
+	struct resource resource;               /**< Underlying resource.            */
+	int type;                               /**< Type.                           */
+	mqd_t fd;                               /**< Underlying file descriptor.     */
+	int ncount;                             /**< Number of remotes in broadcast. */
+	char pathname[UNIX64_SYNC_NAME_LENGTH]; /**< Name of underlying mqueue.      */
+	int nodes[PROCESSOR_NOC_NODES_NUM];     /**< IDs of attached nodes.          */
 };
 
 /**
@@ -99,7 +99,7 @@ PRIVATE pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
  * @brief Default message queue attribute.
  */
 PRIVATE struct mq_attr mq_attr = {
-	.mq_maxmsg = LINUX64_PROCESSOR_NOC_NODES_NUM,
+	.mq_maxmsg = PROCESSOR_NOC_NODES_NUM,
 	.mq_msgsize = sizeof(int)
 };
 
@@ -246,7 +246,7 @@ PRIVATE int do_unix64_sync_create(const int *nodes, int nnodes, int type)
 	int syncid;     /* Synchronization point. */
 	char *pathname; /* NoC connector name.    */
 
-	nodenum = linux64_processor_node_get_id();
+	nodenum = processor_node_get_num();
 
 	unix64_sync_lock();
 
@@ -327,7 +327,7 @@ PUBLIC int unix64_sync_create(const int *nodes, int nnodes, int type)
 		return (-EINVAL);
 
 	/* Bad nodes list. */
-	if (!WITHIN(nnodes, 2, LINUX64_PROCESSOR_NOC_NODES_NUM))
+	if (!WITHIN(nnodes, 2, PROCESSOR_NOC_NODES_NUM))
 		return (-EINVAL);
 
 	/* Bad sync type. */
@@ -357,7 +357,7 @@ PRIVATE int do_unix64_sync_open(const int *nodes, int nnodes, int type)
 	int syncid;     /* Synchronization point. */
 	char *pathname; /* NoC connector name.    */
 
-	nodenum = linux64_processor_node_get_id();
+	nodenum = processor_node_get_num();
 
 	unix64_sync_lock();
 
@@ -433,7 +433,7 @@ PUBLIC int unix64_sync_open(const int *nodes, int nnodes, int type)
 		return (-EINVAL);
 
 	/* Bad nodes list. */
-	if (!WITHIN(nnodes, 2, LINUX64_PROCESSOR_NOC_NODES_NUM))
+	if (!WITHIN(nnodes, 2, PROCESSOR_NOC_NODES_NUM))
 		return (-EINVAL);
 
 	/* Bad sync type. */
@@ -498,7 +498,7 @@ PRIVATE inline int do_unix64_sync_wait_broadcast(int syncid)
 PRIVATE int do_unix64_sync_wait_gather(int syncid)
 {
 	int nsignals = synctab.rxs[syncid].ncount - 1;
-	int signals[LINUX64_PROCESSOR_NOC_NODES_NUM];
+	int signals[PROCESSOR_NOC_NODES_NUM];
 
 	kmemset(signals, 0, nsignals*sizeof(int));
 
@@ -639,7 +639,7 @@ PRIVATE inline int do_unix64_sync_signal_broadcast(int syncid, int sig)
 PUBLIC int unix64_sync_signal(int syncid)
 {
 	int ret;
-	int nodeid;
+	int nodenum;
 
 	/* Invalid sync. */
 	if (!unix64_sync_tx_is_valid(syncid))
@@ -668,12 +668,12 @@ again:
 	 */
 	unix64_sync_unlock();
 
-	nodeid = linux64_processor_node_get_id();
+	nodenum = processor_node_get_num();
 
 	/* Broadcast. */
 	ret = (synctab.txs[syncid].type == UNIX64_SYNC_ONE_TO_ALL) ?
-		do_unix64_sync_signal_broadcast(syncid, nodeid) :
-		do_unix64_sync_signal(syncid, nodeid);
+		do_unix64_sync_signal_broadcast(syncid, nodenum) :
+		do_unix64_sync_signal(syncid, nodenum);
 
 	unix64_sync_lock();
 		resource_set_notbusy(&synctab.txs[syncid].resource);

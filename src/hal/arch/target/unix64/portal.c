@@ -21,10 +21,10 @@
  */
 
 /* Must come fist. */
-#define __NEED_PROCESSOR_LINUX64
+#define __NEED_HAL_PROCESSOR
 
-#include <arch/processor/linux64.h>
 #include <arch/target/unix64/unix64/portal.h>
+#include <nanvix/hal/processor.h>
 #include <nanvix/hal/resource.h>
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
@@ -448,7 +448,7 @@ PUBLIC int unix64_portal_create(int local)
 		return (-EINVAL);
 
 	/* Bad local NoC node. */
-	if (local != processor_node_get_id())
+	if (local != processor_node_get_num())
 		return (-EINVAL);
 
 	return (do_unix64_portal_create(local));
@@ -546,7 +546,7 @@ PUBLIC int unix64_portal_allow(int portalid, int remote)
 		return (-EINVAL);
 
 	/* Bad remote. */
-	if (remote == processor_node_get_id())
+	if (remote == processor_node_get_num())
 		return (-EINVAL);
 
 	return (do_unix64_portal_allow(portalid, remote));
@@ -646,7 +646,7 @@ PUBLIC int unix64_portal_open(int local, int remote)
 		return (-EINVAL);
 
 	/* Bad local. */
-	if (local != processor_node_get_id())
+	if (local != processor_node_get_num())
 		return (-EINVAL);
 
 	/* Bad remote. */
@@ -720,7 +720,7 @@ again:
 
 	unix64_portal_lock(&portaltab.rxs[portalid]);
 
-		remote = processor_node_get_num(portaltab.rxs[portalid].remote);
+		remote = portaltab.rxs[portalid].remote;
 
 		/* No data is available. */
 		if (!portaltab.rxs[portalid].buffers[remote]->busy)
@@ -808,7 +808,7 @@ again:
 
 	unix64_portal_lock(&portaltab.txs[portalid]);
 
-		local = processor_node_get_num(portaltab.txs[portalid].local);
+		local = portaltab.txs[portalid].local;
 
 		/* Remote is not ready. */
 		if (!portaltab.txs[portalid].buffers[local]->ready)
@@ -931,7 +931,7 @@ again:
 
 	unix64_portals_lock();
 
-		local = processor_node_get_num(portaltab.txs[portalid].local);
+		local = portaltab.txs[portalid].local;
 
 		/* Bad portal. */
 		if (!resource_is_used(&portaltab.txs[portalid].resource))
