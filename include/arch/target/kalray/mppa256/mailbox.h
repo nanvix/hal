@@ -39,8 +39,8 @@
 	 * @name Maximum number of mailboxes points.
 	 */
 	/**@{*/
-	#define MPPA256_MAILBOX_CREATE_MAX (BOSTAN_MAILBOX_CREATE_PER_DMA * BOSTAN_NR_INTERFACES) /**< Maximum amount of create mailboxes. */
-	#define MPPA256_MAILBOX_OPEN_MAX   (BOSTAN_MAILBOX_OPEN_PER_DMA * BOSTAN_NR_INTERFACES)   /**< Maximum amount of open mailboxes.   */
+	#define MPPA256_MAILBOX_CREATE_MAX (BOSTAN_MAILBOX_CREATE_PER_DMA * BOSTAN_PROCESSOR_NOC_INTERFACES_NUM) /**< Maximum amount of create mailboxes. */
+	#define MPPA256_MAILBOX_OPEN_MAX   (BOSTAN_MAILBOX_OPEN_PER_DMA * BOSTAN_PROCESSOR_NOC_INTERFACES_NUM)   /**< Maximum amount of open mailboxes.   */
 	/**@}*/
 
 	/**

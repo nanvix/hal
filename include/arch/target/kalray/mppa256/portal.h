@@ -39,8 +39,8 @@
 	 * @name Maximum number of portal points.
 	 */
 	/**@{*/
-	#define MPPA256_PORTAL_CREATE_MAX (BOSTAN_PORTAL_CREATE_PER_DMA * BOSTAN_NR_INTERFACES) /**< Maximum amount of create portals. */
-	#define MPPA256_PORTAL_OPEN_MAX   (BOSTAN_PORTAL_OPEN_PER_DMA * BOSTAN_NR_INTERFACES)   /**< Maximum amount of open portals.   */
+	#define MPPA256_PORTAL_CREATE_MAX (BOSTAN_PORTAL_CREATE_PER_DMA * BOSTAN_PROCESSOR_NOC_INTERFACES_NUM) /**< Maximum amount of create portals. */
+	#define MPPA256_PORTAL_OPEN_MAX   (BOSTAN_PORTAL_OPEN_PER_DMA * BOSTAN_PROCESSOR_NOC_INTERFACES_NUM)   /**< Maximum amount of open portals.   */
 	/**@}*/
 
 	/**
@@ -63,23 +63,24 @@
 	 * @brief Enables read operations from a remote.
 	 *
 	 * @param portalid ID of the target portal.
-	 * @param remote   NoC node ID of target remote.
+	 * @param nodenum  NoC node ID of target remote.
 	 *
 	 * @returns Upons successful completion zero is returned. Upon failure,
 	 * a negative error code is returned instead.
 	 */
-	EXTERN int mppa256_portal_allow(int portalid, int remote);
+	EXTERN int mppa256_portal_allow(int portalid, int nodenum);
 
 	/**
 	 * @brief Opens a portal.
 	 *
-	 * @param nodeid Logic ID of the target NoC node.
+	 * @param localnum  Logic ID of local node.
+	 * @param remotenum Logic ID of target node.
 	 *
 	 * @returns Upon successful completion, the ID of the target portal
 	 * is returned. Upon failure, a negative error code is returned
 	 * instead.
 	 */
-	EXTERN int mppa256_portal_open(int local, int remote);
+	EXTERN int mppa256_portal_open(int localnum, int remotenum);
 
 	/**
 	 * @brief Destroys a portal.
@@ -174,17 +175,17 @@
 	/**
 	 * @see mppa256_portal_allow()
 	 */
-	static inline int portal_allow(int portalid, int remote)
+	static inline int portal_allow(int portalid, int remotenum)
 	{
-		return mppa256_portal_allow(portalid, remote);
+		return mppa256_portal_allow(portalid, remotenum);
 	}
 
 	/**
 	 * @see mppa256_portal_open()
 	 */
-	static inline int portal_open(int local, int remote)
+	static inline int portal_open(int localnum, int remotenum)
 	{
-		return mppa256_portal_open(local, remote);
+		return mppa256_portal_open(localnum, remotenum);
 	}
 
 	/**
