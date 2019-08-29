@@ -22,8 +22,9 @@
  * SOFTWARE.
  */
 
-#include <arch/processor/linux64/noc.h>
-#include <arch/processor/linux64/clusters.h>
+#define __NEED_HAL_PROCESSOR
+
+#include <nanvix/hal/processor.h>
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
 #include <sys/mman.h>
@@ -67,9 +68,9 @@ struct
 	 */
 	int shm;
 
-	sem_t *lock;                                       /* Lock          */
-	struct noc_node *nodes;                            /* Nodes         */
-	int configuration[LINUX64_PROCESSOR_CLUSTERS_NUM]; /* Configuration */
+	sem_t *lock;                               /* Lock          */
+	struct noc_node *nodes;                    /* Nodes         */
+	int configuration[PROCESSOR_CLUSTERS_NUM]; /* Configuration */
 } noc = {
 	.shm = -1,
 	.lock = NULL,
@@ -127,7 +128,7 @@ PRIVATE int linux64_processor_noc_node_to_cluster_num(int nodenum)
 	KASSERT((nodenum >= 0) && (nodenum <= LINUX64_PROCESSOR_NOC_NODES_NUM));
 
 	/* Search for node number. */
-	for (int i = 0, j = 0; i < LINUX64_PROCESSOR_CLUSTERS_NUM; i++)
+	for (int i = 0, j = 0; i < PROCESSOR_CLUSTERS_NUM; i++)
 	{
 		/* Found. */
 		if ((nodenum >= j) < (nodenum < (j + noc.configuration[i])))
@@ -152,7 +153,7 @@ PUBLIC int linux64_processor_node_get_id(void)
 }
 
 /*============================================================================*
- * linux64_processor_node_get_num()                                            *
+ * linux64_processor_node_get_num()                                           *
  *============================================================================*/
 
 /**
@@ -264,7 +265,7 @@ PUBLIC void linux64_processor_noc_shutdown(void)
 	KASSERT(close(noc.shm) != -1);
 	KASSERT(sem_close(noc.lock) != -1);
 
-	if (linux64_cluster_get_id() == LINUX64_PROCESSOR_CLUSTERID_MASTER)
+	if (linux64_cluster_get_num() == LINUX64_PROCESSOR_CLUSTERNUM_MASTER)
 	{
 		KASSERT(shm_unlink(UNIX64_NOC_NAME) != -1);
 		KASSERT(sem_unlink(UNIX64_NOC_LOCK_NAME) != -1);

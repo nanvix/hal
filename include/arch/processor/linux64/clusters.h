@@ -49,13 +49,7 @@
 	#define LINUX64_PROCESSOR_CCLUSTERS_NUM 16
 
 	/**
-	 * @brief Number of Clusters
-	 */
-	#define LINUX64_PROCESSOR_CLUSTERS_NUM \
-		(LINUX64_PROCESSOR_IOCLUSTERS_NUM + LINUX64_PROCESSOR_CCLUSTERS_NUM)
-
-	/**
-	 * @name Types of Clusters
+	 * @brief Types of Clusters
 	 */
 	/**@{*/
 	#define LINUX64_PROCESSOR_IOCLUSTER 1 /**< IO Cluster      */
@@ -63,9 +57,9 @@
 	/**@}*/
 
 	/**
-	 * @brief ID of master cluster.
+	 * @brief Logical ID of master cluster.
 	 */
-	EXTERN int LINUX64_PROCESSOR_CLUSTERID_MASTER;
+	#define LINUX64_PROCESSOR_CLUSTERNUM_MASTER 0
 
 #ifdef __NANVIX_HAL
 
@@ -85,11 +79,6 @@
 	EXTERN void linux64_processor_clusters_setup(void);
 
 #endif /* __NANVIX_HAL */
-
-	/**
-	 * @brief Retrieves the ID of the underlying cluster.
-	 */
-	EXTERN int linux64_cluster_get_id(void);
 
 	/**
 	 * @brief Retrieves the logical number of the underlying cluster.
@@ -129,28 +118,19 @@
 	 * @name Provided Constants
 	 */
 	/**@{*/
-	#define PROCESSOR_CCLUSTERS_NUM  LINUX64_PROCESSOR_CCLUSTERS_NUM      /**< @see LINUX64_PROCESSOR_CCLUSTERS_NUM  */
-	#define PROCESSOR_IOCLUSTERS_NUM LINUX64_PROCESSOR_IOCLUSTERS_NUM     /**< @see LINUX64_PROCESSOR_IOCLUSTERS_NUM */
-	#define PROCESSOR_CLUSTERID_MASTER LINUX64_PROCESSOR_CLUSTERID_MASTER /**< @see LINUX64_PROCESSOR_CLUSTERID_MASTER */
+	#define PROCESSOR_CCLUSTERS_NUM  LINUX64_PROCESSOR_CCLUSTERS_NUM        /**< @see LINUX64_PROCESSOR_CCLUSTERS_NUM     */
+	#define PROCESSOR_IOCLUSTERS_NUM LINUX64_PROCESSOR_IOCLUSTERS_NUM       /**< @see LINUX64_PROCESSOR_IOCLUSTERS_NUM    */
+	#define PROCESSOR_CLUSTERNUM_MASTER LINUX64_PROCESSOR_CLUSTERNUM_MASTER /**< @see LINUX64_PROCESSOR_CLUSTERNUM_MASTER */
 	/**@}*/
 
 	/**
 	 * @name Provided Functions
 	 */
 	/**@{*/
-	#define __cluster_get_id_fn       /**< linux64_cluster_cluster_get_id()  */
 	#define __cluster_get_num_fn      /**< linux64_cluster_cluster_get_num() */
 	#define __cluster_is_ccluster_fn  /**< linux64_cluster_is_compute()      */
 	#define __cluster_is_iocluster_fn /**< linux64_cluster_is_io()           */
 	/**@}*/
-
-	/**
-	 * @see linux64_processor_cluster_get_id().
-	 */
-	static inline int cluster_get_id(void)
-	{
-		return (linux64_cluster_get_id());
-	}
 
 	/**
 	 * @see linux64_processor_cluster_get_num().

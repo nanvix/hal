@@ -23,9 +23,9 @@
  */
 
 /* Must come fist. */
-#define __NEED_PROCESSOR_LINUX64
+#define __NEED_HAL_PROCESSOR
 
-#include <arch/processor/linux64.h>
+#include <nanvix/hal/processor.h>
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
 #include <sys/mman.h>
@@ -47,7 +47,7 @@
 /**
  * Physical ID of master cluster.
  */
-PUBLIC int LINUX64_PROCESSOR_CLUSTERID_MASTER;
+PRIVATE int LINUX64_PROCESSOR_CLUSTERID_MASTER;
 
 /**
  * @brief Clusters.
@@ -72,7 +72,7 @@ PRIVATE struct
 	/**
 	 * @brief Types of clusters.
 	 */
-	const int types[LINUX64_PROCESSOR_CLUSTERS_NUM];
+	const int types[PROCESSOR_CLUSTERS_NUM];
 
 } clusters = {
 	.shm = -1,
@@ -132,7 +132,7 @@ PRIVATE void linux64_processor_clusters_unlock(void)
 /**
  * @todo TODO: Provide a detailed description for this function.
  */
-PUBLIC int linux64_cluster_get_id(void)
+PRIVATE int linux64_cluster_get_id(void)
 {
 	return (getpid());
 }
@@ -153,7 +153,7 @@ PUBLIC int linux64_cluster_get_num(void)
 	linux64_processor_clusters_lock();
 
 		/* Search for cluster ID. */
-		for (int i = 0; i < LINUX64_PROCESSOR_CLUSTERS_NUM; i++)
+		for (int i = 0; i < PROCESSOR_CLUSTERS_NUM; i++)
 		{
 			if (clusters.pids[i] == clusterid)
 			{
@@ -179,7 +179,7 @@ PUBLIC int linux64_cluster_get_num(void)
  */
 PUBLIC int linux64_cluster_is_compute(int clusternum)
 {
-	KASSERT((clusternum >= 0) && (clusternum < LINUX64_PROCESSOR_CLUSTERS_NUM));
+	KASSERT((clusternum >= 0) && (clusternum < PROCESSOR_CLUSTERS_NUM));
 
 	return (clusters.types[clusternum] == LINUX64_PROCESSOR_CCLUSTER);
 }
@@ -193,7 +193,7 @@ PUBLIC int linux64_cluster_is_compute(int clusternum)
  */
 PUBLIC int linux64_cluster_is_io(int clusternum)
 {
-	KASSERT((clusternum >= 0) && (clusternum < LINUX64_PROCESSOR_CLUSTERS_NUM));
+	KASSERT((clusternum >= 0) && (clusternum < PROCESSOR_CLUSTERS_NUM));
 
 	return (clusters.types[clusternum] == LINUX64_PROCESSOR_IOCLUSTER);
 }
@@ -208,7 +208,7 @@ PUBLIC int linux64_cluster_is_io(int clusternum)
 PUBLIC void linux64_processor_clusters_boot(void)
 {
 	void *p;
-	size_t clusters_sz = LINUX64_PROCESSOR_CLUSTERS_NUM*sizeof(pid_t);
+	size_t clusters_sz = PROCESSOR_CLUSTERS_NUM*sizeof(pid_t);
 
 	LINUX64_PROCESSOR_CLUSTERID_MASTER = linux64_cluster_get_id();
 
@@ -247,7 +247,7 @@ PUBLIC void linux64_processor_clusters_boot(void)
 
 	/* Initialize clusters. */
 	clusters.pids[0] = getpid();
-	for (int i = 1; i < LINUX64_PROCESSOR_CLUSTERS_NUM; i++)
+	for (int i = 1; i < PROCESSOR_CLUSTERS_NUM; i++)
 		clusters.pids[i] = -1;
 }
 
@@ -260,7 +260,7 @@ PUBLIC void linux64_processor_clusters_boot(void)
  */
 PUBLIC void linux64_processor_clusters_shutdown(void)
 {
-	size_t clusters_sz = LINUX64_PROCESSOR_CLUSTERS_NUM*sizeof(pid_t);
+	size_t clusters_sz = PROCESSOR_CLUSTERS_NUM*sizeof(pid_t);
 
 	KASSERT(munmap(clusters.pids, clusters_sz) != -1);
 	KASSERT(close(clusters.shm) != -1);
@@ -291,7 +291,7 @@ PUBLIC void linux64_processor_clusters_setup(void)
 	linux64_processor_clusters_lock();
 
 		/* Search for an unused virtual cluster. */
-		for (int i = 1; i < LINUX64_PROCESSOR_CLUSTERS_NUM; i++)
+		for (int i = 1; i < PROCESSOR_CLUSTERS_NUM; i++)
 		{
 			if (clusters.pids[i] == -1)
 			{
