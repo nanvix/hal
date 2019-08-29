@@ -39,14 +39,19 @@
 	#include <nanvix/const.h>
 
 	/**
-	 * @name Number of NoC nodes attached to an IO cluster.
+	 * @brief Number of NoC nodes attached to an IO cluster.
 	 */
-	#define LINUX64_PROCESSOR_NOC_IONODES_NUM 8
+	#define LINUX64_PROCESSOR_NOC_IONODES_NUM 2
 
 	/**
-	 * @name Number of NoC nodes not attached to an compute cluster.
+	 * @brief Number of NoC nodes not attached to an compute cluster.
 	 */
 	#define LINUX64_PROCESSOR_NOC_CNODES_NUM 16
+
+	/**
+	 * @brief Logical NoC node ID of master.
+	 */
+	#define LINUX64_PROCESSOR_NODENUM_MASTER 0
 
 #ifdef __NANVIX_HAL
 
@@ -104,8 +109,9 @@
 	 * @name Exported Constans
 	 */
 	/**@{*/
-	#define PROCESSOR_NOC_IONODES_NUM LINUX64_PROCESSOR_NOC_IONODES_NUM
-	#define PROCESSOR_NOC_CNODES_NUM  LINUX64_PROCESSOR_NOC_CNODES_NUM
+	#define PROCESSOR_NOC_IONODES_NUM LINUX64_PROCESSOR_NOC_IONODES_NUM /**< LINUX64_PROCESSOR_NOC_IONODES_NUM */
+	#define PROCESSOR_NOC_CNODES_NUM  LINUX64_PROCESSOR_NOC_CNODES_NUM  /**< LINUX64_PROCESSOR_NOC_CNODES_NUM  */
+	#define PROCESSOR_NODENUM_MASTER LINUX64_PROCESSOR_NODENUM_MASTER   /**< LINUX64_PROCESSOR_NODENUM_MASTER  */
 	/**@}*/
 
 	/**

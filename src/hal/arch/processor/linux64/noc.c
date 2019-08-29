@@ -206,7 +206,14 @@ PUBLIC int linux64_processor_noc_is_cnode(int nodenum)
 PUBLIC void linux64_processor_noc_boot(void)
 {
 	void *p;
+	int nnodes;
 	size_t nodes_sz = PROCESSOR_NOC_NODES_NUM*sizeof(struct noc_node);
+
+	/* Check NoC configuration. */
+	nnodes = 0;
+	for (int i = 0 ; i < PROCESSOR_CLUSTERS_NUM; i++)
+		nnodes += noc.configuration[i];
+	KASSERT(nnodes == PROCESSOR_NOC_NODES_NUM);
 
 	KASSERT((noc.lock =
 		sem_open(UNIX64_NOC_LOCK_NAME,

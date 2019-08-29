@@ -49,6 +49,9 @@
 		#ifndef PROCESSOR_NOC_CNODES_NUM
 		#error "PROCESSOR_NOC_CNODES not defined"
 		#endif
+		#ifndef PROCESSOR_NODENUM_MASTER
+		#error "PROCESSOR_NODENUM_MASTER not defined"
+		#endif
 
 		/* Functions */
 		#ifndef __processor_noc_is_ionode_fn
@@ -69,6 +72,7 @@
 		/* Dummy Constants */
 		#define PROCESSOR_NOC_IONODES_NUM 1
 		#define PROCESSOR_NOC_CNODES_NUM  0
+		#define PROCESSOR_NODENUM_MASTER  0
 
 	#endif
 

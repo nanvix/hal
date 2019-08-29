@@ -87,6 +87,7 @@ PRIVATE void test_processor_al(void)
 	test_dnoc();
 #endif
 	test_clusters();
+	test_noc();
 }
 
 /**
