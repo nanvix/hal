@@ -124,19 +124,6 @@ PRIVATE void test_trigger_exception(void)
 	trigger_exception();
 }
 
-/*----------------------------------------------------------------------------*
- * Test Driver Table                                                          *
- *----------------------------------------------------------------------------*/
-
-/**
- * @brief Unit tests.
- */
-PRIVATE struct test exception_api_tests[] = {
-	{ test_exception_set_unset_handler, "set and unset exception handler" },
-	{ test_trigger_exception,           "trigger exception"               },
-	{ NULL,                              NULL                             },
-};
-
 /*============================================================================*
  * Fault Injection Tests                                                      *
  *============================================================================*/
@@ -195,24 +182,29 @@ PRIVATE void test_exception_unregister_bad(void)
 	KASSERT(exception_unregister(EXCEPTION_PAGE_FAULT) == -EINVAL);
 }
 
-/*----------------------------------------------------------------------------*
- * Test Driver Table                                                          *
- *----------------------------------------------------------------------------*/
+/*============================================================================*
+ * Test Driver                                                                *
+ *============================================================================*/
+
+/**
+ * @brief Unit tests.
+ */
+PRIVATE struct test exception_api_tests[] = {
+	{ test_exception_set_unset_handler, "set and unset exception handler" },
+	{ test_trigger_exception,           "trigger exception              " },
+	{ NULL,                              NULL                             },
+};
 
 /**
  * @brief Unit tests.
  */
 PRIVATE struct test exception_fault_tests[] = {
-	{ test_exception_register_inval,   "set handler for invalid exception"   },
-	{ test_exception_register_bad,     "set handler for bad exception"       },
+	{ test_exception_register_inval,   "set handler for invalid exception  " },
+	{ test_exception_register_bad,     "set handler for bad exception      " },
 	{ test_exception_unregister_inval, "unset handler for invalid exception" },
-	{ test_exception_unregister_bad,   "unset handler for bad exception"     },
+	{ test_exception_unregister_bad,   "unset handler for bad exception    " },
 	{ NULL,                             NULL                                 },
 };
-
-/*============================================================================*
- * Test Driver                                                                *
- *============================================================================*/
 
 /**
  * The test_exception() function launches testing units on the
@@ -222,12 +214,14 @@ PRIVATE struct test exception_fault_tests[] = {
  */
 PUBLIC void test_exception(void)
 {
+	kprintf(HLINE);
 	for (int i = 0; exception_api_tests[i].test_fn != NULL; i++)
 	{
 		exception_api_tests[i].test_fn();
 		kprintf("[test][api][exception] %s [passed]", exception_api_tests[i].name);
 	}
 
+	kprintf(HLINE);
 	for (int i = 0; exception_fault_tests[i].test_fn != NULL; i++)
 	{
 		exception_fault_tests[i].test_fn();

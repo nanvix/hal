@@ -90,9 +90,9 @@ PRIVATE void test_api_spinlock_trylock(void)
     spinlock_unlock(&lock);
 }
 
-/*----------------------------------------------------------------------------*
- * Test Driver Table                                                          *
- *----------------------------------------------------------------------------*/
+/*============================================================================*
+ * Test Driver                                                                *
+ *============================================================================*/
 
 /**
  * @brief Unit tests.
@@ -103,10 +103,6 @@ PRIVATE struct test test_api_spinlock[] = {
 	{ NULL,                           NULL          },
 };
 
-/*============================================================================*
- * Test Driver                                                                *
- *============================================================================*/
-
 /**
  * The test_spinlock() function launches testing units on the spinlock
  * interface of the HAL.
@@ -115,6 +111,8 @@ PRIVATE struct test test_api_spinlock[] = {
  */
 PUBLIC void test_spinlock(void)
 {
+	/* API Tests */
+	kprintf(HLINE);
 	for (int i = 0; test_api_spinlock[i].test_fn != NULL; i++)
 	{
 		test_api_spinlock[i].test_fn();

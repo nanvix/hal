@@ -180,22 +180,6 @@ PRIVATE void test_tlb_write_destructive(void)
 	KASSERT(tlb_lookup_vaddr(TLB_DATA, vaddr) == NULL);
 }
 
-/*----------------------------------------------------------------------------*
- * Test Driver Table                                                          *
- *----------------------------------------------------------------------------*/
-
-/**
- * @brief Unit tests.
- */
-PRIVATE struct test tlb_api_tests[] = {
-	{ test_tlb_lookup_vaddr,      "lookup virtual address"  },
-	{ test_tlb_lookup_paddr,      "lookup physical address" },
-	{ test_tlb_write,             "write"                   },
-	{ test_tlb_invalidate,        "invalidate"              },
-	{ test_tlb_write_destructive, "write destructive"       },
-	{ NULL,                        NULL                     },
-};
-
 /*============================================================================*
  * Fault Injection Tests                                                      *
  *============================================================================*/
@@ -336,26 +320,34 @@ PRIVATE void test_tlb_invalidate_inval(void)
 	 */
 }
 
-/*----------------------------------------------------------------------------*
- * Test Driver Table                                                          *
- *----------------------------------------------------------------------------*/
+/*============================================================================*
+ * Test Driver                                                                *
+ *============================================================================*/
+
+/**
+ * @brief Unit tests.
+ */
+PRIVATE struct test tlb_api_tests[] = {
+	{ test_tlb_lookup_vaddr,      "lookup virtual address " },
+	{ test_tlb_lookup_paddr,      "lookup physical address" },
+	{ test_tlb_write,             "write                  " },
+	{ test_tlb_invalidate,        "invalidate             " },
+	{ test_tlb_write_destructive, "write destructive      " },
+	{ NULL,                        NULL                     },
+};
 
 /**
  * @brief Unit tests.
  */
 PRIVATE struct test tlb_fault_tests[] = {
-	{ test_tlb_lookup_vaddr_tlb_type_inval, "lookup invalid virtual address"  },
-	{ test_tlb_lookup_vaddr_bad,            "lookup bad virtual address"      },
+	{ test_tlb_lookup_vaddr_tlb_type_inval, "lookup invalid virtual address " },
+	{ test_tlb_lookup_vaddr_bad,            "lookup bad virtual address     " },
 	{ test_tlb_lookup_paddr_tlb_type_inval, "lookup invalid physical address" },
-	{ test_tlb_lookup_paddr_bad,            "lookup bad physical address"     },
-	{ test_tlb_write_inval,                 "write invalid entry"             },
-	{ test_tlb_invalidate_inval,            "invalidate invalid entry"        },
+	{ test_tlb_lookup_paddr_bad,            "lookup bad physical address    " },
+	{ test_tlb_write_inval,                 "write invalid entry            " },
+	{ test_tlb_invalidate_inval,            "invalidate invalid entry       " },
 	{ NULL,                                  NULL                             },
 };
-
-/*============================================================================*
- * Test Driver                                                                *
- *============================================================================*/
 
 PRIVATE void test_unix64_tlb_init()
 {
@@ -387,12 +379,16 @@ PUBLIC void test_tlb(void)
 	test_unix64_tlb_init();
 #endif
 
+	/* API Tests */
+	kprintf(HLINE);
 	for (int i = 0; tlb_api_tests[i].test_fn != NULL; i++)
 	{
 		tlb_api_tests[i].test_fn();
 		kprintf("[test][api][tlb] %s [passed]", tlb_api_tests[i].name);
 	}
 
+	/* Fault Tests */
+	kprintf(HLINE);
 	for (int i = 0; tlb_fault_tests[i].test_fn != NULL; i++)
 	{
 		tlb_fault_tests[i].test_fn();

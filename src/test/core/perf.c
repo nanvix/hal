@@ -189,7 +189,7 @@ PRIVATE struct test perf_tests_api[] = {
 	{ test_perf_api_read,       "read performance monitor               " },
 	{ test_perf_api_start_stop, "start and stop performance monitor     " },
 #endif
-	{ NULL,                      NULL                                    },
+	{ NULL,                      NULL                                     },
 };
 
 /**
@@ -202,7 +202,7 @@ PRIVATE struct test perf_tests_fault[] = {
 	{ test_perf_fault_start, "invalid start performance monitor              " },
 	{ test_perf_fault_stop,  "invalid stop performance monitor               " },
 #endif
-	{ NULL,                      NULL                                    },
+	{ NULL,                   NULL                                             },
 };
 
 /**
@@ -214,7 +214,7 @@ PRIVATE struct test perf_tests_fault[] = {
 PUBLIC void test_perf(void)
 {
 	/* API Tests */
-	kprintf("--------------------------------------------------------------------------------");
+	kprintf(HLINE);
 	for (int i = 0; perf_tests_api[i].test_fn != NULL; i++)
 	{
 		perf_tests_api[i].test_fn();
@@ -222,7 +222,7 @@ PUBLIC void test_perf(void)
 	}
 
 	/* Fault Injection Tests */
-	kprintf("--------------------------------------------------------------------------------");
+	kprintf(HLINE);
 	for (int i = 0; perf_tests_fault[i].test_fn != NULL; i++)
 	{
 		perf_tests_fault[i].test_fn();

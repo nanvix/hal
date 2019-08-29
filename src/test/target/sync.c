@@ -44,7 +44,7 @@
 /**
  * @brief API Test: Synchronization Point Create Unlink
  */
-static void test_sync_create_unlink(void)
+PRIVATE void test_sync_create_unlink(void)
 {
 	int tmp;
 	int nodenum;
@@ -69,7 +69,7 @@ static void test_sync_create_unlink(void)
 /**
  * @brief API Test: Synchronization Point Open Close
  */
-static void test_sync_open_close(void)
+PRIVATE void test_sync_open_close(void)
 {
 	int tmp;
 	int syncid;
@@ -91,18 +91,6 @@ static void test_sync_open_close(void)
 	KASSERT(sync_close(syncid) == 0);
 }
 
-/*============================================================================*/
-
-/**
- * @brief Unit tests.
- */
-struct test sync_tests_api[] = {
-	/* Intra-Cluster API Tests */
-	{test_sync_create_unlink, "Create Unlink" },
-	{test_sync_open_close,    "Open Close"    },
-	{NULL,                    NULL            },
-};
-
 /*============================================================================*
  * Fault Injection Tests                                                      *
  *============================================================================*/
@@ -110,7 +98,7 @@ struct test sync_tests_api[] = {
 /**
  * @brief Fault Injection Test: Synchronization Point Invalid Create
  */
-static void test_sync_invalid_create(void)
+PRIVATE void test_sync_invalid_create(void)
 {
 	int tmp;
 	int syncid;
@@ -156,7 +144,7 @@ static void test_sync_invalid_create(void)
 /**
  * @brief Fault Injection Test: Synchronization Point Invalid Open
  */
-static void test_sync_invalid_open(void)
+PRIVATE void test_sync_invalid_open(void)
 {
 	int tmp;
 	int nodenum;
@@ -192,7 +180,7 @@ static void test_sync_invalid_open(void)
 /**
  * @brief Fault Injection Test: Synchronization Point Invalid Unlink
  */
-static void test_sync_invalid_unlink(void)
+PRIVATE void test_sync_invalid_unlink(void)
 {
 	KASSERT(sync_unlink(-1) < 0);
 	KASSERT(sync_unlink(1) < 0);
@@ -202,7 +190,7 @@ static void test_sync_invalid_unlink(void)
 /**
  * @brief Fault Injection Test: Synchronization Point Bad Unlink
  */
-static void test_sync_bad_unlink(void)
+PRIVATE void test_sync_bad_unlink(void)
 {
 	int syncid;
 	int nodenum;
@@ -220,7 +208,7 @@ static void test_sync_bad_unlink(void)
 /**
  * @brief Fault Injection Test: Synchronization Point Double Unlink
  */
-static void test_sync_double_unlink(void)
+PRIVATE void test_sync_double_unlink(void)
 {
 	int nodenum;
 	int syncid;
@@ -238,7 +226,7 @@ static void test_sync_double_unlink(void)
 /**
  * @brief Fault Injection Test: Synchronization Point Invalid Close
  */
-static void test_sync_invalid_close(void)
+PRIVATE void test_sync_invalid_close(void)
 {
 	KASSERT(sync_close(-1) < 0);
 	KASSERT(sync_close(1) < 0);
@@ -248,7 +236,7 @@ static void test_sync_invalid_close(void)
 /**
  * @brief Fault Injection Test: Synchronization Point Bad Close
  */
-static void test_sync_bad_close(void)
+PRIVATE void test_sync_bad_close(void)
 {
 	int nodenum;
 	int syncid;
@@ -266,7 +254,7 @@ static void test_sync_bad_close(void)
 /**
  * @brief Fault Injection Test: Synchronization Point Double Close
  */
-static void test_sync_double_close(void)
+PRIVATE void test_sync_double_close(void)
 {
 	int syncid;
 	int nodenum;
@@ -284,7 +272,7 @@ static void test_sync_double_close(void)
 /**
  * @brief Fault Injection Test: Synchronization Point Invalid Signal
  */
-static void test_sync_invalid_signal(void)
+PRIVATE void test_sync_invalid_signal(void)
 {
 	KASSERT(sync_signal(-1) < 0);
 	KASSERT(sync_signal(1000) < 0);
@@ -293,7 +281,7 @@ static void test_sync_invalid_signal(void)
 /**
  * @brief Fault Injection Test: Synchronization Point Bad Signal
  */
-static void test_sync_bad_signal(void)
+PRIVATE void test_sync_bad_signal(void)
 {
 	int nodenum;
 	int syncid;
@@ -308,26 +296,35 @@ static void test_sync_bad_signal(void)
 	KASSERT(sync_unlink(syncid) == 0);
 }
 
-/**
- * @brief Unit tests.
- */
-struct test sync_tests_fault[] = {
-	{test_sync_invalid_create, "Invalid Create" },
-	{test_sync_invalid_open,   "Invalid Open"   },
-	{test_sync_invalid_unlink, "Invalid Unlink" },
-	{test_sync_bad_unlink,     "Bad Unlink"     },
-	{test_sync_double_unlink,  "Double Unlink"  },
-	{test_sync_invalid_close,  "Invalid Close"  },
-	{test_sync_bad_close,      "Bad Close"      },
-	{test_sync_double_close,   "Double Close"   },
-	{test_sync_invalid_signal, "Invalid Signal" },
-	{test_sync_bad_signal,     "Bad Signal"     },
-	{NULL,                     NULL             },
-};
-
 /*============================================================================*
  * Test Driver                                                                *
  *============================================================================*/
+
+/**
+ * @brief Unit tests.
+ */
+PRIVATE struct test sync_tests_api[] = {
+	{ test_sync_create_unlink, "create unlink" },
+	{ test_sync_open_close,    "open close   " },
+	{ NULL,                     NULL           },
+};
+
+/**
+ * @brief Unit tests.
+ */
+PRIVATE struct test sync_tests_fault[] = {
+	{ test_sync_invalid_create, "invalid create" },
+	{ test_sync_invalid_open,   "invalid open  " },
+	{ test_sync_invalid_unlink, "invalid unlink" },
+	{ test_sync_bad_unlink,     "bad unlink    " },
+	{ test_sync_double_unlink,  "double unlink " },
+	{ test_sync_invalid_close,  "invalid close " },
+	{ test_sync_bad_close,      "bad close     " },
+	{ test_sync_double_close,   "double close  " },
+	{ test_sync_invalid_signal, "invalid signal" },
+	{ test_sync_bad_signal,     "bad signal    " },
+	{ NULL,                      NULL            },
+};
 
 /**
  * The test_sync() function launches testing units on the sync
@@ -338,6 +335,7 @@ struct test sync_tests_fault[] = {
 PUBLIC void test_sync(void)
 {
 	/* API Tests */
+	kprintf(HLINE);
 	for (int i = 0; sync_tests_api[i].test_fn != NULL; i++)
 	{
 		sync_tests_api[i].test_fn();
@@ -345,6 +343,7 @@ PUBLIC void test_sync(void)
 	}
 
 	/* FAULT Tests */
+	kprintf(HLINE);
 	for (int i = 0; sync_tests_fault[i].test_fn != NULL; i++)
 	{
 		sync_tests_fault[i].test_fn();

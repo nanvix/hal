@@ -204,26 +204,22 @@ PRIVATE void test_trap_issue5(void)
 	);
 }
 
-/*----------------------------------------------------------------------------*
- * Test Driver Table                                                          *
- *----------------------------------------------------------------------------*/
+/*============================================================================*
+ * Test Driver                                                                *
+ *============================================================================*/
 
 /**
  * @brief Unit tests.
  */
 PRIVATE struct test trap_tests_api[] = {
-	{ test_trap_issue0, "issue a trap no arguments"    },
-	{ test_trap_issue1, "issue a trap one argument"    },
-	{ test_trap_issue2, "issue a trap two arguments"   },
+	{ test_trap_issue0, "issue a trap no arguments   " },
+	{ test_trap_issue1, "issue a trap one argument   " },
+	{ test_trap_issue2, "issue a trap two arguments  " },
 	{ test_trap_issue3, "issue a trap three arguments" },
-	{ test_trap_issue4, "issue a trap four arguments"  },
-	{ test_trap_issue5, "issue a trap five arguments"  },
+	{ test_trap_issue4, "issue a trap four arguments " },
+	{ test_trap_issue5, "issue a trap five arguments " },
 	{ NULL,             NULL                           },
 };
-
-/*============================================================================*
- * Test Driver                                                                *
- *============================================================================*/
 
 /**
  * The test_trap() function launches testing units on the trap
@@ -234,6 +230,7 @@ PRIVATE struct test trap_tests_api[] = {
 PUBLIC void test_trap(void)
 {
 	/* API Tests */
+	kprintf(HLINE);
 	for (int i = 0; trap_tests_api[i].test_fn != NULL; i++)
 	{
 		trap_tests_api[i].test_fn();

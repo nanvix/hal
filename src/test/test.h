@@ -35,6 +35,11 @@
 	};
 
 	/**
+	 * @brief Horizontal line for tests.
+	 */
+	EXTERN const char *HLINE;
+
+	/**
 	 * @brief Test driver for the Timer Interface.
 	 */
 	EXTERN void test_timer(void);

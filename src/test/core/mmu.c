@@ -267,29 +267,6 @@ PRIVATE void mmu_pde_get(void)
 	KASSERT(pde_get(root_pgdir, KBASE_VIRT) != NULL);
 }
 
-/*----------------------------------------------------------------------------*
- * Test Driver Table                                                          *
- *----------------------------------------------------------------------------*/
-
-/**
- * @brief Unit tests.
- */
-PRIVATE struct test mmu_api_tests[] = {
-	{ mmu_pte_clear,       "clear pte"       },
-	{ mmu_pde_clear,       "clear pde"       },
-	{ mmu_pte_frame_set,   "pte frame set"   },
-	{ mmu_pde_frame_set,   "pde frame set"   },
-	{ mmu_pte_present_set, "pte present set" },
-	{ mmu_pde_present_set, "pde present set" },
-	{ mmu_pte_user_set,    "pte user set"    },
-	{ mmu_pde_user_set,    "pde user set"    },
-	{ mmu_pte_write_set,   "pte write set"   },
-	{ mmu_pde_write_set,   "pde write set"   },
-	{ mmu_pte_get,         "pte get"         },
-	{ mmu_pde_get,         "pde get"         },
-	{ NULL,                 NULL             },
-};
-
 /*============================================================================*
  * Fault Injection Tests                                                      *
  *============================================================================*/
@@ -470,34 +447,49 @@ PRIVATE void mmu_pde_get_inval(void)
 	KASSERT(pde_get(NULL, KBASE_VIRT) == NULL);
 }
 
-/*----------------------------------------------------------------------------*
- * Test Driver Table                                                          *
- *----------------------------------------------------------------------------*/
+/*============================================================================*
+ * Test Driver                                                                *
+ *============================================================================*/
+
+/**
+ * @brief Unit tests.
+ */
+PRIVATE struct test mmu_api_tests[] = {
+	{ mmu_pte_clear,       "clear pte      " },
+	{ mmu_pde_clear,       "clear pde      " },
+	{ mmu_pte_frame_set,   "pte frame set  " },
+	{ mmu_pde_frame_set,   "pde frame set  " },
+	{ mmu_pte_present_set, "pte present set" },
+	{ mmu_pde_present_set, "pde present set" },
+	{ mmu_pte_user_set,    "pte user set   " },
+	{ mmu_pde_user_set,    "pde user set   " },
+	{ mmu_pte_write_set,   "pte write set  " },
+	{ mmu_pde_write_set,   "pde write set  " },
+	{ mmu_pte_get,         "pte get        " },
+	{ mmu_pde_get,         "pde get        " },
+	{ NULL,                 NULL             },
+};
 
 /**
  * @brief Unit tests.
  */
 PRIVATE struct test mmu_fault_tests[] = {
-	{ mmu_pte_clear_inval,       "clear invalid pte"              },
-	{ mmu_pde_clear_inval,       "clear invalid pde"              },
-	{ mmu_pte_frame_set_inval,   "set frame in invalid pte"       },
-	{ mmu_pde_frame_set_inval,   "set frame in invalid pde"       },
-	{ mmu_pte_frame_set_inval2,  "set invalid frame in pte"       },
-	{ mmu_pde_frame_set_inval2,  "set invalid frame in pde"       },
+	{ mmu_pte_clear_inval,       "clear invalid pte             " },
+	{ mmu_pde_clear_inval,       "clear invalid pde             " },
+	{ mmu_pte_frame_set_inval,   "set frame in invalid pte      " },
+	{ mmu_pde_frame_set_inval,   "set frame in invalid pde      " },
+	{ mmu_pte_frame_set_inval2,  "set invalid frame in pte      " },
+	{ mmu_pde_frame_set_inval2,  "set invalid frame in pde      " },
 	{ mmu_pte_present_set_inval, "set present bit in invalid pte" },
 	{ mmu_pde_present_set_inval, "set present bit in invalid pde" },
-	{ mmu_pte_user_set_inval,    "set user bit in invalid pte"    },
-	{ mmu_pde_user_set_inval,    "set user bit in invalid pde"    },
-	{ mmu_pte_write_set_inval,   "set write bit in invalid pte"   },
-	{ mmu_pde_write_set_inval,   "set write bit in invalid pde"   },
-	{ mmu_pte_get_inval,         "get invalid pte"                },
-	{ mmu_pde_get_inval,         "get invalid pde"                },
+	{ mmu_pte_user_set_inval,    "set user bit in invalid pte   " },
+	{ mmu_pde_user_set_inval,    "set user bit in invalid pde   " },
+	{ mmu_pte_write_set_inval,   "set write bit in invalid pte  " },
+	{ mmu_pde_write_set_inval,   "set write bit in invalid pde  " },
+	{ mmu_pte_get_inval,         "get invalid pte               " },
+	{ mmu_pde_get_inval,         "get invalid pde               " },
 	{ NULL, NULL },
 };
-
-/*============================================================================*
- * Test Driver                                                                *
- *============================================================================*/
 
 /**
  * The test_mmu() function launches testing units on the
@@ -507,12 +499,16 @@ PRIVATE struct test mmu_fault_tests[] = {
  */
 PUBLIC void test_mmu(void)
 {
+	/* API Tests */
+	kprintf(HLINE);
 	for (int i = 0; mmu_api_tests[i].test_fn != NULL; i++)
 	{
 		mmu_api_tests[i].test_fn();
 		kprintf("[test][api][mmu] %s [passed]", mmu_api_tests[i].name);
 	}
 
+	/* Fault Tests */
+	kprintf(HLINE);
 	for (int i = 0; mmu_fault_tests[i].test_fn != NULL; i++)
 	{
 		mmu_fault_tests[i].test_fn();
