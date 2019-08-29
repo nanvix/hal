@@ -49,8 +49,8 @@
 		#ifndef PROCESSOR_NOC_CNODES_NUM
 		#error "PROCESSOR_NOC_CNODES not defined"
 		#endif
-		#ifndef PROCESSOR_NOC_NODES_NUM
-		#error "PROCESSOR_NOC_NODES not defined"
+		#ifndef PROCESSOR_NODENUM_MASTER
+		#error "PROCESSOR_NODENUM_MASTER not defined"
 		#endif
 
 		/* Functions */
@@ -60,11 +60,11 @@
 		#ifndef __processor_noc_is_cnode_fn
 		#error "__processor_noc_is_cnode() not defined?"
 		#endif
-		#ifndef __processor_node_get_id_fn
-		#error "__processor_node_get_id() not defined?"
-		#endif
 		#ifndef __processor_node_get_num_fn
 		#error "__processor_node_get_num() not defined?"
+		#endif
+		#ifndef __processor_noc_setup_fn
+		#error "__processor_noc_setup() not defined?"
 		#endif
 
 	#else
@@ -72,7 +72,7 @@
 		/* Dummy Constants */
 		#define PROCESSOR_NOC_IONODES_NUM 1
 		#define PROCESSOR_NOC_CNODES_NUM  0
-		#define PROCESSOR_NOC_NODES_NUM   1
+		#define PROCESSOR_NODENUM_MASTER  0
 
 	#endif
 
@@ -93,42 +93,10 @@
 	#include <nanvix/klib.h>
 
 	/**
-	 * @brief Asserts whether a NoC node is attached to IO cluster 0.
-	 *
-	 * @param nodeid ID of the target NoC node.
-	 *
-	 * @returns One if the target NoC node is attached to IO cluster 0,
-	 * and zero otherwise.
+	 * @name Total number of NoC nodes.
 	 */
-#if (PROCESSOR_HAS_NOC)
-	EXTERN int processor_noc_is_ionode0(int nodeid);
-#else
-	static inline int processor_noc_is_ionode0(int nodeid)
-	{
-		UNUSED(nodeid);
-
-		return (1);
-	}
-#endif
-
-	/**
-	 * @brief Asserts whether a NoC node is attached to IO cluster 1.
-	 *
-	 * @param nodeid ID of the target NoC node.
-	 *
-	 * @returns One if the target NoC node is attached to IO cluster 1,
-	 * and zero otherwise.
-	 */
-#if (PROCESSOR_HAS_NOC)
-	EXTERN int processor_noc_is_ionode1(int nodeid);
-#else
-	static inline int processor_noc_is_ionode1(int nodeid)
-	{
-		UNUSED(nodeid);
-
-		return (1);
-	}
-#endif
+	#define PROCESSOR_NOC_NODES_NUM \
+		(PROCESSOR_NOC_IONODES_NUM + PROCESSOR_NOC_CNODES_NUM)
 
 	/**
 	 * @brief Asserts whether a NoC node is attached to an IO cluster.
@@ -169,36 +137,16 @@
 #endif
 
 	/**
-	 * @brief Gets the ID of the NoC node attached to the underlying core.
-	 *
-	 * @returns The ID of the NoC node attached to the underlying core is
-	 * returned.
-	 *
-	 * @note This function is blocking.
-	 * @note This function is thread-safe.
-	 */
-#if (PROCESSOR_HAS_NOC)
-	EXTERN int processor_node_get_id(void);
-#else
-	static inline int processor_node_get_id(void)
-	{
-		return (0);
-	}
-#endif
-
-	/**
 	 * @brief Gets the logic number of the target NoC node.
 	 *
 	 * @param nodeid ID of the target NoC node.
 	 * @returns The logic number of the target NoC node.
 	 */
 #if (PROCESSOR_HAS_NOC)
-	EXTERN int processor_node_get_num(int nodeid);
+	EXTERN int processor_node_get_num(void);
 #else
-	static inline int processor_node_get_num(int nodeid)
+	static inline int processor_node_get_num(void)
 	{
-		UNUSED(nodeid);
-
 		return (0);
 	}
 #endif

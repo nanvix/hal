@@ -129,4 +129,9 @@
 	 */
 	EXTERN void test_clusters(void);
 
+	/**
+	 * @brief Test driver for the NoCInterface
+	 */
+	EXTERN void test_noc(void);
+
 #endif /* _HAL_TEST_H_ */

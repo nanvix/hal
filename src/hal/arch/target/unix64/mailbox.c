@@ -21,10 +21,10 @@
  */
 
 /* Must come fist. */
-#define __NEED_PROCESSOR_LINUX64
+#define __NEED_HAL_PROCESSOR
 
-#include <arch/processor/linux64.h>
 #include <arch/target/unix64/unix64/mailbox.h>
+#include <nanvix/hal/processor.h>
 #include <nanvix/hal/resource.h>
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
@@ -47,7 +47,7 @@ struct mailbox
 	struct resource resource;                  /**< Underlying resource.        */
 	mqd_t fd;                                  /**< Underlying file descriptor. */
 	char pathname[UNIX64_MAILBOX_NAME_LENGTH]; /**< Name of underlying mqueue.  */
-	int nodeid;                                /**< ID of underlying node.      */
+	int nodenum;                               /**< ID of underlying node.      */
 	int refcount;                              /**< Reference counter.          */
 };
 
@@ -96,7 +96,7 @@ PRIVATE pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
  * @brief Default message queue attribute.
  */
 PRIVATE struct mq_attr mq_attr = {
-	.mq_maxmsg = LINUX64_PROCESSOR_NOC_NODES_NUM,
+	.mq_maxmsg = PROCESSOR_NOC_NODES_NUM,
 	.mq_msgsize = UNIX64_MAILBOX_MSG_SIZE
 };
 
@@ -185,7 +185,7 @@ PRIVATE int do_unix64_mailbox_create(int nodenum)
 			continue;
 
 		/* Found. */
-		if (mailboxtab.rxs[i].nodeid == nodenum)
+		if (mailboxtab.rxs[i].nodenum == nodenum)
 			return (-EEXIST);
 	}
 
@@ -207,7 +207,7 @@ PRIVATE int do_unix64_mailbox_create(int nodenum)
 
 	/* Initialize mailbox. */
 	mailboxtab.rxs[mbxid].fd = fd;
-	mailboxtab.rxs[mbxid].nodeid = nodenum;
+	mailboxtab.rxs[mbxid].nodenum = nodenum;
 	mailboxtab.rxs[mbxid].refcount = 1;
 	resource_set_rdonly(&mailboxtab.rxs[mbxid].resource);
 	resource_set_notbusy(&mailboxtab.rxs[mbxid].resource);
@@ -236,7 +236,7 @@ PUBLIC int unix64_mailbox_create(int nodenum)
 		return (-EINVAL);
 
 	/* Bad NoC node. */
-	if (nodenum != linux64_processor_node_get_num(linux64_processor_node_get_id()))
+	if (nodenum != processor_node_get_num())
 		return (-EINVAL);
 
 	unix64_mailbox_lock();
@@ -277,7 +277,7 @@ PRIVATE int do_unix64_mailbox_open(int nodenum)
 
 	/* Initialize mailbox. */
 	mailboxtab.txs[mbxid].fd = fd;
-	mailboxtab.txs[mbxid].nodeid = nodenum;
+	mailboxtab.txs[mbxid].nodenum = nodenum;
 	mailboxtab.txs[mbxid].refcount = 1;
 	resource_set_wronly(&mailboxtab.txs[mbxid].resource);
 	resource_set_notbusy(&mailboxtab.txs[mbxid].resource);
@@ -306,7 +306,7 @@ PUBLIC int unix64_mailbox_open(int nodenum)
 		return (-EINVAL);
 
 	/* Bad NoC node. */
-	if (nodenum == linux64_processor_node_get_num(linux64_processor_node_get_id()))
+	if (nodenum == processor_node_get_num())
 		return (-EINVAL);
 
 again:
@@ -324,7 +324,7 @@ again:
 			continue;
 
 		/* Not this node ID. */
-		if (nodenum != mailboxtab.txs[i].nodeid)
+		if (nodenum != mailboxtab.txs[i].nodenum)
 			continue;
 
 		/*

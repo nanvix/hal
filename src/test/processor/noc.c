@@ -30,42 +30,42 @@
 /**
  * @brief Launch verbose tests?
  */
-#define TEST_CLUSTERS_VERBOSE 0
+#define TEST_NOC_VERBOSE 0
 
 /*============================================================================*
  * API Tests                                                                  *
  *============================================================================*/
 
 /*----------------------------------------------------------------------------*
- * Query Logical Cluster ID                                                   *
+ * Query Logical NoC Node ID                                                  *
  *----------------------------------------------------------------------------*/
 
 /**
- * @brief API Test: Query Logical Cluster ID
+ * @brief API Test: Query Logical NoC Node ID
  */
-PRIVATE void test_clusters_get_num(void)
+PRIVATE void test_node_get_num(void)
 {
-	int clusternum;
+	int nodenum;
 
-	clusternum = cluster_get_num();
+	nodenum = cluster_get_num();
 
-#if (TEST_CLUSTERS_VERBOSE)
-	kprintf("[test][processor][clusters][api] cluster %d running", clusternum);
+#if (TEST_NOC_VERBOSE)
+	kprintf("[test][processor][node][api] noc node %d online", nodenum);
 #endif
 
-	KASSERT(clusternum == PROCESSOR_CLUSTERNUM_MASTER);
+	KASSERT(nodenum == PROCESSOR_NODENUM_MASTER);
 }
 
 /*----------------------------------------------------------------------------*
- * Query Cluster Type                                                         *
+ * Query NoC Node Type                                                         *
  *----------------------------------------------------------------------------*/
 
 /**
- * @brief API Test: Query Cluster Type
+ * @brief API Test: Query NoC Node Type
  */
-PRIVATE void test_clusters_get_type(void)
+PRIVATE void test_node_get_type(void)
 {
-	KASSERT(cluster_is_iocluster(PROCESSOR_CLUSTERNUM_MASTER));
+	KASSERT(processor_noc_is_ionode(PROCESSOR_NODENUM_MASTER));
 }
 
 /*============================================================================*
@@ -75,27 +75,28 @@ PRIVATE void test_clusters_get_type(void)
 /**
  * @brief API Tests.
  */
-PRIVATE struct test test_api_clusters[] = {
-	{ test_clusters_get_num,  "get logical cluster id" },
-	{ test_clusters_get_type, "get cluster type      " },
-	{ NULL,                    NULL                    },
+PRIVATE struct test test_api_node[] = {
+	{ test_node_get_num,  "get logical noc node id" },
+	{ test_node_get_type, "get noc node type      " },
+	{ NULL,                NULL                     },
 };
 
 /**
- * The test_clusters() function launches regression tests on the
- * Clusters Interface of the Processor Abstraction Layer.
+ * The test_noc() function launches regression tests on the NoC
+ * Interface of the Processor Abstraction Layer.
  *
  * @author Pedro Henrique Penna
  */
-PUBLIC void test_clusters(void)
+PUBLIC void test_noc(void)
 {
 	/* API Tests */
 	kprintf(HLINE);
-	for (int i = 0; test_api_clusters[i].test_fn != NULL; i++)
+	for (int i = 0; test_api_node[i].test_fn != NULL; i++)
 	{
-		test_api_clusters[i].test_fn();
-		kprintf("[test][processor][clusters][api] %s [passed]",
-			test_api_clusters[i].name
+		test_api_node[i].test_fn();
+		kprintf("[test][processor][node][api] %s [passed]",
+			test_api_node[i].name
 		);
 	}
 }
+
