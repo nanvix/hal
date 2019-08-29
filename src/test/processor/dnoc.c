@@ -41,11 +41,11 @@
 /**@}*/
 
 /**
- * @name Data exchange sizes 
+ * @name Data exchange sizes
  */
 /**@{*/
-static uint64_t BUFFER_SIZE = 50;
-static uint64_t data_exchange_sizes[] = {
+PRIVATE uint64_t BUFFER_SIZE = 50;
+PRIVATE uint64_t data_exchange_sizes[] = {
 	1, 2, 3, 4, 5, 6, 7, 8, 9,
 	10, 120, 30, 40, 50, 60, 70, 80, 90,
 	100, 200, 300, 400, 500, 600, 700, 800, 900, 1000,
@@ -58,12 +58,12 @@ static uint64_t data_exchange_sizes[] = {
 /**
  * @brief Lock used for wait the completion of Data NoC operations.
  */
-static spinlock_t test_dnoc_lock = K1B_SPINLOCK_LOCKED;
+PRIVATE spinlock_t test_dnoc_lock = K1B_SPINLOCK_LOCKED;
 
 /**
  * @brief Interrupt handler: Data NoC handler to perform the unlock.
  */
-static void test_dnoc_dummy_handler(int interface, int tag)
+PRIVATE void test_dnoc_dummy_handler(int interface, int tag)
 {
 	UNUSED(tag);
 	UNUSED(interface);
@@ -78,7 +78,7 @@ static void test_dnoc_dummy_handler(int interface, int tag)
 /**
  * @brief API Test: Data Exchange Create Unlink
  */
-static void test_dnoc_create_unlink(void)
+PRIVATE void test_dnoc_create_unlink(void)
 {
 	KASSERT(bostan_dma_data_create(INTERFACE, RX_TAG) == 0);
 	KASSERT(bostan_dma_data_unlink(INTERFACE, RX_TAG) == 0);
@@ -90,7 +90,7 @@ static void test_dnoc_create_unlink(void)
 /**
  * @brief API Test: Data Exchange Open Close
  */
-static void test_dnoc_open_close(void)
+PRIVATE void test_dnoc_open_close(void)
 {
 	KASSERT(bostan_dma_data_open(INTERFACE, TX_TAG) == 0);
 	KASSERT(bostan_dma_data_close(INTERFACE, TX_TAG) == 0);
@@ -102,7 +102,7 @@ static void test_dnoc_open_close(void)
 /**
  * @brief API Test: Data Exchange With Events
  */
-static void test_dnoc_loopback_with_events(void)
+PRIVATE void test_dnoc_loopback_with_events(void)
 {
 	int clusterid;
 	char rx_buffer[BUFFER_MAX_SIZE];
@@ -115,7 +115,7 @@ static void test_dnoc_loopback_with_events(void)
 
 	for (uint64_t i = 0; i < BUFFER_SIZE; i++)
 		KASSERT(rx_buffer[i] != tx_buffer[i]);
-	
+
 	KASSERT(bostan_dma_data_create(INTERFACE, RX_TAG) == 0);
 	KASSERT(
 		bostan_dma_data_aread(
@@ -169,7 +169,7 @@ static void test_dnoc_loopback_with_events(void)
 /**
  * @brief API Test: Data Exchange With Interrupts
  */
-static void test_dnoc_loopback_with_interrupts(void)
+PRIVATE void test_dnoc_loopback_with_interrupts(void)
 {
 	int clusterid;
 	char rx_buffer[BUFFER_MAX_SIZE];
@@ -182,7 +182,7 @@ static void test_dnoc_loopback_with_interrupts(void)
 
 	for (uint64_t i = 0; i < BUFFER_SIZE; i++)
 		KASSERT(rx_buffer[i] != tx_buffer[i]);
-	
+
 	KASSERT(bostan_dma_data_create(INTERFACE, RX_TAG) == 0);
 	KASSERT(
 		bostan_dma_data_aread(
@@ -241,7 +241,7 @@ static void test_dnoc_loopback_with_interrupts(void)
 /**
  * @brief API Test: Data Exchange With Offset
  */
-static void test_dnoc_loopback_with_offset(void)
+PRIVATE void test_dnoc_loopback_with_offset(void)
 {
 	int clusterid;
 	uint64_t offset;
@@ -297,7 +297,7 @@ static void test_dnoc_loopback_with_offset(void)
 /**
  * @brief API Test: Stress Data Exchange
  */
-static void test_dnoc_stress_loopback(void)
+PRIVATE void test_dnoc_stress_loopback(void)
 {
 	/* API Tests */
 	for (uint64_t i = 0; i < sizeof(data_exchange_sizes)/sizeof(uint64_t); i++)
@@ -314,25 +314,22 @@ static void test_dnoc_stress_loopback(void)
 	}
 }
 
-/*============================================================================*/
+/*============================================================================*
+ * Test Driver                                                                *
+ *============================================================================*/
 
 /**
  * @brief Unit tests.
  */
-struct test dnoc_tests_api[] = {
-	/* Intra-Cluster API Tests */
-	{test_dnoc_create_unlink,            "Create Unlink"                            },
-	{test_dnoc_open_close,               "Open Close"                               },
-	{test_dnoc_loopback_with_events,     "Loopback a data exchange with events"     },
-	{test_dnoc_loopback_with_interrupts, "Loopback a data exchange with interrupts" },
-	{test_dnoc_loopback_with_offset,     "Loopback a data exchange with offset"     },
-	{test_dnoc_stress_loopback,          "Stress loopback data exchange"            },
-	{NULL,                               NULL                                       },
+PRIVATE struct test dnoc_tests_api[] = {
+	{ test_dnoc_create_unlink,            "create unlink                           " },
+	{ test_dnoc_open_close,               "open close                              " },
+	{ test_dnoc_loopback_with_events,     "loopback a data exchange with events    " },
+	{ test_dnoc_loopback_with_interrupts, "loopback a data exchange with interrupts" },
+	{ test_dnoc_loopback_with_offset,     "loopback a data exchange with offset    " },
+	{ test_dnoc_stress_loopback,          "stress loopback data exchange           " },
+	{ NULL,                                NULL                                      },
 };
-
-/*============================================================================*
- * Test Driver                                                                *
- *============================================================================*/
 
 /**
  * The test_dnoc() function launches testing units on the dnoc
@@ -343,6 +340,7 @@ struct test dnoc_tests_api[] = {
 PUBLIC void test_dnoc(void)
 {
 	/* API Tests */
+	kprintf(HLINE);
 	for (int i = 0; dnoc_tests_api[i].test_fn != NULL; i++)
 	{
 		dnoc_tests_api[i].test_fn();

@@ -102,7 +102,7 @@ PRIVATE struct test core_tests_api[] = {
 PUBLIC void test_core(void)
 {
 	/* API Tests */
-	kprintf("--------------------------------------------------------------------------------");
+	kprintf(HLINE);
 	for (int i = 0; core_tests_api[i].test_fn != NULL; i++)
 	{
 		core_tests_api[i].test_fn();

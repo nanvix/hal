@@ -45,7 +45,7 @@
 /**
  * @brief API Test: Portal Create Unlink
  */
-static void test_portal_create_unlink(void)
+PRIVATE void test_portal_create_unlink(void)
 {
 	int portalid;
 
@@ -56,7 +56,7 @@ static void test_portal_create_unlink(void)
 /**
  * @brief API Test: Portal Open Close
  */
-static void test_portal_open_close(void)
+PRIVATE void test_portal_open_close(void)
 {
 	int portalid;
 
@@ -67,7 +67,7 @@ static void test_portal_open_close(void)
 /**
  * @brief API Test: Portal Allow
  */
-static void test_portal_allow(void)
+PRIVATE void test_portal_allow(void)
 {
 	int portalid;
 
@@ -78,18 +78,6 @@ static void test_portal_allow(void)
 	KASSERT(portal_unlink(portalid) == 0);
 }
 
-/*============================================================================*/
-
-/**
- * @brief API unit tests.
- */
-struct test portal_tests_api[] = {
-	{test_portal_create_unlink, "Create Unlink" },
-	{test_portal_open_close,    "Open Close"    },
-	{test_portal_allow,         "Open Allow"    },
-	{NULL,                       NULL           },
-};
-
 /*============================================================================*
  * Fault Injection Tests                                                      *
  *============================================================================*/
@@ -97,7 +85,7 @@ struct test portal_tests_api[] = {
 /**
  * @brief Fault Injection Test: Portal Invalid Create
  */
-static void test_portal_invalid_create(void)
+PRIVATE void test_portal_invalid_create(void)
 {
 	/* Invalid local NoC node. */
 	KASSERT(portal_create(-1) == -EINVAL);
@@ -107,7 +95,7 @@ static void test_portal_invalid_create(void)
 /**
  * @brief Fault Injection Test: Portal Invalid Open
  */
-static void test_portal_invalid_open(void)
+PRIVATE void test_portal_invalid_open(void)
 {
 	/* Invalid local NoC node. */
 	KASSERT(portal_open(-1, NODENUM_SLAVE) == -EINVAL);
@@ -121,7 +109,7 @@ static void test_portal_invalid_open(void)
 /**
  * @brief Fault Injection Test: Portal Invalid Allow
  */
-static void test_portal_invalid_allow(void)
+PRIVATE void test_portal_invalid_allow(void)
 {
 	int portalid;
 
@@ -141,7 +129,7 @@ static void test_portal_invalid_allow(void)
 /**
  * @brief Fault Injection Test: Portal Invalid Unlink
  */
-static void test_portal_invalid_unlink(void)
+PRIVATE void test_portal_invalid_unlink(void)
 {
 	/* Invalid portal ID. */
 	KASSERT(portal_unlink(-1) == -EINVAL);
@@ -151,7 +139,7 @@ static void test_portal_invalid_unlink(void)
 /**
  * @brief Fault Injection Test: Portal Invalid Close
  */
-static void test_portal_invalid_close(void)
+PRIVATE void test_portal_invalid_close(void)
 {
 	/* Invalid portal ID. */
 	KASSERT(portal_close(-1) == -EINVAL);
@@ -161,7 +149,7 @@ static void test_portal_invalid_close(void)
 /**
  * @brief Fault Injection Test: Portal Invalid Read
  */
-static void test_portal_invalid_read(void)
+PRIVATE void test_portal_invalid_read(void)
 {
 	int portalid;
 	char buf[PORTAL_SIZE];
@@ -186,7 +174,7 @@ static void test_portal_invalid_read(void)
 /**
  * @brief Fault Injection Test: Portal Invalid Write
  */
-static void test_portal_invalid_write(void)
+PRIVATE void test_portal_invalid_write(void)
 {
 	int portalid;
 	char buf[PORTAL_SIZE];
@@ -210,7 +198,7 @@ static void test_portal_invalid_write(void)
 /**
  * @brief Fault Injection Test: Portal Bad Create
  */
-static void test_portal_bad_create(void)
+PRIVATE void test_portal_bad_create(void)
 {
 	/* Bad local NoC node. */
 	KASSERT(portal_create(NODENUM_SLAVE) == -EINVAL);
@@ -219,7 +207,7 @@ static void test_portal_bad_create(void)
 /**
  * @brief Fault Injection Test: Portal Bad Open
  */
-static void test_portal_bad_open(void)
+PRIVATE void test_portal_bad_open(void)
 {
 	/* Bad local NoC node. */
 	KASSERT(portal_open(NODENUM_SLAVE, NODENUM_SLAVE) == -EINVAL);
@@ -231,7 +219,7 @@ static void test_portal_bad_open(void)
 /**
  * @brief Fault Injection Test: Portal Bad Allow
  */
-static void test_portal_bad_allow(void)
+PRIVATE void test_portal_bad_allow(void)
 {
 	int portalid;
 
@@ -250,7 +238,7 @@ static void test_portal_bad_allow(void)
 /**
  * @brief Fault Injection Test: Portal Bad Unlink
  */
-static void test_portal_bad_unlink(void)
+PRIVATE void test_portal_bad_unlink(void)
 {
 	/* Bad portal ID. */
 	KASSERT(portal_unlink(0) == -EBADF);
@@ -260,7 +248,7 @@ static void test_portal_bad_unlink(void)
 /**
  * @brief Fault Injection Test: Portal Bad Close
  */
-static void test_portal_bad_close(void)
+PRIVATE void test_portal_bad_close(void)
 {
 	/* Bad portal ID. */
 	KASSERT(portal_close(0) == -EBADF);
@@ -270,7 +258,7 @@ static void test_portal_bad_close(void)
 /**
  * @brief Fault Injection Test: Portal Double Unlink
  */
-static void test_portal_double_unlink(void)
+PRIVATE void test_portal_double_unlink(void)
 {
 	int portalid;
 
@@ -282,7 +270,7 @@ static void test_portal_double_unlink(void)
 /**
  * @brief Fault Injection Test: Portal Double Close
  */
-static void test_portal_double_close(void)
+PRIVATE void test_portal_double_close(void)
 {
 	int portalid;
 
@@ -294,7 +282,7 @@ static void test_portal_double_close(void)
 /**
  * @brief Fault Injection Test: Portal Double Allow
  */
-static void test_portal_double_allow(void)
+PRIVATE void test_portal_double_allow(void)
 {
 	int portalid;
 
@@ -306,33 +294,47 @@ static void test_portal_double_allow(void)
 	KASSERT(portal_unlink(portalid) == 0);
 }
 
-/**
- * @brief Unit tests.
- */
-struct test portal_tests_fault[] = {
-	{test_portal_invalid_create, "Invalid Create" },
-	{test_portal_invalid_open,   "Invalid Open"   },
-	{test_portal_invalid_allow,  "Invalid Allow"  },
-	{test_portal_invalid_unlink, "Invalid Unlink" },
-	{test_portal_invalid_close,  "Invalid Close"  },
-	{test_portal_invalid_read,   "Invalid Read"   },
-	{test_portal_invalid_write,  "Invalid Write"  },
-	{test_portal_bad_create,     "Bad Create"     },
-	{test_portal_bad_open,       "Bad Open"       },
-	{test_portal_bad_allow,      "Bad Allow"      },
-	{test_portal_bad_unlink,     "Bad Unlink"     },
-	{test_portal_bad_close,      "Bad Close"      },
-	{test_portal_double_unlink,  "Double Unlink"  },
-	{test_portal_double_close,   "Double Close"   },
-	{test_portal_double_allow,   "Double Allow"   },
-	{NULL,                        NULL            },
-};
-
 #endif /* __TARGET_HAS_PORTAL */
 
 /*============================================================================*
  * Test Driver                                                                *
  *============================================================================*/
+
+#if __TARGET_HAS_PORTAL
+
+/**
+ * @brief API unit tests.
+ */
+PRIVATE struct test portal_tests_api[] = {
+	{ test_portal_create_unlink, "create unlink" },
+	{ test_portal_open_close,    "open close   " },
+	{ test_portal_allow,         "open allow   " },
+	{ NULL,                       NULL           },
+};
+
+/**
+ * @brief Unit tests.
+ */
+PRIVATE struct test portal_tests_fault[] = {
+	{ test_portal_invalid_create, "invalid create" },
+	{ test_portal_invalid_open,   "invalid open  " },
+	{ test_portal_invalid_allow,  "invalid allow " },
+	{ test_portal_invalid_unlink, "invalid unlink" },
+	{ test_portal_invalid_close,  "invalid close " },
+	{ test_portal_invalid_read,   "invalid read  " },
+	{ test_portal_invalid_write,  "invalid write " },
+	{ test_portal_bad_create,     "bad create    " },
+	{ test_portal_bad_open,       "bad open      " },
+	{ test_portal_bad_allow,      "bad allow     " },
+	{ test_portal_bad_unlink,     "bad unlink    " },
+	{ test_portal_bad_close,      "bad close     " },
+	{ test_portal_double_unlink,  "double unlink " },
+	{ test_portal_double_close,   "double close  " },
+	{ test_portal_double_allow,   "double allow  " },
+	{ NULL,                        NULL            },
+};
+
+#endif /* __TARGET_HAS_PORTAL */
 
 /**
  * The test_portal() function launches testing units on the portal
@@ -345,6 +347,7 @@ PUBLIC void test_portal(void)
 #if (__TARGET_HAS_PORTAL)
 
 	/* API Tests */
+	kprintf(HLINE);
 	for (int i = 0; portal_tests_api[i].test_fn != NULL; i++)
 	{
 		portal_tests_api[i].test_fn();
@@ -352,6 +355,7 @@ PUBLIC void test_portal(void)
 	}
 
 	/* FAULT Tests */
+	kprintf(HLINE);
 	for (int i = 0; portal_tests_fault[i].test_fn != NULL; i++)
 	{
 		portal_tests_fault[i].test_fn();

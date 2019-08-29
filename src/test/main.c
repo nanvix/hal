@@ -29,6 +29,12 @@
 #include "test.h"
 
 /**
+ * Horizontal line for tests.
+ */
+PUBLIC const char *HLINE = \
+"--------------------------------------------------------------------------------";
+
+/**
  * @brief Launch unit tests on performance interface?
  */
 #ifdef __unix64__

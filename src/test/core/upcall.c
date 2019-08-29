@@ -182,18 +182,18 @@ PRIVATE void test_upcall_issue(void)
 	_upcall_issue(FAKE_STACK_TOP);
 }
 
+/*============================================================================*
+ * Test Driver                                                                *
+ *============================================================================*/
+
 /**
  * @brief Unit tests.
  */
 PRIVATE struct test upcall_tests_api[] = {
-	{ test_upcall_forge, "Forge Upcall" },
-	{ test_upcall_issue, "Issue Upcall" },
+	{ test_upcall_forge, "forge upcall" },
+	{ test_upcall_issue, "issue upcall" },
 	{ NULL,               NULL          },
 };
-
-/*============================================================================*
- * Test Driver                                                                *
- *============================================================================*/
 
 /**
  * The test_upcall() function launches testing units on the upcall
@@ -203,9 +203,8 @@ PRIVATE struct test upcall_tests_api[] = {
  */
 PUBLIC void test_upcall(void)
 {
-	kprintf("[test][upcall] launching api tests...");
-
 	/* API Tests */
+	kprintf(HLINE);
 	for (int i = 0; upcall_tests_api[i].test_fn != NULL; i++)
 	{
 		upcall_tests_api[i].test_fn();

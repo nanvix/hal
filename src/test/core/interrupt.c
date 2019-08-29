@@ -111,19 +111,6 @@ PRIVATE void test_interrupt_enable_disable(void)
 #endif
 }
 
-/*----------------------------------------------------------------------------*
- * Test Driver Table                                                          *
- *----------------------------------------------------------------------------*/
-
-/**
- * @brief Unit tests.
- */
-PRIVATE struct test interrupt_tests_api[] = {
-	{ test_interrupt_register_unregister, "Register and Unregister a Handler" },
-	{ test_interrupt_enable_disable,      "Enable and Disable Interrupts"     },
-	{ NULL,                                NULL                               },
-};
-
 /*============================================================================*
  * Fault Injection Tests                                                      *
  *============================================================================*/
@@ -188,24 +175,29 @@ PRIVATE void test_interrupt_unregister_handler_bad(void)
 	KASSERT(interrupt_unregister(INTERRUPT_TIMER) == -EINVAL);
 }
 
-/*----------------------------------------------------------------------------*
- * Test Driver Table                                                          *
- *----------------------------------------------------------------------------*/
+/*============================================================================*
+ * Test Driver                                                                *
+ *============================================================================*/
+
+/**
+ * @brief Unit tests.
+ */
+PRIVATE struct test interrupt_tests_api[] = {
+	{ test_interrupt_register_unregister, "register and unregister a handler" },
+	{ test_interrupt_enable_disable,      "enable and disable interrupts    " },
+	{ NULL,                                NULL                               },
+};
 
 /**
  * @brief Unit tests.
  */
 PRIVATE struct test interrupt_tests_fault_injection[] = {
-	{ test_interrupt_register_handler_inval,   "Register Handler for Invalid Interrupt"   },
-	{ test_interrupt_unregister_handler_inval, "Unregister Handler for Invalid Interrupt" },
-	{ test_interrupt_register_handler_bad,     "Register Handler for Bad Interrupt"       },
-	{ test_interrupt_unregister_handler_bad,   "Unregister Handler for Bad Interrupt"     },
-	{ NULL,                                    NULL                                       },
+	{ test_interrupt_register_handler_inval,   "register handler for invalid interrupt  " },
+	{ test_interrupt_unregister_handler_inval, "unregister handler for invalid interrupt" },
+	{ test_interrupt_register_handler_bad,     "register handler for bad interrupt      " },
+	{ test_interrupt_unregister_handler_bad,   "unregister handler for bad interrupt    " },
+	{ NULL,                                     NULL                                      },
 };
-
-/*============================================================================*
- * Test Driver                                                                *
- *============================================================================*/
 
 /**
  * The test_interrupt() function launches testing units on the
@@ -216,6 +208,7 @@ PRIVATE struct test interrupt_tests_fault_injection[] = {
 PUBLIC void test_interrupt(void)
 {
 	/* API Tests */
+	kprintf(HLINE);
 	for (int i = 0; interrupt_tests_api[i].test_fn != NULL; i++)
 	{
 		interrupt_tests_api[i].test_fn();
@@ -223,6 +216,7 @@ PUBLIC void test_interrupt(void)
 	}
 
 	/* Fault Tests */
+	kprintf(HLINE);
 	for (int i = 0; interrupt_tests_fault_injection[i].test_fn != NULL; i++)
 	{
 		interrupt_tests_fault_injection[i].test_fn();

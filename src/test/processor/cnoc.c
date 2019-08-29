@@ -44,12 +44,12 @@
 /**
  * @brief Lock used for wait the completion of Control NoC operations.
  */
-static spinlock_t test_cnoc_lock = K1B_SPINLOCK_LOCKED;
+PRIVATE spinlock_t test_cnoc_lock = K1B_SPINLOCK_LOCKED;
 
 /**
  * @brief Interrupt handler: Control NoC handler to perform the unlock.
  */
-static void test_cnoc_dummy_handler(int interface, int tag)
+PRIVATE void test_cnoc_dummy_handler(int interface, int tag)
 {
 	UNUSED(tag);
 	UNUSED(interface);
@@ -64,7 +64,7 @@ static void test_cnoc_dummy_handler(int interface, int tag)
 /**
  * @brief API Test: Synchronization Point Create Unlink
  */
-static void test_cnoc_create_unlink(void)
+PRIVATE void test_cnoc_create_unlink(void)
 {
 	KASSERT(bostan_dma_control_create(INTERFACE, RX_TAG, RX_MASK, NULL) == 0);
 	KASSERT(bostan_dma_control_unlink(INTERFACE, RX_TAG) == 0);
@@ -77,7 +77,7 @@ static void test_cnoc_create_unlink(void)
 /**
  * @brief API Test: Synchronization Point Open Close
  */
-static void test_cnoc_open_close(void)
+PRIVATE void test_cnoc_open_close(void)
 {
 	KASSERT(bostan_dma_control_open(INTERFACE, TX_TAG) == 0);
 	KASSERT(bostan_dma_control_close(INTERFACE, TX_TAG) == 0);
@@ -89,7 +89,7 @@ static void test_cnoc_open_close(void)
 /**
  * @brief API Test: Synchronization Point With Events
  */
-static void test_cnoc_loopback_with_events(void)
+PRIVATE void test_cnoc_loopback_with_events(void)
 {
 	int clusterid;
 
@@ -118,7 +118,7 @@ static void test_cnoc_loopback_with_events(void)
 /**
  * @brief API Test: Synchronization Point With Interrupts
  */
-static void test_cnoc_loopback_with_interrupts(void)
+PRIVATE void test_cnoc_loopback_with_interrupts(void)
 {
 	int clusterid;
 
@@ -148,23 +148,20 @@ static void test_cnoc_loopback_with_interrupts(void)
 	KASSERT(bostan_dma_control_unlink(INTERFACE, RX_TAG) == 0);
 }
 
-/*============================================================================*/
+/*============================================================================*
+ * Test Driver                                                                *
+ *============================================================================*/
 
 /**
  * @brief Unit tests.
  */
-struct test cnoc_tests_api[] = {
-	/* Intra-Cluster API Tests */
-	{test_cnoc_create_unlink,            "Create Unlink"                     },
-	{test_cnoc_open_close,               "Open Close"                        },
-	{test_cnoc_loopback_with_events,     "Loopback a signal with events    " },
-	{test_cnoc_loopback_with_interrupts, "Loopback a signal with interrupts" },
-	{NULL,                               NULL                                },
+PRIVATE struct test cnoc_tests_api[] = {
+	{ test_cnoc_create_unlink,            "create unlink                    " },
+	{ test_cnoc_open_close,               "open close                       " },
+	{ test_cnoc_loopback_with_events,     "loopback a signal with events    " },
+	{ test_cnoc_loopback_with_interrupts, "loopback a signal with interrupts" },
+	{ NULL,                                NULL                               },
 };
-
-/*============================================================================*
- * Test Driver                                                                *
- *============================================================================*/
 
 /**
  * The test_cnoc() function launches testing units on the cnoc
@@ -175,6 +172,7 @@ struct test cnoc_tests_api[] = {
 PUBLIC void test_cnoc(void)
 {
 	/* API Tests */
+	kprintf(HLINE);
 	for (int i = 0; cnoc_tests_api[i].test_fn != NULL; i++)
 	{
 		cnoc_tests_api[i].test_fn();
