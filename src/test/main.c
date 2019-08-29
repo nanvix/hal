@@ -140,7 +140,7 @@ PUBLIC NORETURN void kmain(int argc, const char *argv[])
 
 #endif
 
-	if (cluster_get_id() == PROCESSOR_CLUSTERID_MASTER)
+	if (cluster_get_num() == PROCESSOR_CLUSTERNUM_MASTER)
 	{
 		/* Run unit tests. */
 		if ((!kstrcmp(arg, "--all")) || (!kstrcmp(arg, "--core")))
