@@ -112,17 +112,17 @@
 	/**
 	 * @brief Asserts if a cluster is a compute cluster.
 	 *
-	 * @param clusterid ID of the target cluster.
+	 * @param clusternum Logic ID of the target cluster.
 	 *
-	 * @returns Non-zero if the target cluster @p clusterid is a
+	 * @returns Non-zero if the target cluster @p clusternum is a
 	 * compute cluster and zero otherwise.
 	 */
 #if (PROCESSOR_IS_MULTICLUSTER)
-	EXTERN int cluster_is_ccluster(int clusterid);
+	EXTERN int cluster_is_ccluster(int clusternum);
 #else
-	static inline int cluster_is_ccluster(int clusterid)
+	static inline int cluster_is_ccluster(int clusternum)
 	{
-		UNUSED(clusterid);
+		UNUSED(clusternum);
 
 		return (0);
 	}
@@ -131,17 +131,17 @@
 	/**
 	 * @brief Asserts if a cluster is an I/O cluster.
 	 *
-	 * @param clusterid ID of the target cluster.
+	 * @param clusternum Logic ID of the target cluster.
 	 *
-	 * @returns Non-zero if the target cluster @p clusterid is an I/O
+	 * @returns Non-zero if the target cluster @p clusternum is an I/O
 	 * cluster and zero otherwise.
 	 */
 #if (PROCESSOR_IS_MULTICLUSTER)
-	EXTERN int cluster_is_iocluster(int clusterid);
+	EXTERN int cluster_is_iocluster(int clusternum);
 #else
-	static inline int cluster_is_iocluster(int clusterid)
+	static inline int cluster_is_iocluster(int clusternum)
 	{
-		UNUSED(clusterid);
+		UNUSED(clusternum);
 
 		return (1);
 	}

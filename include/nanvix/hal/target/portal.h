@@ -127,21 +127,21 @@
 #endif
 
 	/**
-	 * @brief Enables read operations from a remote.
+	 * @brief Opens a portal.
 	 *
-	 * @param portalid ID of the target portal.
-	 * @param remote   NoC node ID of target remote.
+	 * @param localnum  Logic ID of local node.
+	 * @param remotenum Logic ID of target node.
 	 *
 	 * @returns Upons successful completion zero is returned. Upon failure,
 	 * a negative error code is returned instead.
 	 */
 #if (__TARGET_HAS_PORTAL)
-	EXTERN int portal_open(int local, int remote);
+	EXTERN int portal_open(int localnum, int remotenum);
 #else
-	static inline int portal_open(int local, int remote)
+	static inline int portal_open(int localnum, int remotenum)
 	{
-		UNUSED(local);
-		UNUSED(remote);
+		UNUSED(localnum);
+		UNUSED(remotenum);
 
 		return (-ENOSYS);
 	}
@@ -157,12 +157,12 @@
 	 * failure, a negative error code is returned instead.
 	 */
 #if (__TARGET_HAS_PORTAL)
-	EXTERN int portal_allow(int portalid, int remote);
+	EXTERN int portal_allow(int portalid, int nodenum);
 #else
-	static inline int portal_allow(int portalid, int remote)
+	static inline int portal_allow(int portalid, int nodenum)
 	{
 		UNUSED(portalid);
-		UNUSED(remote);
+		UNUSED(nodenum);
 
 		return (-ENOSYS);
 	}
