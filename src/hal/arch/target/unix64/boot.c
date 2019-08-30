@@ -23,9 +23,9 @@
  */
 
 /* Must come fist. */
-#define __NEED_TARGET_UNIX64
+#define __NEED_HAL_TARGET
 
-#include <arch/target/unix64/unix64.h>
+#include <nanvix/hal/target.h>
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
 #include <string.h>
@@ -67,7 +67,7 @@ PRIVATE void unix64_parse_boot_args(int argc, const char **argv)
 	}
 
 	/* Bad argument. */
-	if ((boot_args.nclusters < 1) || (boot_args.nclusters > LINUX64_PROCESSOR_CCLUSTERS_NUM))
+	if ((boot_args.nclusters < 1) || (boot_args.nclusters > PROCESSOR_CLUSTERS_NUM))
 		exit(-EINVAL);
 }
 
