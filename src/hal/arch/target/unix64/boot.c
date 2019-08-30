@@ -90,6 +90,18 @@ PRIVATE int unix64_boot(int nclusters)
 }
 
 /**
+ * @todo TODO: provide a detailed description for this function.
+ */
+PUBLIC NORETURN void unix64_poweroff(void)
+{
+	unix64_sync_shutdown();
+	unix64_mailbox_shutdown();
+	unix64_portal_shutdown();
+
+	processor_poweroff();
+}
+
+/**
  * @brief Entry point.
  *
  * @param argc Number of arguments.

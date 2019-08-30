@@ -55,6 +55,11 @@
 
 #endif /* __NANVIX_HAL */
 
+	/**
+	 * @brief Powers off the underlying target.
+	 */
+	EXTERN NORETURN void unix64_poweroff(void);
+
 /**@}*/
 
 /*============================================================================*
@@ -74,6 +79,21 @@
 	#define __TARGET_HAS_MAILBOX 1 /**< Mailbox feature         */
 	#define __TARGET_HAS_PORTAL  1 /**< Portal feature          */
 	/**@}*/
+
+	/**
+	 * @name Provided Functions
+	 */
+	/**@{*/
+	#define __target_poweroff_fn /**< unix64_poweroff() */
+	/**@}*/
+
+	/**
+	 * @see unix64_poweroff().
+	 */
+	static inline NORETURN void target_poweroff(void)
+	{
+		unix64_poweroff();
+	}
 
 /**@endcond*/
 
