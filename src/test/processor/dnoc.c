@@ -104,11 +104,11 @@ PRIVATE void test_dnoc_open_close(void)
  */
 PRIVATE void test_dnoc_loopback_with_events(void)
 {
-	int clusterid;
+	int local;
 	char rx_buffer[BUFFER_MAX_SIZE];
 	char tx_buffer[BUFFER_MAX_SIZE];
 
-	clusterid = cluster_get_id();
+	local = processor_node_get_num();
 
 	kmemset(rx_buffer, 0, BUFFER_MAX_SIZE);
 	kmemset(tx_buffer, 1, BUFFER_MAX_SIZE);
@@ -135,7 +135,7 @@ PRIVATE void test_dnoc_loopback_with_events(void)
 		bostan_dma_data_write(
 			INTERFACE,
 			TX_TAG,
-			clusterid,
+			local,
 			RX_TAG,
 			tx_buffer,
 			BUFFER_SIZE,
@@ -147,7 +147,7 @@ PRIVATE void test_dnoc_loopback_with_events(void)
 		bostan_dma_data_awrite(
 			INTERFACE,
 			TX_TAG,
-			clusterid,
+			local,
 			RX_TAG,
 			tx_buffer,
 			BUFFER_SIZE,
@@ -171,11 +171,11 @@ PRIVATE void test_dnoc_loopback_with_events(void)
  */
 PRIVATE void test_dnoc_loopback_with_interrupts(void)
 {
-	int clusterid;
+	int local;
 	char rx_buffer[BUFFER_MAX_SIZE];
 	char tx_buffer[BUFFER_MAX_SIZE];
 
-	clusterid = cluster_get_id();
+	local = processor_node_get_num();
 
 	kmemset(rx_buffer, 0, BUFFER_MAX_SIZE);
 	kmemset(tx_buffer, 1, BUFFER_MAX_SIZE);
@@ -204,7 +204,7 @@ PRIVATE void test_dnoc_loopback_with_interrupts(void)
 		bostan_dma_data_write(
 			INTERFACE,
 			TX_TAG,
-			clusterid,
+			local,
 			RX_TAG,
 			tx_buffer,
 			BUFFER_SIZE,
@@ -216,7 +216,7 @@ PRIVATE void test_dnoc_loopback_with_interrupts(void)
 		bostan_dma_data_awrite(
 			INTERFACE,
 			TX_TAG,
-			clusterid,
+			local,
 			RX_TAG,
 			tx_buffer,
 			BUFFER_SIZE,
@@ -243,13 +243,13 @@ PRIVATE void test_dnoc_loopback_with_interrupts(void)
  */
 PRIVATE void test_dnoc_loopback_with_offset(void)
 {
-	int clusterid;
+	int local;
 	uint64_t offset;
 	char rx_buffer[100];
 	char tx_buffer[10];
 
 	offset = 10;
-	clusterid = cluster_get_id();
+	local = processor_node_get_num();
 
 	kmemset(rx_buffer, 0, 100);
 	kmemset(rx_buffer, 1, 10);
@@ -275,7 +275,7 @@ PRIVATE void test_dnoc_loopback_with_offset(void)
 		bostan_dma_data_write(
 			INTERFACE,
 			TX_TAG,
-			clusterid,
+			local,
 			RX_TAG,
 			tx_buffer,
 			10,

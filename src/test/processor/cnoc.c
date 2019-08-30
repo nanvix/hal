@@ -91,9 +91,9 @@ PRIVATE void test_cnoc_open_close(void)
  */
 PRIVATE void test_cnoc_loopback_with_events(void)
 {
-	int clusterid;
+	int local;
 
-	clusterid = cluster_get_id();
+	local = processor_node_get_num();
 
 	KASSERT(bostan_dma_control_create(INTERFACE, RX_TAG, RX_MASK, NULL) == 0);
 	KASSERT(bostan_dma_control_open(INTERFACE, TX_TAG) == 0);
@@ -102,7 +102,7 @@ PRIVATE void test_cnoc_loopback_with_events(void)
 		bostan_dma_control_signal(
 			INTERFACE,
 			TX_TAG,
-			&clusterid,
+			&local,
 			1,
 			RX_TAG,
 			TX_MASK
@@ -120,9 +120,9 @@ PRIVATE void test_cnoc_loopback_with_events(void)
  */
 PRIVATE void test_cnoc_loopback_with_interrupts(void)
 {
-	int clusterid;
+	int local;
 
-	clusterid = cluster_get_id();
+	local = processor_node_get_num();
 
 	KASSERT(bostan_dma_control_create(INTERFACE, RX_TAG, RX_MASK, test_cnoc_dummy_handler) == 0);
 	KASSERT(bostan_dma_control_open(INTERFACE, TX_TAG) == 0);
@@ -133,7 +133,7 @@ PRIVATE void test_cnoc_loopback_with_interrupts(void)
 			bostan_dma_control_signal(
 				INTERFACE,
 				TX_TAG,
-				&clusterid,
+				&local,
 				1,
 				RX_TAG,
 				TX_MASK
@@ -153,9 +153,9 @@ PRIVATE void test_cnoc_loopback_with_interrupts(void)
  */
 static void test_cnoc_stress_with_events(void)
 {
-	int clusterid;
+	int local;
 
-	clusterid = cluster_get_id();
+	local = processor_node_get_num();
 
 	KASSERT(bostan_dma_control_create(INTERFACE, RX_TAG, RX_MASK, NULL) == 0);
 	KASSERT(bostan_dma_control_open(INTERFACE, TX_TAG) == 0);
@@ -166,7 +166,7 @@ static void test_cnoc_stress_with_events(void)
 			bostan_dma_control_signal(
 				INTERFACE,
 				TX_TAG,
-				&clusterid,
+				&local,
 				1,
 				RX_TAG,
 				TX_MASK
@@ -187,9 +187,9 @@ static void test_cnoc_stress_with_events(void)
  */
 static void test_cnoc_stress_with_interrupts(void)
 {
-	int clusterid;
+	int local;
 
-	clusterid = cluster_get_id();
+	local = processor_node_get_num();
 
 	KASSERT(bostan_dma_control_create(INTERFACE, RX_TAG, RX_MASK, test_cnoc_dummy_handler) == 0);
 	KASSERT(bostan_dma_control_open(INTERFACE, TX_TAG) == 0);
@@ -202,7 +202,7 @@ static void test_cnoc_stress_with_interrupts(void)
 				bostan_dma_control_signal(
 					INTERFACE,
 					TX_TAG,
-					&clusterid,
+					&local,
 					1,
 					RX_TAG,
 					TX_MASK
@@ -229,12 +229,12 @@ static void test_cnoc_stress_with_interrupts(void)
  */
 struct test cnoc_tests_api[] = {
 	/* Intra-Cluster API Tests */
-	{test_cnoc_create_unlink,            "Create Unlink"                     },
-	{test_cnoc_open_close,               "Open Close"                        },
-	{test_cnoc_loopback_with_events,     "Loopback a signal with events"     },
+	{test_cnoc_create_unlink,            "Create Unlink                    " },
+	{test_cnoc_open_close,               "Open Close                       " },
+	{test_cnoc_loopback_with_events,     "Loopback a signal with events    " },
 	{test_cnoc_loopback_with_interrupts, "Loopback a signal with interrupts" },
-	{test_cnoc_stress_with_events,       "Stress a signal with events    "   },
-	{test_cnoc_stress_with_interrupts,   "Stress a signal with interrupts"   },
+	{test_cnoc_stress_with_events,       "Stress a signal with events      " },
+	{test_cnoc_stress_with_interrupts,   "Stress a signal with interrupts  " },
 	{NULL,                               NULL                                },
 };
 
