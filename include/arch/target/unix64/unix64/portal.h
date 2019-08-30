@@ -44,7 +44,7 @@
 	 */
 	/**@{*/
 	#define UNIX64_PORTAL_CREATE_MAX  1 /**< Maximum amount of input portals.  */
-	#define UNIX64_PORTAL_OPEN_MAX   16 /**< Maximum amount of output portals. */
+	#define UNIX64_PORTAL_OPEN_MAX   18 /**< Maximum amount of output portals. */
 	/**@}*/
 
 	/**
