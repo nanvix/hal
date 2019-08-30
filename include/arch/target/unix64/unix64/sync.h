@@ -59,6 +59,15 @@
 	 */
 	#define UNIX64_SYNC_MAX (UNIX64_SYNC_CREATE_MAX + UNIX64_SYNC_OPEN_MAX)
 
+#ifdef __NANVIX_HAL
+
+	/**
+	 * @brief Shutdowns the sync interface.
+	 */
+	PUBLIC void unix64_sync_shutdown(void);
+
+#endif
+
 	/**
 	 * @brief Allocates and configures the receiving side of the synchronization point.
 	 *
