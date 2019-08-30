@@ -44,7 +44,7 @@
 	 */
 	/**@{*/
 	#define UNIX64_MAILBOX_CREATE_MAX  1 /**< Maximum amount of create mailboxes. */
-	#define UNIX64_MAILBOX_OPEN_MAX   16 /**< Maximum amount of open mailboxes.   */
+	#define UNIX64_MAILBOX_OPEN_MAX   18 /**< Maximum amount of open mailboxes.   */
 	/**@}*/
 
 	/**
