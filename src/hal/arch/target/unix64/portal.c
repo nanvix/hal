@@ -426,8 +426,6 @@ PRIVATE int do_unix64_portal_create(int local)
 		portaltab.rxs[portalid].remote = -1;
 		resource_set_rdonly(&portaltab.rxs[portalid].resource);
 		resource_set_notbusy(&portaltab.rxs[portalid].resource);
-		for (int i = 0; i < PROCESSOR_NOC_NODES_NUM; i++)
-			portaltab.rxs[portalid].buffers[i] = NULL;
 
 		unix64_portals_unlock();
 
@@ -888,18 +886,14 @@ again:
 			goto again;
 		}
 
-		/* Close portal buffers.. */
 		for (int i = 0; i < PROCESSOR_NOC_NODES_NUM; i++)
 		{
-			/* Skip invalid buffers. */
-			if (portaltab.rxs[portalid].buffers[i] == NULL)
-				continue;
-
-			unix64_portal_buffer_close(&portaltab.rxs[portalid], i);
+			if (portaltab.rxs[portalid].buffers[i] != NULL)
+			{
+				portaltab.rxs[portalid].buffers[i]->busy = 0;
+				portaltab.rxs[portalid].buffers[i]->ready = 0;
+			}
 		}
-
-		/* Close portal lock. */
-		unix64_portal_lock_close(&portaltab.rxs[portalid]);
 
 		resource_free(&pool.rx, portalid);
 
@@ -921,8 +915,6 @@ again:
  */
 PUBLIC int unix64_portal_close(int portalid)
 {
-	int local;
-
 	/* Invalid portal. */
 	if (!unix64_portal_tx_is_valid(portalid))
 		return (-EINVAL);
@@ -930,8 +922,6 @@ PUBLIC int unix64_portal_close(int portalid)
 again:
 
 	unix64_portals_lock();
-
-		local = portaltab.txs[portalid].local;
 
 		/* Bad portal. */
 		if (!resource_is_used(&portaltab.txs[portalid].resource))
@@ -947,13 +937,76 @@ again:
 			goto again;
 		}
 
-		/* Close portal buffer and lock. */
-		unix64_portal_buffer_close(&portaltab.txs[portalid], local);
-		unix64_portal_lock_close(&portaltab.txs[portalid]);
-
 		resource_free(&pool.tx, portalid);
 
 	unix64_portals_unlock();
 
 	return (0);
+}
+
+/*============================================================================*
+ * unix64_portal_setup()                                                      *
+ *============================================================================*/
+
+/**
+ * @todo TODO: provide a detailed description for this function.
+ */
+PUBLIC void unix64_portal_setup(void)
+{
+	kprintf("[hal][target] initializing portals...");
+
+	for (int i = 0; i < UNIX64_PORTAL_CREATE_MAX; i++)
+	{
+		for (int j = 0; j < PROCESSOR_NOC_NODES_NUM; j++)
+			portaltab.rxs[i].buffers[j] = NULL;
+	}
+}
+
+/*============================================================================*
+ * unix64_portal_shutdown()                                                   *
+ *============================================================================*/
+
+/**
+ * @todo TODO: provide a detailed description for this function.
+ */
+PUBLIC void unix64_portal_shutdown(void)
+{
+	/* Input portals. */
+	for (int i = 0; i < UNIX64_PORTAL_CREATE_MAX; i++)
+	{
+		for (int j = 0; j < PROCESSOR_NOC_NODES_NUM; j++)
+		{
+			munmap(portaltab.rxs[i].buffers[j],
+				sizeof(struct portal_buffer)
+			);
+		}
+		sem_close(portaltab.rxs[i].lock);
+	}
+
+	/* Output portals. */
+	for (int i = 0; i < UNIX64_PORTAL_OPEN_MAX; i++)
+	{
+		for (int j = 0; j < PROCESSOR_NOC_NODES_NUM; j++)
+		{
+			munmap(portaltab.txs[i].buffers[j],
+				sizeof(struct portal_buffer)
+			);
+		}
+		sem_close(portaltab.txs[i].lock);
+	}
+
+	/* Unlink portas. */
+	for (int i = 0; i < PROCESSOR_NOC_NODES_NUM; i++)
+	{
+		char pathname[UNIX64_PORTAL_NAME_LENGTH];
+
+		for (int j = 0; j < PROCESSOR_NOC_NODES_NUM; j++)
+		{
+			sprintf(pathname, "%s-%d-%d", UNIX64_PORTAL_BASENAME, i, j);
+			shm_unlink(pathname);
+		}
+
+		sprintf(pathname,"%s-%d", UNIX64_PORTAL_BASENAME, i);
+		sem_unlink(pathname);
+	}
 }

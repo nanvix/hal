@@ -44,7 +44,7 @@
 	 */
 	/**@{*/
 	#define UNIX64_MAILBOX_CREATE_MAX  1 /**< Maximum amount of create mailboxes. */
-	#define UNIX64_MAILBOX_OPEN_MAX   16 /**< Maximum amount of open mailboxes.   */
+	#define UNIX64_MAILBOX_OPEN_MAX   18 /**< Maximum amount of open mailboxes.   */
 	/**@}*/
 
 	/**
@@ -58,6 +58,15 @@
 	/**@{*/
 	#define UNIX64_MAILBOX_MSG_SIZE 120 /**< Data size. */
 	/**@}*/
+
+#ifdef __NANVIX_HAL
+
+	/**
+	 * @brief Shutdowns the mailbox interface.
+	 */
+	PUBLIC void unix64_mailbox_shutdown(void);
+
+#endif
 
 	/**
 	 * @brief Creates a mailbox.

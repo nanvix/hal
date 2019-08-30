@@ -44,7 +44,7 @@
 	 */
 	/**@{*/
 	#define UNIX64_PORTAL_CREATE_MAX  1 /**< Maximum amount of input portals.  */
-	#define UNIX64_PORTAL_OPEN_MAX   16 /**< Maximum amount of output portals. */
+	#define UNIX64_PORTAL_OPEN_MAX   18 /**< Maximum amount of output portals. */
 	/**@}*/
 
 	/**
@@ -56,6 +56,20 @@
 	 * @brief Maximum size of transfer data.
 	 */
 	#define UNIX64_PORTAL_MAX_SIZE (1*MB)
+
+#ifdef __NANVIX_HAL
+
+	/**
+	 * @brief Initializes the portal interface.
+	 */
+	PUBLIC void unix64_portal_setup(void);
+
+	/**
+	 * @brief Shutdowns the portal interface.
+	 */
+	PUBLIC void unix64_portal_shutdown(void);
+
+#endif
 
 	/**
 	 * @brief Creates a portal.

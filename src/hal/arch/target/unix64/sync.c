@@ -104,7 +104,7 @@ PRIVATE struct mq_attr mq_attr = {
 };
 
 /*============================================================================*
- * unix64_sync_lock()                                                           *
+ * unix64_sync_lock()                                                         *
  *============================================================================*/
 
 /**
@@ -116,7 +116,7 @@ PRIVATE void unix64_sync_lock(void)
 }
 
 /*============================================================================*
- * unix64_sync_unlock()                                                         *
+ * unix64_sync_unlock()                                                       *
  *============================================================================*/
 
 /**
@@ -723,10 +723,6 @@ again:
 			goto again;
 		}
 
-		if (mq_close(synctab.txs[syncid].fd) < 0)
-			goto error1;
-		mq_unlink(synctab.txs[syncid].pathname);
-
 		resource_free(&pool.tx, syncid);
 
 	unix64_sync_unlock();
@@ -775,11 +771,6 @@ again:
 			goto again;
 		}
 
-		/* Destroy underlying message queue. */
-		if (mq_close(synctab.rxs[syncid].fd) < 0)
-			goto error1;
-		mq_unlink(synctab.rxs[syncid].pathname);
-
 		resource_free(&pool.rx, syncid);
 
 	unix64_sync_unlock();
@@ -790,4 +781,33 @@ error1:
 	unix64_sync_unlock();
 error0:
 	return (-EAGAIN);
+}
+
+/*============================================================================*
+ * unix64_sync_shutdown()                                                     *
+ *============================================================================*/
+
+/**
+ * @todo TODO: provide a detailed description for this function.
+ */
+PUBLIC void unix64_sync_shutdown(void)
+{
+	/* Close receiver mqueues. */
+	for (int i = 0; i < UNIX64_SYNC_CREATE_MAX; i++)
+		mq_close(synctab.rxs[i].fd);
+
+	/* Close sender mqueues. */
+	for (int i = 0; i < UNIX64_SYNC_OPEN_MAX; i++)
+		mq_close(synctab.txs[i].fd);
+
+	/* Unlink mqueues. */
+	for (int i = 0; i < PROCESSOR_NOC_NODES_NUM; i++)
+	{
+		char pathname[UNIX64_SYNC_NAME_LENGTH];
+
+		sprintf(pathname, "/sync-%d-gather", i);
+		mq_unlink(pathname);
+		sprintf(pathname, "/sync-%d-broadcast", i);
+		mq_unlink(pathname);
+	}
 }
