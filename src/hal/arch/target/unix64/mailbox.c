@@ -382,14 +382,6 @@ again:
 			goto again;
 		}
 
-		/* Destroy underlying message queue. */
-		if (mq_close(mailboxtab.rxs[mbxid].fd) < 0)
-		{
-			err = -EAGAIN;
-			goto error1;
-		}
-		mq_unlink(mailboxtab.rxs[mbxid].pathname);
-
 		resource_free(&pool.rx, mbxid);
 
 	unix64_mailbox_unlock();
@@ -458,13 +450,6 @@ again:
 			/* Release lock, since we may sleep below. */
 			unix64_mailbox_unlock();
 
-			if (mq_close(mailboxtab.txs[mbxid].fd) < 0)
-			{
-				err = -EAGAIN;
-				goto error2;
-			}
-			mq_unlink(mailboxtab.txs[mbxid].pathname);
-
 			/* Re-acquire lock. */
 			unix64_mailbox_lock();
 
@@ -475,9 +460,6 @@ again:
 
 	return (0);
 
-error2:
-	unix64_mailbox_lock();
-		resource_set_notbusy(&mailboxtab.txs[mbxid].resource);
 error1:
 	unix64_mailbox_unlock();
 	return (err);
@@ -638,4 +620,31 @@ PUBLIC ssize_t unix64_mailbox_aread(int mbxid, void *buf, size_t n)
 		return (-EINVAL);
 
 	return (do_unix64_mailbox_aread(mbxid, buf, n));
+}
+
+/*============================================================================*
+ * unix64_mailbox_shutdown()                                                  *
+ *============================================================================*/
+
+/**
+ * @todo TODO: provide a detailed description for this function.
+ */
+PUBLIC void unix64_mailbox_shutdown(void)
+{
+	/* Input mqueues. */
+	for (int i = 0; i < UNIX64_MAILBOX_CREATE_MAX; i++)
+		mq_close(mailboxtab.rxs[i].fd);
+
+	/* Output mqueues. */
+	for (int i = 0; i < UNIX64_MAILBOX_OPEN_MAX; i++)
+		mq_close(mailboxtab.txs[i].fd);
+
+	/* Unlink mqueues. */
+	for (int i = 0; i < PROCESSOR_NOC_NODES_NUM; i++)
+	{
+		char pathname[UNIX64_MAILBOX_NAME_LENGTH];
+
+		sprintf(pathname, "/mailbox-%d", i);
+		mq_unlink(pathname);
+	}
 }

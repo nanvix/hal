@@ -59,6 +59,15 @@
 	#define UNIX64_MAILBOX_MSG_SIZE 120 /**< Data size. */
 	/**@}*/
 
+#ifdef __NANVIX_HAL
+
+	/**
+	 * @brief Shutdowns the mailbox interface.
+	 */
+	PUBLIC void unix64_mailbox_shutdown(void);
+
+#endif
+
 	/**
 	 * @brief Creates a mailbox.
 	 *
