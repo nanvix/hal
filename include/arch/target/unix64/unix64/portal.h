@@ -57,6 +57,20 @@
 	 */
 	#define UNIX64_PORTAL_MAX_SIZE (1*MB)
 
+#ifdef __NANVIX_HAL
+
+	/**
+	 * @brief Initializes the portal interface.
+	 */
+	PUBLIC void unix64_portal_setup(void);
+
+	/**
+	 * @brief Shutdowns the portal interface.
+	 */
+	PUBLIC void unix64_portal_shutdown(void);
+
+#endif
+
 	/**
 	 * @brief Creates a portal.
 	 *

@@ -36,5 +36,6 @@ PUBLIC void unix64_setup(void)
 {
 	kprintf("[hal][target] initializing target...");
 
+	unix64_portal_setup();
 	linux64_processor_setup();
 }
