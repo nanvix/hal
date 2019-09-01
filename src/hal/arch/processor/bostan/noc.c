@@ -114,8 +114,8 @@ PUBLIC int bostan_processor_node_get_num(void)
 	int coreid;
 	int clusternum;
 
-	coreid     = core_get_id();
 	clusternum = cluster_get_num();
+	coreid = cluster_is_iocluster(clusternum) ? (core_get_id()) : (0);
 
 	return (bostan_processor_noc_cluster_to_node_num(clusternum) + coreid);
 }
