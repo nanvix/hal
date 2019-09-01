@@ -675,8 +675,6 @@ PRIVATE int mppa256_mailbox_send_msg(int mbxid)
  */
 PRIVATE ssize_t do_mppa256_mailbox_awrite(int mbxid, const void * buffer, uint64_t size)
 {
-	UNUSED(size);
-
 	dcache_invalidate();
 
 	/* Programs the next write. */
@@ -693,13 +691,13 @@ PRIVATE ssize_t do_mppa256_mailbox_awrite(int mbxid, const void * buffer, uint64
 	 * Then don't send the message.
 	 */
 	else if (mbxtab.txs[mbxid].ack == 0)
-		return (0);
+		return (size);
 
 	/* Sends the message and configurates the control receiver buffet. */
 	if (mppa256_mailbox_send_msg(mbxid) != 0)
-		return (-EINVAL);
+		return (-EAGAIN);
 
-	return (0);
+	return (size);
 }
 
 /**
@@ -802,7 +800,9 @@ PRIVATE int mppa256_mailbox_msg_copy(int mbxid)
 	interface = UNDERLYING_CREATE_INTERFACE(mbxid);
 
 	/* Confirms receiving with message source. */
-	tag = bostan_processor_node_mailbox_tag(cluster_get_num() + interface);
+	tag = bostan_processor_node_mailbox_tag(
+		bostan_processor_noc_cluster_to_node_num(cluster_get_num()) + interface
+	);
 
 	return bostan_dma_control_signal(
 		interface,
@@ -830,16 +830,17 @@ PRIVATE int mppa256_mailbox_msg_copy(int mbxid)
  */
 PRIVATE ssize_t do_mppa256_mailbox_aread(int mbxid, void * buffer, uint64_t size)
 {
-	UNUSED(size);
-
 	mbxtab.rxs[mbxid].buffer = buffer;
 	resource_set_busy(&mbxtab.rxs[mbxid].resource);
 
 	/* Is the message queue not empty? */
 	if (mbxtab.rxs[mbxid].message_count > 0)
-		mppa256_mailbox_msg_copy(mbxid);
+	{
+		if (mppa256_mailbox_msg_copy(mbxid) != 0)
+			return (-EAGAIN);
+	}
 
-	return (0);
+	return (size);
 }
 
 /**

@@ -752,9 +752,12 @@ PRIVATE ssize_t do_mppa256_portal_awrite(int portalid, const void * buffer, uint
 	resource_set_busy(&portaltab.txs[portalid].resource);
 
 	if (portaltab.txs[portalid].is_allowed)
-		mppa256_portal_send_data(portalid);
+	{
+		if (mppa256_portal_send_data(portalid) != 0)
+			return (-EAGAIN);
+	}
 
-	return (0);
+	return (size);
 }
 
 /**
@@ -846,7 +849,7 @@ PUBLIC ssize_t do_mppa256_portal_aread(int portalid, void * buffer, uint64_t siz
 
 	resource_set_busy(&portaltab.rxs[portalid].resource);
 
-	return (0);
+	return (size);
 }
 
 /**
