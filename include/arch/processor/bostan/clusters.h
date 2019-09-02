@@ -36,88 +36,96 @@
  */
 /**@*/
 
-	#include <arch/processor/bostan/noc/node.h>
+	#include <arch/processor/bostan/noc/dma.h>
 	#include <nanvix/klib.h>
 
 	/**
 	 * @brief Number of IO Clusters in the platform.
 	 */
-	#define BOSTAN_IOCLUSTERS_NUM 2
+	#define BOSTAN_PROCESSOR_IOCLUSTERS_NUM 2
 
 	/**
 	 * @brief Number of Compute Clusters in the platform.
 	 */
-	#define BOSTAN_CCLUSTERS_NUM 16
+	#define BOSTAN_PROCESSOR_CCLUSTERS_NUM 16
 
 	/**
-	 * @name Cluster IDs
+	 * @name Clusters' Physical ID
 	 */
 	/**@{*/
-	#define BOSTAN_CCLUSTER0    0 /**< Compute Cluster  0 */
-	#define BOSTAN_CCLUSTER1    1 /**< Compute Cluster  1 */
-	#define BOSTAN_CCLUSTER2    2 /**< Compute Cluster  2 */
-	#define BOSTAN_CCLUSTER3    3 /**< Compute Cluster  3 */
-	#define BOSTAN_CCLUSTER4    4 /**< Compute Cluster  4 */
-	#define BOSTAN_CCLUSTER5    5 /**< Compute Cluster  5 */
-	#define BOSTAN_CCLUSTER6    6 /**< Compute Cluster  6 */
-	#define BOSTAN_CCLUSTER7    7 /**< Compute Cluster  7 */
-	#define BOSTAN_CCLUSTER8    8 /**< Compute Cluster  8 */
-	#define BOSTAN_CCLUSTER9    9 /**< Compute Cluster  9 */
-	#define BOSTAN_CCLUSTER10  10 /**< Compute Cluster 10 */
-	#define BOSTAN_CCLUSTER11  11 /**< Compute Cluster 11 */
-	#define BOSTAN_CCLUSTER12  12 /**< Compute Cluster 12 */
-	#define BOSTAN_CCLUSTER13  13 /**< Compute Cluster 13 */
-	#define BOSTAN_CCLUSTER14  14 /**< Compute Cluster 14 */
-	#define BOSTAN_CCLUSTER15  15 /**< Compute Cluster 15 */
-	#define BOSTAN_IOCLUSTER0 128 /**< IO Cluster 0       */
-	#define BOSTAN_IOCLUSTER1 192 /**< IO Cluster 1       */
+	#define BOSTAN_PROCESSOR_CLUSTERID_IOCLUSTER0 128 /**< IO Cluster 0       */
+	#define BOSTAN_PROCESSOR_CLUSTERID_IOCLUSTER1 192 /**< IO Cluster 1       */
+	#define BOSTAN_PROCESSOR_CLUSTERID_CCLUSTER0    0 /**< Compute Cluster  0 */
+	#define BOSTAN_PROCESSOR_CLUSTERID_CCLUSTER1    1 /**< Compute Cluster  1 */
+	#define BOSTAN_PROCESSOR_CLUSTERID_CCLUSTER2    2 /**< Compute Cluster  2 */
+	#define BOSTAN_PROCESSOR_CLUSTERID_CCLUSTER3    3 /**< Compute Cluster  3 */
+	#define BOSTAN_PROCESSOR_CLUSTERID_CCLUSTER4    4 /**< Compute Cluster  4 */
+	#define BOSTAN_PROCESSOR_CLUSTERID_CCLUSTER5    5 /**< Compute Cluster  5 */
+	#define BOSTAN_PROCESSOR_CLUSTERID_CCLUSTER6    6 /**< Compute Cluster  6 */
+	#define BOSTAN_PROCESSOR_CLUSTERID_CCLUSTER7    7 /**< Compute Cluster  7 */
+	#define BOSTAN_PROCESSOR_CLUSTERID_CCLUSTER8    8 /**< Compute Cluster  8 */
+	#define BOSTAN_PROCESSOR_CLUSTERID_CCLUSTER9    9 /**< Compute Cluster  9 */
+	#define BOSTAN_PROCESSOR_CLUSTERID_CCLUSTER10  10 /**< Compute Cluster 10 */
+	#define BOSTAN_PROCESSOR_CLUSTERID_CCLUSTER11  11 /**< Compute Cluster 11 */
+	#define BOSTAN_PROCESSOR_CLUSTERID_CCLUSTER12  12 /**< Compute Cluster 12 */
+	#define BOSTAN_PROCESSOR_CLUSTERID_CCLUSTER13  13 /**< Compute Cluster 13 */
+	#define BOSTAN_PROCESSOR_CLUSTERID_CCLUSTER14  14 /**< Compute Cluster 14 */
+	#define BOSTAN_PROCESSOR_CLUSTERID_CCLUSTER15  15 /**< Compute Cluster 15 */
 	/**@}*/
 
 	/**
-	 * @brief Gets the ID of the underling cluster.
-	 *
-	 * @returns The ID of the underlying cluster.
+	 * @name Clusters' Logical ID
 	 */
-	static inline int bostan_cluster_get_id(void)
-	{
-		int nodeid = bostan_node_get_id();
-
-		/* IO Cluster 0 */
-		if (WITHIN(nodeid, BOSTAN_IOCLUSTER0, BOSTAN_IOCLUSTER0 + BOSTAN_NR_INTERFACES))
-			return (BOSTAN_IOCLUSTER0);
-
-		/* IO Cluster 1 */
-		if (WITHIN(nodeid, BOSTAN_IOCLUSTER1, BOSTAN_IOCLUSTER1 + BOSTAN_NR_INTERFACES))
-			return (BOSTAN_IOCLUSTER1);
-
-		return (nodeid);
-	}
+	/**@{*/
+	#define BOSTAN_PROCESSOR_CLUSTERNUM_IOCLUSTER0  0 /**< IO Cluster 0       */
+	#define BOSTAN_PROCESSOR_CLUSTERNUM_IOCLUSTER1  1 /**< IO Cluster 1       */
+	#define BOSTAN_PROCESSOR_CLUSTERNUM_CCLUSTER0   2 /**< Compute Cluster  0 */
+	#define BOSTAN_PROCESSOR_CLUSTERNUM_CCLUSTER1   3 /**< Compute Cluster  1 */
+	#define BOSTAN_PROCESSOR_CLUSTERNUM_CCLUSTER2   4 /**< Compute Cluster  2 */
+	#define BOSTAN_PROCESSOR_CLUSTERNUM_CCLUSTER3   5 /**< Compute Cluster  3 */
+	#define BOSTAN_PROCESSOR_CLUSTERNUM_CCLUSTER4   6 /**< Compute Cluster  4 */
+	#define BOSTAN_PROCESSOR_CLUSTERNUM_CCLUSTER5   7 /**< Compute Cluster  5 */
+	#define BOSTAN_PROCESSOR_CLUSTERNUM_CCLUSTER6   8 /**< Compute Cluster  6 */
+	#define BOSTAN_PROCESSOR_CLUSTERNUM_CCLUSTER7   9 /**< Compute Cluster  7 */
+	#define BOSTAN_PROCESSOR_CLUSTERNUM_CCLUSTER8  10 /**< Compute Cluster  8 */
+	#define BOSTAN_PROCESSOR_CLUSTERNUM_CCLUSTER9  11 /**< Compute Cluster  9 */
+	#define BOSTAN_PROCESSOR_CLUSTERNUM_CCLUSTER10 12 /**< Compute Cluster 10 */
+	#define BOSTAN_PROCESSOR_CLUSTERNUM_CCLUSTER11 13 /**< Compute Cluster 11 */
+	#define BOSTAN_PROCESSOR_CLUSTERNUM_CCLUSTER12 14 /**< Compute Cluster 12 */
+	#define BOSTAN_PROCESSOR_CLUSTERNUM_CCLUSTER13 15 /**< Compute Cluster 13 */
+	#define BOSTAN_PROCESSOR_CLUSTERNUM_CCLUSTER14 16 /**< Compute Cluster 14 */
+	#define BOSTAN_PROCESSOR_CLUSTERNUM_CCLUSTER15 17 /**< Compute Cluster 15 */
+	/**@}*/
 
 	/**
-	 * @brief Asserts whether or not the target cluster is a Compute Cluster.
+	 * @brief Logical ID of master cluster.
+	 */
+	#define BOSTAN_PROCESSOR_CLUSTERNUM_MASTER BOSTAN_PROCESSOR_CLUSTERNUM_IOCLUSTER0
+
+	/**
+	 * @brief Retrieves the logical number of the underlying cluster.
+	 */
+	EXTERN int bostan_cluster_get_num(void);
+
+	/**
+	 * @brief Asserts whether or not the target cluster is a compute cluster.
 	 *
-	 * @param clusterid ID of the target cluster.
+	 * @param clusternum Logical ID of the target cluster.
 	 *
-	 * @return Non zero if the target cluster is a Compute Cluster and
+	 * @return Non zero if the target cluster is a compute cluster and
 	 * zero otherwise.
 	 */
-	static inline int bostan_cluster_is_ccluster(int clusterid)
-	{
-		return (WITHIN(clusterid, BOSTAN_CCLUSTER0, BOSTAN_CCLUSTER15 + 1));
-	}
+	EXTERN int bostan_cluster_is_compute(int clusternum);
 
 	/**
 	 * @brief Asserts whether or not the target cluster is an IO cluster.
 	 *
-	 * @param clusterid ID of the target cluster.
+	 * @param clusternum Logical ID of the target cluster.
 	 *
 	 * @return Non zero if the target cluster is an IO cluster and
 	 * zero otherwise.
 	 */
-	static inline int bostan_cluster_is_iocluster(int clusterid)
-	{
-		return ((clusterid == BOSTAN_IOCLUSTER0) || (clusterid == BOSTAN_IOCLUSTER1));
-	}
+	EXTERN int bostan_cluster_is_io(int clusternum);
 
 /**@}*/
 
@@ -133,41 +141,42 @@
 	 * @name Provided Constants
 	 */
 	/**@{*/
-	#define PROCESSOR_CCLUSTERS_NUM  BOSTAN_CCLUSTERS_NUM  /**< @see BOSTAN_CCLUSTERS_NUM  */
-	#define PROCESSOR_IOCLUSTERS_NUM BOSTAN_IOCLUSTERS_NUM /**< @see BOSTAN_IOCLUSTERS_NUM */
+	#define PROCESSOR_CCLUSTERS_NUM     BOSTAN_PROCESSOR_CCLUSTERS_NUM     /**< @see BOSTAN_PROCESSOR_CCLUSTERS_NUM     */
+	#define PROCESSOR_IOCLUSTERS_NUM    BOSTAN_PROCESSOR_IOCLUSTERS_NUM    /**< @see BOSTAN_PROCESSOR_IOCLUSTERS_NUM    */
+	#define PROCESSOR_CLUSTERNUM_MASTER BOSTAN_PROCESSOR_CLUSTERNUM_MASTER /**< @see BOSTAN_PROCESSOR_CLUSTERNUM_MASTER */
 	/**@}*/
 
 	/**
 	 * @name Provided Functions
 	 */
 	/**@{*/
-	#define __cluster_get_id_fn       /**< bostan_cluster_get_id()       */
-	#define __cluster_is_ccluster_fn  /**< bostan_cluster_is_ccluster()  */
-	#define __cluster_is_iocluster_fn /**< bostan_cluster_is_iocluster() */
+	#define __cluster_get_num_fn      /**< bostan_cluster_get_num()    */
+	#define __cluster_is_ccluster_fn  /**< bostan_cluster_is_compute() */
+	#define __cluster_is_iocluster_fn /**< bostan_cluster_is_io()      */
 	/**@}*/
 
 	/**
-	 * @see bostan_cluster_get_id().
+	 * @see bostan_cluster_get_num().
 	 */
-	static inline int cluster_get_id(void)
+	static inline int cluster_get_num(void)
 	{
-		return (bostan_cluster_get_id());
+		return (bostan_cluster_get_num());
 	}
 
 	/**
-	 * @see bostan_cluster_is_ccluster().
+	 * @see bostan_cluster_is_compute().
 	 */
-	static inline int cluster_is_ccluster(int clusterid)
+	static inline int cluster_is_ccluster(int clusternum)
 	{
-		return (bostan_cluster_is_ccluster(clusterid));
+		return (bostan_cluster_is_compute(clusternum));
 	}
 
 	/**
-	 * @see bostan_cluster_is_iocluster().
+	 * @see bostan_cluster_is_io().
 	 */
-	static inline int cluster_is_iocluster(int clusterid)
+	static inline int cluster_is_iocluster(int clusternum)
 	{
-		return (bostan_cluster_is_iocluster(clusterid));
+		return (bostan_cluster_is_io(clusternum));
 	}
 
 /**@endcond*/

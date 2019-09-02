@@ -39,15 +39,14 @@
 	 * @name Maximum number of portal points.
 	 */
 	/**@{*/
-	#define MPPA256_PORTAL_CREATE_MAX (BOSTAN_PORTAL_CREATE_PER_DMA * BOSTAN_NR_INTERFACES) /**< Maximum amount of create mailboxes. */
-	#define MPPA256_PORTAL_OPEN_MAX   (BOSTAN_PORTAL_OPEN_PER_DMA * BOSTAN_NR_INTERFACES)   /**< Maximum amount of open mailboxes.   */
+	#define MPPA256_PORTAL_CREATE_MAX (BOSTAN_PORTAL_CREATE_PER_DMA * BOSTAN_PROCESSOR_NOC_INTERFACES_NUM) /**< Maximum amount of create portals. */
+	#define MPPA256_PORTAL_OPEN_MAX   (BOSTAN_PORTAL_OPEN_PER_DMA * BOSTAN_PROCESSOR_NOC_INTERFACES_NUM)   /**< Maximum amount of open portals.   */
 	/**@}*/
 
 	/**
 	 * @brief Maximum size of transfer data.
 	 */
 	#define MPPA256_PORTAL_MAX_SIZE (1*MB)
-
 
 	/**
 	 * @brief Creates a portal.
@@ -64,23 +63,24 @@
 	 * @brief Enables read operations from a remote.
 	 *
 	 * @param portalid ID of the target portal.
-	 * @param remote   NoC node ID of target remote.
+	 * @param nodenum  NoC node ID of target remote.
 	 *
 	 * @returns Upons successful completion zero is returned. Upon failure,
 	 * a negative error code is returned instead.
 	 */
-	EXTERN int mppa256_portal_allow(int portalid, int remote);
+	EXTERN int mppa256_portal_allow(int portalid, int nodenum);
 
 	/**
 	 * @brief Opens a portal.
 	 *
-	 * @param nodeid Logic ID of the target NoC node.
+	 * @param localnum  Logic ID of local node.
+	 * @param remotenum Logic ID of target node.
 	 *
 	 * @returns Upon successful completion, the ID of the target portal
 	 * is returned. Upon failure, a negative error code is returned
 	 * instead.
 	 */
-	EXTERN int mppa256_portal_open(int local, int remote);
+	EXTERN int mppa256_portal_open(int localnum, int remotenum);
 
 	/**
 	 * @brief Destroys a portal.
@@ -112,7 +112,7 @@
 	 * @returns Upon successful completion, 0 is returned
 	 * and non zero otherwise.
 	 */
-	EXTERN int mppa256_portal_awrite(int portalid, const void * buffer, uint64_t size, struct aiocb * aiocb);
+	EXTERN ssize_t mppa256_portal_awrite(int portalid, const void * buffer, uint64_t size);
 
 	/**
 	 * @brief Reads data from a portal.
@@ -120,12 +120,11 @@
 	 * @param portalid ID of the target portal.
 	 * @param buffer   Buffer where the data should be written to.
 	 * @param size     Number of bytes to read.
-	 * @param aiocb    Asynchronous operation control.
 	 *
 	 * @returns Upon successful completion, 0 is returned
 	 * and non zero otherwise.
 	 */
-	EXTERN int mppa256_portal_aread(int portalid, void * buffer, uint64_t size, struct aiocb * aiocb);
+	EXTERN ssize_t mppa256_portal_aread(int portalid, void * buffer, uint64_t size);
 
 	/**
 	 * @brief Waits asynchronous operation.
@@ -134,7 +133,7 @@
 	 *
 	 * @return Zero if wait read correctly and non zero otherwise.
 	 */
-	EXTERN int mppa256_portal_wait(struct aiocb * aiocb);
+	EXTERN int mppa256_portal_wait(int portalid);
 
 /*============================================================================*
  *                              Exported Interface                            *
@@ -144,14 +143,14 @@
 	 * @name Provided Interface
 	 */
 	/**@{*/
-	#define __portal_create_fn /**< mailbox_create() */
-	#define __portal_allow_fn  /**< mailbox_allow()  */
-	#define __portal_open_fn   /**< mailbox_open()   */
-	#define __portal_unlink_fn /**< mailbox_unlink() */
-	#define __portal_close_fn  /**< mailbox_close()  */
-	#define __portal_awrite_fn  /**< mailbox_write()  */
-	#define __portal_aread_fn  /**< mailbox_aread()  */
-	#define __portal_wait_fn   /**< mailbox_wait()   */
+	#define __portal_create_fn /**< portal_create() */
+	#define __portal_allow_fn  /**< portal_allow()  */
+	#define __portal_open_fn   /**< portal_open()   */
+	#define __portal_unlink_fn /**< portal_unlink() */
+	#define __portal_close_fn  /**< portal_close()  */
+	#define __portal_awrite_fn /**< portal_write()  */
+	#define __portal_aread_fn  /**< portal_aread()  */
+	#define __portal_wait_fn   /**< portal_wait()   */
 	/**@}*/
 
 	/**
@@ -176,17 +175,17 @@
 	/**
 	 * @see mppa256_portal_allow()
 	 */
-	static inline int portal_allow(int portalid, int remote)
+	static inline int portal_allow(int portalid, int remotenum)
 	{
-		return mppa256_portal_allow(portalid, remote);
+		return mppa256_portal_allow(portalid, remotenum);
 	}
 
 	/**
 	 * @see mppa256_portal_open()
 	 */
-	static inline int portal_open(int local, int remote)
+	static inline int portal_open(int localnum, int remotenum)
 	{
-		return mppa256_portal_open(local, remote);
+		return mppa256_portal_open(localnum, remotenum);
 	}
 
 	/**
@@ -208,25 +207,25 @@
 	/**
 	 * @see mppa256_portal_write()
 	 */
-	static inline int portal_awrite(int portalid, const void * buffer, uint64_t size, struct aiocb * aiocb)
+	static inline ssize_t portal_awrite(int portalid, const void * buffer, uint64_t size)
 	{
-		return mppa256_portal_awrite(portalid, buffer, size, aiocb);
+		return mppa256_portal_awrite(portalid, buffer, size);
 	}
 
 	/**
 	 * @see mppa256_portal_aread()
 	 */
-	static inline int portal_aread(int portalid, void * buffer, uint64_t size, struct aiocb * aiocb)
+	static inline ssize_t portal_aread(int portalid, void * buffer, uint64_t size)
 	{
-		return mppa256_portal_aread(portalid, buffer, size, aiocb);
+		return mppa256_portal_aread(portalid, buffer, size);
 	}
 
 	/**
 	 * @see mppa256_portal_wait()
 	 */
-	static inline int portal_wait(struct aiocb * aiocb)
+	static inline int portal_wait(int portalid)
 	{
-		return mppa256_portal_wait(aiocb);
+		return mppa256_portal_wait(portalid);
 	}
 
 #endif /* TARGET_KALRAY_MPPA256_PORTAL_H_ */

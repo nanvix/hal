@@ -266,7 +266,7 @@ PRIVATE int do_unix64_sync_create(const int *nodes, int nnodes, int type)
 			{
 				resource_free(&pool.rx, syncid);
 				unix64_sync_unlock();
-				return (-ECONNREFUSED);
+				return (-EINVAL);
 			}
 
 			/* Build pathname for NoC connector. */
@@ -282,7 +282,7 @@ PRIVATE int do_unix64_sync_create(const int *nodes, int nnodes, int type)
 			{
 				resource_free(&pool.rx, syncid);
 				unix64_sync_unlock();
-				return (-ECONNREFUSED);
+				return (-EINVAL);
 			}
 
 			/* Build pathname for NoC connector. */
@@ -374,7 +374,7 @@ PRIVATE int do_unix64_sync_open(const int *nodes, int nnodes, int type)
 			{
 				resource_free(&pool.tx, syncid);
 				unix64_sync_unlock();
-				return (-ECONNREFUSED);
+				return (-EINVAL);
 			}
 
 			/* Build pathname for NoC connector. */
@@ -390,7 +390,7 @@ PRIVATE int do_unix64_sync_open(const int *nodes, int nnodes, int type)
 			{
 				resource_free(&pool.tx, syncid);
 				unix64_sync_unlock();
-				return (-ECONNREFUSED);
+				return (-EINVAL);
 			}
 
 			/* Build pathname for NoC connector. */
@@ -586,7 +586,7 @@ again:
 error1:
 	unix64_sync_unlock();
 error0:
-	return (-EAGAIN);
+	return (-EBADF);
 }
 
 /*============================================================================*
@@ -684,7 +684,7 @@ again:
 error1:
 	unix64_sync_unlock();
 error0:
-	return (-EAGAIN);
+	return (-EBADF);
 }
 
 /*============================================================================*
@@ -732,7 +732,7 @@ again:
 error1:
 	unix64_sync_unlock();
 error0:
-	return (-EAGAIN);
+	return (-EBADF);
 }
 
 /*============================================================================*
@@ -780,7 +780,7 @@ again:
 error1:
 	unix64_sync_unlock();
 error0:
-	return (-EAGAIN);
+	return (-EBADF);
 }
 
 /*============================================================================*

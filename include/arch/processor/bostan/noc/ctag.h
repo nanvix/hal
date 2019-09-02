@@ -44,8 +44,8 @@
 	 * @name Type of C-NoC buffers
 	 */
 	/**@{*/
-	#define BOSTAN_CNOC_RX_TYPE BOSTAN_NOC_RX_TYPE /**< C-NoC receiver type. */
-	#define BOSTAN_CNOC_TX_TYPE BOSTAN_NOC_TX_TYPE /**< C-NoC transfer type. */
+	#define BOSTAN_CNOC_RX_TYPE BOSTAN_PROCESSOR_NOC_RX_TYPE /**< C-NoC receiver type. */
+	#define BOSTAN_CNOC_TX_TYPE BOSTAN_PROCESSOR_NOC_TX_TYPE /**< C-NoC transfer type. */
 	/**@}*/
 
     /**
@@ -68,20 +68,22 @@
 	 * @name Initial C-NoC tag.
 	 */
 	/**@{*/
-	#define BOSTAN_CNOC_RX_BASE BOSTAN_NR_RESERVED_RX_TAGS /**< Receiver tag offset. */
-	#define BOSTAN_CNOC_TX_BASE BOSTAN_NR_RESERVED_TX_TAGS /**< Transfer tag offset. */
+	#define BOSTAN_CNOC_RX_BASE BOSTAN_PROCESSOR_NOC_RESERVED_RXS_NUM /**< Receiver tag offset. */
+	#define BOSTAN_CNOC_TX_BASE BOSTAN_PROCESSOR_NOC_RESERVED_TXS_NUM /**< Transfer tag offset. */
 	/**@}*/
 
 	/**
 	 * @name Number of C-NoC buffer
 	 */
 	/**@{*/
-	#define BOSTAN_NR_CNOC_RX (BOSTAN_CNOC_RX_MAX - BOSTAN_CNOC_RX_BASE) /**< Number of receive buffers.  */
-	#define BOSTAN_NR_CNOC_TX (BOSTAN_CNOC_TX_MAX - BOSTAN_CNOC_TX_BASE) /**< Number of transfer buffers. */
+	#define BOSTAN_CNOC_RXS_NUM (BOSTAN_CNOC_RX_MAX - BOSTAN_CNOC_RX_BASE) /**< Number of receive buffers.  */
+	#define BOSTAN_CNOC_TXS_NUM (BOSTAN_CNOC_TX_MAX - BOSTAN_CNOC_TX_BASE) /**< Number of transfer buffers. */
 	/**@}*/
 
 	/**
 	 * @name Identifies C-NoC transfer tag reserved for Communication services.
+	 * 
+	 * @details Portal abstraction has 2 TX avaiable {2, 3}.
 	 */
 	/**@{*/
 	#define BOSTAN_MAILBOX_CNOC_TX_BASE 0 /**< C-NoC Transfer Tag reserved for Mailbox. */
@@ -115,6 +117,8 @@
 	 *
 	 * @param interface Number of the DMA channel.
 	 * @param tag       Number of receiver buffer.
+	 * 
+	 * @return Zero if allocate correctly and non zero otherwise.
 	 */
 	EXTERN int bostan_cnoc_rx_free(int interface, int tag);
 
@@ -152,7 +156,7 @@
 		int tag,
 		int mode,
 		uint64_t mask,
-		bostan_noc_handler_fn handler
+		bostan_processor_noc_handler_fn handler
 	);
 
 /*============================================================================*
@@ -160,11 +164,11 @@
  *============================================================================*/
 
 	/**
-	 * @brief Free C-NoC transfer buffer.
+	 * @brief Allocate C-NoC transfer buffer.
 	 *
 	 * @param interface Number of the DMA channel.
-	 * @param tag       Number of transfer buffer.
-
+	 * @param tag       Number of receiver buffer.
+	 *
 	 * @return Zero if allocate correctly and non zero otherwise.
 	 */
 	EXTERN int bostan_cnoc_tx_alloc(int interface, int tag);
@@ -174,6 +178,8 @@
 	 *
 	 * @param interface Number of the DMA channel.
 	 * @param tag       Number of transfer buffer.
+	 * 
+	 * @return Zero if allocate correctly and non zero otherwise.
 	 */
 	EXTERN int bostan_cnoc_tx_free(int interface, int tag);
 
@@ -183,26 +189,28 @@
 	 * @param interface Number of the DMA channel.
 	 * @param tag       Number tag.
 	 * @param value     Data to send.
+	 * 
+	 * @return Zero if allocate correctly and non zero otherwise.
 	 */
-	EXTERN void bostan_cnoc_tx_write(int interface, int tag, uint64_t value);
+	EXTERN int bostan_cnoc_tx_write(int interface, int tag, uint64_t value);
 
 	/**
 	 * @brief Configure C-NoC transfer buffer.
 	 *
-	 * @param interface   Number of the DMA channel.
-	 * @param source_node Source interface ID.
-	 * @param source_tag  Number of source buffer.
-	 * @param target_node Target interface ID.
-	 * @param target_tag  Number of target buffer.
+	 * @param interface  Number of the DMA channel.
+	 * @param localid    Source interface ID.
+	 * @param local_tag  Number of source buffer.
+	 * @param remoteid   Target interface ID.
+	 * @param remote_tag Number of target buffer.
 	 *
 	 * @return Zero if configure successfully and non zero otherwise.
 	 */
     EXTERN int bostan_cnoc_tx_config(
 		int interface,
-		int source_node,
-		int source_tag,
-		int target_node,
-		int target_tag
+		int localid,
+		int local_tag,
+		int remoteid,
+		int remote_tag
 	);
 
 /**@}*/

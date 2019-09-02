@@ -22,11 +22,26 @@
  * SOFTWARE.
  */
 
-#include <arch/target/kalray/mppa256/portal.h>
-#include <nanvix/hal/hal.h>
+/* Must come fist. */
+#define __NEED_HAL_TARGET
+
+#include <nanvix/hal/target.h>
+
 #include <nanvix/hal/resource.h>
 #include <nanvix/klib.h>
 #include <errno.h>
+
+/*============================================================================*
+ * Definitions                                                                *
+ *============================================================================*/
+
+/**
+ * @name File descriptor offset.
+ */
+/**@{*/
+#define MPPA256_PORTAL_CREATE_OFFSET 0                          /**< Initial File Descriptor ID for Creates. */
+#define MPPA256_PORTAL_OPEN_OFFSET   MPPA256_PORTAL_CREATE_MAX /**< Initial File Descriptor ID for Opens.   */
+/**@}*/
 
 /**
  * @name Gets underlying resource IDs.
@@ -41,12 +56,16 @@
  */
 /**@{*/
 #define UNDERLYING_CREATE_CTAG(portalid)      ((portalid % BOSTAN_PORTAL_CREATE_PER_DMA) + PORTAL_CONTROL_TAG_BASE) /**< Receiver Ctag TX ID.     */
-#define UNDERLYING_CREATE_DTAG(remoteid)      (bostan_node_portal_tag(remoteid))                                    /**< Receiver Dtag RX ID.     */
+#define UNDERLYING_CREATE_DTAG(remote_num)    (bostan_processor_node_portal_tag(remote_num))                        /**< Receiver Dtag RX ID.     */
 #define UNDERLYING_CREATE_INTERFACE(portalid) (portalid / BOSTAN_PORTAL_CREATE_PER_DMA)                             /**< Receiver DMA channel ID. */
-#define UNDERLYING_OPEN_CTAG(remoteid)        (bostan_node_portal_tag(remoteid))
-#define UNDERLYING_OPEN_DTAG(portalid)        ((portalid % BOSTAN_PORTAL_OPEN_PER_DMA) + PORTAL_DATA_TAG_BASE)
-#define UNDERLYING_OPEN_INTERFACE(portalid)   (portalid / BOSTAN_PORTAL_OPEN_PER_DMA)
+#define UNDERLYING_OPEN_CTAG(remote_num)      (bostan_processor_node_portal_tag(remote_num))                        /**< Transfer Ctag TX ID.     */
+#define UNDERLYING_OPEN_DTAG(portalid)        ((portalid % BOSTAN_PORTAL_OPEN_PER_DMA) + PORTAL_DATA_TAG_BASE)      /**< Transfer Dtag RX ID.     */
+#define UNDERLYING_OPEN_INTERFACE(portalid)   (portalid / BOSTAN_PORTAL_OPEN_PER_DMA)                               /**< Transfer DMA channel ID. */
 /**@}*/
+
+/*============================================================================*
+ * Global variables                                                           *
+ *============================================================================*/
 
 /**
  * @brief portal Table
@@ -54,36 +73,36 @@
 PRIVATE struct portal
 {
 	/**
-	 * @brief portal receiver
+	 * @brief Portal receiver
 	 */
 	struct rx
 	{
-		struct resource resource; /**< Control flags.                                */
+		struct resource resource; /**< Control flags.                                      */
 		
 		/* Control parameters */
-		int remoteid;             /**< ID of the remote node allowed to communicate. */
+		int remote;               /**< Logic ID of the remote node allowed to communicate. */
 
 		/* Receiver requisition on hold. */
-		k1b_spinlock_t lock;      /**< Receiver request barrier.                     */
-	} rxs[MPPA256_PORTAL_CREATE_MAX];
+		k1b_spinlock_t lock;      /**< Receiver request barrier.                           */
+	} ALIGN(sizeof(dword_t)) rxs[MPPA256_PORTAL_CREATE_MAX];
 
 	/**
-	 * @brief portal sender
+	 * @brief Portal sender
 	 */
 	struct tx
 	{
-		struct resource resource; /**< Control flags.                          */
+		struct resource resource; /**< Control flags.                                      */
 
 		/* Control parameters */
-		k1b_byte_t is_allowed;    /**< Permission signal to sends the message. */
-		int remoteid;             /**< ID of the remote node allowed to communicate. */
+		k1b_byte_t is_allowed;    /**< Permission signal to sends the message.             */
+		int remote;               /**< Logic ID of the remote node allowed to communicate. */
 		
 		/* Sender requisition on hold. */
-		const void * buffer;
-		uint64_t size;
-		k1b_spinlock_t lock;      /**< Transfer request barrier.               */
-	} txs[MPPA256_PORTAL_OPEN_MAX];
-} portaltab = {
+		const void * buffer;      /**< Buffer of the data.                                 */
+		uint64_t size;            /**< Size of the buffer.                                 */
+		k1b_spinlock_t lock;      /**< Transfer request barrier.                           */
+	} ALIGN(sizeof(dword_t)) txs[MPPA256_PORTAL_OPEN_MAX];
+} ALIGN(sizeof(dword_t)) portaltab = {
 	.rxs[0 ... MPPA256_PORTAL_CREATE_MAX-1] = { {0}, 0, K1B_SPINLOCK_UNLOCKED },
 	.txs[0 ... MPPA256_PORTAL_OPEN_MAX-1]   = { {0}, 0, -1, NULL, 0, K1B_SPINLOCK_UNLOCKED }
 };
@@ -95,10 +114,14 @@ PRIVATE struct portalpools
 {
 	const struct resource_pool rx_pool;
 	const struct resource_pool tx_pool;
-} portalpools = {
+} ALIGN(sizeof(dword_t)) portalpools = {
 	.rx_pool = {portaltab.rxs, MPPA256_PORTAL_CREATE_MAX, sizeof(struct rx)},
 	.tx_pool = {portaltab.txs, MPPA256_PORTAL_OPEN_MAX,   sizeof(struct tx)},
 };
+
+/*============================================================================*
+ * mppa256_get_free_resource_rx()                                             *
+ *============================================================================*/
 
 /**
  * @brief Gets portal table parameters.
@@ -107,20 +130,24 @@ PRIVATE struct portalpools
  * 
  * @returns Portal ID on RX arrays elements, -1 if has no one available.
  */
-PRIVATE int get_free_resource_rx(int nodenum)
+PRIVATE int mppa256_get_free_resource_rx(int nodenum)
 {
 	unsigned base;
 
 	UNUSED(portalpools);
 
-	base = (nodenum % BOSTAN_NR_INTERFACES) * BOSTAN_PORTAL_CREATE_PER_DMA;
+	base = (nodenum % BOSTAN_PROCESSOR_NOC_INTERFACES_NUM) * BOSTAN_PORTAL_CREATE_PER_DMA;
 
 	for (unsigned i = base; i < (base + BOSTAN_PORTAL_CREATE_PER_DMA); ++i)
-		if (resource_is_used(&portaltab.rxs[i].resource))
+		if (!resource_is_used(&portaltab.rxs[i].resource))
 			return (i);
 
-	return (-1);
+	return (-EINVAL);
 }
+
+/*============================================================================*
+ * mppa256_get_free_resource_tx()                                             *
+ *============================================================================*/
 
 /**
  * @brief Gets portal table parameters.
@@ -129,18 +156,22 @@ PRIVATE int get_free_resource_rx(int nodenum)
  * 
  * @returns Portal ID on RX arrays elements, -1 if has no one available.
  */
-PRIVATE int get_free_resource_tx(int nodenum)
+PRIVATE int mppa256_get_free_resource_tx(int nodenum)
 {
 	unsigned base;
 
-	base = (nodenum % BOSTAN_NR_INTERFACES) * BOSTAN_PORTAL_OPEN_PER_DMA;
+	base = (nodenum % BOSTAN_PROCESSOR_NOC_INTERFACES_NUM) * BOSTAN_PORTAL_OPEN_PER_DMA;
 
 	for (unsigned i = base; i < (base + BOSTAN_PORTAL_OPEN_PER_DMA); ++i)
-		if (resource_is_used(&portaltab.txs[i].resource))
+		if (!resource_is_used(&portaltab.txs[i].resource))
 			return (i);
 
-	return (-1);
+	return (-EINVAL);
 }
+
+/*============================================================================*
+ * mppa256_portal_node_is_local()                                             *
+ *============================================================================*/
 
 /**
  * @brief Assess if the nodenum in on local cluster. 
@@ -153,19 +184,19 @@ PRIVATE int mppa256_portal_node_is_local(int portalid, int nodenum)
 {
 	int clusternum;
 
+	clusternum = bostan_processor_noc_cluster_to_node_num(cluster_get_num());
+
 	if (portalid == -1)
-	{
-		clusternum = bostan_node_get_num(bostan_cluster_get_id());
+		return WITHIN(nodenum, clusternum, clusternum + BOSTAN_PROCESSOR_NOC_INTERFACES_NUM);
 
-		return WITHIN(nodenum, clusternum, clusternum + BOSTAN_NR_INTERFACES);
-	}
-	else
-	{
-		clusternum = bostan_node_get_num(bostan_cluster_get_id() + UNDERLYING_CREATE_INTERFACE(portalid));
+	clusternum += UNDERLYING_CREATE_INTERFACE(portalid);
 
-		return (clusternum == nodenum);
-	}
+	return (clusternum == nodenum);
 }
+
+/*============================================================================*
+ * mppa256_portal_rx_is_valid()                                               *
+ *============================================================================*/
 
 /**
  * @brief Asserts whether or not a receiver portal is valid.
@@ -181,8 +212,18 @@ PRIVATE int mppa256_portal_node_is_local(int portalid, int nodenum)
  */
 PRIVATE int mppa256_portal_rx_is_valid(int portalid)
 {
-	return WITHIN(portalid, 0, MPPA256_PORTAL_CREATE_MAX);
+	return (
+		WITHIN(
+			portalid,
+			MPPA256_PORTAL_CREATE_OFFSET,
+			MPPA256_PORTAL_CREATE_OFFSET + MPPA256_PORTAL_CREATE_MAX
+		)
+	);
 }
+
+/*============================================================================*
+ * mppa256_portal_tx_is_valid()                                               *
+ *============================================================================*/
 
 /**
  * @brief Asserts whether or not a sender portal is valid.
@@ -198,8 +239,39 @@ PRIVATE int mppa256_portal_rx_is_valid(int portalid)
  */
 PRIVATE int mppa256_portal_tx_is_valid(int portalid)
 {
-	return WITHIN(portalid, 0, MPPA256_PORTAL_OPEN_MAX);
+	return (
+		WITHIN(
+			portalid,
+			MPPA256_PORTAL_OPEN_OFFSET,
+			MPPA256_PORTAL_OPEN_OFFSET + MPPA256_PORTAL_OPEN_MAX
+		)
+	);
 }
+
+/*============================================================================*
+ * mppa256_node_is_valid()                                                    *
+ *============================================================================*/
+
+/**
+ * @brief Asserts whether or not a sender mailbox is valid.
+ *
+ * @param portalid ID of the target mailbox.
+ *
+ * @returns One if the target mailbox is valid, and false
+ * otherwise.
+ *
+ * @note This function is non-blocking.
+ * @note This function is thread-safe.
+ * @note This function is reentrant.
+ */
+PRIVATE int mppa256_node_is_valid(int nodenum)
+{
+	return (WITHIN(nodenum, 0, PROCESSOR_NOC_NODES_NUM));
+}
+
+/*============================================================================*
+ * mppa256_portal_receiver_handler()                                          *
+ *============================================================================*/
 
 /**
  * @brief Portal Receiver Handler.
@@ -209,18 +281,18 @@ PRIVATE int mppa256_portal_tx_is_valid(int portalid)
  */
 PRIVATE void mppa256_portal_receiver_handler(int interface, int tag)
 {
-	unsigned base;
+	unsigned begin;
+	unsigned end;
 
-	kprintf("[hal][target][portal] Receiver Handler triggered (%d, %d).", interface, tag);
+	begin = (interface * BOSTAN_PORTAL_CREATE_PER_DMA);
+	end   = (begin + MPPA256_PORTAL_CREATE_MAX);
 
-	base = (interface * BOSTAN_PORTAL_CREATE_PER_DMA);
-
-	for (unsigned i = base; i < (base + MPPA256_PORTAL_CREATE_MAX); ++i)
+	for (unsigned i = begin; i < end; ++i)
 	{
 		if (!resource_is_used(&portaltab.rxs[i].resource))
 			continue;
 
-		if (UNDERLYING_CREATE_DTAG(portaltab.rxs[i].remoteid) != tag)
+		if (UNDERLYING_CREATE_DTAG(portaltab.rxs[i].remote) != tag)
 			continue;
 
 		resource_set_notbusy(&portaltab.rxs[i].resource);
@@ -232,6 +304,13 @@ PRIVATE void mppa256_portal_receiver_handler(int interface, int tag)
 	}
 }
 
+/*============================================================================*
+ * mppa256_portal_sender_handler()                                            *
+ *============================================================================*/
+
+/**
+ * @see mppa256_portal_send_data().
+ */
 PRIVATE int mppa256_portal_send_data(int portalid);
 
 /**
@@ -242,24 +321,24 @@ PRIVATE int mppa256_portal_send_data(int portalid);
  */
 PRIVATE void mppa256_portal_sender_handler(int interface, int tag)
 {
-	unsigned base;
+	unsigned begin;
+	unsigned end;
 
-	kprintf("[hal][target][portal] Sender Handler triggered (%d, %d).", interface, tag);
+	begin = (interface * BOSTAN_PORTAL_OPEN_PER_DMA);
+	end   = (begin + MPPA256_PORTAL_OPEN_MAX);
 
-	base = (interface * BOSTAN_PORTAL_OPEN_PER_DMA);
-
-	for (unsigned i = base; i < (base + MPPA256_PORTAL_OPEN_MAX); ++i)
+	for (unsigned i = begin; i < end; ++i)
 	{
 		if (!resource_is_used(&portaltab.txs[i].resource))
 			continue;
 
-		if (UNDERLYING_OPEN_CTAG(portaltab.txs[i].remoteid) != tag)
+		if (UNDERLYING_OPEN_CTAG(portaltab.txs[i].remote) != tag)
 			continue;
 
 		portaltab.txs[i].is_allowed = 1;
 
 		/* Sends requested message. */
-		if (!resource_is_busy(&portaltab.txs[i].resource))
+		if (resource_is_busy(&portaltab.txs[i].resource))
 		{
 			if (mppa256_portal_send_data(i) != 0)
 				kpanic("[hal][target][portal] Sender Handler failed!");
@@ -269,27 +348,27 @@ PRIVATE void mppa256_portal_sender_handler(int interface, int tag)
 	}
 }
 
+/*============================================================================*
+ * mppa256_portal_create()                                                    *
+ *============================================================================*/
+
 /**
  * @brief Creates a portal.
  *
- * @param local ID of the local NoC node.
+ * @param nodenum Logical ID of the local NoC node.
  *
  * @returns Upon successful completion, the ID of a newly created
  * portal is returned. Upon failure, a negative error code is returned
  * instead.
  */
-int mppa256_portal_create(int nodenum)
+PRIVATE int do_mppa256_portal_create(int nodenum)
 {
 	int ctag;
 	int portalid;
 	int interface;
 
-	/* Invalid NoC node ID. */
-	if (!mppa256_portal_node_is_local(-1, nodenum))
-		return (-EINVAL);
-
 	/* Gets portal index not used. */
-	if ((portalid = get_free_resource_rx(nodenum)) < 0)
+	if ((portalid = mppa256_get_free_resource_rx(nodenum)) < 0)
 		return (-EBUSY);
 
 	/* Gets underlying parameters. */
@@ -301,118 +380,179 @@ int mppa256_portal_create(int nodenum)
 		return (-EAGAIN);
 
 	/* Configures lock from asynchronous operations. */
-	k1b_spinlock_lock(&portaltab.rxs[portalid].lock);
+	spinlock_lock(&portaltab.rxs[portalid].lock);
 
 	/* Allocates associated resource. */
-	portaltab.rxs[portalid].remoteid = -1;
+	portaltab.rxs[portalid].remote = -1;
 	resource_set_used(&portaltab.rxs[portalid].resource);
 	resource_set_notbusy(&portaltab.rxs[portalid].resource);
 
-	return (portalid);
+	return (MPPA256_PORTAL_CREATE_OFFSET + portalid);
 }
+
+/**
+ * @see do_mppa256_portal_create().
+ */
+PUBLIC int mppa256_portal_create(int nodenum)
+{
+	/* Is local valid? */
+	if (!mppa256_node_is_valid(nodenum))
+		return (-EINVAL);
+
+	/* Invalid NoC node ID. */
+	if (!mppa256_portal_node_is_local(-1, nodenum))
+		return (-EINVAL);
+
+	return (do_mppa256_portal_create(nodenum));
+}
+
+/*============================================================================*
+ * mppa256_portal_allow()                                                     *
+ *============================================================================*/
 
 /**
  * @brief Enables read operations from a remote.
  *
- * @param portalid ID of the target portal.
- * @param remote   NoC node ID of target remote.
+ * @param portalid  ID of the target portal.
+ * @param remotenum Logic ID of target NoC node.
  *
  * @returns Upons successful completion zero is returned. Upon failure,
  * a negative error code is returned instead.
  */
-int mppa256_portal_allow(int portalid, int remote)
+PRIVATE int do_mppa256_portal_allow(int portalid, int remotenum)
 {
 	int dtag;
-	int remoteid;
 	int interface;
 
-	/* Invalid NoC node ID. */
-	if (!mppa256_portal_rx_is_valid(portalid))
-		return (-EINVAL);
-
-	/* Gets portal index not used. */
-	if (mppa256_portal_node_is_local(portalid, remote))
-		return (-EINVAL);
-
-	interface = UNDERLYING_CREATE_INTERFACE(portalid);
-	
-	if (portaltab.rxs[portalid].remoteid != -1)
-	{
-		dtag = UNDERLYING_CREATE_DTAG(portaltab.rxs[portalid].remoteid);
-
-		if (bostan_dma_data_unlink(interface, dtag) != 0)
-			return (-EINVAL);
-	}
-
 	/* Gets underlying parameters. */
-	remoteid = bostan_node_convert_id(remote);
-	dtag     = UNDERLYING_CREATE_DTAG(remoteid);
+	interface = UNDERLYING_CREATE_INTERFACE(portalid);
+	dtag = UNDERLYING_CREATE_DTAG(remotenum);
 
 	/* Creates data reciever point. */
 	if (bostan_dma_data_create(interface, dtag) != 0)
 		return (-EINVAL);
 
 	/* Allocates associated resource. */
-	portaltab.rxs[portalid].remoteid = remoteid;
+	portaltab.rxs[portalid].remote = remotenum;
 	resource_set_used(&portaltab.rxs[portalid].resource);
 	resource_set_notbusy(&portaltab.rxs[portalid].resource);
+
+	dcache_invalidate();
 
 	return (0);
 }
 
 /**
+ * @see do_mppa256_portal_allow().
+ */
+PUBLIC int mppa256_portal_allow(int portalid, int remotenum)
+{
+	/* Invalid NoC node ID. */
+	if (!mppa256_portal_rx_is_valid(portalid))
+		return (-EBADF);
+
+		/* Bad portal. */
+	if (!resource_is_used(&portaltab.rxs[portalid].resource))
+		return (-EBADF);
+
+	/* Is nodenum valid? */
+	if (!mppa256_node_is_valid(remotenum))
+		return (-EINVAL);
+
+	portalid -= MPPA256_PORTAL_CREATE_OFFSET;
+
+	/* Gets portal index not used. */
+	if (mppa256_portal_node_is_local(portalid, remotenum))
+		return (-EINVAL);
+	
+	/* Is the remote already configured? */
+	if (portaltab.rxs[portalid].remote != -1)
+	{
+		// dtag = UNDERLYING_CREATE_DTAG(portaltab.rxs[portalid].remote);
+
+		// if (bostan_dma_data_unlink(interface, dtag) != 0)
+		// 	return (-EINVAL);
+
+		return (-EBUSY);
+	}
+
+	return (do_mppa256_portal_allow(portalid, remotenum));
+}
+
+/*============================================================================*
+ * mppa256_portal_open()                                                      *
+ *============================================================================*/
+
+/**
  * @brief Opens a portal.
  *
- * @param nodeid Logic ID of the target NoC node.
+ * @param localnum Logic ID of the local NoC node.
+ * @param remote   Logic ID of the target NoC node.
  *
  * @returns Upon successful completion, the ID of the target portal
  * is returned. Upon failure, a negative error code is returned
  * instead.
  */
-int mppa256_portal_open(int local, int remote)
+PRIVATE int do_mppa256_portal_open(int localnum, int remotenum)
 {
 	int ctag;
 	int dtag;
-	int remoteid;
 	int portalid;
 	int interface;
 
-	/* Invalid NoC node ID. */
-	if (!mppa256_portal_node_is_local(-1, local))
-		return (-EINVAL);
-	
-	/* Invalid NoC node ID. */
-	if (local == remote)
-		return (-EINVAL);
-
 	/* Gets portal index not used. */
-	if ((portalid = get_free_resource_tx(local)) < 0)
+	if ((portalid = mppa256_get_free_resource_tx(localnum)) < 0)
 		return (-EBUSY);
 
 	/* Gets underlying parameters. */
-	remoteid  = bostan_node_convert_id(remote);
-	ctag      = UNDERLYING_OPEN_CTAG(remoteid);
+	ctag      = UNDERLYING_OPEN_CTAG(remotenum);
 	dtag      = UNDERLYING_OPEN_DTAG(portalid);
 	interface = UNDERLYING_OPEN_INTERFACE(portalid);
 
 	/* Opens control sender point. */
 	if (bostan_dma_control_create(interface, ctag, (1), mppa256_portal_sender_handler) != 0)
 		return (-EAGAIN);
-	
+
 	/* Opens data sender point. */
 	if (bostan_dma_data_open(interface, dtag) != 0)
 		return (-EAGAIN);
 
 	/* Configures lock from asynchronous operations. */
-	k1b_spinlock_lock(&portaltab.txs[portalid].lock);
+	spinlock_lock(&portaltab.txs[portalid].lock);
 
 	/* Allocates associated resource. */
-	portaltab.txs[portalid].remoteid = remoteid;
+	portaltab.txs[portalid].remote = remotenum;
+	portaltab.txs[portalid].buffer = NULL;
+	portaltab.txs[portalid].size   = 0;
 	resource_set_used(&portaltab.txs[portalid].resource);
 	resource_set_notbusy(&portaltab.txs[portalid].resource);
 
-	return (portalid);
+	return (MPPA256_PORTAL_OPEN_OFFSET + portalid);
 }
+
+/**
+ * @see do_mppa256_portal_open().
+ */
+PUBLIC int mppa256_portal_open(int localnum, int remotenum)
+{
+	/* Is nodenum valid? */
+	if (!mppa256_node_is_valid(localnum) || !mppa256_node_is_valid(remotenum))
+		return (-EINVAL);
+
+	/* Invalid NoC node ID. */
+	if (!mppa256_portal_node_is_local(-1, localnum))
+		return (-EINVAL);
+
+	/* Invalid NoC node ID. */
+	if (localnum == remotenum)
+		return (-EINVAL);
+
+	return (do_mppa256_portal_open(localnum, remotenum));
+}
+
+/*============================================================================*
+ * mppa256_portal_unlink()                                                    *
+ *============================================================================*/
 
 /**
  * @brief Destroys a portal.
@@ -422,27 +562,19 @@ int mppa256_portal_open(int local, int remote)
  * @returns Upon successful completion, zero is returned. Upon failure,
  * a negative error code is returned instead.
  */
-int mppa256_portal_unlink(int portalid)
+PRIVATE int do_mppa256_portal_unlink(int portalid)
 {
 	int ctag;
 	int dtag;
 	int interface;
 
-	/* Invalid NoC node ID. */
-	if (!mppa256_portal_rx_is_valid(portalid))
-		return (-EINVAL);
-
-	/* Bad portal. */
-	if (!resource_is_used(&portaltab.rxs[portalid].resource))
-		return (-EINVAL);
-
 	/* Gets underlying parameters. */
 	ctag = UNDERLYING_CREATE_CTAG(portalid);
 	interface = UNDERLYING_CREATE_INTERFACE(portalid);
 
-	if (portaltab.rxs[portalid].remoteid != -1)
+	if (portaltab.rxs[portalid].remote != -1)
 	{
-		dtag = UNDERLYING_CREATE_DTAG(portaltab.rxs[portalid].remoteid);
+		dtag = UNDERLYING_CREATE_DTAG(portaltab.rxs[portalid].remote);
 
 		if (bostan_dma_data_unlink(interface, dtag) != 0)
 			return (-EINVAL);	
@@ -453,15 +585,37 @@ int mppa256_portal_unlink(int portalid)
 		return (-EAGAIN);
 
 	/* Configures lock from asynchronous operations. */
-	k1b_spinlock_unlock(&portaltab.rxs[portalid].lock);
+	spinlock_unlock(&portaltab.rxs[portalid].lock);
 
 	/* Allocates associated resource. */
-	portaltab.rxs[portalid].remoteid = -1;
+	portaltab.rxs[portalid].remote = -1;
 	resource_set_unused(&portaltab.rxs[portalid].resource);
 	resource_set_notbusy(&portaltab.rxs[portalid].resource);
 
 	return (0);
 }
+
+/**
+ * @see do_mppa256_portal_unlink().
+ */
+PUBLIC int mppa256_portal_unlink(int portalid)
+{
+	/* Invalid NoC node ID. */
+	if (!mppa256_portal_rx_is_valid(portalid))
+		return (-EBADF);
+	
+	portalid -= MPPA256_PORTAL_CREATE_OFFSET;
+
+	/* Bad portal. */
+	if (!resource_is_used(&portaltab.rxs[portalid].resource))
+		return (-EBADF);
+
+	return (do_mppa256_portal_unlink(portalid));
+}
+
+/*============================================================================*
+ * mppa256_portal_close()                                                     *
+ *============================================================================*/
 
 /**
  * @brief Closes a portal.
@@ -471,22 +625,14 @@ int mppa256_portal_unlink(int portalid)
  * @returns Upon successful completion, zero is returned. Upon
  * failure, a negative error code is returned instead.
  */
-int mppa256_portal_close(int portalid)
+PRIVATE int do_mppa256_portal_close(int portalid)
 {
 	int ctag;
 	int dtag;
 	int interface;
 
-	/* Invalid NoC node ID. */
-	if (!mppa256_portal_tx_is_valid(portalid))
-		return (-EINVAL);
-
-	/* Bad portal. */
-	if (!resource_is_used(&portaltab.txs[portalid].resource))
-		return (-EINVAL);
-
 	/* Gets underlying parameters. */
-	ctag      = UNDERLYING_OPEN_CTAG(portaltab.txs[portalid].remoteid);
+	ctag      = UNDERLYING_OPEN_CTAG(portaltab.txs[portalid].remote);
 	dtag      = UNDERLYING_OPEN_DTAG(portalid);
 	interface = UNDERLYING_OPEN_INTERFACE(portalid);
 
@@ -499,33 +645,63 @@ int mppa256_portal_close(int portalid)
 		return (-EAGAIN);
 	
 	/* Configures lock from asynchronous operations. */
-	k1b_spinlock_unlock(&portaltab.txs[portalid].lock);
+	spinlock_unlock(&portaltab.txs[portalid].lock);
 
 	/* Allocates associated resource. */
-	portaltab.txs[portalid].remoteid = -1;
+	portaltab.txs[portalid].remote = -1;
 	resource_set_unused(&portaltab.txs[portalid].resource);
 	resource_set_notbusy(&portaltab.txs[portalid].resource);
 
 	return (0);
 }
 
+/**
+ * @see do_mppa256_portal_close().
+ */
+PUBLIC int mppa256_portal_close(int portalid)
+{
+	/* Invalid NoC node ID. */
+	if (!mppa256_portal_tx_is_valid(portalid))
+		return (-EBADF);
+	
+	portalid -= MPPA256_PORTAL_OPEN_OFFSET;
+
+	/* Bad portal. */
+	if (!resource_is_used(&portaltab.txs[portalid].resource))
+		return (-EBADF);
+
+	return (do_mppa256_portal_close(portalid));
+}
+
+/*============================================================================*
+ * mppa256_portal_send_data()                                                 *
+ *============================================================================*/
+
+/**
+ * @brief Underlying sender funtion.
+ *
+ * @param portalid ID of the target portal.
+ *
+ * @returns Upon successful completion, 0 is returned
+ * and non zero otherwise.
+ */
 PRIVATE int mppa256_portal_send_data(int portalid)
 {
 	int ret;
 	int ctag;
 	int dtag;
-	int localid;
 	int interface;
 	int target_dtag;
 
 	/* Local Parameters. */
-	ctag        = UNDERLYING_OPEN_CTAG(portaltab.txs[portalid].remoteid);
-	dtag        = UNDERLYING_OPEN_DTAG(portalid);
-	interface   = UNDERLYING_OPEN_INTERFACE(portalid);
+	ctag      = UNDERLYING_OPEN_CTAG(portaltab.txs[portalid].remote);
+	dtag      = UNDERLYING_OPEN_DTAG(portalid);
+	interface = UNDERLYING_OPEN_INTERFACE(portalid);
 
 	/* Target parameters*/
-	localid     = bostan_node_convert_id(cluster_get_id() + interface);
-	target_dtag = UNDERLYING_CREATE_DTAG(localid);
+	target_dtag = UNDERLYING_CREATE_DTAG(
+		bostan_processor_noc_cluster_to_node_num(cluster_get_num()) + interface
+	);
 
 	/* Reconfigures signal receiver. */
 	if (bostan_dma_control_config(interface, ctag, (1), mppa256_portal_sender_handler) < 0)
@@ -535,7 +711,7 @@ PRIVATE int mppa256_portal_send_data(int portalid)
 	ret = bostan_dma_data_write(
 		interface,
 		dtag,
-		portaltab.txs[portalid].remoteid,
+		portaltab.txs[portalid].remote,
 		target_dtag,
 		portaltab.txs[portalid].buffer,
 		portaltab.txs[portalid].size,
@@ -550,10 +726,14 @@ PRIVATE int mppa256_portal_send_data(int portalid)
 	portaltab.txs[portalid].is_allowed = 0;
 	resource_set_notbusy(&portaltab.txs[portalid].resource);
 
-	k1b_spinlock_unlock(&portaltab.txs[portalid].lock);
+	spinlock_unlock(&portaltab.txs[portalid].lock);
 
 	return (0);
 }
+
+/*============================================================================*
+ * mppa256_portal_awrite()                                                    *
+ *============================================================================*/
 
 /**
  * @brief Writes data to a portal.
@@ -565,33 +745,50 @@ PRIVATE int mppa256_portal_send_data(int portalid)
  * @returns Upon successful completion, 0 is returned
  * and non zero otherwise.
  */
-int mppa256_portal_write(int portalid, const void * buffer, uint64_t size, struct aiocb * aiocb)
+PRIVATE ssize_t do_mppa256_portal_awrite(int portalid, const void * buffer, uint64_t size)
 {
-	/* Invalid NoC node ID. */
-	if (!mppa256_portal_tx_is_valid(portalid))
-		return (-EINVAL);
-
-	/* Bad portal. */
-	if (!resource_is_used(&portaltab.txs[portalid].resource))
-		return (-EINVAL);
-
-	/* Busy portal. */
-	if (!resource_is_busy(&portaltab.txs[portalid].resource))
-		return (-EBUSY);
-	
-	/* Bad aiocb. */
-	if (aiocb == NULL || size > MPPA256_PORTAL_MAX_SIZE)
-		return (-EINVAL);
-
 	portaltab.txs[portalid].buffer = buffer;
 	portaltab.txs[portalid].size   = size;
 	resource_set_busy(&portaltab.txs[portalid].resource);
-	
-	if (portaltab.txs[portalid].is_allowed)
-		mppa256_portal_send_data(portalid);
 
-	return (0);
+	if (portaltab.txs[portalid].is_allowed)
+	{
+		if (mppa256_portal_send_data(portalid) != 0)
+			return (-EAGAIN);
+	}
+
+	return (size);
 }
+
+/**
+ * @see do_mppa256_portal_awrite().
+ */
+PUBLIC ssize_t mppa256_portal_awrite(int portalid, const void * buffer, uint64_t size)
+{
+	/* Invalid NoC node ID. */
+	if (!mppa256_portal_tx_is_valid(portalid))
+		return (-EBADF);
+	
+	portalid -= MPPA256_PORTAL_OPEN_OFFSET;
+
+	/* Bad portal. */
+	if (!resource_is_used(&portaltab.txs[portalid].resource))
+		return (-EBADF);
+
+	/* Busy portal. */
+	if (resource_is_busy(&portaltab.txs[portalid].resource))
+		return (-EBUSY);
+
+	/* Bad size. */
+	if (size == 0 || size > MPPA256_PORTAL_MAX_SIZE || buffer == NULL)
+		return (-EINVAL);
+
+	return (do_mppa256_portal_awrite(portalid, buffer, size));
+}
+
+/*============================================================================*
+ * mppa256_portal_aread()                                                     *
+ *============================================================================*/
 
 /**
  * @brief Reads data from a portal.
@@ -599,12 +796,11 @@ int mppa256_portal_write(int portalid, const void * buffer, uint64_t size, struc
  * @param portalid  ID of the target portal.
  * @param buffer Buffer where the data should be written to.
  * @param size   Number of bytes to read.
- * @param aiocb  Asynchronous operation control.
  *
  * @returns Upon successful completion, 0 is returned
  * and non zero otherwise.
  */
-int mppa256_portal_aread(int portalid, void * buffer, uint64_t size, struct aiocb * aiocb)
+PUBLIC ssize_t do_mppa256_portal_aread(int portalid, void * buffer, uint64_t size)
 {
 	int ret;
 	int ctag;
@@ -612,25 +808,9 @@ int mppa256_portal_aread(int portalid, void * buffer, uint64_t size, struct aioc
 	int interface;
 	int target_ctag;
 
-	/* Invalid NoC node ID. */
-	if (!mppa256_portal_rx_is_valid(portalid))
-		return (-EINVAL);
-
-	/* Bad portal. */
-	if (!resource_is_used(&portaltab.rxs[portalid].resource))
-		return (-EINVAL);
-
-	/* Busy portal. */
-	if (!resource_is_busy(&portaltab.rxs[portalid].resource))
-		return (-EBUSY);
-	
-	/* Bad aiocb. */
-	if (aiocb == NULL || size > MPPA256_PORTAL_MAX_SIZE)
-		return (-EINVAL);
-
 	/* Data parameters. */
 	interface = UNDERLYING_CREATE_INTERFACE(portalid);
-	dtag      = UNDERLYING_CREATE_DTAG(portaltab.rxs[portalid].remoteid);
+	dtag      = UNDERLYING_CREATE_DTAG(portaltab.rxs[portalid].remote);
 
 	/* Configures the underlying resources to receive the data. */
 	ret = bostan_dma_data_aread(
@@ -649,13 +829,15 @@ int mppa256_portal_aread(int portalid, void * buffer, uint64_t size, struct aioc
 
 	/* Control parameters. */
 	ctag        = UNDERLYING_CREATE_CTAG(portalid);
-	target_ctag = UNDERLYING_OPEN_CTAG((bostan_cluster_get_id() + interface));
+	target_ctag = UNDERLYING_OPEN_CTAG(
+		bostan_processor_noc_cluster_to_node_num(cluster_get_num()) + interface
+	);
 
 	/* Sends permission to transmit the data. */
 	ret = bostan_dma_control_signal(
 		interface,
 		ctag,
-		&portaltab.rxs[portalid].remoteid,
+		&portaltab.rxs[portalid].remote,
 		1,
 		target_ctag,
 		(~0)
@@ -665,53 +847,85 @@ int mppa256_portal_aread(int portalid, void * buffer, uint64_t size, struct aioc
 	if (ret < 0)
 		return (ret);
 
-	/* Configures controller for asynchronous operation. */
-	aiocb->fd   = portalid;
-	aiocb->type = BOSTAN_NOC_RX_TYPE;
-	aiocb->lock = &portaltab.rxs[portalid].lock;
-
 	resource_set_busy(&portaltab.rxs[portalid].resource);
 
-	return (0);
+	return (size);
 }
+
+/**
+ * @see do_mppa256_portal_aread().
+ */
+PUBLIC ssize_t mppa256_portal_aread(int portalid, void * buffer, uint64_t size)
+{
+	/* Invalid NoC node ID. */
+	if (!mppa256_portal_rx_is_valid(portalid))
+		return (-EBADF);
+	
+	portalid -= MPPA256_PORTAL_CREATE_OFFSET;
+
+	/* Bad portal. */
+	if (!resource_is_used(&portaltab.rxs[portalid].resource))
+		return (-EBADF);
+
+	/* Busy portal. */
+	if (resource_is_busy(&portaltab.rxs[portalid].resource))
+		return (-EBUSY);
+
+	/* Bad size. */
+	if (size == 0 || size > MPPA256_PORTAL_MAX_SIZE || buffer == NULL)
+		return (-EINVAL);
+
+	return (do_mppa256_portal_aread(portalid, buffer, size));
+}
+
+/*============================================================================*
+ * mppa256_portal_wait()                                                      *
+ *============================================================================*/
 
 /**
  * @brief Waits asynchronous operation.
  *
- * @param aiocb  Asynchronous operation control.
+ * @param portaid ID of the target portal.
  *
  * @return Zero if wait read correctly and non zero otherwise.
  */
-int mppa256_portal_wait(struct aiocb * aiocb)
+PUBLIC int mppa256_portal_wait(int portalid)
 {
-	/* Bad aiocb. */
-	if (aiocb == NULL)
-		return (-EINVAL);
-
 	/* Is it a rx operation? */
-	if (aiocb->type == BOSTAN_NOC_RX_TYPE)
+	if (portalid < MPPA256_PORTAL_OPEN_OFFSET)
 	{
-		if (!mppa256_portal_rx_is_valid(aiocb->fd))
+		if (!mppa256_portal_rx_is_valid(portalid))
 			return (-EBADF);
+		
+		portalid -= MPPA256_PORTAL_CREATE_OFFSET;
+
+		#if 1 /* Is the slave with correct data cached? */
+			/* Bad sync. */
+			if (!resource_is_used(&portaltab.rxs[portalid].resource))
+				return (-EBADF);
+		#endif
+
+		/* Waits for the handler release the lock. */
+		spinlock_lock(&portaltab.rxs[portalid].lock);
 	}
 
 	/* Is it a tx operation? */
-	else if (aiocb->type == BOSTAN_NOC_RX_TYPE)
-	{
-		if (!mppa256_portal_tx_is_valid(aiocb->fd))
-			return (-EBADF);
-	}
-
-	/* Invalid operation type. */
 	else
-		return (-EINVAL);
+	{   
+		if (!mppa256_portal_tx_is_valid(portalid))
+			return (-EBADF);
+		
+		portalid -= MPPA256_PORTAL_OPEN_OFFSET;
 
-	/* Bad lock. */
-	if (aiocb->lock == NULL)
-		return (-EINVAL);
+		#if 1 /* Is the slave with correct data cached? */
+			/* Bad sync. */
+			if (!resource_is_used(&portaltab.txs[portalid].resource))
+				return (-EBADF);
+		#endif
 
-	/* Waits for the handler release the lock. */
-	k1b_spinlock_lock(aiocb->lock);
+		/* Waits for the handler release the lock. */
+		spinlock_lock(&portaltab.txs[portalid].lock);
+	}
 
 	return (0);
 }

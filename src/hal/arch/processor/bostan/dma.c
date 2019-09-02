@@ -22,10 +22,18 @@
  * SOFTWARE.
  */
 
-#include <arch/processor/bostan/clusters.h>
-#include <arch/processor/bostan/noc/dma.h>
-#include <nanvix/const.h>
-#include <errno.h>
+/* Must come fist. */
+#define __NEED_HAL_PROCESSOR
+
+#include <nanvix/hal/processor.h>
+
+/*============================================================================*
+ * Control DMA Functions                                                      *
+ *============================================================================*/
+
+/*============================================================================*
+ * bostan_dma_control_create()                                                *
+ *============================================================================*/
 
 /**
  * @brief Allocates and configures the control receiver buffer.
@@ -33,10 +41,16 @@
  * @param interface Number of the DMA channel.
  * @param tag       Number of the control receiver buffer.
  * @param mask      Initial value of the buffer.
+ * @param handler   Interrupt handler to receive the signal (if NULL use events).
  *
  * @return Zero if create successfully and non zero otherwise.
  */
-PUBLIC int bostan_dma_control_create(int interface, int tag, uint64_t mask, bostan_noc_handler_fn handler)
+PUBLIC int bostan_dma_control_create(
+	int interface,
+	int tag,
+	uint64_t mask,
+	bostan_processor_noc_handler_fn handler
+)
 {
 	if (bostan_cnoc_rx_alloc(interface, tag) != 0)
 		return (-EBUSY);
@@ -50,108 +64,144 @@ PUBLIC int bostan_dma_control_create(int interface, int tag, uint64_t mask, bost
 	return (0);
 }
 
+/*============================================================================*
+ * bostan_dma_control_signal()                                                *
+ *============================================================================*/
+
 /**
  * @brief Configure and send a signal on a control transfer buffer.
  *
- * @param interface    Number of the DMA channel.
- * @param tag          Number of the control transfer buffer.
- * @param target_nodes Target Node IDs.
- * @param ntargets     Amount of targets.
- * @param target_tag   Number of the target control receiver buffer.
- * @param mask         Signal value.
+ * @param interface  Number of the DMA channel.
+ * @param tag        Number of the control transfer buffer.
+ * @param remotes    Target Node IDs.
+ * @param nremotes   Amount of targets.
+ * @param remote_tag Number of the target control receiver buffer.
+ * @param mask       Signal value.
  *
  * @return Zero if send successfully and non zero otherwise.
  */
 PUBLIC int bostan_dma_control_signal(
 	int interface,
 	int tag,
-	const int *target_nodes,
-	int ntargets,
-	int target_tag,
+	const int *remotes,
+	int nremotes,
+	int remote_tag,
 	uint64_t mask
 )
 {
-	int source_node;
+	int local;
+	int localid;
+	int remoteid;
 
-	source_node = cluster_get_id() + interface;
+	local = bostan_processor_noc_cluster_to_node_num(cluster_get_num()) + interface;
 
-	for (int i = 0; i < ntargets; i++)
+	localid = bostan_processor_noc_node_num_to_id(local);
+
+	for (int i = 0; i < nremotes; i++)
 	{
-		if (bostan_cnoc_tx_config(interface, source_node, tag, target_nodes[i], target_tag))
-			return (-ECONNABORTED);
+		if ((remoteid = bostan_processor_noc_node_num_to_id(remotes[i])) < 0)
+			return (-EINVAL);
 
-		bostan_cnoc_tx_write(interface, tag, mask);
+		if (bostan_cnoc_tx_config(interface, localid, tag, remoteid, remote_tag))
+			return (-EINVAL);
+
+		if (bostan_cnoc_tx_write(interface, tag, mask) != 0)
+			return (-EINVAL);
 	}
 
 	return (0);
 }
+
+/*============================================================================*
+ * Data DMA Functions                                                         *
+ *============================================================================*/
+
+/*============================================================================*
+ * bostan_dma_data_awrite()                                                   *
+ *============================================================================*/
 
 /**
  * @brief Configure and async write to the target node.
  *
  * @param interface   Number of the DMA channel.
  * @param tag         Number of the data transfer buffer.
- * @param target_node Target Node ID.
- * @param target_tag  Target receiver buffer.
+ * @param remote      Target Node ID.
+ * @param remote_tag  Target receiver buffer.
  * @param buffer      Local data pointer.
  * @param size        Amount of bytes to transfer.
+ * @param offset      Offset on target buffer.
  *
  * @return Zero if configure successfully and non zero otherwise.
  */
 PUBLIC int bostan_dma_data_awrite(
 	int interface,
 	int tag,
-	int target_node,
-	int target_tag,
+	int remote,
+	int remote_tag,
 	const void *buffer,
 	uint64_t size,
 	uint64_t offset
 )
 {
-	int source_node;
+	int local;
+	int localid;
+	int remoteid;
 
-	source_node = cluster_get_id() + interface;
+	local = bostan_processor_noc_cluster_to_node_num(cluster_get_num()) + interface;
+
+	localid  = bostan_processor_noc_node_num_to_id(local);
+	remoteid = bostan_processor_noc_node_num_to_id(remote);
 
 	return bostan_dnoc_uc_config_write(
 		interface,
-		source_node,
+		localid,
 		tag,
 		tag,
-		target_node,
-		target_tag,
+		remoteid,
+		remote_tag,
 		buffer,
 		size,
 		offset
 	);
 }
 
+/*============================================================================*
+ * bostan_dma_data_write()                                                    *
+ *============================================================================*/
+
 /**
  * @brief Configure and write to the target node.
  *
  * @param interface   Number of the DMA channel.
  * @param tag         Number of the data transfer buffer.
- * @param target_node Target Node ID.
- * @param target_tag  Target receiver buffer.
+ * @param remote      Target Node ID.
+ * @param remote_tag  Target receiver buffer.
  * @param buffer      Local data pointer.
  * @param size        Amount of bytes to transfer.
+ * @param offset      Offset on target buffer.
  *
  * @return Zero if configure successfully and non zero otherwise.
  */
 PUBLIC int bostan_dma_data_write(
 	int interface,
 	int tag,
-	int target_node,
-	int target_tag,
+	int remote,
+	int remote_tag,
 	const void *buffer,
 	uint64_t size,
 	uint64_t offset
 )
 {
-	int source_node;
+	int local;
+	int localid;
+	int remoteid;
 
-	source_node = cluster_get_id() + interface;
+	local = bostan_processor_noc_cluster_to_node_num(cluster_get_num()) + interface;
 
-	if (bostan_dnoc_tx_config(interface, source_node, tag, target_node, target_tag) != 0)
+	localid  = bostan_processor_noc_node_num_to_id(local);
+	remoteid = bostan_processor_noc_node_num_to_id(remote);
+
+	if (bostan_dnoc_tx_config(interface, localid, tag, remoteid, remote_tag) != 0)
 		return (-EINVAL);
 
 	return bostan_dnoc_tx_write(

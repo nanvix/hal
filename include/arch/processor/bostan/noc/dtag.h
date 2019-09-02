@@ -44,9 +44,9 @@
 	 * @name Type of D-NoC Tag
 	 */
 	/**@{*/
-	#define BOSTAN_DNOC_RX_TYPE (BOSTAN_NOC_RX_TYPE)     /**< D-NoC receive tag.  */
-	#define BOSTAN_DNOC_TX_TYPE (BOSTAN_NOC_TX_TYPE)     /**< D-NoC transfer tag. */
-	#define BOSTAN_DNOC_UC_TYPE (BOSTAN_NOC_TX_TYPE + 1) /**< D-NoC ucore tag.    */
+	#define BOSTAN_DNOC_RX_TYPE (BOSTAN_PROCESSOR_NOC_RX_TYPE)     /**< D-NoC receive tag.  */
+	#define BOSTAN_DNOC_TX_TYPE (BOSTAN_PROCESSOR_NOC_TX_TYPE)     /**< D-NoC transfer tag. */
+	#define BOSTAN_DNOC_UC_TYPE (BOSTAN_PROCESSOR_NOC_TX_TYPE + 1) /**< D-NoC ucore tag.    */
 	/**@}*/
 
 	/**
@@ -62,32 +62,38 @@
 	 * @name Initial D-NoC tag
 	 */
 	/**@{*/
-	#define BOSTAN_DNOC_RX_BASE BOSTAN_NR_RESERVED_RX_TAGS /**< Receive tag offset.  */
-	#define BOSTAN_DNOC_TX_BASE BOSTAN_NR_RESERVED_TX_TAGS /**< Transfer tag offset. */
-	#define BOSTAN_DNOC_UC_BASE BOSTAN_NR_RESERVED_TX_TAGS /**< UCore thread offset. */
+	#define BOSTAN_DNOC_RX_BASE BOSTAN_PROCESSOR_NOC_RESERVED_RXS_NUM /**< Receive tag offset.  */
+	#define BOSTAN_DNOC_TX_BASE BOSTAN_PROCESSOR_NOC_RESERVED_TXS_NUM /**< Transfer tag offset. */
+	#define BOSTAN_DNOC_UC_BASE BOSTAN_PROCESSOR_NOC_RESERVED_TXS_NUM /**< UCore thread offset. */
 	/**@}*/
 
 	/**
 	 * @name Number of D-NoC buffer
 	 */
 	/**@{*/
-	#define BOSTAN_NR_DNOC_RX (BOSTAN_DNOC_RX_MAX - BOSTAN_DNOC_RX_BASE) /**< Number of receive buffers.  */
-	#define BOSTAN_NR_DNOC_TX (BOSTAN_DNOC_TX_MAX - BOSTAN_DNOC_TX_BASE) /**< Number of transfer buffers. */
-	#define BOSTAN_NR_DNOC_UC (BOSTAN_DNOC_UC_MAX - BOSTAN_DNOC_UC_BASE) /**< Number of ucore threads.	  */
+	#define BOSTAN_DNOC_RXS_NUM (BOSTAN_DNOC_RX_MAX - BOSTAN_DNOC_RX_BASE) /**< Number of receive buffers.  */
+	#define BOSTAN_DNOC_TXS_NUM (BOSTAN_DNOC_TX_MAX - BOSTAN_DNOC_TX_BASE) /**< Number of transfer buffers. */
+	#define BOSTAN_DNOC_UCS_NUM (BOSTAN_DNOC_UC_MAX - BOSTAN_DNOC_UC_BASE) /**< Number of ucore threads.	*/
 	/**@}*/
 
 	/**
 	 * @brief Number of D-NoC transfer per communication service.
 	 */
-	#define BOSTAN_NR_DNOC_TX_PER_COMM_SERVICE 4
+	#define BOSTAN_DNOC_TXS_PER_COMM_SERVICE 4
 
 	/**
 	 * @name Identifies D-NoC transfer tag reserved for Communication services.
 	 */
 	/**@{*/
-	#define BOSTAN_MAILBOX_DNOC_TX_BASE  0                                                                 /**< D-NoC Transfer Tag reserved for Mailbox. */
-	#define BOSTAN_PORTAL_DNOC_TX_BASE  (BOSTAN_MAILBOX_DNOC_TX_BASE + BOSTAN_NR_DNOC_TX_PER_COMM_SERVICE) /**< D-NoC Transfer Tag reserved for Portal.  */
+	#define BOSTAN_MAILBOX_DNOC_TX_BASE  0                                                               /**< D-NoC Transfer Tag reserved for Mailbox. */
+	#define BOSTAN_PORTAL_DNOC_TX_BASE  (BOSTAN_MAILBOX_DNOC_TX_BASE + BOSTAN_DNOC_TXS_PER_COMM_SERVICE) /**< D-NoC Transfer Tag reserved for Portal.  */
 	/**@}*/
+
+	/**
+	 * @brief Initializes the control structures and configures the
+	 * interrupt handlers.
+	 */
+	EXTERN void bostan_dnoc_setup(void);
 
 /*============================================================================*
  * D-Noc Receiver Interface                                                   *
@@ -141,7 +147,7 @@
 		uint64_t min_size,
 		uint64_t max_size,
 		uint64_t offset,
-		bostan_noc_handler_fn handler
+		bostan_processor_noc_handler_fn handler
 	);
 
 /*============================================================================*
@@ -149,7 +155,7 @@
  *============================================================================*/
 
 	/**
-	 * @brief Free D-NoC transfer buffer.
+	 * @brief Allocate D-NoC transfer buffer.
 	 *
 	 * @param interface Number of the interface.
 	 * @param tag       Numberof transfer buffer.
@@ -163,26 +169,28 @@
 	 *
 	 * @param interface Number of the interface.
 	 * @param tag       Number of transfer buffer.
+	 * 
+	 * @return Zero if allocate correctly and non zero otherwise.
 	 */
 	EXTERN int bostan_dnoc_tx_free(int interface, int tag);
 
 	/**
 	 * @brief Configure D-NoC transfer buffer.
 	 *
-	 * @param interface   Number of the interface.
-	 * @param source_node Source interface ID.
-	 * @param source_tag  Number of source buffer.
-	 * @param target_node Target interface ID.
-	 * @param target_tag  Number of target buffer.
+	 * @param interface  Number of the interface.
+	 * @param localid    Source interface ID.
+	 * @param local_tag  Number of source buffer.
+	 * @param remoteid   Target interface ID.
+	 * @param remote_tag Number of target buffer.
 	 *
 	 * @return Zero if configure successfully and non zero otherwise.
 	 */
 	EXTERN int bostan_dnoc_tx_config(
 		int interface,
-		int source_node,
-		int source_tag,
-		int target_node,
-		int target_tag
+		int localid,
+		int local_tag,
+		int remoteid,
+		int remote_tag
 	);
 
 	/**
@@ -207,18 +215,17 @@
  *============================================================================*/
 
 	/**
-	 * @brief Free D-NoC transfer buffer.
+	 * @brief Allocate D-NoC ucore sender.
 	 *
 	 * @param interface Number of the interface.
-	 * @param uctag     Number of ucore.
-	 * @param txtag     Number of transfer buffer.
+	 * @param tag       Numberof of ucore.
 	 *
 	 * @return Zero if allocate correctly and non zero otherwise.
 	 */
 	EXTERN int bostan_dnoc_uc_alloc(int interface, int uctag, int txtag);
 
 	/**
-	 * @brief Free D-NoC transfer buffer.
+	 * @brief Free D-NoC ucore sender.
 	 *
 	 * @param interface Number of the interface.
 	 * @param uctag     Number of ucore.
@@ -229,7 +236,7 @@
 	EXTERN int bostan_dnoc_uc_free(int interface, int uctag, int txtag);
 
 	/**
-	 * @brief Wait events on D-NoC sender buffer.
+	 * @brief Wait events on D-NoC ucore sender.
 	 *
 	 * @param interface Number of the interface.
 	 * @param uctag     Number of ucore.
@@ -239,34 +246,28 @@
 	EXTERN int bostan_dnoc_uc_wait(int interface, int uctag);
 
 	/**
-	 * @brief Configure and async writes on D-NoC transfer buffer.
+	 * @brief Configure and async writes on D-NoC ucore sender.
 	 *
 	 * @param interface   Number of the DMA channel.
-	 * @param source_node Local Node ID.
+	 * @param localid Local Node ID.
 	 * @param uctag       Ucore thread ID.
 	 * @param txtag       Transfer buffer ID.
-	 * @param target_node Target Node ID.
-	 * @param target_tag  Target receiver buffer.
+	 * @param remoteid Target Node ID.
+	 * @param remote_tag  Target receiver buffer.
 	 * @param buffer      Local data pointer.
 	 * @param size        Amount of bytes to transfer.
 	 */
 	EXTERN int bostan_dnoc_uc_config_write(
 		int interface,
-		int source_node,
+		int localid,
 		int uctag,
 		int txtag,
-		int target_node,
-		int target_tag,
+		int remoteid,
+		int remote_tag,
 		const void *buffer,
 		uint64_t size,
 		uint64_t offset
 	);
-
-	/**
-	 * @brief Initializes the control structures and configures the
-	 * interrupt handlers.
-	 */
-	EXTERN void bostan_dnoc_setup(void);
 
 /**@}*/
 

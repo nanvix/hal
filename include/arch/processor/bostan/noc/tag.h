@@ -35,31 +35,31 @@
 	 * @name Type of operation of the NoC Tag
 	 */
 	/**@{*/
-	#define BOSTAN_NOC_RX_TYPE 0 /**< Receiver tag. */
-	#define BOSTAN_NOC_TX_TYPE 1 /**< Transfer tag. */
+	#define BOSTAN_PROCESSOR_NOC_RX_TYPE 0 /**< Receiver tag. */
+	#define BOSTAN_PROCESSOR_NOC_TX_TYPE 1 /**< Transfer tag. */
 	/**@}*/
 
 	/**
 	 * @name Number of reserved tags.
 	 */
 	/**@{*/
-	#define BOSTAN_NR_RESERVED_RX_TAGS 2 /**< Reserved receiver tag. */
-	#define BOSTAN_NR_RESERVED_TX_TAGS 0 /**< Reserved transfer tag. */
+	#define BOSTAN_PROCESSOR_NOC_RESERVED_RXS_NUM 2 /**< Reserved receiver tags. */
+	#define BOSTAN_PROCESSOR_NOC_RESERVED_TXS_NUM 0 /**< Reserved transfer tags. */
 	/**@}*/
 
 	/**
 	 * @brief Number of interface.
 	 */
 	#ifdef __node__
-		#define BOSTAN_NR_INTERFACES 1
+		#define BOSTAN_PROCESSOR_NOC_INTERFACES_NUM 1
 	#elif defined(__ioddr__)
-		#define BOSTAN_NR_INTERFACES 4
+		#define BOSTAN_PROCESSOR_NOC_INTERFACES_NUM 4
 	#endif
 
 	/**
 	 * @brief Micro interface callback type for asynchronous events.
 	 */
-	typedef void (*bostan_noc_handler_fn)(int interface, int tag);
+	typedef void (*bostan_processor_noc_handler_fn)(int interface, int tag);
 
 
 /**@}*/

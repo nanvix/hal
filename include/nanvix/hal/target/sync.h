@@ -107,18 +107,18 @@
 	/**
 	 * @brief Allocates and configures the receiving side of the synchronization point.
 	 *
-	 * @param nodes  IDs of target NoC nodes.
-	 * @param nnodes Number of target NoC nodes.
-	 * @param type   Type of synchronization point.
+	 * @param nodenums IDs of target NoC nodes.
+	 * @param nnodes   Number of target NoC nodes.
+	 * @param type     Type of synchronization point.
 	 *
 	 * @return The tag of underlying resource ID.
 	 */
 #if (__TARGET_HAS_SYNC)
-	EXTERN int sync_create(const int *nodes, int nnodes, int type);
+	EXTERN int sync_create(const int *nodenums, int nnodes, int type);
 #else
-	static inline int sync_create(const int *nodes, int nnodes, int type)
+	static inline int sync_create(const int *nodenums, int nnodes, int type)
 	{
-		UNUSED(nodes);
+		UNUSED(nodenums);
 		UNUSED(nnodes);
 		UNUSED(type);
 
@@ -129,14 +129,18 @@
 	/**
 	 * @brief Allocates and configures the sending side of the synchronization point.
 	 *
+	 * @param nodenums Logic IDs of target NoC nodes.
+	 * @param nnodes   Number of target NoC nodes.
+	 * @param type     Type of synchronization point.
+	 * 
 	 * @return The tag of underlying resource ID.
 	 */
 #if (__TARGET_HAS_SYNC)
-	EXTERN int sync_open(const int *nodes, int nnodes, int type);
+	EXTERN int sync_open(const int *nodenums, int nnodes, int type);
 #else
-	static inline int sync_open(const int *nodes, int nnodes, int type)
+	static inline int sync_open(const int *nodenums, int nnodes, int type)
 	{
-		UNUSED(nodes);
+		UNUSED(nodenums);
 		UNUSED(nnodes);
 		UNUSED(type);
 

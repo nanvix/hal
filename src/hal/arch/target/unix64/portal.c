@@ -537,7 +537,7 @@ PUBLIC int unix64_portal_allow(int portalid, int remote)
 {
 	/* Invalid portal.*/
 	if (!unix64_portal_rx_is_valid(portalid))
-		return (-EINVAL);
+		return (-EBADF);
 
 	/* Invalid remote NoC node. */
 	if ((remote < 0) || (remote >= PROCESSOR_NOC_NODES_NUM))
@@ -752,7 +752,7 @@ PUBLIC ssize_t unix64_portal_read(int portalid, void *buf, size_t n)
 {
 	/* Invalid portal ID.*/
 	if (!unix64_portal_rx_is_valid(portalid))
-		return (-EINVAL);
+		return (-EBADF);
 
 	/* Invalid buffer. */
 	if (buf == NULL)
@@ -838,7 +838,7 @@ PUBLIC ssize_t unix64_portal_write(int portalid, const void *buf, size_t n)
 {
 	/* Invalid portal ID.*/
 	if (!unix64_portal_tx_is_valid(portalid))
-		return (-EINVAL);
+		return (-EBADF);
 
 	/* Invalid buffer. */
 	if (buf == NULL)
@@ -866,7 +866,7 @@ PUBLIC int unix64_portal_unlink(int portalid)
 {
 	/* Invalid portal. */
 	if (!unix64_portal_rx_is_valid(portalid))
-		return (-EINVAL);
+		return (-EBADF);
 
 again:
 
@@ -917,7 +917,7 @@ PUBLIC int unix64_portal_close(int portalid)
 {
 	/* Invalid portal. */
 	if (!unix64_portal_tx_is_valid(portalid))
-		return (-EINVAL);
+		return (-EBADF);
 
 again:
 

@@ -42,6 +42,21 @@
 #include <errno.h>
 
 /*============================================================================*
+ * DMA configuration                                                          *
+ *============================================================================*/
+
+	/**
+	 * The bostan_dma_init() function initializes the control
+	 * structures and configures the interrupt handler of the
+	 * Control and Data NoC.
+	 */
+	static inline void bostan_dma_init(void)
+	{
+		bostan_cnoc_setup();
+		bostan_dnoc_setup();
+	}
+
+/*============================================================================*
  * Control DMA Interface                                                      *
  *============================================================================*/
 
@@ -51,6 +66,7 @@
 	 * @param interface Number of the DMA channel.
 	 * @param tag       Number of the control receiver buffer.
 	 * @param mask      Initial value of the buffer.
+	 * @param handler   Interrupt handler to receive the signal (if NULL use events).
 	 *
 	 * @return Zero if create successfully and non zero otherwise.
 	 */
@@ -58,7 +74,7 @@
 		int interface,
 		int tag,
 		uint64_t mask,
-		bostan_noc_handler_fn handler
+		bostan_processor_noc_handler_fn handler
 	);
 
 	/**
@@ -67,6 +83,7 @@
 	 * @param interface Number of the DMA channel.
 	 * @param tag       Number of the control receiver buffer.
 	 * @param mask      Initial value of the buffer.
+	 * @param handler   Interrupt handler to receive the signal (if NULL use events).
 	 *
 	 * @return Zero if configure successfully and non zero otherwise.
 	 */
@@ -74,7 +91,7 @@
 		int interface,
 		int tag,
 		uint64_t mask,
-		bostan_noc_handler_fn handler
+		bostan_processor_noc_handler_fn handler
 	)
 	{
 		return bostan_cnoc_rx_config(
@@ -143,21 +160,21 @@
 	/**
 	 * @brief Configure and send a signal on a control transfer buffer.
 	 *
-	 * @param interface    Number of the DMA channel.
-	 * @param tag          Number of the control transfer buffer.
-	 * @param target_nodes Target Node IDs.
-	 * @param ntargets     Amount of targets.
-	 * @param target_tag   Number of the target control receiver buffer.
-	 * @param mask         Signal value.
+	 * @param interface  Number of the DMA channel.
+	 * @param tag        Number of the control transfer buffer.
+	 * @param remotes    Target Node IDs.
+	 * @param nremotes   Amount of targets.
+	 * @param remote_tag Number of the target control receiver buffer.
+	 * @param mask       Signal value.
 	 *
 	 * @return Zero if send successfully and non zero otherwise.
 	 */
 	EXTERN int bostan_dma_control_signal(
 		int interface,
 		int tag,
-		const int *target_nodes,
-		int ntargets,
-		int target_tag,
+		const int *remotes,
+		int nremotes,
+		int remote_tag,
 		uint64_t mask
 	);
 
@@ -252,17 +269,18 @@
 	 * @param min_size  Minimal value to generate an event (in bytes).
 	 * @param max_size  Size of the receiver buffer (in bytes).
 	 * @param offset    Offset in receiver buffer where data shall be written.
+	 * @param handler   Interrupt handler to receive the data (if NULL use events).
 	 *
 	 * @return Zero if configure successfully and non zero otherwise.
 	 */
 	static inline int bostan_dma_data_aread(
 		int interface,
 		int tag,
-		void *buffer,
+		void * buffer,
 		uint64_t min_size,
 		uint64_t max_size,
 		uint64_t offset,
-		bostan_noc_handler_fn handler
+		bostan_processor_noc_handler_fn handler
 	)
 	{
 		return bostan_dnoc_rx_config(
@@ -281,19 +299,20 @@
 	 *
 	 * @param interface   Number of the DMA channel.
 	 * @param tag         Number of the data transfer buffer.
-	 * @param target_node Target Node ID.
-	 * @param target_tag  Target receiver buffer.
+	 * @param remote      Logic ID of the Target Node.
+	 * @param remote_tag  Target receiver buffer.
 	 * @param buffer      Local data pointer.
 	 * @param size        Amount of bytes to transfer.
+	 * @param offset      Offset on target buffer.
 	 *
 	 * @return Zero if configure successfully and non zero otherwise.
 	 */
 	EXTERN int bostan_dma_data_awrite(
 		int interface,
 		int tag,
-		int target_node,
-		int target_tag,
-		const void *buffer,
+		int remote,
+		int remote_tag,
+		const void * buffer,
 		uint64_t size,
 		uint64_t offset
 	);
@@ -303,33 +322,23 @@
 	 *
 	 * @param interface   Number of the DMA channel.
 	 * @param tag         Number of the data transfer buffer.
-	 * @param target_node Target Node ID.
-	 * @param target_tag  Target receiver buffer.
+	 * @param remote      Logic ID of the Target Node.
+	 * @param remote_tag  Target receiver buffer.
 	 * @param buffer      Local data pointer.
 	 * @param size        Amount of bytes to transfer.
+	 * @param offset      Offset on target buffer
 	 *
 	 * @return Zero if configure successfully and non zero otherwise.
 	 */
 	EXTERN int bostan_dma_data_write(
 		int interface,
 		int tag,
-		int target_node,
-		int target_tag,
-		const void *buffer,
+		int remote,
+		int remote_tag,
+		const void * buffer,
 		uint64_t size,
 		uint64_t offset
 	);
-
-	/**
-	 * The bostan_dma_init() function initializes the control
-	 * structures and configures the interrupt handler of the
-	 * Control and Data NoC.
-	 */
-	static inline void bostan_dma_init(void)
-	{
-		bostan_cnoc_setup();
-		bostan_dnoc_setup();
-	}
 
 /**@}*/
 

@@ -34,8 +34,12 @@
  * @brief ID of master NoC node.
  */
 #define NODES_AMOUNT   2
-#define NODENUM_MASTER 0
-#define NODENUM_SLAVE  1
+#define NODENUM_MASTER PROCESSOR_CLUSTERNUM_MASTER
+#ifdef __mppa256__
+	#define NODENUM_SLAVE (PROCESSOR_CLUSTERNUM_MASTER + PROCESSOR_NOC_IONODES_NUM)
+#else
+	#define NODENUM_SLAVE (PROCESSOR_CLUSTERNUM_MASTER + 1)
+#endif
 #define PORTAL_SIZE    256
 
 /*============================================================================*
@@ -114,8 +118,8 @@ PRIVATE void test_portal_invalid_allow(void)
 	int portalid;
 
 	/* Invalid portal ID. */
-	KASSERT(portal_allow(-1, NODENUM_SLAVE) == -EINVAL);
-	KASSERT(portal_allow(PORTAL_CREATE_MAX, NODENUM_SLAVE) == -EINVAL);
+	KASSERT(portal_allow(-1, NODENUM_SLAVE) == -EBADF);
+	KASSERT(portal_allow(PORTAL_CREATE_MAX, NODENUM_SLAVE) == -EBADF);
 
 	KASSERT((portalid = portal_create(NODENUM_MASTER)) >= 0);
 
@@ -132,8 +136,8 @@ PRIVATE void test_portal_invalid_allow(void)
 PRIVATE void test_portal_invalid_unlink(void)
 {
 	/* Invalid portal ID. */
-	KASSERT(portal_unlink(-1) == -EINVAL);
-	KASSERT(portal_unlink(PORTAL_CREATE_MAX) == -EINVAL);
+	KASSERT(portal_unlink(-1) == -EBADF);
+	KASSERT(portal_unlink(PORTAL_CREATE_MAX) == -EBADF);
 }
 
 /**
@@ -142,8 +146,8 @@ PRIVATE void test_portal_invalid_unlink(void)
 PRIVATE void test_portal_invalid_close(void)
 {
 	/* Invalid portal ID. */
-	KASSERT(portal_close(-1) == -EINVAL);
-	KASSERT(portal_close(PORTAL_OPEN_MAX) == -EINVAL);
+	KASSERT(portal_close(-1) == -EBADF);
+	KASSERT(portal_close(PORTAL_OPEN_MAX) == -EBADF);
 }
 
 /**
@@ -155,8 +159,8 @@ PRIVATE void test_portal_invalid_read(void)
 	char buf[PORTAL_SIZE];
 
 	/* Invalid portal ID */
-	KASSERT(portal_aread(-1, buf, PORTAL_SIZE) == -EINVAL);
-	KASSERT(portal_aread(PORTAL_CREATE_MAX, buf, PORTAL_SIZE) == -EINVAL);
+	KASSERT(portal_aread(-1, buf, PORTAL_SIZE) == -EBADF);
+	KASSERT(portal_aread(PORTAL_CREATE_MAX, buf, PORTAL_SIZE) == -EBADF);
 
 	KASSERT((portalid = portal_create(NODENUM_MASTER)) >= 0);
 
@@ -180,8 +184,8 @@ PRIVATE void test_portal_invalid_write(void)
 	char buf[PORTAL_SIZE];
 
 	/* Invalid portal ID */
-	KASSERT(portal_awrite(-1, buf, PORTAL_SIZE) == -EINVAL);
-	KASSERT(portal_awrite(PORTAL_OPEN_MAX, buf, PORTAL_SIZE) == -EINVAL);
+	KASSERT(portal_awrite(-1, buf, PORTAL_SIZE) == -EBADF);
+	KASSERT(portal_awrite(PORTAL_OPEN_MAX, buf, PORTAL_SIZE) == -EBADF);
 
 	KASSERT((portalid = portal_open(NODENUM_MASTER, NODENUM_SLAVE)) >= 0);
 

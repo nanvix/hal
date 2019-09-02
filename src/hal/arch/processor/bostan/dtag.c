@@ -69,17 +69,17 @@
  * @name Reciever resources.
  */
 /**@{*/
-PRIVATE uint64_t bostan_dnoc_rx_tags[BOSTAN_NR_INTERFACES][BOSTAN_DNOC_RX_BIT_FIELD_AMOUNT]     ALIGN(sizeof(uint64_t)); /**< Receiver tags.                  */
-PRIVATE uint64_t bostan_dnoc_rx_its[BOSTAN_NR_INTERFACES][BOSTAN_DNOC_RX_BIT_FIELD_AMOUNT]      ALIGN(sizeof(uint64_t)); /**< Receiver tags interrupt status. */
-PRIVATE bostan_noc_handler_fn bostan_dnoc_rx_handlers[BOSTAN_NR_INTERFACES][BOSTAN_DNOC_RX_MAX] ALIGN(sizeof(uint64_t)); /**< Receiver tags handlers.         */
+PRIVATE uint64_t bostan_dnoc_rx_tags[BOSTAN_PROCESSOR_NOC_INTERFACES_NUM][BOSTAN_DNOC_RX_BIT_FIELD_AMOUNT]               ALIGN(sizeof(dword_t)); /**< Receiver tags.                  */
+PRIVATE uint64_t bostan_dnoc_rx_its[BOSTAN_PROCESSOR_NOC_INTERFACES_NUM][BOSTAN_DNOC_RX_BIT_FIELD_AMOUNT]                ALIGN(sizeof(dword_t)); /**< Receiver tags interrupt status. */
+PRIVATE bostan_processor_noc_handler_fn bostan_dnoc_rx_handlers[BOSTAN_PROCESSOR_NOC_INTERFACES_NUM][BOSTAN_DNOC_RX_MAX] ALIGN(sizeof(dword_t)); /**< Receiver tags handlers.         */
 /**@}*/
 
 /**
  * @name Transfer resources.
  */
 /**@{*/
-PRIVATE uint8_t bostan_dnoc_tx_tags[BOSTAN_NR_INTERFACES]                     ALIGN(sizeof(uint64_t)); /**< Transfer tags.                                    */
-PRIVATE int bostan_dnoc_tx_old_fdir[BOSTAN_NR_INTERFACES][BOSTAN_DNOC_TX_MAX] ALIGN(sizeof(uint64_t)); /**< History of the First Direction of the TX Channel. */
+PRIVATE uint8_t bostan_dnoc_tx_tags[BOSTAN_PROCESSOR_NOC_INTERFACES_NUM]                     ALIGN(sizeof(dword_t)); /**< Transfer tags.                                    */
+PRIVATE int bostan_dnoc_tx_old_fdir[BOSTAN_PROCESSOR_NOC_INTERFACES_NUM][BOSTAN_DNOC_TX_MAX] ALIGN(sizeof(dword_t)); /**< History of the First Direction of the TX Channel. */
 /**@}*/
 
 /**
@@ -88,17 +88,17 @@ PRIVATE int bostan_dnoc_tx_old_fdir[BOSTAN_NR_INTERFACES][BOSTAN_DNOC_TX_MAX] AL
  * @todo Ucore doesn't trigger events/interrupts yet.
  */
 /**@{*/
-PRIVATE uint8_t bostan_dnoc_uc_tags[BOSTAN_NR_INTERFACES]                        ALIGN(sizeof(uint64_t)); /**< Ucore tags.                                           */
-PRIVATE int bostan_dnoc_uc_job[BOSTAN_NR_INTERFACES][BOSTAN_DNOC_UC_MAX]         ALIGN(sizeof(uint64_t)); /**< Job queue control.                                    */
-PRIVATE uint8_t bostan_dnoc_tx_uc_link[BOSTAN_NR_INTERFACES][BOSTAN_DNOC_UC_MAX] ALIGN(sizeof(uint64_t)); /**< Control the association of a TX channel with a Ucore. */
-//! PRIVATE uint8_t bostan_dnoc_uc_its[BOSTAN_NR_INTERFACES][BOSTAN_DNOC_RX_BIT_FIELD_AMOUNT]       ALIGN(sizeof(uint64_t)); /**< Ucore interrupt status. */
-//! PRIVATE bostan_noc_handler_fn bostan_dnoc_uc_handlers[BOSTAN_NR_INTERFACES][BOSTAN_DNOC_UC_MAX] ALIGN(sizeof(uint64_t)); /**< Ucore handlers.         */
+PRIVATE uint8_t bostan_dnoc_uc_tags[BOSTAN_PROCESSOR_NOC_INTERFACES_NUM]                        ALIGN(sizeof(dword_t)); /**< Ucore tags.                                           */
+PRIVATE int bostan_dnoc_uc_job[BOSTAN_PROCESSOR_NOC_INTERFACES_NUM][BOSTAN_DNOC_UC_MAX]         ALIGN(sizeof(dword_t)); /**< Job queue control.                                    */
+PRIVATE uint8_t bostan_dnoc_tx_uc_link[BOSTAN_PROCESSOR_NOC_INTERFACES_NUM][BOSTAN_DNOC_UC_MAX] ALIGN(sizeof(dword_t)); /**< Control the association of a TX channel with a Ucore. */
+//! PRIVATE uint8_t bostan_dnoc_uc_its[BOSTAN_PROCESSOR_NOC_INTERFACES_NUM][BOSTAN_DNOC_RX_BIT_FIELD_AMOUNT]                 ALIGN(sizeof(dword_t)); /**< Ucore interrupt status.  */
+//! PRIVATE bostan_processor_noc_handler_fn bostan_dnoc_uc_handlers[BOSTAN_PROCESSOR_NOC_INTERFACES_NUM][BOSTAN_DNOC_UC_MAX] ALIGN(sizeof(dword_t)); /**< Ucore handlers.          */
  
- /* These variables are to simulate Compute Cluster behavior (Maybe it can be removed). */
+ /* These variables are to simulate Compute Cluster behavior on IO Clusters (Maybe it can be removed). */
 #ifdef __k1io__
-	mOS_uc_desc_t bostan_dnoc_uc_descriptor[BOSTAN_NR_INTERFACES][BOSTAN_DNOC_UC_MAX]    ALIGN(sizeof(uint64_t)); /**< Information about which set of resources must be updated.          */
-	mOS_uc_path_t bostan_dnoc_uc_path[BOSTAN_NR_INTERFACES][BOSTAN_DNOC_UC_MAX]          ALIGN(sizeof(uint64_t)); /**< Defines ths NoC route and tag to be used to reach the destination. */
-	mOS_uc_notify_mode_t bostan_dnoc_uc_notify[BOSTAN_NR_INTERFACES][BOSTAN_DNOC_UC_MAX] ALIGN(sizeof(uint64_t)); /**< Information about which pe set will be notified.                   */
+	mOS_uc_desc_t bostan_dnoc_uc_descriptor[BOSTAN_PROCESSOR_NOC_INTERFACES_NUM][BOSTAN_DNOC_UC_MAX]    ALIGN(sizeof(dword_t)); /**< Information about which set of resources must be updated.          */
+	mOS_uc_path_t bostan_dnoc_uc_path[BOSTAN_PROCESSOR_NOC_INTERFACES_NUM][BOSTAN_DNOC_UC_MAX]          ALIGN(sizeof(dword_t)); /**< Defines ths NoC route and tag to be used to reach the destination. */
+	mOS_uc_notify_mode_t bostan_dnoc_uc_notify[BOSTAN_PROCESSOR_NOC_INTERFACES_NUM][BOSTAN_DNOC_UC_MAX] ALIGN(sizeof(dword_t)); /**< Information about which pe set will be notified.                   */
 #endif
 /**@}*/
 
@@ -118,10 +118,10 @@ PRIVATE uint8_t bostan_dnoc_tx_uc_link[BOSTAN_NR_INTERFACES][BOSTAN_DNOC_UC_MAX]
  *
  * @return Zero if tag is valid non zero otherwise.
  */
-static inline int bostan_dnoc_rx_is_valid(int interface, int tag)
+PRIVATE inline int bostan_dnoc_rx_is_valid(int interface, int tag)
 {
-	return WITHIN(interface, 0, BOSTAN_NR_INTERFACES)
-	    && WITHIN(tag, BOSTAN_DNOC_RX_BASE, BOSTAN_NR_DNOC_RX);
+	return WITHIN(interface, 0, BOSTAN_PROCESSOR_NOC_INTERFACES_NUM)
+	    && WITHIN(tag, BOSTAN_DNOC_RX_BASE, BOSTAN_DNOC_RXS_NUM);
 }
 
 /**
@@ -130,7 +130,7 @@ static inline int bostan_dnoc_rx_is_valid(int interface, int tag)
  * @param interface Underlying DMA interface.
  * @param tag       Underlying resource ID.
  */
-static inline void bostan_dnoc_rx_set_used(int interface, int tag)
+PRIVATE inline void bostan_dnoc_rx_set_used(int interface, int tag)
 {
 	bostan_dnoc_rx_tags[interface][FIELD(tag)] |= (BOSTAN_DNOC_TAG_USED << OFFSET(tag));
 }
@@ -141,7 +141,7 @@ static inline void bostan_dnoc_rx_set_used(int interface, int tag)
  * @param interface Underlying DMA interface.
  * @param tag       Underlying resource ID.
  */
-static inline void bostan_dnoc_rx_set_unused(int interface, int tag)
+PRIVATE inline void bostan_dnoc_rx_set_unused(int interface, int tag)
 {
 	bostan_dnoc_rx_tags[interface][FIELD(tag)] &= ~(BOSTAN_DNOC_TAG_USED << OFFSET(tag));
 }
@@ -152,9 +152,9 @@ static inline void bostan_dnoc_rx_set_unused(int interface, int tag)
  * @param interface Underlying DMA interface.
  * @param tag       Underlying resource ID.
  */
-static inline void bostan_dnoc_rx_enable_it(int interface, int tag)
+PRIVATE inline void bostan_dnoc_rx_enable_it(int interface, int tag)
 {
-	bostan_dnoc_rx_tags[interface][FIELD(tag)] |= (BOSTAN_DNOC_IT_ENABLE << OFFSET(tag));
+	bostan_dnoc_rx_its[interface][FIELD(tag)] |= (BOSTAN_DNOC_IT_ENABLE << OFFSET(tag));
 }
 
 /**
@@ -163,9 +163,9 @@ static inline void bostan_dnoc_rx_enable_it(int interface, int tag)
  * @param interface Underlying DMA interface.
  * @param tag       Underlying resource ID.
  */
-static inline void bostan_dnoc_rx_disable_it(int interface, int tag)
+PRIVATE inline void bostan_dnoc_rx_disable_it(int interface, int tag)
 {
-	bostan_dnoc_rx_tags[interface][FIELD(tag)] &= ~(BOSTAN_DNOC_IT_ENABLE << OFFSET(tag));
+	bostan_dnoc_rx_its[interface][FIELD(tag)] &= ~(BOSTAN_DNOC_IT_ENABLE << OFFSET(tag));
 }
 
 /**
@@ -176,7 +176,7 @@ static inline void bostan_dnoc_rx_disable_it(int interface, int tag)
  *
  * @returns Non zero if the target resource is in used, and zero otherwise.
  */
-static inline int bostan_dnoc_rx_is_used(const int interface, int tag)
+PRIVATE inline int bostan_dnoc_rx_is_used(const int interface, int tag)
 {
 	return ((bostan_dnoc_rx_tags[interface][FIELD(tag)] >> OFFSET(tag)) & BOSTAN_DNOC_TAG_USED);
 }
@@ -189,7 +189,7 @@ static inline int bostan_dnoc_rx_is_used(const int interface, int tag)
  *
  * @returns Non zero if the target interrupt is enabled, and zero otherwise.
  */
-static inline int bostan_dnoc_rx_it_enable(const int interface, int tag)
+PRIVATE inline int bostan_dnoc_rx_it_is_enable(const int interface, int tag)
 {
 	return ((bostan_dnoc_rx_its[interface][FIELD(tag)] >> OFFSET(tag)) & BOSTAN_DNOC_IT_ENABLE);
 }
@@ -205,10 +205,10 @@ static inline int bostan_dnoc_rx_it_enable(const int interface, int tag)
  *
  * @return Zero if tag is valid non zero otherwise.
  */
-static inline int bostan_dnoc_tx_is_valid(int interface, int tag)
+PRIVATE inline int bostan_dnoc_tx_is_valid(int interface, int tag)
 {
-	return WITHIN(interface, 0, BOSTAN_NR_INTERFACES)
-	    && WITHIN(tag, BOSTAN_DNOC_TX_BASE, BOSTAN_NR_DNOC_TX);
+	return WITHIN(interface, 0, BOSTAN_PROCESSOR_NOC_INTERFACES_NUM)
+	    && WITHIN(tag, BOSTAN_DNOC_TX_BASE, BOSTAN_DNOC_TXS_NUM);
 }
 
 /**
@@ -217,7 +217,7 @@ static inline int bostan_dnoc_tx_is_valid(int interface, int tag)
  * @param interface Underlying DMA interface.
  * @param tag       Underlying resource ID.
  */
-static inline void bostan_dnoc_tx_set_used(int interface, int tag)
+PRIVATE inline void bostan_dnoc_tx_set_used(int interface, int tag)
 {
 	bostan_dnoc_tx_tags[interface] |= (BOSTAN_DNOC_TAG_USED << tag);
 }
@@ -228,7 +228,7 @@ static inline void bostan_dnoc_tx_set_used(int interface, int tag)
  * @param interface Underlying DMA interface.
  * @param tag       Underlying resource ID.
  */
-static inline void bostan_dnoc_tx_set_unused(int interface, int tag)
+PRIVATE inline void bostan_dnoc_tx_set_unused(int interface, int tag)
 {
 	bostan_dnoc_tx_tags[interface] &= ~(BOSTAN_DNOC_TAG_USED << tag);
 }
@@ -241,7 +241,7 @@ static inline void bostan_dnoc_tx_set_unused(int interface, int tag)
  *
  * @returns Non zero if the target resource is in used, and zero otherwise.
  */
-static inline int bostan_dnoc_tx_is_used(const int interface, int tag)
+PRIVATE inline int bostan_dnoc_tx_is_used(const int interface, int tag)
 {
 	return ((bostan_dnoc_tx_tags[interface] >> tag) & BOSTAN_DNOC_TAG_USED);
 }
@@ -257,10 +257,10 @@ static inline int bostan_dnoc_tx_is_used(const int interface, int tag)
  *
  * @return Zero if tag is valid non zero otherwise.
  */
-static inline int bostan_dnoc_uc_is_valid(int interface, int tag)
+PRIVATE inline int bostan_dnoc_uc_is_valid(int interface, int tag)
 {
-	return WITHIN(interface, 0, BOSTAN_NR_INTERFACES)
-	    && WITHIN(tag, BOSTAN_DNOC_UC_BASE, BOSTAN_NR_DNOC_UC);
+	return WITHIN(interface, 0, BOSTAN_PROCESSOR_NOC_INTERFACES_NUM)
+	    && WITHIN(tag, BOSTAN_DNOC_UC_BASE, BOSTAN_DNOC_UCS_NUM);
 }
 
 /**
@@ -269,7 +269,7 @@ static inline int bostan_dnoc_uc_is_valid(int interface, int tag)
  * @param interface Underlying DMA interface.
  * @param tag       Underlying resource ID.
  */
-static inline void bostan_dnoc_uc_set_used(int interface, int tag)
+PRIVATE inline void bostan_dnoc_uc_set_used(int interface, int tag)
 {
 	bostan_dnoc_uc_tags[interface] |= (BOSTAN_DNOC_TAG_USED << tag);
 }
@@ -280,7 +280,7 @@ static inline void bostan_dnoc_uc_set_used(int interface, int tag)
  * @param interface Underlying DMA interface.
  * @param tag       Underlying resource ID.
  */
-static inline void bostan_dnoc_uc_set_unused(int interface, int tag)
+PRIVATE inline void bostan_dnoc_uc_set_unused(int interface, int tag)
 {
 	bostan_dnoc_uc_tags[interface] &= ~(BOSTAN_DNOC_TAG_USED << tag);
 }
@@ -293,7 +293,7 @@ static inline void bostan_dnoc_uc_set_unused(int interface, int tag)
  *
  * @returns Non zero if the target resource is in used, and zero otherwise.
  */
-static inline int bostan_dnoc_uc_is_used(const int interface, int tag)
+PRIVATE inline int bostan_dnoc_uc_is_used(const int interface, int tag)
 {
 	return ((bostan_dnoc_uc_tags[interface] >> tag) & BOSTAN_DNOC_TAG_USED);
 }
@@ -307,7 +307,7 @@ static inline int bostan_dnoc_uc_is_used(const int interface, int tag)
  *
  * @returns Non zero if the Ucore is linked to the Tx channel, and zero otherwise.
  */
-static inline int bostan_dnoc_uc_is_linked(int interface, int uc, int tx)
+PRIVATE inline int bostan_dnoc_uc_is_linked(int interface, int uc, int tx)
 {
 	return ((bostan_dnoc_tx_uc_link[interface][uc] >> tx) & BOSTAN_DNOC_TAG_USED);
 }
@@ -321,7 +321,7 @@ static inline int bostan_dnoc_uc_is_linked(int interface, int uc, int tx)
  *
  * @returns Zero if link successfully, and non zero otherwise.
  */
-static inline int bostan_dnoc_uc_link(int interface, int uc, int tx)
+PRIVATE inline int bostan_dnoc_uc_link(int interface, int uc, int tx)
 {
 	uint32_t channel_id;
 
@@ -360,7 +360,7 @@ static inline int bostan_dnoc_uc_link(int interface, int uc, int tx)
  *
  * @returns Zero if unlink successfully, and non zero otherwise.
  */
-static inline int bostan_dnoc_uc_unlink(int interface, int uc, int tx)
+PRIVATE inline int bostan_dnoc_uc_unlink(int interface, int uc, int tx)
 {
 	if (!bostan_dnoc_uc_is_linked(interface, uc, tx))
 		return (0);
@@ -392,7 +392,7 @@ static inline int bostan_dnoc_uc_unlink(int interface, int uc, int tx)
  *
  * @returns Non zero if the target resource is in used, and zero otherwise.
  */
-static inline void bostan_dnoc_rx_update_notify(int interface, int tag, int events, int cores_mask)
+PRIVATE inline void bostan_dnoc_rx_update_notify(int interface, int tag, int events, int cores_mask)
 {
 	mOS_async_rx_get_cfg_perm(interface, tag, BOSTAN_DNOC_EVENTS);
 	mOS_async_rx_rda_event_waitclear(BOSTAN_DNOC_EVENTS);
@@ -403,7 +403,7 @@ static inline void bostan_dnoc_rx_update_notify(int interface, int tag, int even
 }
 
 /*============================================================================*
- * bostan_cnoc_setup()                                                        *
+ * bostan_dnoc_it_handler()                                                   *
  *============================================================================*/
 
 /**
@@ -419,26 +419,32 @@ PRIVATE void bostan_dnoc_it_handler(int ev_src)
 {
 	int tag;
 	int offset;
+	uint64_t its_enabled;
 	uint64_t tags_set;
-	uint64_t tags_set_release;
-	bostan_noc_handler_fn handler;
+	uint64_t tags_set_it;
+	bostan_processor_noc_handler_fn handler;
 
 	UNUSED(ev_src);
 
-	for (unsigned int interface = 0; interface < BOSTAN_NR_INTERFACES; interface++)
+	for (unsigned int interface = 0; interface < BOSTAN_PROCESSOR_NOC_INTERFACES_NUM; interface++)
 	{
 		for (unsigned int field = 0; field < BOSTAN_DNOC_RX_BIT_FIELD_AMOUNT; field++)
 		{
 			/* Gets the set of tags that generated an interrupt. */
 			tags_set = mppa_dnoc[interface]->rx_global.events[field].dword;
-			tags_set &= ~(bostan_dnoc_rx_its[interface][field]);
-			tags_set_release = tags_set;
+
+			/* Ignores untriggered tags. */
+			if (!tags_set)
+				continue;
+
+			its_enabled = __k1_umem_read64((void *) &bostan_dnoc_rx_its[interface][field]);
+			tags_set_it = (tags_set & its_enabled);
 
 			/* For each tag that generated an interrupt, cleans its flags. */
-			while (tags_set_release)
+			while (tags_set)
 			{
-				offset = __builtin_k1_ctzdl(tags_set_release);
-				tags_set_release &= ~(1ULL << offset);
+				offset = __builtin_k1_ctzdl(tags_set);
+				tags_set &= ~(1ULL << offset);
 
 				tag = field * (sizeof(uint64_t) * 8) + offset;
 
@@ -449,17 +455,22 @@ PRIVATE void bostan_dnoc_it_handler(int ev_src)
 			 * For each tag that generated an interrupt, executes the call
 			 * of its specific handler.
 			 */
-			while (tags_set)
+			while (tags_set_it)
 			{
-				offset = __builtin_k1_ctzdl(tags_set);
-				tags_set &= ~(1ULL << offset);
+				/**
+				 * Find the next bit enabled that represents the
+				 * triggered tag.
+				 */
+				offset = __builtin_k1_ctzdl(tags_set_it);
+				tags_set_it &= ~(1ULL << offset);
 
 				tag = field * (sizeof(uint64_t) * 8) + offset;
 
-				handler = bostan_dnoc_rx_handlers[interface][tag];
+				handler = (bostan_processor_noc_handler_fn) __k1_umem_read32(
+					(void *) &bostan_dnoc_rx_handlers[interface][tag]
+				);
 
-				if (handler)
-					handler(interface, tag);
+				handler(interface, tag);
 			}
 		}
 	}
@@ -477,12 +488,12 @@ PUBLIC void bostan_dnoc_setup(void)
 {
 	interrupt_register(K1B_INT_DNOC, bostan_dnoc_it_handler);
 
-	for (int interface = 0; interface < BOSTAN_NR_INTERFACES; interface++)
+	for (int interface = 0; interface < BOSTAN_PROCESSOR_NOC_INTERFACES_NUM; interface++)
 	{
 		/* IO Cluster need initializes the boot status of the interface. */
-		#ifdef __k1io__
-			mOS_dnoc_set_boot_status(interface, 1);
-		#endif
+#ifdef __k1io__
+		mOS_dnoc_set_boot_status(interface, 1);
+#endif
 
 		/* All RX tags are unused. */
 		for (unsigned int field = 0; field < BOSTAN_DNOC_RX_BIT_FIELD_AMOUNT; field++)
@@ -517,17 +528,21 @@ PUBLIC void bostan_dnoc_setup(void)
 			bostan_dnoc_uc_path[interface][tag].header_ext.dword      = 0ULL;
 			bostan_dnoc_uc_path[interface][tag].min_max_task_id.dword = 0ULL;
 #endif
+			bostan_dnoc_rx_update_notify(interface, tag, BOSTAN_DNOC_EVENTS, 0);
 
 			/* Maybe this is not necessary but in some mOS functions, they set the activation register. */
 			mOS_async_uc_get_cfg_perm(interface, tag, BOSTAN_DNOC_EVENTS);
-
 			if (mOS_async_uc_rda_event_waitclear(BOSTAN_DNOC_EVENTS) != 0)
 				kpanic("Error on ucore configuration!");
 
-			__k1_io_write32((void *) &mppa_dnoc[interface]->threads[tag].activation.word, _K1_NOCV2_ENABLE_DIRECT_UCORE);
+			__k1_io_write32(
+				(void *) &mppa_dnoc[interface]->threads[tag].activation.word,
+				_K1_NOCV2_ENABLE_DIRECT_UCORE
+			);
 		}
 	}
 
+	/* Flush dcache to sram. */
 	__builtin_k1_wpurge();
 	__builtin_k1_fence();
 }
@@ -583,7 +598,7 @@ PUBLIC int bostan_dnoc_rx_free(int interface, int tag)
 
 	bostan_dnoc_rx_set_unused(interface, tag);
 
-	if (bostan_dnoc_rx_it_enable(interface, tag))
+	if (bostan_dnoc_rx_it_is_enable(interface, tag))
 	{
 		bostan_dnoc_rx_handlers[interface][tag] = NULL;
 		bostan_dnoc_rx_disable_it(interface, tag);
@@ -614,7 +629,7 @@ PUBLIC int bostan_dnoc_rx_free(int interface, int tag)
 PUBLIC int bostan_dnoc_rx_wait(int interface, int tag)
 {
 	/**
-	 * note: The distinction of actions for each type of CPU is because
+	 * @note: The distinction of actions for each type of CPU is because
 	 * the mOS function does not wait correctly in the IO cluster.
 	 */
 
@@ -639,6 +654,7 @@ PUBLIC int bostan_dnoc_rx_wait(int interface, int tag)
 	/* Cleans event counter. */
 	mppa_dnoc[interface]->rx_queues[tag].event_lac.hword;
 
+	/* Invalites the dcache for get the incoming data. */
 	dcache_invalidate();
 
 	return (0);
@@ -672,7 +688,7 @@ PUBLIC int bostan_dnoc_rx_config(
 	uint64_t min_size,
 	uint64_t max_size,
 	uint64_t offset,
-	bostan_noc_handler_fn handler
+	bostan_processor_noc_handler_fn handler
 )
 {
 	/* Gets permissions to configure on underlying RX resources. */
@@ -726,9 +742,6 @@ PUBLIC int bostan_dnoc_rx_config(
 	else
 		bostan_dnoc_rx_update_notify(interface, tag, BOSTAN_DNOC_EVENTS, (~0));
 
-	__builtin_k1_wpurge();
-	__builtin_k1_fence();
-
 	return (0);
 }
 
@@ -741,10 +754,10 @@ PUBLIC int bostan_dnoc_rx_config(
  *============================================================================*/
 
 /**
- * @brief Free D-NoC transfer tag.
+ * @brief Allocate D-NoC transfer buffer.
  *
  * @param interface Number of the interface.
- * @param tag       Numberof transfer tag.
+ * @param tag       Numberof transfer buffer.
  *
  * @return Zero if allocate correctly and non zero otherwise.
  */
@@ -766,12 +779,12 @@ PUBLIC int bostan_dnoc_tx_alloc(int interface, int tag)
  *============================================================================*/
 
 /**
- * @brief Free D-NoC transfer tag.
+ * @brief Free D-NoC transfer buffer.
  *
  * @param interface Number of the interface.
- * @param tag       Number of transfer tag.
- *
- * @return Zero if releases correctly and non zero otherwise.
+ * @param tag       Number of transfer buffer.
+ * 
+ * @return Zero if allocate correctly and non zero otherwise.
  */
 PUBLIC int bostan_dnoc_tx_free(int interface, int tag)
 {
@@ -809,10 +822,10 @@ PUBLIC int bostan_dnoc_tx_free(int interface, int tag)
  * @brief Configure D-NoC transfer tag.
  *
  * @param interface   Number of the interface.
- * @param source_node Source interface ID.
- * @param source_tag  Number of source buffer.
- * @param target_node Target interface ID.
- * @param target_tag  Number of target buffer.
+ * @param localid Source interface ID.
+ * @param local_tag  Number of source buffer.
+ * @param remoteid Target interface ID.
+ * @param remote_tag  Number of target buffer.
  *
  * @return Zero if configure successfully and non zero otherwise.
  *
@@ -820,10 +833,10 @@ PUBLIC int bostan_dnoc_tx_free(int interface, int tag)
  */
 PUBLIC int bostan_dnoc_tx_config(
 	int interface,
-	int source_node,
-	int source_tag,
-	int target_node,
-	int target_tag
+	int localid,
+	int local_tag,
+	int remoteid,
+	int remote_tag
 )
 {
 	int src;
@@ -831,20 +844,20 @@ PUBLIC int bostan_dnoc_tx_config(
 	mppa_dnoc_header_t header;
 	mppa_dnoc_channel_config_t config;
 
-	if (!bostan_dnoc_tx_is_valid(interface, source_tag))
+	if (!bostan_dnoc_tx_is_valid(interface, local_tag))
 		return (-EINVAL);
 
-	if (!bostan_dnoc_tx_is_used(interface, source_tag))
+	if (!bostan_dnoc_tx_is_used(interface, local_tag))
 		return (-EINVAL);
 
-	src  = __bsp_get_router_id(source_node);
-	dest = __bsp_get_router_id(target_node);
+	src  = __bsp_get_router_id(localid);
+	dest = __bsp_get_router_id(remoteid);
 
 	/* Sets header values (default values by Kalray). */
 	header.dword   = 0ULL;
 	header._.valid = 1;
 	header._.route = (__bsp_routing_table[src][dest] >> 3);
-	header._.tag   = target_tag;
+	header._.tag   = remote_tag;
 
 	/* Sets configuration values (default values by Kalray). */
 	config.dword               = 0;
@@ -859,12 +872,12 @@ PUBLIC int bostan_dnoc_tx_config(
 	config._.write_user_en     = 1;
 
 	/*  Checks if the tx channel are saturated. */
-	int old_fdir = bostan_dnoc_tx_old_fdir[interface][source_tag];
+	int old_fdir = bostan_dnoc_tx_old_fdir[interface][local_tag];
 
 	if (old_fdir != -2)
 	{
 		/* Wait TX channel be free. */
-		while (mppa_dnoc[interface]->tx_ports[source_tag].watermark.reg != 3);
+		while (mppa_dnoc[interface]->tx_ports[local_tag].watermark.reg != 3);
 
 		/**
 		 * Kalray's comment: We still can't reprogram the TX due to #6937.
@@ -873,15 +886,16 @@ PUBLIC int bostan_dnoc_tx_config(
 		while (mppa_dnoc[interface]->dma_global.router_fifo[5 * old_fdir].level.hword > 350);
 	}
 
-	/* Updates first direction of source_tag. */
-	bostan_dnoc_tx_old_fdir[interface][source_tag] = config._.first_dir;
+	/* Updates first direction of local_tag. */
+	bostan_dnoc_tx_old_fdir[interface][local_tag] = config._.first_dir;
 
+	/* Flush dcache to sram. */
 	__builtin_k1_wpurge();
 	__builtin_k1_fence();
 
 	/* Writes on underlying registers. */
-	mppa_dnoc[interface]->tx_channels[source_tag].header.dword = header.dword;
-	mppa_dnoc[interface]->tx_channels[source_tag].config.dword = config.dword;
+	mppa_dnoc[interface]->tx_channels[local_tag].header.dword = header.dword;
+	mppa_dnoc[interface]->tx_channels[local_tag].config.dword = config.dword;
 
 	return (0);
 }
@@ -1024,11 +1038,10 @@ PUBLIC int bostan_dnoc_tx_write(
  *============================================================================*/
 
 /**
- * @brief Free D-NoC transfer tag.
+ * @brief Allocate D-NoC ucore sender.
  *
  * @param interface Number of the interface.
- * @param uctag     Number of ucore.
- * @param txtag     Number of transfer tag.
+ * @param tag       Numberof of ucore.
  *
  * @return Zero if allocate correctly and non zero otherwise.
  */
@@ -1076,12 +1089,13 @@ PUBLIC int bostan_dnoc_uc_alloc(int interface, int uctag, int txtag)
  *============================================================================*/
 
 /**
- * @brief Free D-NoC transfer tag.
+ * @brief Free D-NoC ucore sender.
  *
  * @param interface Number of the interface.
- * @param tag       Number of transfer tag.
- *
- * @return Zero if releases correctly and non zero otherwise.
+ * @param uctag     Number of ucore.
+ * @param txtag     Number of transfer buffer.
+ * 
+ * @return Zero if allocate correctly and non zero otherwise.
  */
 PUBLIC int bostan_dnoc_uc_free(int interface, int uctag, int txtag)
 {
@@ -1398,20 +1412,20 @@ struct bostan_dnoc_uc_transaction
  * @param interface  Number of the interface.
  * @param uctag      Number of Ucore.
  * @param txtag      Number of TX channel.
- * @param target_tag Number of target RX tag.
+ * @param remote_tag Number of target RX tag.
  */
 PRIVATE inline void bostan_dnoc_uc_pre_config(
 	int interface,
 	int uctag,
 	int txtag,
-	int target_tag
+	int remote_tag
 )
 {
 	/* Pré-configurations. */
 	UC_VIRTUAL_FIFO_PATH(interface, uctag, txtag).min_max_task_id._.min_max_task_id_en = 1;
-	UC_VIRTUAL_FIFO_PATH(interface, uctag, txtag).min_max_task_id._.min_task_id        = target_tag;
-	UC_VIRTUAL_FIFO_PATH(interface, uctag, txtag).min_max_task_id._.max_task_id        = target_tag;
-	UC_VIRTUAL_FIFO_PATH(interface, uctag, txtag).min_max_task_id._.current_task_id    = target_tag;
+	UC_VIRTUAL_FIFO_PATH(interface, uctag, txtag).min_max_task_id._.min_task_id        = remote_tag;
+	UC_VIRTUAL_FIFO_PATH(interface, uctag, txtag).min_max_task_id._.max_task_id        = remote_tag;
+	UC_VIRTUAL_FIFO_PATH(interface, uctag, txtag).min_max_task_id._.current_task_id    = remote_tag;
 
 #if 0
 	/* Test for configure the ucore to trigger an event (not works). */
@@ -1569,8 +1583,7 @@ PRIVATE inline void bostan_dnoc_uc_commit_job(
 )
 {
 	/* Flush cached values. */
-	__builtin_k1_wpurge();
-	__builtin_k1_fence();
+	dcache_invalidate();
 
 #ifdef __k1dp__
 	UNUSED(interface);
@@ -1593,13 +1606,14 @@ PRIVATE inline void bostan_dnoc_uc_commit_job(
  * @brief Configure and async writes on D-NoC transfer tag.
  *
  * @param interface   Number of the DMA channel.
- * @param source_node Local Node ID.
+ * @param localid Local Node ID.
  * @param uctag       Ucore thread ID.
  * @param txtag       Transfer buffer ID.
- * @param target_node Target Node ID.
- * @param target_tag  Target receiver buffer.
+ * @param remoteid Target Node ID.
+ * @param remote_tag  Target receiver buffer.
  * @param buffer      Local data pointer.
  * @param size        Amount of bytes to transfer.
+ * @param offset      Offset on target buffer.
  *
  * @return Zero if configure correctly and non zero otherwise.
  *
@@ -1607,11 +1621,11 @@ PRIVATE inline void bostan_dnoc_uc_commit_job(
  */
 PUBLIC int bostan_dnoc_uc_config_write(
 	int interface,
-	int source_node,
+	int localid,
 	int uctag,
 	int txtag,
-	int target_node,
-	int target_tag,
+	int remoteid,
+	int remote_tag,
 	const void *buffer,
 	uint64_t size,
 	uint64_t offset
@@ -1640,11 +1654,11 @@ PUBLIC int bostan_dnoc_uc_config_write(
 			return (-EINVAL);
 
 	/* First, we need configurate the TX channel. */
-	if (bostan_dnoc_tx_config(interface, source_node, txtag, target_node, target_tag) != 0)
+	if (bostan_dnoc_tx_config(interface, localid, txtag, remoteid, remote_tag) != 0)
 		return (-EINVAL);
 
 	/* Pré-configurations. */
-	bostan_dnoc_uc_pre_config(interface, uctag, txtag, target_tag);
+	bostan_dnoc_uc_pre_config(interface, uctag, txtag, remote_tag);
 
 	/**
 	 * Now that we no longer need to tweak the TX channel, we can

@@ -371,7 +371,7 @@ again:
 		/* Bad mailbox. */
 		if (!resource_is_used(&mailboxtab.rxs[mbxid].resource))
 		{
-			err = -EINVAL;
+			err = -EBADF;
 			goto error1;
 		}
 
@@ -400,7 +400,7 @@ PUBLIC int unix64_mailbox_unlink(int mbxid)
 {
 	/* Invalid mailbox. */
 	if (!unix64_mailbox_rx_is_valid(mbxid))
-		return (-EINVAL);
+		return (-EBADF);
 
 	return (do_unix64_mailbox_unlink(mbxid));
 }
@@ -427,7 +427,7 @@ again:
 		/* Bad mailbox. */
 		if (!resource_is_used(&mailboxtab.txs[mbxid].resource))
 		{
-			err = -EINVAL;
+			err = -EBADF;
 			goto error1;
 		}
 
@@ -472,7 +472,7 @@ PUBLIC int unix64_mailbox_close(int mbxid)
 {
 	/* Invalid mailbox. */
 	if (!unix64_mailbox_tx_is_valid(mbxid))
-		return (-EINVAL);
+		return (-EBADF);
 
 	return (do_unix64_mailbox_close(mbxid));
 }
@@ -488,13 +488,18 @@ PUBLIC int unix64_mailbox_close(int mbxid)
  */
 PRIVATE ssize_t do_unix64_mailbox_awrite(int mbxid, const void *buf, size_t n)
 {
+	int err;
+
 again:
 
 	unix64_mailbox_lock();
 
 		/* Bad mailbox. */
 		if (!resource_is_used(&mailboxtab.txs[mbxid].resource))
+		{
+			err = -EBADF;
 			goto error1;
+		}
 
 		/* Busy mailbox. */
 		if (resource_is_busy(&mailboxtab.txs[mbxid].resource))
@@ -512,7 +517,10 @@ again:
 	unix64_mailbox_unlock();
 
 	if (mq_send(mailboxtab.txs[mbxid].fd, buf, n, 1) == -1)
+	{
+		err = -EAGAIN;
 		goto error2;
+	}
 
 	unix64_mailbox_lock();
 		resource_set_notbusy(&mailboxtab.txs[mbxid].resource);
@@ -526,7 +534,7 @@ error2:
 	unix64_mailbox_unlock();
 error1:
 	unix64_mailbox_unlock();
-	return (-EAGAIN);
+	return (err);
 }
 
 /**
@@ -536,7 +544,7 @@ PUBLIC ssize_t unix64_mailbox_awrite(int mbxid, const void *buf, size_t n)
 {
 	/* Invalid mailbox. */
 	if (!unix64_mailbox_tx_is_valid(mbxid))
-		return (-EINVAL);
+		return (-EBADF);
 
 	/* Invalid buffer. */
 	if (buf == NULL)
@@ -560,6 +568,7 @@ PUBLIC ssize_t unix64_mailbox_awrite(int mbxid, const void *buf, size_t n)
  */
 PRIVATE ssize_t do_unix64_mailbox_aread(int mbxid, void *buf, size_t n)
 {
+	int err;
 	ssize_t nread;
 
 again:
@@ -568,7 +577,10 @@ again:
 
 		/* Bad mailbox. */
 		if (!resource_is_used(&mailboxtab.rxs[mbxid].resource))
+		{
+			err = -EBADF;
 			goto error1;
+		}
 
 		/* Busy mailbox. */
 		if (resource_is_busy(&mailboxtab.rxs[mbxid].resource))
@@ -585,7 +597,10 @@ again:
 	 */
 	unix64_mailbox_unlock();
 	if ((nread = mq_receive(mailboxtab.rxs[mbxid].fd, buf, n, NULL)) == -1)
+	{
+		err = -EAGAIN;
 		goto error2;
+	}
 
 	unix64_mailbox_lock();
 		resource_set_notbusy(&mailboxtab.rxs[mbxid].resource);
@@ -599,7 +614,7 @@ error2:
 	unix64_mailbox_unlock();
 error1:
 	unix64_mailbox_unlock();
-	return (-EAGAIN);
+	return (err);
 }
 
 /**
@@ -609,7 +624,7 @@ PUBLIC ssize_t unix64_mailbox_aread(int mbxid, void *buf, size_t n)
 {
 	/* Invalid mailbox. */
 	if (!unix64_mailbox_rx_is_valid(mbxid))
-		return (-EINVAL);
+		return (-EBADF);
 
 	/* Invalid buffer. */
 	if (buf == NULL)

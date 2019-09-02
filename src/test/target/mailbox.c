@@ -34,8 +34,12 @@
  * @brief ID of master NoC node.
  */
 #define NODES_AMOUNT   2
-#define NODENUM_MASTER 0
-#define NODENUM_SLAVE  1
+#define NODENUM_MASTER PROCESSOR_CLUSTERNUM_MASTER
+#ifdef __mppa256__
+	#define NODENUM_SLAVE (PROCESSOR_CLUSTERNUM_MASTER + PROCESSOR_NOC_IONODES_NUM)
+#else
+	#define NODENUM_SLAVE (PROCESSOR_CLUSTERNUM_MASTER + 1)
+#endif
 
 /*============================================================================*
  * API Tests                                                                  *
@@ -90,8 +94,8 @@ PRIVATE void test_mailbox_invalid_open(void)
  */
 PRIVATE void test_mailbox_invalid_unlink(void)
 {
-	KASSERT(mailbox_unlink(-1) == -EINVAL);
-	KASSERT(mailbox_unlink(MAILBOX_CREATE_MAX) == -EINVAL);
+	KASSERT(mailbox_unlink(-1) == -EBADF);
+	KASSERT(mailbox_unlink(MAILBOX_CREATE_MAX) == -EBADF);
 }
 
 /**
@@ -99,8 +103,8 @@ PRIVATE void test_mailbox_invalid_unlink(void)
  */
 PRIVATE void test_mailbox_invalid_close(void)
 {
-	KASSERT(mailbox_close(-1) == -EINVAL);
-	KASSERT(mailbox_close(MAILBOX_OPEN_MAX) == -EINVAL);
+	KASSERT(mailbox_close(-1) == -EBADF);
+	KASSERT(mailbox_close(MAILBOX_OPEN_MAX) == -EBADF);
 }
 
 /**
@@ -108,11 +112,17 @@ PRIVATE void test_mailbox_invalid_close(void)
  */
 PRIVATE void test_mailbox_invalid_read(void)
 {
+	int mbxid;
 	char msg[MAILBOX_MSG_SIZE];
 
-	KASSERT(mailbox_aread(-1, msg, MAILBOX_MSG_SIZE) == -EINVAL);
-	KASSERT(mailbox_aread(0, NULL, MAILBOX_MSG_SIZE) == -EINVAL);
-	KASSERT(mailbox_aread(0, msg, 0) == -EINVAL);
+	KASSERT(mailbox_aread(-1, msg, MAILBOX_MSG_SIZE) == -EBADF);
+
+	KASSERT((mbxid = mailbox_create(NODENUM_MASTER)) >= 0);
+
+		KASSERT(mailbox_aread(mbxid, NULL, MAILBOX_MSG_SIZE) == -EINVAL);
+		KASSERT(mailbox_aread(mbxid, msg, 0) == -EINVAL);
+
+	KASSERT(mailbox_unlink(mbxid) == 0);
 }
 
 /**
@@ -120,11 +130,17 @@ PRIVATE void test_mailbox_invalid_read(void)
  */
 PRIVATE void test_mailbox_invalid_write(void)
 {
+	int mbxid;
 	char msg[MAILBOX_MSG_SIZE];
 
-	KASSERT(mailbox_awrite(-1, msg, MAILBOX_MSG_SIZE) == -EINVAL);
-	KASSERT(mailbox_awrite(0, NULL, MAILBOX_MSG_SIZE) == -EINVAL);
-	KASSERT(mailbox_awrite(0, msg, 0) == -EINVAL);
+	KASSERT(mailbox_awrite(-1, msg, MAILBOX_MSG_SIZE) == -EBADF);
+
+	KASSERT((mbxid = mailbox_open(NODENUM_SLAVE)) >= 0);
+
+		KASSERT(mailbox_awrite(mbxid, NULL, MAILBOX_MSG_SIZE) == -EINVAL);
+		KASSERT(mailbox_awrite(mbxid, msg, 0) == -EINVAL);
+
+	KASSERT(mailbox_close(mbxid) == 0);
 }
 
 /**
@@ -140,7 +156,14 @@ PRIVATE void test_mailbox_bad_create(void)
  */
 PRIVATE void test_mailbox_bad_open(void)
 {
-	KASSERT(mailbox_open(NODENUM_MASTER) == -EINVAL);
+#ifdef __mppa256__
+	/**
+	 * This doesn't fail on MPPA-256 because the IOCluster is able to open
+	 * locally (multiples nodes inside the cluster).
+	 */
+	if (cluster_is_ccluster(cluster_get_num()))
+#endif
+		KASSERT(mailbox_open(NODENUM_MASTER) == -EINVAL);
 }
 
 /**
@@ -148,8 +171,8 @@ PRIVATE void test_mailbox_bad_open(void)
  */
 PRIVATE void test_mailbox_bad_unlink(void)
 {
-	KASSERT(mailbox_unlink(0) == -EINVAL);
-	KASSERT(mailbox_unlink(MAILBOX_CREATE_MAX - 1) == -EINVAL);
+	KASSERT(mailbox_unlink(0) == -EBADF);
+	KASSERT(mailbox_unlink(MAILBOX_CREATE_MAX - 1) == -EBADF);
 }
 
 /**
@@ -157,8 +180,8 @@ PRIVATE void test_mailbox_bad_unlink(void)
  */
 PRIVATE void test_mailbox_bad_close(void)
 {
-	KASSERT(mailbox_close(0) == -EINVAL);
-	KASSERT(mailbox_close(MAILBOX_OPEN_MAX - 1) == -EINVAL);
+	KASSERT(mailbox_close(0) == -EBADF);
+	KASSERT(mailbox_close(MAILBOX_OPEN_MAX - 1) == -EBADF);
 }
 
 /**
@@ -170,7 +193,7 @@ PRIVATE void test_mailbox_double_unlink(void)
 
 	KASSERT((mbxid = mailbox_create(NODENUM_MASTER)) >= 0);
 	KASSERT(mailbox_unlink(mbxid) == 0);
-	KASSERT(mailbox_unlink(mbxid) == -EINVAL);
+	KASSERT(mailbox_unlink(mbxid) == -EBADF);
 }
 
 /**
@@ -182,7 +205,7 @@ PRIVATE void test_mailbox_double_close(void)
 
 	KASSERT((mbxid = mailbox_open(NODENUM_SLAVE)) >= 0);
 	KASSERT(mailbox_close(mbxid) == 0);
-	KASSERT(mailbox_close(mbxid) == -EINVAL);
+	KASSERT(mailbox_close(mbxid) == -EBADF);
 }
 
 /**
@@ -194,8 +217,10 @@ PRIVATE void test_mailbox_bad_read(void)
 	char msg[MAILBOX_MSG_SIZE];
 
 	KASSERT((mbxid = mailbox_create(NODENUM_MASTER)) >= 0);
-	KASSERT(mailbox_awrite(mbxid, NULL, MAILBOX_MSG_SIZE) == -EINVAL);
-	KASSERT(mailbox_awrite(mbxid, msg, 0) == -EINVAL);
+
+		KASSERT(mailbox_awrite(mbxid, NULL, MAILBOX_MSG_SIZE) == -EINVAL);
+		KASSERT(mailbox_awrite(mbxid, msg, 0) == -EINVAL);
+
 	KASSERT(mailbox_unlink(mbxid) == 0);
 }
 
@@ -208,8 +233,10 @@ PRIVATE void test_mailbox_bad_write(void)
 	char msg[MAILBOX_MSG_SIZE];
 
 	KASSERT((mbxid = mailbox_open(NODENUM_SLAVE)) >= 0);
-	KASSERT(mailbox_aread(mbxid, NULL, MAILBOX_MSG_SIZE) == -EINVAL);
-	KASSERT(mailbox_aread(mbxid, msg, 0) == -EINVAL);
+
+		KASSERT(mailbox_aread(mbxid, NULL, MAILBOX_MSG_SIZE) == -EINVAL);
+		KASSERT(mailbox_aread(mbxid, msg, 0) == -EINVAL);
+
 	KASSERT(mailbox_close(mbxid) == 0);
 }
 
