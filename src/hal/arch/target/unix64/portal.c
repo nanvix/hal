@@ -34,6 +34,8 @@
 #include <pthread.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <stdio.h>
+#include <unistd.h>
 
 /**
  * @brief Length of portal name.
@@ -491,7 +493,7 @@ again:
 		}
 
 		/*
-		 * Set portal as busy, because we 
+		 * Set portal as busy, because we
 		 * release the global lock below.
 		 */
 		resource_set_busy(&portaltab.rxs[portalid].resource);
@@ -709,7 +711,7 @@ again:
 			goto error0;
 
 		/*
-		 * Set portal as busy, because we 
+		 * Set portal as busy, because we
 		 * release the global lock below.
 		 */
 		resource_set_busy(&portaltab.rxs[portalid].resource);
@@ -797,7 +799,7 @@ again:
 		}
 
 		/*
-		 * Set portal as busy, because we 
+		 * Set portal as busy, because we
 		 * release the global lock below.
 		 */
 		resource_set_busy(&portaltab.txs[portalid].resource);
