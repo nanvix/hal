@@ -51,6 +51,9 @@
 		#endif
 
 		/* Functions */
+		#ifndef __mailbox_setup_fn
+		#error "mailbox_setup() not defined?"
+		#endif
 		#ifndef __mailbox_create_fn
 		#error "mailbox_create() not defined?"
 		#endif
@@ -91,7 +94,7 @@
 #if (__TARGET_HAS_MAILBOX)
 
 /**
- * @defgroup kernel-hal-target-sync Syncrhonization service
+ * @defgroup kernel-hal-target-mailbox Mailbox service
  * @ingroup kernel-hal-target
  *
  * @brief Target Standard Output HAL Interface
@@ -101,6 +104,11 @@
 	#include <nanvix/const.h>
 	#include <nanvix/klib.h>
 	#include <errno.h>
+
+	/**
+	 * @brief Initializes the mailbox interface.
+	 */
+	EXTERN void mailbox_setup(void);
 
 	/**
 	 * @brief Creates a mailbox.

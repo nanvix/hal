@@ -57,6 +57,9 @@
 		#endif
 
 		/* Functions */
+		#ifndef __sync_setup_fn
+		#error "sync_setup() not defined?"
+		#endif
 		#ifndef __sync_create_fn
 		#error "sync_create() not defined?"
 		#endif
@@ -105,6 +108,18 @@
 	#include <errno.h>
 
 	/**
+	 * @brief Initializes the sync interface.
+	 */
+#if (__TARGET_HAS_SYNC)
+	EXTERN void sync_setup(void);
+#else
+	static inline void sync_setup(void)
+	{
+
+	}
+#endif
+
+	/**
 	 * @brief Allocates and configures the receiving side of the synchronization point.
 	 *
 	 * @param nodenums IDs of target NoC nodes.
@@ -132,7 +147,7 @@
 	 * @param nodenums Logic IDs of target NoC nodes.
 	 * @param nnodes   Number of target NoC nodes.
 	 * @param type     Type of synchronization point.
-	 * 
+	 *
 	 * @return The tag of underlying resource ID.
 	 */
 #if (__TARGET_HAS_SYNC)

@@ -56,4 +56,14 @@ PUBLIC void hal_init(void)
 	exception_setup();
 	interrupt_setup();
 	processor_noc_setup();
+
+#if (__TARGET_HAS_SYNC)
+	sync_setup();
+#endif
+#if (__TARGET_HAS_MAILBOX)
+	mailbox_setup();
+#endif
+#if (__TARGET_HAS_PORTAL)
+	portal_setup();
+#endif
 }
