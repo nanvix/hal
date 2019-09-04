@@ -34,11 +34,10 @@
  * @brief ID of master NoC node.
  */
 #define NODES_AMOUNT    2
-#define NODENUM_MASTER PROCESSOR_CLUSTERNUM_MASTER
 #ifdef __mppa256__
-	#define NODENUM_SLAVE (PROCESSOR_CLUSTERNUM_MASTER + PROCESSOR_NOC_IONODES_NUM)
+	#define NODENUM_OFFSET (PROCESSOR_NOC_IONODES_NUM)
 #else
-	#define NODENUM_SLAVE (PROCESSOR_CLUSTERNUM_MASTER + 1)
+	#define NODENUM_OFFSET (1)
 #endif
 
 /*============================================================================*
@@ -51,13 +50,17 @@
 PRIVATE void test_sync_create_unlink(void)
 {
 	int tmp;
-	int nodenum;
+	int masternum;
 	int syncid;
 	int nodes[NODES_AMOUNT];
 
-	nodenum = processor_node_get_num();
-	nodes[0] = nodenum;
-	nodes[1] = nodenum == NODENUM_MASTER ? NODENUM_SLAVE : NODENUM_MASTER;
+	masternum = processor_node_get_num();
+	nodes[0] = masternum;
+	nodes[1] = masternum + NODENUM_OFFSET;
+
+	/* These numbers must be valid. */
+	KASSERT((masternum + NODENUM_OFFSET) < PROCESSOR_NOC_NODES_NUM);
+	KASSERT((masternum + NODENUM_OFFSET + 1) < PROCESSOR_NOC_NODES_NUM);
 
 	KASSERT((syncid = sync_create(nodes, NODES_AMOUNT, SYNC_ALL_TO_ONE)) >= 0);
 	KASSERT(sync_unlink(syncid) == 0);
@@ -77,12 +80,12 @@ PRIVATE void test_sync_open_close(void)
 {
 	int tmp;
 	int syncid;
-	int nodenum;
+	int masternum;
 	int nodes[NODES_AMOUNT];
 
-	nodenum = processor_node_get_num();
-	nodes[0] = nodenum;
-	nodes[1] = nodenum == NODENUM_MASTER ? NODENUM_SLAVE : NODENUM_MASTER;
+	masternum = processor_node_get_num();
+	nodes[0] = masternum;
+	nodes[1] = masternum + NODENUM_OFFSET;
 
 	KASSERT((syncid = sync_open(nodes, NODES_AMOUNT, SYNC_ONE_TO_ALL)) >= 0);
 	KASSERT(sync_close(syncid) == 0);
@@ -105,23 +108,20 @@ PRIVATE void test_sync_open_close(void)
 PRIVATE void test_sync_invalid_create(void)
 {
 	int tmp;
-	int nodenum;
+	int masternum;
 	int nodes[NODES_AMOUNT];
 
-	nodenum = processor_node_get_num();
-	nodes[0] = nodenum == NODENUM_MASTER ? NODENUM_SLAVE : NODENUM_MASTER;
-	nodes[1] = nodenum;
+	masternum = processor_node_get_num();
+	nodes[0] = masternum;
+	nodes[1] = masternum + NODENUM_OFFSET;
 
 	KASSERT(sync_create(NULL, NODES_AMOUNT, SYNC_ALL_TO_ONE) == -EINVAL);
 	KASSERT(sync_create(nodes, -1, SYNC_ALL_TO_ONE) == -EINVAL);
 	KASSERT(sync_create(nodes, 0, SYNC_ALL_TO_ONE) == -EINVAL);
 	KASSERT(sync_create(nodes, 1, SYNC_ALL_TO_ONE) == -EINVAL);
-	KASSERT(sync_create(nodes, 1000, SYNC_ALL_TO_ONE) == -EINVAL);
 	KASSERT(sync_create(nodes, NODES_AMOUNT, -1) == -EINVAL);
 	KASSERT(sync_create(nodes, NODES_AMOUNT, 1000) == -EINVAL);
-	KASSERT(sync_create(nodes, NODES_AMOUNT, SYNC_ALL_TO_ONE) == -EINVAL);
-	KASSERT(sync_create(nodes, NODES_AMOUNT, -1) == -EINVAL);
-	KASSERT(sync_create(nodes, NODES_AMOUNT, 1000) == -EINVAL);
+	KASSERT(sync_create(nodes, (PROCESSOR_NOC_NODES_NUM + 1), SYNC_ALL_TO_ONE) == -EINVAL);
 
 	tmp = nodes[0];
 	nodes[0] = nodes[1];
@@ -134,9 +134,62 @@ PRIVATE void test_sync_invalid_create(void)
 	KASSERT(sync_create(nodes, 1000, SYNC_ONE_TO_ALL) == -EINVAL);
 	KASSERT(sync_create(nodes, NODES_AMOUNT, -1) == -EINVAL);
 	KASSERT(sync_create(nodes, NODES_AMOUNT, 1000) == -EINVAL);
-	KASSERT(sync_create(nodes, NODES_AMOUNT, SYNC_ONE_TO_ALL) == -EINVAL);
-	KASSERT(sync_create(nodes, NODES_AMOUNT, -1) == -EINVAL);
-	KASSERT(sync_create(nodes, NODES_AMOUNT, 1000) == -EINVAL);
+	KASSERT(sync_create(nodes, (PROCESSOR_NOC_NODES_NUM + 1), SYNC_ONE_TO_ALL) == -EINVAL);
+}
+
+/**
+ * @brief Fault Injection Test: Synchronization Point Bad Create
+ */
+PRIVATE void test_sync_bad_create(void)
+{
+	int masternum;
+	int nodes[NODES_AMOUNT + 1];
+
+	masternum = processor_node_get_num();
+
+	/* Invalid list of NoC nodes. */
+	for (int i = 0; i < (NODES_AMOUNT + 1); ++i)
+		nodes[i] = -1;
+
+	KASSERT(sync_create(nodes, (NODES_AMOUNT + 1), SYNC_ONE_TO_ALL) == -EINVAL);
+	KASSERT(sync_create(nodes, (NODES_AMOUNT + 1), SYNC_ALL_TO_ONE) == -EINVAL);
+
+	/* Underlying NoC node is the sender. */
+	nodes[0] = masternum;
+	nodes[1] = masternum + NODENUM_OFFSET;
+	nodes[2] = masternum + NODENUM_OFFSET + 1;
+
+	KASSERT(sync_create(nodes, (NODES_AMOUNT + 1), SYNC_ONE_TO_ALL) == -EINVAL);
+
+	/* Underlying NoC node is the receiver. */
+	nodes[0] = masternum + NODENUM_OFFSET;
+	nodes[1] = masternum;
+	nodes[2] = masternum + NODENUM_OFFSET + 1;
+
+	KASSERT(sync_create(nodes, (NODES_AMOUNT + 1), SYNC_ALL_TO_ONE) == -EINVAL);
+
+	/* Underlying NoC node is not listed. */
+	nodes[0] = masternum + NODENUM_OFFSET;
+	nodes[1] = masternum + NODENUM_OFFSET + 1;
+	nodes[2] = masternum + NODENUM_OFFSET + 2;
+
+	KASSERT(sync_create(nodes, (NODES_AMOUNT + 1), SYNC_ALL_TO_ONE) == -EINVAL);
+	KASSERT(sync_create(nodes, (NODES_AMOUNT + 1), SYNC_ONE_TO_ALL) == -EINVAL);
+
+	/* Underlying NoC node appears twice in the list. */
+	nodes[0] = masternum;
+	nodes[1] = masternum;
+	nodes[2] = masternum + NODENUM_OFFSET;
+
+	KASSERT(sync_create(nodes, (NODES_AMOUNT + 1), SYNC_ALL_TO_ONE) == -EINVAL);
+	KASSERT(sync_create(nodes, (NODES_AMOUNT + 1), SYNC_ONE_TO_ALL) == -EINVAL);
+
+	nodes[0] = masternum + NODENUM_OFFSET;
+	nodes[1] = masternum;
+	nodes[2] = masternum;
+
+	KASSERT(sync_create(nodes, (NODES_AMOUNT + 1), SYNC_ALL_TO_ONE) == -EINVAL);
+	KASSERT(sync_create(nodes, (NODES_AMOUNT + 1), SYNC_ONE_TO_ALL) == -EINVAL);
 }
 
 /**
@@ -145,12 +198,12 @@ PRIVATE void test_sync_invalid_create(void)
 PRIVATE void test_sync_invalid_open(void)
 {
 	int tmp;
-	int nodenum;
+	int masternum;
 	int nodes[NODES_AMOUNT];
 
-	nodenum = processor_node_get_num();
-	nodes[0] = nodenum;
-	nodes[1] = nodenum == NODENUM_MASTER ? NODENUM_SLAVE : NODENUM_MASTER;
+	masternum = processor_node_get_num();
+	nodes[0] = masternum;
+	nodes[1] = masternum + NODENUM_OFFSET;
 
 	KASSERT(sync_open(NULL, NODES_AMOUNT, SYNC_ONE_TO_ALL) == -EINVAL);
 	KASSERT(sync_open(nodes, -1, SYNC_ONE_TO_ALL) == -EINVAL);
@@ -159,7 +212,7 @@ PRIVATE void test_sync_invalid_open(void)
 	KASSERT(sync_open(nodes, 1000, SYNC_ONE_TO_ALL) == -EINVAL);
 	KASSERT(sync_open(nodes, NODES_AMOUNT, -1) == -EINVAL);
 	KASSERT(sync_open(nodes, NODES_AMOUNT, 1000) == -EINVAL);
-	KASSERT(sync_open(nodes, NODES_AMOUNT, SYNC_ALL_TO_ONE) == -EINVAL);
+	KASSERT(sync_open(nodes, (PROCESSOR_NOC_NODES_NUM + 1), SYNC_ONE_TO_ALL) == -EINVAL);
 
 	tmp = nodes[0];
 	nodes[0] = nodes[1];
@@ -172,7 +225,62 @@ PRIVATE void test_sync_invalid_open(void)
 	KASSERT(sync_open(nodes, 1000, SYNC_ALL_TO_ONE) == -EINVAL);
 	KASSERT(sync_open(nodes, NODES_AMOUNT, -1) == -EINVAL);
 	KASSERT(sync_open(nodes, NODES_AMOUNT, 1000) == -EINVAL);
-	KASSERT(sync_open(nodes, NODES_AMOUNT, SYNC_ONE_TO_ALL) == -EINVAL);
+	KASSERT(sync_open(nodes, (PROCESSOR_NOC_NODES_NUM + 1), SYNC_ALL_TO_ONE) == -EINVAL);
+}
+
+/**
+ * @brief Fault Injection Test: Synchronization Point Bad Open
+ */
+PRIVATE void test_sync_bad_open(void)
+{
+	int masternum;
+	int nodes[NODES_AMOUNT + 1];
+
+	masternum = processor_node_get_num();
+
+	/* Invalid list of NoC nodes. */
+	for (int i = 0; i < (NODES_AMOUNT + 1); ++i)
+		nodes[i] = -1;
+
+	KASSERT(sync_open(nodes, (NODES_AMOUNT + 1), SYNC_ONE_TO_ALL) == -EINVAL);
+	KASSERT(sync_open(nodes, (NODES_AMOUNT + 1), SYNC_ALL_TO_ONE) == -EINVAL);
+
+	/* Underlying NoC node is the sender. */
+	nodes[0] = masternum + NODENUM_OFFSET;
+	nodes[1] = masternum;
+	nodes[2] = masternum + NODENUM_OFFSET + 1;
+
+	KASSERT(sync_open(nodes, (NODES_AMOUNT + 1), SYNC_ONE_TO_ALL) == -EINVAL);
+
+	/* Underlying NoC node is the receiver. */
+	nodes[0] = masternum;
+	nodes[1] = masternum + NODENUM_OFFSET;
+	nodes[2] = masternum + NODENUM_OFFSET + 1;
+
+	KASSERT(sync_open(nodes, (NODES_AMOUNT + 1), SYNC_ALL_TO_ONE) == -EINVAL);
+
+	/* Underlying NoC node is not listed. */
+	nodes[0] = masternum + NODENUM_OFFSET;
+	nodes[1] = masternum + NODENUM_OFFSET + 1;
+	nodes[2] = masternum + NODENUM_OFFSET + 2;
+
+	KASSERT(sync_open(nodes, (NODES_AMOUNT + 1), SYNC_ALL_TO_ONE) == -EINVAL);
+	KASSERT(sync_open(nodes, (NODES_AMOUNT + 1), SYNC_ONE_TO_ALL) == -EINVAL);
+
+	/* Underlying NoC node appears twice in the list. */
+	nodes[0] = masternum;
+	nodes[1] = masternum;
+	nodes[2] = masternum + NODENUM_OFFSET;
+
+	KASSERT(sync_open(nodes, (NODES_AMOUNT + 1), SYNC_ALL_TO_ONE) == -EINVAL);
+	KASSERT(sync_open(nodes, (NODES_AMOUNT + 1), SYNC_ONE_TO_ALL) == -EINVAL);
+
+	nodes[0] = masternum + NODENUM_OFFSET;
+	nodes[1] = masternum;
+	nodes[2] = masternum;
+
+	KASSERT(sync_open(nodes, (NODES_AMOUNT + 1), SYNC_ALL_TO_ONE) == -EINVAL);
+	KASSERT(sync_open(nodes, (NODES_AMOUNT + 1), SYNC_ONE_TO_ALL) == -EINVAL);
 }
 
 /**
@@ -191,12 +299,12 @@ PRIVATE void test_sync_invalid_unlink(void)
 PRIVATE void test_sync_bad_unlink(void)
 {
 	int syncid;
-	int nodenum;
+	int masternum;
 	int nodes[NODES_AMOUNT];
 
-	nodenum = processor_node_get_num();
-	nodes[0] = nodenum;
-	nodes[1] = nodenum == NODENUM_MASTER ? NODENUM_SLAVE : NODENUM_MASTER;
+	masternum = processor_node_get_num();
+	nodes[0] = masternum;
+	nodes[1] = masternum + NODENUM_OFFSET;
 
 	KASSERT((syncid = sync_open(nodes, NODES_AMOUNT, SYNC_ONE_TO_ALL)) >= 0);
 	KASSERT(sync_unlink(syncid) == -EBADF);
@@ -208,13 +316,13 @@ PRIVATE void test_sync_bad_unlink(void)
  */
 PRIVATE void test_sync_double_unlink(void)
 {
-	int nodenum;
+	int masternum;
 	int syncid;
 	int nodes[NODES_AMOUNT];
 
-	nodenum = processor_node_get_num();
-	nodes[0] = nodenum;
-	nodes[1] = nodenum == NODENUM_MASTER ? NODENUM_SLAVE : NODENUM_MASTER;
+	masternum = processor_node_get_num();
+	nodes[0] = masternum;
+	nodes[1] = masternum + NODENUM_OFFSET;
 
 	KASSERT((syncid = sync_create(nodes, NODES_AMOUNT, SYNC_ALL_TO_ONE)) >= 0);
 	KASSERT(sync_unlink(syncid) == 0);
@@ -236,16 +344,18 @@ PRIVATE void test_sync_invalid_close(void)
  */
 PRIVATE void test_sync_bad_close(void)
 {
-	int nodenum;
+	int masternum;
 	int syncid;
 	int nodes[NODES_AMOUNT];
 
-	nodenum = processor_node_get_num();
-	nodes[0] = nodenum;
-	nodes[1] = nodenum == NODENUM_MASTER ? NODENUM_SLAVE : NODENUM_MASTER;
+	masternum = processor_node_get_num();
+	nodes[0] = masternum;
+	nodes[1] = masternum + NODENUM_OFFSET;
 
 	KASSERT((syncid = sync_create(nodes, NODES_AMOUNT, SYNC_ALL_TO_ONE)) >= 0);
-	KASSERT(sync_close(syncid) == -EBADF);
+
+		KASSERT(sync_close(syncid) == -EBADF);
+
 	KASSERT(sync_unlink(syncid) == 0);
 }
 
@@ -255,12 +365,12 @@ PRIVATE void test_sync_bad_close(void)
 PRIVATE void test_sync_double_close(void)
 {
 	int syncid;
-	int nodenum;
+	int masternum;
 	int nodes[NODES_AMOUNT];
 
-	nodenum = processor_node_get_num();
-	nodes[0] = nodenum;
-	nodes[1] = nodenum == NODENUM_MASTER ? NODENUM_SLAVE : NODENUM_MASTER;
+	masternum = processor_node_get_num();
+	nodes[0] = masternum;
+	nodes[1] = masternum + NODENUM_OFFSET;
 
 	KASSERT((syncid = sync_open(nodes, NODES_AMOUNT, SYNC_ONE_TO_ALL)) >= 0);
 	KASSERT(sync_close(syncid) == 0);
@@ -281,16 +391,18 @@ PRIVATE void test_sync_invalid_signal(void)
  */
 PRIVATE void test_sync_bad_signal(void)
 {
-	int nodenum;
+	int masternum;
 	int syncid;
 	int nodes[NODES_AMOUNT];
 
-	nodenum = processor_node_get_num();
-	nodes[0] = nodenum;
-	nodes[1] = nodenum == NODENUM_MASTER ? NODENUM_SLAVE : NODENUM_MASTER;
+	masternum = processor_node_get_num();
+	nodes[0] = masternum;
+	nodes[1] = masternum + NODENUM_OFFSET;
 
 	KASSERT((syncid = sync_create(nodes, NODES_AMOUNT, SYNC_ALL_TO_ONE)) >= 0);
-	KASSERT(sync_signal(syncid) == -EBADF);
+
+		KASSERT(sync_signal(syncid) == -EBADF);
+
 	KASSERT(sync_unlink(syncid) == 0);
 }
 
@@ -309,15 +421,17 @@ PRIVATE void test_sync_invalid_wait(void)
 PRIVATE void test_sync_bad_wait(void)
 {
 	int syncid;
-	int nodenum;
+	int masternum;
 	int nodes[NODES_AMOUNT];
 
-	nodenum = processor_node_get_num();
-	nodes[0] = nodenum;
-	nodes[1] = nodenum == NODENUM_MASTER ? NODENUM_SLAVE : NODENUM_MASTER;
+	masternum = processor_node_get_num();
+	nodes[0] = masternum;
+	nodes[1] = masternum + NODENUM_OFFSET;
 
 	KASSERT((syncid = sync_open(nodes, NODES_AMOUNT, SYNC_ONE_TO_ALL)) >= 0);
-	KASSERT(sync_wait(syncid) == -EBADF);
+
+		KASSERT(sync_wait(syncid) == -EBADF);
+
 	KASSERT(sync_close(syncid) == 0);
 }
 
@@ -339,8 +453,9 @@ PRIVATE struct test sync_tests_api[] = {
  */
 PRIVATE struct test sync_tests_fault[] = {
 	{ test_sync_invalid_create, "invalid create" },
+	{ test_sync_bad_create,     "bad create    " },
 	{ test_sync_invalid_open,   "invalid open  " },
-	{ test_sync_invalid_unlink, "invalid unlink" },
+	{ test_sync_bad_open,       "bad open      " },
 	{ test_sync_bad_unlink,     "bad unlink    " },
 	{ test_sync_double_unlink,  "double unlink " },
 	{ test_sync_invalid_close,  "invalid close " },
