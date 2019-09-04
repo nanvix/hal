@@ -33,10 +33,9 @@
  */
 /**@{*/
 
+	#include <nanvix/const.h>
 	#include <linux/perf_event.h>
-	#include <sys/ioctl.h>
-	#include <syscall.h>
-	#include <unistd.h>
+	#include <stdint.h>
 
 	/**
 	 * @brief Number of performance events.
@@ -91,31 +90,16 @@
 	#define LINUX64_PERF_ARG4  0 /**< Default arg4 */
 
 	/**
-	 * @Brief Function to call to configure a perf
-	 */
-	PRIVATE int perf_event_open(struct perf_event_attr *hw_event, pid_t pid, int cpu, int group_fd, unsigned long flags)
-	{
-		return (syscall(__NR_perf_event_open, (dword_t) hw_event, pid, cpu, group_fd, flags));
-	}
-
-	/**
 	 * @Brief Array of File Descriptor containing the values of the counters
 	 */
-	int linux64_perf_monitors[LINUX64_PERF_MONITORS_NUM];
-
+	EXTERN int linux64_perf_monitors[LINUX64_PERF_MONITORS_NUM];
 
 	/**
 	 * @Brief Check if the perf and event values are valide
 	 */
-	static inline int perf_isvalid(int perf)
-	{
-		return (perf >= 0 && perf < LINUX64_PERF_MONITORS_NUM);
-	}
+	EXTERN int perf_isvalid(int perf);
 
-	static inline int event_isvalid(int event)
-	{
-		return (event >= 0 && event < LINUX64_PERF_EVENTS_NUM);
-	}
+	EXTERN int event_isvalid(int event);
 
 	/**
 	 * @brief Initializes performance monitors.
@@ -123,11 +107,7 @@
 	 * @returns Upon successful completion, zero is returned. Upon
 	 * failure, a negative error code is returned instead.
 	 */
-	static inline void linux64_perf_setup(void)
-	{
-		for(int i = 0; i < LINUX64_PERF_MONITORS_NUM; i++)
-			linux64_perf_monitors[i] = -1;
-	}
+	EXTERN void linux64_perf_setup(void);
 
 	/**
 	 * @brief Starts a performance monitor.
@@ -138,32 +118,7 @@
 	 * @returns Upon successful completion, zero is returned.
 	 * Upon failure, a negative error code is returned instead.
 	 */
-	static inline int linux64_perf_start(int perf, int event)
-    {
-		if (!perf_isvalid(perf) || !event_isvalid(event))
-			return (-EINVAL);
-
-		struct perf_event_attr attr;
-		kmemset(&attr, 0, sizeof(struct perf_event_attr));
-		attr.type = PERF_TYPE_HARDWARE;
-		attr.size = sizeof(struct perf_event_attr);
-		attr.config = event;
-		attr.disabled = 1;
-        attr.exclude_kernel = 1;
-        attr.exclude_hv = 1;
-		linux64_perf_monitors[perf] = perf_event_open(&attr,
-													LINUX64_PERF_ARG1,
-													LINUX64_PERF_ARG2,
-													LINUX64_PERF_ARG3,
-													LINUX64_PERF_ARG4);
-
-		if (linux64_perf_monitors[perf] == -1)
-			return (-EINVAL);
-
-		ioctl(linux64_perf_monitors[perf], PERF_EVENT_IOC_RESET, 0);
-        ioctl(linux64_perf_monitors[perf], PERF_EVENT_IOC_ENABLE, 0);
-		return (0);
-    }
+	EXTERN int linux64_perf_start(int perf, int event);
 
 	/**
 	 * @brief Stops a performance monitor.
@@ -173,14 +128,7 @@
 	 * @returns Upon successful completion, zero is returned. Upon
 	 * failure, a negative error code is returned instead.
 	 */
-	static inline int linux64_perf_stop(int perf)
-	{
-		if (!perf_isvalid(perf))
-			return (-EINVAL);
-
-		ioctl(linux64_perf_monitors[perf], PERF_EVENT_IOC_DISABLE, 0);
-		return (0);
-	}
+	EXTERN int linux64_perf_stop(int perf);
 
 	/**
 	 * @brief Restarts a performance monitor.
@@ -190,14 +138,7 @@
 	 * @returns Upon successful completion, zero is returned. Upon
 	 * failure, a negative error code is returned instead.
 	 */
-	static inline int linux64_perf_restart(int perf)
-	{
-		if (!perf_isvalid(perf))
-			return (-1);
-
-		ioctl(linux64_perf_monitors[perf], PERF_EVENT_IOC_RESET, 0);
-		return (0);
-	}
+	EXTERN int linux64_perf_restart(int perf);
 
 	/**
 	 * @brief Reads a PM register.
@@ -207,17 +148,7 @@
 	 * @returns Upon successful completion, the value of the target
 	 * performance monitor.
 	 */
-	static inline uint64_t linux64_perf_read(int perf)
-	{
-		if (!perf_isvalid(perf))
-			return (-1);
-
-		uint64_t res = 0;
-		if (read(linux64_perf_monitors[perf], &res, sizeof(unsigned long)) < 1)
-			return (0);
-		else
-			return (res);
-	}
+	EXTERN uint64_t linux64_perf_read(int perf);
 
 /**@}*/
 

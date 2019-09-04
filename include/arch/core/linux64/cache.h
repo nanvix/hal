@@ -35,7 +35,6 @@
 
 	#include <nanvix/klib.h>
 	#include <stdlib.h>
-	#include <stdio.h>
 
 	/**
 	 * @brief recover the cache line size

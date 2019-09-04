@@ -33,6 +33,7 @@
 #include <pthread.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <stdio.h>
 
 /**
  * @brief Length of mailbox name.
