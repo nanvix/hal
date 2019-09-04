@@ -172,6 +172,7 @@
 	 * @name Provided Functions
 	 */
 	/**@{*/
+	#define __portal_setup_fn  /**< portal_setup()  */
 	#define __portal_create_fn /**< portal_create() */
 	#define __portal_allow_fn  /**< portal_allow()  */
 	#define __portal_open_fn   /**< portal_open()   */
@@ -188,6 +189,18 @@
 	#define PORTAL_OPEN_MAX   UNIX64_PORTAL_OPEN_MAX   /**< UNIX64_PORTAL_OPEN_MAX   */
 	#define PORTAL_MAX_SIZE   UNIX64_PORTAL_MAX_SIZE   /**< UNIX64_PORTAL_MAX_SIZE   */
 	/**@}*/
+
+	/**
+	 * @todo TODO: call unix64_portal_setup().
+	 */
+	static inline void portal_setup(void)
+	{
+		/*
+		 * Afterwards we provide a platform-independent initialization
+		 * for the target we can add a call to unix64_portal_setup()
+		 * here.
+		 */
+	}
 
 	/**
 	 * @see unix64_portal_create()
