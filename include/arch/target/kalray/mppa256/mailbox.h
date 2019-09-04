@@ -133,13 +133,14 @@
 	 * @name Provided Interface
 	 */
 	/**@{*/
-	#define __mailbox_create_fn    /**< mailbox_create() */
-	#define __mailbox_open_fn      /**< mailbox_open()   */
-	#define __mailbox_unlink_fn    /**< mailbox_unlink() */
-	#define __mailbox_close_fn     /**< mailbox_close()  */
-	#define __mailbox_awrite_fn    /**< mailbox_awrite() */
-	#define __mailbox_aread_fn     /**< mailbox_aread()  */
-	#define __mailbox_wait_fn      /**< mailbox_wait()   */
+	#define __mailbox_setup_fn  /**< mailbox_setup()  */
+	#define __mailbox_create_fn /**< mailbox_create() */
+	#define __mailbox_open_fn   /**< mailbox_open()   */
+	#define __mailbox_unlink_fn /**< mailbox_unlink() */
+	#define __mailbox_close_fn  /**< mailbox_close()  */
+	#define __mailbox_awrite_fn /**< mailbox_awrite() */
+	#define __mailbox_aread_fn  /**< mailbox_aread()  */
+	#define __mailbox_wait_fn   /**< mailbox_wait()   */
 	/**@}*/
 
 	/**
@@ -157,6 +158,14 @@
 	#define MAILBOX_CREATE_MAX MPPA256_MAILBOX_CREATE_MAX
 	#define MAILBOX_OPEN_MAX   MPPA256_MAILBOX_OPEN_MAX
 	/**@}*/
+
+	/**
+	 * @todo TODO: rely on dummy platform-independent dummy function.
+	 */
+	static inline void mailbox_setup(void)
+	{
+
+	}
 
 	/**
 	 * @see mppa256_mailbox_create()

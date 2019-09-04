@@ -75,7 +75,7 @@
 	 * @param nodenums Logic IDs of target NoC nodes.
 	 * @param nnodes   Number of target NoC nodes.
 	 * @param type     Type of synchronization point.
-	 * 
+	 *
 	 * @return The File descriptor ID.
 	 */
 	EXTERN int mppa256_sync_open(const int *nodenums, int nnodes, int type);
@@ -124,6 +124,7 @@
 	 * @name Provided Interface
 	 */
 	/**@{*/
+	#define __sync_setup_fn  /**< sync_setup()  */
 	#define __sync_create_fn /**< sync_create() */
 	#define __sync_open_fn   /**< sync_open()   */
 	#define __sync_unlink_fn /**< sync_unlink() */
@@ -149,6 +150,17 @@
 	#define SYNC_CREATE_MAX MPPA256_SYNC_CREATE_MAX
 	#define SYNC_OPEN_MAX   MPPA256_SYNC_OPEN_MAX
 	/**@}*/
+
+	/**
+	 * @todo TODO: rely on dummy platform-independent dummy function.
+	 *
+	 * @todo Maybe this function can be used to initialize the intercluster
+	 * fence resources.
+	 */
+	static inline void sync_setup(void)
+	{
+
+	}
 
 	/**
 	 * @see mppa256_sync_create()
