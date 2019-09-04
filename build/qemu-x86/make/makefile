@@ -34,7 +34,7 @@ export PROCESSOR := x86
 #===============================================================================
 
 # Toolchain Directory
-export TOOLCHAIN_DIR ?= $(TOOLSDIR)/dev/toolchain/i486/bin
+export TOOLCHAIN_DIR ?= $(TOOLSDIR)/toolchain/i486/bin
 
 # Toolchain
 export CC = $(TOOLCHAIN_DIR)/i486-elf-gcc

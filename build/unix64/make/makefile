@@ -35,7 +35,7 @@ export PROCESSOR := linux64
 #===============================================================================
 
 # Toolchain Directory
-export TOOLCHAIN_DIR ?= $(TOOLSDIR)/dev/toolchain/unix/bin
+export TOOLCHAIN_DIR ?= $(TOOLSDIR)/toolchain/unix/bin
 
 # Toolchain
 export CC = gcc

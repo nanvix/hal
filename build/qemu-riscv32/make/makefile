@@ -34,7 +34,7 @@ export PROCESSOR := riscv32
 #===============================================================================
 
 # Toolchain Directory
-export TOOLCHAIN_DIR ?= $(TOOLSDIR)/dev/toolchain/riscv32/bin
+export TOOLCHAIN_DIR ?= $(TOOLSDIR)/toolchain/riscv32/bin
 
 # Toolchain
 export CC = $(TOOLCHAIN_DIR)/riscv32-elf-gcc
