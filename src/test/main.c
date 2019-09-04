@@ -103,7 +103,9 @@ PRIVATE void test_target_al(void)
 	test_mailbox();
 #endif
 
+#if (__TARGET_HAS_PORTAL)
 	test_portal();
+#endif
 }
 
 #ifndef __unix64__
