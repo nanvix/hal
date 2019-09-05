@@ -54,6 +54,9 @@
 		#endif
 
 		/* Functions */
+		#ifndef __processor_noc_setup_fn
+		#error "__processor_noc_setup() not defined?"
+		#endif
 		#ifndef __processor_noc_is_ionode_fn
 		#error "__processor_noc_is_ionode() not defined?"
 		#endif
@@ -63,8 +66,8 @@
 		#ifndef __processor_node_get_num_fn
 		#error "__processor_node_get_num() not defined?"
 		#endif
-		#ifndef __processor_noc_setup_fn
-		#error "__processor_noc_setup() not defined?"
+		#ifndef __processor_node_set_num_fn
+		#error "__processor_node_set_num() not defined?"
 		#endif
 
 	#else
@@ -97,6 +100,22 @@
 	 */
 	#define PROCESSOR_NOC_NODES_NUM \
 		(PROCESSOR_NOC_IONODES_NUM + PROCESSOR_NOC_CNODES_NUM)
+
+#ifdef __NANVIX_HAL
+
+	/**
+	 * @brief Initializes the mailbox interface.
+	 */
+#if (PROCESSOR_HAS_NOC)
+	EXTERN void processor_noc_setup(void);
+#else
+	static inline void processor_noc_setup(void)
+	{
+
+	}
+#endif
+
+#endif /* __NANVIX_HAL */
 
 	/**
 	 * @brief Asserts whether a NoC node is attached to an IO cluster.
@@ -137,34 +156,53 @@
 #endif
 
 	/**
-	 * @brief Gets the logic number of the target NoC node.
+	 * @brief Gets the logic number of the target NoC node
+	 * attached with a core.
+	 * 
+	 * @param coreid Attached core ID.
 	 *
-	 * @returns The logic number of the target NoC node.
+	 * @returns The logic number of the target NoC node attached
+	 * with the @p coreid.
 	 */
 #if (PROCESSOR_HAS_NOC)
-	EXTERN int processor_node_get_num(void);
+	EXTERN int processor_node_get_num(int coreid);
 #else
-	static inline int processor_node_get_num(void)
+	static inline int processor_node_get_num(int coreid)
 	{
+		/* Invalid coreid. */
+		if (!WITHIN(coreid, 0, CORES_NUM))
+			return (-EINVAL);
+
 		return (0);
 	}
 #endif
 
-#ifdef __NANVIX_HAL
-
 	/**
-	 * @brief Initializes the mailbox interface.
+	 * @brief Exchange the logic number of the target NoC node
+	 * attached with a core.
+	 *
+	 * @param coreid  Attached core ID.
+	 * @param nodenum Logic ID of the target NoC node.
+	 * 
+	 * @returns Zero if the target NoC node is successfully attached
+	 * to the requested @p coreid, and non zero otherwise.
 	 */
 #if (PROCESSOR_HAS_NOC)
-	EXTERN void processor_noc_setup(void);
+	EXTERN int processor_node_set_num(int coreid, int nodenum);
 #else
-	static inline void processor_noc_setup(void)
+	static inline int processor_node_set_num(int coreid, int nodenum)
 	{
+		/* Invalid coreid. */
+		if (!WITHIN(coreid, 0, CORES_NUM))
+			return (-EINVAL);
+		
+		/* Invalid coreid. */
+		if (!WITHIN(nodenum, 0, PROCESSOR_NOC_NODES_NUM))
+			return (-EINVAL);
 
+		return (0);
 	}
 #endif
-
-#endif /* __NANVIX_HAL */
 
 /**@}*/
 
