@@ -88,6 +88,36 @@ struct
 	}
 };
 
+/**
+ * @brief Map of core ids to nodenums.
+ */
+PRIVATE int linux64_corenums[CORES_NUM];
+
+/*============================================================================*
+ * linux64_processor_node_get_id()                                            *
+ *============================================================================*/
+
+/**
+ * @todo TODO: Provide a detailed description to this function.
+ */
+PRIVATE int linux64_processor_node_get_id(void)
+{
+	return (linux64_cluster_get_num());
+}
+
+/*=======================================================================*
+ * linux64_processor_noc_setup()                                         *
+ *=======================================================================*/
+
+/**
+ * @brief Initializes the noc interface.
+ */
+PUBLIC void linux64_processor_noc_setup(void)
+{
+	for (int i = 0; i < CORES_NUM; ++i)
+		linux64_corenums[i] = linux64_processor_node_get_id();
+}
+
 /*============================================================================*
  * linux64_processor_noc_lock()                                               *
  *============================================================================*/
@@ -132,7 +162,7 @@ PRIVATE int linux64_processor_noc_node_to_cluster_num(int nodenum)
 	for (int i = 0, j = 0; i < PROCESSOR_CLUSTERS_NUM; i++)
 	{
 		/* Found. */
-		if ((nodenum >= j) < (nodenum < (j + noc.configuration[i])))
+		if ((nodenum >= j) && (nodenum < (j + noc.configuration[i])))
 			return (i);
 
 		j += noc.configuration[i];
@@ -142,15 +172,25 @@ PRIVATE int linux64_processor_noc_node_to_cluster_num(int nodenum)
 }
 
 /*============================================================================*
- * linux64_processor_node_get_id()                                            *
+ * linux64_processor_node_get_num()                                           *
  *============================================================================*/
 
 /**
- * @todo TODO: Provide a detailed description to this function.
+ * @brief Gets the logic number of the target NoC node
+ * attached with a core.
+ *
+ * @param coreid Attached core ID.
+ *
+ * @returns The logic number of the target NoC node attached
+ * with the @p coreid.
  */
-PRIVATE int linux64_processor_node_get_id(void)
+PUBLIC int linux64_processor_node_get_num(int coreid)
 {
-	return (linux64_cluster_get_num());
+	/* Invalid coreid. */
+	if (!WITHIN(coreid, 0, CORES_NUM))
+		return (-EINVAL);
+
+	return (linux64_corenums[coreid]);
 }
 
 /*============================================================================*
@@ -158,11 +198,31 @@ PRIVATE int linux64_processor_node_get_id(void)
  *============================================================================*/
 
 /**
- * @todo TODO: Provnume a detailed description to this function.
+ * @brief Exchange the logic number of the target NoC node
+ * attached with a core.
+ *
+ * @param coreid  Attached core ID.
+ * @param nodenum Logic ID of the target NoC node.
+ * 
+ * @returns Zero if the target NoC node is successfully attached
+ * to the requested @p coreid, and non zero otherwise.
  */
-PUBLIC int linux64_processor_node_get_num(void)
+PUBLIC int linux64_processor_node_set_num(int coreid, int nodenum)
 {
-	return (linux64_processor_node_get_id());
+	/* Invalid coreid. */
+	if (!WITHIN(coreid, 0, CORES_NUM))
+		return (-EINVAL);
+	
+	if (!WITHIN(nodenum, 0, PROCESSOR_NOC_NODES_NUM))
+		return (-EINVAL);
+
+	/* Invalid nodenum. */
+	if (cluster_get_num() != linux64_processor_noc_node_to_cluster_num(nodenum))
+		return (-EINVAL);
+
+	linux64_corenums[coreid] = nodenum;
+
+	return (0);
 }
 
 /*============================================================================*

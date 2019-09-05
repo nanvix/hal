@@ -448,7 +448,7 @@ PUBLIC int unix64_portal_create(int local)
 		return (-EINVAL);
 
 	/* Bad local NoC node. */
-	if (local != processor_node_get_num())
+	if (local != processor_node_get_num(core_get_id()))
 		return (-EINVAL);
 
 	return (do_unix64_portal_create(local));
@@ -546,7 +546,7 @@ PUBLIC int unix64_portal_allow(int portalid, int remote)
 		return (-EINVAL);
 
 	/* Bad remote. */
-	if (remote == processor_node_get_num())
+	if (remote == processor_node_get_num(core_get_id()))
 		return (-EINVAL);
 
 	return (do_unix64_portal_allow(portalid, remote));
@@ -646,7 +646,7 @@ PUBLIC int unix64_portal_open(int local, int remote)
 		return (-EINVAL);
 
 	/* Bad local. */
-	if (local != processor_node_get_num())
+	if (local != processor_node_get_num(core_get_id()))
 		return (-EINVAL);
 
 	/* Bad remote. */

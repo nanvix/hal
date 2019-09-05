@@ -237,7 +237,7 @@ PUBLIC int unix64_mailbox_create(int nodenum)
 		return (-EINVAL);
 
 	/* Bad NoC node. */
-	if (nodenum != processor_node_get_num())
+	if (nodenum != processor_node_get_num(core_get_id()))
 		return (-EINVAL);
 
 	unix64_mailbox_lock();
@@ -307,7 +307,7 @@ PUBLIC int unix64_mailbox_open(int nodenum)
 		return (-EINVAL);
 
 	/* Bad NoC node. */
-	if (nodenum == processor_node_get_num())
+	if (nodenum == processor_node_get_num(core_get_id()))
 		return (-EINVAL);
 
 again:

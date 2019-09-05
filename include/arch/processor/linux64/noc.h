@@ -68,12 +68,9 @@
 #endif /* __NANVIX_HAL */
 
 	/**
-	 * @brief Gets the logic number of the target NoC node.
-	 *
-	 * @param nodeid ID of the target NoC node.
-	 * @returns The logic number of the target NoC node.
+	 * @brief Initializes the noc interface.
 	 */
-	EXTERN int linux64_processor_node_get_num(void);
+	EXTERN void linux64_processor_noc_setup(void);
 
 	/**
 	 * @brief Asserts whether a NoC node is attached to an IO cluster.
@@ -94,6 +91,29 @@
 	 * cluster, and zero otherwise.
 	 */
 	EXTERN int linux64_processor_noc_is_cnode(int nodenum);
+
+	/**
+	 * @brief Gets the logic number of the target NoC node
+	 * attached with a core.
+	 * 
+	 * @param coreid Attached core ID.
+	 *
+	 * @returns The logic number of the target NoC node attached
+	 * with the @p coreid.
+	 */
+	EXTERN int linux64_processor_node_get_num(int coreid);
+
+	/**
+	 * @brief Exchange the logic number of the target NoC node
+	 * attached with a core.
+	 *
+	 * @param coreid  Attached core ID.
+	 * @param nodenum Logic ID of the target NoC node.
+	 * 
+	 * @returns Zero if the target NoC node is successfully attached
+	 * to the requested @p coreid, and non zero otherwise.
+	 */
+	EXTERN int linux64_processor_node_set_num(int coreid, int nodenum);
 
 /**@}*/
 
@@ -118,18 +138,19 @@
 	 * @name Exported Functions
 	 */
 	/**@{*/
-	#define __processor_node_get_num_fn  /**< processor_node_get_num()  */
+	#define __processor_noc_setup_fn     /**< processor_noc_setup()     */
 	#define __processor_noc_is_ionode_fn /**< processor_noc_is_ionode() */
 	#define __processor_noc_is_cnode_fn  /**< processor_noc_is_cnode()  */
-	#define __processor_noc_setup_fn     /**< processor_noc_setup()     */
+	#define __processor_node_get_num_fn  /**< processor_node_get_num()  */
+	#define __processor_node_set_num_fn  /**< processor_node_set_num()  */
 	/**@}*/
 
 	/**
-	 * @see linux64_processor_node_get_num().
+	 * @brief Dummy operation.
 	 */
-	static inline int processor_node_get_num(void)
+	static inline void processor_noc_setup(void)
 	{
-		return (linux64_processor_node_get_num());
+		linux64_processor_noc_setup();
 	}
 
 	/**
@@ -149,10 +170,19 @@
 	}
 
 	/**
-	 * @brief Dummy operation.
+	 * @see linux64_processor_node_get_num().
 	 */
-	static inline void processor_noc_setup(void)
+	static inline int processor_node_get_num(int coreid)
 	{
+		return (linux64_processor_node_get_num(coreid));
+	}
+
+	/**
+	 * @see linux64_processor_node_set_num().
+	 */
+	static inline int processor_node_set_num(int coreid, int nodenum)
+	{
+		return (linux64_processor_node_set_num(coreid, nodenum));
 	}
 
 /**@endcond*/
