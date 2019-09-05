@@ -79,7 +79,7 @@
 	 * thus are skipped.
 	 */
 	/**@{*/
-	#define BOSTAN_MAILBOX_RX_OFF (BOSTAN_PROCESSOR_NOC_RESERVED_RXS_NUM)                   /**< Mailbox. */
+	#define BOSTAN_MAILBOX_RX_OFF (BOSTAN_PROCESSOR_NOC_RESERVED_RXS_NUM)                  /**< Mailbox. */
 	#define BOSTAN_PORTAL_RX_OFF  (BOSTAN_MAILBOX_RX_OFF + BOSTAN_PROCESSOR_NOC_NODES_NUM) /**< Portal.  */
 	#define BOSTAN_SYNC_RX_OFF    (BOSTAN_PORTAL_RX_OFF + BOSTAN_PROCESSOR_NOC_NODES_NUM)  /**< Sync.    */
 	/**@}*/
@@ -88,7 +88,7 @@
 	 * @brief Transfer C-NoC tags offsets.
 	 */
 	/**@{*/
-	#define BOSTAN_MAILBOX_CNOC_TX_OFF (BOSTAN_PROCESSOR_NOC_RESERVED_TXS_NUM)                   /**< Mailbox. */
+	#define BOSTAN_MAILBOX_CNOC_TX_OFF (BOSTAN_PROCESSOR_NOC_RESERVED_TXS_NUM)                  /**< Mailbox. */
 	#define BOSTAN_PORTAL_CNOC_TX_OFF  (BOSTAN_MAILBOX_CNOC_TX_OFF + BOSTAN_MAILBOX_CREATE_MAX) /**< Portal.  */
 	#define BOSTAN_SYNC_CNOC_TX_OFF    (BOSTAN_PORTAL_CNOC_TX_OFF + BOSTAN_PORTAL_CREATE_MAX)   /**< Sync.    */
 	/**@}*/
@@ -97,16 +97,14 @@
 	 * @brief Transfer D-NoC tags offsets.
 	 */
 	/**@{*/
-	#define BOSTAN_MAILBOX_DNOC_TX_OFF (BOSTAN_PROCESSOR_NOC_RESERVED_TXS_NUM)                 /**< Mailbox. */
+	#define BOSTAN_MAILBOX_DNOC_TX_OFF (BOSTAN_PROCESSOR_NOC_RESERVED_TXS_NUM)                /**< Mailbox. */
 	#define BOSTAN_PORTAL_DNOC_TX_OFF  (BOSTAN_MAILBOX_DNOC_TX_OFF + BOSTAN_MAILBOX_OPEN_MAX) /**< Portal.  */
 	/**@}*/
 
 	/**
-	 * @brief Gets the logic number of the target NoC node.
-	 *
-	 * @returns The logic number of the target NoC node.
+	 * @brief Initializes the noc interface.
 	 */
-	EXTERN int bostan_processor_node_get_num(void);
+	EXTERN void bostan_processor_noc_setup(void);
 
 	/**
 	 * @brief Asserts whether a NoC node is attached to an IO cluster.
@@ -129,6 +127,29 @@
 	EXTERN int bostan_processor_noc_is_cnode(int nodenum);
 
 	/**
+	 * @brief Gets the logic number of the target NoC node
+	 * attached with a core.
+	 * 
+	 * @param coreid Attached core ID.
+	 *
+	 * @returns The logic number of the target NoC node attached
+	 * with the @p coreid.
+	 */
+	EXTERN int bostan_processor_node_get_num(int coreid);
+
+	/**
+	 * @brief Exchange the logic number of the target NoC node
+	 * attached with a core.
+	 *
+	 * @param coreid  Attached core ID.
+	 * @param nodenum Logic ID of the target NoC node.
+	 * 
+	 * @returns Zero if the target NoC node is successfully attached
+	 * to the requested @p coreid, and non zero otherwise.
+	 */
+	EXTERN int bostan_processor_node_set_num(int coreid, int nodenum);
+
+	/**
 	 * @brief Converts a nodes list.
 	 *
 	 * @param _nodes Place to store converted list.
@@ -149,7 +170,6 @@
 	 * nodenum is located.
 	 */
 	EXTERN int bostan_processor_noc_cluster_to_node_num(int clusternum);
-
 
 	/**
 	 * @brief Converts a NoC node number to cluster number.
@@ -191,14 +211,6 @@
 	 */
 	EXTERN int bostan_processor_node_portal_tag(int nodenum);
 
-	/**
-	 * @todo Provide a detailed description to this function.
-	 */
-	static inline void bostan_processor_noc_setup(void)
-	{
-		bostan_dma_init();
-	}
-
 /**@}*/
 
 /*============================================================================*
@@ -222,18 +234,19 @@
 	 * @name Exported Functions
 	 */
 	/**@{*/
-	#define __processor_node_get_num_fn  /**< processor_node_get_num()  */
+	#define __processor_noc_setup_fn     /**< processor_noc_setup()     */
 	#define __processor_noc_is_ionode_fn /**< processor_noc_is_ionode() */
 	#define __processor_noc_is_cnode_fn  /**< processor_noc_is_cnode()  */
-	#define __processor_noc_setup_fn     /**< processor_noc_setup()     */
+	#define __processor_node_get_num_fn  /**< processor_node_get_num()  */
+	#define __processor_node_set_num_fn  /**< processor_node_set_num()  */
 	/**@}*/
 
 	/**
-	 * @see bostan_processor_node_get_num()
+	 * @see bostan_processor_noc_setup()
 	 */
-	static inline int processor_node_get_num(void)
+	static inline void processor_noc_setup(void)
 	{
-		return bostan_processor_node_get_num();
+		bostan_processor_noc_setup();
 	}
 
 	/**
@@ -253,11 +266,19 @@
 	}
 
 	/**
-	 * @see bostan_processor_noc_setup()
+	 * @see bostan_processor_node_get_num()
 	 */
-	static inline void processor_noc_setup(void)
+	static inline int processor_node_get_num(int coreid)
 	{
-		bostan_processor_noc_setup();
+		return bostan_processor_node_get_num(coreid);
+	}
+
+	/**
+	 * @see bostan_processor_node_set_num()
+	 */
+	static inline int processor_node_set_num(int coreid, int nodenum)
+	{
+		return bostan_processor_node_set_num(coreid, nodenum);
 	}
 
 /**@endcond*/
