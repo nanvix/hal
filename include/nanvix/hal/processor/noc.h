@@ -101,17 +101,17 @@
 	/**
 	 * @brief Asserts whether a NoC node is attached to an IO cluster.
 	 *
-	 * @param nodeid ID of the target NoC node.
+	 * @param nodenum Logic ID of the target NoC node.
 	 *
 	 * @returns One if the target NoC node is attached to an IO cluster,
 	 * and zero otherwise.
 	 */
 #if (PROCESSOR_HAS_NOC)
-	EXTERN int processor_noc_is_ionode(int nodeid);
+	EXTERN int processor_noc_is_ionode(int nodenum);
 #else
-	static inline int processor_noc_is_ionode(int nodeid)
+	static inline int processor_noc_is_ionode(int nodenum)
 	{
-		UNUSED(nodeid);
+		UNUSED(nodenum);
 
 		return (1);
 	}
@@ -120,17 +120,17 @@
 	/**
 	 * @brief Asserts whether a NoC node is attached to a compute cluster.
 	 *
-	 * @param nodeid ID of the target NoC node.
+	 * @param nodenum Logic ID of the target NoC node.
 	 *
 	 * @returns One if the target NoC node is attached to a compute
 	 * cluster, and zero otherwise.
 	 */
 #if (PROCESSOR_HAS_NOC)
-	EXTERN int processor_noc_is_cnode(int nodeid);
+	EXTERN int processor_noc_is_cnode(int nodenum);
 #else
-	static inline int processor_noc_is_cnode(int nodeid)
+	static inline int processor_noc_is_cnode(int nodenum)
 	{
-		UNUSED(nodeid);
+		UNUSED(nodenum);
 
 		return (0);
 	}
@@ -139,7 +139,6 @@
 	/**
 	 * @brief Gets the logic number of the target NoC node.
 	 *
-	 * @param nodeid ID of the target NoC node.
 	 * @returns The logic number of the target NoC node.
 	 */
 #if (PROCESSOR_HAS_NOC)
@@ -154,28 +153,7 @@
 #ifdef __NANVIX_HAL
 
 	/**
-	 * @brief Converts a nodes list.
-	 *
-	 * @param _nodes Place to store converted list.
-	 * @param nodes  Target nodes list.
-	 * @param nnodes Number of nodes in the list.
-	 *
-	 * @returns Upon successful completion, zero is returned. Upon
-	 * failure, a negative error code is returned instead.
-	 */
-#if (PROCESSOR_HAS_NOC)
-	EXTERN int processor_node_convert_nums_to_ids(int *_nodes, const int *nodes, int nnodes);
-#else
-	static inline int processor_node_convert_nums_to_ids(int *_nodes, const int *nodes, int nnodes)
-	{
-		kmemcpy(_nodes, nodes, nnodes);
-
-		return (0);
-	}
-#endif
-
-	/**
-	 * @todo TODO: Provide a detailed description to this function.
+	 * @brief Initializes the mailbox interface.
 	 */
 #if (PROCESSOR_HAS_NOC)
 	EXTERN void processor_noc_setup(void);
