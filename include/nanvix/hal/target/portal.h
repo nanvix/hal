@@ -39,7 +39,7 @@
 	#error "does this target feature a portal interface?"
 	#endif
 
-	/* Has Mailbox Interface */
+	/* Has Portal Interface */
 	#if (__TARGET_HAS_PORTAL)
 
 		/* Constants */
@@ -54,6 +54,9 @@
 		#endif
 
 		/* Functions */
+		#ifndef __portal_setup_fn
+		#error "portal_setup() not defined?"
+		#endif
 		#ifndef __portal_create_fn
 		#error "portal_create() not defined?"
 		#endif
@@ -95,7 +98,7 @@
  *============================================================================*/
 
 /**
- * @defgroup kernel-hal-target-sync Syncrhonization service
+ * @defgroup kernel-hal-target-portal Portal service
  * @ingroup kernel-hal-target
  *
  * @brief Target Standard Output HAL Interface
@@ -105,6 +108,18 @@
 	#include <nanvix/const.h>
 	#include <nanvix/klib.h>
 	#include <errno.h>
+
+	/**
+	 * @brief Initializes the portal interface.
+	 */
+#if (__TARGET_HAS_PORTAL)
+	EXTERN void portal_setup(void);
+#else
+	static inline void portal_setup(void)
+	{
+
+	}
+#endif
 
 	/**
 	 * @brief Creates a portal.

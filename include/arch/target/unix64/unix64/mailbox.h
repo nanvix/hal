@@ -148,10 +148,11 @@
 	 * @name Provided Functions
 	 */
 	/**@{*/
-	#define __mailbox_create_fn  /**< mailbox_create() */
-	#define __mailbox_open_fn    /**< mailbox_open()   */
-	#define __mailbox_unlink_fn  /**< mailbox_unlink() */
-	#define __mailbox_close_fn   /**< mailbox_close()  */
+	#define __mailbox_setup_fn  /**< mailbox_setup()  */
+	#define __mailbox_create_fn /**< mailbox_create() */
+	#define __mailbox_open_fn   /**< mailbox_open()   */
+	#define __mailbox_unlink_fn /**< mailbox_unlink() */
+	#define __mailbox_close_fn  /**< mailbox_close()  */
 	/**@}*/
 
 	/**
@@ -162,6 +163,14 @@
 	#define MAILBOX_CREATE_MAX UNIX64_MAILBOX_CREATE_MAX /**< UNIX64_MAILBOX_CREATE_MAX */
 	#define MAILBOX_OPEN_MAX   UNIX64_MAILBOX_OPEN_MAX   /**< UNIX64_MAILBOX_OPEN_MAX   */
 	/**@}*/
+
+	/**
+	 * @todo TODO: rely on dummy platform-independent dummy function.
+	 */
+	static inline void mailbox_setup(void)
+	{
+
+	}
 
 	/**
 	 * @see unix64_mailbox_create()

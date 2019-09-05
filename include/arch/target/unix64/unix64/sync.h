@@ -85,7 +85,7 @@
 	 * @brief Opens a synchronization point.
 	 *
 	 * @param nodes  IDs of target NoC nodes.
-	 * @param nnodes Number of target NoC nodes. 
+	 * @param nnodes Number of target NoC nodes.
 	 * @param type   Type of synchronization point.
 	 *
 	 * @returns Upon successful completion, the ID of the target
@@ -151,12 +151,13 @@
 	 * @name Provided Functions
 	 */
 	/**@{*/
-	#define __sync_create_fn /**< sync_create()    */
-	#define __sync_open_fn   /**< sync_open()      */
-	#define __sync_unlink_fn /**< sync_unlink()    */
-	#define __sync_close_fn  /**< sync_close()     */
-	#define __sync_wait_fn   /**< sync_wait()      */
-	#define __sync_signal_fn /**< sync_signal()    */
+	#define __sync_setup_fn  /**< sync_setup()  */
+	#define __sync_create_fn /**< sync_create() */
+	#define __sync_open_fn   /**< sync_open()   */
+	#define __sync_unlink_fn /**< sync_unlink() */
+	#define __sync_close_fn  /**< sync_close()  */
+	#define __sync_wait_fn   /**< sync_wait()   */
+	#define __sync_signal_fn /**< sync_signal() */
 	/**@}*/
 
 	/**@{*/
@@ -165,6 +166,14 @@
 	#define SYNC_CREATE_MAX UNIX64_SYNC_CREATE_MAX /**< UNIX64_SYNC_CREATE_MAX */
 	#define SYNC_OPEN_MAX   UNIX64_SYNC_OPEN_MAX   /**< UNIX64_SYNC_OPEN_MAX   */
 	/**@}*/
+
+	/**
+	 * @todo TODO: rely on dummy platform-independent dummy function.
+	 */
+	static inline void sync_setup(void)
+	{
+
+	}
 
 	/**
 	 * @see unix64_sync_create()
