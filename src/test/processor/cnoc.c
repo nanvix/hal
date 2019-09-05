@@ -93,7 +93,7 @@ PRIVATE void test_cnoc_loopback_with_events(void)
 {
 	int local;
 
-	local = processor_node_get_num();
+	local = processor_node_get_num(COREID_MASTER);
 
 	KASSERT(bostan_dma_control_create(INTERFACE, RX_TAG, RX_MASK, NULL) == 0);
 	KASSERT(bostan_dma_control_open(INTERFACE, TX_TAG) == 0);
@@ -122,7 +122,7 @@ PRIVATE void test_cnoc_loopback_with_interrupts(void)
 {
 	int local;
 
-	local = processor_node_get_num();
+	local = processor_node_get_num(COREID_MASTER);
 
 	KASSERT(bostan_dma_control_create(INTERFACE, RX_TAG, RX_MASK, test_cnoc_dummy_handler) == 0);
 	KASSERT(bostan_dma_control_open(INTERFACE, TX_TAG) == 0);
@@ -155,7 +155,7 @@ static void test_cnoc_stress_with_events(void)
 {
 	int local;
 
-	local = processor_node_get_num();
+	local = processor_node_get_num(COREID_MASTER);
 
 	KASSERT(bostan_dma_control_create(INTERFACE, RX_TAG, RX_MASK, NULL) == 0);
 	KASSERT(bostan_dma_control_open(INTERFACE, TX_TAG) == 0);
@@ -189,7 +189,7 @@ static void test_cnoc_stress_with_interrupts(void)
 {
 	int local;
 
-	local = processor_node_get_num();
+	local = processor_node_get_num(COREID_MASTER);
 
 	KASSERT(bostan_dma_control_create(INTERFACE, RX_TAG, RX_MASK, test_cnoc_dummy_handler) == 0);
 	KASSERT(bostan_dma_control_open(INTERFACE, TX_TAG) == 0);

@@ -108,7 +108,7 @@ PRIVATE void test_dnoc_loopback_with_events(void)
 	char rx_buffer[BUFFER_MAX_SIZE];
 	char tx_buffer[BUFFER_MAX_SIZE];
 
-	local = processor_node_get_num();
+	local = processor_node_get_num(COREID_MASTER);
 
 	kmemset(rx_buffer, 0, BUFFER_MAX_SIZE);
 	kmemset(tx_buffer, 1, BUFFER_MAX_SIZE);
@@ -130,7 +130,8 @@ PRIVATE void test_dnoc_loopback_with_events(void)
 	);
 
 	KASSERT(bostan_dma_data_open(INTERFACE, TX_TAG) == 0);
-#if 1
+
+#if 1 /* Async write is not working yet. */
 	KASSERT(
 		bostan_dma_data_write(
 			INTERFACE,
@@ -175,7 +176,7 @@ PRIVATE void test_dnoc_loopback_with_interrupts(void)
 	char rx_buffer[BUFFER_MAX_SIZE];
 	char tx_buffer[BUFFER_MAX_SIZE];
 
-	local = processor_node_get_num();
+	local = processor_node_get_num(COREID_MASTER);
 
 	kmemset(rx_buffer, 0, BUFFER_MAX_SIZE);
 	kmemset(tx_buffer, 1, BUFFER_MAX_SIZE);
@@ -249,7 +250,7 @@ PRIVATE void test_dnoc_loopback_with_offset(void)
 	char tx_buffer[10];
 
 	offset = 10;
-	local = processor_node_get_num();
+	local = processor_node_get_num(COREID_MASTER);
 
 	kmemset(rx_buffer, 0, 100);
 	kmemset(rx_buffer, 1, 10);
