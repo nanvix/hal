@@ -29,6 +29,7 @@
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
 #include <sys/mman.h>
+#include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -37,12 +38,12 @@
 /**
  * @brief Name for virtual processor.
  */
-#define UNIX64_CLUSTERS_NAME "unix64-clusters"
+#define UNIX64_CLUSTERS_NAME "nanvix-unix64-clusters"
 
 /**
  * @brief Name for virtual processor lock.
  */
-#define UNIX64_CLUSTERS_LOCK_NAME "unix64-clusters-lock"
+#define UNIX64_CLUSTERS_LOCK_NAME "nanvix-unix64-clusters-lock"
 
 /**
  * Physical ID of master cluster.
@@ -208,6 +209,8 @@ PUBLIC int linux64_cluster_is_io(int clusternum)
 PUBLIC void linux64_processor_clusters_boot(void)
 {
 	void *p;
+	struct stat st;
+	int initialize = 0;
 	size_t clusters_sz = PROCESSOR_CLUSTERS_NUM*sizeof(pid_t);
 
 	LINUX64_PROCESSOR_CLUSTERID_MASTER = linux64_cluster_get_id();
@@ -220,8 +223,6 @@ PUBLIC void linux64_processor_clusters_boot(void)
 		) != NULL
 	);
 
-	kprintf("[processor] creating virtual clusters...");
-
 	/* Open virtual processor. */
 	KASSERT((clusters.shm =
 		shm_open(UNIX64_CLUSTERS_NAME,
@@ -230,25 +231,51 @@ PUBLIC void linux64_processor_clusters_boot(void)
 		) != -1
 	);
 
-	/* Allocate virtual processor. */
-	KASSERT(ftruncate(clusters.shm, clusters_sz) != -1);
+	linux64_processor_clusters_lock();
 
-	/* Attach virtual processor. */
-	KASSERT((p =
-		mmap(NULL,
-			clusters_sz,
-			PROT_READ | PROT_WRITE,
-			MAP_SHARED,
-			clusters.shm,
-			0)
-		) != NULL
-	);
-	clusters.pids = p;
+		/* Allocate virtual processor. */
+		KASSERT(fstat(clusters.shm, &st) != -1);
+		if (st.st_size == 0)
+		{
+			kprintf("[processor] allocating virtual clusters...");
+			initialize = 1;
+			KASSERT(ftruncate(clusters.shm, clusters_sz) != -1);
+		}
 
-	/* Initialize clusters. */
-	clusters.pids[0] = getpid();
-	for (int i = 1; i < PROCESSOR_CLUSTERS_NUM; i++)
-		clusters.pids[i] = -1;
+		/* Attach virtual processor. */
+		KASSERT((p =
+			mmap(NULL,
+				clusters_sz,
+				PROT_READ | PROT_WRITE,
+				MAP_SHARED,
+				clusters.shm,
+				0)
+			) != NULL
+		);
+		clusters.pids = p;
+
+		if (initialize)
+		{
+			for (int i = 0; i < PROCESSOR_CLUSTERS_NUM; i++)
+				clusters.pids[i] = -1;
+		}
+
+		kprintf("[processor] attaching process to virtual cluster...");
+
+		/* Search for an unused virtual cluster. */
+		for (int i = 0; i < PROCESSOR_CLUSTERS_NUM; i++)
+		{
+			if (clusters.pids[i] == -1)
+			{
+				clusters.pids[i] = getpid();
+				linux64_processor_clusters_unlock();
+				break;
+			}
+		}
+
+		LINUX64_PROCESSOR_CLUSTERID_MASTER = clusters.pids[0];
+
+	linux64_processor_clusters_unlock();
 }
 
 /*============================================================================*
@@ -265,12 +292,6 @@ PUBLIC void linux64_processor_clusters_shutdown(void)
 	KASSERT(munmap(clusters.pids, clusters_sz) != -1);
 	KASSERT(close(clusters.shm) != -1);
 	KASSERT(sem_close(clusters.lock) != -1);
-
-	if (linux64_cluster_get_id() == LINUX64_PROCESSOR_CLUSTERID_MASTER)
-	{
-		KASSERT(shm_unlink(UNIX64_CLUSTERS_NAME) != -1);
-		KASSERT(sem_unlink(UNIX64_CLUSTERS_LOCK_NAME) != -1);
-	}
 }
 
 /*============================================================================*
@@ -282,28 +303,4 @@ PUBLIC void linux64_processor_clusters_shutdown(void)
  */
 PUBLIC void linux64_processor_clusters_setup(void)
 {
-	/* Nothing to do. */
-	if (linux64_cluster_get_id() == LINUX64_PROCESSOR_CLUSTERID_MASTER)
-		return;
-
-	kprintf("[processor] attaching process to virtual processor...");
-
-	linux64_processor_clusters_lock();
-
-		/* Search for an unused virtual cluster. */
-		for (int i = 1; i < PROCESSOR_CLUSTERS_NUM; i++)
-		{
-			if (clusters.pids[i] == -1)
-			{
-				clusters.pids[i] = getpid();
-				linux64_processor_clusters_unlock();
-				return;
-			}
-		}
-
-	linux64_processor_clusters_unlock();
-
-	kpanic("[processor] failed to attach process to virtual processor");
-	UNREACHABLE();
 }
-
