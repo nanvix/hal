@@ -28,6 +28,7 @@
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
 #include <sys/mman.h>
+#include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -36,12 +37,12 @@
 /**
  * @brief Name for virtual NoC.
  */
-#define UNIX64_NOC_NAME "unix64-noc"
+#define UNIX64_NOC_NAME "nanvix-unix64-noc"
 
 /**
  * @brief Name for virtual NoC lock.
  */
-#define UNIX64_NOC_LOCK_NAME "unix64-noc-lock"
+#define UNIX64_NOC_LOCK_NAME "nanvix-unix64-noc-lock"
 
 /**
  * @brief NoC node.
@@ -207,6 +208,8 @@ PUBLIC void linux64_processor_noc_boot(void)
 {
 	void *p;
 	int nnodes;
+	struct stat st;
+	int initialize = 0;
 	size_t nodes_sz = PROCESSOR_NOC_NODES_NUM*sizeof(struct noc_node);
 
 	/* Check NoC configuration. */
@@ -223,8 +226,6 @@ PUBLIC void linux64_processor_noc_boot(void)
 		) != NULL
 	);
 
-	kprintf("[noc] creating virtual network-on-chip...");
-
 	/* Open virtual NoC. */
 	KASSERT((noc.shm =
 		shm_open(UNIX64_NOC_NAME,
@@ -233,26 +234,39 @@ PUBLIC void linux64_processor_noc_boot(void)
 		) != -1
 	);
 
-	/* Allocate virtual NoC. */
-	KASSERT(ftruncate(noc.shm, nodes_sz) != -1);
+	linux64_processor_noc_lock();
 
-	KASSERT((p =
-		mmap(NULL,
-			nodes_sz,
-			PROT_READ | PROT_WRITE,
-			MAP_SHARED,
-			noc.shm,
-			0)
-		) != NULL
-	);
-	noc.nodes = p;
+		/* Allocate virtual NoC. */
+		KASSERT(fstat(noc.shm, &st) != -1);
+		if (st.st_size == 0)
+		{
+			kprintf("[noc] allocating virtual network-on-chip...");
+			initialize = 1;
+			KASSERT(ftruncate(noc.shm, nodes_sz) != -1);
+		}
 
-	/* Initialize nodes. */
-	for (int i = 0; i < PROCESSOR_NOC_NODES_NUM; i++)
-	{
-		noc.nodes[i].buffer.head = 0;
-		noc.nodes[i].buffer.tail = 0;
-	}
+		KASSERT((p =
+			mmap(NULL,
+				nodes_sz,
+				PROT_READ | PROT_WRITE,
+				MAP_SHARED,
+				noc.shm,
+				0)
+			) != NULL
+		);
+		noc.nodes = p;
+
+		/* Initialize nodes. */
+		if (initialize)
+		{
+			for (int i = 0; i < PROCESSOR_NOC_NODES_NUM; i++)
+			{
+				noc.nodes[i].buffer.head = 0;
+				noc.nodes[i].buffer.tail = 0;
+			}
+		}
+
+	linux64_processor_noc_unlock();
 }
 
 /*============================================================================*
@@ -269,10 +283,4 @@ PUBLIC void linux64_processor_noc_shutdown(void)
 	KASSERT(munmap(noc.nodes, nodes_sz) != -1);
 	KASSERT(close(noc.shm) != -1);
 	KASSERT(sem_close(noc.lock) != -1);
-
-	if (linux64_cluster_get_num() == LINUX64_PROCESSOR_CLUSTERNUM_MASTER)
-	{
-		KASSERT(shm_unlink(UNIX64_NOC_NAME) != -1);
-		KASSERT(sem_unlink(UNIX64_NOC_LOCK_NAME) != -1);
-	}
 }

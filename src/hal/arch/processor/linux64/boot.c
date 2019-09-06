@@ -28,35 +28,18 @@
 #include <nanvix/hal/processor.h>
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
-#include <unistd.h>
 
 /**
  * @todo TODO: provide a detailed description for this function.
  */
 PUBLIC int linux64_processor_boot(int nclusters)
 {
+	UNUSED(nclusters);
+
 	kprintf("[hal][processor] powering on processor...");
 
 	linux64_processor_clusters_boot();
 	linux64_processor_noc_boot();
-
-	/* Power on clusters. */
-	for (int i = 1; i < PROCESSOR_CLUSTERS_NUM; i++)
-	{
-		pid_t pid;
-
-		/* Enough clusters are powered on. */
-		if (i == nclusters)
-			break;
-
-		/* Cannot power on slave cluster. */
-		if ((pid = fork()) < 0)
-			return (pid);
-
-		/* Slave cluster. */
-		if (pid == 0)
-			break;
-	}
 
 	return (linux64_cluster_boot());
 }
