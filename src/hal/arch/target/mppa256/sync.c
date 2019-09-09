@@ -151,6 +151,42 @@ PRIVATE int mppa256_sync_tx_is_valid(int syncid)
 }
 
 /*============================================================================*
+ * mppa256_sync_node_list_is_valid()                                          *
+ *============================================================================*/
+
+/**
+ * @brief Node list validation.
+ *
+ * @param local    Logic ID of local node.
+ * @param nodenums IDs of target NoC nodes.
+ * @param nnodes   Number of target NoC nodes.
+ *
+ * @return Non zero if node list is valid and zero otherwise.
+ */
+PRIVATE int mppa256_sync_node_list_is_valid(int local, const int *nodenums, int nnodes)
+{
+	uint64_t checks;
+
+	checks = 0ULL;
+
+	/* Build list of RX NoC nodes. */
+	for (int i = 0; i < nnodes; ++i)
+	{
+		if (!WITHIN(nodenums[i], 0, PROCESSOR_NOC_NODES_NUM))
+			return (0);
+
+		/* Does a node appear twice? */
+		if (checks & (1ULL << nodenums[i]))
+			return (0);
+		
+		checks |= (1ULL << nodenums[i]);
+	}
+
+	/* Local Node found. */
+	return (checks & (1ULL << local));
+}
+
+/*============================================================================*
  * mppa256_sync_is_local()                                                    *
  *============================================================================*/
 
@@ -322,6 +358,9 @@ PRIVATE int do_mppa256_sync_create(const int *nodenums, int nnodes, int type)
 
 	nodenum = bostan_processor_noc_cluster_to_node_num(cluster_get_num()) + interface;
 
+	if (!mppa256_sync_node_list_is_valid(nodenum, nodenums, nnodes))
+		return (-EINVAL);
+
 	/* Broadcast. */
 	if (type == MPPA256_SYNC_ONE_TO_ALL)
 	{
@@ -460,6 +499,9 @@ PRIVATE int do_mppa256_sync_open(const int *nodenums, int nnodes, int type)
 
 	syncid   = RESOURCEID_TX(interface);
 	localnum = bostan_processor_noc_cluster_to_node_num(cluster_get_num()) + interface;
+
+	if (!mppa256_sync_node_list_is_valid(localnum, nodenums, nnodes))
+		return (-EINVAL);
 
 	/* Broadcast. */
 	if (type == MPPA256_SYNC_ONE_TO_ALL)
