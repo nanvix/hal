@@ -32,12 +32,12 @@
  * Interface Implementation Checking                                          *
  *============================================================================*/
 
-#if defined(__INTERFACE_CHECK) || defined(__INTERFACE_CHECK_PROCESSOR_AL) || defined(__INTERFACE_CHECK_NOC)
-
 	/* Feature Checking */
 	#ifndef PROCESSOR_HAS_NOC
 	#error "Does this processor have Network-on-Chip (NoC) ?"
 	#endif
+
+#if defined(__INTERFACE_CHECK) || defined(__INTERFACE_CHECK_PROCESSOR_AL) || defined(__INTERFACE_CHECK_NOC)
 
 	/* Multicluster Processor*/
 	#if (PROCESSOR_HAS_NOC)
@@ -70,16 +70,18 @@
 		#error "__processor_node_set_num() not defined?"
 		#endif
 
-	#else
-
-		/* Dummy Constants */
-		#define PROCESSOR_NOC_IONODES_NUM 1
-		#define PROCESSOR_NOC_CNODES_NUM  0
-		#define PROCESSOR_NODENUM_MASTER  0
-
 	#endif
 
 #endif
+
+#if (!PROCESSOR_HAS_NOC)
+
+	/* Dummy Constants */
+	#define PROCESSOR_NOC_IONODES_NUM 1
+	#define PROCESSOR_NOC_CNODES_NUM  0
+	#define PROCESSOR_NODENUM_MASTER  0
+
+#endif /* !PROCESSOR_HAS_NOC */
 
 /*============================================================================*
  * NoC Interface                                                              *
@@ -158,7 +160,7 @@
 	/**
 	 * @brief Gets the logic number of the target NoC node
 	 * attached with a core.
-	 * 
+	 *
 	 * @param coreid Attached core ID.
 	 *
 	 * @returns The logic number of the target NoC node attached
@@ -183,7 +185,7 @@
 	 *
 	 * @param coreid  Attached core ID.
 	 * @param nodenum Logic ID of the target NoC node.
-	 * 
+	 *
 	 * @returns Zero if the target NoC node is successfully attached
 	 * to the requested @p coreid, and non zero otherwise.
 	 */
@@ -195,7 +197,7 @@
 		/* Invalid coreid. */
 		if (!WITHIN(coreid, 0, CORES_NUM))
 			return (-EINVAL);
-		
+
 		/* Invalid coreid. */
 		if (!WITHIN(nodenum, 0, PROCESSOR_NOC_NODES_NUM))
 			return (-EINVAL);
