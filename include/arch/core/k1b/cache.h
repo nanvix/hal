@@ -97,7 +97,6 @@
 	 */
 	static inline void k1b_dcache_flush(void)
 	{
-		__builtin_k1_dflush();
 		__builtin_k1_wpurge();
 	}
 
