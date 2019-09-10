@@ -24,7 +24,7 @@
 
 #include <arch/core/k1b/tlb.h>
 #include <nanvix/const.h>
-#include <errno.h>
+#include <posix/errno.h>
 
 /*============================================================================*
  * k1b_tlb_write()                                                            *

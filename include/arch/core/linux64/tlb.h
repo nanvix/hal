@@ -35,7 +35,7 @@
 
 	#include <arch/core/linux64/mmu.h>
 	#include <nanvix/klib.h>
-	#include <errno.h>
+	#include <posix/errno.h>
 
 	/**
 	 * @name TLB Types

@@ -40,7 +40,7 @@
 	#include <arch/core/or1k/types.h>
 	#include <arch/core/or1k/regs.h>
 	#include <nanvix/klib.h>
-	#include <errno.h>
+	#include <posix/errno.h>
 	#include <stdint.h>
 
 	/**

@@ -29,7 +29,7 @@
 #include <nanvix/hal/cluster.h>
 #include <arch/stdout/16550a.h>
 #include <nanvix/const.h>
-#include <errno.h>
+#include <posix/errno.h>
 
 /**
  * @brief Initializes machine mode.

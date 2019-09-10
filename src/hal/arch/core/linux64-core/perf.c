@@ -32,7 +32,7 @@
 #include <syscall.h>
 #include <stdint.h>
 #include <unistd.h>
-#include <errno.h>
+#include <posix/errno.h>
 
 /**
  * @Brief Function to call to configure a perf

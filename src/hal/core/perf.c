@@ -24,7 +24,7 @@
 
 #include <nanvix/hal/core/perf.h>
 #include <nanvix/const.h>
-#include <errno.h>
+#include <posix/errno.h>
 
 #if (CORE_HAS_PERF)
 

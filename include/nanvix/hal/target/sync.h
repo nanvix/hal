@@ -105,7 +105,7 @@
 
 	#include <nanvix/const.h>
 	#include <nanvix/klib.h>
-	#include <errno.h>
+	#include <posix/errno.h>
 
 	/**
 	 * @brief Initializes the sync interface.

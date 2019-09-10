@@ -24,7 +24,7 @@
 
 #include <arch/core/or1k/mmu.h>
 #include <nanvix/const.h>
-#include <errno.h>
+#include <posix/errno.h>
 
 /**
  * @brief For a given page table, addresses and permissions, maps a virtual

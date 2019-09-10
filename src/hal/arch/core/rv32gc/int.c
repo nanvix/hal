@@ -25,7 +25,7 @@
 #include <arch/core/rv32gc/int.h>
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
-#include <errno.h>
+#include <posix/errno.h>
 
 /**
  * @brief Interrupt handlers.

@@ -38,7 +38,7 @@
 
 	#include <arch/core/rv32gc/types.h>
 	#include <nanvix/klib.h>
-	#include <errno.h>
+	#include <posix/errno.h>
 
 	/**
 	 * @name Page Shifts and Masks

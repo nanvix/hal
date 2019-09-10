@@ -26,7 +26,7 @@
 #include <nanvix/hal/hal.h>
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
-#include <errno.h>
+#include <posix/errno.h>
 
 /*============================================================================*
  * Definitions                                                                *

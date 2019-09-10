@@ -25,7 +25,7 @@
 #include <nanvix/hal/core/exception.h>
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
-#include <errno.h>
+#include <posix/errno.h>
 
 /*===========================================================================*
  * default_handler()                                                         *

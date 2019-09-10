@@ -24,7 +24,7 @@
 
 #include <arch/core/linux64/tlb.h>
 #include <nanvix/const.h>
-#include <errno.h>
+#include <posix/errno.h>
 
 /*============================================================================*
  * linux64_tlb_write()                                                            *

@@ -40,7 +40,7 @@
 	#include <arch/cluster/riscv32-cluster/memory.h>
 	#include <arch/cluster/riscv32-cluster/cores.h>
 	#include <nanvix/const.h>
-	#include <errno.h>
+	#include <posix/errno.h>
 
 	/**
 	 * @brief CLINT base address
