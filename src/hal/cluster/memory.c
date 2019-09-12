@@ -227,25 +227,25 @@ PUBLIC void mem_info(void)
 {
 	int i; /* Loop index. */
 
-	kprintf("[hal] text = %d KB data = %d KB bss = %d KB",
+	kprintf("[hal][cluster] text = %d KB data = %d KB bss = %d KB",
 		(&__TEXT_END - &__TEXT_START)/KB,
 		(&__DATA_END - &__DATA_START)/KB,
 		(&__BSS_END  - &__BSS_START)/KB
 	);
 	for (i = 0; i < MEM_REGIONS; i++)
 	{
-		kprintf("[hal] %s_base=%x %s_end=%x",
+		kprintf("[hal][cluster] %s_base=%x %s_end=%x",
 			mem_layout[i].desc,
 			mem_layout[i].vbase,
 			mem_layout[i].desc,
 			mem_layout[i].vend
 		);
 	}
-	kprintf("[hal] user_base=%x   user_end=%x",
+	kprintf("[hal][cluster] user_base=%x   user_end=%x",
 		UBASE_VIRT,
 		UEND_VIRT
 	);
-	kprintf("[hal] memsize=%d MB kmem=%d KB kpool=%d KB umem=%d KB",
+	kprintf("[hal][cluster] memsize=%d MB kmem=%d KB kpool=%d KB umem=%d KB",
 		MEMORY_SIZE/MB,
 		KMEM_SIZE/KB,
 		KPOOL_SIZE/KB,
@@ -414,7 +414,7 @@ PUBLIC void mem_setup(void)
 	/* Master core builds root virtual address space. */
 	if (coreid == COREID_MASTER)
 	{
-		kprintf("[hal] initializing memory layout...");
+		kprintf("[hal][cluster] initializing memory layout...");
 
 		mem_info();
 

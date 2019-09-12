@@ -90,14 +90,14 @@ PUBLIC int exception_register(int excpnum, exception_handler_t handler)
 	/* Invalid exception number. */
 	if ((excpnum < 0) || (excpnum >= EXCEPTIONS_NUM))
 	{
-		kprintf("[hal] invalid exception number");
+		kprintf("[hal][core] invalid exception number");
 		return (-EINVAL);
 	}
 
 	/* Invalid handler. */
 	if (handler == NULL)
 	{
-		kprintf("[hal] invalid exception handler");
+		kprintf("[hal][core] invalid exception handler");
 		return (-EINVAL);
 	}
 
@@ -106,7 +106,7 @@ PUBLIC int exception_register(int excpnum, exception_handler_t handler)
 	{
 		if (exceptions[excpnum].handler != NULL)
 		{
-			kprintf("[hal] exception handler already registered for %s",
+			kprintf("[hal][core] exception handler already registered for %s",
 				exceptions[excpnum].name
 			);
 			return (1);
@@ -116,7 +116,7 @@ PUBLIC int exception_register(int excpnum, exception_handler_t handler)
 	exceptions[excpnum].handler = handler;
 	dcache_invalidate();
 
-	kprintf("[hal] exception handler registered for %s",
+	kprintf("[hal][core] exception handler registered for %s",
 		exceptions[excpnum].name
 	);
 
@@ -138,7 +138,7 @@ PUBLIC int exception_unregister(int excpnum)
 	/* Invalid exception number. */
 	if ((excpnum < 0) || (excpnum >= EXCEPTIONS_NUM))
 	{
-		kprintf("[hal] invalid exception number");
+		kprintf("[hal][core] invalid exception number");
 		return (-EINVAL);
 	}
 

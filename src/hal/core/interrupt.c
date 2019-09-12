@@ -61,7 +61,7 @@ PRIVATE void default_handler(int num)
 
 	/* Too many spurious interrupts. */
 	if (++spurious >= INTERRUPT_SPURIOUS_THRESHOLD)
-		kprintf("[hal] spurious interrupt %d", num);
+		kprintf("[hal][core] spurious interrupt %d", num);
 
 	noop();
 }
@@ -173,7 +173,7 @@ PUBLIC int interrupt_register(int num, interrupt_handler_t handler)
 	dcache_invalidate();
 	interrupt_unmask(num);
 
-	kprintf("[hal] interrupt handler registered for irq %d", num);
+	kprintf("[hal][core] interrupt handler registered for irq %d", num);
 
 	return (0);
 }
@@ -221,7 +221,7 @@ PUBLIC int interrupt_unregister(int num)
 		dcache_invalidate();
 	interrupt_mask(num);
 
-	kprintf("[hal] interrupt handler unregistered for irq %d", num);
+	kprintf("[hal][core] interrupt handler unregistered for irq %d", num);
 
 	return (0);
 }
@@ -232,7 +232,7 @@ PUBLIC int interrupt_unregister(int num)
  */
 PUBLIC void interrupt_setup(void)
 {
-	kputs("[hal] initializing interrupts...\n");
+	kputs("[hal][core] initializing interrupts...\n");
 
 	for (int i = 0; i < INTERRUPTS_NUM; i++)
 	{
