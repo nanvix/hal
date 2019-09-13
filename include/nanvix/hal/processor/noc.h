@@ -39,7 +39,7 @@
 
 #if defined(__INTERFACE_CHECK) || defined(__INTERFACE_CHECK_PROCESSOR_AL) || defined(__INTERFACE_CHECK_NOC)
 
-	/* Multicluster Processor*/
+	/* Has Network-on-Chip */
 	#if (PROCESSOR_HAS_NOC)
 
 		/* Constants */
@@ -74,9 +74,9 @@
 
 #endif
 
+/* Dummy Constants */
 #if (!PROCESSOR_HAS_NOC)
 
-	/* Dummy Constants */
 	#define PROCESSOR_NOC_IONODES_NUM 1
 	#define PROCESSOR_NOC_CNODES_NUM  0
 	#define PROCESSOR_NODENUM_MASTER  0
