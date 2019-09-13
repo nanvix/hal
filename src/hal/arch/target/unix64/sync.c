@@ -34,7 +34,7 @@
 #include <mqueue.h>
 #include <pthread.h>
 #include <fcntl.h>
-#include <errno.h>
+#include <posix/errno.h>
 #include <stdio.h>
 
 /**
@@ -328,7 +328,7 @@ PUBLIC int unix64_sync_create(const int *nodes, int nnodes, int type)
 		return (-EINVAL);
 
 	/* Bad nodes list. */
-	if (!WITHIN(nnodes, 2, PROCESSOR_NOC_NODES_NUM))
+	if (!WITHIN(nnodes, 2, PROCESSOR_NOC_NODES_NUM + 1))
 		return (-EINVAL);
 
 	/* Bad sync type. */
@@ -434,7 +434,7 @@ PUBLIC int unix64_sync_open(const int *nodes, int nnodes, int type)
 		return (-EINVAL);
 
 	/* Bad nodes list. */
-	if (!WITHIN(nnodes, 2, PROCESSOR_NOC_NODES_NUM))
+	if (!WITHIN(nnodes, 2, PROCESSOR_NOC_NODES_NUM + 1))
 		return (-EINVAL);
 
 	/* Bad sync type. */

@@ -34,7 +34,7 @@
 #include <arch/core/rv32gc/types.h>
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
-#include <errno.h>
+#include <posix/errno.h>
 
 /**
  * @brief Reads a CSR register.

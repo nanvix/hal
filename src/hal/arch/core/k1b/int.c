@@ -27,7 +27,7 @@
 #include <arch/core/k1b/ivt.h>
 #include <nanvix/const.h>
 #include <nanvix/klib.h>
-#include <errno.h>
+#include <posix/errno.h>
 
 /**
  * Lookup table for interrupt request lines of hardware interrupts.

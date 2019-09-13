@@ -39,7 +39,7 @@
 #include <arch/processor/bostan/noc/dtag.h>
 
 /* Error Identification */
-#include <errno.h>
+#include <posix/errno.h>
 
 /*============================================================================*
  * DMA configuration                                                          *

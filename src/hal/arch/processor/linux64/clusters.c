@@ -165,7 +165,7 @@ PUBLIC int linux64_cluster_get_num(void)
 
 	linux64_processor_clusters_unlock();
 
-	kpanic("[processor] unattached process");
+	kpanic("[hal][processor] unattached process");
 	UNREACHABLE();
 
 	return (-1);
@@ -237,7 +237,7 @@ PUBLIC void linux64_processor_clusters_boot(void)
 		KASSERT(fstat(clusters.shm, &st) != -1);
 		if (st.st_size == 0)
 		{
-			kprintf("[processor] allocating virtual clusters...");
+			kprintf("[hal][processor] allocating virtual clusters...");
 			initialize = 1;
 			KASSERT(ftruncate(clusters.shm, clusters_sz) != -1);
 		}
@@ -260,7 +260,7 @@ PUBLIC void linux64_processor_clusters_boot(void)
 				clusters.pids[i] = -1;
 		}
 
-		kprintf("[processor] attaching process to virtual cluster...");
+		kprintf("[hal][processor] attaching process to virtual cluster...");
 
 		/* Search for an unused virtual cluster. */
 		for (int i = 0; i < PROCESSOR_CLUSTERS_NUM; i++)

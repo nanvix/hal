@@ -24,7 +24,7 @@
 
 #include <arch/core/rv32gc/mmu.h>
 #include <nanvix/const.h>
-#include <errno.h>
+#include <posix/errno.h>
 
 /**
  * @todo TODO provide a detailed description for this function.

@@ -103,12 +103,16 @@
 
 	#include <nanvix/const.h>
 	#include <nanvix/klib.h>
-	#include <errno.h>
+	#include <posix/errno.h>
+
+#ifdef __NANVIX_HAL
 
 	/**
 	 * @brief Initializes the mailbox interface.
 	 */
 	EXTERN void mailbox_setup(void);
+
+#endif /* __NANVIX_HAL */
 
 	/**
 	 * @brief Creates a mailbox.

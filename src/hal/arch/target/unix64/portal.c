@@ -33,7 +33,7 @@
 #include <semaphore.h>
 #include <pthread.h>
 #include <fcntl.h>
-#include <errno.h>
+#include <posix/errno.h>
 #include <stdio.h>
 #include <unistd.h>
 

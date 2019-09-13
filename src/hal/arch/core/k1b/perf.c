@@ -28,7 +28,7 @@
 #include <arch/core/k1b/types.h>
 #include <arch/core/k1b/perf.h>
 #include <nanvix/const.h>
-#include <errno.h>
+#include <posix/errno.h>
 #include <stdint.h>
 
 /**

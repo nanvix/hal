@@ -79,17 +79,19 @@
 		#error "sync_signal() not defined?"
 		#endif
 
-	#else
-
-		/* Constants */
-		#define SYNC_ONE_TO_ALL 0
-		#define SYNC_ALL_TO_ONE 1
-		#define SYNC_CREATE_MAX 1
-		#define SYNC_OPEN_MAX   1
-
 	#endif
 
 #endif
+
+/* Dummy Constants */
+#if (!__TARGET_HAS_SYNC)
+
+	#define SYNC_ONE_TO_ALL 0
+	#define SYNC_ALL_TO_ONE 1
+	#define SYNC_CREATE_MAX 1
+	#define SYNC_OPEN_MAX   1
+
+#endif /* !__TARGET_HAS_SYNC */
 
 /*============================================================================*
  * Provided Interface                                                         *
@@ -105,7 +107,7 @@
 
 	#include <nanvix/const.h>
 	#include <nanvix/klib.h>
-	#include <errno.h>
+	#include <posix/errno.h>
 
 	/**
 	 * @brief Initializes the sync interface.

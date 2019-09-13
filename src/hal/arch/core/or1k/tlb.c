@@ -25,7 +25,7 @@
 #include <arch/core/or1k/tlb.h>
 #include <arch/core/or1k/tlb.h>
 #include <nanvix/const.h>
-#include <errno.h>
+#include <posix/errno.h>
 
 /**
  * @brief TLB Entry Value

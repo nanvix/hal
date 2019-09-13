@@ -25,7 +25,7 @@
 #ifndef NANVIX_HAL_CORE_PERF_H_
 #define NANVIX_HAL_CORE_PERF_H_
 
-	#include <errno.h>
+	#include <posix/errno.h>
 
 	/* Core Interface Implementation */
 	#include <nanvix/hal/core/_core.h>

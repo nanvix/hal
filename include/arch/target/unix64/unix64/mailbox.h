@@ -66,7 +66,7 @@
 	 */
 	PUBLIC void unix64_mailbox_shutdown(void);
 
-#endif
+#endif /* __NANVIX_HAL */
 
 	/**
 	 * @brief Creates a mailbox.
@@ -164,6 +164,8 @@
 	#define MAILBOX_OPEN_MAX   UNIX64_MAILBOX_OPEN_MAX   /**< UNIX64_MAILBOX_OPEN_MAX   */
 	/**@}*/
 
+#ifdef __NANVIX_HAL
+
 	/**
 	 * @todo TODO: rely on dummy platform-independent dummy function.
 	 */
@@ -171,6 +173,8 @@
 	{
 
 	}
+
+#endif /* __NANVIX_HAL */
 
 	/**
 	 * @see unix64_mailbox_create()

@@ -39,7 +39,7 @@
 	#error "Is this processor multicluster?"
 	#endif
 
-	/* Multicluster Processor*/
+	/* Multicluster Processor */
 	#if (PROCESSOR_IS_MULTICLUSTER)
 
 		/* Constants */
@@ -64,16 +64,18 @@
 		#error "cluster_is_iocluster() not defined?"
 		#endif
 
-	#else
-
-		/* Constants */
-		#define PROCESSOR_IOCLUSTERS_NUM    1
-		#define PROCESSOR_CCLSUTERS_NUM     0
-		#define PROCESSOR_CLUSTERNUM_MASTER 0
-
 	#endif
 
 #endif
+
+/* Dummy Constants */
+#if (!PROCESSOR_IS_MULTICLUSTER)
+
+	#define PROCESSOR_IOCLUSTERS_NUM    1
+	#define PROCESSOR_CCLUSTERS_NUM     0
+	#define PROCESSOR_CLUSTERNUM_MASTER 0
+
+#endif /* !PROCESSOR_IS_MULTICLUSTER */
 
 /*============================================================================*
  * Cluster Interface                                                          *

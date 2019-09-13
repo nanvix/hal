@@ -45,7 +45,7 @@ PUBLIC struct events_table
  *============================================================================*/
 
 /**
- * Initializes the table of events. 
+ * Initializes the table of events.
  *
  * @author Davidson Francis
  */
@@ -97,7 +97,7 @@ PUBLIC void event_drop(void)
 
 		if (events[mycoreid].pending)
 		{
-			kprintf("[hal] core %d dropping events %x",
+			kprintf("[hal][cluster] core %d dropping events %x",
 				mycoreid,
 				events[mycoreid].pending
 			);

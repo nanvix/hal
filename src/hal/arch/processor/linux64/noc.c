@@ -203,7 +203,7 @@ PUBLIC int linux64_processor_node_get_num(int coreid)
  *
  * @param coreid  Attached core ID.
  * @param nodenum Logic ID of the target NoC node.
- * 
+ *
  * @returns Zero if the target NoC node is successfully attached
  * to the requested @p coreid, and non zero otherwise.
  */
@@ -212,7 +212,7 @@ PUBLIC int linux64_processor_node_set_num(int coreid, int nodenum)
 	/* Invalid coreid. */
 	if (!WITHIN(coreid, 0, CORES_NUM))
 		return (-EINVAL);
-	
+
 	if (!WITHIN(nodenum, 0, PROCESSOR_NOC_NODES_NUM))
 		return (-EINVAL);
 
@@ -300,7 +300,7 @@ PUBLIC void linux64_processor_noc_boot(void)
 		KASSERT(fstat(noc.shm, &st) != -1);
 		if (st.st_size == 0)
 		{
-			kprintf("[noc] allocating virtual network-on-chip...");
+			kprintf("[hal][processor] allocating virtual network-on-chip...");
 			initialize = 1;
 			KASSERT(ftruncate(noc.shm, nodes_sz) != -1);
 		}

@@ -42,7 +42,7 @@
  */
 PUBLIC NORETURN void core_halt(void)
 {
-	kprintf("[hal] halting...");
+	kprintf("[hal][core] halting...");
 
 	/* Disable all interrupts. */
 	interrupts_disable();
@@ -65,7 +65,7 @@ PUBLIC NORETURN void core_halt(void)
  */
 PUBLIC void core_setup(void *stack)
 {
-	kprintf("[hal] booting up core...");
+	kprintf("[hal][core] booting up core...");
 
 	mmu_setup();
 	perf_setup();

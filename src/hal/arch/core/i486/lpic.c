@@ -27,7 +27,7 @@
 #include <arch/core/i486/lpic.h>
 #include <arch/core/i486/pmio.h>
 #include <nanvix/const.h>
-#include <errno.h>
+#include <posix/errno.h>
 #include <stdint.h>
 
 /**

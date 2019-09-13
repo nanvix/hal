@@ -40,7 +40,7 @@
 	/* #include <arch/core/linux64/elf.h> */
 	#include <arch/core/linux64/types.h>
 	#include <nanvix/klib.h>
-	#include <errno.h>
+	#include <posix/errno.h>
 	#include <stdint.h>
 
 	/**

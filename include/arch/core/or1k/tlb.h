@@ -38,7 +38,7 @@
 
 	#include <arch/core/or1k/types.h>
 	#include <arch/core/or1k/mmu.h>
-	#include <errno.h>
+	#include <posix/errno.h>
 
 	/**
 	 * @name TLB Types
