@@ -195,7 +195,7 @@
 	#define EXCEPTION_SIZE                I486_EXCP_SIZE                /**< @ref I486_EXCP_SIZE               */
 	#define EXCEPTION_INVALID_OPCODE      I486_EXCP_INVALID_OPCODE      /**< @ref I486_EXCP_INVALID_OPCODE     */
 	#define EXCEPTION_PAGE_FAULT          I486_EXCP_PAGE_FAULT          /**< @ref I486_EXCP_PAGE_FAULT         */
-	#define EXCEPTION_PAGE_PROTECTION     I486_EXCP_PAGE_FAULT         /**< @ref I486_EXCP_PAGE_FAULT         */
+	#define EXCEPTION_PAGE_PROTECTION     I486_EXCP_PAGE_FAULT          /**< @ref I486_EXCP_PAGE_FAULT         */
 	#define EXCEPTION_GENERAL_PROTECTION  I486_EXCP_GENERAL_PROTECTION  /**< @ref I486_EXCP_GENERAL_PROTECTION */
 	/**@}*/
 
