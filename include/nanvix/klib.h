@@ -27,7 +27,7 @@
 #ifndef _ASM_FILE_
 
 	#include <nanvix/const.h>
-	#include <stdarg.h>
+	#include <posix/stdarg.h>
 
 /**
  * @defgroup klib Kernel Library
