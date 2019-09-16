@@ -296,6 +296,9 @@ PRIVATE void bostan_cnoc_it_handler(int ev_src)
 	int tag;
 	int offset;
 	uint64_t tags_set;
+	uint64_t tags_status;
+	uint64_t its_enabled;
+	volatile dword_t * field_status;
 	bostan_processor_noc_handler_fn handler;
 
 	UNUSED(ev_src);
@@ -304,41 +307,52 @@ PRIVATE void bostan_cnoc_it_handler(int ev_src)
 	{
 		for (unsigned int field = 0; field < BOSTAN_CNOC_RX_BIT_FIELD_AMOUNT; field++)
 		{
-			/* Gets the set of tags that generated an interrupt. */
-			tags_set = mppa_cnoc[interface]->message_rx.status[field].dword;
+			/**
+			 * Masks the CNOC interrupt to get the triggered tags and clear them
+			 * without intermediary interrupts.
+			 */
+			interrupt_mask(K1B_INT_CNOC);
 
-			if (tags_set)
-			{
-				/* Cleans RX Tags Flags for incoming interrupts. */
-				mppa_cnoc[interface]->message_rx.status_clear[field].dword = tags_set;
+				tags_set     = 0ULL;
+				tags_status  = 0ULL;
+				field_status = &mppa_cnoc[interface]->message_rx.status[field].dword;
+				its_enabled  = __k1_umem_read64((void *) &bostan_cnoc_rx_its[interface][field]);
 
-				/* Cleans CNoC Interrupt Flags on current interface. */
-				bostan_cnoc_clear_interface_flags(interface);
-
-				/* Gets only tags that are with interrupt handler enable. */
-				tags_set &= __k1_umem_read64((void *) &bostan_cnoc_rx_its[interface][field]);
-
-				/**
-				 * For each tag that generated an interrupt, executes the
-				 * call of its specific handler.
-				 */
-				while (tags_set)
+				/* Gets the set of tags that generated an interrupt. */
+				while ((tags_status = (*field_status)) != 0ULL)
 				{
-					/**
-					 * Find the next bit enabled that represents the
-					 * triggered tag.
-					 */
-					offset    = __builtin_k1_ctzdl(tags_set);
-					tags_set &= ~(0x1ULL << offset);
+					/* Gets only tags that are with interrupt handler enable. */
+					tags_set |= (tags_status & its_enabled);
 
-					tag = field * (sizeof(uint64_t) * 8) + offset;
+					/* Cleans RX Tags Flags for incoming interrupts. */
+					mppa_cnoc[interface]->message_rx.status_clear[field].dword = tags_status;
 
-					handler = (bostan_processor_noc_handler_fn) __k1_umem_read32(
-						(void *) &bostan_cnoc_rx_handlers[interface][tag]
-					);
-
-					handler(interface, tag);
+					/* Cleans CNoC Interrupt Flags on current interface. */
+					bostan_cnoc_clear_interface_flags(interface);
 				}
+
+			interrupt_unmask(K1B_INT_CNOC);
+
+			/**
+			 * For each tag that generated an interrupt, executes the
+			 * call of its specific handler.
+			 */
+			while (tags_set)
+			{
+				/**
+				 * Find the next bit enabled that represents the
+				 * triggered tag.
+				 */
+				offset    = __builtin_k1_ctzdl(tags_set);
+				tags_set &= ~(0x1ULL << offset);
+
+				tag = field * (sizeof(uint64_t) * 8) + offset;
+
+				handler = (bostan_processor_noc_handler_fn) __k1_umem_read32(
+					(void *) &bostan_cnoc_rx_handlers[interface][tag]
+				);
+
+				handler(interface, tag);
 			}
 		}
 	}
@@ -373,7 +387,7 @@ PUBLIC void bostan_cnoc_setup(void)
 			bostan_cnoc_barrier_modes[interface][field] = 0ULL;
 
 			/* Sets default mode (mailbox mode). */
-			mppa_cnoc[interface]->message_rx.barrier_mode[field].dword = 
+			mppa_cnoc[interface]->message_rx.barrier_mode[field].dword =
 				bostan_cnoc_barrier_modes[interface][field];
 
 			/* Cleans status and error flags of the current field (64 tags). */
@@ -606,7 +620,7 @@ PUBLIC int bostan_cnoc_rx_config(
 	 */
 	else
 		bostan_cnoc_rx_update_notify(interface, tag, BOSTAN_CNOC_EVENTS, (~0));
-	
+
 	return (0);
 }
 
@@ -729,7 +743,7 @@ PUBLIC int bostan_cnoc_tx_write(int interface, int tag, uint64_t value)
 {
 	if (!bostan_cnoc_tx_is_valid(interface, tag))
 		return (-EINVAL);
-	
+
 	if (!bostan_cnoc_tx_is_used(interface, tag))
 		return (-EINVAL);
 
