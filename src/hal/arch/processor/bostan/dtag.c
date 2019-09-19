@@ -93,7 +93,7 @@ PRIVATE int bostan_dnoc_uc_job[BOSTAN_PROCESSOR_NOC_INTERFACES_NUM][BOSTAN_DNOC_
 PRIVATE uint8_t bostan_dnoc_tx_uc_link[BOSTAN_PROCESSOR_NOC_INTERFACES_NUM][BOSTAN_DNOC_UC_MAX] ALIGN(sizeof(dword_t)); /**< Control the association of a TX channel with a Ucore. */
 //! PRIVATE uint8_t bostan_dnoc_uc_its[BOSTAN_PROCESSOR_NOC_INTERFACES_NUM][BOSTAN_DNOC_RX_BIT_FIELD_AMOUNT]                 ALIGN(sizeof(dword_t)); /**< Ucore interrupt status.  */
 //! PRIVATE bostan_processor_noc_handler_fn bostan_dnoc_uc_handlers[BOSTAN_PROCESSOR_NOC_INTERFACES_NUM][BOSTAN_DNOC_UC_MAX] ALIGN(sizeof(dword_t)); /**< Ucore handlers.          */
- 
+
  /* These variables are to simulate Compute Cluster behavior on IO Clusters (Maybe it can be removed). */
 #ifdef __k1io__
 	mOS_uc_desc_t bostan_dnoc_uc_descriptor[BOSTAN_PROCESSOR_NOC_INTERFACES_NUM][BOSTAN_DNOC_UC_MAX]    ALIGN(sizeof(dword_t)); /**< Information about which set of resources must be updated.          */
@@ -419,9 +419,10 @@ PRIVATE void bostan_dnoc_it_handler(int ev_src)
 {
 	int tag;
 	int offset;
-	uint64_t its_enabled;
 	uint64_t tags_set;
-	uint64_t tags_set_it;
+	uint64_t tags_status;
+	uint64_t its_enabled;
+	volatile dword_t * field_status;
 	bostan_processor_noc_handler_fn handler;
 
 	UNUSED(ev_src);
@@ -430,39 +431,49 @@ PRIVATE void bostan_dnoc_it_handler(int ev_src)
 	{
 		for (unsigned int field = 0; field < BOSTAN_DNOC_RX_BIT_FIELD_AMOUNT; field++)
 		{
-			/* Gets the set of tags that generated an interrupt. */
-			tags_set = mppa_dnoc[interface]->rx_global.events[field].dword;
+			/**
+			 * Masks the DNOC interrupt to get the triggered tags and clear them
+			 * without intermediary interrupts.
+			 */
+			interrupt_mask(K1B_INT_DNOC);
 
-			/* Ignores untriggered tags. */
-			if (!tags_set)
-				continue;
+				tags_set     = 0ULL;
+				tags_status  = 0ULL;
+				field_status = &mppa_dnoc[interface]->rx_global.events[field].dword;
+				its_enabled  = __k1_umem_read64((void *) &bostan_dnoc_rx_its[interface][field]);
 
-			its_enabled = __k1_umem_read64((void *) &bostan_dnoc_rx_its[interface][field]);
-			tags_set_it = (tags_set & its_enabled);
+				/* Gets the set of tags that generated an interrupt. */
+				while ((tags_status = (*field_status)) != 0ULL)
+				{
+					/* Gets only tags that are with interrupt handler enable. */
+					tags_set |= (tags_status & its_enabled);
 
-			/* For each tag that generated an interrupt, cleans its flags. */
-			while (tags_set)
-			{
-				offset = __builtin_k1_ctzdl(tags_set);
-				tags_set &= ~(1ULL << offset);
+					/* For each tag that generated an interrupt, cleans its flags. */
+					while (tags_status)
+					{
+						offset       = __builtin_k1_ctzdl(tags_status);
+						tags_status &= ~(1ULL << offset);
 
-				tag = field * (sizeof(uint64_t) * 8) + offset;
+						tag = field * (sizeof(uint64_t) * 8) + offset;
 
-				mppa_dnoc[interface]->rx_queues[tag].event_lac.hword;
-			}
+						mppa_dnoc[interface]->rx_queues[tag].event_lac.hword;
+					}
+				}
+
+			interrupt_unmask(K1B_INT_DNOC);
 
 			/**
 			 * For each tag that generated an interrupt, executes the call
 			 * of its specific handler.
 			 */
-			while (tags_set_it)
+			while (tags_set)
 			{
 				/**
 				 * Find the next bit enabled that represents the
 				 * triggered tag.
 				 */
-				offset = __builtin_k1_ctzdl(tags_set_it);
-				tags_set_it &= ~(1ULL << offset);
+				offset    = __builtin_k1_ctzdl(tags_set);
+				tags_set &= ~(1ULL << offset);
 
 				tag = field * (sizeof(uint64_t) * 8) + offset;
 
@@ -783,7 +794,7 @@ PUBLIC int bostan_dnoc_tx_alloc(int interface, int tag)
  *
  * @param interface Number of the interface.
  * @param tag       Number of transfer buffer.
- * 
+ *
  * @return Zero if allocate correctly and non zero otherwise.
  */
 PUBLIC int bostan_dnoc_tx_free(int interface, int tag)
@@ -1094,7 +1105,7 @@ PUBLIC int bostan_dnoc_uc_alloc(int interface, int uctag, int txtag)
  * @param interface Number of the interface.
  * @param uctag     Number of ucore.
  * @param txtag     Number of transfer buffer.
- * 
+ *
  * @return Zero if allocate correctly and non zero otherwise.
  */
 PUBLIC int bostan_dnoc_uc_free(int interface, int uctag, int txtag)
