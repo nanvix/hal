@@ -818,6 +818,14 @@ again:
 			goto again;
 		}
 
+		/* On-going transter. */
+		if (portaltab.txs[portalid].buffers[local]->busy)
+		{
+			resource_set_notbusy(&portaltab.txs[portalid].resource);
+			unix64_portal_unlock(&portaltab.txs[portalid]);
+			goto again;
+		}
+
 		kmemcpy(portaltab.txs[portalid].buffers[local]->data, buf, nwrite = n);
 
 		portaltab.txs[portalid].buffers[local]->busy = 1;
