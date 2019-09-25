@@ -818,6 +818,14 @@ again:
 			goto again;
 		}
 
+		/* On-going transter. */
+		if (portaltab.txs[portalid].buffers[local]->busy)
+		{
+			resource_set_notbusy(&portaltab.txs[portalid].resource);
+			unix64_portal_unlock(&portaltab.txs[portalid]);
+			goto again;
+		}
+
 		kmemcpy(portaltab.txs[portalid].buffers[local]->data, buf, nwrite = n);
 
 		portaltab.txs[portalid].buffers[local]->busy = 1;
@@ -873,6 +881,13 @@ PUBLIC int unix64_portal_unlink(int portalid)
 again:
 
 	unix64_portals_lock();
+
+		/* Bad local NoC node. */
+		if (portaltab.rxs[portalid].local != processor_node_get_num(core_get_id()))
+		{
+			unix64_portals_unlock();
+			return (-EPERM);
+		}
 
 		/* Bad portal. */
 		if (!resource_is_used(&portaltab.rxs[portalid].resource))
