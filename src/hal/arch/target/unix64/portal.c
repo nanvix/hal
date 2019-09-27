@@ -45,7 +45,7 @@
 /**
  * @brief Base name for a portal
  */
-#define UNIX64_PORTAL_BASENAME "portal"
+#define UNIX64_PORTAL_BASENAME "nanvix-portal"
 
 /**
  * @brief Portal buffer.

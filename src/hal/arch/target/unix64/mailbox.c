@@ -41,6 +41,11 @@
 #define UNIX64_MAILBOX_NAME_LENGTH 128
 
 /**
+ * @brief Base name for a mailbox
+ */
+#define UNIX64_MAILBOX_BASENAME "nanvix-mailbox"
+
+/**
  * @brief Mailbox.
  */
 struct mailbox
@@ -198,7 +203,8 @@ PRIVATE int do_unix64_mailbox_create(int nodenum)
 
 	/* Build pathname for NoC connector. */
 	sprintf(pathname,
-		"/mailbox-%d",
+		"/%s-%d",
+		UNIX64_MAILBOX_BASENAME,
 		nodenum
 	);
 
@@ -268,7 +274,8 @@ PRIVATE int do_unix64_mailbox_open(int nodenum)
 
 	/* Build pathname for NoC connector. */
 	sprintf(pathname,
-		"/mailbox-%d",
+		"/%s-%d",
+		UNIX64_MAILBOX_BASENAME,
 		nodenum
 	);
 
@@ -660,7 +667,7 @@ PUBLIC void unix64_mailbox_shutdown(void)
 	{
 		char pathname[UNIX64_MAILBOX_NAME_LENGTH];
 
-		sprintf(pathname, "/mailbox-%d", i);
+		sprintf(pathname, "/%s-%d", UNIX64_MAILBOX_BASENAME, i);
 		mq_unlink(pathname);
 	}
 }

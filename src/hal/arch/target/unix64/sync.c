@@ -43,6 +43,11 @@
 #define UNIX64_SYNC_NAME_LENGTH 128
 
 /**
+ * @brief Base name for a sync
+ */
+#define UNIX64_SYNC_BASENAME "nanvix-sync"
+
+/**
  * @brief Synchronization point.
  */
 struct sync
@@ -272,7 +277,8 @@ PRIVATE int do_unix64_sync_create(const int *nodes, int nnodes, int type)
 
 			/* Build pathname for NoC connector. */
 			sprintf(pathname,
-				"/sync-%d-broadcast",
+				"/%s-%d-broadcast",
+				UNIX64_SYNC_BASENAME,
 				nodes[0]
 			);
 		}
@@ -288,7 +294,8 @@ PRIVATE int do_unix64_sync_create(const int *nodes, int nnodes, int type)
 
 			/* Build pathname for NoC connector. */
 			sprintf(pathname,
-				"/sync-%d-gather",
+				"/%s-%d-gather",
+				UNIX64_SYNC_BASENAME,
 				nodes[0]
 			);
 		}
@@ -380,7 +387,8 @@ PRIVATE int do_unix64_sync_open(const int *nodes, int nnodes, int type)
 
 			/* Build pathname for NoC connector. */
 			sprintf(pathname,
-				"/sync-%d-broadcast",
+				"/%s-%d-broadcast",
+				UNIX64_SYNC_BASENAME,
 				nodes[0]
 			);
 		}
@@ -396,7 +404,8 @@ PRIVATE int do_unix64_sync_open(const int *nodes, int nnodes, int type)
 
 			/* Build pathname for NoC connector. */
 			sprintf(pathname,
-				"/sync-%d-gather",
+				"/%s-%d-gather",
+				UNIX64_SYNC_BASENAME,
 				nodes[0]
 			);
 		}
@@ -806,9 +815,9 @@ PUBLIC void unix64_sync_shutdown(void)
 	{
 		char pathname[UNIX64_SYNC_NAME_LENGTH];
 
-		sprintf(pathname, "/sync-%d-gather", i);
+		sprintf(pathname, "/%s-%d-gather", UNIX64_SYNC_BASENAME, i);
 		mq_unlink(pathname);
-		sprintf(pathname, "/sync-%d-broadcast", i);
+		sprintf(pathname, "/%s-%d-broadcast", UNIX64_SYNC_BASENAME, i);
 		mq_unlink(pathname);
 	}
 }
