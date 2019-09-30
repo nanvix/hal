@@ -97,9 +97,6 @@ jobs:
 
     # Tests Debug
     - stage: "Tests Debug"
-      name: "QEMU OpenRISC"
-      script: docker run --privileged -v "$(pwd):/mnt" -p 4567:4567 nanvix/ubuntu:qemu-openrisc /bin/bash -l -c "cd /mnt && bash utils/nanvix-setup-network.sh on --root && make distclean && make all && make test-ccluster"
-    - stage: "Tests Debug"
       name: "QEMU RISC-V 32-bit"
       script: docker run -v "$(pwd):/mnt" -p 4567:4567 nanvix/ubuntu:qemu-riscv32  /bin/bash -l -c "cd /mnt && make distclean && make all && make test-ccluster"
     - stage: "Tests Debug"
@@ -119,9 +116,6 @@ jobs:
         - ssh $SERVER_NAME 'bash travis/test-hal.sh --no-verbose --debug'
 
     # Tests Release
-    - stage: "Tests Release"
-      name: "QEMU OpenRISC"
-      script: docker run --privileged -v "$(pwd):/mnt" -p 4567:4567 nanvix/ubuntu:qemu-openrisc /bin/bash -l -c "cd /mnt && bash utils/nanvix-setup-network.sh on --root && export RELEASE=true && make distclean && make all && make test-ccluster"
     - stage: "Tests Release"
       name: "QEMU RISC-V 32-bit"
       script: docker run -v "$(pwd):/mnt" -p 4567:4567 nanvix/ubuntu:qemu-riscv32  /bin/bash -l -c "cd /mnt && export RELEASE=true && make distclean && make all && make test-ccluster"
