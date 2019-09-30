@@ -390,6 +390,20 @@ again:
 			goto again;
 		}
 
+		/*
+		 * Set mailbox as busy, before releasing the lock,
+		 * because we may sleep below.
+		 */
+		resource_set_busy(&mailboxtab.rxs[mbxid].resource);
+
+	unix64_mailbox_unlock();
+
+		/* Release underlying message queue. */
+		KASSERT(mq_close(mailboxtab.rxs[mbxid].fd) == 0);
+
+	unix64_mailbox_lock();
+
+		resource_set_notbusy(&mailboxtab.rxs[mbxid].resource);
 		resource_free(&pool.rx, mbxid);
 
 	unix64_mailbox_unlock();
@@ -452,15 +466,21 @@ again:
 		 */
 		if (mailboxtab.txs[mbxid].refcount-- == 1)
 		{
-			/* Set mailbox as busy. */
+			/*
+			 * Set mailbox as busy, before releasing the lock,
+			 * because we may sleep below.
+			 */
 			resource_set_busy(&mailboxtab.txs[mbxid].resource);
 
-			/* Release lock, since we may sleep below. */
 			unix64_mailbox_unlock();
+
+			/* Release underlying message queue. */
+			KASSERT(mq_close(mailboxtab.txs[mbxid].fd) == 0);
 
 			/* Re-acquire lock. */
 			unix64_mailbox_lock();
 
+			resource_set_notbusy(&mailboxtab.txs[mbxid].resource);
 			resource_free(&pool.tx, mbxid);
 		}
 
