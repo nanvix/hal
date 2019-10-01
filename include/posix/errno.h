@@ -65,6 +65,7 @@
  * OF SUCH DAMAGE.
  */
 
+#ifndef __unix64__
 #ifndef ERRNO_H_
 #define ERRNO_H_
 
@@ -169,3 +170,9 @@
 
 #endif /* _ASM_FILE_   */
 #endif /* ERRNO_H_ */
+
+#else
+
+	#include <errno.h>
+
+#endif /* !__unix64__*/
