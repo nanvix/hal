@@ -42,7 +42,7 @@ export LD = $(TOOLCHAIN_DIR)/or1k-elf-ld
 export AR = $(TOOLCHAIN_DIR)/or1k-elf-ar
 
 # Timeout Variable
-export TIMEOUT ?= 5
+export TIMEOUT ?= 10
 
 # Compiler Options
 export CFLAGS  = -D __qemu_openrisc__ -D__openrisc__
