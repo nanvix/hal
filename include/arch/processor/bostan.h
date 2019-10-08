@@ -43,6 +43,11 @@
 	#include <arch/processor/bostan/clusters.h>
 	#include <arch/processor/bostan/noc.h>
 
+	/**
+	 * @brief Powers off the underlying processor.
+	 */
+	EXTERN NORETURN void bostan_processor_poweroff(void);
+
 /**@}*/
 
 /*============================================================================*
@@ -61,7 +66,21 @@
 	#define PROCESSOR_HAS_NOC         1 /**< NoC feature          */
 	/**@}*/
 
+	/**
+	 * @brief Provided Functions
+	 */
+	/**@{*/
+	#define __processor_poweroff_fn /**< processor_poweroff() */
+	/**@}*/
+
+	/**
+	 * @see bostan_processor_poweroff().
+	 */
+	static inline NORETURN void processor_poweroff(void)
+	{
+		bostan_processor_poweroff();
+	}
+
 /**@endcond*/
 
 #endif /* PROCESSOR_BOSTAN_H_ */
-

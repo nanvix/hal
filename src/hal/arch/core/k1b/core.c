@@ -22,16 +22,20 @@
  * SOFTWARE.
  */
 
-#include <arch/core/k1b/excp.h>
-#include <arch/core/k1b/int.h>
-#include <arch/core/k1b/mOS.h>
-#include <arch/core/k1b/perf.h>
-#include <arch/core/k1b/trap.h>
-#include <nanvix/const.h>
+
+/* Must come fist. */
+#define __NEED_HAL_CORE
+
+#include <nanvix/hal/core.h>
 
 /*============================================================================*
  * k1b_core_poweroff()                                                        *
  *============================================================================*/
+
+/**
+ * @brief Halt core?
+ */
+PUBLIC int k1b_core_halt = 1;
 
 /**
  * The k1b_core_poweroff() function powers off the underlying core.
@@ -42,6 +46,9 @@
  */
 PUBLIC NORETURN void k1b_core_poweroff(void)
 {
+	if (k1b_core_halt)
+		core_halt();
+
 	kprintf("[hal] powering off...");
 
 	/* Disable all interrupts. */

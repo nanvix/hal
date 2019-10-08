@@ -66,7 +66,7 @@ PRIVATE const int bostan_processor_clusterids[PROCESSOR_CLUSTERS_NUM] = {
 PUBLIC int bostan_cluster_get_num(void)
 {
     int clusterid;
-    
+
     clusterid = __k1_get_cluster_id();
 
     /* IO Cluster 0 */
@@ -134,4 +134,22 @@ PUBLIC int bostan_cluster_is_io(int clusternum)
         (clusternum == BOSTAN_PROCESSOR_CLUSTERNUM_IOCLUSTER0) ||
         (clusternum == BOSTAN_PROCESSOR_CLUSTERNUM_IOCLUSTER1)
     );
+}
+
+/*============================================================================*
+ * bostan_processor_poweroff()                                                *
+ *============================================================================*/
+
+/**
+ * @todo TODO: Provide a detailed description for this function.
+ */
+PUBLIC NORETURN void bostan_processor_poweroff(void)
+{
+	if (cluster_get_num() == PROCESSOR_CLUSTERNUM_MASTER)
+	{
+		kprintf("[hal][processor] powering off...");
+		k1b_core_halt = 0;
+	}
+
+	cluster_poweroff();
 }
