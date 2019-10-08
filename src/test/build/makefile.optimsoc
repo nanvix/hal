@@ -20,4 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+# Binaries
+export EXECBIN = test-driver.optimsoc
+
 include build/makefile.qemu-openrisc

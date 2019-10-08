@@ -23,6 +23,9 @@
 # Tweak toolchain.
 export LDFLAGS  +=
 
+# Binaries
+export EXECBIN ?= test-driver.unix64
+
 # Filter C Source List
 C_SRC := $(filter-out $(wildcard core/*.c), $(C_SRC))
 C_SRC := $(filter-out $(wildcard cluster/*.c), $(C_SRC))

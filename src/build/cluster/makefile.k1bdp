@@ -38,7 +38,7 @@ export CFLAGS += -D __k1bdp__
 # Libraries and Binaries
 
 # Binaries
-export EXECBIN = test-driver-k1bdp
+export EXECBIN = test-driver.k1bdp
 
 #===============================================================================
 

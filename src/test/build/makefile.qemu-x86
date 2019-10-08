@@ -23,6 +23,9 @@
 # Tweak toolchain.
 export LDFLAGS  += -L $(LINKERDIR)/ -T link.ld
 
+# Binaries
+export EXECBIN ?= test-driver.qemu-x86
+
 ASM_SRC = $(wildcard core/arch/i486.S)
 
 # Object Files
