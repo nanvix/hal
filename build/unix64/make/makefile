@@ -43,7 +43,7 @@ export LD = ld
 export AR = ar
 
 # Timeout Variable
-export TIMEOUT ?= 20
+export TIMEOUT ?= 60
 
 # Compiler Options
 export CFLAGS  = -D __unix64__ -D__linux64__
