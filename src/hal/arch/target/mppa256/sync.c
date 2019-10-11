@@ -415,8 +415,8 @@ PUBLIC int mppa256_sync_create(const int *nodenums, int nnodes, int type)
 {
 	if (nodenums == NULL)
 		return (-EINVAL);
-	
-	if (!WITHIN(nnodes, 2, PROCESSOR_NOC_NODES_NUM))
+
+	if (!WITHIN(nnodes, 2, PROCESSOR_NOC_NODES_NUM + 1))
 		return (-EINVAL);
 
 	if (type != MPPA256_SYNC_ALL_TO_ONE && type != MPPA256_SYNC_ONE_TO_ALL)
@@ -550,7 +550,10 @@ PRIVATE int do_mppa256_sync_open(const int *nodenums, int nnodes, int type)
  */
 PUBLIC int mppa256_sync_open(const int *nodenums, int nnodes, int type)
 {
-	if (nodenums == NULL || !WITHIN(nnodes, 2, PROCESSOR_NOC_NODES_NUM))
+	if (nodenums == NULL)
+		return (-EINVAL);
+
+	if (!WITHIN(nnodes, 2, PROCESSOR_NOC_NODES_NUM + 1))
 		return (-EINVAL);
 
 	if (type != MPPA256_SYNC_ALL_TO_ONE && type != MPPA256_SYNC_ONE_TO_ALL)
