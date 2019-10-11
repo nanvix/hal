@@ -59,6 +59,9 @@ PUBLIC void cluster_fence_wait(void)
 {
 	while (true)
 	{
+		/* TODO: Master core cannot acquire the lock in some runs. (BUG) */
+		dcache_invalidate();
+
 		spinlock_lock(&fence.lock);
 
 			/* Fence is released. */
@@ -70,6 +73,9 @@ PUBLIC void cluster_fence_wait(void)
 
 			noop();
 		spinlock_unlock(&fence.lock);
+
+		/* TODO: Master core cannot acquire the lock in some runs. (BUG) */
+		dcache_invalidate();
 	}
 }
 
