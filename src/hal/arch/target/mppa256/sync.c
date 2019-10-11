@@ -178,7 +178,7 @@ PRIVATE int mppa256_sync_node_list_is_valid(int local, const int *nodenums, int 
 		/* Does a node appear twice? */
 		if (checks & (1ULL << nodenums[i]))
 			return (0);
-		
+
 		checks |= (1ULL << nodenums[i]);
 	}
 
@@ -268,7 +268,7 @@ PRIVATE void mppa256_sync_it_handler(int interface, int tag)
 	if (resource_is_used(&synctab.rxs[syncid].resource))
 	{
 		k1b_spinlock_unlock(&synctab.rxs[syncid].lock);
-	
+
 		ret = bostan_dma_control_config(
 			interface,
 			tag,
@@ -310,7 +310,7 @@ PRIVATE int mppa256_sync_select_rx_interface(const int *nodenums, int nnodes, in
 		i = 0;
 		nnodes = 1;
 	}
-	
+
 	/* Searchs on Remote IDs? */
 	else
 		i = 1;
@@ -483,7 +483,7 @@ PRIVATE int mppa256_sync_select_tx_interface(const int *nodenums, int nnodes, in
  * @param nodenums IDs of target NoC nodes.
  * @param nnodes   Number of target NoC nodes.
  * @param type     Type of synchronization point.
- * 
+ *
  * @return The tag of underlying resource ID.
  */
 PRIVATE int do_mppa256_sync_open(const int *nodenums, int nnodes, int type)
@@ -555,13 +555,13 @@ PUBLIC int mppa256_sync_open(const int *nodenums, int nnodes, int type)
 
 	if (type != MPPA256_SYNC_ALL_TO_ONE && type != MPPA256_SYNC_ONE_TO_ALL)
 		return (-EINVAL);
-	
+
 	/* Are nodenums valid? */
 	for (int i = 0; i < nnodes; ++i)
 		if (!WITHIN(nodenums[i], 0, PROCESSOR_NOC_NODES_NUM))
 			return (-EINVAL);
 
-	return (do_mppa256_sync_open(nodenums, nnodes, type));	
+	return (do_mppa256_sync_open(nodenums, nnodes, type));
 }
 
 /*============================================================================*
@@ -601,13 +601,13 @@ PUBLIC int mppa256_sync_unlink(int syncid)
 {
 	if (!mppa256_sync_rx_is_valid(syncid))
 		return (-EBADF);
-	
+
 	syncid -= MPPA256_SYNC_CREATE_OFFSET;
 
 	if (!resource_is_used(&synctab.rxs[syncid].resource))
 		return (-EBADF);
 
-	return (do_mppa256_sync_unlink(syncid));	
+	return (do_mppa256_sync_unlink(syncid));
 }
 
 /*============================================================================*
@@ -645,7 +645,7 @@ PUBLIC int mppa256_sync_close(int syncid)
 {
 	if (!mppa256_sync_tx_is_valid(syncid))
 		return (-EBADF);
-	
+
 	syncid -= MPPA256_SYNC_OPEN_OFFSET;
 
 	/* Bad sync. */
@@ -665,7 +665,7 @@ PUBLIC int mppa256_sync_close(int syncid)
  * @param syncid ID of the synchronization point.
  *
  * @return Zero if wait signal correctly and non zero otherwise.
- * 
+ *
  * @todo How make the slave wait on lock without the need to
  * access the master's private structures? (microkernel approach)
  */
@@ -724,7 +724,7 @@ PUBLIC int mppa256_sync_signal(int syncid)
 {
 	if (!mppa256_sync_tx_is_valid(syncid))
 		return (-EBADF);
-	
+
 	syncid -= MPPA256_SYNC_OPEN_OFFSET;
 
 	/* Bad sync. */

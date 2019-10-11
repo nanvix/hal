@@ -367,7 +367,6 @@ PRIVATE int do_mppa256_mailbox_create(int nodenum)
 
 	mbxtab.rxs[mbxid].initial_message = 0;
 	mbxtab.rxs[mbxid].message_count   = 0;
-
 	spinlock_lock(&mbxtab.rxs[mbxid].lock);
 
 	ret = bostan_dma_data_aread(
@@ -543,8 +542,8 @@ PUBLIC int mppa256_mailbox_unlink(int mbxid)
 	/* Invalid mailbox. */
 	if (!mppa256_mailbox_rx_is_valid(mbxid))
 		return (-EBADF);
-	
-	return (do_mppa256_mailbox_unlink(mbxid));	
+
+	return (do_mppa256_mailbox_unlink(mbxid));
 }
 
 /*============================================================================*
@@ -602,7 +601,7 @@ PUBLIC int mppa256_mailbox_close(int mbxid)
 	/* Bad mailbox. */
 	if (!resource_is_used(&mbxtab.txs[mbxid].resource))
 		return (-EBADF);
-	
+
 	return (do_mppa256_mailbox_close(mbxid));
 }
 
@@ -716,7 +715,7 @@ PUBLIC ssize_t mppa256_mailbox_awrite(int mbxid, const void * buffer, uint64_t s
 	/* Invalid mailbox. */
 	if (!mppa256_mailbox_tx_is_valid(mbxid))
 		return (-EBADF);
-	
+
 	mbxid -= MPPA256_MAILBOX_OPEN_OFFSET;
 
 	/* Bad mailbox. */
@@ -726,7 +725,7 @@ PUBLIC ssize_t mppa256_mailbox_awrite(int mbxid, const void * buffer, uint64_t s
 	/* Busy mailbox */
 	if (resource_is_busy(&mbxtab.txs[mbxid].resource))
 		return (-EBUSY);
-	
+
 	return (do_mppa256_mailbox_awrite(mbxid, buffer, size));
 }
 
@@ -891,7 +890,7 @@ PUBLIC int mppa256_mailbox_wait(int mbxid)
 	{
 		if (!mppa256_mailbox_rx_is_valid(mbxid))
 			return (-EBADF);
-		
+
 		mbxid -= MPPA256_MAILBOX_CREATE_OFFSET;
 
 		#if 1 /* Is the slave with correct data cached? */
@@ -909,7 +908,7 @@ PUBLIC int mppa256_mailbox_wait(int mbxid)
 	{
 		if (!mppa256_mailbox_tx_is_valid(mbxid))
 			return (-EBADF);
-		
+
 		mbxid -= MPPA256_MAILBOX_OPEN_OFFSET;
 
 		#if 1 /* Is the slave with correct data cached? */
