@@ -376,10 +376,10 @@ PRIVATE int do_mppa256_sync_create(const int *nodenums, int nnodes, int type)
 		if (!mppa256_sync_is_local(nodenum, nodenums, nnodes))
 			return (-EINVAL);
 
-		mask = 0;
+		mask = 0ULL;
 		for (int i = 1; i < nnodes; i++)
-			mask |= 1 << nodenums[i];
-		mask = ~mask;
+			mask |= (1ULL << nodenums[i]);
+		mask = (~mask);
 	}
 
 	tag = bostan_processor_node_sync_tag(nodenums[0]);
@@ -516,7 +516,7 @@ PRIVATE int do_mppa256_sync_open(const int *nodenums, int nnodes, int type)
 		if (!mppa256_sync_is_local(nodenum, nodenums, nnodes))
 			return (-EINVAL);
 #endif
-		kmemcpy(synctab.txs[syncid].remotes, &nodenums[1], (nnodes - 1));
+		kmemcpy(synctab.txs[syncid].remotes, &nodenums[1], sizeof(int) * (nnodes - 1));
 		synctab.txs[syncid].nremotes = (nnodes - 1);
 		synctab.txs[syncid].mask     = ~(1ULL);
 	}
