@@ -406,6 +406,12 @@ PRIVATE inline void bostan_dnoc_rx_update_notify(int interface, int tag, int eve
  * bostan_dnoc_it_handler()                                                   *
  *============================================================================*/
 
+int bostan_dnoc_it_counters[BOSTAN_PROCESSOR_NOC_INTERFACES_NUM][BOSTAN_CNOC_RX_MAX] = {
+	[0 ... (BOSTAN_PROCESSOR_NOC_INTERFACES_NUM - 1)] = {
+		[0 ... (BOSTAN_CNOC_RX_MAX - 1)] = 0
+	}
+};
+
 /**
  * @brief Underlying handler for DNoC interrupts.
  *
@@ -457,6 +463,8 @@ PRIVATE void bostan_dnoc_it_handler(int ev_src)
 						tag = field * (sizeof(uint64_t) * 8) + offset;
 
 						mppa_dnoc[interface]->rx_queues[tag].event_lac.hword;
+
+						++bostan_dnoc_it_counters[interface][tag];
 					}
 				}
 
@@ -481,7 +489,14 @@ PRIVATE void bostan_dnoc_it_handler(int ev_src)
 					(void *) &bostan_dnoc_rx_handlers[interface][tag]
 				);
 
-				handler(interface, tag);
+				int counter = bostan_dnoc_it_counters[interface][tag];
+				bostan_dnoc_it_counters[interface][tag] = 0;
+
+				while (counter > 0)
+				{
+					handler(interface, tag);
+					--counter;
+				}
 			}
 		}
 	}
