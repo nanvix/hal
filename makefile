@@ -20,6 +20,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+#
+# Default make rule.
+#
+.DEFAULT_GOAL := all
+
 #===============================================================================
 # Build Options
 #===============================================================================
