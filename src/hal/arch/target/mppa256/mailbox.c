@@ -253,6 +253,31 @@ PRIVATE int mppa256_node_is_valid(int nodenum)
  */
 PRIVATE int mppa256_mailbox_msg_copy(int mbxid);
 
+#define MPPA256_MAILBOX_MESSAGE_INVALID (-1)
+#define MPPA256_MAILBOX_MESSAGE_VALID   (-2)
+
+PRIVATE void mppa256_mailbox_count_messages(struct rx * mqueue)
+{
+	struct underliyng_message * msg;
+
+	/* Updates message queue. */
+	dcache_invalidate();
+
+	for (unsigned i = 0; i < MQUEUE_MSG_AMOUNT; ++i)
+	{
+		msg = &mqueue->messages[i];
+
+		if (msg->source == MPPA256_MAILBOX_MESSAGE_INVALID)
+			continue;
+
+		if (msg->source != msg->confirm)
+			continue;
+
+		mqueue->message_count++;
+		msg->confirm = MPPA256_MAILBOX_MESSAGE_VALID;
+	}
+}
+
 /**
  * @brief Mailbox Receiver Handler.
  *
@@ -268,7 +293,7 @@ PRIVATE void mppa256_mailbox_rx_handler(int interface, int tag)
 
 	mbxid = MAILBOXID_RX(interface, tag);
 
-	++mbxtab.rxs[mbxid].message_count;
+	mppa256_mailbox_count_messages(&mbxtab.rxs[mbxid]);
 
 	if (mbxtab.rxs[mbxid].buffer != NULL)
 		if (mppa256_mailbox_msg_copy(mbxid) != 0)
@@ -367,7 +392,6 @@ PRIVATE int do_mppa256_mailbox_create(int nodenum)
 
 	mbxtab.rxs[mbxid].initial_message = 0;
 	mbxtab.rxs[mbxid].message_count   = 0;
-
 	spinlock_lock(&mbxtab.rxs[mbxid].lock);
 
 	ret = bostan_dma_data_aread(
@@ -381,10 +405,7 @@ PRIVATE int do_mppa256_mailbox_create(int nodenum)
 	);
 
 	if (ret < 0)
-	{
-		spinlock_unlock(&mbxtab.rxs[mbxid].lock);
 		return (ret);
-	}
 
 	/* Allocates associated resource. */
 	resource_set_used(&mbxtab.rxs[mbxid].resource);
@@ -543,8 +564,8 @@ PUBLIC int mppa256_mailbox_unlink(int mbxid)
 	/* Invalid mailbox. */
 	if (!mppa256_mailbox_rx_is_valid(mbxid))
 		return (-EBADF);
-	
-	return (do_mppa256_mailbox_unlink(mbxid));	
+
+	return (do_mppa256_mailbox_unlink(mbxid));
 }
 
 /*============================================================================*
@@ -602,7 +623,7 @@ PUBLIC int mppa256_mailbox_close(int mbxid)
 	/* Bad mailbox. */
 	if (!resource_is_used(&mbxtab.txs[mbxid].resource))
 		return (-EBADF);
-	
+
 	return (do_mppa256_mailbox_close(mbxid));
 }
 
@@ -716,7 +737,7 @@ PUBLIC ssize_t mppa256_mailbox_awrite(int mbxid, const void * buffer, uint64_t s
 	/* Invalid mailbox. */
 	if (!mppa256_mailbox_tx_is_valid(mbxid))
 		return (-EBADF);
-	
+
 	mbxid -= MPPA256_MAILBOX_OPEN_OFFSET;
 
 	/* Bad mailbox. */
@@ -726,7 +747,7 @@ PUBLIC ssize_t mppa256_mailbox_awrite(int mbxid, const void * buffer, uint64_t s
 	/* Busy mailbox */
 	if (resource_is_busy(&mbxtab.txs[mbxid].resource))
 		return (-EBUSY);
-	
+
 	return (do_mppa256_mailbox_awrite(mbxid, buffer, size));
 }
 
@@ -768,19 +789,19 @@ PRIVATE int mppa256_mailbox_msg_copy(int mbxid)
 		{
 			msg = &mqueue->messages[j];
 
-			if (msg->source != -1 && msg->source == msg->confirm)
+			if (msg->source != MPPA256_MAILBOX_MESSAGE_INVALID && msg->confirm == MPPA256_MAILBOX_MESSAGE_VALID)
 				break;
 
 			j = ((j + 1) % MQUEUE_MSG_AMOUNT);
 		}
-	} while (msg->source == -1 || msg->source != msg->confirm);
+	} while (msg->confirm != MPPA256_MAILBOX_MESSAGE_VALID);
 
 	/* Copies message data. */
 	kmemcpy(mqueue->buffer, msg->buffer, MPPA256_MAILBOX_MSG_SIZE);
 
 	/* Cleans underlying message. */
 	remotenum   = msg->source;
-	msg->source = msg->confirm = -1;
+	msg->source = msg->confirm = MPPA256_MAILBOX_MESSAGE_INVALID;
 
 	/* Updates message queue parameters. */
 	--mqueue->message_count;
@@ -793,8 +814,8 @@ PRIVATE int mppa256_mailbox_msg_copy(int mbxid)
 	/* Updates message queue. */
 	dcache_invalidate();
 
-	/* Unlock to slave read the data. */
-	spinlock_unlock(&mqueue->lock);
+	/* Releases reads. */
+	spinlock_unlock(&mbxtab.rxs[mbxid].lock);
 
 	/* Gets underlying parameters. */
 	interface = UNDERLYING_CREATE_INTERFACE(mbxid);
@@ -891,7 +912,7 @@ PUBLIC int mppa256_mailbox_wait(int mbxid)
 	{
 		if (!mppa256_mailbox_rx_is_valid(mbxid))
 			return (-EBADF);
-		
+
 		mbxid -= MPPA256_MAILBOX_CREATE_OFFSET;
 
 		#if 1 /* Is the slave with correct data cached? */
@@ -909,7 +930,7 @@ PUBLIC int mppa256_mailbox_wait(int mbxid)
 	{
 		if (!mppa256_mailbox_tx_is_valid(mbxid))
 			return (-EBADF);
-		
+
 		mbxid -= MPPA256_MAILBOX_OPEN_OFFSET;
 
 		#if 1 /* Is the slave with correct data cached? */
