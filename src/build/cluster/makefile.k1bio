@@ -38,7 +38,7 @@ export CFLAGS += -D __k1bio__
 # Libraries and Binaries
 
 # Binaries
-export EXECBIN = test-driver-k1bio
+export EXECBIN = test-driver.k1bio
 
 #===============================================================================
 

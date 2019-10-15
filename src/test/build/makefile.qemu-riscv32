@@ -23,6 +23,9 @@
 # Tweak toolchain.
 export LDFLAGS  += -L $(LINKERDIR)/ -T link.ld
 
+# Binaries
+export EXECBIN ?= test-driver.qemu-riscv32
+
 # Assembly Source Files
 ASM_SRC = $(wildcard core/arch/rv32gc.S)
 

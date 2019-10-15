@@ -46,6 +46,7 @@ export LINKERDIR := $(BUILDDIR)/$(TARGET)/linker
 export MAKEDIR   := $(BUILDDIR)/$(TARGET)/make
 export DOCDIR    := $(CURDIR)/doc
 export INCDIR    := $(CURDIR)/include
+export IMGDIR    := $(CURDIR)/img
 export LIBDIR    := $(CURDIR)/lib
 export SRCDIR    := $(CURDIR)/src
 export TOOLSDIR  := $(CURDIR)/utils
@@ -57,8 +58,8 @@ include $(MAKEDIR)/makefile
 
 #===============================================================================
 
-# Binary Name
-export EXECBIN = test-driver
+# Image Source
+export IMGSRC = $(IMGDIR)/$(TARGET).img
 
 # Image Name
 export IMAGE = hal-debug.img
@@ -68,7 +69,7 @@ all: image
 
 # Builds image.
 image: hal-target
-	@bash $(TOOLSDIR)/nanvix-build-image.sh $(IMAGE) $(BINDIR) $(EXECBIN)
+	@bash $(TOOLSDIR)/nanvix-build-image.sh $(IMAGE) $(BINDIR) $(IMGSRC)
 
 # Make directories
 make-dirs:
@@ -88,7 +89,6 @@ distclean: distclean-target
 # Cleans compilation files.
 distclean-target:
 	@$(MAKE) -C $(SRCDIR) -f build/processor/makefile.$(PROCESSOR) distclean
-
 
 # Builds documentation.
 documentation:

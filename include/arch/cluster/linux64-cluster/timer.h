@@ -40,6 +40,14 @@
 
 	#define INTERRUPT_TIMER 0
 
+	/**
+	 * @brief Cluster frequency.
+	 *
+	 * @note This is CLOCKS_PER_SEC but hard coded.
+	 * @todo TODO: remove hard coded value.
+	 */
+	#define LINUX64_CLUSTER_CLUSTER_FREQ 1000000
+
 #ifndef _ASM_FILE_
 
 	/**
@@ -68,6 +76,13 @@
 /**
  * @cond linux64_cluster
  */
+
+	/**
+	 * @name Exported Constants
+	 */
+	/**@{*/
+	#define CLUSTER_FREQ LINUX64_CLUSTER_CLUSTER_FREQ /**< @see LINUX64_CLUSTER_CLUSTER_FREQ */
+	/**@}*/
 
 	/**
 	 * @name Exported Functions

@@ -40,6 +40,11 @@
 #ifndef _ASM_FILE_
 
 	/**
+	 * @brief Halt core?
+	 */
+	EXTERN int k1b_core_halt;
+
+	/**
 	 * @brief Powers off the underlying core.
 	 */
 	EXTERN NORETURN void k1b_core_poweroff(void);
