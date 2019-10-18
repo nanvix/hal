@@ -23,22 +23,26 @@
  */
 
 #include <nanvix/const.h>
-#include <nanvix/klib.h>
+#include <nanvix/hlib.h>
+#include <posix/stdarg.h>
 
 /**
- * @brief Returns the length of a string.
+ * @brief Writes a formated string on the kernels's output device.
  *
- * @param str String to be evaluated.
- *
- * @returns The length of the string.
+ * @param fmt Formated string.
  */
-PUBLIC size_t kstrlen(const char *str)
+PUBLIC void kprintf(const char *fmt, ...)
 {
-	const char *p;
+	size_t len;                    /* String length.           */
+	va_list args;                  /* Variable arguments list. */
+	char buffer[KBUFFER_SIZE + 1]; /* Temporary buffer.        */
 
-	/* Count the number of characters. */
-	for (p = str; *p != '\0'; p++)
-		noop();
+	/* Convert to raw string. */
+	va_start(args, fmt);
+	len = kvsprintf(buffer, fmt, args);
+	buffer[len++] = '\n';
+	buffer[len++] = '\0';
+	va_end(args);
 
-	return (p - str);
+	kputs(buffer);
 }
