@@ -31,7 +31,7 @@
 #include <nanvix/hal/cluster/mmio.h>
 #include <nanvix/hal/core/interrupt.h>
 #include <nanvix/const.h>
-#include <stdint.h>
+#include <posix/stdint.h>
 
 /*
  * @brief Sends an Inter-processor Interrupt.

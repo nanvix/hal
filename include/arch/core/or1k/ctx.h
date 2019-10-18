@@ -38,7 +38,7 @@
 /**@{*/
 
 	#include <arch/core/or1k/core.h>
-	#include <nanvix/klib.h>
+	#include <nanvix/hlib.h>
 
 	/**
 	 * @brief Execution context size (in bytes).

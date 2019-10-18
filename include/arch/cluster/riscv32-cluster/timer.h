@@ -40,7 +40,7 @@
 /**@{*/
 
 	#include <arch/cluster/riscv32-cluster/clint.h>
-	#include <stdint.h>
+	#include <posix/stdint.h>
 
 	/**
 	 * @brief Timer frequency (10 MHz)

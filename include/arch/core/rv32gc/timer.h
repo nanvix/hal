@@ -34,7 +34,7 @@
 /**@{*/
 
 	#include <nanvix/const.h>
-	#include <stdint.h>
+	#include <posix/stdint.h>
 
 #ifndef _ASM_FILE_
 

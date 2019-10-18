@@ -25,8 +25,8 @@
 #include <arch/core/rv32gc/timer.h>
 #include <arch/core/rv32gc/mcall.h>
 #include <nanvix/const.h>
-#include <nanvix/klib.h>
-#include <stdint.h>
+#include <nanvix/hlib.h>
+#include <posix/stdint.h>
 
 /**
  * @brief Was the timer device initialized?

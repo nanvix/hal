@@ -33,7 +33,7 @@
 #ifndef _SYS__INTSUP_H
 #define _SYS__INTSUP_H
 
-#include <sys/features.h>
+#include <posix/sys/features.h>
 
 #if __GNUC_PREREQ (3, 2)
 /* gcc > 3.2 implicitly defines the values we are interested */

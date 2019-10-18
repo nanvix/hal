@@ -37,7 +37,7 @@
 	#define __NEED_MEMORY_TYPES
 
 	#include <arch/core/rv32gc/types.h>
-	#include <nanvix/klib.h>
+	#include <nanvix/hlib.h>
 	#include <posix/errno.h>
 
 	/**

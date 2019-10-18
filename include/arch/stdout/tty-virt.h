@@ -31,7 +31,7 @@
  */
 /**@{*/
 
-	#include <stddef.h>
+	#include <posix/stddef.h>
 
 	/**
 	 * @brief Initializes the virtual tty device.

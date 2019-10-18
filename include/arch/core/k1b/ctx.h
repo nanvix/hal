@@ -37,9 +37,11 @@
  */
 /**@{*/
 
+#ifndef _ASM_FILE_
 	#include <arch/core/k1b/core.h>
 	#include <nanvix/const.h>
-	#include <nanvix/klib.h>
+	#include <nanvix/hlib.h>
+#endif
 
 	/**
 	 * @brief Execution context size (in bytes).

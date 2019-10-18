@@ -54,7 +54,7 @@
 
 #ifndef _ASM_FILE_
 
-	#include <stdint.h>
+	#include <posix/stdint.h>
 
 	/*
 	 * Multiboot header.

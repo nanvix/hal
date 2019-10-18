@@ -25,7 +25,7 @@
 #include <nanvix/hal/core/exception.h>
 #include <arch/core/linux64/ctx.h>
 #include <nanvix/const.h>
-#include <nanvix/klib.h>
+#include <nanvix/hlib.h>
 
 EXTERN struct context linux64_create_context(void);
 

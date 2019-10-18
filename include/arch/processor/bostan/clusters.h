@@ -37,7 +37,7 @@
 /**@*/
 
 	#include <arch/processor/bostan/noc/dma.h>
-	#include <nanvix/klib.h>
+	#include <nanvix/hlib.h>
 
 	/**
 	 * @brief Number of IO Clusters in the platform.

@@ -37,7 +37,7 @@
 /**@{*/
 
 	#include <nanvix/const.h>
-	#include <stdint.h>
+	#include <posix/stdint.h>
 
 /*============================================================================*
  * Exported Interface                                                         *

@@ -27,7 +27,7 @@
 
 #include <nanvix/hal/target.h>
 #include <nanvix/const.h>
-#include <nanvix/klib.h>
+#include <nanvix/hlib.h>
 #include <string.h>
 #include <stdio.h>
 

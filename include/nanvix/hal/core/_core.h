@@ -59,7 +59,7 @@
 		#define __NEED_CORE_RV32GC
 		#include <arch/core/rv32gc.h>
 
-	#elif (defined(__linux64__))
+	#elif (defined(__linux64_core__))
 
 		#undef  __NEED_CORE_LINUX64
 		#define __NEED_CORE_LINUX64

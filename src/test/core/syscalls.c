@@ -23,7 +23,7 @@
  */
 
 #include <nanvix/const.h>
-#include <nanvix/klib.h>
+#include <nanvix/hlib.h>
 #include <nanvix/hal/core/trap.h>
 #include "../test.h"
 

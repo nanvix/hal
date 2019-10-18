@@ -26,10 +26,10 @@
 
 #include <nanvix/hal/processor.h>
 #include <nanvix/const.h>
-#include <nanvix/klib.h>
+#include <nanvix/hlib.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
-#include <sys/types.h>
+#include <posix/sys/types.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <semaphore.h>

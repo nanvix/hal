@@ -39,7 +39,7 @@
 
 	#include <arch/core/i486/pmio.h>
 	#include <nanvix/const.h>
-	#include <stdint.h>
+	#include <posix/stdint.h>
 
 	/**
 	 * @name Master LPIC Registers

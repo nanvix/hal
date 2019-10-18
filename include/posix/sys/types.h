@@ -22,12 +22,13 @@
  * SOFTWARE.
  */
 
+#ifndef __unix64__
+
 #ifndef TYPES_H_
 #define TYPES_H_
-
 #ifndef _ASM_FILE_
 
-	#include <stdint.h>
+	#include <posix/stdint.h>
 
 	/* Used for system times in timer ticks. */
 	typedef int timer_t;
@@ -64,11 +65,16 @@
 
 	#define __need_size_t
 	#define __need_ssize_t
-	#include <decl.h>
+	#include <posix/decl.h>
 
 	/* Used for user IDs. */
 	typedef int uid_t;
 
 #endif /* _ASM_FILE */
-
 #endif /* TYPES_H_ */
+
+#else
+
+#include <sys/types.h>
+
+#endif /* !__unix64__*/

@@ -42,7 +42,7 @@
 	#include <arch/core/i486/types.h>
 	#include <arch/core/i486/mmu.h>
 	#include <nanvix/const.h>
-	#include <stdint.h>
+	#include <posix/stdint.h>
 
 	/**
 	 * @brief Exception information size (in bytes).

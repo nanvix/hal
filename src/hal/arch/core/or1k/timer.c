@@ -31,8 +31,8 @@
 #define __NEED_OR1K_REGS
 #include <arch/core/or1k/regs.h>
 #include <nanvix/const.h>
-#include <nanvix/klib.h>
-#include <stdint.h>
+#include <nanvix/hlib.h>
+#include <posix/stdint.h>
 
 /**
  * @brief Was the timer device initialized?

@@ -31,7 +31,7 @@
  */
 /**@{*/
 
-	#include <stddef.h>
+	#include <posix/stddef.h>
 
 	/* Console colors. */
 	#define BLACK         0x00

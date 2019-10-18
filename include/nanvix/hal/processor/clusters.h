@@ -89,7 +89,7 @@
  */
 /**@{*/
 
-	#include <nanvix/klib.h>
+	#include <nanvix/hlib.h>
 
 	/**
 	 * @brief Total number of clusters in the processor.

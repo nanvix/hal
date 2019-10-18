@@ -157,7 +157,7 @@
 	 */
 	EXTERN struct memory_region mem_layout[MEM_REGIONS];
 
-#ifndef __NANVIX_HAL
+#ifdef __NANVIX_HAL
 
 	/**
 	 * @brief Lookups a TLB entry by virtual address.

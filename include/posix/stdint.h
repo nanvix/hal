@@ -30,13 +30,15 @@
  * is freely granted, provided that this notice is preserved.
  */
 
+#ifndef __unix64__
+
 #ifndef _STDINT_H
 #define _STDINT_H
 
 #ifndef _ASM_FILE_
 
 #include <machine/_default_types.h>
-#include <sys/_intsup.h>
+#include <posix/sys/_intsup.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -224,9 +226,9 @@ typedef __uintptr_t uintptr_t;
 #define INT8_MAX __INT8_MAX__
 #define UINT8_MAX __UINT8_MAX__
 #elif defined(__int8_t_defined)
-#define INT8_MIN 	-128
-#define INT8_MAX 	 127
-#define UINT8_MAX 	 255
+#define INT8_MIN     -128
+#define INT8_MAX      127
+#define UINT8_MAX      255
 #endif
 
 #ifdef __INT_LEAST8_MAX__
@@ -234,8 +236,8 @@ typedef __uintptr_t uintptr_t;
 #define INT_LEAST8_MAX __INT_LEAST8_MAX__
 #define UINT_LEAST8_MAX __UINT_LEAST8_MAX__
 #elif defined(__int_least8_t_defined)
-#define INT_LEAST8_MIN 	-128
-#define INT_LEAST8_MAX 	 127
+#define INT_LEAST8_MIN     -128
+#define INT_LEAST8_MAX      127
 #define UINT_LEAST8_MAX	 255
 #else
 #error required type int_least8_t missing
@@ -246,9 +248,9 @@ typedef __uintptr_t uintptr_t;
 #define INT16_MAX __INT16_MAX__
 #define UINT16_MAX __UINT16_MAX__
 #elif defined(__int16_t_defined)
-#define INT16_MIN 	-32768
-#define INT16_MAX 	 32767
-#define UINT16_MAX 	 65535
+#define INT16_MIN     -32768
+#define INT16_MAX      32767
+#define UINT16_MAX      65535
 #endif
 
 #ifdef __INT_LEAST16_MAX__
@@ -269,12 +271,12 @@ typedef __uintptr_t uintptr_t;
 #define UINT32_MAX __UINT32_MAX__
 #elif defined(__int32_t_defined)
 #if __have_long32
-#define INT32_MIN 	 (-2147483647L-1)
-#define INT32_MAX 	 2147483647L
+#define INT32_MIN      (-2147483647L-1)
+#define INT32_MAX      2147483647L
 #define UINT32_MAX       4294967295UL
 #else
-#define INT32_MIN 	 (-2147483647-1)
-#define INT32_MAX 	 2147483647
+#define INT32_MIN      (-2147483647-1)
+#define INT32_MAX      2147483647
 #define UINT32_MAX       4294967295U
 #endif
 #endif
@@ -303,13 +305,13 @@ typedef __uintptr_t uintptr_t;
 #define UINT64_MAX __UINT64_MAX__
 #elif defined(__int64_t_defined)
 #if __have_long64
-#define INT64_MIN 	(-9223372036854775807L-1L)
-#define INT64_MAX 	 9223372036854775807L
-#define UINT64_MAX 	18446744073709551615U
+#define INT64_MIN     (-9223372036854775807L-1L)
+#define INT64_MAX      9223372036854775807L
+#define UINT64_MAX     18446744073709551615U
 #elif __have_longlong64
-#define INT64_MIN 	(-9223372036854775807LL-1LL)
-#define INT64_MAX 	 9223372036854775807LL
-#define UINT64_MAX 	18446744073709551615ULL
+#define INT64_MIN     (-9223372036854775807LL-1LL)
+#define INT64_MAX      9223372036854775807LL
+#define UINT64_MAX     18446744073709551615ULL
 #endif
 #endif
 
@@ -420,7 +422,7 @@ typedef __uintptr_t uintptr_t;
 #define SIG_ATOMIC_MIN (-__STDINT_EXP(INT_MAX) - 1)
 #define SIG_ATOMIC_MAX __STDINT_EXP(INT_MAX)
 
-/* This must match ptrdiff_t  in <stddef.h> (currently long int) */
+/* This must match ptrdiff_t  in <posix/stddef.h> (currently long int) */
 #ifdef __PTRDIFF_MAX__
 #define PTRDIFF_MAX __PTRDIFF_MAX__
 #else
@@ -536,3 +538,9 @@ typedef __uintptr_t uintptr_t;
 
 #endif /* _ASM_FILE_ */
 #endif /* _STDINT_H */
+
+#else
+
+#include <stdint.h>
+
+#endif /* !__unix64__*/

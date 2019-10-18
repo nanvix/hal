@@ -24,6 +24,7 @@
 
 #ifndef NANVIX_CONST_H_
 #define NANVIX_CONST_H_
+#ifndef _ASM_FILE_
 
 	/* Must come first. */
 	#define __NEED_CC
@@ -39,8 +40,9 @@
 /**@{*/
 
 	#include <nanvix/cc.h>
-	#include <stdbool.h>
-	#include <stddef.h>
+
+	#include <posix/stdbool.h>
+	#include <posix/stddef.h>
 
 	/**
 	 * @name Scope Constants
@@ -62,4 +64,5 @@
 
 /**@}*/
 
+#endif /* _ASM_FILE_ */
 #endif /* NANVIX_CONST_H_ */

@@ -32,7 +32,7 @@
 	/* Processor API. */
 	#include <arch/target/kalray/mppa256/_mppa256.h>
 
-	#include <sys/types.h>
+	#include <posix/sys/types.h>
 	#include <nanvix/const.h>
 
 	/**

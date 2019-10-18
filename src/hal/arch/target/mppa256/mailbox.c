@@ -28,7 +28,7 @@
 #include <nanvix/hal/target.h>
 
 #include <nanvix/hal/resource.h>
-#include <nanvix/klib.h>
+#include <nanvix/hlib.h>
 #include <posix/errno.h>
 
 /*============================================================================*

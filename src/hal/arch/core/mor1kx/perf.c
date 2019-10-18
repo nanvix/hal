@@ -25,7 +25,7 @@
 #include <arch/core/mor1kx/perf.h>
 #include <nanvix/const.h>
 #include <posix/errno.h>
-#include <stdint.h>
+#include <posix/stdint.h>
 
 /**
  * @brief Asserts a valid performance monitor.

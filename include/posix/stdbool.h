@@ -46,6 +46,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
+#ifndef __unix64__
 #ifndef _STDBOOL_H
 #define _STDBOOL_H
 
@@ -73,3 +74,9 @@
 	#define __bool_true_false_are_defined 1
 
 #endif	/* STDBOOL_H_ */
+
+#else
+
+#include <stdbool.h>
+
+#endif /* !__unix64__*/

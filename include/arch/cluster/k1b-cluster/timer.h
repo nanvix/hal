@@ -36,7 +36,7 @@
  */
 /**@{*/
 
-	#include <stdint.h>
+	#include <posix/stdint.h>
 
 	/**
 	 * @brief Cluster frequency.

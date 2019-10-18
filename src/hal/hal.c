@@ -23,7 +23,7 @@
  */
 
 #include <nanvix/hal/hal.h>
-#include <nanvix/klib.h>
+#include <nanvix/hlib.h>
 
 /* Size checking. */
 #if (CONTEXT_SIZE % WORD_SIZE)

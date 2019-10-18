@@ -35,7 +35,7 @@
 
 	#include <arch/core/k1b/cache.h>
 	#include <arch/core/k1b/mOS.h>
-	#include <stdint.h>
+	#include <posix/stdint.h>
 
 	/**
 	 * @name Spinlock State

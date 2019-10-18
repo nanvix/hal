@@ -29,7 +29,7 @@
 #include <arch/core/rv32gc/lpic.h>
 #include <arch/core/rv32gc/regs.h>
 #include <nanvix/const.h>
-#include <nanvix/klib.h>
+#include <nanvix/hlib.h>
 #include <posix/errno.h>
 
 /**

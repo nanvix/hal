@@ -28,7 +28,7 @@
 #include <nanvix/hal/cluster.h>
 #include <arch/cluster/linux64-cluster.h>
 #include <nanvix/const.h>
-#include <nanvix/klib.h>
+#include <nanvix/hlib.h>
 #include <setjmp.h>
 
 /* Import definitions. */

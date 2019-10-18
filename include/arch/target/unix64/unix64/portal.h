@@ -37,7 +37,7 @@
 /**@{*/
 
 	#include <nanvix/const.h>
-	#include <sys/types.h>
+	#include <posix/sys/types.h>
 
 	/**
 	 * @name Maximum number of portal points.
@@ -178,6 +178,9 @@
 	#define __portal_open_fn   /**< portal_open()   */
 	#define __portal_unlink_fn /**< portal_unlink() */
 	#define __portal_close_fn  /**< portal_close()  */
+	#define __portal_wait_fn   /**< portal_wait()   */
+	#define __portal_awrite_fn /**< portal_write()  */
+	#define __portal_aread_fn  /**< portal_aread()  */
 	#define __portal_wait_fn   /**< portal_wait()   */
 	/**@}*/
 

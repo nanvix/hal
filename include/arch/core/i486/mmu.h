@@ -37,7 +37,7 @@
 /**@{*/
 
 	#include <arch/core/i486/types.h>
-	#include <nanvix/klib.h>
+	#include <nanvix/hlib.h>
 	#include <posix/errno.h>
 
 	/**

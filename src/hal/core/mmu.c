@@ -22,8 +22,10 @@
  * SOFTWARE.
  */
 
+#ifndef __unix64__
+
 #include <nanvix/const.h>
-#include <nanvix/klib.h>
+#include <nanvix/hlib.h>
 #include <nanvix/hal/core/_core.h>
 #include <nanvix/hal/core/mmu.h>
 
@@ -111,3 +113,7 @@ out:
 	else
 		return (void*)(vaddr + (paddr - paddr_aligned));
 }
+
+#else
+typedef int make_iso_compilers_happy;
+#endif

@@ -69,7 +69,7 @@
 /**@{*/
 
 	#include <nanvix/const.h>
-	#include <stdint.h>
+	#include <posix/stdint.h>
 
 	/**
 	 * @brief Writes 8 bits to an I/O port.

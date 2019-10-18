@@ -28,7 +28,7 @@
 #include <arch/stdout/jtag.h>
 #include <nanvix/hal/cluster.h>
 #include <nanvix/const.h>
-#include <nanvix/klib.h>
+#include <nanvix/hlib.h>
 
 /**
  * @brief Size of exception stack (in double words).

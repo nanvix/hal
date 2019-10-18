@@ -25,7 +25,7 @@
 #define __NEED_HAL_CLUSTER
 #include <nanvix/hal/cluster.h>
 #include <nanvix/const.h>
-#include <nanvix/klib.h>
+#include <nanvix/hlib.h>
 
 /* Import definitions. */
 EXTERN NORETURN void kmain(int, const char *[]);

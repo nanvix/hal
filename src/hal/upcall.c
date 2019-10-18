@@ -25,7 +25,7 @@
 #include <nanvix/hal/core/context.h>
 #include <nanvix/hal/core/upcall.h>
 #include <nanvix/const.h>
-#include <nanvix/klib.h>
+#include <nanvix/hlib.h>
 
 /**
  * The upcall_forge() creates a fake stack frame that enables an
