@@ -1,6 +1,7 @@
+#
 # MIT License
 #
-# Copyright(c) 2011-2019 The Maintainers of Nanvix
+# Copyright(c) 2018 Pedro Henrique Penna <pedrohenriquepenna@gmail.com>
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -19,8 +20,36 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+#
 
-# Binaries
-export EXECBIN = test-driver.optimsoc
+# Builds contrib.
+contrib: contrib-klib
 
-include build/makefile.qemu-openrisc
+# Builds contrib headers.
+contrib-headers: contrib-headers-klib
+
+# Cleans contrib.
+contrib-uninstall: contrib-uninstall-klib
+
+# Cleans contrib headers.
+contrib-uninstall-headers: contrib-uninstall-headers-klib
+
+#===============================================================================
+# Kernel Library
+#===============================================================================
+
+# Builds Kernel Library.
+contrib-klib: make-dirs
+	$(MAKE) -C $(CONTRIBDIR)/klib install PREFIX=$(ROOTDIR) RELEASE=$(RELEASE)
+
+# Builds Kernel Library headers.
+contrib-headers-klib: make-dirs
+	$(MAKE) -C $(CONTRIBDIR)/klib install-headers PREFIX=$(ROOTDIR) RELEASE=$(RELEASE)
+
+# Cleans Kernel Library.
+contrib-uninstall-klib:
+	$(MAKE) -C $(CONTRIBDIR)/klib uninstall PREFIX=$(ROOTDIR) RELEASE=$(RELEASE)
+
+# Cleans Kernel Library headers.
+contrib-uninstall-headers-klib:
+	$(MAKE) -C $(CONTRIBDIR)/klib uninstall-headers PREFIX=$(ROOTDIR) RELEASE=$(RELEASE)

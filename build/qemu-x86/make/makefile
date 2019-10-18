@@ -28,6 +28,13 @@
 
 export TARGET    ?= qemu-x86
 export PROCESSOR := x86
+export CLUSTER   := x86-cluster
+export CORE      := i486
+
+export CFLAGS := -D __qemu_x86__    # Target
+export CFLAGS += -D __x86__         # Processor
+export CFLAGS += -D __x86_cluster__ # Cluster
+export CFLAGS += -D __i486__        # Core
 
 #===============================================================================
 # Toolchain Configuration
@@ -37,34 +44,45 @@ export PROCESSOR := x86
 export TOOLCHAIN_DIR ?= $(TOOLSDIR)/toolchain/i486/bin
 
 # Toolchain
-export CC = $(TOOLCHAIN_DIR)/i486-elf-gcc
-export LD = $(TOOLCHAIN_DIR)/i486-elf-ld
-export AR = $(TOOLCHAIN_DIR)/i486-elf-ar
+export CC := $(TOOLCHAIN_DIR)/i486-elf-gcc
+export LD := $(TOOLCHAIN_DIR)/i486-elf-ld
+export AR := $(TOOLCHAIN_DIR)/i486-elf-ar
 
 # Timeout Variable
 export TIMEOUT ?= 5
 
 # Compiler Options
-export CFLAGS  = -D __qemu_x86__ -D __x86__
 export CFLAGS += -nostdlib -nostdinc -ffreestanding
 export CFLAGS += -ansi -pedantic-errors
 export CFLAGS += -Wstack-usage=4096
 export CFLAGS += -D __HAS_HW_DIVISION
 export CFLAGS += -D __INTERFACE_CHECK_CORE_AL
-export CFLAGS += -D __INTERFACE_CHECK_EVENT
-export CFLAGS += -D __INTERFACE_CHECK_MEMORY
+export CFLAGS += -D __INTERFACE_CHECK_CLUSTER_AL
 export CFLAGS += -D __INTERFACE_CHECK_PROCESSOR_AL
 export CFLAGS += -D __INTERFACE_CHECK_TARGET_AL
-export CFLAGS += -I $(INCDIR)/posix
 
 # Linker Options
-export LDFLAGS  =
+export LDFLAGS := -nostdlib -nostdinc -ffreestanding
+
+# Suffix for Objects
+export OBJ_SUFFIX := qemu-x86
 
 #===============================================================================
-# Libraries and Binaries
-#===============================================================================
-
 # Libraries
-export LIBHAL = libhal-$(TARGET).a
-export LIBS = $(LIBDIR)/$(LIBHAL)
+#===============================================================================
 
+export THEIR_LIBS := -lgcc
+
+#===============================================================================
+
+# Builds everything.
+all-target: make-dirs
+	@$(MAKE) -C $(SRCDIR) all
+
+# Cleans object files.
+clean-target:
+	@$(MAKE) -C $(SRCDIR) clean
+
+# Cleans everything.
+distclean-target:
+	@$(MAKE) -C $(SRCDIR) distclean

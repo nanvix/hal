@@ -28,6 +28,13 @@
 
 export TARGET    ?= qemu-riscv32
 export PROCESSOR := riscv32
+export CLUSTER   := riscv32-cluster
+export CORE      := rv32gc
+
+export CFLAGS := -D __qemu_riscv32__    # Target
+export CFLAGS += -D __riscv32__         # Processor
+export CFLAGS += -D __riscv32_cluster__ # Cluster
+export CFLAGS += -D __rv32gc__          # Core
 
 #===============================================================================
 # Toolchain Configuration
@@ -37,36 +44,50 @@ export PROCESSOR := riscv32
 export TOOLCHAIN_DIR ?= $(TOOLSDIR)/toolchain/riscv32/bin
 
 # Toolchain
-export CC = $(TOOLCHAIN_DIR)/riscv32-elf-gcc
-export LD = $(TOOLCHAIN_DIR)/riscv32-elf-ld
-export AR = $(TOOLCHAIN_DIR)/riscv32-elf-ar
+export CC := $(TOOLCHAIN_DIR)/riscv32-elf-gcc
+export LD := $(TOOLCHAIN_DIR)/riscv32-elf-ld
+export AR := $(TOOLCHAIN_DIR)/riscv32-elf-ar
 
 # Timeout Variable
 export TIMEOUT ?= 5
 
 # Compiler Options
-export CFLAGS  = -D __qemu_riscv32__ -D__riscv32__
-export CFAGS  += -march=rv32imafdc -mabi=ilp32
-export CFLAGS += -mcmodel=medany
+export CFLAGS += -march=rv32imac -mabi=ilp32 -mcmodel=medany
+export CFLAGS += -ffunction-sections -fdata-sections
 export CFLAGS += -nostdlib -nostdinc -ffreestanding
 export CFLAGS += -ansi -pedantic-errors
 export CFLAGS += -Wstack-usage=4096
+export CFLAGS += -Wno-error=type-limits
 export CFLAGS += -D __HAS_HW_DIVISION
 export CFLAGS += -D __INTERFACE_CHECK_CORE_AL
-export CFLAGS += -D __INTERFACE_CHECK_EVENT
-export CFLAGS += -D __INTERFACE_CHECK_MEMORY
+export CFLAGS += -D __INTERFACE_CHECK_CLUSTER_AL
 export CFLAGS += -D __INTERFACE_CHECK_PROCESSOR_AL
 export CFLAGS += -D __INTERFACE_CHECK_TARGET_AL
-export CFLAGS += -I $(INCDIR)/posix
 
 # Linker Options
-export LDFLAGS   = -march=rv32imafdc -mabi=ilp32 -mcmodel=medany
-export LDFLAGS  += -nostdlib -nostdinc -Wl,--nmagic -Wl,--gc-sections
+export LDFLAGS := -march=rv32imac -mabi=ilp32 -mcmodel=medany
+export LDFLAGS += -Wl,--nmagic -Wl,--gc-sections
+export LDFLAGS += -nostdlib -nostdinc -ffreestanding
+
+# Suffix for Objects
+export OBJ_SUFFIX := qemu-riscv32
 
 #===============================================================================
-# Libraries and Binaries
-#===============================================================================
-
 # Libraries
-export LIBHAL = libhal-$(TARGET).a
-export LIBS = $(LIBDIR)/$(LIBHAL) -lgcc
+#===============================================================================
+
+export THEIR_LIBS := -lgcc
+
+#===============================================================================
+
+# Builds everything.
+all-target: make-dirs
+	@$(MAKE) -C $(SRCDIR) all
+
+# Cleans object files.
+clean-target:
+	@$(MAKE) -C $(SRCDIR) clean
+
+# Cleans everything.
+distclean-target:
+	@$(MAKE) -C $(SRCDIR) distclean

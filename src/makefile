@@ -1,3 +1,4 @@
+#
 # MIT License
 #
 # Copyright(c) 2011-2019 The Maintainers of Nanvix
@@ -19,21 +20,54 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+#
 
 #===============================================================================
-# Target Configuration
+# Conflicts
 #===============================================================================
 
-export CLUSTER = riscv32-cluster
-export CORE = rv32gc
-
-#===============================================================================
-# Toolchain Configuration
-#===============================================================================
-
-# Compiler Options
-export CFLAGS += -D __riscv32_cluster__ -D__rv32gc__
+.PHONY: hal
+.PHONY: test
 
 #===============================================================================
 
-include $(SRCDIR)/build/makefile.nanvix
+# Builds Everything
+all: all-hal all-test
+
+# Cleans Build Objects
+clean: clean-hal clean-test
+
+# Cleans Everything
+distclean: distclean-hal distclean-test
+
+#===============================================================================
+# test 
+#===============================================================================
+
+# Builds The Test Driver
+all-test: all-hal
+	$(MAKE) -C test all
+
+# Cleans Test Driver Build Objects
+clean-test:
+	$(MAKE) -C test clean
+
+# Cleans Test Driver Build
+distclean-test:
+	$(MAKE) -C test distclean
+
+#===============================================================================
+# hal
+#===============================================================================
+
+# Builds the Kernel
+all-hal:
+	$(MAKE) -C hal all
+
+# Cleans Kernel Build Objects
+clean-hal:
+	$(MAKE) -C hal clean
+
+# Cleans Kernel Build
+distclean-hal:
+	$(MAKE) -C hal distclean

@@ -27,7 +27,15 @@
 #===============================================================================
 
 export TARGET    ?= qemu-openrisc
-export PROCESSOR := or1k
+export PROCESSOR := or1k-processor
+export CLUSTER   := or1k-cluster
+export CORE      := or1k
+
+export CFLAGS := -D __qemu_openrisc__ # Target
+export CFLAGS += -D __openrisc__      # Processor
+export CFLAGS += -D __or1k_cluster__  # Cluster
+export CFLAGS += -D __or1k__          # Core
+export CFLAGS += -D __or1200__        # Core Variant
 
 #===============================================================================
 # Toolchain Configuration
@@ -37,35 +45,46 @@ export PROCESSOR := or1k
 export TOOLCHAIN_DIR ?= $(TOOLSDIR)/toolchain/or1k/bin/
 
 # Toolchain
-export CC = $(TOOLCHAIN_DIR)/or1k-elf-gcc
-export LD = $(TOOLCHAIN_DIR)/or1k-elf-ld
-export AR = $(TOOLCHAIN_DIR)/or1k-elf-ar
+export CC := $(TOOLCHAIN_DIR)/or1k-elf-gcc
+export LD := $(TOOLCHAIN_DIR)/or1k-elf-ld
+export AR := $(TOOLCHAIN_DIR)/or1k-elf-ar
 
 # Timeout Variable
 export TIMEOUT ?= 10
 
 # Compiler Options
-export CFLAGS  = -D __qemu_openrisc__ -D__openrisc__
 export CFLAGS += -nostdlib -nostdinc -ffreestanding
 export CFLAGS += -ansi -pedantic-errors
 export CFLAGS += -Wstack-usage=4096
 export CFLAGS += -Wno-type-limits
-export CFLAGS += -Wno-missing-profile
 export CFLAGS += -D __HAS_HW_DIVISION
 export CFLAGS += -D __INTERFACE_CHECK_CORE_AL
-export CFLAGS += -D __INTERFACE_CHECK_EVENT
-export CFLAGS += -D __INTERFACE_CHECK_MEMORY
+export CFLAGS += -D __INTERFACE_CHECK_CLUSTER_AL
 export CFLAGS += -D __INTERFACE_CHECK_PROCESSOR_AL
 export CFLAGS += -D __INTERFACE_CHECK_TARGET_AL
-export CFLAGS += -I $(INCDIR)/posix
 
 # Linker Options
-export LDFLAGS  =
+export LDFLAGS := -nostdlib -nostdinc -ffreestanding
+
+# Suffix for Objects
+export OBJ_SUFFIX := qemu-openrisc
 
 #===============================================================================
-# Libraries and Binaries
-#===============================================================================
-
 # Libraries
-export LIBHAL = libhal-$(TARGET).a
-export LIBS = $(LIBDIR)/$(LIBHAL)
+#===============================================================================
+
+export THEIR_LIBS := -lgcc
+
+#===============================================================================
+
+# Builds everything.
+all-target: make-dirs
+	@$(MAKE) -C $(SRCDIR) all
+
+# Cleans object files.
+clean-target:
+	@$(MAKE) -C $(SRCDIR) clean
+
+# Cleans everything.
+distclean-target:
+	@$(MAKE) -C $(SRCDIR) distclean
