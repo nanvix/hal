@@ -38,7 +38,7 @@
 
 	#include <arch/core/linux64/core.h>
 	#include <nanvix/const.h>
-	#include <nanvix/klib.h>
+	#include <nanvix/hlib.h>
 
 	/**
 	 * @brief Execution context size (in bytes).

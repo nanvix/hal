@@ -37,7 +37,7 @@
 /**@{*/
 
 	#include <arch/stdout/console.h>
-	#include <sys/types.h>
+	#include <posix/sys/types.h>
 
 	/**
 	 * @see console_init()

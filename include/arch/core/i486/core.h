@@ -38,7 +38,7 @@
 
 	#include <arch/core/i486/types.h>
 	#include <nanvix/const.h>
-	#include <stdint.h>
+	#include <posix/stdint.h>
 
 #ifndef _ASM_FILE_
 

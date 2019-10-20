@@ -37,7 +37,7 @@
 /**@{*/
 
 	#include <arch/stdout/jtag.h>
-	#include <sys/types.h>
+	#include <posix/sys/types.h>
 
 	/**
 	 * @see jtag_init().

@@ -39,9 +39,9 @@
 
 	#include <arch/core/or1k/types.h>
 	#include <arch/core/or1k/regs.h>
-	#include <nanvix/klib.h>
+	#include <nanvix/hlib.h>
 	#include <posix/errno.h>
-	#include <stdint.h>
+	#include <posix/stdint.h>
 
 	/**
 	 * @name Page Shifts and Masks

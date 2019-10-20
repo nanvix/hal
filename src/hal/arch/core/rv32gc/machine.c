@@ -33,7 +33,7 @@
 #include <arch/core/rv32gc/mcall.h>
 #include <arch/core/rv32gc/types.h>
 #include <nanvix/const.h>
-#include <nanvix/klib.h>
+#include <nanvix/hlib.h>
 #include <posix/errno.h>
 
 /**

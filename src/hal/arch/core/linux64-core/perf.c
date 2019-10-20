@@ -27,10 +27,10 @@
 
 #include <arch/core/linux64/types.h>
 #include <arch/core/linux64/perf.h>
-#include <nanvix/klib.h>
+#include <nanvix/hlib.h>
 #include <sys/ioctl.h>
 #include <syscall.h>
-#include <stdint.h>
+#include <posix/stdint.h>
 #include <unistd.h>
 #include <posix/errno.h>
 

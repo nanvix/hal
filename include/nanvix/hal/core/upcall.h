@@ -60,7 +60,7 @@
 
 	#include <nanvix/hal/core/context.h>
 	#include <nanvix/const.h>
-	#include <nanvix/klib.h>
+	#include <nanvix/hlib.h>
 
 	/**
 	 * @name Offsets to the Upcall Stack Frame

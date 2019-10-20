@@ -22,12 +22,14 @@
  * SOFTWARE.
  */
 
+#ifndef __unix64__
+
 /* Must come first. */
 #define __NEED_HAL_CORE
 
 #include <nanvix/hal/core.h>
 #include <nanvix/const.h>
-#include <nanvix/klib.h>
+#include <nanvix/hlib.h>
 
 /*============================================================================*
  * core_halt()                                                                *
@@ -71,3 +73,7 @@ PUBLIC void core_setup(void *stack)
 	perf_setup();
 	ivt_setup(stack);
 }
+
+#else
+typedef int make_iso_compilers_happy;
+#endif

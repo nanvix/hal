@@ -24,8 +24,8 @@
 
 #include <nanvix/hal/hal.h>
 #include <nanvix/const.h>
-#include <nanvix/klib.h>
-#include <stdint.h>
+#include <nanvix/hlib.h>
+#include <posix/stdint.h>
 #include "../test.h"
 
 /**

@@ -46,6 +46,14 @@
 	#include <arch/target/unix64/unix64/portal.h>
 	#include <arch/target/unix64/unix64/stdout.h>
 
+	/**
+	 * @brief Frequency (in MHz).
+	 *
+	 * @note This is CLOCKS_PER_SEC but hard coded.
+	 * @todo TODO: remove hard coded value.
+	 */
+	#define UNIX64_FREQUENCY 1000
+
 #ifdef __NANVIX_HAL
 
 	/**
@@ -78,6 +86,13 @@
 	#define __TARGET_HAS_SYNC    1 /**< Synchronization feature */
 	#define __TARGET_HAS_MAILBOX 1 /**< Mailbox feature         */
 	#define __TARGET_HAS_PORTAL  1 /**< Portal feature          */
+	/**@}*/
+
+	/**
+	 * @name Exported Constants
+	 */
+	/**@{*/
+	#define TARGET_FREQUENCY UNIX64_FREQUENCY
 	/**@}*/
 
 	/**

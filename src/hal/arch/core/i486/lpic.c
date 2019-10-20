@@ -28,7 +28,7 @@
 #include <arch/core/i486/pmio.h>
 #include <nanvix/const.h>
 #include <posix/errno.h>
-#include <stdint.h>
+#include <posix/stdint.h>
 
 /**
  * @brief Masks of interrupt levels.

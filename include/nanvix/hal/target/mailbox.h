@@ -102,7 +102,7 @@
 /**@{*/
 
 	#include <nanvix/const.h>
-	#include <nanvix/klib.h>
+	#include <nanvix/hlib.h>
 	#include <posix/errno.h>
 
 #ifdef __NANVIX_HAL

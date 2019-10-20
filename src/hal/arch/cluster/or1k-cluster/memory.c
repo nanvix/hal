@@ -32,7 +32,7 @@
 
 #include <nanvix/hal/cluster/memory.h>
 #include <nanvix/hal/core/exception.h>
-#include <nanvix/klib.h>
+#include <nanvix/hlib.h>
 #include <nanvix/const.h>
 
 /**

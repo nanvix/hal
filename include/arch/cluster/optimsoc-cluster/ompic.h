@@ -31,7 +31,7 @@
 #ifndef _ASM_FILE_
 
 	#include <nanvix/const.h>
-	#include <stdint.h>
+	#include <posix/stdint.h>
 
 	/* External functions. */
 	EXTERN void or1k_cluster_ompic_init(void);

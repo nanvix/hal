@@ -25,9 +25,9 @@
 #include <nanvix/hal/target/stdout.h>
 #include <nanvix/hal/log.h>
 #include <nanvix/const.h>
-#include <nanvix/klib.h>
-#include <sys/types.h>
-#include <stdint.h>
+#include <nanvix/hlib.h>
+#include <posix/sys/types.h>
+#include <posix/stdint.h>
 
 /**
  * @brief HAL log.

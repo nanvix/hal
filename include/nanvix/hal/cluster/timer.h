@@ -65,7 +65,7 @@
 /**@{*/
 
 	#include <nanvix/const.h>
-	#include <stdint.h>
+	#include <posix/stdint.h>
 
 	/**
 	 * @brief Simulated clock for architectures that do not

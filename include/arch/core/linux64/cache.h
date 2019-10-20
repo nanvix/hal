@@ -33,7 +33,7 @@
  */
 /**@{*/
 
-	#include <nanvix/klib.h>
+	#include <nanvix/hlib.h>
 	#include <stdlib.h>
 
 	/**

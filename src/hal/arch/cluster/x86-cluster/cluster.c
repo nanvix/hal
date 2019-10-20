@@ -28,7 +28,7 @@
 #include <nanvix/hal/cluster.h>
 #include <nanvix/hal/target/stdout.h>
 #include <nanvix/const.h>
-#include <nanvix/klib.h>
+#include <nanvix/hlib.h>
 
 /* Import definitions. */
 EXTERN NORETURN void kmain(int, const char *[]);

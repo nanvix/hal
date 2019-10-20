@@ -39,9 +39,9 @@
 
 	#include <arch/core/k1b/elf.h>
 	#include <arch/core/k1b/types.h>
-	#include <nanvix/klib.h>
+	#include <nanvix/hlib.h>
 	#include <posix/errno.h>
-	#include <stdint.h>
+	#include <posix/stdint.h>
 
 	/**
 	 * @name Page Shifts and Masks

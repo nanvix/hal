@@ -25,8 +25,8 @@
 #include <nanvix/hal/hal.h>
 #include <arch/stdout/console.h>
 #include <nanvix/const.h>
-#include <stddef.h>
-#include <stdint.h>
+#include <posix/stddef.h>
+#include <posix/stdint.h>
 
 /**
  * @brief Hardware cursor.

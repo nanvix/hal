@@ -41,7 +41,7 @@
 	#include <arch/core/k1b/ctx.h>
 	#include <arch/core/k1b/types.h>
 	#include <nanvix/const.h>
-	#include <nanvix/klib.h>
+	#include <nanvix/hlib.h>
 
 	/**
 	 * @brief Exception information size (in bytes).

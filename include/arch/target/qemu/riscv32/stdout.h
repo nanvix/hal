@@ -37,7 +37,7 @@
 /**@{*/
 
 	#include <arch/stdout/16550a.h>
-	#include <sys/types.h>
+	#include <posix/sys/types.h>
 
 	/**
 	 * @see uart8250_init()

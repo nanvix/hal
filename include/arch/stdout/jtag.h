@@ -31,8 +31,8 @@
  */
 /**@{*/
 
-	#include <stddef.h>
-	#include <stdint.h>
+	#include <posix/stddef.h>
+	#include <posix/stdint.h>
 
 	/**
 	 * @brief Size of JTAG buffer (in bytes).

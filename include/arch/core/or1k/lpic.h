@@ -43,7 +43,7 @@
 	#include <arch/core/or1k/regs.h>
 	#include <nanvix/const.h>
 	#include <posix/errno.h>
-	#include <stdint.h>
+	#include <posix/stdint.h>
 
 	/**
 	 * @brief Number of Interrupt Request (IRQ) lines.

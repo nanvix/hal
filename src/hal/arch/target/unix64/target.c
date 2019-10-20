@@ -27,7 +27,7 @@
 
 #include <arch/target/unix64/unix64.h>
 #include <nanvix/const.h>
-#include <nanvix/klib.h>
+#include <nanvix/hlib.h>
 
 /**
  * @todo TODO: Provide a detailed description for this function.

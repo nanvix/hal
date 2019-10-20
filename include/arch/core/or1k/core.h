@@ -38,7 +38,7 @@
 	#include <arch/core/or1k/spinlock.h>
 	#include <arch/core/or1k/types.h>
 	#include <nanvix/const.h>
-	#include <stdint.h>
+	#include <posix/stdint.h>
 
 #ifndef _ASM_FILE_
 

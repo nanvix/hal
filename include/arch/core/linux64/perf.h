@@ -35,7 +35,7 @@
 
 	#include <nanvix/const.h>
 	#include <linux/perf_event.h>
-	#include <stdint.h>
+	#include <posix/stdint.h>
 
 	/**
 	 * @brief Number of performance events.

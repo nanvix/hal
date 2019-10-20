@@ -26,7 +26,7 @@
 
 #include <arch/core/i486/ctx.h>
 #include <nanvix/const.h>
-#include <nanvix/klib.h>
+#include <nanvix/hlib.h>
 
 /**
  * @todo TODO provide a detailed description for this function.

@@ -22,27 +22,37 @@
  * SOFTWARE.
  */
 
+#include <nanvix/hal/hal.h>
 #include <nanvix/const.h>
-#include <nanvix/klib.h>
-#include <stdarg.h>
+#include <nanvix/hlib.h>
+#include <posix/stdarg.h>
 
 /**
- * @brief Writes a formated string on the kernels's output device.
- *
- * @param fmt Formated string.
+ * The kpanic() function writes the formatted message pointed to by @p
+ * fmt to the standard output device and panics the kernel. In panic
+ * mode, all interrupts are disabled in the underlying core, and
+ * execution loops indefinitely.
  */
-PUBLIC void kprintf(const char *fmt, ...)
+PUBLIC NORETURN void kpanic(const char *fmt, ...)
 {
 	size_t len;                    /* String length.           */
 	va_list args;                  /* Variable arguments list. */
 	char buffer[KBUFFER_SIZE + 1]; /* Temporary buffer.        */
 
+	kstrncpy(buffer, "PANIC: ", 7);
+
 	/* Convert to raw string. */
 	va_start(args, fmt);
-	len = kvsprintf(buffer, fmt, args);
+	len = kvsprintf(buffer + 7, fmt, args) + 7;
 	buffer[len++] = '\n';
 	buffer[len++] = '\0';
 	va_end(args);
 
 	kputs(buffer);
+
+	/* I don't want to be troubled. */
+	interrupts_disable();
+
+	/* Stay here, forever. */
+	UNREACHABLE();
 }

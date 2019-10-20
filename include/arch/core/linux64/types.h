@@ -30,7 +30,7 @@
 	#error "do not include this file"
 #endif
 
-	#include <stdint.h>
+	#include <posix/stdint.h>
 
 /**
  * @addtogroup linux64-core

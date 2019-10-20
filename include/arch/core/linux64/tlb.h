@@ -34,7 +34,6 @@
 /**@{*/
 
 	#include <arch/core/linux64/mmu.h>
-	#include <nanvix/klib.h>
 	#include <posix/errno.h>
 
 	/**
@@ -105,7 +104,7 @@
 		{
 			unsigned status       :  2; /**< Entry Status (ES)          */
 			unsigned cache_policy : 22; /**< Cache Policy (CP)          */
-			unsigned protection   :  4; /**< Protection Attributes (PA) */ 
+			unsigned protection   :  4; /**< Protection Attributes (PA) */
 			unsigned addr_ext     :  4; /**< Address Extension (AE)     */
 			uint64_t frame        : 42; /**< Frame Number (FN)          */
 			unsigned addrspace    :  9; /**< Address Space Number (ANS) */
@@ -157,7 +156,7 @@
 
 	/**
 	 * @brief Gets the tlbe entry index on TLB structure.
-	 * 
+	 *
 	 * @param vaddr Target virtual address.
 	 * @param shift Page shift.
 	 * @param way   Target set-associative way.
@@ -185,7 +184,7 @@
 	{
 		return (tlbe->status != LINUX64_TLBE_STATUS_INVALID);
 	}
-	
+
 	/**
 	 * @brief Writes a TLB entry.
 	 *
@@ -195,7 +194,7 @@
 	 * @param shift      Page shift.
 	 * @param way        Target set-associative way.
 	 * @param protection Protection attributes.
-	 * 
+	 *
 	 * @return Zero if successfully writes a TLB entry,
 	 * non zero otherwise.
 	 */
@@ -213,7 +212,7 @@
 	 * @param vaddr Target virtual address.
 	 * @param shift Page shift.
 	 * @param way   Target set-associative way.
-	 * 
+	 *
 	 * @return Zero if successfully writes a TLB entry,
 	 * non zero otherwise.
 	 */
@@ -307,7 +306,7 @@
 		/* Invalid TLB type. */
 		if ((tlb_type != LINUX64_TLB_INSTRUCTION) && (tlb_type != LINUX64_TLB_DATA))
 			return (-EINVAL);
-		
+
 		UNUSED(vadd_info);
 
 		return (linux64_tlbe_write(tlbe, vaddr, paddr, LINUX64_TLBE_PROT_RW));

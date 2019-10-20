@@ -27,7 +27,15 @@
 #===============================================================================
 
 export TARGET    ?= optimsoc
-export PROCESSOR := optimsoc
+export PROCESSOR := optimsoc4
+export CLUSTER   := or1k-cluster
+export CORE      := mor1kx
+
+export CFLAGS := -D __optimsoc__         # Target
+export CFLAGS += -D __optimsoc4__        # Processor
+export CFLAGS += -D __optimsoc_cluster__ # Cluster
+export CFLAGS += -D __or1k__             # Core
+export CFLAGS += -D __mor1kx__           # Core Variant
 
 #===============================================================================
 # Toolchain Configuration
@@ -37,33 +45,45 @@ export PROCESSOR := optimsoc
 export TOOLCHAIN_DIR ?= $(TOOLSDIR)/toolchain/or1k/bin/
 
 # Toolchain
-export CC = $(TOOLCHAIN_DIR)/or1k-elf-gcc
-export LD = $(TOOLCHAIN_DIR)/or1k-elf-ld
-export AR = $(TOOLCHAIN_DIR)/or1k-elf-ar
+export CC := $(TOOLCHAIN_DIR)/or1k-elf-gcc
+export LD := $(TOOLCHAIN_DIR)/or1k-elf-ld
+export AR := $(TOOLCHAIN_DIR)/or1k-elf-ar
 
 # Compiler Options
-export CFLAGS  = -D __optimsoc__ -D__optimsoc4__
 export CFLAGS += -nostdlib -nostdinc -ffreestanding
 export CFLAGS += -ansi -pedantic-errors
 export CFLAGS += -Wstack-usage=4096
-export CFLAGS += -Wno-missing-profile
+export CFLAGS += -Wno-type-limits
 export CFLAGS += -D __INTERFACE_CHECK_CORE_AL
-export CFLAGS += -D __INTERFACE_CHECK_EVENT
-export CFLAGS += -D __INTERFACE_CHECK_MEMORY
+export CFLAGS += -D __INTERFACE_CHECK_CLUSTER_AL
 export CFLAGS += -D __INTERFACE_CHECK_PROCESSOR_AL
 export CFLAGS += -D __INTERFACE_CHECK_TARGET_AL
-export CFLAGS += -I $(INCDIR)/posix
 
 # Timeout Variable
 export TIMEOUT ?= 5
 
 # Linker Options
-export LDFLAGS  =
+export LDFLAGS := -nostdlib -nostdinc -ffreestanding
+
+# Suffix for Objects
+export OBJ_SUFFIX := optimsoc
 
 #===============================================================================
-# Libraries and Binaries
-#===============================================================================
-
 # Libraries
-export LIBHAL = libhal-$(TARGET).a
-export LIBS = $(LIBDIR)/$(LIBHAL)
+#===============================================================================
+
+export THEIR_LIBS := -lgcc
+
+#===============================================================================
+
+# Builds everything.
+all-target: make-dirs
+	@$(MAKE) -C $(SRCDIR) all
+
+# Cleans object files.
+clean-target:
+	@$(MAKE) -C $(SRCDIR) clean
+
+# Cleans everything.
+distclean-target:
+	@$(MAKE) -C $(SRCDIR) distclean

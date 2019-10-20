@@ -1,3 +1,4 @@
+#
 # MIT License
 #
 # Copyright(c) 2011-2019 The Maintainers of Nanvix
@@ -19,6 +20,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+#
 
 #
 # Default make rule.
@@ -32,6 +34,12 @@
 # Verbose build?
 export VERBOSE ?= no
 
+# Release Version?
+export RELEASE ?= no
+
+# Installation Prefix
+export PREFIX ?= $(HOME)
+
 # Run Arguments
 export RUN_ARGS ?= "--all"
 
@@ -39,22 +47,57 @@ export RUN_ARGS ?= "--all"
 # Directories
 #===============================================================================
 
-# Directories
-export BINDIR    := $(CURDIR)/bin
-export BUILDDIR  := $(CURDIR)/build
-export LINKERDIR := $(BUILDDIR)/$(TARGET)/linker
-export MAKEDIR   := $(BUILDDIR)/$(TARGET)/make
-export DOCDIR    := $(CURDIR)/doc
-export INCDIR    := $(CURDIR)/include
-export IMGDIR    := $(CURDIR)/img
-export LIBDIR    := $(CURDIR)/lib
-export SRCDIR    := $(CURDIR)/src
-export TOOLSDIR  := $(CURDIR)/utils
+export ROOTDIR    := $(CURDIR)
+export BINDIR     := $(ROOTDIR)/bin
+export BUILDDIR   := $(ROOTDIR)/build
+export CONTRIBDIR := $(ROOTDIR)/contrib
+export DOCDIR     := $(ROOTDIR)/doc
+export IMGDIR     := $(ROOTDIR)/img
+export INCDIR     := $(ROOTDIR)/include
+export LIBDIR     := $(ROOTDIR)/lib
+export LINKERDIR  := $(BUILDDIR)/$(TARGET)/linker
+export MAKEDIR    := $(BUILDDIR)/$(TARGET)/make
+export SRCDIR     := $(ROOTDIR)/src
+export TOOLSDIR   := $(ROOTDIR)/utils
 
 #===============================================================================
+# Libraries and Binaries
+#===============================================================================
 
+# Libraries
+export KLIB   = klib-$(TARGET).a
+export LIBHAL = libhal-$(TARGET).a
+
+# Binaries
+export EXEC := test-driver.$(TARGET)
+
+#===============================================================================
 # Target-Specific Make Rules
+#===============================================================================
+
 include $(MAKEDIR)/makefile
+
+#===============================================================================
+# Toolchain Configuration
+#===============================================================================
+
+# Compiler Options
+export CFLAGS += -std=c99 -fno-builtin
+export CFLAGS += -Wall -Wextra -Werror -Wa,--warn
+export CFLAGS += -Winit-self -Wswitch-default -Wfloat-equal
+export CFLAGS += -Wundef -Wshadow -Wuninitialized -Wlogical-op
+export CFLAGS += -Wvla # -Wredundant-decls
+export CFLAGS += -Wno-missing-profile
+export CFLAGS += -fno-stack-protector
+export CFLAGS += -Wno-unused-function
+export CFLAGS += -I $(INCDIR)
+export CFLAGS += -D__NANVIX_HAL
+
+# Additional C Flags
+include $(BUILDDIR)/makefile.cflags
+
+# Archiver Options
+export ARFLAGS = rc
 
 #===============================================================================
 
@@ -65,35 +108,34 @@ export IMGSRC = $(IMGDIR)/$(TARGET).img
 export IMAGE = hal-debug.img
 
 # Builds everything.
-all: image
-
-# Builds image.
-image: hal-target
-	@bash $(TOOLSDIR)/nanvix-build-image.sh $(IMAGE) $(BINDIR) $(IMGSRC)
+all: | make-dirs image
 
 # Make directories
 make-dirs:
 	@mkdir -p $(BINDIR)
 	@mkdir -p $(LIBDIR)
 
-# Builds HAL.
-hal-target: make-dirs
-	@$(MAKE) -C $(SRCDIR) -f build/processor/makefile.$(PROCESSOR) all
+# Builds image.
+image: all-target
+	@bash $(TOOLSDIR)/nanvix-build-image.sh $(IMAGE) $(BINDIR) $(IMGSRC)
+
+# Cleans build.
+clean: clean-target
 
 # Cleans everything.
 distclean: distclean-target
-	@rm -rf $(IMAGE) $(BINDIR)/$(EXECBIN)
-	@rm -rf $(BINDIR) $(LIBDIR)
-	@find $(SRCDIR) -name "*.o" -exec rm -rf {} \;
-
-# Cleans compilation files.
-distclean-target:
-	@$(MAKE) -C $(SRCDIR) -f build/processor/makefile.$(PROCESSOR) distclean
+	@rm -rf $(IMAGE) $(BINDIR)/$(EXECBIN) $(LIBDIR)/$(LIBHAL)
 
 # Builds documentation.
 documentation:
 	mkdir -p $(DOCDIR)
 	doxygen doxygen/doxygen.$(TARGET)
+
+#===============================================================================
+# Contrib Install and Uninstall Rules
+#===============================================================================
+
+include $(BUILDDIR)/makefile.contrib
 
 #===============================================================================
 # Install and Uninstall Rules

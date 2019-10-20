@@ -22,3 +22,12 @@ tags
 *.swp
 *.swo
 *.vscode/
+
+# KLib Headers
+include/nanvix/klib.h
+include/posix/decl.h
+include/posix/stdarg.h
+include/posix/stddef.h
+
+# Excludes
+!img/*

@@ -29,7 +29,7 @@
 #include <nanvix/hal/processor.h>
 #include <nanvix/hal/resource.h>
 #include <nanvix/const.h>
-#include <nanvix/klib.h>
+#include <nanvix/hlib.h>
 #include <sys/stat.h>
 #include <mqueue.h>
 #include <pthread.h>

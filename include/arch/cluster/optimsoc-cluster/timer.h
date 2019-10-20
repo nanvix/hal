@@ -37,7 +37,7 @@
 /**@{*/
 
 	#include <nanvix/const.h>
-	#include <stdint.h>
+	#include <posix/stdint.h>
 
 	/**
 	 * @brief Estimated CPU frequency (in Hz), 50Mhz.

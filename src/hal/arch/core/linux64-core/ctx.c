@@ -26,7 +26,7 @@
 
 #include <arch/core/linux64/ctx.h>
 #include <nanvix/const.h>
-#include <nanvix/klib.h>
+#include <nanvix/hlib.h>
 
 /**
  * @brief Print informations contained in the context.

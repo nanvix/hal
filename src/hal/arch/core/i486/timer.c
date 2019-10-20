@@ -25,7 +25,7 @@
 #include <arch/core/i486/timer.h>
 #include <arch/core/i486/pmio.h>
 #include <nanvix/const.h>
-#include <stdint.h>
+#include <posix/stdint.h>
 
 /**
  * The i486_timer_init() function initializes the timer driver in the

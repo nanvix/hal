@@ -27,7 +27,7 @@
 
 #include <nanvix/hal/core.h>
 #include <nanvix/const.h>
-#include <nanvix/klib.h>
+#include <nanvix/hlib.h>
 
 /*============================================================================*
  * rv32gc_core_poweroff()                                                      *

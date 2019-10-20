@@ -85,8 +85,8 @@
  */
 /**@{*/
 
-	#include <nanvix/klib.h>
-	#include <stdint.h>
+	#include <nanvix/hlib.h>
+	#include <posix/stdint.h>
 
 	/**
 	 * @brief Total number of known events.

@@ -22,16 +22,17 @@
  * SOFTWARE.
  */
 
-#define __need_NULL
-#define __need_wchar_t
-#define __need_size_t
-#define __need_ptrdiff_t
-#include <decl.h>
+#include <nanvix/hal/target/stdout.h>
+#include <nanvix/hal/log.h>
+#include <nanvix/const.h>
+#include <nanvix/hlib.h>
 
 /**
- * @brief Structure offset.
+ * The kputs() function writes the null-terminated string pointed to
+ * by @p str into the standard output device of the kernel.
  */
-#ifndef offsetof
-#define offsetof(TYPE, MEMBER) __builtin_offsetof(TYPE, MEMBER)
-#endif
+PUBLIC void kputs(const char *str)
+{
+	hal_log_write(str, kstrlen(str));
+}
 

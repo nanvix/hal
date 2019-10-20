@@ -37,7 +37,7 @@
 /**@{*/
 
 	#include <nanvix/const.h>
-	#include <nanvix/klib.h>
+	#include <nanvix/hlib.h>
 	#include <arch/stdout/tty-virt.h>
 
 	/**

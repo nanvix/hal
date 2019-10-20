@@ -29,7 +29,7 @@
 	#include <arch/cluster/or1k-cluster/_or1k-cluster.h>
 
 	#include <nanvix/const.h>
-	#include <stdint.h>
+	#include <posix/stdint.h>
 
 #ifndef _ASM_FILE_
 

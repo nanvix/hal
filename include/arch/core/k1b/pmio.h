@@ -34,7 +34,7 @@
 /**@{*/
 
 	#include <arch/core/k1b/mOS.h>
-	#include <stdint.h>
+	#include <posix/stdint.h>
 
 #ifndef _ASM_FILE_
 

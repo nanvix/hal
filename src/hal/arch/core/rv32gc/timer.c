@@ -25,8 +25,8 @@
 #include <arch/core/rv32gc/timer.h>
 #include <arch/core/rv32gc/mcall.h>
 #include <nanvix/const.h>
-#include <nanvix/klib.h>
-#include <stdint.h>
+#include <nanvix/hlib.h>
+#include <posix/stdint.h>
 
 /**
  * @brief Was the timer device initialized?
@@ -135,6 +135,23 @@ PUBLIC void rv32gc_timer_reset(void)
 }
 
 /**
+ * @brief Computes number of leading 0-bits.
+ */
+PRIVATE uint64_t ctzdi2(uint64_t a)
+{
+	uint64_t i = 0;
+
+	if (a > 0)
+	{
+		do
+			i++;
+		while ((a = a >> 1));
+	}
+
+	return (i);
+}
+
+/**
  * The rv32gc_timer_init() function initializes the timer device in the
  * underlying rv32gc core.
  *
@@ -147,6 +164,7 @@ PUBLIC void rv32gc_timer_init(
 	uint64_t *mtimecmp
 )
 {
+
 	/* Nothing to do. */
 	if (initialized)
 		return;
@@ -158,7 +176,7 @@ PUBLIC void rv32gc_timer_init(
 	rv32gc_mtimecmp = mtimecmp;
 
 	/* Initialize timer. */
-	timer_delta = timebase/freq;
+	timer_delta = timebase >> ctzdi2(freq);
 	timer_delay = rv32gc_timer_calibrate();
 	initialized = true;
 

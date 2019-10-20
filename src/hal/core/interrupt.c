@@ -27,7 +27,7 @@
 
 #include <nanvix/hal/cluster.h>
 #include <nanvix/const.h>
-#include <nanvix/klib.h>
+#include <nanvix/hlib.h>
 #include <posix/errno.h>
 
 /**

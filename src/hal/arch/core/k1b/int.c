@@ -26,7 +26,7 @@
 #include <arch/core/k1b/int.h>
 #include <arch/core/k1b/ivt.h>
 #include <nanvix/const.h>
-#include <nanvix/klib.h>
+#include <nanvix/hlib.h>
 #include <posix/errno.h>
 
 /**

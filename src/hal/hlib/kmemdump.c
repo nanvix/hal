@@ -22,31 +22,29 @@
  * SOFTWARE.
  */
 
-#include <nanvix/hal/core/cache.h>
 #include <nanvix/const.h>
+#include <nanvix/hlib.h>
 
 /**
- * @brief Copy bytes in memory.
+ * @brief Dumps the contents of a memory area.
  *
- * @param dest Target memory area.
- * @param src  Source memory area.
- * @param n    Number of bytes to be copied.
+ * @details Dumps the contents of the memory area pointed to by @p s.
  *
- * @returns A pointer to the target memory area.
+ * @param s Target memory area.
+ * @param n Number of bytes to dump.
  */
-PUBLIC void *kmemcpy(void *dest, const void *src, size_t n)
+PUBLIC void kmemdump(const void *s, size_t n)
 {
-    char *d;       /* Write pointer. */
-    const char* s; /* Read pointer.  */
+	const unsigned *p  = s;
 
-    s = src;
-    d = dest;
-
-    while (n-- > 0)
+	/* Dump memory area in chunks. */
+	for (size_t i = 0; i < n; i += 16, p += 4)
 	{
-		*d++ = *s++;
-		dcache_invalidate();
+		/* Do not print zero lines. */
+		if (*(p + 0) || *(p + 1) || *(p + 2) || *(p + 3))
+		{
+			kprintf("[%x]: %x %x %x %x",
+				i, *(p + 0), *(p + 1), *(p + 2), *(p + 3));
+		}
 	}
-
-    return (d);
 }

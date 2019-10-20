@@ -41,7 +41,7 @@
 /**@{*/
 
 	#include <arch/core/rv32gc/types.h>
-	#include <nanvix/klib.h>
+	#include <nanvix/hlib.h>
 
 	/**
 	 * @brief Execution context size (in bytes).

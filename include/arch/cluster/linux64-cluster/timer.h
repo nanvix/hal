@@ -36,7 +36,7 @@
  */
 /**@{*/
 
-	#include <stdint.h>
+	#include <posix/stdint.h>
 
 	#define INTERRUPT_TIMER 0
 

@@ -95,7 +95,7 @@
  */
 /**@{*/
 
-	#include <nanvix/klib.h>
+	#include <nanvix/hlib.h>
 
 	/**
 	 * @name Total number of NoC nodes.

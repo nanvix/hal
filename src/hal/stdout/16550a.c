@@ -25,7 +25,7 @@
 #include <nanvix/hal/hal.h>
 #include <arch/stdout/16550a.h>
 #include <nanvix/const.h>
-#include <stdint.h>
+#include <posix/stdint.h>
 
 /**
  * @brief lock.

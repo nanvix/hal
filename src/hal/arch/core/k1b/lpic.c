@@ -29,7 +29,7 @@
 #include <arch/core/k1b/mOS.h>
 #include <nanvix/const.h>
 #include <posix/errno.h>
-#include <stdint.h>
+#include <posix/stdint.h>
 
 /**
  * @brief Current interrupt mask.

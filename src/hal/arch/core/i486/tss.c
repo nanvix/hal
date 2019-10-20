@@ -23,7 +23,7 @@
  */
 
 #include <nanvix/const.h>
-#include <nanvix/klib.h>
+#include <nanvix/hlib.h>
 #include <arch/core/i486/gdt.h>
 #include <arch/core/i486/tss.h>
 

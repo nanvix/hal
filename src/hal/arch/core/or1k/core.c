@@ -32,7 +32,7 @@
 #include <arch/core/or1k/lpic.h>
 #include <arch/core/or1k/mmu.h>
 #include <nanvix/const.h>
-#include <nanvix/klib.h>
+#include <nanvix/hlib.h>
 
 /*============================================================================*
  * or1k_core_poweroff()                                                       *

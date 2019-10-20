@@ -36,7 +36,7 @@
 	/* Processor API. */
 	#include <arch/target/unix64/unix64/_unix64.h>
 
-	#include <sys/types.h>
+	#include <posix/sys/types.h>
 	#include <nanvix/const.h>
 
 	/**
@@ -153,6 +153,9 @@
 	#define __mailbox_open_fn   /**< mailbox_open()   */
 	#define __mailbox_unlink_fn /**< mailbox_unlink() */
 	#define __mailbox_close_fn  /**< mailbox_close()  */
+	#define __mailbox_awrite_fn /**< mailbox_awrite() */
+	#define __mailbox_aread_fn  /**< mailbox_aread()  */
+	#define __mailbox_wait_fn   /**< mailbox_wait()   */
 	/**@}*/
 
 	/**

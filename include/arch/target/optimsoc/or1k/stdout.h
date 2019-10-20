@@ -37,7 +37,7 @@
 /**@{*/
 
 	#include <arch/stdout/systrace.h>
-	#include <sys/types.h>
+	#include <posix/sys/types.h>
 
 	/**
 	 * @see systrace_init()
