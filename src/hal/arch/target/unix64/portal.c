@@ -69,6 +69,7 @@ struct portal
 	char portalname[UNIX64_PORTAL_NAME_LENGTH];             /**< Name of shared memory region.  */
 	char lockname[UNIX64_PORTAL_NAME_LENGTH];               /**< Name of shared memory region.  */
 	struct portal_buffer *buffers[PROCESSOR_NOC_NODES_NUM]; /**< Portal buffers.                */
+	int fd[PROCESSOR_NOC_NODES_NUM];                        /**< Underlying file descriptors.   */
 };
 
 /**
@@ -187,7 +188,7 @@ PRIVATE int unix64_portal_tx_is_valid(int portalid)
  * @param local  Target local NoC node.
  * @param remote Target remote NoC node.
  */
-PRIVATE void unix64_portal_buffer_open(struct portal *portal, int local, int remote)
+PRIVATE int unix64_portal_buffer_open(struct portal *portal, int local, int remote)
 {
 	int shm;
 	struct stat st;
@@ -237,6 +238,8 @@ PRIVATE void unix64_portal_buffer_open(struct portal *portal, int local, int rem
 		portal->buffers[remote]->busy = 0;
 		portal->buffers[remote]->ready = 0;
 	}
+
+	return (shm);
 }
 
 /**
@@ -244,7 +247,11 @@ PRIVATE void unix64_portal_buffer_open(struct portal *portal, int local, int rem
  */
 PRIVATE void unix64_portal_buffer_rx_open(struct portal *portal, int local, int remote)
 {
-	unix64_portal_buffer_open(portal, local, remote);
+	int fd;
+
+	fd = unix64_portal_buffer_open(portal, local, remote);
+
+	portal->fd[remote] = fd;
 }
 
 /**
@@ -252,7 +259,11 @@ PRIVATE void unix64_portal_buffer_rx_open(struct portal *portal, int local, int 
  */
 PRIVATE void unix64_portal_buffer_tx_open(struct portal *portal, int local, int remote)
 {
-	unix64_portal_buffer_open(portal, remote, local);
+	int fd;
+
+	fd = unix64_portal_buffer_open(portal, remote, local);
+
+	portal->fd[remote] = fd;
 }
 
 /*============================================================================*
@@ -903,14 +914,22 @@ again:
 			goto again;
 		}
 
+		/* Release underlying resources. */
 		for (int i = 0; i < PROCESSOR_NOC_NODES_NUM; i++)
 		{
 			if (portaltab.rxs[portalid].buffers[i] != NULL)
 			{
 				portaltab.rxs[portalid].buffers[i]->busy = 0;
 				portaltab.rxs[portalid].buffers[i]->ready = 0;
+				KASSERT(munmap(portaltab.rxs[portalid].buffers[i],
+					sizeof(struct portal_buffer)
+				) == 0);
+				KASSERT(close(portaltab.rxs[portalid].fd[i]) == 0);
+				KASSERT(sem_close(portaltab.rxs[portalid].lock) == 0);
+				portaltab.rxs[portalid].buffers[i] = NULL;
 			}
 		}
+
 
 		resource_free(&pool.rx, portalid);
 
@@ -932,6 +951,8 @@ again:
  */
 PUBLIC int unix64_portal_close(int portalid)
 {
+	int remote;
+
 	/* Invalid portal. */
 	if (!unix64_portal_tx_is_valid(portalid))
 		return (-EBADF);
@@ -953,6 +974,14 @@ again:
 			unix64_portals_unlock();
 			goto again;
 		}
+
+		/* Close underlying resources. */
+		remote = portaltab.txs[portalid].remote;
+		KASSERT(munmap(portaltab.txs[portalid].buffers[remote],
+			sizeof(struct portal_buffer)
+		) == 0);
+		KASSERT(close(portaltab.txs[portalid].fd[remote]) == 0);
+		KASSERT(sem_close(portaltab.txs[portalid].lock) == 0);
 
 		resource_free(&pool.tx, portalid);
 
