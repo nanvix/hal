@@ -27,6 +27,8 @@
 #include <nanvix/const.h>
 #include <nanvix/hlib.h>
 
+#ifndef __upcall_forge_fn
+
 /**
  * The upcall_forge() creates a fake stack frame that enables an
  * upcall. It pushes the saved program counter, followed by the
@@ -85,3 +87,5 @@ PUBLIC void upcall_forge(
 	context_set_pc(ctx, (word_t) upcall_ret);
 	context_set_sp(ctx, sp);
 }
+
+#endif /* !__upcall_forge_fn */
