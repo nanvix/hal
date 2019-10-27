@@ -99,13 +99,8 @@ PRIVATE void dummy_handler(
  */
 PRIVATE void test_exception_set_unset_handler(void)
 {
-#ifndef __unix64__
 	KASSERT(exception_register(EXCEPTION_PAGE_FAULT, dummy_handler) == 0);
 	KASSERT(exception_unregister(EXCEPTION_PAGE_FAULT) == 0);
-#else
-	KASSERT(exception_unregister(EXCEPTION_PAGE_FAULT) == 0);
-	KASSERT(exception_register(EXCEPTION_PAGE_FAULT, dummy_handler) == 0);
-#endif
 }
 
 /*----------------------------------------------------------------------------*
@@ -150,9 +145,7 @@ PRIVATE void test_exception_register_inval(void)
  */
 PRIVATE void test_exception_register_bad(void)
 {
-#ifndef __unix64__
 	KASSERT(exception_register(EXCEPTION_PAGE_FAULT, dummy_handler) == 0);
-#endif
 	KASSERT(exception_register(EXCEPTION_PAGE_FAULT, dummy_handler) == 1);
 	KASSERT(exception_unregister(EXCEPTION_PAGE_FAULT) == 0);
 }
