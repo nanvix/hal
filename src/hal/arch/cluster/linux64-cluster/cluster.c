@@ -120,8 +120,16 @@ PUBLIC NORETURN void linux64_cluster_setup(void)
 /**
  * @todo TODO: Provide a detailed description for this function.
  */
-PUBLIC NORETURN void linux64_core_poweroff(void)
+PUBLIC NORETURN void linux64_core_poweroff(bool panic)
 {
+	/* Panic. */
+	if (panic)
+	{
+		kprintf("[hal] core panic");
+		exit(0);
+	}
+
+	/* Poweroff. */
 	if (linux64_core_get_id() == LINUX64_CLUSTER_COREID_MASTER)
 	{
 		kprintf("[hal] powering off...");

@@ -25,6 +25,9 @@
 #ifndef ARCH_CORE_LINUX64_UPCALL_H_
 #define ARCH_CORE_LINUX64_UPCALL_H_
 
+	/* Must come first. */
+	#define __NEED_CORE_TYPES
+
 /**
  * @addtogroup linux64-core-upcall Upcall
  * @ingroup linux64-core
@@ -32,6 +35,8 @@
  * @brief Upcall Interface
  */
 /**@{*/
+
+	#include <arch/core/linux64/types.h>
 
 	/**
 	 * @brief System call number for upcall_ret().
@@ -66,8 +71,19 @@
 	 * @name Exported Functions
 	 */
 	/**@{*/
-	#define __upcall_ret_fn /**< upcall_ret() */
+	#define __upcall_forge_fn /**< upcall_forge() */
+	#define __upcall_ret_fn   /**< upcall_ret()   */
 	/**@}*/
+
+	/**
+	 * @see linux64_upcall_forge()
+	 */
+	EXTERN void upcall_forge(
+		struct context *ctx,
+		void (*fn)(void *),
+		void *arg,
+		word_t argsize
+	);
 
 	/**
 	 * @brief Alias for linux64_upcall_ret()

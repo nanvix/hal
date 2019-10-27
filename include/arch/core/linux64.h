@@ -52,8 +52,10 @@
 
 	/**
 	 * @brief Powers off the underlying core.
+	 *
+	 * @param panic Panic?
 	 */
-	EXTERN NORETURN void linux64_core_poweroff(void);
+	EXTERN NORETURN void linux64_core_poweroff(bool panic);
 
 /**@}*/
 
@@ -90,7 +92,7 @@
 	 */
 	static inline NORETURN void core_poweroff(void)
 	{
-		linux64_core_poweroff();
+		linux64_core_poweroff(false);
 	}
 
 /**@endcond*/
