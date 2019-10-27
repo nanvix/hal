@@ -116,7 +116,8 @@ PUBLIC int exception_register(int excpnum, exception_handler_t handler)
 	exceptions[excpnum].handler = handler;
 	dcache_invalidate();
 
-	kprintf("[hal][core] exception handler registered for %s",
+	kprintf("[hal][core] exception handler %x registered for %s",
+		exceptions[excpnum].handler,
 		exceptions[excpnum].name
 	);
 
