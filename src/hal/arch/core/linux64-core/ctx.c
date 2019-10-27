@@ -33,5 +33,5 @@
  */
 PUBLIC void linux64_ctx_dump(const struct context *ctx)
 {
-	kprintf("[Context] id = %l", context_get_id(ctx));
+	kprintf("[linux64] coreid = %l", context_get_id(ctx));
 }
