@@ -51,13 +51,3 @@ PUBLIC int linux64_core_get_id(void)
 
 	return (-1);
 }
-
-/**
- * @brief Create an context struct.
- */
-PUBLIC struct context linux64_create_context(void)
-{
-	struct context ctx;
-	ctx.id = linux64_core_get_id();
-	return ctx;
-}

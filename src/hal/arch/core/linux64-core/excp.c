@@ -27,29 +27,11 @@
 #include <nanvix/const.h>
 #include <nanvix/hlib.h>
 
-EXTERN struct context linux64_create_context(void);
-
-/**
- * @brief Generic handler of an exception
+/*
+ * XXX This belongs to the Cluster AL. We should find a nicer
+ * way of doing this ot avoid any possible circular dependency.
  */
-PRIVATE void linux64_do_exception(const struct exception *excp, const struct context *ctx)
-{
-	kprintf("<%s> detected ! (%d)", exceptions[exception_get_num(excp)].name, exception_get_num(excp));
-	context_dump(ctx);
-	exit(0);
-}
-
-/**
- * @brief List of the signal considered as exceptions
- */
-PRIVATE int linux64_excp_signals[] = {
-	SIGFPE,
-	SIGTRAP,
-	SIGSEGV,
-	SIGILL,
-	SIGBUS,
-	-1
-};
+EXTERN int linux64_core_get_id(void);
 
 /**
  * @cond linux64
@@ -59,39 +41,62 @@ PRIVATE int linux64_excp_signals[] = {
  * @endcond
  */
 PUBLIC struct exception_info exceptions[LINUX64_EXCP_NUM] = {
-	{ NULL,                  NULL                                               },
-	{ NULL,                  NULL                                               },
-	{ NULL,                  NULL                                               },
-	{ NULL,                  NULL                                               },
-	{ linux64_do_exception, "Illegal instruction"                               },
-	{ linux64_do_exception, "Trace/breakpoint trap"                             },
-	{ NULL,                  NULL                                               },
-	{ NULL,                  NULL                                               },
-	{ linux64_do_exception, "Erroneous arithmetic operation"                    },
-	{ NULL,                  NULL                                               },
-	{ linux64_do_exception, "Access to an undefined portion of a memory object" },
-	{ linux64_do_exception, "Invalid memory reference"                          }
+	{ NULL, ""                               },
+	{ NULL, ""                               },
+	{ NULL, ""                               },
+	{ NULL, ""                               },
+	{ NULL, "illegal instruction"            },
+	{ NULL, "trace/breakpoint trap"          },
+	{ NULL, ""                               },
+	{ NULL, ""                               },
+	{ NULL, "erroneous arithmetic operation" },
+	{ NULL, ""                               },
+	{ NULL, "segmentation fault"             },
+	{ NULL, "invalid memory reference"       }
 };
 
 /**
  * @brief Exception Handler called by the signal() function
  */
-void linux64_excp_handler(int excpnum)
+PRIVATE void linux64_excp_handler(int excpnum)
 {
+	struct context ctx;
 	struct exception excp;
-	kmemset(&excp, 0, sizeof(struct exception));
+
 	excp.num = excpnum;
-	struct context ctx = linux64_create_context();
+	ctx.id = linux64_core_get_id();
+
 	do_exception(&excp, &ctx);
+
+	context_dump(&ctx);
+	exception_dump(&excp);
+	kpanic("unhandled exception");
+	UNREACHABLE();
 }
+
+/**
+ * @brief List of the signal considered as exceptions
+ */
+PRIVATE struct {
+	int num;
+	void (*handler)(int);
+
+} linux64_signals[] = {
+	{ SIGFPE,  linux64_excp_handler },
+	{ SIGTRAP, linux64_excp_handler },
+	{ SIGSEGV, linux64_excp_handler },
+	{ SIGILL,  linux64_excp_handler },
+	{ SIGBUS,  linux64_excp_handler },
+	{ -1,      NULL                 }
+};
 
 /**
  * @brief Setup the signals
  */
 PUBLIC void linux64_excp_setup(void)
 {
-	for(int i = 0; linux64_excp_signals[i] != -1; i++)
-		signal(linux64_excp_signals[i], linux64_excp_handler);
+	for (int i = 0; linux64_signals[i].num != -1; i++)
+		KASSERT(signal(linux64_signals[i].num, linux64_signals[i].handler) != SIG_ERR);
 }
 
 /**
