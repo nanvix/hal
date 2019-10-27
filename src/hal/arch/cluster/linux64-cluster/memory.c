@@ -64,32 +64,9 @@ PUBLIC unsigned char __BSS_END    = 0;
 PUBLIC struct memory_region mem_layout[LINUX64_CLUSTER_MEM_REGIONS];
 
 /**
- * @brief TLB
- */
-PRIVATE struct tlbe linux64_root_tlb[LINUX64_CLUSTER_NUM_CORES][LINUX64_TLB_LENGTH];
-
-/**
- * Alias to TLB
- */
-PUBLIC struct tlbe *root_tlb = &linux64_root_tlb[0][0];
-
-/**
  * @ brief counter for the flush function
  */
 PRIVATE unsigned linux64_cluster_tlb_flush_count[LINUX64_CLUSTER_NUM_CORES];
-
-/**
- * @brief Gets the underlying TLB entries.
- *
- * The linux64_cluster_tlb_get_utlb() function returns the architectural
- * TLB entries.
- *
- * @returns Initial position of the specific underlying tlb entries.
- */
-PUBLIC struct tlbe *linux64_cluster_tlb_get_utlb()
-{
-	return linux64_root_tlb[core_get_id()];
-}
 
 /**
  * @brief Flushes the TLB.
@@ -101,35 +78,6 @@ PUBLIC int linux64_cluster_tlb_flush(void)
 	return (0);
 }
 
-/**
- * @brief Dumps a TLB entry.
- *
- * @param idx Index of target entry in the TLB.
- */
-PUBLIC void linux64_cluster_tlbe_dump(int idx)
-{
-	const struct tlbe *tlbe = &linux64_root_tlb[core_get_id()][idx];
-
-	if (tlbe == NULL)
-	{
-		kprintf("no tlb entry");
-		return;
-	}
-
-	kprintf("[%d] frame=%x page=%x",
-		idx,
-		linux64_tlbe_paddr_get(tlbe),
-		linux64_tlbe_vaddr_get(tlbe)
-	);
-}
-
-/**
- * @brief Initializes the TLB.
- */
-PUBLIC void linx64_cluster_tlb_setup(void)
-{
-	linux64_cluster_tlb_flush_count[linux64_core_get_id()] = 0;
-}
 
 /**
  * @todo TODO: provide a detailed description for this function.

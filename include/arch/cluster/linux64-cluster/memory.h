@@ -81,8 +81,6 @@
 	#define LINUX64_USER_BASE_PHYS   0x02000000 /**< User Base             */
 	/**@}*/
 
-	#define LINUX64_TLB_VADDR_MASK PAGE_MASK
-
 	/**
 	 * @name Memory Regions Constants
 	 */
@@ -96,40 +94,9 @@
 	/**@}*/
 
 	/**
-	 * @brief Gets the underlying TLB entries.
-	 *
-	 * The linux64_cluster_tlb_get_utlb() function returns the architectural
-	 * TLB entries.
-	 *
-	 * @returns Initial position of the specific underlying tlb entries.
-	 */
-	EXTERN struct tlbe *linux64_cluster_tlb_get_utlb();
-
-	/**
-	 * @brief Gets the configuration of a TLB Entry.
-	 *
-	 * @param vaddr Target virtual address.
-	 *
-	 * @return linux64 TLB entry does not need configuration.
-	 */
-	static inline int linux64_cluster_tlb_get_vaddr_info(vaddr_t vaddr)
-	{
-		UNUSED(vaddr);
-
-		return (0);
-	}
-
-	/**
 	 * @brief Flushes the TLB.
 	 */
 	EXTERN int linux64_cluster_tlb_flush(void);
-
-	/**
-	 * @brief Dumps a TLB entry.
-	 *
-	 * @param idx Index of target entry in the TLB.
-	 */
-	EXTERN void linux64_cluster_tlbe_dump(int idx);
 
 	/**
 	 * @brief Binary Sections
@@ -180,7 +147,6 @@
 	#define UEND_VIRT      LINUX64_USER_END_VIRT    /**< @see LINUX64_USER_END_VIRT    */
 	#define KBASE_VIRT     LINUX64_KERNEL_BASE_VIRT /**< @see LINUX64_KERNEL_BASE_VIRT */
 	#define KPOOL_VIRT     LINUX64_KPOOL_BASE_VIRT  /**< @see LINUX64_KPOOL_BASE_VIRT  */
-	#define TLB_VADDR_MASK LINUX64_TLB_VADDR_MASK   /**< @see LINUX64_TLB_VADDR_MASK   */
 	/**@}*/
 
 	/**
@@ -199,9 +165,7 @@
 	 * @brief Provided Interface
 	 */
 	/**@{*/
-	#define __tlb_flush_fn          /**< tlb_flush()          */
-	#define __tlb_get_vaddr_info_fn /**< tlb_get_vaddr_info() */
-	#define __tlb_get_utlb_fn       /**< tlb_get_utlb()       */
+	#define __tlb_flush_fn /**< tlb_flush() */
 	/**@}*/
 
 	/**
@@ -210,26 +174,6 @@
 	static inline int tlb_flush(void)
 	{
 		return (linux64_cluster_tlb_flush());
-	}
-
-	/**
-	 * @see linux64_cluster_tlb_get_vaddr_info().
-	 */
-	static inline int tlb_get_vaddr_info(vaddr_t vaddr)
-	{
-		return (linux64_cluster_tlb_get_vaddr_info(vaddr));
-	}
-
-	/**
-	 * @see linux64_cluster_tlb_lookup_paddr().
-	 */
-	static inline struct tlbe *tlb_get_utlb(int tlb_type)
-	{
-		/* Invalid TLB type. */
-		if ((tlb_type != LINUX64_TLB_INSTRUCTION) && (tlb_type != LINUX64_TLB_DATA))
-			return (NULL);
-
-		return (linux64_cluster_tlb_get_utlb());
 	}
 
 /**@endcond*/
