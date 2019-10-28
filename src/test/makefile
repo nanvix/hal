@@ -35,7 +35,7 @@ endif
 LIBS := -Wl,--whole-archive
 LIBS += $(LIBDIR)/$(LIBHAL)
 LIBS += -Wl,--no-whole-archive
-LIBS += $(LIBDIR)/$(KLIB) $(THEIR_LIBS)
+LIBS += $(LIBDIR)/$(BARELIB) $(THEIR_LIBS)
 
 #===============================================================================
 # Sources

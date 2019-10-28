@@ -26,30 +26,169 @@
 #define NANVIX_HLIB
 #ifndef _ASM_FILE_
 
+	#include <posix/stddef.h>
+	#include <posix/stdarg.h>
 	#include <nanvix/const.h>
-	#include <nanvix/klib.h>
+	#include <nanvix/barelib.h>
 
 /**
- * @defgroup klib Kernel Library
- * @ingroup kernel
+ * @defgroup hlib HAL Library
+ * @ingroup hal
  */
+
+/*============================================================================*
+ * Memory Manipulation                                                        *
+ *============================================================================*/
+
+/**
+ * @addtogroup hlib-memory
+ * @ingroup hlib
+ */
+/**@{*/
+
+	/**
+	 * @see __memchr().
+	 */
+	#define kmemchr(s,c,n) __memchr(s,c,n)
+
+	/**
+	 * @see __memcpy*().
+	 */
+	#define kmemcpy(s1,s2,n) __memcpy(s1,s2,n)
+
+	/**
+	 * @see __memmove().
+	 */
+	#define kmemmove(s1,s2,n) __memmove(s1,s2,n)
+
+	/**
+	 * @see __memset().
+	 */
+	#define kmemset(s,c,n) __memset(s,c,n)
+
+/**@}*/
+
+/*============================================================================*
+ * String Manipulation                                                        *
+ *============================================================================*/
+
+/**
+ * @addtogroup hlib-string String Manipulation
+ * @ingroup hlib
+ */
+/**@{*/
+
+	/**
+	 * @see __strcat().
+	 */
+	#define kstrcat(s1,s2) __strcat(s1,s2)
+
+	/**
+	 * @see __strchr().
+	 */
+	#define kstrchr(s,c) __strchr(s,c)
+
+	/**
+	 * @see __strcmp().
+	 */
+	#define kstrcmp(s1,s2) __strcmp(s1,s2)
+
+	/**
+	 * @see __strcpy().
+	 */
+	#define kstrcpy(s1,s2) __strcpy(s1,s2)
+
+	/**
+	 * @see __strcspn().
+	 */
+	#define kstrcspn(s1,s2) __strcspn(s1,s2)
+
+	/**
+	 * @see __strlen()
+	 */
+	#define kstrlen(str) __strlen(str)
+
+	/**
+	 * @see __strncat()
+	 */
+	#define kstrncat(s1,s2,n) __strncat(s1,s2,n)
+
+	/**
+	 * @see __strncmp().
+	 */
+	#define kstrncmp(s1,s2,n) __strncmp(s1,s2,n)
+
+	/**
+	 * @see __strncpy().
+	 */
+	#define kstrncpy(s1,s2,n) __strncpy(s1,s2,n)
+
+	/**
+	 * @see __strnlen().
+	 */
+	#define kstrnlen(s,maxlen) __strnlen(s,maxlen)
+
+	/**
+	 * @see __strpbrk().
+	 */
+	#define kstrpbrk(s1,s2) __strpbrk(s1,s2)
+
+	/**
+	 * @see __strrchr().
+	 */
+	#define kstrrchr(s,c) __strrchr(s,c)
+
+	/**
+	 * @see __strspn().
+	 */
+	#define kstrspn(s1,s2) __strspn(s1,s2)
+
+	/**
+	 * @see __strstr().
+	 */
+	#define kstrstr(s1,s2) __strstr(s1,s2)
+
+/**@}*/
+
+/*============================================================================*
+ * String Formatting                                                          *
+ *============================================================================*/
+
+/**
+ * @addtogroup hlib-formatting String Formatting
+ * @ingroup hlib
+ */
+/**@{*/
+
+	/**
+	 * @see __vsprintf().
+	 */
+	#define kvsprintf(str,fmt,args) __vsprintf(str,fmt,args)
+
+	/**
+	 * @see __sprintf().
+	 */
+	#define ksprintf(str,fmt,...) __sprintf(str,fmt,__VA_ARGS__)
+
+/**@}*/
 
 /*============================================================================*
  *                          Logging and Debugging                             *
  *============================================================================*/
 
 /**
- * @addtogroup klib-debug Log & Debug
- * @ingroup klib
+ * @addtogroup hlib-debug Log & Debug
+ * @ingroup hlib
  */
 /**@{*/
 
 	/**
-	 * @brief Kernel buffer size (in bytes).
+	 * @brief HAL buffer size (in bytes).
 	 *
 	 * @note Hopefully not kernel string is longer than this.
 	 */
 	#define KBUFFER_SIZE 128
+
 
 	/**
 	 * @brief Prints a string on the standard output device.
@@ -76,13 +215,13 @@
  *============================================================================*/
 
 /**
- * @addtogroup klib-misc Miscellaneous
- * @ingroup klib
+ * @addtogroup hlib-misc Miscellaneous
+ * @ingroup hlib
  */
 /**@{*/
 
 	/**
-	 * @brief Kernel assert.
+	 * @brief HAL assert.
 	 *
 	 * The kassert() function asserts if @p expr evaluates to non-zero. If
 	 * not, it panics the kernel with the @p msg.
@@ -124,6 +263,124 @@
 	 * parameters of kernel routines.
 	 */
 	#define KASSERT(x) kassert(x, "kassert() failed")
+
+/**@}*/
+
+/*============================================================================*
+ * Bit-Wise Manipulation                                                      *
+ *============================================================================*/
+
+/**
+ * @addtogroup hlib-bits Bit-Wise Manipulation
+ * @ingroup hlib
+ */
+/**@{*/
+
+	/**
+	 * @brief Get bits of a bitmap.
+	 *
+	 * @param bits Bitmap.
+	 * @param mask Mask.
+	 */
+	#define BITS_GET(bits, mask) \
+		(((bits) & (mask)) / ((mask) & ~((mask)-1)))
+
+	/**
+	 * @brief      Set bits on a bitmap.
+	 * @param mask Mask.
+	 * @param val  Value.
+	 */
+	#define BITS_SET(bits, mask, val) \
+		(((bits) & ~(mask)) | ((val) * ((mask) & ~((mask)-1))))
+
+/**@}*/
+
+/*============================================================================*
+ * Miscellaneous                                                              *
+ *============================================================================*/
+
+/**
+ * @addtogroup hlib-misc Miscellaneous
+ * @ingroup hlib
+ */
+/**@{*/
+
+	/**
+	 * @brief Asserts if 'a' and 'b' agrees on size.
+	 *
+	 * @param a Probing size.
+	 * @param b Control size.
+	 *
+	 * @returns Upon success, compilation proceeds as normal. Upon
+	 * failure, a compilation error is generated.
+	 */
+	#define KASSERT_SIZE(a, b) \
+		((void) sizeof(char[(((a) == (b)) ? 1 : -1)]))
+
+	/**
+	 * @brief Asserts if a value is aligned to a boundary.
+	 *
+	 * @param x Target value.
+	 * @param a Boundary.
+	 *
+	 * @returns True if the target value is aligned on the given
+	 * boundary, and false otherwise.
+	 */
+	#define ALIGNED(x, a) \
+		(!((x) & ((a) - 1)))
+
+	/**
+	 * @brief Truncate a value on a boundary.
+	 *
+	 * @param x Value to be aligned.
+	 * @param a Boundary.
+	 *
+	 * @returns Truncated value.
+	 */
+	#define TRUNCATE(x, a) \
+		(((x) + ((a) - 1)) & ~((a) - 1))
+
+	/**
+	 * @brief Returns the length of an array.
+	 *
+	 * @param x Target array.
+	 *
+	 * @returns The length of the array @p x.
+	 */
+	#define ARRAY_LENGTH(x) \
+		(sizeof(x)/sizeof((x)[0]))
+
+	/**
+	 * @brief Asserts if a number is within a range.
+	 *
+	 * @param x Number.
+	 * @param a Start of range.
+	 * @param b End of range.
+	 *
+	 * @returns Non-zero if @p x is within [a, b) and zero otherwise.
+	 */
+	#define WITHIN(x, a, b) (((x) >= (a)) && ((x) < (b)))
+
+	/**
+	 * @brief Concatenates two macros.
+	 *
+	 * @param x First macro.
+	 * @param y Second macro.
+	 */
+	#define CONCAT2(x, y) x ## y
+
+	/**
+	 * @brief Expands a macro.
+	 *
+	 * @param x First macro.
+	 * @param y Second macro.
+	 */
+	#define EXPAND2(x, y) CONCAT2(x, y)
+
+	/**
+	 * @brief Auto-name for reserved fields in a structure.
+	 */
+	#define RESERVED EXPAND2(reserved, __LINE__)
 
 /**@}*/
 

@@ -1,6 +1,6 @@
 [submodule "utils"]
 	path = utils
 	url = https://github.com/nanvix/utils.git
-[submodule "contrib/klib"]
-	path = contrib/klib
-	url = https://github.com/nanvix/klib.git
+[submodule "contrib/barelib"]
+	path = contrib/barelib
+	url = https://github.com/nanvix/barelib.git
