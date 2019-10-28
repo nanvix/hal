@@ -23,33 +23,33 @@
 #
 
 # Builds contrib.
-contrib: contrib-klib
+contrib: contrib-barelib
 
 # Builds contrib headers.
-contrib-headers: contrib-headers-klib
+contrib-headers: contrib-headers-barelib
 
 # Cleans contrib.
-contrib-uninstall: contrib-uninstall-klib
+contrib-uninstall: contrib-uninstall-barelib
 
 # Cleans contrib headers.
-contrib-uninstall-headers: contrib-uninstall-headers-klib
+contrib-uninstall-headers: contrib-uninstall-headers-barelib
 
 #===============================================================================
 # Kernel Library
 #===============================================================================
 
 # Builds Kernel Library.
-contrib-klib: make-dirs
-	$(MAKE) -C $(CONTRIBDIR)/klib install PREFIX=$(ROOTDIR) RELEASE=$(RELEASE)
+contrib-barelib: make-dirs
+	$(MAKE) -C $(CONTRIBDIR)/barelib install PREFIX=$(ROOTDIR) RELEASE=$(RELEASE)
 
 # Builds Kernel Library headers.
-contrib-headers-klib: make-dirs
-	$(MAKE) -C $(CONTRIBDIR)/klib install-headers PREFIX=$(ROOTDIR) RELEASE=$(RELEASE)
+contrib-headers-barelib: make-dirs
+	$(MAKE) -C $(CONTRIBDIR)/barelib install-headers PREFIX=$(ROOTDIR) RELEASE=$(RELEASE)
 
 # Cleans Kernel Library.
-contrib-uninstall-klib:
-	$(MAKE) -C $(CONTRIBDIR)/klib uninstall PREFIX=$(ROOTDIR) RELEASE=$(RELEASE)
+contrib-uninstall-barelib:
+	$(MAKE) -C $(CONTRIBDIR)/barelib uninstall PREFIX=$(ROOTDIR) RELEASE=$(RELEASE)
 
 # Cleans Kernel Library headers.
-contrib-uninstall-headers-klib:
-	$(MAKE) -C $(CONTRIBDIR)/klib uninstall-headers PREFIX=$(ROOTDIR) RELEASE=$(RELEASE)
+contrib-uninstall-headers-barelib:
+	$(MAKE) -C $(CONTRIBDIR)/barelib uninstall-headers PREFIX=$(ROOTDIR) RELEASE=$(RELEASE)

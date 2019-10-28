@@ -65,8 +65,8 @@ export TOOLSDIR   := $(ROOTDIR)/utils
 #===============================================================================
 
 # Libraries
-export KLIB   = klib-$(TARGET).a
-export LIBHAL = libhal-$(TARGET).a
+export BARELIB = barelib-$(TARGET).a
+export LIBHAL  = libhal-$(TARGET).a
 
 # Binaries
 export EXEC := test-driver.$(TARGET)
