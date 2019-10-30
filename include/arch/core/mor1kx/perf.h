@@ -60,17 +60,17 @@
 	 * @name Performance Events
 	 */
 	/**@{*/
-	#define MOR1KX_PERF_LOAD_ACCESS        00  /**< Load access.              */
-	#define MOR1KX_PERF_STORE_ACCESS       01  /**< Store access.             */
-	#define MOR1KX_PERF_INSTRUCTION_FETCH  02  /**< Instruction Fetch.        */
-	#define MOR1KX_PERF_DCACHE_MISSES      03  /**< Data Cache Misses.        */
-	#define MOR1KX_PERF_ICACHE_MISSES      04  /**< Instruction Cache.        */
-	#define MOR1KX_PERF_IFETCH_STALLS      05  /**< Instruction Fetch Stalls. */
-	#define MOR1KX_PERF_LSU_STALLS         06  /**< LSU Stalls.               */
-	#define MOR1KX_PERF_BRANCH_STALLS      07  /**< Branch Stalls.            */
-	#define MOR1KX_PERF_DTLB_MISSES        08  /**< Data TLB Misses.          */
-	#define MOR1KX_PERF_ITLB_MISSES        09  /**< Instruction TLB Misses.   */
-	#define MOR1KX_PERF_DATA_DEP_STALLS    10  /**< Data Dependency Stalls.   */
+	#define MOR1KX_PERF_LOAD_ACCESS         0 /**< Load access.              */
+	#define MOR1KX_PERF_STORE_ACCESS        1 /**< Store access.             */
+	#define MOR1KX_PERF_INSTRUCTION_FETCH   2 /**< Instruction Fetch.        */
+	#define MOR1KX_PERF_DCACHE_MISSES       3 /**< Data Cache Misses.        */
+	#define MOR1KX_PERF_ICACHE_MISSES       4 /**< Instruction Cache.        */
+	#define MOR1KX_PERF_IFETCH_STALLS       5 /**< Instruction Fetch Stalls. */
+	#define MOR1KX_PERF_LSU_STALLS          6 /**< LSU Stalls.               */
+	#define MOR1KX_PERF_BRANCH_STALLS       7 /**< Branch Stalls.            */
+	#define MOR1KX_PERF_DTLB_MISSES         8 /**< Data TLB Misses.          */
+	#define MOR1KX_PERF_ITLB_MISSES         9 /**< Instruction TLB Misses.   */
+	#define MOR1KX_PERF_DATA_DEP_STALLS    10 /**< Data Dependency Stalls.   */
 	/**@}*/
 
 #ifndef _ASM_FILE_
