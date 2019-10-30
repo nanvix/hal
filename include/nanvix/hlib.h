@@ -52,7 +52,12 @@
 	#define kmemchr(s,c,n) __memchr(s,c,n)
 
 	/**
-	 * @see __memcpy*().
+	 * @see __memcmp().
+	 */
+	#define kmemcmp(s1,s2,n) __memcmp(s1,s2,n)
+
+	/**
+	 * @see __memcpy().
 	 */
 	#define kmemcpy(s1,s2,n) __memcpy(s1,s2,n)
 
