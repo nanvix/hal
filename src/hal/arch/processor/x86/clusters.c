@@ -22,44 +22,48 @@
  * SOFTWARE.
  */
 
-#ifndef PROCESSOR_I486_QEMU_H_
-#define PROCESSOR_I486_QEMU_H_
+/* Must come fist. */
+#define __NEED_HAL_PROCESSOR
 
-	#ifndef __NEED_PROCESSOR_I486_QEMU
-		#error "bad processor configuration?"
-	#endif
-
-	/* Processor Interface Implementation */
-	#include <arch/processor/i486-qemu/_i486-qemu.h>
-
-/**
- * @addtogroup processor-i486-qemu x86 QUEMU
- * @ingroup processors
- *
- * @brief x86 QEMU Processor
- */
-/**@*/
-
-	#include <arch/processor/i486-qemu/clusters.h>
-	#include <arch/processor/i486-qemu/noc.h>
-
-/**@}*/
+#include <nanvix/hal/processor.h>
+#include <nanvix/const.h>
 
 /*============================================================================*
- * Provided Interface                                                         *
+ * x86_cluster_get_num()                                                      *
  *============================================================================*/
+
 /**
- * @cond i486qemu
+ * @todo TODO: Provide a detailed description for this function.
  */
+PUBLIC int x86_cluster_get_num(void)
+{
+	return (0);
+}
 
-	/**
-	 * @name Provided Features
-	 */
-	/**@{*/
-	#define PROCESSOR_IS_MULTICLUSTER 0 /**< Multicluster feature */
-	#define PROCESSOR_HAS_NOC         0 /**< NoC feature          */
-	/**@}*/
+/*============================================================================*
+ * x86_processor_cluster_is_compute()                                         *
+ *============================================================================*/
 
-/**@endcond*/
+/**
+ * @todo TODO: Provide a detailed description for this function.
+ */
+PUBLIC int x86_cluster_is_compute(int clusternum)
+{
+	UNUSED(clusternum);
 
-#endif /* PROCESSOR_I486_QEMU_H_ */
+	return (0);
+}
+
+/*============================================================================*
+ * x86_processor_cluster_is_io()                                              *
+ *============================================================================*/
+
+/**
+ * @todo TODO: Provide a detailed description for this function.
+ */
+PUBLIC int x86_cluster_is_io(int clusternum)
+{
+	UNUSED(clusternum);
+
+	return (1);
+}
