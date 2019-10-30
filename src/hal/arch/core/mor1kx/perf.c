@@ -123,7 +123,7 @@ PUBLIC int mor1kx_perf_restart(int perf)
 
 	/* Resets counter. */
 	or1k_mtspr(OR1K_SPR_PCCR(perf), 0);
-	
+
 	/* Start counter again. */
 	or1k_mtspr(OR1K_SPR_PCMR(perf), pcmr);
 
