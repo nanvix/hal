@@ -68,15 +68,6 @@
 
 #endif
 
-/* Dummy Constants */
-#if (!PROCESSOR_IS_MULTICLUSTER)
-
-	#define PROCESSOR_IOCLUSTERS_NUM    1
-	#define PROCESSOR_CCLUSTERS_NUM     0
-	#define PROCESSOR_CLUSTERNUM_MASTER 0
-
-#endif /* !PROCESSOR_IS_MULTICLUSTER */
-
 /*============================================================================*
  * Cluster Interface                                                          *
  *============================================================================*/
@@ -102,14 +93,7 @@
 	 *
 	 * @returns The ID of the underlying cluster.
 	 */
-#if (PROCESSOR_IS_MULTICLUSTER)
 	EXTERN int cluster_get_num(void);
-#else
-	static inline int cluster_get_num(void)
-	{
-		return (0);
-	}
-#endif
 
 	/**
 	 * @brief Asserts if a cluster is a compute cluster.
@@ -119,16 +103,7 @@
 	 * @returns Non-zero if the target cluster @p clusternum is a
 	 * compute cluster and zero otherwise.
 	 */
-#if (PROCESSOR_IS_MULTICLUSTER)
 	EXTERN int cluster_is_ccluster(int clusternum);
-#else
-	static inline int cluster_is_ccluster(int clusternum)
-	{
-		UNUSED(clusternum);
-
-		return (0);
-	}
-#endif
 
 	/**
 	 * @brief Asserts if a cluster is an I/O cluster.
@@ -138,18 +113,8 @@
 	 * @returns Non-zero if the target cluster @p clusternum is an I/O
 	 * cluster and zero otherwise.
 	 */
-#if (PROCESSOR_IS_MULTICLUSTER)
 	EXTERN int cluster_is_iocluster(int clusternum);
-#else
-	static inline int cluster_is_iocluster(int clusternum)
-	{
-		UNUSED(clusternum);
-
-		return (1);
-	}
-#endif
 
 /**@}*/
 
 #endif /* NANVIX_HAL_PROCESSOR_CLUSTERS_H_ */
-
