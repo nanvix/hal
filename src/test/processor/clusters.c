@@ -27,6 +27,8 @@
 #include <nanvix/hlib.h>
 #include "../test.h"
 
+#if (PROCESSOR_IS_MULTICLUSTER)
+
 /**
  * @brief Launch verbose tests?
  */
@@ -99,3 +101,5 @@ PUBLIC void test_clusters(void)
 		);
 	}
 }
+
+#endif /* PROCESSOR_IS_MULTICLUSTER */

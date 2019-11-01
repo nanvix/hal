@@ -27,6 +27,8 @@
 #include <nanvix/hlib.h>
 #include "../test.h"
 
+#if (PROCESSOR_HAS_NOC)
+
 /**
  * @brief Launch verbose tests?
  */
@@ -210,3 +212,4 @@ PUBLIC void test_noc(void)
 	}
 }
 
+#endif /* PROCESSOR_HAS_NOC */
