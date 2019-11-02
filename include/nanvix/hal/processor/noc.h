@@ -74,15 +74,6 @@
 
 #endif
 
-/* Dummy Constants */
-#if (!PROCESSOR_HAS_NOC)
-
-	#define PROCESSOR_NOC_IONODES_NUM 1
-	#define PROCESSOR_NOC_CNODES_NUM  0
-	#define PROCESSOR_NODENUM_MASTER  0
-
-#endif /* !PROCESSOR_HAS_NOC */
-
 /*============================================================================*
  * NoC Interface                                                              *
  *============================================================================*/
@@ -108,14 +99,7 @@
 	/**
 	 * @brief Initializes the mailbox interface.
 	 */
-#if (PROCESSOR_HAS_NOC)
 	EXTERN void processor_noc_setup(void);
-#else
-	static inline void processor_noc_setup(void)
-	{
-
-	}
-#endif
 
 #endif /* __NANVIX_HAL */
 
@@ -127,16 +111,7 @@
 	 * @returns One if the target NoC node is attached to an IO cluster,
 	 * and zero otherwise.
 	 */
-#if (PROCESSOR_HAS_NOC)
 	EXTERN int processor_noc_is_ionode(int nodenum);
-#else
-	static inline int processor_noc_is_ionode(int nodenum)
-	{
-		UNUSED(nodenum);
-
-		return (1);
-	}
-#endif
 
 	/**
 	 * @brief Asserts whether a NoC node is attached to a compute cluster.
@@ -146,16 +121,7 @@
 	 * @returns One if the target NoC node is attached to a compute
 	 * cluster, and zero otherwise.
 	 */
-#if (PROCESSOR_HAS_NOC)
 	EXTERN int processor_noc_is_cnode(int nodenum);
-#else
-	static inline int processor_noc_is_cnode(int nodenum)
-	{
-		UNUSED(nodenum);
-
-		return (0);
-	}
-#endif
 
 	/**
 	 * @brief Gets the logic number of the target NoC node
@@ -166,18 +132,7 @@
 	 * @returns The logic number of the target NoC node attached
 	 * with the @p coreid.
 	 */
-#if (PROCESSOR_HAS_NOC)
 	EXTERN int processor_node_get_num(int coreid);
-#else
-	static inline int processor_node_get_num(int coreid)
-	{
-		/* Invalid coreid. */
-		if (!WITHIN(coreid, 0, CORES_NUM))
-			return (-EINVAL);
-
-		return (0);
-	}
-#endif
 
 	/**
 	 * @brief Exchange the logic number of the target NoC node
@@ -189,22 +144,7 @@
 	 * @returns Zero if the target NoC node is successfully attached
 	 * to the requested @p coreid, and non zero otherwise.
 	 */
-#if (PROCESSOR_HAS_NOC)
 	EXTERN int processor_node_set_num(int coreid, int nodenum);
-#else
-	static inline int processor_node_set_num(int coreid, int nodenum)
-	{
-		/* Invalid coreid. */
-		if (!WITHIN(coreid, 0, CORES_NUM))
-			return (-EINVAL);
-
-		/* Invalid coreid. */
-		if (!WITHIN(nodenum, 0, PROCESSOR_NOC_NODES_NUM))
-			return (-EINVAL);
-
-		return (0);
-	}
-#endif
 
 /**@}*/
 

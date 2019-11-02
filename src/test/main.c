@@ -86,8 +86,12 @@ PRIVATE void test_processor_al(void)
 	test_cnoc();
 	test_dnoc();
 #endif
+#if (PROCESSOR_IS_MULTICLUSTER)
 	test_clusters();
+#endif
+#if (PROCESSOR_HAS_NOC)
 	test_noc();
+#endif
 }
 
 /**
@@ -144,7 +148,9 @@ PUBLIC NORETURN void kmain(int argc, const char *argv[])
 
 #endif
 
+#if (PROCESSOR_IS_MULTICLUSTER)
 	if (cluster_get_num() == PROCESSOR_CLUSTERNUM_MASTER)
+#endif
 	{
 		/* Run unit tests. */
 		if ((!kstrcmp(arg, "--all")) || (!kstrcmp(arg, "--core")))

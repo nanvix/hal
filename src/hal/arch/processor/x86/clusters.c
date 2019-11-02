@@ -22,44 +22,48 @@
  * SOFTWARE.
  */
 
-#ifndef PROCESSOR_OR1K_OPTIMSOC_H_
-#define PROCESSOR_OR1K_OPTIMSOC_H_
+/* Must come fist. */
+#define __NEED_HAL_PROCESSOR
 
-	#ifndef __NEED_PROCESSOR_OPTIMSOC
-		#error "bad processor configuration?"
-	#endif
-
-	/* Processor Interface Implementation */
-	#include <arch/processor/optimsoc/_optimsoc.h>
-
-/**
- * @addtogroup processor OpTiMSoC
- * @ingroup processors
- *
- * @brief OpTiMSoC Processor
- */
-/**@*/
-
-	#include <arch/processor/optimsoc/clusters.h>
-	#include <arch/processor/optimsoc/noc.h>
-
-/**@}*/
+#include <nanvix/hal/processor.h>
+#include <nanvix/const.h>
 
 /*============================================================================*
- * Provided Interface                                                         *
+ * x86_cluster_get_num()                                                      *
  *============================================================================*/
+
 /**
- * @cond optimsoc
+ * @todo TODO: Provide a detailed description for this function.
  */
+PUBLIC int x86_cluster_get_num(void)
+{
+	return (0);
+}
 
-	/**
-	 * @name Provided Features
-	 */
-	/**@{*/
-	#define PROCESSOR_IS_MULTICLUSTER 0 /**< Multicluster feature */
-	#define PROCESSOR_HAS_NOC         0 /**< NoC feature          */
-	/**@}*/
+/*============================================================================*
+ * x86_processor_cluster_is_compute()                                         *
+ *============================================================================*/
 
-/**@endcond*/
+/**
+ * @todo TODO: Provide a detailed description for this function.
+ */
+PUBLIC int x86_cluster_is_compute(int clusternum)
+{
+	UNUSED(clusternum);
 
-#endif /* PROCESSOR_OR1K_OPTIMSOC_H_ */
+	return (0);
+}
+
+/*============================================================================*
+ * x86_processor_cluster_is_io()                                              *
+ *============================================================================*/
+
+/**
+ * @todo TODO: Provide a detailed description for this function.
+ */
+PUBLIC int x86_cluster_is_io(int clusternum)
+{
+	UNUSED(clusternum);
+
+	return (1);
+}

@@ -55,8 +55,9 @@ PUBLIC void hal_init(void)
 
 	exception_setup();
 	interrupt_setup();
+#if (PROCESSOR_HAS_NOC)
 	processor_noc_setup();
-
+#endif
 #if (__TARGET_HAS_SYNC)
 	sync_setup();
 #endif

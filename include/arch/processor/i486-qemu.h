@@ -40,6 +40,9 @@
  */
 /**@*/
 
+	#include <arch/processor/i486-qemu/clusters.h>
+	#include <arch/processor/i486-qemu/noc.h>
+
 /**@}*/
 
 /*============================================================================*
@@ -60,5 +63,3 @@
 /**@endcond*/
 
 #endif /* PROCESSOR_I486_QEMU_H_ */
-
-

@@ -40,6 +40,9 @@
  */
 /**@*/
 
+	#include <arch/processor/riscv32/clusters.h>
+	#include <arch/processor/riscv32/noc.h>
+
 /**@}*/
 
 /*============================================================================*
@@ -60,4 +63,3 @@
 /**@endcond*/
 
 #endif /* PROCESSOR_RISCV32_H_ */
-

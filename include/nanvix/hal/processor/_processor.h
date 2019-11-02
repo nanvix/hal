@@ -43,8 +43,8 @@
 
 	#elif (defined(__optimsoc4__))
 
-		#undef  __NEED_PROCESSOR_OR1K_OPTIMSOC
-		#define __NEED_PROCESSOR_OR1K_OPTIMSOC
+		#undef  __NEED_PROCESSOR_OPTIMSOC
+		#define __NEED_PROCESSOR_OPTIMSOC
 		#include <arch/processor/optimsoc.h>
 
 	#elif (defined(__openrisc__))
