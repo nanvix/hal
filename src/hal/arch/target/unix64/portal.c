@@ -925,11 +925,10 @@ again:
 					sizeof(struct portal_buffer)
 				) == 0);
 				KASSERT(close(portaltab.rxs[portalid].fd[i]) == 0);
-				KASSERT(sem_close(portaltab.rxs[portalid].lock) == 0);
 				portaltab.rxs[portalid].buffers[i] = NULL;
 			}
 		}
-
+		KASSERT(sem_close(portaltab.rxs[portalid].lock) == 0);
 
 		resource_free(&pool.rx, portalid);
 
