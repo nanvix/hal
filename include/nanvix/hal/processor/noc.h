@@ -87,8 +87,6 @@
  */
 /**@{*/
 
-	#include <nanvix/hlib.h>
-
 	/**
 	 * @name Total number of NoC nodes.
 	 */
