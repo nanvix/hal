@@ -28,19 +28,18 @@
 	/* Processor Interface Implementation */
 	#include <nanvix/hal/processor/_processor.h>
 
-/*============================================================================*
- * Interface Implementation Checking                                          *
- *============================================================================*/
-
 	/* Feature Checking */
 	#ifndef PROCESSOR_HAS_NOC
 	#error "Does this processor have Network-on-Chip (NoC) ?"
 	#endif
 
-#if defined(__INTERFACE_CHECK) || defined(__INTERFACE_CHECK_PROCESSOR_AL) || defined(__INTERFACE_CHECK_NOC)
+/*============================================================================*
+ * Interface Implementation Checking                                          *
+ *============================================================================*/
 
-	/* Has Network-on-Chip */
-	#if (PROCESSOR_HAS_NOC)
+#if (PROCESSOR_HAS_NOC)
+
+	#if defined(__INTERFACE_CHECK) || defined(__INTERFACE_CHECK_PROCESSOR_AL) || defined(__INTERFACE_CHECK_NOC)
 
 		/* Constants */
 		#ifndef PROCESSOR_NOC_IONODES_NUM
@@ -72,11 +71,13 @@
 
 	#endif
 
-#endif
+#endif /* PROCESSOR_HAS_NOC */
 
 /*============================================================================*
  * NoC Interface                                                              *
  *============================================================================*/
+
+#if (PROCESSOR_HAS_NOC)
 
 /**
  * @defgroup kernel-hal-processor-noc Network-on-Chip
@@ -85,8 +86,6 @@
  * @brief Processor NoC HAL Interface
  */
 /**@{*/
-
-	#include <nanvix/hlib.h>
 
 	/**
 	 * @name Total number of NoC nodes.
@@ -147,5 +146,7 @@
 	EXTERN int processor_node_set_num(int coreid, int nodenum);
 
 /**@}*/
+
+#endif /* PROCESSOR_HAS_NOC */
 
 #endif /* NANVIX_HAL_PROCESSOR_NOC_H_ */
