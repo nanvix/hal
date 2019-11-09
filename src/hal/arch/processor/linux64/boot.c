@@ -36,7 +36,7 @@ PUBLIC int linux64_processor_boot(int nclusters)
 {
 	UNUSED(nclusters);
 
-	kprintf("[hal][processor] powering on processor...");
+	kprintf("[hal][processor] powering on...");
 
 	linux64_processor_clusters_boot();
 	linux64_processor_noc_boot();

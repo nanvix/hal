@@ -84,7 +84,7 @@ PRIVATE int unix64_boot(int nclusters)
 	 */
 	tty_virt_init();
 
-	kprintf("[hal][target] powering on target...");
+	kprintf("[hal][target] powering on...");
 
 	return (linux64_processor_boot(nclusters));
 }
@@ -94,6 +94,8 @@ PRIVATE int unix64_boot(int nclusters)
  */
 PUBLIC NORETURN void unix64_poweroff(void)
 {
+	kprintf("[hal][target] powering off...");
+
 	unix64_sync_shutdown();
 	unix64_mailbox_shutdown();
 	unix64_portal_shutdown();
