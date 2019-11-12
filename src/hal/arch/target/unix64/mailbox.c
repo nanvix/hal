@@ -400,6 +400,7 @@ again:
 
 		/* Release underlying message queue. */
 		KASSERT(mq_close(mailboxtab.rxs[mbxid].fd) == 0);
+		KASSERT(mq_unlink(mailboxtab.rxs[mbxid].pathname) == 0);
 
 	unix64_mailbox_lock();
 
@@ -674,20 +675,4 @@ PUBLIC ssize_t unix64_mailbox_aread(int mbxid, void *buf, size_t n)
  */
 PUBLIC void unix64_mailbox_shutdown(void)
 {
-	/* Input mqueues. */
-	for (int i = 0; i < UNIX64_MAILBOX_CREATE_MAX; i++)
-		mq_close(mailboxtab.rxs[i].fd);
-
-	/* Output mqueues. */
-	for (int i = 0; i < UNIX64_MAILBOX_OPEN_MAX; i++)
-		mq_close(mailboxtab.txs[i].fd);
-
-	/* Unlink mqueues. */
-	for (int i = 0; i < PROCESSOR_NOC_NODES_NUM; i++)
-	{
-		char pathname[UNIX64_MAILBOX_NAME_LENGTH];
-
-		sprintf(pathname, "/%s-%d", UNIX64_MAILBOX_BASENAME, i);
-		mq_unlink(pathname);
-	}
 }
