@@ -30,6 +30,7 @@
 #include <nanvix/hlib.h>
 #include <sys/stat.h>
 #include <mqueue.h>
+#include <time.h>
 #include <pthread.h>
 #include <fcntl.h>
 #include <posix/errno.h>
@@ -209,7 +210,7 @@ PRIVATE int do_unix64_mailbox_create(int nodenum)
 	);
 
 	/* Open NoC connector. */
-	if ((fd = mq_open(pathname, O_RDONLY | O_CREAT, S_IRUSR | S_IWUSR, &mq_attr)) == -1)
+	if ((fd = mq_open(pathname, O_RDONLY | O_CREAT | O_NONBLOCK, S_IRUSR | S_IWUSR, &mq_attr)) == -1)
 		goto error1;
 
 	/* Initialize mailbox. */
@@ -280,7 +281,7 @@ PRIVATE int do_unix64_mailbox_open(int nodenum)
 	);
 
 	/* Open NoC connector. */
-	if ((fd = mq_open(pathname, O_WRONLY | O_CREAT, S_IRUSR | S_IWUSR, &mq_attr)) == -1)
+	if ((fd = mq_open(pathname, O_WRONLY | O_CREAT | O_NONBLOCK, S_IRUSR | S_IWUSR, &mq_attr)) == -1)
 		goto error1;
 
 	/* Initialize mailbox. */
@@ -599,6 +600,7 @@ PRIVATE ssize_t do_unix64_mailbox_aread(int mbxid, void *buf, size_t n)
 {
 	int err;
 	ssize_t nread;
+	int ntries = 5;
 
 again:
 
@@ -625,11 +627,34 @@ again:
 	 * Release lock, since we may sleep below.
 	 */
 	unix64_mailbox_unlock();
-	if ((nread = mq_receive(mailboxtab.rxs[mbxid].fd, buf, n, NULL)) == -1)
+
+
+	do
 	{
-		err = -EAGAIN;
-		goto error2;
-	}
+		struct timespec tm;
+
+		if (ntries-- == 0)
+		{
+			err = -ETIMEDOUT;
+			goto error2;
+		}
+
+		clock_gettime(CLOCK_REALTIME, &tm);
+		tm.tv_sec += 1;
+
+		if ((nread = mq_timedreceive(mailboxtab.rxs[mbxid].fd, buf, n, NULL, &tm)) == -1)
+		{
+			if (errno == EAGAIN)
+				continue;
+
+			kprintf("mailbox read error: %d", errno);
+			err = -EAGAIN;
+			goto error2;
+		}
+
+		break;
+
+	} while (1);
 
 	unix64_mailbox_lock();
 		resource_set_notbusy(&mailboxtab.rxs[mbxid].resource);
