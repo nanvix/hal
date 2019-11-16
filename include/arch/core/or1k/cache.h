@@ -51,16 +51,13 @@
 	/**
 	 * @brief Invalidates the data cache.
 	 *
-	 * @note We do note need to flush the pipeline because OpenRISC
-	 * doesn't have any other instruction, besides load and store,
-	 * which also manipulate memory, and msync ensures that all load
-	 * and stores that were issued complete before we progress.
+	 * @note OpenRISC features cache coherency. Still, we issue a full
+	 * memory barrier here to ensure that all load and stores complete
+	 * before we progress.
 	 */
 	static inline void or1k_dcache_inval(void)
 	{
-		or1k_mtspr(OR1K_SPR_DCBWR, 0);
-		asm volatile ("l.msync" ::: "memory");
-		or1k_mtspr(OR1K_SPR_DCBIR, 0);
+		__sync_synchronize();
 	}
 
 	/**
