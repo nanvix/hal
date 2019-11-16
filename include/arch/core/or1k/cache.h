@@ -36,6 +36,7 @@
  */
 /**@{*/
 
+	#include <nanvix/const.h>
 	#include <arch/core/or1k/regs.h>
 
 	/**
