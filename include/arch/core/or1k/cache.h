@@ -44,7 +44,7 @@
 	 *
 	 * @todo Check this.
 	 */
-	#define OR1K_CACHE_LINE_SIZE 64
+	#define OR1K_CACHE_LINE_SIZE 32
 
 #ifndef _ASM_FILE_
 
