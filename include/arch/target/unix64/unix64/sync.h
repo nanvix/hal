@@ -50,8 +50,8 @@
 	 * @name Maximum number of syncs points.
 	 */
 	/**@{*/
-	#define UNIX64_SYNC_CREATE_MAX  1 /**< Maximum amount of create syncs. */
-	#define UNIX64_SYNC_OPEN_MAX   18 /**< Maximum amount of open syncs.   */
+	#define UNIX64_SYNC_CREATE_MAX  18 /**< Maximum amount of create syncs. */
+	#define UNIX64_SYNC_OPEN_MAX    18 /**< Maximum amount of open syncs.   */
 	/**@}*/
 
 	/**

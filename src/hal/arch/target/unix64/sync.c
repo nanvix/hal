@@ -134,6 +134,20 @@ PRIVATE void unix64_sync_unlock(void)
 }
 
 /*============================================================================*
+ * unix64_sync_build_nodeslist()                                              *
+ *============================================================================*/
+
+PRIVATE uint64_t unix64_sync_build_nodeslist(const int *nodes, int nnodes)
+{
+	uint64_t nodeslist = 0ULL;
+
+	for (int j = 0; j < nnodes; j++)
+		nodeslist |= (1ULL << nodes[j]);
+
+	return (nodeslist);
+}
+
+/*============================================================================*
  * unix64_sync_rx_is_valid()                                                  *
  *============================================================================*/
 
@@ -247,10 +261,11 @@ PRIVATE int unix64_sync_is_local(int nodenum, const int *nodes, int nnodes)
  */
 PRIVATE int do_unix64_sync_create(const int *nodes, int nnodes, int type)
 {
-	int fd;         /* NoC connector.         */
-	int nodenum;    /* NoC node number.       */
-	int syncid;     /* Synchronization point. */
-	char *pathname; /* NoC connector name.    */
+	int fd;             /* NoC connector.         */
+	int nodenum;        /* NoC node number.       */
+	int syncid;         /* Synchronization point. */
+	char *pathname;     /* NoC connector name.    */
+	uint64_t nodeslist; /* Target nodes list.     */
 
 	nodenum = processor_node_get_num(core_get_id());
 
@@ -263,6 +278,7 @@ PRIVATE int do_unix64_sync_create(const int *nodes, int nnodes, int type)
 			return (-EAGAIN);
 		}
 
+		nodeslist = unix64_sync_build_nodeslist(nodes, nnodes);
 		pathname = synctab.rxs[syncid].pathname;
 
 		/* Broadcast. */
@@ -277,9 +293,10 @@ PRIVATE int do_unix64_sync_create(const int *nodes, int nnodes, int type)
 
 			/* Build pathname for NoC connector. */
 			sprintf(pathname,
-				"/%s-%d-broadcast",
+				"/%s-%d-%lx-broadcast",
 				UNIX64_SYNC_BASENAME,
-				nodes[0]
+				nodes[0],
+				nodeslist
 			);
 		}
 
@@ -294,9 +311,10 @@ PRIVATE int do_unix64_sync_create(const int *nodes, int nnodes, int type)
 
 			/* Build pathname for NoC connector. */
 			sprintf(pathname,
-				"/%s-%d-gather",
+				"/%s-%d-%lx-gather",
 				UNIX64_SYNC_BASENAME,
-				nodes[0]
+				nodes[0],
+				nodeslist
 			);
 		}
 
@@ -360,10 +378,11 @@ PUBLIC int unix64_sync_create(const int *nodes, int nnodes, int type)
  */
 PRIVATE int do_unix64_sync_open(const int *nodes, int nnodes, int type)
 {
-	int fd;         /* NoC connector.         */
-	int nodenum;    /* NoC node number.       */
-	int syncid;     /* Synchronization point. */
-	char *pathname; /* NoC connector name.    */
+	int fd;             /* NoC connector.         */
+	int nodenum;        /* NoC node number.       */
+	int syncid;         /* Synchronization point. */
+	char *pathname;     /* NoC connector name.    */
+	uint64_t nodeslist; /* Target nodes list.     */
 
 	nodenum = processor_node_get_num(core_get_id());
 
@@ -373,6 +392,7 @@ PRIVATE int do_unix64_sync_open(const int *nodes, int nnodes, int type)
 		if ((syncid = resource_alloc(&pool.tx)) < 0)
 			goto error0;
 
+		nodeslist = unix64_sync_build_nodeslist(nodes, nnodes);
 		pathname = synctab.txs[syncid].pathname;
 
 		/* Broadcast. */
@@ -387,9 +407,10 @@ PRIVATE int do_unix64_sync_open(const int *nodes, int nnodes, int type)
 
 			/* Build pathname for NoC connector. */
 			sprintf(pathname,
-				"/%s-%d-broadcast",
+				"/%s-%d-%lx-broadcast",
 				UNIX64_SYNC_BASENAME,
-				nodes[0]
+				nodes[0],
+				nodeslist
 			);
 		}
 
@@ -404,9 +425,10 @@ PRIVATE int do_unix64_sync_open(const int *nodes, int nnodes, int type)
 
 			/* Build pathname for NoC connector. */
 			sprintf(pathname,
-				"/%s-%d-gather",
+				"/%s-%d-%lx-gather",
 				UNIX64_SYNC_BASENAME,
-				nodes[0]
+				nodes[0],
+				nodeslist
 			);
 		}
 
@@ -733,6 +755,8 @@ again:
 			goto again;
 		}
 
+		KASSERT(mq_close(synctab.txs[syncid].fd) == 0);
+
 		resource_free(&pool.tx, syncid);
 
 	unix64_sync_unlock();
@@ -781,6 +805,22 @@ again:
 			goto again;
 		}
 
+		/*
+		 * Note that we intentionally assert for unlinking only when
+		 * it is a gather sync. That is because in this case we have
+		 * multiple peers that may call this.
+		 */
+		if (synctab.rxs[syncid].type == UNIX64_SYNC_ONE_TO_ALL)
+		{
+			KASSERT(mq_close(synctab.rxs[syncid].fd) == 0);
+			mq_unlink(synctab.rxs[syncid].pathname);
+		}
+		else
+		{
+			KASSERT(mq_close(synctab.rxs[syncid].fd) == 0);
+			KASSERT(mq_unlink(synctab.rxs[syncid].pathname) == 0);
+		}
+
 		resource_free(&pool.rx, syncid);
 
 	unix64_sync_unlock();
@@ -802,22 +842,5 @@ error0:
  */
 PUBLIC void unix64_sync_shutdown(void)
 {
-	/* Close receiver mqueues. */
-	for (int i = 0; i < UNIX64_SYNC_CREATE_MAX; i++)
-		mq_close(synctab.rxs[i].fd);
-
-	/* Close sender mqueues. */
-	for (int i = 0; i < UNIX64_SYNC_OPEN_MAX; i++)
-		mq_close(synctab.txs[i].fd);
-
-	/* Unlink mqueues. */
-	for (int i = 0; i < PROCESSOR_NOC_NODES_NUM; i++)
-	{
-		char pathname[UNIX64_SYNC_NAME_LENGTH];
-
-		sprintf(pathname, "/%s-%d-gather", UNIX64_SYNC_BASENAME, i);
-		mq_unlink(pathname);
-		sprintf(pathname, "/%s-%d-broadcast", UNIX64_SYNC_BASENAME, i);
-		mq_unlink(pathname);
-	}
+	noop();
 }
