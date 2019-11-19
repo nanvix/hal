@@ -132,9 +132,8 @@ PUBLIC int main(int argc, const char *argv[])
  */
 PUBLIC NORETURN void kmain(int argc, const char *argv[])
 {
-	const char *arg;
-
-	arg = (argc < 2) ? "--all" : argv[1];
+	UNUSED(argc);
+	UNUSED(argv);
 
 	/*
 	 * Initializes the HAL. Must come
@@ -153,14 +152,10 @@ PUBLIC NORETURN void kmain(int argc, const char *argv[])
 #endif
 	{
 		/* Run unit tests. */
-		if ((!kstrcmp(arg, "--all")) || (!kstrcmp(arg, "--core")))
-			test_core_al();
-		if ((!kstrcmp(arg, "--all")) || (!kstrcmp(arg, "--cluster")))
-			test_cluster_al();
-		if ((!kstrcmp(arg, "--all")) || (!kstrcmp(arg, "--processor")))
-			test_processor_al();
-		if ((!kstrcmp(arg, "--all")) || (!kstrcmp(arg, "--target")))
-			test_target_al();
+		test_core_al();
+		test_cluster_al();
+		test_processor_al();
+		test_target_al();
 	}
 
 	target_poweroff();
