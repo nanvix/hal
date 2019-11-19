@@ -203,6 +203,8 @@ PRIVATE void slave(void)
 #endif
 
 	fence_join(&slave_fence);
+
+	core_reset();
 }
 
 /*----------------------------------------------------------------------------*
@@ -339,6 +341,8 @@ PRIVATE void leader(void)
 	fence_wait(&slave_fence);
 
 	fence_join(&leader_fence);
+
+	core_reset();
 }
 
 /*----------------------------------------------------------------------------*
@@ -858,6 +862,8 @@ PRIVATE void consumer(void)
 	}
 
 	fence_join(&slave_fence);
+
+	core_reset();
 }
 
 /**
