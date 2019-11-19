@@ -44,12 +44,12 @@
 	/**
 	 * @brief Number of performance events.
 	 */
-	#define MOR1KX_PERF_EVENTS_NUM 11
+	#define MOR1KX_PERF_EVENTS_NUM 7
 
 	/**
 	 * @brief Number of performance monitors.
 	 */
-	#define MOR1KX_PERF_MONITORS_NUM 8
+	#define MOR1KX_PERF_MONITORS_NUM 2
 
 	/**
 	 * @brief Event Offset.
@@ -58,19 +58,17 @@
 
 	/**
 	 * @name Performance Events
+	 *
+	 * @note We have tweaked these for Bluedragon cluster.
 	 */
 	/**@{*/
-	#define MOR1KX_PERF_LOAD_ACCESS         0 /**< Load access.              */
-	#define MOR1KX_PERF_STORE_ACCESS        1 /**< Store access.             */
-	#define MOR1KX_PERF_INSTRUCTION_FETCH   2 /**< Instruction Fetch.        */
-	#define MOR1KX_PERF_DCACHE_MISSES       3 /**< Data Cache Misses.        */
-	#define MOR1KX_PERF_ICACHE_MISSES       4 /**< Instruction Cache.        */
-	#define MOR1KX_PERF_IFETCH_STALLS       5 /**< Instruction Fetch Stalls. */
-	#define MOR1KX_PERF_LSU_STALLS          6 /**< LSU Stalls.               */
-	#define MOR1KX_PERF_BRANCH_STALLS       7 /**< Branch Stalls.            */
-	#define MOR1KX_PERF_DTLB_MISSES         8 /**< Data TLB Misses.          */
-	#define MOR1KX_PERF_ITLB_MISSES         9 /**< Instruction TLB Misses.   */
-	#define MOR1KX_PERF_DATA_DEP_STALLS    10 /**< Data Dependency Stalls.   */
+	#define MOR1KX_PERF_LOAD_ACCESS         0 /**< D-Cache Accesses */
+	#define MOR1KX_PERF_STORE_ACCESS        1 /**< Branch Stalls    */
+	#define MOR1KX_PERF_INSTRUCTION_FETCH   2 /**< I-Cache Hits     */
+	#define MOR1KX_PERF_DCACHE_MISSES       3 /**< D-Cache Misses   */
+	#define MOR1KX_PERF_ICACHE_MISSES       4 /**< I-Cache Misses   */
+	#define MOR1KX_PERF_IFETCH_STALLS       5 /**< I-Fetch Stalls   */
+	#define MOR1KX_PERF_LSU_STALLS          6 /**< LSU Stalls       */
 	/**@}*/
 
 #ifndef _ASM_FILE_
