@@ -78,6 +78,8 @@
 	 */
 	static inline int or1k_spinlock_trylock(or1k_spinlock_t *lock)
 	{
+		__sync_synchronize();
+
 		return (
 			!__sync_bool_compare_and_swap(
 				lock,
@@ -95,9 +97,7 @@
 	static inline void or1k_spinlock_lock(or1k_spinlock_t *lock)
 	{
 		while (or1k_spinlock_trylock(lock))
-			/* noop */;
-
-		__sync_synchronize();
+			noop();
 	}
 
 	/**
