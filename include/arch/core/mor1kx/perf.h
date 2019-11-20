@@ -62,13 +62,13 @@
 	 * @note We have tweaked these for Bluedragon cluster.
 	 */
 	/**@{*/
-	#define MOR1KX_PERF_LOAD_ACCESS         0 /**< D-Cache Accesses */
-	#define MOR1KX_PERF_STORE_ACCESS        1 /**< Branch Stalls    */
-	#define MOR1KX_PERF_INSTRUCTION_FETCH   2 /**< I-Cache Hits     */
-	#define MOR1KX_PERF_DCACHE_MISSES       3 /**< D-Cache Misses   */
-	#define MOR1KX_PERF_ICACHE_MISSES       4 /**< I-Cache Misses   */
-	#define MOR1KX_PERF_IFETCH_STALLS       5 /**< I-Fetch Stalls   */
-	#define MOR1KX_PERF_LSU_STALLS          6 /**< LSU Stalls       */
+	#define MOR1KX_PERF_LSU_HITS      0 /**< LSU Hits             */
+	#define MOR1KX_PERF_BRANCH_STALLS 1 /**< Branch Stalls        */
+	#define MOR1KX_PERF_ICACHE_HITS   2 /**< I-Cache Hits         */
+	#define MOR1KX_PERF_REG_STALLS    3 /**< Register File Stalls */
+	#define MOR1KX_PERF_ICACHE_MISSES 4 /**< I-Cache Misses       */
+	#define MOR1KX_PERF_IFETCH_STALLS 5 /**< I-Fetch Stalls       */
+	#define MOR1KX_PERF_LSU_STALLS    6 /**< LSU Stalls           */
 	/**@}*/
 
 #ifndef _ASM_FILE_
@@ -140,15 +140,15 @@
 	 * @name Exported Constants
 	 */
 	/**@{*/
-	#define PERF_MONITORS_NUM  MOR1KX_PERF_MONITORS_NUM       /**< @ref MOR1KX_PERF_MONITORS_NUM      */
-	#define PERF_EVENTS_NUM    MOR1KX_PERF_EVENTS_NUM         /**< @ref MOR1KX_PERF_EVENTS_NUM        */
-	#define PERF_CYCLES        MOR1KX_PERF_INSTRUCTION_FETCH  /**< @ref MOR1KX_PERF_INSTRUCTION_FETCH */
-	#define PERF_ICACHE_MISSES MOR1KX_PERF_ICACHE_MISSES      /**< @ref MOR1KX_PERF_ICACHE_MISSES     */
-	#define PERF_DCACHE_MISSES MOR1KX_PERF_DCACHE_MISSES      /**< @ref MOR1KX_PERF_DCACHE_MISSES     */
-	#define PERF_BRANCH_STALLS MOR1KX_PERF_BRANCH_STALLS      /**< @ref MOR1KX_PERF_BRANCH_STALLS     */
-	#define PERF_ICACHE_STALLS MOR1KX_PERF_IFETCH_STALLS      /**< @ref MOR1KX_PERF_IFETCH_STALLS     */
-	#define PERF_DCACHE_STALLS MOR1KX_PERF_LSU_STALLS         /**< @ref MOR1KX_PERF_LSU_STALLS        */
-	#define PERF_REG_STALLS    MOR1KX_PERF_DATA_DEP_STALLS    /**< @ref MOR1KX_PERF_DATA_DEP_STALLS   */
+	#define PERF_MONITORS_NUM  MOR1KX_PERF_MONITORS_NUM  /**< @ref MOR1KX_PERF_MONITORS_NUM  */
+	#define PERF_EVENTS_NUM    MOR1KX_PERF_EVENTS_NUM    /**< @ref MOR1KX_PERF_EVENTS_NUM    */
+	#define PERF_CYCLES        -1                        /**< Not present.                   */
+	#define PERF_ICACHE_MISSES MOR1KX_PERF_ICACHE_HITS   /**< @ref MOR1KX_PERF_ICACHE_MISSES */
+	#define PERF_DCACHE_MISSES -1                        /**< Not present                    */
+	#define PERF_BRANCH_STALLS MOR1KX_PERF_BRANCH_STALLS /**< @ref MOR1KX_PERF_BRANCH_STALLS */
+	#define PERF_ICACHE_STALLS MOR1KX_PERF_IFETCH_STALLS /**< @ref MOR1KX_PERF_IFETCH_STALLS */
+	#define PERF_DCACHE_STALLS MOR1KX_PERF_LSU_STALLS    /**< @ref MOR1KX PERF_LSU_STALLS    */
+	#define PERF_REG_STALLS    MOR1KX_PERF_REG_STALLS    /**< @ref MOR1KX_PERF_REG_STALLS    */
 	/**@}*/
 
 	/**
