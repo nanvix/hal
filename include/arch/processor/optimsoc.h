@@ -40,9 +40,6 @@
  */
 /**@*/
 
-	#include <arch/processor/optimsoc/clusters.h>
-	#include <arch/processor/optimsoc/noc.h>
-
 /**@}*/
 
 /*============================================================================*
