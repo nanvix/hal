@@ -106,7 +106,16 @@ PUBLIC void or1k_timer_init(unsigned freq)
 		while (1);
 
 	/* Timer rate. */
+#if (__HAS_HW_DIVISION)
 	timer_delta = (OR1K_CORE_FREQUENCY/freq);
+#else
+	timer_delta = OR1K_CORE_FREQUENCY;
+	while (freq > 0)
+	{
+		timer_delta >>= 1;
+		freq >>= 1;
+	}
+#endif
 
 	/*
 	 * Timer calibrate.
