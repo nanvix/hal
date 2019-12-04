@@ -52,7 +52,7 @@ export TIMEOUT ?= 120
 
 # Compiler Options
 export CFLAGS += -mos=bare -march=k1b -mboard=developer
-export CFLAGS += -D __HAS_HW_DIVISION
+export CFLAGS += -D __HAS_HW_DIVISION=1 -D__HAS_HW_MULTIPLICATION=1
 export CFLAGS += -D __INTERFACE_CHECK_CORE_AL
 export CFLAGS += -D __INTERFACE_CHECK_CLUSTER_AL
 export CFLAGS += -D __INTERFACE_CHECK_PROCESSOR_AL

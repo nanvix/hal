@@ -55,7 +55,7 @@ export TIMEOUT ?= 5
 export CFLAGS += -nostdlib -nostdinc -ffreestanding
 export CFLAGS += -ansi -pedantic-errors
 export CFLAGS += -Wstack-usage=4096
-export CFLAGS += -D __HAS_HW_DIVISION
+export CFLAGS += -D __HAS_HW_DIVISION=1 -D__HAS_HW_MULTIPLICATION=1
 export CFLAGS += -D __INTERFACE_CHECK_CORE_AL
 export CFLAGS += -D __INTERFACE_CHECK_CLUSTER_AL
 export CFLAGS += -D __INTERFACE_CHECK_PROCESSOR_AL
