@@ -101,15 +101,15 @@ PUBLIC int exception_register(int excpnum, exception_handler_t handler)
 		return (-EINVAL);
 	}
 
-	/* Bad exception number. */
+	/* Overwriting handler. */
 	if (exceptions[excpnum].handler != default_handler)
 	{
 		if (exceptions[excpnum].handler != NULL)
 		{
-			kprintf("[hal][core] exception handler already registered for %s",
+			kprintf("[hal][core] overwriting handler %x for %s",
+				exceptions[excpnum].handler,
 				exceptions[excpnum].name
 			);
-			return (1);
 		}
 	}
 

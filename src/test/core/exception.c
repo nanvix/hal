@@ -137,20 +137,6 @@ PRIVATE void test_exception_register_inval(void)
 }
 
 /*----------------------------------------------------------------------------*
- * Set a Handler for a Bad Exception                                          *
- *----------------------------------------------------------------------------*/
-
-/**
- * Fault Injection Test: Set a Handler for a Bad Exception
- */
-PRIVATE void test_exception_register_bad(void)
-{
-	KASSERT(exception_register(EXCEPTION_PAGE_FAULT, dummy_handler) == 0);
-	KASSERT(exception_register(EXCEPTION_PAGE_FAULT, dummy_handler) == 1);
-	KASSERT(exception_unregister(EXCEPTION_PAGE_FAULT) == 0);
-}
-
-/*----------------------------------------------------------------------------*
  * Unset a Handler for Invalid Exception                                      *
  *----------------------------------------------------------------------------*/
 
@@ -193,7 +179,6 @@ PRIVATE struct test exception_api_tests[] = {
  */
 PRIVATE struct test exception_fault_tests[] = {
 	{ test_exception_register_inval,   "set handler for invalid exception  " },
-	{ test_exception_register_bad,     "set handler for bad exception      " },
 	{ test_exception_unregister_inval, "unset handler for invalid exception" },
 	{ test_exception_unregister_bad,   "unset handler for bad exception    " },
 	{ NULL,                             NULL                                 },
