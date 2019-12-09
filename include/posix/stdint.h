@@ -493,7 +493,7 @@ typedef __uintptr_t uintptr_t;
 #define INT32_C(x) __INT32_C(x)
 #define UINT32_C(x) __UINT32_C(x)
 #else
-#if __have_long32
+#if defined(__have_long32) && (__have_long32)
 #define INT32_C(x)	x##L
 #define UINT32_C(x)	x##UL
 #else
