@@ -352,8 +352,11 @@ PUBLIC void or1k_enable_mmu(void)
 PUBLIC void or1k_mmu_setup(void)
 {
 	/* TLB Handler. */
-	exception_register(EXCEPTION_DTLB_FAULT, or1k_cluster_do_tlb_fault);
-	exception_register(EXCEPTION_ITLB_FAULT, or1k_cluster_do_tlb_fault);
+	if (core_get_id() == OR1K_CLUSTER_COREID_MASTER)
+	{
+		exception_register(EXCEPTION_DTLB_FAULT, or1k_cluster_do_tlb_fault);
+		exception_register(EXCEPTION_ITLB_FAULT, or1k_cluster_do_tlb_fault);
+	}
 
 	/* Enable MMU. */
 	or1k_enable_mmu();
