@@ -311,6 +311,20 @@
 /**@{*/
 
 	/**
+	 * @brief Multiplies two integers.
+	 *
+	 * @param a First operand.
+	 * @param b Second operand.
+	 *
+	 * @returns The result of @p a times @p b.
+	 */
+	#if (__HAS_HW_MULTIPLICATION)
+		#define mult(a, b) ((a)*(b))
+	#else
+		#define mult(a, b) __mult((a), (b))
+	#endif
+
+	/**
 	 * @brief Asserts if 'a' and 'b' agrees on size.
 	 *
 	 * @param a Probing size.

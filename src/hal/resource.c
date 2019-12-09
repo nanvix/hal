@@ -23,6 +23,7 @@
  */
 
 #include <nanvix/hal/resource.h>
+#include <nanvix/hlib.h>
 #include <nanvix/const.h>
 
 /*============================================================================*
@@ -52,7 +53,7 @@ PRIVATE int resource_dumb_alloc(const struct resource_pool *pool)
 	{
 		struct resource *resource;
 
-		resource = (struct resource *)(&base[i*size]);
+		resource = (struct resource *)(&base[mult(i, size)]);
 
 		/* Found. */
 		if (!resource_is_used(resource))
@@ -85,7 +86,7 @@ PRIVATE void resource_dumb_free(const struct resource_pool *pool, int id)
 	size_t size = pool->resource_size;
 	struct resource *resource;
 
-	resource = (struct resource *)(&base[id*size]);
+	resource = (struct resource *)(&base[mult(id, size)]);
 
 	resource_set_unused(resource);
 }
