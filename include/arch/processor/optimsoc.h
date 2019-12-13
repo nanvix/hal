@@ -57,6 +57,11 @@
 	#define PROCESSOR_HAS_NOC         0 /**< NoC feature          */
 	/**@}*/
 
+	/**
+	 * @brief Logical NoC node ID of master.
+	 */
+	#define PROCESSOR_NODENUM_MASTER  0
+
 /**@endcond*/
 
 #endif /* PROCESSOR_OR1K_OPTIMSOC_H_ */
