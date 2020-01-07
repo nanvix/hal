@@ -95,6 +95,11 @@
 	 */
 	EXTERN void bostan_dnoc_setup(void);
 
+	/**
+	 * @brief Verify lost interrupts.
+	 */
+	EXTERN void bostan_dnoc_it_verify(void);
+
 /*============================================================================*
  * D-Noc Receiver Interface                                                   *
  *============================================================================*/
