@@ -55,7 +55,7 @@ export TIMEOUT ?= 10
 export CFLAGS += -march=rv32imac -mabi=ilp32 -mcmodel=medany
 export CFLAGS += -ffunction-sections -fdata-sections
 export CFLAGS += -nostdlib -nostdinc -ffreestanding
-export CFLAGS += -ansi -pedantic-errors
+export CFLAGS += -pedantic-errors
 export CFLAGS += -Wstack-usage=4096
 export CFLAGS += -Wno-error=type-limits
 export CFLAGS += -D __HAS_HW_DIVISION=1 -D__HAS_HW_MULTIPLICATION=1

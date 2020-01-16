@@ -51,7 +51,7 @@ export AR := $(TOOLCHAIN_DIR)/or1k-elf-ar
 
 # Compiler Options
 export CFLAGS += -nostdlib -nostdinc -ffreestanding
-export CFLAGS += -ansi -pedantic-errors
+export CFLAGS += -pedantic-errors
 export CFLAGS += -Wstack-usage=4096
 export CFLAGS += -Wno-type-limits
 export CFLAGS += -D __INTERFACE_CHECK_CORE_AL
