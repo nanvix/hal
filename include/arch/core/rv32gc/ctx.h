@@ -203,6 +203,7 @@
 	#define __context_get_pc_fn /**< context_get_pc() */
 	#define __context_set_sp_fn /**< context_set_sp() */
 	#define __context_set_pc_fn /**< context_set_pc() */
+	#define __context_dump_fn   /**< context_dump()   */
 	/**@}*/
 
 #ifndef _ASM_FILE_

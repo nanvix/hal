@@ -57,6 +57,9 @@
 	#ifndef __context_set_pc_fn
 	#error "context_set_pc() not defined?"
 	#endif
+	#ifndef __context_dump_fn
+	#error "context_dump() not defined?"
+	#endif
 
 #endif
 
@@ -115,6 +118,12 @@
 	 */
 	EXTERN void context_set_pc(struct context *ctx, word_t val);
 
+	/**
+	 * @brief Dumps context information.
+	 *
+	 * @param ctx Saved execution context.
+	 */
+	EXTERN void context_dump(const struct context *ctx);
 
 /**@}*/
 
