@@ -37,9 +37,14 @@
  * Interface Implementation Checking                                          *
  *============================================================================*/
 
-#if (PROCESSOR_HAS_NOC)
+#if defined(__INTERFACE_CHECK) || defined(__INTERFACE_CHECK_PROCESSOR_AL) || defined(__INTERFACE_CHECK_NOC)
 
-	#if defined(__INTERFACE_CHECK) || defined(__INTERFACE_CHECK_PROCESSOR_AL) || defined(__INTERFACE_CHECK_NOC)
+	/* Feature Checking */
+	#ifndef PROCESSOR_HAS_NOC
+	#error "Does  this processor have a NoC?"
+	#endif
+
+	#if (PROCESSOR_HAS_NOC)
 
 		/* Constants */
 		#ifndef PROCESSOR_NOC_IONODES_NUM
@@ -71,7 +76,7 @@
 
 	#endif
 
-#endif /* PROCESSOR_HAS_NOC */
+#endif
 
 /*============================================================================*
  * NoC Interface                                                              *

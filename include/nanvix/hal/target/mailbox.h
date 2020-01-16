@@ -76,13 +76,6 @@
 		#error "mailbox_wait() not defined?"
 		#endif
 
-	#else
-
-		/* Constants */
-		#define MAILBOX_CREATE_MAX 1
-		#define MAILBOX_OPEN_MAX   1
-		#define MAILBOX_MSG_SIZE   1
-
 	#endif
 
 #endif
@@ -189,8 +182,8 @@
 	 */
 	EXTERN int mailbox_wait(int mbxid);
 
-#endif /* __TARGET_HAS_MAILBOX */
-
 /**@}*/
+
+#endif /* __TARGET_HAS_MAILBOX */
 
 #endif /* NANVIX_HAL_TARGET_MAILBOX_H_ */

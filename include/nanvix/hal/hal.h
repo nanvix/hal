@@ -25,6 +25,10 @@
 #ifndef NANVIX_HAL_HAL_H_
 #define NANVIX_HAL_HAL_H_
 
+	#if !defined(__NANVIX_HAL) && !defined(__NEED_HAL)
+		#error "include <nanvix/hal.h> instead"
+	#endif
+
 	#undef  __NEED_HAL_TARGET
 	#define __NEED_HAL_TARGET
 	#include <nanvix/hal/target.h>
