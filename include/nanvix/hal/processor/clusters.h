@@ -72,6 +72,8 @@
  * Cluster Interface                                                          *
  *============================================================================*/
 
+#if (PROCESSOR_IS_MULTICLUSTER)
+
 /**
  * @defgroup kernel-hal-processor-clusters Clusters
  * @ingroup kernel-hal-processor
@@ -116,5 +118,7 @@
 	EXTERN int cluster_is_iocluster(int clusternum);
 
 /**@}*/
+
+#endif /* PROCESSOR_IS_MULTICLUSTER */
 
 #endif /* NANVIX_HAL_PROCESSOR_CLUSTERS_H_ */
