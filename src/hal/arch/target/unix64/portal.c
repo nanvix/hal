@@ -760,6 +760,8 @@ error0:
 
 /**
  * @see do_unix64_portal_read();
+ *
+ * @todo Check fixed size from microkernel.
  */
 PUBLIC ssize_t unix64_portal_read(int portalid, void *buf, size_t n)
 {
@@ -772,7 +774,7 @@ PUBLIC ssize_t unix64_portal_read(int portalid, void *buf, size_t n)
 		return (-EINVAL);
 
 	/* Invalid read size. */
-	if ((n < 1) || (n > UNIX64_PORTAL_MAX_SIZE))
+	if (n == 0)
 		return (-EINVAL);
 
 	return (do_unix64_portal_read(portalid, buf, n));
@@ -854,6 +856,8 @@ error0:
 
 /**
  * @see unix64_do_portal_write().
+ *
+ * @todo Check fixed size from microkernel.
  */
 PUBLIC ssize_t unix64_portal_write(int portalid, const void *buf, size_t n)
 {
@@ -866,7 +870,7 @@ PUBLIC ssize_t unix64_portal_write(int portalid, const void *buf, size_t n)
 		return (-EINVAL);
 
 	/* Invalid write size. */
-	if ((n < 1) || (n > UNIX64_PORTAL_MAX_SIZE))
+	if (n == 0)
 		return (-EINVAL);
 
 	return (do_unix64_portal_write(portalid, buf, n));
