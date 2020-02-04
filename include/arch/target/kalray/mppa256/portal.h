@@ -49,6 +49,11 @@
 	#define MPPA256_PORTAL_MAX_SIZE (8*KB)
 
 	/**
+	 * @brief Number of ports in a single portal.
+	 */
+	#define MPPA256_PORTAL_PORT_NR 16
+
+	/**
 	 * @brief Creates a portal.
 	 *
 	 * @param local ID of the local NoC node.
@@ -158,11 +163,13 @@
 	 * @see MPPA256_PORTAL_CREATE_MAX
 	 * @see MPPA256_PORTAL_OPEN_MAX
 	 * @see MPPA256_PORTAL_MAX_SIZE
+	 * @see MPPA256_PORTAL_PORT_NR
 	 */
 	/**@{*/
 	#define PORTAL_CREATE_MAX MPPA256_PORTAL_CREATE_MAX
 	#define PORTAL_OPEN_MAX   MPPA256_PORTAL_OPEN_MAX
 	#define PORTAL_MAX_SIZE   MPPA256_PORTAL_MAX_SIZE
+	#define PORTAL_PORT_NR    MPPA256_PORTAL_PORT_NR
 	/**@}*/
 
 	/**
