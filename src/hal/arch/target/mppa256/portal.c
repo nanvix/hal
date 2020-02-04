@@ -338,6 +338,7 @@ PRIVATE void mppa256_portal_sender_handler(int interface, int tag)
 			continue;
 
 		portaltab.txs[i].is_allowed = 1;
+		dcache_invalidate();
 
 		/* Sends requested message. */
 		if (resource_is_busy(&portaltab.txs[i].resource))
