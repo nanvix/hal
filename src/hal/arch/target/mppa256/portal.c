@@ -800,6 +800,10 @@ PUBLIC ssize_t mppa256_portal_awrite(int portalid, const void * buffer, uint64_t
 	if (resource_is_busy(&portaltab.txs[portalid].resource))
 		return (-EAGAIN);
 
+	/* Bad buffer*/
+	if (buffer == NULL)
+		return (-EINVAL);
+
 	/* Bad size. */
 	if (size == 0 || size > MPPA256_PORTAL_MAX_SIZE || buffer == NULL)
 		return (-EINVAL);
@@ -895,6 +899,10 @@ PUBLIC ssize_t mppa256_portal_aread(int portalid, void * buffer, uint64_t size)
 	/* Busy portal. */
 	if (resource_is_busy(&portaltab.rxs[portalid].resource))
 		return (-EBUSY);
+
+	/* Bad buffer. */
+	if (buffer == NULL)
+		return (-EINVAL);
 
 	/* Bad size. */
 	if (size == 0 || size > MPPA256_PORTAL_MAX_SIZE || buffer == NULL)
