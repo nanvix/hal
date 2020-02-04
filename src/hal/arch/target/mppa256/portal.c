@@ -783,6 +783,8 @@ PRIVATE ssize_t do_mppa256_portal_awrite(int portalid, const void * buffer, uint
 
 /**
  * @see do_mppa256_portal_awrite().
+ *
+ * @todo Check fixed size from microkernel.
  */
 PUBLIC ssize_t mppa256_portal_awrite(int portalid, const void * buffer, uint64_t size)
 {
@@ -805,7 +807,7 @@ PUBLIC ssize_t mppa256_portal_awrite(int portalid, const void * buffer, uint64_t
 		return (-EINVAL);
 
 	/* Bad size. */
-	if (size == 0 || size > MPPA256_PORTAL_MAX_SIZE || buffer == NULL)
+	if (size == 0)
 		return (-EINVAL);
 
 	return (do_mppa256_portal_awrite(portalid, buffer, size));
@@ -883,6 +885,8 @@ PUBLIC ssize_t do_mppa256_portal_aread(int portalid, void * buffer, uint64_t siz
 
 /**
  * @see do_mppa256_portal_aread().
+ *
+ * @todo Check fixed size from microkernel.
  */
 PUBLIC ssize_t mppa256_portal_aread(int portalid, void * buffer, uint64_t size)
 {
@@ -905,7 +909,7 @@ PUBLIC ssize_t mppa256_portal_aread(int portalid, void * buffer, uint64_t size)
 		return (-EINVAL);
 
 	/* Bad size. */
-	if (size == 0 || size > MPPA256_PORTAL_MAX_SIZE || buffer == NULL)
+	if (size == 0)
 		return (-EINVAL);
 
 	/* Read not allowed. */
