@@ -55,7 +55,7 @@
 	/**
 	 * @brief Maximum size of transfer data.
 	 */
-	#define UNIX64_PORTAL_MAX_SIZE (1*MB)
+	#define UNIX64_PORTAL_MAX_SIZE (8*KB)
 
 #ifdef __NANVIX_HAL
 
