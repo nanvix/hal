@@ -338,6 +338,7 @@ PRIVATE void mppa256_portal_sender_handler(int interface, int tag)
 			continue;
 
 		portaltab.txs[i].is_allowed = 1;
+		dcache_invalidate();
 
 		/* Sends requested message. */
 		if (resource_is_busy(&portaltab.txs[i].resource))
@@ -768,14 +769,17 @@ PRIVATE int mppa256_portal_send_data(int portalid)
  */
 PRIVATE ssize_t do_mppa256_portal_awrite(int portalid, const void * buffer, uint64_t size)
 {
+	if (!portaltab.txs[portalid].is_allowed)
+		return (-EAGAIN);
+
 	portaltab.txs[portalid].buffer = buffer;
 	portaltab.txs[portalid].size   = size;
 	resource_set_busy(&portaltab.txs[portalid].resource);
 
-	if (portaltab.txs[portalid].is_allowed)
+	if (mppa256_portal_send_data(portalid) != 0)
 	{
-		if (mppa256_portal_send_data(portalid) != 0)
-			return (-EAGAIN);
+		resource_set_notbusy(&portaltab.txs[portalid].resource);
+		return (-EAGAIN);
 	}
 
 	return (size);
@@ -783,6 +787,8 @@ PRIVATE ssize_t do_mppa256_portal_awrite(int portalid, const void * buffer, uint
 
 /**
  * @see do_mppa256_portal_awrite().
+ *
+ * @todo Check fixed size from microkernel.
  */
 PUBLIC ssize_t mppa256_portal_awrite(int portalid, const void * buffer, uint64_t size)
 {
@@ -798,10 +804,14 @@ PUBLIC ssize_t mppa256_portal_awrite(int portalid, const void * buffer, uint64_t
 
 	/* Busy portal. */
 	if (resource_is_busy(&portaltab.txs[portalid].resource))
-		return (-EBUSY);
+		return (-EAGAIN);
+
+	/* Bad buffer*/
+	if (buffer == NULL)
+		return (-EINVAL);
 
 	/* Bad size. */
-	if (size == 0 || size > MPPA256_PORTAL_MAX_SIZE || buffer == NULL)
+	if (size == 0)
 		return (-EINVAL);
 
 	return (do_mppa256_portal_awrite(portalid, buffer, size));
@@ -879,6 +889,8 @@ PUBLIC ssize_t do_mppa256_portal_aread(int portalid, void * buffer, uint64_t siz
 
 /**
  * @see do_mppa256_portal_aread().
+ *
+ * @todo Check fixed size from microkernel.
  */
 PUBLIC ssize_t mppa256_portal_aread(int portalid, void * buffer, uint64_t size)
 {
@@ -896,8 +908,12 @@ PUBLIC ssize_t mppa256_portal_aread(int portalid, void * buffer, uint64_t size)
 	if (resource_is_busy(&portaltab.rxs[portalid].resource))
 		return (-EBUSY);
 
+	/* Bad buffer. */
+	if (buffer == NULL)
+		return (-EINVAL);
+
 	/* Bad size. */
-	if (size == 0 || size > MPPA256_PORTAL_MAX_SIZE || buffer == NULL)
+	if (size == 0)
 		return (-EINVAL);
 
 	/* Read not allowed. */

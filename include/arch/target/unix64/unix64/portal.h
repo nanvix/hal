@@ -55,7 +55,12 @@
 	/**
 	 * @brief Maximum size of transfer data.
 	 */
-	#define UNIX64_PORTAL_MAX_SIZE (1*MB)
+	#define UNIX64_PORTAL_MAX_SIZE (8*KB)
+
+	/**
+	 * @brief Number of ports in a single portal.
+	 */
+	#define UNIX64_PORTAL_PORT_NR 16
 
 #ifdef __NANVIX_HAL
 
@@ -191,6 +196,7 @@
 	#define PORTAL_CREATE_MAX UNIX64_PORTAL_CREATE_MAX /**< UNIX64_PORTAL_CREATE_MAX */
 	#define PORTAL_OPEN_MAX   UNIX64_PORTAL_OPEN_MAX   /**< UNIX64_PORTAL_OPEN_MAX   */
 	#define PORTAL_MAX_SIZE   UNIX64_PORTAL_MAX_SIZE   /**< UNIX64_PORTAL_MAX_SIZE   */
+	#define PORTAL_PORT_NR    UNIX64_PORTAL_PORT_NR    /**< UNIX64_PORTAL_PORT_NR    */
 	/**@}*/
 
 	/**

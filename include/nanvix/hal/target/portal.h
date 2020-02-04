@@ -52,6 +52,9 @@
 		#ifndef PORTAL_MAX_SIZE
 		#error "PORTAL_MAX_SIZE not defined"
 		#endif
+		#ifndef PORTAL_PORT_NR
+		#error "PORTAL_PORT_NR not defined"
+		#endif
 
 		/* Functions */
 		#ifndef __portal_setup_fn
@@ -88,6 +91,7 @@
 		#define PORTAL_CREATE_MAX 1
 		#define PORTAL_OPEN_MAX   1
 		#define PORTAL_MAX_SIZE   1
+		#define PORTAL_PORT_NR    1
 
 	#endif
 
