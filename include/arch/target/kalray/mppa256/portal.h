@@ -46,7 +46,7 @@
 	/**
 	 * @brief Maximum size of transfer data.
 	 */
-	#define MPPA256_PORTAL_MAX_SIZE (1*MB)
+	#define MPPA256_PORTAL_MAX_SIZE (8*KB)
 
 	/**
 	 * @brief Creates a portal.
