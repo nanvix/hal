@@ -332,6 +332,34 @@ PRIVATE int k1b_cluster_tlb_inval(vaddr_t vaddr, unsigned shift, unsigned way)
 }
 
 /*============================================================================*
+ * k1b_cluster_tlb_shootdown()                                                *
+ *============================================================================*/
+
+/**
+ * The k1b_cluster_tlb_shootdown() function invalidates the TLB entry
+ * that encodes the virtual address @p vaddr in all cores.
+ *
+ * @author Pedro Henrique Penna
+ */
+PUBLIC int k1b_cluster_tlb_shootdown(vaddr_t vaddr)
+{
+	unsigned idx;
+	struct tlbe tlbe;
+
+	idx = k1b_tlbe_get_index(vaddr, K1B_PAGE_SHIFT, 0);
+
+	/* Shootdown hardware TLBs */
+	if (k1b_tlbe_shootdown(&tlbe, vaddr, K1B_PAGE_SHIFT))
+		return (-EAGAIN);
+
+	/* Shootdown software TLBs. */
+	for (int i = 0; i < K1B_CLUSTER_NUM_CORES; i++)
+		kmemcpy(&k1b_tlb[i].jtlb[idx], &tlbe, K1B_TLBE_SIZE);
+
+	return (0);
+}
+
+/*============================================================================*
  * k1b_cluster_mem_warmup()                                                   *
  *============================================================================*/
 

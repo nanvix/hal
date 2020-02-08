@@ -203,7 +203,7 @@
 
 	/**
 	 * @brief Gets the tlbe entry index on TLB structure.
-	 * 
+	 *
 	 * @param vaddr Target virtual address.
 	 * @param shift Page shift.
 	 * @param way   Target set-associative way.
@@ -282,7 +282,7 @@
 	 * @param shift      Page shift.
 	 * @param way        Target set-associative way.
 	 * @param protection Protection attributes.
-	 * 
+	 *
 	 * @return Zero if successfully writes a TLB entry,
 	 * non zero otherwise.
 	 */
@@ -302,7 +302,7 @@
 	 * @param vaddr Target virtual address.
 	 * @param shift Page shift.
 	 * @param way   Target set-associative way.
-	 * 
+	 *
 	 * @return Zero if successfully writes a TLB entry,
 	 * non zero otherwise.
 	 */
@@ -311,6 +311,21 @@
 		vaddr_t vaddr,
 		unsigned shift,
 		unsigned way
+	);
+
+	/**
+	 * @brief Shoots down a TLB entry.
+	 *
+	 * @param tlbe  The updated value of target TLB entry.
+	 * @param vaddr Target virtual address.
+	 * @param shift Page shift.
+	 *
+	 * @return Zero if successful, non zero otherwise.
+	 */
+	EXTERN int k1b_tlbe_shootdown(
+		struct tlbe *tlbe,
+		vaddr_t vaddr,
+		unsigned shift
 	);
 
 #endif /* _ASM_FILE_ */
@@ -405,7 +420,7 @@
 		/* Invalid TLB type. */
 		if ((tlb_type != K1B_TLB_INSTRUCTION) && (tlb_type != K1B_TLB_DATA))
 			return (-EINVAL);
-		
+
 		UNUSED(vadd_info);
 
 		return (k1b_tlbe_write(tlbe, vaddr, paddr, 12, 0, K1B_TLBE_PROT_RW));
