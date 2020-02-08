@@ -122,6 +122,16 @@
 		#error "tlb_flush() not defined?"
 	#endif
 
+	/**
+	 * @todo FIXME: remove this guard once all supported platforms
+	 * feature this operation.
+	 */
+#if 0
+	#ifndef __tlb_shootdown_fn
+		#error "tlb_shootdown() not defined?"
+	#endif
+#endif
+
 #endif
 
 /*============================================================================*
@@ -287,6 +297,15 @@
 	 * failure, a negative error code is returned instead.
 	 */
 	EXTERN int tlb_flush(void);
+
+	/**
+	 * @brief Shoots down a TLB entry.
+	 *
+	 * @param vaddr Target virtual address.
+	 *
+	 * @return Zero if successful, non zero otherwise.
+	 */
+	EXTERN void tlb_shootdown(vaddr_t vaddr);
 
 	/**
 	 * @brief Does a memory warmup in the underlying cluster.
