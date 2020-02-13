@@ -91,6 +91,15 @@
 	#include <nanvix/const.h>
 
 	/**
+	 * @brief Cluster Features
+	 */
+	#ifndef __tlb_shootdown_fn
+		#define CLUSTER_HAS_TLB_SHOOTDOWN 0
+	#else
+		#define CLUSTER_HAS_TLB_SHOOTDOWN 1
+	#endif
+
+	/**
 	 * @name Types of Cluster
 	 */
 	/**@{*/
