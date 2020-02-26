@@ -43,17 +43,14 @@
 	#if (__TARGET_HAS_PORTAL)
 
 		/* Constants */
-		#ifndef PORTAL_CREATE_MAX
-		#error "PORTAL_CREATE_MAX not defined"
+		#ifndef HAL_PORTAL_CREATE_MAX
+		#error "HAL_PORTAL_CREATE_MAX not defined"
 		#endif
-		#ifndef PORTAL_OPEN_MAX
-		#error "PORTAL_OPEN_MAX not defined"
+		#ifndef HAL_PORTAL_OPEN_MAX
+		#error "HAL_PORTAL_OPEN_MAX not defined"
 		#endif
-		#ifndef PORTAL_MAX_SIZE
-		#error "PORTAL_MAX_SIZE not defined"
-		#endif
-		#ifndef PORTAL_PORT_NR
-		#error "PORTAL_PORT_NR not defined"
+		#ifndef HAL_PORTAL_MAX_SIZE
+		#error "HAL_PORTAL_MAX_SIZE not defined"
 		#endif
 
 		/* Functions */
@@ -84,14 +81,6 @@
 		#ifndef __portal_wait_fn
 		#error "portal_wait() not defined?"
 		#endif
-
-	#else
-
-		/* Constants */
-		#define PORTAL_CREATE_MAX 1
-		#define PORTAL_OPEN_MAX   1
-		#define PORTAL_MAX_SIZE   1
-		#define PORTAL_PORT_NR    1
 
 	#endif
 
