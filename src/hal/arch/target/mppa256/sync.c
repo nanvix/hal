@@ -267,8 +267,7 @@ PRIVATE void mppa256_sync_it_handler(int interface, int tag)
 
 	if (resource_is_used(&synctab.rxs[syncid].resource))
 	{
-		k1b_spinlock_unlock(&synctab.rxs[syncid].lock);
-
+		/* Reconfigure sync point. */
 		ret = bostan_dma_control_config(
 			interface,
 			tag,
@@ -278,6 +277,9 @@ PRIVATE void mppa256_sync_it_handler(int interface, int tag)
 
 		if (ret < 0)
 			kpanic("[hal][sync] Reconfiguration of the sync falied!");
+
+		/* Releases slave. */
+		k1b_spinlock_unlock(&synctab.rxs[syncid].lock);
 	}
 }
 
@@ -592,7 +594,7 @@ PRIVATE int do_mppa256_sync_unlink(int syncid)
 
 	resource_free(&syncpools.rx_pool, syncid);
 
-	spinlock_unlock(&synctab.rxs[syncid].lock);
+	k1b_spinlock_unlock(&synctab.rxs[syncid].lock);
 
 	return (0);
 }
@@ -686,7 +688,7 @@ PUBLIC int mppa256_sync_wait(int syncid)
 #endif
 
 	/* Waits for the handler release the lock. */
-	spinlock_lock(&synctab.rxs[syncid].lock);
+	k1b_spinlock_lock(&synctab.rxs[syncid].lock);
 
 	return (0);
 }

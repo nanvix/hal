@@ -402,15 +402,20 @@ PRIVATE inline void bostan_dnoc_rx_update_notify(int interface, int tag, int eve
 	mOS_rx_cfg_line(interface, tag, events, cores_mask);
 }
 
-/*============================================================================*
- * bostan_dnoc_it_handler()                                                   *
- *============================================================================*/
+/**
+ * @brief Check if has any interrupt event on dnoc interfaces.
+ *
+ * @return Non-zero if has received a interrupt, zero otherwise.
+ */
+PRIVATE int bostan_dnoc_it_received(void)
+{
+	for (unsigned interface = 0; interface < BOSTAN_PROCESSOR_NOC_INTERFACES_NUM; interface++)
+		for (unsigned int field = 0; field < BOSTAN_DNOC_RX_BIT_FIELD_AMOUNT; field++)
+			if (mppa_dnoc[interface]->rx_global.events[field].dword)
+				return (1);
 
-int bostan_dnoc_it_counters[BOSTAN_PROCESSOR_NOC_INTERFACES_NUM][BOSTAN_CNOC_RX_MAX] = {
-	[0 ... (BOSTAN_PROCESSOR_NOC_INTERFACES_NUM - 1)] = {
-		[0 ... (BOSTAN_CNOC_RX_MAX - 1)] = 0
-	}
-};
+	return (0);
+}
 
 /**
  * @brief Underlying handler for DNoC interrupts.
@@ -425,35 +430,30 @@ PRIVATE void bostan_dnoc_it_handler(int ev_src)
 {
 	int tag;
 	int offset;
-	uint64_t tags_set;
 	uint64_t tags_status;
-	uint64_t its_enabled;
 	volatile dword_t * field_status;
 	bostan_processor_noc_handler_fn handler;
 
 	UNUSED(ev_src);
 
-	for (unsigned int interface = 0; interface < BOSTAN_PROCESSOR_NOC_INTERFACES_NUM; interface++)
-	{
-		for (unsigned int field = 0; field < BOSTAN_DNOC_RX_BIT_FIELD_AMOUNT; field++)
-		{
-			/**
-			 * Masks the DNOC interrupt to get the triggered tags and clear them
-			 * without intermediary interrupts.
-			 */
-			interrupt_mask(K1B_INT_DNOC);
+	dcache_invalidate();
 
-				tags_set     = 0ULL;
+	while (bostan_dnoc_it_received())
+	{
+		for (unsigned int interface = 0; interface < BOSTAN_PROCESSOR_NOC_INTERFACES_NUM; interface++)
+		{
+			for (unsigned int field = 0; field < BOSTAN_DNOC_RX_BIT_FIELD_AMOUNT; field++)
+			{
+				/**
+				* Masks the DNOC interrupt to get the triggered tags and clear them
+				* without intermediary interrupts.
+				*/
 				tags_status  = 0ULL;
 				field_status = &mppa_dnoc[interface]->rx_global.events[field].dword;
-				its_enabled  = __k1_umem_read64((void *) &bostan_dnoc_rx_its[interface][field]);
 
 				/* Gets the set of tags that generated an interrupt. */
 				while ((tags_status = (*field_status)) != 0ULL)
 				{
-					/* Gets only tags that are with interrupt handler enable. */
-					tags_set |= (tags_status & its_enabled);
-
 					/* For each tag that generated an interrupt, cleans its flags. */
 					while (tags_status)
 					{
@@ -464,47 +464,41 @@ PRIVATE void bostan_dnoc_it_handler(int ev_src)
 
 						mppa_dnoc[interface]->rx_queues[tag].event_lac.hword;
 
-						++bostan_dnoc_it_counters[interface][tag];
+						__k1_dnoc_event_clear_rx(interface);
+
+						handler = (bostan_processor_noc_handler_fn) __k1_umem_read32(
+							(void *) &bostan_dnoc_rx_handlers[interface][tag]
+						);
+
+						handler(interface, tag);
 					}
-				}
-
-			interrupt_unmask(K1B_INT_DNOC);
-
-			/**
-			 * For each tag that generated an interrupt, executes the call
-			 * of its specific handler.
-			 */
-			while (tags_set)
-			{
-				/**
-				 * Find the next bit enabled that represents the
-				 * triggered tag.
-				 */
-				offset    = __builtin_k1_ctzdl(tags_set);
-				tags_set &= ~(1ULL << offset);
-
-				tag = field * (sizeof(uint64_t) * 8) + offset;
-
-				handler = (bostan_processor_noc_handler_fn) __k1_umem_read32(
-					(void *) &bostan_dnoc_rx_handlers[interface][tag]
-				);
-
-				int counter = bostan_dnoc_it_counters[interface][tag];
-				bostan_dnoc_it_counters[interface][tag] = 0;
-
-				while (counter > 0)
-				{
-					handler(interface, tag);
-					--counter;
 				}
 			}
 		}
 	}
 }
 
+/**
+ * @brief Verify lost interrupts.
+ */
+PUBLIC void bostan_dnoc_it_verify(void)
+{
+	if (bostan_dnoc_it_received())
+		bostan_dnoc_it_handler(-1);
+}
+
 /*============================================================================*
  * bostan_dnoc_setup()                                                        *
  *============================================================================*/
+
+/**
+ * @brief Dummy DNoC handler.
+ */
+PRIVATE void bostan_dnoc_dummy_noc_handler(int interface, int tag)
+{
+	UNUSED(interface);
+	UNUSED(tag);
+}
 
 /**
  * @brief Initializes the control structures and configures the interrupt
@@ -530,7 +524,7 @@ PUBLIC void bostan_dnoc_setup(void)
 			bostan_dnoc_rx_its[interface][field] = 0ULL;
 
 		for (unsigned int tag = 0; tag < BOSTAN_DNOC_RX_BIT_FIELD_AMOUNT; tag++)
-			bostan_dnoc_rx_handlers[interface][tag] = NULL;
+			bostan_dnoc_rx_handlers[interface][tag] = &bostan_dnoc_dummy_noc_handler;
 
 		/* All TX tags are unused. */
 		bostan_dnoc_tx_tags[interface] = 0;
@@ -569,8 +563,7 @@ PUBLIC void bostan_dnoc_setup(void)
 	}
 
 	/* Flush dcache to sram. */
-	__builtin_k1_wpurge();
-	__builtin_k1_fence();
+	dcache_invalidate();
 }
 
 /*============================================================================*
@@ -626,7 +619,7 @@ PUBLIC int bostan_dnoc_rx_free(int interface, int tag)
 
 	if (bostan_dnoc_rx_it_is_enable(interface, tag))
 	{
-		bostan_dnoc_rx_handlers[interface][tag] = NULL;
+		bostan_dnoc_rx_handlers[interface][tag] = &bostan_dnoc_dummy_noc_handler;
 		bostan_dnoc_rx_disable_it(interface, tag);
 	}
 
@@ -916,8 +909,7 @@ PUBLIC int bostan_dnoc_tx_config(
 	bostan_dnoc_tx_old_fdir[interface][local_tag] = config._.first_dir;
 
 	/* Flush dcache to sram. */
-	__builtin_k1_wpurge();
-	__builtin_k1_fence();
+	dcache_invalidate();
 
 	/* Writes on underlying registers. */
 	mppa_dnoc[interface]->tx_channels[local_tag].header.dword = header.dword;
