@@ -50,7 +50,7 @@
 	/**
 	 * @brief Memory size (in bytes) for IO DDR Cluster.
 	 */
-	#define K1B_IODDR_MEM_SIZE (4*MB)
+	#define K1B_IODDR_MEM_SIZE (1*GB)
 
 	/**
 	 * @brief Memory size (in bytes) for IO Ethernet Cluster.
@@ -99,9 +99,11 @@
 	/**
 	 * @brief User memory size (in bytes).
 	 */
-	#if defined(__ioddr__) || defined(__ioeth__)
+	#if defined(__node__)
 		#define K1B_CLUSTER_UMEM_SIZE (512*KB)
-	#elif defined(__node__)
+	#elif defined (__ioddr__)
+		#define K1B_CLUSTER_UMEM_SIZE (512*MB)
+	#elif defined (__ioeth__)
 		#define K1B_CLUSTER_UMEM_SIZE (512*KB)
 	#endif
 
@@ -119,6 +121,11 @@
 		#define K1B_CLUSTER_HYPER_LOW_END_PHYS   0x00008000 /**< Low Hypervisor End   */
 		#define K1B_CLUSTER_HYPER_HIGH_BASE_PHYS 0x001f8000 /**< High Hypervisor Base */
 		#define K1B_CLUSTER_HYPER_HIGH_END_PHYS  0x00200000 /**< High Hypervisor End  */
+	#endif
+
+	#if defined(__ioddr__)
+		#define K1B_CLUSTER_DDR_BASE_PHYS 0x80000000 /**< DDR Base */
+		#define K1B_CLUSTER_DDR_END_PHYS  0xc0000000 /**< DDR End */
 	#endif
 
 #ifndef _ASM_FILE_

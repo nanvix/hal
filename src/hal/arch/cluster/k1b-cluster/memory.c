@@ -95,8 +95,13 @@ PUBLIC const paddr_t K1B_CLUSTER_KERNEL_BASE_PHYS  = K1B_CLUSTER_HYPER_LOW_END_P
 PUBLIC const paddr_t K1B_CLUSTER_KERNEL_END_PHYS   = K1B_PADDR(&_kend);                                                  /* Kernel End         */
 PUBLIC const paddr_t K1B_CLUSTER_KPOOL_BASE_PHYS   = K1B_PADDR(&_kend);                                                  /* Kernel Pool Base   */
 PUBLIC const paddr_t K1B_CLUSTER_KPOOL_END_PHYS    = K1B_PADDR(&_kend) + K1B_CLUSTER_KPOOL_SIZE;                         /* Kernel Pool End    */
+#if defined (__ioddr__)
+PUBLIC const paddr_t K1B_CLUSTER_USER_BASE_PHYS    = K1B_CLUSTER_DDR_BASE_PHYS;                                          /* User Base          */
+PUBLIC const paddr_t K1B_CLUSTER_USER_END_PHYS     = K1B_CLUSTER_DDR_BASE_PHYS + K1B_CLUSTER_UMEM_SIZE;                  /* User End           */
+#else
 PUBLIC const paddr_t K1B_CLUSTER_USER_BASE_PHYS    = K1B_PADDR(&_kend) + K1B_CLUSTER_KPOOL_SIZE;                         /* User Base          */
 PUBLIC const paddr_t K1B_CLUSTER_USER_END_PHYS     = K1B_PADDR(&_kend) + K1B_CLUSTER_KPOOL_SIZE + K1B_CLUSTER_UMEM_SIZE; /* User End           */
+#endif
 PUBLIC const paddr_t K1B_CLUSTER_KSTACK_BASE_PHYS  = K1B_PADDR(&_user_stack_start);                                      /* Kernel Stack Base  */
 /**@}*/
 
