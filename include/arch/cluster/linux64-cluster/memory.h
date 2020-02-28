@@ -54,7 +54,7 @@
 	/**
 	 * @brief User memory size (in bytes).
 	 */
-	#define LINUX64_UMEM_SIZE (16*1024*1024)
+	#define LINUX64_UMEM_SIZE (128*1024*1024)
 
 	/**
 	 * @brief Kernel stack size (in bytes).
