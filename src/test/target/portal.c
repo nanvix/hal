@@ -119,7 +119,7 @@ PRIVATE void test_portal_invalid_allow(void)
 
 	/* Invalid portal ID. */
 	KASSERT(portal_allow(-1, NODENUM_SLAVE) == -EBADF);
-	KASSERT(portal_allow(PORTAL_CREATE_MAX, NODENUM_SLAVE) == -EBADF);
+	KASSERT(portal_allow(HAL_PORTAL_CREATE_MAX, NODENUM_SLAVE) == -EBADF);
 
 	KASSERT((portalid = portal_create(NODENUM_MASTER)) >= 0);
 
@@ -137,7 +137,7 @@ PRIVATE void test_portal_invalid_unlink(void)
 {
 	/* Invalid portal ID. */
 	KASSERT(portal_unlink(-1) == -EBADF);
-	KASSERT(portal_unlink(PORTAL_CREATE_MAX) == -EBADF);
+	KASSERT(portal_unlink(HAL_PORTAL_CREATE_MAX) == -EBADF);
 }
 
 /**
@@ -147,7 +147,7 @@ PRIVATE void test_portal_invalid_close(void)
 {
 	/* Invalid portal ID. */
 	KASSERT(portal_close(-1) == -EBADF);
-	KASSERT(portal_close(PORTAL_OPEN_MAX) == -EBADF);
+	KASSERT(portal_close(HAL_PORTAL_OPEN_MAX) == -EBADF);
 }
 
 /**
@@ -162,7 +162,7 @@ PRIVATE void test_portal_invalid_read(void)
 
 	/* Invalid portal ID */
 	KASSERT(portal_aread(-1, buf, PORTAL_SIZE) == -EBADF);
-	KASSERT(portal_aread(PORTAL_CREATE_MAX, buf, PORTAL_SIZE) == -EBADF);
+	KASSERT(portal_aread(HAL_PORTAL_CREATE_MAX, buf, PORTAL_SIZE) == -EBADF);
 
 	KASSERT((portalid = portal_create(NODENUM_MASTER)) >= 0);
 
@@ -188,7 +188,7 @@ PRIVATE void test_portal_invalid_write(void)
 
 	/* Invalid portal ID */
 	KASSERT(portal_awrite(-1, buf, PORTAL_SIZE) == -EBADF);
-	KASSERT(portal_awrite(PORTAL_OPEN_MAX, buf, PORTAL_SIZE) == -EBADF);
+	KASSERT(portal_awrite(HAL_PORTAL_OPEN_MAX, buf, PORTAL_SIZE) == -EBADF);
 
 	KASSERT((portalid = portal_open(NODENUM_MASTER, NODENUM_SLAVE)) >= 0);
 
@@ -231,7 +231,7 @@ PRIVATE void test_portal_bad_allow(void)
 
 	/* Bad portal ID. */
 	KASSERT(portal_allow(0, NODENUM_SLAVE) == -EBADF);
-	KASSERT(portal_allow(PORTAL_CREATE_MAX - 1, NODENUM_SLAVE) == -EBADF);
+	KASSERT(portal_allow(HAL_PORTAL_CREATE_MAX - 1, NODENUM_SLAVE) == -EBADF);
 
 	KASSERT((portalid = portal_create(NODENUM_MASTER)) >= 0);
 
@@ -248,7 +248,7 @@ PRIVATE void test_portal_bad_unlink(void)
 {
 	/* Bad portal ID. */
 	KASSERT(portal_unlink(0) == -EBADF);
-	KASSERT(portal_unlink(PORTAL_CREATE_MAX - 1) == -EBADF);
+	KASSERT(portal_unlink(HAL_PORTAL_CREATE_MAX - 1) == -EBADF);
 }
 
 /**
@@ -258,7 +258,7 @@ PRIVATE void test_portal_bad_close(void)
 {
 	/* Bad portal ID. */
 	KASSERT(portal_close(0) == -EBADF);
-	KASSERT(portal_close(PORTAL_OPEN_MAX - 1) == -EBADF);
+	KASSERT(portal_close(HAL_PORTAL_OPEN_MAX - 1) == -EBADF);
 }
 
 /**
