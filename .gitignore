@@ -27,10 +27,14 @@ tags
 *.vscode/
 
 # Barelib Headers
+include/machine/_default_types.h
 include/nanvix/barelib.h
 include/posix/decl.h
 include/posix/stdarg.h
 include/posix/stddef.h
+include/posix/stdint.h
+include/posix/sys/_intsup.h
+include/posix/sys/features.h
 
 # Excludes
 !img/*
