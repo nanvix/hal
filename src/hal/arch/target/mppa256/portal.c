@@ -515,7 +515,6 @@ PUBLIC int mppa256_portal_allow(int portalid, int remotenum)
 PRIVATE int do_mppa256_portal_open(int localnum, int remotenum)
 {
 	int ctag;
-	int dtag;
 	int portalid;
 	int interface;
 
@@ -525,15 +524,10 @@ PRIVATE int do_mppa256_portal_open(int localnum, int remotenum)
 
 	/* Gets underlying parameters. */
 	ctag      = UNDERLYING_OPEN_CTAG(remotenum);
-	dtag      = UNDERLYING_OPEN_DTAG(portalid);
 	interface = UNDERLYING_OPEN_INTERFACE(portalid);
 
 	/* Opens control sender point. */
 	if (bostan_dma_control_create(interface, ctag, (1), mppa256_portal_sender_handler) != 0)
-		return (-EAGAIN);
-
-	/* Opens data sender point. */
-	if (bostan_dma_data_open(interface, dtag) != 0)
 		return (-EAGAIN);
 
 	/* Configures lock from asynchronous operations. */
@@ -649,19 +643,13 @@ PUBLIC int mppa256_portal_unlink(int portalid)
 PRIVATE int do_mppa256_portal_close(int portalid)
 {
 	int ctag;
-	int dtag;
 	int interface;
 
 	/* Gets underlying parameters. */
 	ctag      = UNDERLYING_OPEN_CTAG(portaltab.txs[portalid].remote);
-	dtag      = UNDERLYING_OPEN_DTAG(portalid);
 	interface = UNDERLYING_OPEN_INTERFACE(portalid);
 
-	/* Opens data sender point. */
-	if (bostan_dma_data_close(interface, dtag) != 0)
-		return (-EAGAIN);
-
-	/* Opens control sender point. */
+	/* Unlinks control sender point. */
 	if (bostan_dma_control_unlink(interface, ctag) != 0)
 		return (-EAGAIN);
 
@@ -717,8 +705,25 @@ PRIVATE int mppa256_portal_send_data(int portalid)
 
 	/* Local Parameters. */
 	ctag      = UNDERLYING_OPEN_CTAG(portaltab.txs[portalid].remote);
-	dtag      = UNDERLYING_OPEN_DTAG(portalid);
 	interface = UNDERLYING_OPEN_INTERFACE(portalid);
+
+	/* Opens data sender point. */
+	dtag = PORTAL_DATA_TAG_BASE;
+	ret = -1;
+
+	/* Try to find not busy dtag. */
+	for (int i = 0; i < BOSTAN_DNOC_TXS_PER_COMM_SERVICE; ++i)
+	{
+		/* Tries to open DMA Data Channel. */
+		if ((ret = bostan_dma_data_open(interface, dtag)) != -EBUSY)
+			break;
+
+		dtag++;
+	}
+
+	/* Checks if succesfully allocated a DTAG. */
+	if (ret != 0)
+		return (-EAGAIN);
 
 	/* Target parameters*/
 	target_dtag = UNDERLYING_CREATE_DTAG(
@@ -739,6 +744,10 @@ PRIVATE int mppa256_portal_send_data(int portalid)
 		portaltab.txs[portalid].size,
 		0
 	);
+
+	/* Closes data sender point. */
+	if (bostan_dma_data_close(interface, dtag) != 0)
+		return (-EAGAIN);
 
 	if (ret < 0)
 		return (ret);
