@@ -47,10 +47,10 @@
  * @name Message Queue constants.
  */
 /**@{*/
-#define MQUEUE_MSG_SIZE   (sizeof(struct underliyng_message))        /**< Size of the underlying message.      */
-#define MQUEUE_MIN_SIZE   (MQUEUE_MSG_SIZE)                          /**< Minimum size of the Message Queue.   */
+#define MQUEUE_MSG_SIZE   (sizeof(struct underliyng_message))         /**< Size of the underlying message.      */
+#define MQUEUE_MIN_SIZE   (MQUEUE_MSG_SIZE)                           /**< Minimum size of the Message Queue.   */
 #define MQUEUE_MAX_SIZE   (PROCESSOR_NOC_NODES_NUM * MQUEUE_MIN_SIZE) /**< Maximum size of the Message Queue.   */
-#define MQUEUE_MSG_AMOUNT (MQUEUE_MAX_SIZE / MQUEUE_MIN_SIZE)        /**< Message amount in the Message Queue. */
+#define MQUEUE_MSG_AMOUNT (MQUEUE_MAX_SIZE / MQUEUE_MIN_SIZE)         /**< Message amount in the Message Queue. */
 /**@}*/
 
 /**
@@ -65,7 +65,9 @@
  * @name Gets underlying resource IDs.
  */
 /**@{*/
-#define MAILBOX_CONTROL_TAG                (BOSTAN_MAILBOX_CNOC_TX_BASE)         /**< Associated Control Tag.  */
+#define MAILBOX_CONTROL_TAG   (BOSTAN_MAILBOX_CNOC_TX_BASE) /**< Associated Control Tag. */
+#define MAILBOX_DATA_TAG_BASE (BOSTAN_PORTAL_DNOC_TX_BASE)  /**< Associated Data Tag.    */
+
 #define UNDERLYING_OPEN_INTERFACE(mbxid)   (mbxid / BOSTAN_MAILBOX_OPEN_PER_DMA) /**< Transfer interface.      */
 #define UNDERLYING_OPEN_TAG(mbxid)         (BOSTAN_MAILBOX_DNOC_TX_BASE                                \
                                               + (mbxid % BOSTAN_DNOC_TXS_PER_COMM_SERVICE) \
@@ -502,7 +504,6 @@ PUBLIC int mppa256_mailbox_create(int nodenum)
  */
 PRIVATE int do_mppa256_mailbox_open(int nodenum)
 {
-	int dtag;
 	int ctag;
 	int localnum;
 	int mbxid;
@@ -512,24 +513,15 @@ PRIVATE int do_mppa256_mailbox_open(int nodenum)
 	if ((mbxid = resource_alloc(&mbxpools.tx_pool)) < 0)
 		return (-EINVAL);
 
-	/* Data arguments. */
-	dtag      = UNDERLYING_OPEN_TAG(mbxid);
+	/* Control arguments. */
+	ctag      = bostan_processor_node_mailbox_tag(nodenum);
 	interface = UNDERLYING_OPEN_INTERFACE(mbxid);
 
-	/* Control arguments. */
-	ctag     = bostan_processor_node_mailbox_tag(nodenum);
 	localnum = bostan_processor_noc_cluster_to_node_num(cluster_get_num()) + interface;
-
-	/* Opens data sender point. */
-	if (bostan_dma_data_open(interface, dtag) != 0)
-		return (-EINVAL);
 
 	/* Creates control reciever point. */
 	if (bostan_dma_control_create(interface, ctag, (1), mppa256_mailbox_tx_handler) != 0)
-	{
-		bostan_dma_data_close(interface, dtag);
 		return (-EINVAL);
-	}
 
 	/* Configures associated resource. */
 	mbxtab.txs[mbxid].commit          = 0;
@@ -645,12 +637,10 @@ PUBLIC int mppa256_mailbox_unlink(int mbxid)
  */
 PRIVATE int do_mppa256_mailbox_close(int mbxid)
 {
-	int dtag;
 	int ctag;
 	int interface;
 
 	/* Data parameters. */
-	dtag      = UNDERLYING_OPEN_TAG(mbxid);
 	interface = UNDERLYING_OPEN_INTERFACE(mbxid);
 
 	/* Control parameters. */
@@ -658,10 +648,6 @@ PRIVATE int do_mppa256_mailbox_close(int mbxid)
 
 	/* Unlink control reciever point. */
 	if (bostan_dma_control_unlink(interface, ctag) != 0)
-		return (-EINVAL);
-
-	/* Close data sender point. */
-	if (bostan_dma_data_close(interface, dtag) != 0)
 		return (-EINVAL);
 
 	/* Releases associated resource. */
@@ -713,11 +699,28 @@ PRIVATE int mppa256_mailbox_send_msg(int mbxid)
 	int interface;
 
 	/* Defines parameters. */
-	dtag      = UNDERLYING_OPEN_TAG(mbxid);
 	interface = UNDERLYING_OPEN_INTERFACE(mbxid);
 	remotenum = mbxtab.txs[mbxid].remote;
 	ctag      = bostan_processor_node_mailbox_tag(remotenum);
 	localnum  = bostan_processor_noc_cluster_to_node_num(cluster_get_num()) + interface;
+
+	/* Opens data sender point. */
+	dtag = MAILBOX_DATA_TAG_BASE;
+	ret = -1;
+
+	/* Try to find not busy dtag. */
+	for (int i = 0; i < BOSTAN_DNOC_TXS_PER_COMM_SERVICE; ++i)
+	{
+		/* Tries to open DMA Data Channel. */
+		if ((ret = bostan_dma_data_open(interface, dtag)) != -EBUSY)
+			break;
+
+		dtag++;
+	}
+
+	/* Checks if succesfully allocated a DTAG. */
+	if (ret != 0)
+		return (-EAGAIN);
 
 	if (bostan_dma_control_config(interface, ctag, (1), mppa256_mailbox_tx_handler) < 0)
 		return (-EINVAL);
@@ -732,6 +735,10 @@ PRIVATE int mppa256_mailbox_send_msg(int mbxid)
 		MQUEUE_MSG_SIZE,
 		0
 	);
+
+	/* Close data sender point. */
+	if (bostan_dma_data_close(interface, dtag) != 0)
+		return (-EINVAL);
 
 	if (ret != 0)
 		return (ret);
