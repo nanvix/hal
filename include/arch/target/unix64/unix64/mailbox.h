@@ -48,6 +48,14 @@
 	/**@}*/
 
 	/**
+	 * @name File descriptor offset.
+	 */
+	/**@{*/
+	#define UNIX64_MAILBOX_CREATE_OFFSET 0 /**< Initial file descriptor id for creates. */
+	#define UNIX64_MAILBOX_OPEN_OFFSET   0 /**< Initial file descriptor id for opens.   */
+	/**@}*/
+
+	/**
 	 * @brief Total number of mailboxes.
 	 */
 	#define UNIX64_MAILBOX_MAX (UNIX64_MAILBOX_CREATE_MAX + UNIX64_MAILBOX_OPEN_MAX)
@@ -162,9 +170,11 @@
 	 * @name Provided Constants
 	 */
 	/**@{*/
-	#define MAILBOX_MSG_SIZE UNIX64_MAILBOX_MSG_SIZE     /**< UNIX64_MAILBOX_MSG_SIZE   */
-	#define MAILBOX_CREATE_MAX UNIX64_MAILBOX_CREATE_MAX /**< UNIX64_MAILBOX_CREATE_MAX */
-	#define MAILBOX_OPEN_MAX   UNIX64_MAILBOX_OPEN_MAX   /**< UNIX64_MAILBOX_OPEN_MAX   */
+	#define MAILBOX_MSG_SIZE      UNIX64_MAILBOX_MSG_SIZE      /**< UNIX64_MAILBOX_MSG_SIZE      */
+	#define MAILBOX_CREATE_OFFSET UNIX64_MAILBOX_CREATE_OFFSET /**< UNIX64_MAILBOX_CREATE_OFFSET */
+	#define MAILBOX_OPEN_OFFSET   UNIX64_MAILBOX_OPEN_OFFSET   /**< UNIX64_MAILBOX_OPEN_OFFSET   */
+	#define MAILBOX_CREATE_MAX    UNIX64_MAILBOX_CREATE_MAX    /**< UNIX64_MAILBOX_CREATE_MAX    */
+	#define MAILBOX_OPEN_MAX      UNIX64_MAILBOX_OPEN_MAX      /**< UNIX64_MAILBOX_OPEN_MAX      */
 	/**@}*/
 
 #ifdef __NANVIX_HAL
@@ -182,62 +192,45 @@
 	/**
 	 * @see unix64_mailbox_create()
 	 */
-	static inline int mailbox_create(int nodenum)
-	{
-		return unix64_mailbox_create(nodenum);
-	}
+	#define __mailbox_create(nodenum) \
+		unix64_mailbox_create(nodenum)
 
 	/**
 	 * @see unix64_mailbox_open()
 	 */
-	static inline int mailbox_open(int nodenum)
-	{
-		return unix64_mailbox_open(nodenum);
-	}
+	#define __mailbox_open(nodenum) \
+		unix64_mailbox_open(nodenum)
 
 	/**
 	 * @see unix64_mailbox_unlink()
 	 */
-	static inline int mailbox_unlink(int mbxid)
-	{
-		return unix64_mailbox_unlink(mbxid);
-	}
+	#define __mailbox_unlink(mbxid) \
+		unix64_mailbox_unlink(mbxid)
 
 	/**
 	 * @see unix64_mailbox_close()
 	 */
-	static inline int mailbox_close(int mbxid)
-	{
-		return unix64_mailbox_close(mbxid);
-	}
+	#define __mailbox_close(mbxid) \
+		unix64_mailbox_close(mbxid)
 
 	/**
 	 * @see unix64_mailbox_awrite()
 	 */
-	static inline ssize_t mailbox_awrite(int mbxid, const void *buffer, uint64_t size)
-	{
-		return unix64_mailbox_awrite(mbxid, buffer, size);
-	}
+	#define __mailbox_awrite(mbxid, buffer, size) \
+		unix64_mailbox_awrite(mbxid, buffer, size)
 
 	/**
 	 * @see unix64_mailbox_aread()
 	 */
-	static inline ssize_t mailbox_aread(int mbxid, void *buffer, uint64_t size)
-	{
-		return unix64_mailbox_aread(mbxid, buffer, size);
-	}
+	#define __mailbox_aread(mbxid, buffer, size) \
+		unix64_mailbox_aread(mbxid, buffer, size)
 
 	/**
 	 * @brief Dummy operation.
 	 *
 	 * @param mbxid Unused.
 	 */
-	static inline int mailbox_wait(int mbxid)
-	{
-		UNUSED(mbxid);
-
-		return (0);
-	}
+	#define __mailbox_wait(mbxid) (0)
 
 /**@}*/
 

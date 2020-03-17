@@ -43,6 +43,15 @@
 	#if (__TARGET_HAS_MAILBOX)
 
 		/* Constants */
+		#ifndef MAILBOX_MSG_SIZE
+		#error "MAILBOX_MSG_SIZE not defined"
+		#endif
+		#ifndef MAILBOX_CREATE_OFFSET
+		#error "MAILBOX_CREATE_OFFSET not defined"
+		#endif
+		#ifndef MAILBOX_OPEN_OFFSET
+		#error "MAILBOX_OPEN_OFFSET not defined"
+		#endif
 		#ifndef MAILBOX_CREATE_MAX
 		#error "MAILBOX_CREATE_MAX not defined"
 		#endif

@@ -36,14 +36,6 @@
  *============================================================================*/
 
 /**
- * @name File descriptor offset.
- */
-/**@{*/
-#define MPPA256_MAILBOX_CREATE_OFFSET 0                          /**< Initial File Descriptor ID for Creates. */
-#define MPPA256_MAILBOX_OPEN_OFFSET   MPPA256_MAILBOX_CREATE_MAX /**< Initial File Descriptor ID for Opens.   */
-/**@}*/
-
-/**
  * @name Message Queue constants.
  */
 /**@{*/
@@ -188,81 +180,6 @@ PRIVATE int mppa256_mailbox_node_is_local(int nodenum)
 	local = bostan_processor_noc_cluster_to_node_num(cluster_get_num());
 
 	return (WITHIN(nodenum, local, local + BOSTAN_PROCESSOR_NOC_INTERFACES_NUM));
-}
-
-/*============================================================================*
- * mppa256_mailbox_rx_is_valid()                                              *
- *============================================================================*/
-
-/**
- * @brief Asserts whether or not a receiver mailbox is valid.
- *
- * @param mbxid ID of the target mailbox.
- *
- * @returns One if the target mailbox is valid, and false
- * otherwise.
- *
- * @note This function is non-blocking.
- * @note This function is thread-safe.
- * @note This function is reentrant.
- */
-PRIVATE int mppa256_mailbox_rx_is_valid(int mbxid)
-{
-	return (
-		WITHIN(
-			mbxid,
-			MPPA256_MAILBOX_CREATE_OFFSET,
-			(MPPA256_MAILBOX_CREATE_OFFSET + MPPA256_MAILBOX_CREATE_MAX)
-		)
-	);
-}
-
-/*============================================================================*
- * mppa256_mailbox_tx_is_valid()                                              *
- *============================================================================*/
-
-/**
- * @brief Asserts whether or not a sender mailbox is valid.
- *
- * @param mbxid ID of the target mailbox.
- *
- * @returns One if the target mailbox is valid, and false
- * otherwise.
- *
- * @note This function is non-blocking.
- * @note This function is thread-safe.
- * @note This function is reentrant.
- */
-PRIVATE int mppa256_mailbox_tx_is_valid(int mbxid)
-{
-	return (
-		WITHIN(
-			mbxid,
-			MPPA256_MAILBOX_OPEN_OFFSET,
-			MPPA256_MAILBOX_OPEN_OFFSET + MPPA256_MAILBOX_OPEN_MAX
-		)
-	);
-}
-
-/*============================================================================*
- * mppa256_node_is_valid()                                                    *
- *============================================================================*/
-
-/**
- * @brief Asserts whether or not a sender mailbox is valid.
- *
- * @param mbxid ID of the target mailbox.
- *
- * @returns One if the target mailbox is valid, and false
- * otherwise.
- *
- * @note This function is non-blocking.
- * @note This function is thread-safe.
- * @note This function is reentrant.
- */
-PRIVATE int mppa256_node_is_valid(int nodenum)
-{
-	return WITHIN(nodenum, 0, PROCESSOR_NOC_NODES_NUM);
 }
 
 /*============================================================================*
@@ -478,10 +395,6 @@ PRIVATE int do_mppa256_mailbox_create(int nodenum)
  */
 PUBLIC int mppa256_mailbox_create(int nodenum)
 {
-	/* Invalid NoC node ID. */
-	if (!mppa256_node_is_valid(nodenum))
-		return (-EINVAL);
-
 	/* Invalid NoC node is local. */
 	if (!mppa256_mailbox_node_is_local(nodenum))
 		return (-EINVAL);
@@ -543,10 +456,6 @@ PRIVATE int do_mppa256_mailbox_open(int nodenum)
  */
 PUBLIC int mppa256_mailbox_open(int nodenum)
 {
-	/* Is remote valid? */
-	if (!mppa256_node_is_valid(nodenum))
-		return (-EINVAL);
-
 	/* Is remote in the local cluster? */
 	if (mppa256_mailbox_node_is_local(nodenum))
 	{
@@ -616,10 +525,6 @@ PRIVATE int do_mppa256_mailbox_unlink(int mbxid)
  */
 PUBLIC int mppa256_mailbox_unlink(int mbxid)
 {
-	/* Invalid mailbox. */
-	if (!mppa256_mailbox_rx_is_valid(mbxid))
-		return (-EBADF);
-
 	return (do_mppa256_mailbox_unlink(mbxid));
 }
 
@@ -664,10 +569,6 @@ PRIVATE int do_mppa256_mailbox_close(int mbxid)
  */
 PUBLIC int mppa256_mailbox_close(int mbxid)
 {
-	/* Invalid mailbox. */
-	if (!mppa256_mailbox_tx_is_valid(mbxid))
-		return (-EBADF);
-
 	mbxid -= MPPA256_MAILBOX_OPEN_OFFSET;
 
 	/* Bad mailbox. */
@@ -798,17 +699,6 @@ PRIVATE ssize_t do_mppa256_mailbox_awrite(int mbxid, const void * buffer, uint64
  */
 PUBLIC ssize_t mppa256_mailbox_awrite(int mbxid, const void * buffer, uint64_t size)
 {
-	/* Invalid buffer. */
-	if (buffer == NULL)
-		return (-EINVAL);
-
-	/* Invalid write size. */
-	if (size != MPPA256_MAILBOX_MSG_SIZE)
-		return (-EINVAL);
-
-	/* Invalid mailbox. */
-	if (!mppa256_mailbox_tx_is_valid(mbxid))
-		return (-EBADF);
 
 	mbxid -= MPPA256_MAILBOX_OPEN_OFFSET;
 
@@ -950,9 +840,7 @@ PRIVATE ssize_t do_mppa256_mailbox_aread(int mbxid, void * buffer, uint64_t size
 				return (-EAGAIN);
 		}
 		else
-		{
 			mbxtab.rxs[mbxid].buffer = buffer;
-		}
 
 		/* Double check. */
 		bostan_dnoc_it_verify();
@@ -967,18 +855,6 @@ PRIVATE ssize_t do_mppa256_mailbox_aread(int mbxid, void * buffer, uint64_t size
  */
 PUBLIC ssize_t mppa256_mailbox_aread(int mbxid, void * buffer, uint64_t size)
 {
-	/* Invalid buffer. */
-	if (buffer == NULL)
-		return (-EINVAL);
-
-	/* Invalid read size. */
-	if (size != MPPA256_MAILBOX_MSG_SIZE)
-		return (-EINVAL);
-
-	/* Invalid mailbox. */
-	if (!mppa256_mailbox_rx_is_valid(mbxid))
-		return (-EBADF);
-
 	mbxid -= MPPA256_MAILBOX_CREATE_OFFSET;
 
 	/* Bad mailbox. */
@@ -1008,16 +884,11 @@ PUBLIC int mppa256_mailbox_wait(int mbxid)
 	/* Is it a rx operation? */
 	if (mbxid < MPPA256_MAILBOX_OPEN_OFFSET)
 	{
-		if (!mppa256_mailbox_rx_is_valid(mbxid))
-			return (-EBADF);
-
 		mbxid -= MPPA256_MAILBOX_CREATE_OFFSET;
 
-		#if 1 /* Is the slave with correct data cached? */
 			/* Bad sync. */
 			if (!resource_is_used(&mbxtab.rxs[mbxid].resource))
 				return (-EBADF);
-		#endif
 
 		/* Waits for the handler release the lock. */
 		spinlock_lock(&mbxtab.rxs[mbxid].lock);
@@ -1026,16 +897,11 @@ PUBLIC int mppa256_mailbox_wait(int mbxid)
 	/* Is it a tx operation? */
 	else
 	{
-		if (!mppa256_mailbox_tx_is_valid(mbxid))
-			return (-EBADF);
-
 		mbxid -= MPPA256_MAILBOX_OPEN_OFFSET;
 
-		#if 1 /* Is the slave with correct data cached? */
 			/* Bad sync. */
 			if (!resource_is_used(&mbxtab.txs[mbxid].resource))
 				return (-EBADF);
-		#endif
 
 		/* Waits for the handler release the lock. */
 		spinlock_lock(&mbxtab.txs[mbxid].lock);

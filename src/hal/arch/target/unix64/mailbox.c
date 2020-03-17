@@ -132,46 +132,6 @@ PRIVATE void unix64_mailbox_unlock(void)
 }
 
 /*============================================================================*
- * unix64_mailbox_rx_is_valid()                                               *
- *============================================================================*/
-
-/**
- * @brief Asserts if an input mailbox is valid.
- *
- * @param mbxid ID of the target mailbox.
- *
- * @returns One if the target mailbox is valid, and false otherwise.
- *
- * @note This function is non-blocking.
- * @note This function is thread-safe.
- * @note This function is reentrant.
- */
-PRIVATE int unix64_mailbox_rx_is_valid(int mbxid)
-{
-	return ((mbxid >= 0) && (mbxid < UNIX64_MAILBOX_CREATE_MAX));
-}
-
-/*============================================================================*
- * unix64_mailbox_tx_is_valid()                                               *
- *============================================================================*/
-
-/**
- * @brief Asserts if an output mailbox is valid.
- *
- * @param mbxid ID of the target mailbox.
- *
- * @returns One if the target mailbox is valid, and false otherwise.
- *
- * @note This function is non-blocking.
- * @note This function is thread-safe.
- * @note This function is reentrant.
- */
-PRIVATE int unix64_mailbox_tx_is_valid(int mbxid)
-{
-	return ((mbxid >= 0) && (mbxid < UNIX64_MAILBOX_OPEN_MAX));
-}
-
-/*============================================================================*
  * unix64_mailbox_create()                                                    *
  *============================================================================*/
 
@@ -239,10 +199,6 @@ PUBLIC int unix64_mailbox_create(int nodenum)
 {
 	int mbxid;
 
-	/* Invalid NoC node. */
-	if ((nodenum < 0) || (nodenum >= PROCESSOR_NOC_NODES_NUM))
-		return (-EINVAL);
-
 	/* Bad NoC node. */
 	if (nodenum != processor_node_get_num(core_get_id()))
 		return (-EINVAL);
@@ -309,10 +265,6 @@ error0:
 PUBLIC int unix64_mailbox_open(int nodenum)
 {
 	int mbxid;
-
-	/* Invalid NoC node. */
-	if ((nodenum < 0) || (nodenum >= PROCESSOR_NOC_NODES_NUM))
-		return (-EINVAL);
 
 	/* Bad NoC node. */
 	if (nodenum == processor_node_get_num(core_get_id()))
@@ -422,10 +374,6 @@ error1:
  */
 PUBLIC int unix64_mailbox_unlink(int mbxid)
 {
-	/* Invalid mailbox. */
-	if (!unix64_mailbox_rx_is_valid(mbxid))
-		return (-EBADF);
-
 	return (do_unix64_mailbox_unlink(mbxid));
 }
 
@@ -500,10 +448,6 @@ error1:
  */
 PUBLIC int unix64_mailbox_close(int mbxid)
 {
-	/* Invalid mailbox. */
-	if (!unix64_mailbox_tx_is_valid(mbxid))
-		return (-EBADF);
-
 	return (do_unix64_mailbox_close(mbxid));
 }
 
@@ -561,7 +505,6 @@ again:
 error2:
 	unix64_mailbox_lock();
 		resource_set_notbusy(&mailboxtab.txs[mbxid].resource);
-	unix64_mailbox_unlock();
 error1:
 	unix64_mailbox_unlock();
 	return (err);
@@ -572,18 +515,6 @@ error1:
  */
 PUBLIC ssize_t unix64_mailbox_awrite(int mbxid, const void *buf, size_t n)
 {
-	/* Invalid mailbox. */
-	if (!unix64_mailbox_tx_is_valid(mbxid))
-		return (-EBADF);
-
-	/* Invalid buffer. */
-	if (buf == NULL)
-		return (-EINVAL);
-
-	/* Invalid write size. */
-	if (n != UNIX64_MAILBOX_MSG_SIZE)
-		return (-EINVAL);
-
 	return (do_unix64_mailbox_awrite(mbxid, buf, n));
 }
 
@@ -665,7 +596,6 @@ again:
 error2:
 	unix64_mailbox_lock();
 		resource_set_notbusy(&mailboxtab.rxs[mbxid].resource);
-	unix64_mailbox_unlock();
 error1:
 	unix64_mailbox_unlock();
 	return (err);
@@ -676,18 +606,6 @@ error1:
  */
 PUBLIC ssize_t unix64_mailbox_aread(int mbxid, void *buf, size_t n)
 {
-	/* Invalid mailbox. */
-	if (!unix64_mailbox_rx_is_valid(mbxid))
-		return (-EBADF);
-
-	/* Invalid buffer. */
-	if (buf == NULL)
-		return (-EINVAL);
-
-	/* Invalid read size. */
-	if (n != UNIX64_MAILBOX_MSG_SIZE)
-		return (-EINVAL);
-
 	return (do_unix64_mailbox_aread(mbxid, buf, n));
 }
 

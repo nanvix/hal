@@ -44,6 +44,14 @@
 	/**@}*/
 
 	/**
+	 * @name File descriptor offset.
+	 */
+	/**@{*/
+	#define MPPA256_MAILBOX_CREATE_OFFSET 0                          /**< Initial file descriptor id for creates. */
+	#define MPPA256_MAILBOX_OPEN_OFFSET   MPPA256_MAILBOX_CREATE_MAX /**< Initial file descriptor id for opens.   */
+	/**@}*/
+
+	/**
 	 * @name Sizes (in bytes) of a mailbox message.
 	 */
 	/**@{*/
@@ -130,7 +138,7 @@
  *============================================================================*/
 
 	/**
-	 * @name Provided Interface
+	 * @name Provided Functions
 	 */
 	/**@{*/
 	#define __mailbox_setup_fn  /**< mailbox_setup()  */
@@ -144,19 +152,14 @@
 	/**@}*/
 
 	/**
-	 * @see MPPA256_MAILBOX_MSG_SIZE
+	 * @name Provided Constants
 	 */
 	/**@{*/
-	#define MAILBOX_MSG_SIZE MPPA256_MAILBOX_MSG_SIZE
-	/**@}*/
-
-	/**
-	 * @see MPPA256_MAILBOX_CREATE_MAX
-	 * @see MPPA256_MAILBOX_OPEN_MAX
-	 */
-	/**@{*/
-	#define MAILBOX_CREATE_MAX MPPA256_MAILBOX_CREATE_MAX
-	#define MAILBOX_OPEN_MAX   MPPA256_MAILBOX_OPEN_MAX
+	#define MAILBOX_MSG_SIZE      MPPA256_MAILBOX_MSG_SIZE      /**< MPPA256_MAILBOX_MSG_SIZE      */
+	#define MAILBOX_CREATE_OFFSET MPPA256_MAILBOX_CREATE_OFFSET /**< MPPA256_MAILBOX_CREATE_OFFSET */
+	#define MAILBOX_OPEN_OFFSET   MPPA256_MAILBOX_OPEN_OFFSET   /**< MPPA256_MAILBOX_OPEN_OFFSET   */
+	#define MAILBOX_CREATE_MAX    MPPA256_MAILBOX_CREATE_MAX    /**< MPPA256_MAILBOX_CREATE_MAX    */
+	#define MAILBOX_OPEN_MAX      MPPA256_MAILBOX_OPEN_MAX      /**< MPPA256_MAILBOX_OPEN_MAX      */
 	/**@}*/
 
 	/**
@@ -170,57 +173,43 @@
 	/**
 	 * @see mppa256_mailbox_create()
 	 */
-	static inline int mailbox_create(int nodenum)
-	{
-		return mppa256_mailbox_create(nodenum);
-	}
+	#define __mailbox_create(nodenum) \
+		mppa256_mailbox_create(nodenum)
 
 	/**
 	 * @see mppa256_mailbox_open()
 	 */
-	static inline int mailbox_open(int nodenum)
-	{
-		return mppa256_mailbox_open(nodenum);
-	}
+	#define __mailbox_open(nodenum) \
+		mppa256_mailbox_open(nodenum)
 
 	/**
 	 * @see mppa256_mailbox_unlink()
 	 */
-	static inline int mailbox_unlink(int mbxid)
-	{
-		return mppa256_mailbox_unlink(mbxid);
-	}
+	#define __mailbox_unlink(mbxid) \
+		mppa256_mailbox_unlink(mbxid)
 
 	/**
 	 * @see mppa256_mailbox_close()
 	 */
-	static inline int mailbox_close(int mbxid)
-	{
-		return mppa256_mailbox_close(mbxid);
-	}
+	#define __mailbox_close(mbxid) \
+		mppa256_mailbox_close(mbxid)
 
 	/**
 	 * @see mppa256_mailbox_awrite()
 	 */
-	static inline ssize_t mailbox_awrite(int mbxid, const void * buffer, uint64_t size)
-	{
-		return mppa256_mailbox_awrite(mbxid, buffer, size);
-	}
+	#define __mailbox_awrite(mbxid, buffer, size) \
+		mppa256_mailbox_awrite(mbxid, buffer, size)
 
 	/**
 	 * @see mppa256_mailbox_aread()
 	 */
-	static inline ssize_t mailbox_aread(int mbxid, void * buffer, uint64_t size)
-	{
-		return mppa256_mailbox_aread(mbxid, buffer, size);
-	}
+	#define __mailbox_aread(mbxid, buffer, size) \
+		mppa256_mailbox_aread(mbxid, buffer, size)
 
 	/**
 	 * @see mppa256_mailbox_wait()
 	 */
-	static inline int mailbox_wait(int mbxid)
-	{
-		return mppa256_mailbox_wait(mbxid);
-	}
+	#define __mailbox_wait(mbxid) \
+		mppa256_mailbox_wait(mbxid)
 
 #endif /* TARGET_KALRAY_MPPA256_MAILBOX_H_ */
