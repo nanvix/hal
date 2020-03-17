@@ -561,7 +561,6 @@ again:
 error2:
 	unix64_mailbox_lock();
 		resource_set_notbusy(&mailboxtab.txs[mbxid].resource);
-	unix64_mailbox_unlock();
 error1:
 	unix64_mailbox_unlock();
 	return (err);
@@ -665,7 +664,6 @@ again:
 error2:
 	unix64_mailbox_lock();
 		resource_set_notbusy(&mailboxtab.rxs[mbxid].resource);
-	unix64_mailbox_unlock();
 error1:
 	unix64_mailbox_unlock();
 	return (err);
