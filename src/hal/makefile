@@ -35,6 +35,7 @@ C_SRC = $(wildcard *.c)                             \
         $(wildcard core/*.c)                        \
         $(wildcard cluster/*.c)                     \
         $(wildcard hlib/*.c)                        \
+        $(wildcard target/*.c)                      \
         $(wildcard stdout/klog.c)
 
 # Asembly Source Files
