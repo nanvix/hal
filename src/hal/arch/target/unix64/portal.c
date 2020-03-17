@@ -605,8 +605,8 @@ PRIVATE int unix64_portal_tx_exists(int local, int remote)
  */
 PRIVATE int do_unix64_portal_open(int local, int remote)
 {
-	int error;    /* Error.         */
-	int portalid; /* ID of  portal. */
+	int error;    /* Error.        */
+	int portalid; /* ID of portal. */
 
 	unix64_portals_lock();
 

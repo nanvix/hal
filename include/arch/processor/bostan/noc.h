@@ -62,12 +62,12 @@
 	 * @name Number of NoC nodes per DMA Channel.
 	 */
 	/**@{*/
-	#define BOSTAN_MAILBOX_CREATE_PER_DMA 1                              /**< 1 D-NoC RX and 1 C-NoC TX */
-	#define BOSTAN_MAILBOX_OPEN_PER_DMA   4                              /**< 1 D-NoC TX and 1 C-NoC RX */
-	#define BOSTAN_PORTAL_CREATE_PER_DMA  2                              /**< 1 D-NoC RX and 1 C-NoC TX */
-	#define BOSTAN_PORTAL_OPEN_PER_DMA    4                              /**< 1 D-NoC TX and 1 C-NoC RX */
-	#define BOSTAN_SYNC_CREATE_PER_DMA    BOSTAN_PROCESSOR_NOC_NODES_NUM /**< 1 C-NoC RX                */
-	#define BOSTAN_SYNC_OPEN_PER_DMA      1                              /**< 1 C-NoC TX                */
+	#define BOSTAN_MAILBOX_CREATE_PER_DMA 1                              /**< 1 D-NoC RX and 1 C-NoC TX             */
+	#define BOSTAN_MAILBOX_OPEN_PER_DMA   BOSTAN_PROCESSOR_NOC_NODES_NUM /**< 1 D-NoC TX (by demand) and 1 C-NoC RX */
+	#define BOSTAN_PORTAL_CREATE_PER_DMA  2                              /**< 1 D-NoC RX and 1 C-NoC TX             */
+	#define BOSTAN_PORTAL_OPEN_PER_DMA    BOSTAN_PROCESSOR_NOC_NODES_NUM /**< 1 D-NoC TX (by demand) and 1 C-NoC RX */
+	#define BOSTAN_SYNC_CREATE_PER_DMA    BOSTAN_PROCESSOR_NOC_NODES_NUM /**< 1 C-NoC RX                            */
+	#define BOSTAN_SYNC_OPEN_PER_DMA      1                              /**< 1 C-NoC TX                            */
 	/**@}*/
 
 	/**

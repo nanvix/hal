@@ -1071,7 +1071,7 @@ PUBLIC int bostan_dnoc_uc_alloc(int interface, int uctag, int txtag)
 		return (-EINVAL);
 
 	if (bostan_dnoc_uc_is_used(interface, uctag))
-		return (-EINVAL);
+		return (-EBUSY);
 
 	if (bostan_dnoc_tx_alloc(interface, txtag) != 0)
 		return (-EBUSY);
