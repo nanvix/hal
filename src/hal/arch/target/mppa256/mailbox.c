@@ -569,22 +569,12 @@ PRIVATE int mppa256_mailbox_send_msg(int mbxid)
 	localnum  = bostan_processor_noc_cluster_to_node_num(cluster_get_num()) + interface;
 
 	/* Opens data sender point. */
-	dtag = MAILBOX_DATA_TAG_BASE;
+	dtag = UNDERLYING_OPEN_TAG(mbxid);
 	ret = -1;
 
-	/* Try to find not busy dtag. */
-	for (int i = 0; i < BOSTAN_DNOC_TXS_PER_COMM_SERVICE; ++i)
-	{
-		/* Tries to open DMA Data Channel. */
-		if ((ret = bostan_dma_data_open(interface, dtag)) != -EBUSY)
-			break;
-
-		dtag++;
-	}
-
-	/* Checks if succesfully allocated a DTAG. */
-	if (ret != 0)
-		return (-EAGAIN);
+	/* Tries to open DMA Data Channel. */
+	if ((ret = bostan_dma_data_open(interface, dtag)) != 0)
+		return (-EBUSY);
 
 	if (bostan_dma_control_config(interface, ctag, (1), mppa256_mailbox_tx_handler) < 0)
 		return (-EINVAL);
