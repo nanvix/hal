@@ -414,10 +414,6 @@ error0:
  */
 PUBLIC int unix64_portal_create(int local)
 {
-	/* Bad local NoC node. */
-	if (local != processor_node_get_num(core_get_id()))
-		return (-EINVAL);
-
 	return (do_unix64_portal_create(local));
 }
 
@@ -504,10 +500,6 @@ error0:
  */
 PUBLIC int unix64_portal_allow(int portalid, int remote)
 {
-	/* Bad remote. */
-	if (remote == processor_node_get_num(core_get_id()))
-		return (-EINVAL);
-
 	return (do_unix64_portal_allow(portalid, remote));
 }
 
@@ -596,10 +588,6 @@ error0:
  */
 PUBLIC int unix64_portal_open(int local, int remote)
 {
-	/* Bad local. */
-	if (local != processor_node_get_num(core_get_id()))
-		return (-EINVAL);
-
 	return (do_unix64_portal_open(local, remote));
 }
 

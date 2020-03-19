@@ -104,6 +104,10 @@ PUBLIC int portal_create(int nodenum)
 	if (!node_is_valid(nodenum))
 		return (-EINVAL);
 
+	/* Bad local NoC node. */
+	if (!node_is_local(nodenum))
+		return (-EINVAL);
+
 	return (__portal_create(nodenum));
 
 #else
@@ -136,6 +140,10 @@ PUBLIC int portal_open(int localnum, int remotenum)
 	if (localnum == remotenum)
 		return (-EINVAL);
 
+	/* Bad local NoC node. */
+	if (node_is_local(remotenum))
+		return (-EINVAL);
+
 	return (__portal_open(localnum, remotenum));
 
 #else
@@ -164,6 +172,10 @@ PUBLIC int portal_allow(int portalid, int nodenum)
 	/* Invalid portal.*/
 	if (!portal_rx_is_valid(portalid))
 		return (-EBADF);
+
+	/* Bad local NoC node. */
+	if (node_is_local(nodenum))
+		return (-EINVAL);
 
 	return (__portal_allow(portalid, nodenum));
 

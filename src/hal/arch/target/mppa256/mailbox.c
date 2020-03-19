@@ -163,26 +163,6 @@ PRIVATE struct mbxpools
 };
 
 /*============================================================================*
- * mppa256_mailbox_node_is_local()                                            *
- *============================================================================*/
-
-/**
- * @brief Assess if the nodenum in on local cluster.
- *
- * @param nodenum Logic ID of a NoC node.
- *
- * @return No zero if nodenum is on local cluster and zero otherwise.
- */
-PRIVATE int mppa256_mailbox_node_is_local(int nodenum)
-{
-	int local;
-
-	local = bostan_processor_noc_cluster_to_node_num(cluster_get_num());
-
-	return (WITHIN(nodenum, local, local + BOSTAN_PROCESSOR_NOC_INTERFACES_NUM));
-}
-
-/*============================================================================*
  * mppa256_mailbox_rx_handler()                                               *
  *============================================================================*/
 
@@ -395,10 +375,6 @@ PRIVATE int do_mppa256_mailbox_create(int nodenum)
  */
 PUBLIC int mppa256_mailbox_create(int nodenum)
 {
-	/* Invalid NoC node is local. */
-	if (!mppa256_mailbox_node_is_local(nodenum))
-		return (-EINVAL);
-
 	return (do_mppa256_mailbox_create(nodenum));
 }
 
@@ -456,19 +432,6 @@ PRIVATE int do_mppa256_mailbox_open(int nodenum)
  */
 PUBLIC int mppa256_mailbox_open(int nodenum)
 {
-	/* Is remote in the local cluster? */
-	if (mppa256_mailbox_node_is_local(nodenum))
-	{
-		/* Is it a compute cluster? */
-		if (cluster_is_ccluster(cluster_get_num()))
-			return (-EINVAL);
-
-		/* Explanation (IO cluster):
-		 * It is allowed to open locally in the IO cluster because
-		 * it is as if it would be sent to a neighboring node (core).
-		 */
-	}
-
 	return (do_mppa256_mailbox_open(nodenum));
 }
 

@@ -166,6 +166,18 @@
 		return (WITHIN(nodenum, 0, PROCESSOR_NOC_NODES_NUM));
 	}
 
+	/**
+	 * @brief Assess if the nodenum in the local cluster.
+	 *
+	 * @param nodenum Logic ID of a NoC node.
+	 *
+	 * @return No zero if nodenum is on local cluster and zero otherwise.
+	 */
+	static inline int node_is_local(int nodenum)
+	{
+		return (nodenum == processor_node_get_num(core_get_id()));
+	}
+
 /**@}*/
 
 #endif /* PROCESSOR_HAS_NOC */

@@ -163,31 +163,6 @@ PRIVATE int mppa256_get_free_resource_tx(int nodenum)
 }
 
 /*============================================================================*
- * mppa256_portal_node_is_local()                                             *
- *============================================================================*/
-
-/**
- * @brief Assess if the nodenum in on local cluster.
- *
- * @param nodenum Logic ID of a NoC node.
- *
- * @return No zero if nodenum is on local cluster and zero otherwise.
- */
-PRIVATE int mppa256_portal_node_is_local(int portalid, int nodenum)
-{
-	int clusternum;
-
-	clusternum = bostan_processor_noc_cluster_to_node_num(cluster_get_num());
-
-	if (portalid == -1)
-		return WITHIN(nodenum, clusternum, clusternum + BOSTAN_PROCESSOR_NOC_INTERFACES_NUM);
-
-	clusternum += UNDERLYING_CREATE_INTERFACE(portalid);
-
-	return (clusternum == nodenum);
-}
-
-/*============================================================================*
  * mppa256_portal_receiver_handler()                                          *
  *============================================================================*/
 
@@ -316,10 +291,6 @@ PRIVATE int do_mppa256_portal_create(int nodenum)
  */
 PUBLIC int mppa256_portal_create(int nodenum)
 {
-	/* Invalid NoC node ID. */
-	if (!mppa256_portal_node_is_local(-1, nodenum))
-		return (-EINVAL);
-
 	return (do_mppa256_portal_create(nodenum));
 }
 
@@ -392,10 +363,6 @@ PUBLIC int mppa256_portal_allow(int portalid, int remotenum)
 
 	portalid -= MPPA256_PORTAL_CREATE_OFFSET;
 
-	/* Gets portal index not used. */
-	if (mppa256_portal_node_is_local(portalid, remotenum))
-		return (-EINVAL);
-
 	/* Read already allowed. */
 	if (portaltab.rxs[portalid].is_allowed)
 		return (-EBUSY);
@@ -454,10 +421,6 @@ PRIVATE int do_mppa256_portal_open(int localnum, int remotenum)
  */
 PUBLIC int mppa256_portal_open(int localnum, int remotenum)
 {
-	/* Invalid NoC node ID. */
-	if (!mppa256_portal_node_is_local(-1, localnum))
-		return (-EINVAL);
-
 	return (do_mppa256_portal_open(localnum, remotenum));
 }
 
