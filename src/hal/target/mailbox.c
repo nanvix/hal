@@ -70,8 +70,8 @@ PRIVATE int mailbox_rx_is_valid(int mbxid)
 	return (
 		WITHIN(
 			mbxid,
-			MAILBOX_CREATE_OFFSET,
-			(MAILBOX_CREATE_OFFSET + MAILBOX_CREATE_MAX)
+			HAL_MAILBOX_CREATE_OFFSET,
+			(HAL_MAILBOX_CREATE_OFFSET + HAL_MAILBOX_CREATE_MAX)
 		)
 	);
 }
@@ -96,8 +96,8 @@ PRIVATE int mailbox_tx_is_valid(int mbxid)
 	return (
 		WITHIN(
 			mbxid,
-			MAILBOX_OPEN_OFFSET,
-			MAILBOX_OPEN_OFFSET + MAILBOX_OPEN_MAX
+			HAL_MAILBOX_OPEN_OFFSET,
+			HAL_MAILBOX_OPEN_OFFSET + HAL_MAILBOX_OPEN_MAX
 		)
 	);
 }
@@ -181,7 +181,7 @@ PUBLIC ssize_t mailbox_aread(int mbxid, void *buffer, uint64_t size)
 		return (-EINVAL);
 
 	/* Invalid read size. */
-	if (size != MAILBOX_MSG_SIZE)
+	if (size != HAL_MAILBOX_MSG_SIZE)
 		return (-EINVAL);
 
 	/* Invalid mailbox. */
@@ -205,7 +205,7 @@ PUBLIC ssize_t mailbox_awrite(int mbxid, const void *buffer, uint64_t size)
 		return (-EINVAL);
 
 	/* Invalid write size. */
-	if (size != MAILBOX_MSG_SIZE)
+	if (size != HAL_MAILBOX_MSG_SIZE)
 		return (-EINVAL);
 
 	/* Invalid mailbox. */
