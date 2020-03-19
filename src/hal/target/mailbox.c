@@ -23,6 +23,7 @@
  */
 
 #include <nanvix/hal/target/mailbox.h>
+#include <posix/errno.h>
 #include <posix/stddef.h>
 #include <posix/stdint.h>
 
