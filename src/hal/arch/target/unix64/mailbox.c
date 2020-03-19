@@ -199,10 +199,6 @@ PUBLIC int unix64_mailbox_create(int nodenum)
 {
 	int mbxid;
 
-	/* Bad NoC node. */
-	if (nodenum != processor_node_get_num(core_get_id()))
-		return (-EINVAL);
-
 	unix64_mailbox_lock();
 		mbxid = do_unix64_mailbox_create(nodenum);
 	unix64_mailbox_unlock();
@@ -265,10 +261,6 @@ error0:
 PUBLIC int unix64_mailbox_open(int nodenum)
 {
 	int mbxid;
-
-	/* Bad NoC node. */
-	if (nodenum == processor_node_get_num(core_get_id()))
-		return (-EINVAL);
 
 again:
 

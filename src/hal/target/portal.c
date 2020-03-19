@@ -28,30 +28,6 @@
 #include <posix/stdint.h>
 
 /*============================================================================*
- * node_is_valid()                                                            *
- *============================================================================*/
-
-#if (__TARGET_HAS_PORTAL)
-
-/**
- * @brief Asserts whether or not a node number is valid.
- *
- * @param nodenum ID of the target node number.
- *
- * @returns One if the target node number is valid, and zero otherwise.
- *
- * @note This function is non-blocking.
- * @note This function is thread-safe.
- * @note This function is reentrant.
- */
-PRIVATE int node_is_valid(int nodenum)
-{
-	return (WITHIN(nodenum, 0, PROCESSOR_NOC_NODES_NUM));
-}
-
-#endif
-
-/*============================================================================*
  * portal_rx_is_valid()                                                       *
  *============================================================================*/
 
@@ -128,6 +104,10 @@ PUBLIC int portal_create(int nodenum)
 	if (!node_is_valid(nodenum))
 		return (-EINVAL);
 
+	/* Bad local NoC node. */
+	if (!node_is_local(nodenum))
+		return (-EINVAL);
+
 	return (__portal_create(nodenum));
 
 #else
@@ -160,6 +140,10 @@ PUBLIC int portal_open(int localnum, int remotenum)
 	if (localnum == remotenum)
 		return (-EINVAL);
 
+	/* Bad local NoC node. */
+	if (node_is_local(remotenum))
+		return (-EINVAL);
+
 	return (__portal_open(localnum, remotenum));
 
 #else
@@ -188,6 +172,10 @@ PUBLIC int portal_allow(int portalid, int nodenum)
 	/* Invalid portal.*/
 	if (!portal_rx_is_valid(portalid))
 		return (-EBADF);
+
+	/* Bad local NoC node. */
+	if (node_is_local(nodenum))
+		return (-EINVAL);
 
 	return (__portal_allow(portalid, nodenum));
 

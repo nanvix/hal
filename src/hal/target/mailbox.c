@@ -28,31 +28,6 @@
 #include <posix/stdint.h>
 
 /*============================================================================*
- * node_is_valid()                                                            *
- *============================================================================*/
-
-#if __TARGET_HAS_MAILBOX
-
-/**
- * @brief Asserts whether or not a sender mailbox is valid.
- *
- * @param mbxid ID of the target mailbox.
- *
- * @returns One if the target mailbox is valid, and false
- * otherwise.
- *
- * @note This function is non-blocking.
- * @note This function is thread-safe.
- * @note This function is reentrant.
- */
-PRIVATE int node_is_valid(int nodenum)
-{
-	return (WITHIN(nodenum, 0, PROCESSOR_NOC_NODES_NUM));
-}
-
-#endif
-
-/*============================================================================*
  * mailbox_rx_is_valid()                                                      *
  *============================================================================*/
 
@@ -127,6 +102,10 @@ PUBLIC int mailbox_create(int local)
 	if (!node_is_valid(local))
 		return (-EINVAL);
 
+	/* Invalid NoC node is local. */
+	if (!node_is_local(local))
+		return (-EINVAL);
+
 	return (__mailbox_create(local));
 
 #else
@@ -143,15 +122,19 @@ PUBLIC int mailbox_create(int local)
 /**
  * @todo TODO: provide a detailed description for this function.
  */
-PUBLIC int mailbox_open(int remnote)
+PUBLIC int mailbox_open(int remote)
 {
 #if (__TARGET_HAS_MAILBOX)
 
 	/* Invalid NoC node. */
-	if (!node_is_valid(remnote))
+	if (!node_is_valid(remote))
 		return (-EINVAL);
 
-	return (__mailbox_open(remnote));
+	/* Is remote in the local cluster? */
+	if (node_is_local(remote))
+		return (-EINVAL);
+
+	return (__mailbox_open(remote));
 
 #else
 	UNUSED(remote);
