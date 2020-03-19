@@ -699,7 +699,6 @@ PRIVATE ssize_t do_mppa256_mailbox_awrite(int mbxid, const void * buffer, uint64
  */
 PUBLIC ssize_t mppa256_mailbox_awrite(int mbxid, const void * buffer, uint64_t size)
 {
-
 	mbxid -= MPPA256_MAILBOX_OPEN_OFFSET;
 
 	/* Bad mailbox. */

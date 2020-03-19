@@ -28,30 +28,6 @@
 #include <posix/stdint.h>
 
 /*============================================================================*
- * node_is_valid()                                                            *
- *============================================================================*/
-
-#if (__TARGET_HAS_PORTAL)
-
-/**
- * @brief Asserts whether or not a node number is valid.
- *
- * @param nodenum ID of the target node number.
- *
- * @returns One if the target node number is valid, and zero otherwise.
- *
- * @note This function is non-blocking.
- * @note This function is thread-safe.
- * @note This function is reentrant.
- */
-PRIVATE int node_is_valid(int nodenum)
-{
-	return (WITHIN(nodenum, 0, PROCESSOR_NOC_NODES_NUM));
-}
-
-#endif
-
-/*============================================================================*
  * portal_rx_is_valid()                                                       *
  *============================================================================*/
 
