@@ -89,11 +89,20 @@
 
 #endif
 
+/* Dummy Constants */
+#if (!__TARGET_HAS_MAILBOX)
+
+	#define HAL_MAILBOX_CREATE_MAX    1
+	#define HAL_MAILBOX_CREATE_OFFSET 0
+	#define HAL_MAILBOX_OPEN_MAX      1
+	#define HAL_MAILBOX_OPEN_OFFSET   0
+	#define HAL_MAILBOX_MSG_SIZE      1
+
+#endif /* !__TARGET_HAS_MAILBOX */
+
 /*============================================================================*
  * Provided Interface                                                         *
  *============================================================================*/
-
-#if (__TARGET_HAS_MAILBOX)
 
 /**
  * @defgroup kernel-hal-target-mailbox Mailbox service
@@ -112,31 +121,38 @@
 	/**
 	 * @brief Initializes the mailbox interface.
 	 */
+#if (__TARGET_HAS_MAILBOX)
 	EXTERN void mailbox_setup(void);
+#else
+	static inline void mailbox_setup(void)
+	{
+
+	}
+#endif
 
 #endif /* __NANVIX_HAL */
 
 	/**
 	 * @brief Creates a mailbox.
 	 *
-	 * @param nodenum Logic ID of the underlying NoC node.
+	 * @param local Logic ID of the underlying NoC node.
 	 *
 	 * @returns Upon successful completion, the ID of the newly created
 	 * mailbox is returned. Upon failure, a negative error code is
 	 * returned instead.
 	 */
-	EXTERN int mailbox_create(int nodenum);
+	EXTERN int mailbox_create(int local);
 
 	/**
 	 * @brief Opens a mailbox.
 	 *
-	 * @param nodeid Logic ID of the target NoC node.
+	 * @param remote Logic ID of the target NoC node.
 	 *
 	 * @returns Upon successful completion, the ID of the target mailbox
 	 * is returned. Upon failure, a negative error code is returned
 	 * instead.
 	 */
-	EXTERN int mailbox_open(int nodenum);
+	EXTERN int mailbox_open(int remote);
 
 	/**
 	 * @brief Destroys a mailbox.
@@ -193,6 +209,5 @@
 
 /**@}*/
 
-#endif /* __TARGET_HAS_MAILBOX */
-
 #endif /* NANVIX_HAL_TARGET_MAILBOX_H_ */
+

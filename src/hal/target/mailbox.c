@@ -27,11 +27,11 @@
 #include <posix/stddef.h>
 #include <posix/stdint.h>
 
-#if __TARGET_HAS_MAILBOX
-
 /*============================================================================*
  * node_is_valid()                                                            *
  *============================================================================*/
+
+#if __TARGET_HAS_MAILBOX
 
 /**
  * @brief Asserts whether or not a sender mailbox is valid.
@@ -50,9 +50,13 @@ PRIVATE int node_is_valid(int nodenum)
 	return (WITHIN(nodenum, 0, PROCESSOR_NOC_NODES_NUM));
 }
 
+#endif
+
 /*============================================================================*
  * mailbox_rx_is_valid()                                                      *
  *============================================================================*/
+
+#if __TARGET_HAS_MAILBOX
 
 /**
  * @brief Asserts whether or not a receiver mailbox is valid.
@@ -76,9 +80,13 @@ PRIVATE int mailbox_rx_is_valid(int mbxid)
 	);
 }
 
+#endif
+
 /*============================================================================*
  * mailbox_tx_is_valid()                                                      *
  *============================================================================*/
+
+#if __TARGET_HAS_MAILBOX
 
 /**
  * @brief Asserts whether or not a sender mailbox is valid.
@@ -102,6 +110,8 @@ PRIVATE int mailbox_tx_is_valid(int mbxid)
 	);
 }
 
+#endif
+
 /*============================================================================*
  * mailbox_create()                                                           *
  *============================================================================*/
@@ -109,13 +119,21 @@ PRIVATE int mailbox_tx_is_valid(int mbxid)
 /**
  * @todo TODO: provide a detailed description for this function.
  */
-PUBLIC int mailbox_create(int nodenum)
+PUBLIC int mailbox_create(int local)
 {
+#if (__TARGET_HAS_MAILBOX)
+
 	/* Invalid NoC node. */
-	if (!node_is_valid(nodenum))
+	if (!node_is_valid(local))
 		return (-EINVAL);
 
-	return (__mailbox_create(nodenum));
+	return (__mailbox_create(local));
+
+#else
+	UNUSED(local);
+
+	return (-ENOSYS);
+#endif
 }
 
 /*============================================================================*
@@ -125,13 +143,21 @@ PUBLIC int mailbox_create(int nodenum)
 /**
  * @todo TODO: provide a detailed description for this function.
  */
-PUBLIC int mailbox_open(int nodenum)
+PUBLIC int mailbox_open(int remnote)
 {
+#if (__TARGET_HAS_MAILBOX)
+
 	/* Invalid NoC node. */
-	if (!node_is_valid(nodenum))
+	if (!node_is_valid(remnote))
 		return (-EINVAL);
 
-	return (__mailbox_open(nodenum));
+	return (__mailbox_open(remnote));
+
+#else
+	UNUSED(remote);
+
+	return (-ENOSYS);
+#endif
 }
 
 /*============================================================================*
@@ -143,12 +169,19 @@ PUBLIC int mailbox_open(int nodenum)
  */
 PUBLIC int mailbox_unlink(int mbxid)
 {
+#if (__TARGET_HAS_MAILBOX)
+
 	/* Invalid mailbox. */
 	if (!mailbox_rx_is_valid(mbxid))
 		return (-EBADF);
 
 
 	return (__mailbox_unlink(mbxid));
+#else
+	UNUSED(mbxid);
+
+	return (-ENOSYS);
+#endif
 }
 
 /*============================================================================*
@@ -160,11 +193,18 @@ PUBLIC int mailbox_unlink(int mbxid)
  */
 PUBLIC int mailbox_close(int mbxid)
 {
+#if (__TARGET_HAS_MAILBOX)
+
 	/* Invalid mailbox. */
 	if (!mailbox_tx_is_valid(mbxid))
 		return (-EBADF);
 
 	return (__mailbox_close(mbxid));
+#else
+	UNUSED(mbxid);
+
+	return (-ENOSYS);
+#endif
 }
 
 /*============================================================================*
@@ -176,6 +216,8 @@ PUBLIC int mailbox_close(int mbxid)
  */
 PUBLIC ssize_t mailbox_aread(int mbxid, void *buffer, uint64_t size)
 {
+#if (__TARGET_HAS_MAILBOX)
+
 	/* Invalid buffer. */
 	if (buffer == NULL)
 		return (-EINVAL);
@@ -189,6 +231,14 @@ PUBLIC ssize_t mailbox_aread(int mbxid, void *buffer, uint64_t size)
 		return (-EBADF);
 
 	return (__mailbox_aread(mbxid, buffer, size));
+
+#else
+	UNUSED(mbxid);
+	UNUSED(buffer);
+	UNUSED(size);
+
+	return (-ENOSYS);
+#endif
 }
 
 /*============================================================================*
@@ -200,6 +250,8 @@ PUBLIC ssize_t mailbox_aread(int mbxid, void *buffer, uint64_t size)
  */
 PUBLIC ssize_t mailbox_awrite(int mbxid, const void *buffer, uint64_t size)
 {
+#if (__TARGET_HAS_MAILBOX)
+
 	/* Invalid buffer. */
 	if (buffer == NULL)
 		return (-EINVAL);
@@ -213,6 +265,14 @@ PUBLIC ssize_t mailbox_awrite(int mbxid, const void *buffer, uint64_t size)
 		return (-EBADF);
 
 	return (__mailbox_awrite(mbxid, buffer, size));
+
+#else
+	UNUSED(mbxid);
+	UNUSED(buffer);
+	UNUSED(size);
+
+	return (-ENOSYS);
+#endif
 }
 
 /*============================================================================*
@@ -224,11 +284,16 @@ PUBLIC ssize_t mailbox_awrite(int mbxid, const void *buffer, uint64_t size)
  */
 PUBLIC int mailbox_wait(int mbxid)
 {
+#if (__TARGET_HAS_MAILBOX)
+
 	/* Invalid mailbox. */
 	if (!(mailbox_rx_is_valid(mbxid) || mailbox_tx_is_valid(mbxid)))
 		return (-EBADF);
 
 	return (__mailbox_wait(mbxid));
-}
+#else
+	UNUSED(mbxid);
 
-#endif /* __TARGET_HAS_MAILBOX */
+	return (-ENOSYS);
+#endif
+}

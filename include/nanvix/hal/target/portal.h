@@ -92,6 +92,17 @@
 
 #endif
 
+/* Dummy Constants */
+#if (!__TARGET_HAS_PORTAL)
+
+	#define HAL_PORTAL_CREATE_MAX    1
+	#define HAL_PORTAL_CREATE_OFFSET 0
+	#define HAL_PORTAL_OPEN_MAX      1
+	#define HAL_PORTAL_OPEN_OFFSET   0
+	#define HAL_PORTAL_MAX_SIZE      1
+
+#endif /* !__TARGET_HAS_PORTAL */
+
 /*============================================================================*
  * Provided Interface                                                         *
  *============================================================================*/
