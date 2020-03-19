@@ -225,7 +225,7 @@ PUBLIC ssize_t mailbox_awrite(int mbxid, const void *buffer, uint64_t size)
 PUBLIC int mailbox_wait(int mbxid)
 {
 	/* Invalid mailbox. */
-	if (!(mailbox_tx_is_valid(mbxid) || mailbox_tx_is_valid(mbxid)))
+	if (!(mailbox_rx_is_valid(mbxid) || mailbox_tx_is_valid(mbxid)))
 		return (-EBADF);
 
 	return (__mailbox_wait(mbxid));
