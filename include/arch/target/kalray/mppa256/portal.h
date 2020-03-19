@@ -44,6 +44,14 @@
 	/**@}*/
 
 	/**
+	 * @name File descriptor offset.
+	 */
+	/**@{*/
+	#define MPPA256_PORTAL_CREATE_OFFSET 0                         /**< Initial File Descriptor ID for Creates. */
+	#define MPPA256_PORTAL_OPEN_OFFSET   MPPA256_PORTAL_CREATE_MAX /**< Initial File Descriptor ID for Opens.   */
+	/**@}*/
+
+	/**
 	 * @brief Maximum size of transfer data.
 	 */
 	#define MPPA256_PORTAL_MAX_SIZE (8*KB)
@@ -158,9 +166,11 @@
 	 * @name Provided Constants
 	 */
 	/**@{*/
-	#define HAL_PORTAL_CREATE_MAX MPPA256_PORTAL_CREATE_MAX /**< @see MPPA256_PORTAL_CREATE_MAX */
-	#define HAL_PORTAL_OPEN_MAX   MPPA256_PORTAL_OPEN_MAX   /**< @see MPPA256_PORTAL_OPEN_MAX   */
-	#define HAL_PORTAL_MAX_SIZE   MPPA256_PORTAL_MAX_SIZE   /**< @see MPPA256_PORTAL_MAX_SIZE   */
+	#define HAL_PORTAL_CREATE_MAX    MPPA256_PORTAL_CREATE_MAX    /**< @see MPPA256_PORTAL_CREATE_MAX */
+	#define HAL_PORTAL_CREATE_OFFSET MPPA256_PORTAL_CREATE_OFFSET /**< MPPA256_PORTAL_CREATE_OFFSET   */
+	#define HAL_PORTAL_OPEN_MAX      MPPA256_PORTAL_OPEN_MAX      /**< @see MPPA256_PORTAL_OPEN_MAX   */
+	#define HAL_PORTAL_OPEN_OFFSET   MPPA256_PORTAL_OPEN_OFFSET   /**< MPPA256_PORTAL_OPEN_OFFSET     */
+	#define HAL_PORTAL_MAX_SIZE      MPPA256_PORTAL_MAX_SIZE      /**< @see MPPA256_PORTAL_MAX_SIZE   */
 	/**@}*/
 
 	/**
@@ -174,65 +184,49 @@
 	/**
 	 * @see mppa256_portal_create()
 	 */
-	static inline int portal_create(int nodenum)
-	{
-		return mppa256_portal_create(nodenum);
-	}
+	#define __portal_create(nodenum) \
+		mppa256_portal_create(nodenum)
 
 	/**
 	 * @see mppa256_portal_allow()
 	 */
-	static inline int portal_allow(int portalid, int remotenum)
-	{
-		return mppa256_portal_allow(portalid, remotenum);
-	}
+	#define __portal_allow(portalid, remote) \
+		mppa256_portal_allow(portalid, remote)
 
 	/**
 	 * @see mppa256_portal_open()
 	 */
-	static inline int portal_open(int localnum, int remotenum)
-	{
-		return mppa256_portal_open(localnum, remotenum);
-	}
+	#define __portal_open(local, remote) \
+		mppa256_portal_open(local, remote)
 
 	/**
 	 * @see mppa256_portal_unlink()
 	 */
-	static inline int portal_unlink(int portalid)
-	{
-		return mppa256_portal_unlink(portalid);
-	}
+	#define __portal_unlink(portalid) \
+		mppa256_portal_unlink(portalid)
 
 	/**
 	 * @see mppa256_portal_close()
 	 */
-	static inline int portal_close(int portalid)
-	{
-		return mppa256_portal_close(portalid);
-	}
+	#define __portal_close(portalid) \
+		mppa256_portal_close(portalid)
 
 	/**
 	 * @see mppa256_portal_write()
 	 */
-	static inline ssize_t portal_awrite(int portalid, const void * buffer, uint64_t size)
-	{
-		return mppa256_portal_awrite(portalid, buffer, size);
-	}
+	#define __portal_awrite(portalid, buffer, size) \
+		mppa256_portal_awrite(portalid, buffer, size)
 
 	/**
 	 * @see mppa256_portal_aread()
 	 */
-	static inline ssize_t portal_aread(int portalid, void * buffer, uint64_t size)
-	{
-		return mppa256_portal_aread(portalid, buffer, size);
-	}
+	#define __portal_aread(portalid, buffer, size) \
+		mppa256_portal_aread(portalid, buffer, size)
 
 	/**
 	 * @see mppa256_portal_wait()
 	 */
-	static inline int portal_wait(int portalid)
-	{
-		return mppa256_portal_wait(portalid);
-	}
+	#define __portal_wait(portalid) \
+		mppa256_portal_wait(portalid)
 
 #endif /* TARGET_KALRAY_MPPA256_PORTAL_H_ */

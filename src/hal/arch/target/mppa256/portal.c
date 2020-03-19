@@ -36,14 +36,6 @@
  *============================================================================*/
 
 /**
- * @name File descriptor offset.
- */
-/**@{*/
-#define MPPA256_PORTAL_CREATE_OFFSET 0                         /**< Initial File Descriptor ID for Creates. */
-#define MPPA256_PORTAL_OPEN_OFFSET   MPPA256_PORTAL_CREATE_MAX /**< Initial File Descriptor ID for Opens.   */
-/**@}*/
-
-/**
  * @name Gets underlying resource IDs.
  */
 /**@{*/
@@ -196,81 +188,6 @@ PRIVATE int mppa256_portal_node_is_local(int portalid, int nodenum)
 }
 
 /*============================================================================*
- * mppa256_portal_rx_is_valid()                                               *
- *============================================================================*/
-
-/**
- * @brief Asserts whether or not a receiver portal is valid.
- *
- * @param portalid ID of the target portal.
- *
- * @returns One if the target portal is valid, and false
- * otherwise.
- *
- * @note This function is non-blocking.
- * @note This function is thread-safe.
- * @note This function is reentrant.
- */
-PRIVATE int mppa256_portal_rx_is_valid(int portalid)
-{
-	return (
-		WITHIN(
-			portalid,
-			MPPA256_PORTAL_CREATE_OFFSET,
-			MPPA256_PORTAL_CREATE_OFFSET + MPPA256_PORTAL_CREATE_MAX
-		)
-	);
-}
-
-/*============================================================================*
- * mppa256_portal_tx_is_valid()                                               *
- *============================================================================*/
-
-/**
- * @brief Asserts whether or not a sender portal is valid.
- *
- * @param portalid ID of the target portal.
- *
- * @returns One if the target portal is valid, and false
- * otherwise.
- *
- * @note This function is non-blocking.
- * @note This function is thread-safe.
- * @note This function is reentrant.
- */
-PRIVATE int mppa256_portal_tx_is_valid(int portalid)
-{
-	return (
-		WITHIN(
-			portalid,
-			MPPA256_PORTAL_OPEN_OFFSET,
-			MPPA256_PORTAL_OPEN_OFFSET + MPPA256_PORTAL_OPEN_MAX
-		)
-	);
-}
-
-/*============================================================================*
- * mppa256_node_is_valid()                                                    *
- *============================================================================*/
-
-/**
- * @brief Asserts whether or not a sender mailbox is valid.
- *
- * @param portalid ID of the target mailbox.
- *
- * @returns One if the target mailbox is valid, and false
- * otherwise.
- *
- * @note This function is non-blocking.
- * @note This function is thread-safe.
- * @note This function is reentrant.
- */
-PRIVATE int mppa256_node_is_valid(int nodenum)
-{
-	return (WITHIN(nodenum, 0, PROCESSOR_NOC_NODES_NUM));
-}
-
-/*============================================================================*
  * mppa256_portal_receiver_handler()                                          *
  *============================================================================*/
 
@@ -399,10 +316,6 @@ PRIVATE int do_mppa256_portal_create(int nodenum)
  */
 PUBLIC int mppa256_portal_create(int nodenum)
 {
-	/* Is local valid? */
-	if (!mppa256_node_is_valid(nodenum))
-		return (-EINVAL);
-
 	/* Invalid NoC node ID. */
 	if (!mppa256_portal_node_is_local(-1, nodenum))
 		return (-EINVAL);
@@ -469,10 +382,6 @@ PRIVATE int do_mppa256_portal_allow(int portalid, int remotenum)
  */
 PUBLIC int mppa256_portal_allow(int portalid, int remotenum)
 {
-	/* Invalid NoC node ID. */
-	if (!mppa256_portal_rx_is_valid(portalid))
-		return (-EBADF);
-
 	/* Bad portal. */
 	if (!resource_is_used(&portaltab.rxs[portalid].resource))
 		return (-EBADF);
@@ -480,10 +389,6 @@ PUBLIC int mppa256_portal_allow(int portalid, int remotenum)
 	/* Bad portal. */
 	if (resource_is_busy(&portaltab.rxs[portalid].resource))
 		return (-EBUSY);
-
-	/* Is nodenum valid? */
-	if (!mppa256_node_is_valid(remotenum))
-		return (-EINVAL);
 
 	portalid -= MPPA256_PORTAL_CREATE_OFFSET;
 
@@ -549,16 +454,8 @@ PRIVATE int do_mppa256_portal_open(int localnum, int remotenum)
  */
 PUBLIC int mppa256_portal_open(int localnum, int remotenum)
 {
-	/* Is nodenum valid? */
-	if (!mppa256_node_is_valid(localnum) || !mppa256_node_is_valid(remotenum))
-		return (-EINVAL);
-
 	/* Invalid NoC node ID. */
 	if (!mppa256_portal_node_is_local(-1, localnum))
-		return (-EINVAL);
-
-	/* Invalid NoC node ID. */
-	if (localnum == remotenum)
 		return (-EINVAL);
 
 	return (do_mppa256_portal_open(localnum, remotenum));
@@ -615,9 +512,6 @@ PRIVATE int do_mppa256_portal_unlink(int portalid)
  */
 PUBLIC int mppa256_portal_unlink(int portalid)
 {
-	/* Invalid NoC node ID. */
-	if (!mppa256_portal_rx_is_valid(portalid))
-		return (-EBADF);
 
 	portalid -= MPPA256_PORTAL_CREATE_OFFSET;
 
@@ -670,10 +564,6 @@ PRIVATE int do_mppa256_portal_close(int portalid)
  */
 PUBLIC int mppa256_portal_close(int portalid)
 {
-	/* Invalid NoC node ID. */
-	if (!mppa256_portal_tx_is_valid(portalid))
-		return (-EBADF);
-
 	portalid -= MPPA256_PORTAL_OPEN_OFFSET;
 
 	/* Bad portal. */
@@ -801,10 +691,6 @@ PRIVATE ssize_t do_mppa256_portal_awrite(int portalid, const void * buffer, uint
  */
 PUBLIC ssize_t mppa256_portal_awrite(int portalid, const void * buffer, uint64_t size)
 {
-	/* Invalid NoC node ID. */
-	if (!mppa256_portal_tx_is_valid(portalid))
-		return (-EBADF);
-
 	portalid -= MPPA256_PORTAL_OPEN_OFFSET;
 
 	/* Bad portal. */
@@ -814,14 +700,6 @@ PUBLIC ssize_t mppa256_portal_awrite(int portalid, const void * buffer, uint64_t
 	/* Busy portal. */
 	if (resource_is_busy(&portaltab.txs[portalid].resource))
 		return (-EAGAIN);
-
-	/* Bad buffer*/
-	if (buffer == NULL)
-		return (-EINVAL);
-
-	/* Bad size. */
-	if (size == 0)
-		return (-EINVAL);
 
 	return (do_mppa256_portal_awrite(portalid, buffer, size));
 }
@@ -903,9 +781,6 @@ PUBLIC ssize_t do_mppa256_portal_aread(int portalid, void * buffer, uint64_t siz
  */
 PUBLIC ssize_t mppa256_portal_aread(int portalid, void * buffer, uint64_t size)
 {
-	/* Invalid NoC node ID. */
-	if (!mppa256_portal_rx_is_valid(portalid))
-		return (-EBADF);
 
 	portalid -= MPPA256_PORTAL_CREATE_OFFSET;
 
@@ -916,14 +791,6 @@ PUBLIC ssize_t mppa256_portal_aread(int portalid, void * buffer, uint64_t size)
 	/* Busy portal. */
 	if (resource_is_busy(&portaltab.rxs[portalid].resource))
 		return (-EBUSY);
-
-	/* Bad buffer. */
-	if (buffer == NULL)
-		return (-EINVAL);
-
-	/* Bad size. */
-	if (size == 0)
-		return (-EINVAL);
 
 	/* Read not allowed. */
 	if (!portaltab.rxs[portalid].is_allowed)
@@ -948,9 +815,6 @@ PUBLIC int mppa256_portal_wait(int portalid)
 	/* Is it a rx operation? */
 	if (portalid < MPPA256_PORTAL_OPEN_OFFSET)
 	{
-		if (!mppa256_portal_rx_is_valid(portalid))
-			return (-EBADF);
-
 		portalid -= MPPA256_PORTAL_CREATE_OFFSET;
 
 		#if 1 /* Is the slave with correct data cached? */
@@ -966,9 +830,6 @@ PUBLIC int mppa256_portal_wait(int portalid)
 	/* Is it a tx operation? */
 	else
 	{
-		if (!mppa256_portal_tx_is_valid(portalid))
-			return (-EBADF);
-
 		portalid -= MPPA256_PORTAL_OPEN_OFFSET;
 
 		#if 1 /* Is the slave with correct data cached? */

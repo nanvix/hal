@@ -48,6 +48,14 @@
 	/**@}*/
 
 	/**
+	 * @name File descriptor offset.
+	 */
+	/**@{*/
+	#define UNIX64_PORTAL_CREATE_OFFSET 0 /**< Initial File Descriptor ID for Creates. */
+	#define UNIX64_PORTAL_OPEN_OFFSET   0 /**< Initial File Descriptor ID for Opens.   */
+	/**@}*/
+
+	/**
 	 * @brief Total number of portals.
 	 */
 	#define UNIX64_PORTAL_MAX (UNIX64_PORTAL_CREATE_MAX + UNIX64_PORTAL_OPEN_MAX)
@@ -149,15 +157,6 @@
 	 */
 	EXTERN int unix64_portal_close(int portalid);
 
-	/**
-	 * @brief Waits asynchronous operation.
-	 *
-	 * @param aiocb Asynchronous operation control.
-	 *
-	 * @return Zero if wait read correctly and non zero otherwise.
-	 */
-	EXTERN int unix64_portal_wait(int portalid);
-
 /**@}*/
 
 /*============================================================================*
@@ -188,9 +187,11 @@
 	 * @name Provided Constants
 	 */
 	/**@{*/
-	#define HAL_PORTAL_CREATE_MAX UNIX64_PORTAL_CREATE_MAX /**< UNIX64_PORTAL_CREATE_MAX */
-	#define HAL_PORTAL_OPEN_MAX   UNIX64_PORTAL_OPEN_MAX   /**< UNIX64_PORTAL_OPEN_MAX   */
-	#define HAL_PORTAL_MAX_SIZE   UNIX64_PORTAL_MAX_SIZE   /**< UNIX64_PORTAL_MAX_SIZE   */
+	#define HAL_PORTAL_CREATE_MAX    UNIX64_PORTAL_CREATE_MAX    /**< UNIX64_PORTAL_CREATE_MAX    */
+	#define HAL_PORTAL_CREATE_OFFSET UNIX64_PORTAL_CREATE_OFFSET /**< UNIX64_PORTAL_CREATE_OFFSET */
+	#define HAL_PORTAL_OPEN_MAX      UNIX64_PORTAL_OPEN_MAX      /**< UNIX64_PORTAL_OPEN_MAX      */
+	#define HAL_PORTAL_OPEN_OFFSET   UNIX64_PORTAL_OPEN_OFFSET   /**< UNIX64_PORTAL_OPEN_OFFSET   */
+	#define HAL_PORTAL_MAX_SIZE      UNIX64_PORTAL_MAX_SIZE      /**< UNIX64_PORTAL_MAX_SIZE      */
 	/**@}*/
 
 	/**
@@ -208,67 +209,51 @@
 	/**
 	 * @see unix64_portal_create()
 	 */
-	static inline int portal_create(int nodenum)
-	{
-		return unix64_portal_create(nodenum);
-	}
+	#define __portal_create(nodenum) \
+		unix64_portal_create(nodenum)
 
 	/**
 	 * @see unix64_portal_allow()
 	 */
-	static inline int portal_allow(int portalid, int remote)
-	{
-		return unix64_portal_allow(portalid, remote);
-	}
+	#define __portal_allow(portalid, remote) \
+		unix64_portal_allow(portalid, remote)
 
 	/**
-	 * @see unix64_portal_create()
+	 * @see unix64_portal_read()
 	 */
-	static inline ssize_t portal_aread(int portalid, void *buffer, uint64_t size)
-	{
-		return (unix64_portal_read(portalid, buffer, size));
-	}
+	#define __portal_aread(portalid, buffer, size) \
+		unix64_portal_read(portalid, buffer, size)
 
 	/**
-	 * @see unix64_portal_allow()
+	 * @see unix64_portal_awrite()
 	 */
-	static inline ssize_t portal_awrite(int portalid, const void *buffer, uint64_t size)
-	{
-		return (unix64_portal_write(portalid, buffer, size));
-	}
-
+	#define __portal_awrite(portalid, buffer, size) \
+		unix64_portal_write(portalid, buffer, size)
 
 	/**
 	 * @see unix64_portal_open()
 	 */
-	static inline int portal_open(int local, int remote)
-	{
-		return unix64_portal_open(local, remote);
-	}
+	#define __portal_open(local, remote) \
+		unix64_portal_open(local, remote)
 
 	/**
 	 * @see unix64_portal_unlink()
 	 */
-	static inline int portal_unlink(int portalid)
-	{
-		return unix64_portal_unlink(portalid);
-	}
+	#define __portal_unlink(portalid) \
+		unix64_portal_unlink(portalid)
 
 	/**
 	 * @see unix64_portal_close()
 	 */
-	static inline int portal_close(int portalid)
-	{
-		return unix64_portal_close(portalid);
-	}
+	#define __portal_close(portalid) \
+		unix64_portal_close(portalid)
 
 	/**
-	 * @see unix64_portal_wait()
+	 * @brief Dummy operation.
+	 *
+	 * @param portalid Unused.
 	 */
-	static inline int portal_wait(int portalid)
-	{
-		return unix64_portal_wait(portalid);
-	}
+	#define __portal_wait(portalid) (0)
 
 /**@}*/
 

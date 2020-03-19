@@ -22,24 +22,23 @@
  * SOFTWARE.
  */
 
-#include <nanvix/hal/target/mailbox.h>
+#include <nanvix/hal/target/portal.h>
 #include <posix/errno.h>
 #include <posix/stddef.h>
 #include <posix/stdint.h>
-
-#if __TARGET_HAS_MAILBOX
 
 /*============================================================================*
  * node_is_valid()                                                            *
  *============================================================================*/
 
+#if (__TARGET_HAS_PORTAL)
+
 /**
- * @brief Asserts whether or not a sender mailbox is valid.
+ * @brief Asserts whether or not a node number is valid.
  *
- * @param mbxid ID of the target mailbox.
+ * @param nodenum ID of the target node number.
  *
- * @returns One if the target mailbox is valid, and false
- * otherwise.
+ * @returns One if the target node number is valid, and zero otherwise.
  *
  * @note This function is non-blocking.
  * @note This function is thread-safe.
@@ -50,185 +49,292 @@ PRIVATE int node_is_valid(int nodenum)
 	return (WITHIN(nodenum, 0, PROCESSOR_NOC_NODES_NUM));
 }
 
-/*============================================================================*
- * mailbox_rx_is_valid()                                                      *
- *============================================================================*/
-
-/**
- * @brief Asserts whether or not a receiver mailbox is valid.
- *
- * @param mbxid ID of the target mailbox.
- *
- * @returns One if the target mailbox is valid, and false otherwise.
- *
- * @note This function is non-blocking.
- * @note This function is thread-safe.
- * @note This function is reentrant.
- */
-PRIVATE int mailbox_rx_is_valid(int mbxid)
-{
-	return (
-		WITHIN(
-			mbxid,
-			MAILBOX_CREATE_OFFSET,
-			(MAILBOX_CREATE_OFFSET + MAILBOX_CREATE_MAX)
-		)
-	);
-}
+#endif
 
 /*============================================================================*
- * mailbox_tx_is_valid()                                                      *
+ * portal_rx_is_valid()                                                       *
  *============================================================================*/
 
+#if (__TARGET_HAS_PORTAL)
+
 /**
- * @brief Asserts whether or not a sender mailbox is valid.
+ * @brief Asserts whether or not a receiver portal is valid.
  *
- * @param mbxid ID of the target mailbox.
+ * @param portalid ID of the target portal.
  *
- * @returns One if the target mailbox is valid, and false otherwise.
+ * @returns One if the target portal is valid, and false
+ * otherwise.
  *
  * @note This function is non-blocking.
  * @note This function is thread-safe.
  * @note This function is reentrant.
  */
-PRIVATE int mailbox_tx_is_valid(int mbxid)
+PRIVATE int portal_rx_is_valid(int portalid)
 {
 	return (
 		WITHIN(
-			mbxid,
-			MAILBOX_OPEN_OFFSET,
-			MAILBOX_OPEN_OFFSET + MAILBOX_OPEN_MAX
+			portalid,
+			HAL_PORTAL_CREATE_OFFSET,
+			HAL_PORTAL_CREATE_OFFSET + HAL_PORTAL_CREATE_MAX
 		)
 	);
 }
 
+#endif
+
 /*============================================================================*
- * mailbox_create()                                                           *
+ * portal_tx_is_valid()                                                       *
+ *============================================================================*/
+
+#if (__TARGET_HAS_PORTAL)
+
+/**
+ * @brief Asserts whether or not a sender portal is valid.
+ *
+ * @param portalid ID of the target portal.
+ *
+ * @returns One if the target portal is valid, and false
+ * otherwise.
+ *
+ * @note This function is non-blocking.
+ * @note This function is thread-safe.
+ * @note This function is reentrant.
+ */
+PRIVATE int portal_tx_is_valid(int portalid)
+{
+	return (
+		WITHIN(
+			portalid,
+			HAL_PORTAL_OPEN_OFFSET,
+			HAL_PORTAL_OPEN_OFFSET + HAL_PORTAL_OPEN_MAX
+		)
+	);
+}
+
+#endif
+
+/*============================================================================*
+ * portal_create()                                                            *
  *============================================================================*/
 
 /**
  * @todo TODO: provide a detailed description for this function.
  */
-PUBLIC int mailbox_create(int nodenum)
+PUBLIC int portal_create(int nodenum)
 {
-	/* Invalid NoC node. */
+#if (__TARGET_HAS_PORTAL)
+
+	/* Is local valid? */
 	if (!node_is_valid(nodenum))
 		return (-EINVAL);
 
-	return (__mailbox_create(nodenum));
+	return (__portal_create(nodenum));
+
+#else
+	UNUSED(nodenum);
+
+	return (-ENOSYS);
+#endif
 }
 
 /*============================================================================*
- * mailbox_open()                                                             *
+ * portal_open()                                                              *
  *============================================================================*/
 
 /**
  * @todo TODO: provide a detailed description for this function.
  */
-PUBLIC int mailbox_open(int nodenum)
+PUBLIC int portal_open(int localnum, int remotenum)
 {
-	/* Invalid NoC node. */
+#if (__TARGET_HAS_PORTAL)
+
+	/* Invalid local NoC node. */
+	if (!node_is_valid(localnum))
+		return (-EINVAL);
+
+	/* Invalid remote NoC node. */
+	if (!node_is_valid(remotenum))
+		return (-EINVAL);
+
+	/* Invalid NoC node ID. */
+	if (localnum == remotenum)
+		return (-EINVAL);
+
+	return (__portal_open(localnum, remotenum));
+
+#else
+	UNUSED(localnum);
+	UNUSED(remotenum);
+
+	return (-ENOSYS);
+#endif
+}
+
+/*============================================================================*
+ * portal_allow()                                                             *
+ *============================================================================*/
+
+/**
+ * @todo TODO: provide a detailed description for this function.
+ */
+PUBLIC int portal_allow(int portalid, int nodenum)
+{
+#if (__TARGET_HAS_PORTAL)
+
+	/* Is nodenum valid? */
 	if (!node_is_valid(nodenum))
 		return (-EINVAL);
 
-	return (__mailbox_open(nodenum));
-}
-
-/*============================================================================*
- * mailbox_unlink()                                                           *
- *============================================================================*/
-
-/**
- * @todo TODO: provide a detailed description for this function.
- */
-PUBLIC int mailbox_unlink(int mbxid)
-{
-	/* Invalid mailbox. */
-	if (!mailbox_rx_is_valid(mbxid))
+	/* Invalid portal.*/
+	if (!portal_rx_is_valid(portalid))
 		return (-EBADF);
 
+	return (__portal_allow(portalid, nodenum));
 
-	return (__mailbox_unlink(mbxid));
+#else
+	UNUSED(portalid);
+	UNUSED(nodenum);
+
+	return (-ENOSYS);
+#endif
 }
 
 /*============================================================================*
- * mailbox_close()                                                            *
+ * portal_unlink()                                                            *
  *============================================================================*/
 
 /**
  * @todo TODO: provide a detailed description for this function.
  */
-PUBLIC int mailbox_close(int mbxid)
+PUBLIC int portal_unlink(int portalid)
 {
-	/* Invalid mailbox. */
-	if (!mailbox_tx_is_valid(mbxid))
+#if (__TARGET_HAS_PORTAL)
+
+	/* Invalid portal. */
+	if (!portal_rx_is_valid(portalid))
 		return (-EBADF);
 
-	return (__mailbox_close(mbxid));
+	return (__portal_unlink(portalid));
+
+#else
+	UNUSED(portalid);
+
+	return (-ENOSYS);
+#endif
 }
 
 /*============================================================================*
- * mailbox_aread()                                                            *
+ * portal_close()                                                             *
  *============================================================================*/
 
 /**
  * @todo TODO: provide a detailed description for this function.
  */
-PUBLIC ssize_t mailbox_aread(int mbxid, void *buffer, uint64_t size)
+PUBLIC int portal_close(int portalid)
 {
-	/* Invalid buffer. */
+#if (__TARGET_HAS_PORTAL)
+
+	/* Invalid portal. */
+	if (!portal_tx_is_valid(portalid))
+		return (-EBADF);
+
+	return (__portal_close(portalid));
+
+#else
+	UNUSED(portalid);
+
+	return (-ENOSYS);
+#endif
+}
+
+/*============================================================================*
+ * portal_awrite()                                                            *
+ *============================================================================*/
+
+/**
+ * @todo TODO: provide a detailed description for this function.
+ */
+PUBLIC ssize_t portal_awrite(int portalid, const void *buffer, uint64_t size)
+{
+#if (__TARGET_HAS_PORTAL)
+
+	/* Invalid NoC node ID. */
+	if (!portal_tx_is_valid(portalid))
+		return (-EBADF);
+
+	/* Bad buffer*/
 	if (buffer == NULL)
 		return (-EINVAL);
 
-	/* Invalid read size. */
-	if (size != MAILBOX_MSG_SIZE)
+	/* Bad size. */
+	if (size == 0)
 		return (-EINVAL);
 
-	/* Invalid mailbox. */
-	if (!mailbox_rx_is_valid(mbxid))
-		return (-EBADF);
+	return (__portal_awrite(portalid, buffer, size));
 
-	return (__mailbox_aread(mbxid, buffer, size));
+#else
+	UNUSED(portalid);
+	UNUSED(buffer);
+	UNUSED(size);
+
+	return (-ENOSYS);
+#endif
 }
 
 /*============================================================================*
- * mailbox_awrite()                                                           *
+ * portal_aread()                                                            *
  *============================================================================*/
 
 /**
  * @todo TODO: provide a detailed description for this function.
  */
-PUBLIC ssize_t mailbox_awrite(int mbxid, const void *buffer, uint64_t size)
+PUBLIC ssize_t portal_aread(int portalid, void *buffer, uint64_t size)
 {
-	/* Invalid buffer. */
+#if (__TARGET_HAS_PORTAL)
+
+	/* Invalid NoC node ID. */
+	if (!portal_rx_is_valid(portalid))
+		return (-EBADF);
+
+	/* Bad buffer*/
 	if (buffer == NULL)
 		return (-EINVAL);
 
-	/* Invalid write size. */
-	if (size != MAILBOX_MSG_SIZE)
+	/* Bad size. */
+	if (size == 0)
 		return (-EINVAL);
 
-	/* Invalid mailbox. */
-	if (!mailbox_tx_is_valid(mbxid))
-		return (-EBADF);
+	return (__portal_aread(portalid, buffer, size));
 
-	return (__mailbox_awrite(mbxid, buffer, size));
+#else
+	UNUSED(portalid);
+	UNUSED(buffer);
+	UNUSED(size);
+
+	return (-ENOSYS);
+#endif
 }
 
 /*============================================================================*
- * mailbox_wait()                                                             *
+ * portal_wait()                                                              *
  *============================================================================*/
 
 /**
  * @todo TODO: provide a detailed description for this function.
  */
-PUBLIC int mailbox_wait(int mbxid)
+PUBLIC int portal_wait(int portalid)
 {
+#if (__TARGET_HAS_PORTAL)
+
 	/* Invalid mailbox. */
-	if (!(mailbox_rx_is_valid(mbxid) || mailbox_tx_is_valid(mbxid)))
+	if (!(portal_rx_is_valid(portalid) || portal_tx_is_valid(portalid)))
 		return (-EBADF);
 
-	return (__mailbox_wait(mbxid));
-}
+	return (__portal_wait(portalid));
 
-#endif /* __TARGET_HAS_MAILBOX */
+#else
+	UNUSED(portalid);
+
+	return (-ENOSYS);
+#endif
+}
