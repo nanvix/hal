@@ -138,46 +138,6 @@ PRIVATE void unix64_portals_unlock(void)
 }
 
 /*============================================================================*
- * unix64_portal_rx_is_valid()                                                *
- *============================================================================*/
-
-/**
- * @brief Asserts if an input portal is valid.
- *
- * @param portalid ID of the target portal.
- *
- * @returns One if the target portal is valid, and false otherwise.
- *
- * @note This function is non-blocking.
- * @note This function is thread-safe.
- * @note This function is reentrant.
- */
-PRIVATE int unix64_portal_rx_is_valid(int portalid)
-{
-	return ((portalid >= 0) && (portalid < UNIX64_PORTAL_CREATE_MAX));
-}
-
-/*============================================================================*
- * unix64_portal_tx_is_valid()                                                *
- *============================================================================*/
-
-/**
- * @brief Asserts if an input portal is valid.
- *
- * @param portalid ID of the target portal.
- *
- * @returns One if the target portal is valid, and false otherwise.
- *
- * @note This function is non-blocking.
- * @note This function is thread-safe.
- * @note This function is reentrant.
- */
-PRIVATE int unix64_portal_tx_is_valid(int portalid)
-{
-	return ((portalid >= 0) && (portalid < UNIX64_PORTAL_OPEN_MAX));
-}
-
-/*============================================================================*
  * unix64_portal_buffer_open()                                                *
  *============================================================================*/
 
@@ -454,10 +414,6 @@ error0:
  */
 PUBLIC int unix64_portal_create(int local)
 {
-	/* Invalid local NoC node. */
-	if ((local < 0) || (local >= PROCESSOR_NOC_NODES_NUM))
-		return (-EINVAL);
-
 	/* Bad local NoC node. */
 	if (local != processor_node_get_num(core_get_id()))
 		return (-EINVAL);
@@ -548,14 +504,6 @@ error0:
  */
 PUBLIC int unix64_portal_allow(int portalid, int remote)
 {
-	/* Invalid portal.*/
-	if (!unix64_portal_rx_is_valid(portalid))
-		return (-EBADF);
-
-	/* Invalid remote NoC node. */
-	if ((remote < 0) || (remote >= PROCESSOR_NOC_NODES_NUM))
-		return (-EINVAL);
-
 	/* Bad remote. */
 	if (remote == processor_node_get_num(core_get_id()))
 		return (-EINVAL);
@@ -648,42 +596,11 @@ error0:
  */
 PUBLIC int unix64_portal_open(int local, int remote)
 {
-	/* Invalid local NoC node. */
-	if ((local < 0) || (local >= PROCESSOR_NOC_NODES_NUM))
-		return (-EINVAL);
-
-	/* Invalid remote NoC node. */
-	if ((remote < 0) || (remote >= PROCESSOR_NOC_NODES_NUM))
-		return (-EINVAL);
-
 	/* Bad local. */
 	if (local != processor_node_get_num(core_get_id()))
 		return (-EINVAL);
 
-	/* Bad remote. */
-	if (remote == local)
-		return (-EINVAL);
-
 	return (do_unix64_portal_open(local, remote));
-}
-
-/*============================================================================*
- * unix64_portal_wait()                                                       *
- *============================================================================*/
-
-/**
- * @todo TODO: implement this function.
- * @todo TODO: provide a detailed description for this function.
- *
- * @note This function is blocking.
- * @note This function is thread-safe.
- * @note This function is reentrant.
- */
-PUBLIC int unix64_portal_wait(int portalid)
-{
-	UNUSED(portalid);
-
-	return (0);
 }
 
 /*============================================================================*
@@ -765,18 +682,6 @@ error0:
  */
 PUBLIC ssize_t unix64_portal_read(int portalid, void *buf, size_t n)
 {
-	/* Invalid portal ID.*/
-	if (!unix64_portal_rx_is_valid(portalid))
-		return (-EBADF);
-
-	/* Invalid buffer. */
-	if (buf == NULL)
-		return (-EINVAL);
-
-	/* Invalid read size. */
-	if (n == 0)
-		return (-EINVAL);
-
 	return (do_unix64_portal_read(portalid, buf, n));
 }
 
@@ -861,18 +766,6 @@ error0:
  */
 PUBLIC ssize_t unix64_portal_write(int portalid, const void *buf, size_t n)
 {
-	/* Invalid portal ID.*/
-	if (!unix64_portal_tx_is_valid(portalid))
-		return (-EBADF);
-
-	/* Invalid buffer. */
-	if (buf == NULL)
-		return (-EINVAL);
-
-	/* Invalid write size. */
-	if (n == 0)
-		return (-EINVAL);
-
 	return (do_unix64_portal_write(portalid, buf, n));
 }
 
@@ -889,10 +782,6 @@ PUBLIC ssize_t unix64_portal_write(int portalid, const void *buf, size_t n)
  */
 PUBLIC int unix64_portal_unlink(int portalid)
 {
-	/* Invalid portal. */
-	if (!unix64_portal_rx_is_valid(portalid))
-		return (-EBADF);
-
 again:
 
 	unix64_portals_lock();
@@ -955,10 +844,6 @@ again:
 PUBLIC int unix64_portal_close(int portalid)
 {
 	int remote;
-
-	/* Invalid portal. */
-	if (!unix64_portal_tx_is_valid(portalid))
-		return (-EBADF);
 
 again:
 

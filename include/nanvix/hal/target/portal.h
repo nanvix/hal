@@ -46,8 +46,14 @@
 		#ifndef HAL_PORTAL_CREATE_MAX
 		#error "HAL_PORTAL_CREATE_MAX not defined"
 		#endif
+		#ifndef HAL_PORTAL_CREATE_OFFSET
+		#error "HAL_PORTAL_CREATE_OFFSET not defined"
+		#endif
 		#ifndef HAL_PORTAL_OPEN_MAX
 		#error "HAL_PORTAL_OPEN_MAX not defined"
+		#endif
+		#ifndef HAL_PORTAL_OPEN_OFFSET
+		#error "HAL_PORTAL_OPEN_OFFSET not defined"
 		#endif
 		#ifndef HAL_PORTAL_MAX_SIZE
 		#error "HAL_PORTAL_MAX_SIZE not defined"
@@ -123,16 +129,7 @@
 	 * portal is returned. Upon failure, a negative error code is
 	 * returned instead.
 	 */
-#if (__TARGET_HAS_PORTAL)
 	EXTERN int portal_create(int nodenum);
-#else
-	static inline int portal_create(int nodenum)
-	{
-		UNUSED(nodenum);
-
-		return (-ENOSYS);
-	}
-#endif
 
 	/**
 	 * @brief Opens a portal.
@@ -143,17 +140,7 @@
 	 * @returns Upons successful completion zero is returned. Upon failure,
 	 * a negative error code is returned instead.
 	 */
-#if (__TARGET_HAS_PORTAL)
 	EXTERN int portal_open(int localnum, int remotenum);
-#else
-	static inline int portal_open(int localnum, int remotenum)
-	{
-		UNUSED(localnum);
-		UNUSED(remotenum);
-
-		return (-ENOSYS);
-	}
-#endif
 
 	/**
 	 * @brief Allows remote writes in a portal.
@@ -164,17 +151,7 @@
 	 * @reutrns Upon successful completion, zero is returned. Upon
 	 * failure, a negative error code is returned instead.
 	 */
-#if (__TARGET_HAS_PORTAL)
 	EXTERN int portal_allow(int portalid, int nodenum);
-#else
-	static inline int portal_allow(int portalid, int nodenum)
-	{
-		UNUSED(portalid);
-		UNUSED(nodenum);
-
-		return (-ENOSYS);
-	}
-#endif
 
 	/**
 	 * @brief Destroys a portal.
@@ -184,16 +161,7 @@
 	 * @returns Upon successful completion, zero is returned. Upon failure,
 	 * a negative error code is returned instead.
 	 */
-#if (__TARGET_HAS_PORTAL)
 	EXTERN int portal_unlink(int portalid);
-#else
-	static inline int portal_unlink(int portalid)
-	{
-		UNUSED(portalid);
-
-		return (-ENOSYS);
-	}
-#endif
 
 	/**
 	 * @brief Closes a portal.
@@ -203,16 +171,7 @@
 	 * @returns Upon successful completion, zero is returned. Upon
 	 * failure, a negative error code is returned instead.
 	 */
-#if (__TARGET_HAS_PORTAL)
 	EXTERN int portal_close(int portalid);
-#else
-	static inline int portal_close(int portalid)
-	{
-		UNUSED(portalid);
-
-		return (-ENOSYS);
-	}
-#endif
 
 	/**
 	 * @brief Writes data to a portal.
@@ -225,18 +184,7 @@
 	 * successfully written is returned. Upon failure, a negative error
 	 * code is returned instead.
 	 */
-#if (__TARGET_HAS_PORTAL)
 	EXTERN ssize_t portal_awrite(int portalid, const void *buffer, uint64_t size);
-#else
-	static inline ssize_t portal_awrite(int portalid, const void *buffer, uint64_t size)
-	{
-		UNUSED(portalid);
-		UNUSED(buffer);
-		UNUSED(size);
-
-		return (-ENOSYS);
-	}
-#endif
 
 	/**
 	 * @brief Reads data from a portal.
@@ -248,18 +196,7 @@
 	 * @returns Upon successful completion, 0 is returned
 	 * and non zero otherwise.
 	 */
-#if (__TARGET_HAS_PORTAL)
 	EXTERN ssize_t portal_aread(int portalid, void *buffer, uint64_t size);
-#else
-	static inline ssize_t portal_aread(int portalid, void *buffer, uint64_t size)
-	{
-		UNUSED(portalid);
-		UNUSED(buffer);
-		UNUSED(size);
-
-		return (-ENOSYS);
-	}
-#endif
 
 	/**
 	 * @brief Waits asynchronous operation.
@@ -268,16 +205,7 @@
 	 *
 	 * @return Zero if wait read correctly and non zero otherwise.
 	 */
-#if (__TARGET_HAS_PORTAL)
 	EXTERN int portal_wait(int portalid);
-#else
-	static inline int portal_wait(int portalid)
-	{
-		UNUSED(portalid);
-
-		return (-ENOSYS);
-	}
-#endif
 
 /**@}*/
 
