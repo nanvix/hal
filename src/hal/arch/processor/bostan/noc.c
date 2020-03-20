@@ -73,47 +73,6 @@ PRIVATE const int bostan_nodeids[PROCESSOR_NOC_NODES_NUM] = {
 	BOSTAN_PROCESSOR_CLUSTERID_CCLUSTER15
 };
 
-/**
- * @brief Auxiliar macros for Core Numbering with Node numbers.
- *
-* @details Since only IO Clusters have more than one valid node number,
- * Compute Clusters only simulate the behavior of being able to configure
- * other numbers.
- */
-#ifdef __node__
-	#define BOSTAN_CORENUMS_NUM           (1)                          /**< Size of corenum array.           */
-	#define BOSTAN_CORENUMS_INDEX(coreid) (0)                          /**< Core index in corenum array.     */
-	#define BOSTAN_NODES_AVAILABLE        (BOSTAN_NODES_PER_CCLUSTER)  /**< Amount of node numbers avaiable. */
-#else
-	#define BOSTAN_CORENUMS_NUM           (K1BIO_CORES_NUM)            /**< Size of corenum array.           */
-	#define BOSTAN_CORENUMS_INDEX(coreid) (coreid)                     /**< Core index in corenum array.     */
-	#define BOSTAN_NODES_AVAILABLE        (BOSTAN_NODES_PER_IOCLUSTER) /**< Amount of node numbers avaiable. */
-#endif
-
-/**
- * @brief Map of core ids to nodenums.
- */
-PRIVATE int bostan_corenums[BOSTAN_CORENUMS_NUM];
-
-/*=======================================================================*
- * bostan_processor_noc_setup()                                          *
- *=======================================================================*/
-
-/**
- * @brief Initializes the noc interface.
- */
-PUBLIC void bostan_processor_noc_setup(void)
-{
-	int nodenum;
-
-	bostan_dma_init();
-
-	nodenum = bostan_processor_noc_cluster_to_node_num(cluster_get_num());
-
-	for (int i = 0; i < BOSTAN_CORENUMS_NUM; ++i)
-		bostan_corenums[i] = nodenum;
-}
-
 /*=======================================================================*
  * bostan_processor_noc_cluster_to_node_num()                            *
  *=======================================================================*/
@@ -138,46 +97,6 @@ PUBLIC int bostan_processor_noc_cluster_to_node_num(int clusternum)
 }
 
 /*=======================================================================*
- * bostan_processor_noc_is_ionode()                                      *
- *=======================================================================*/
-
-/**
- * @brief Asserts whether a NoC node is attached to an IO cluster.
- *
- * @param nodenum Logic ID of the target NoC node.
- *
- * @returns One if the target NoC node is attached to an IO cluster,
- * and zero otherwise.
- */
-PUBLIC int bostan_processor_noc_is_ionode(int nodenum)
-{
-	return (WITHIN(nodenum, 0, PROCESSOR_NOC_IONODES_NUM));
-}
-
-/*=======================================================================*
- * bostan_processor_noc_is_cnode()                                       *
- *=======================================================================*/
-
-/**
- * @brief Asserts whether a NoC node is attached to a compute cluster.
- *
- * @param nodenum Logic ID of the target NoC node.
- *
- * @returns One if the target NoC node is attached to a compute
- * cluster, and zero otherwise.
- */
-PUBLIC int bostan_processor_noc_is_cnode(int nodenum)
-{
-	return (
-		WITHIN(
-			nodenum,
-			PROCESSOR_NOC_IONODES_NUM,
-			PROCESSOR_NOC_IONODES_NUM + PROCESSOR_NOC_CNODES_NUM
-		)
-	);
-}
-
-/*=======================================================================*
  * bostan_processor_noc_node_to_cluster_num()                            *
  *=======================================================================*/
 
@@ -198,61 +117,6 @@ PUBLIC int bostan_processor_noc_node_to_cluster_num(int nodenum)
 		return (nodenum - PROCESSOR_NOC_IONODES_NUM + PROCESSOR_IOCLUSTERS_NUM);
 
 	return (-EINVAL);
-}
-
-/*=======================================================================*
- * bostan_processor_node_get_num()                                       *
- *=======================================================================*/
-
-/**
- * @brief Gets the logic number of the target NoC node
- * attached with a core.
- *
- * @param coreid Attached core ID.
- *
- * @returns The logic number of the target NoC node attached
- * with the @p coreid.
- */
-PUBLIC int bostan_processor_node_get_num(int coreid)
-{
-	/* Invalid coreid. */
-	if (!WITHIN(coreid, 0, CORES_NUM))
-		return (-EINVAL);
-
-	return (bostan_corenums[BOSTAN_CORENUMS_INDEX(coreid)]);
-}
-
-/*=======================================================================*
- * bostan_processor_node_set_num()                                       *
- *=======================================================================*/
-
-/**
- * @brief Exchange the logic number of the target NoC node
- * attached with a core.
- *
- * @param coreid  Attached core ID.
- * @param nodenum Logic ID of the target NoC node.
- * 
- * @returns Zero if the target NoC node is successfully attached
- * to the requested @p coreid, and non zero otherwise.
- */
-PUBLIC int bostan_processor_node_set_num(int coreid, int nodenum)
-{
-	int cluster_nodenum;
-
-	/* Invalid coreid. */
-	if (!WITHIN(coreid, 0, CORES_NUM))
-		return (-EINVAL);
-
-	cluster_nodenum = bostan_processor_noc_cluster_to_node_num(cluster_get_num());
-
-	/* Invalid nodenum. */
-	if (!WITHIN(nodenum, cluster_nodenum, cluster_nodenum + BOSTAN_NODES_AVAILABLE))
-		return (-EINVAL);
-
-	bostan_corenums[BOSTAN_CORENUMS_INDEX(coreid)] = nodenum;
-
-	return (0);
 }
 
 /*=======================================================================*
