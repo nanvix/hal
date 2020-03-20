@@ -299,6 +299,13 @@ PUBLIC void linux64_processor_clusters_shutdown(void)
 	KASSERT(munmap(clusters.pids, clusters_sz) != -1);
 	KASSERT(close(clusters.shm) != -1);
 	KASSERT(sem_close(clusters.lock) != -1);
+
+	/* Unlink virtual clusters. */
+	if (cluster_get_num() == PROCESSOR_CLUSTERNUM_MASTER)
+	{
+		KASSERT(shm_unlink(UNIX64_CLUSTERS_NAME) != -1);
+		KASSERT(sem_unlink(UNIX64_CLUSTERS_LOCK_NAME) != -1);
+	}
 }
 
 /*============================================================================*
