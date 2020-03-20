@@ -147,28 +147,35 @@ PRIVATE int linux64_cluster_get_id(void)
  */
 PUBLIC int linux64_cluster_get_num(void)
 {
-	int clusterid;
+	static int clusternum = -1;
 
-	clusterid = linux64_cluster_get_id();
+	if (clusternum == -1)
+	{
+		int clusterid;
 
-	linux64_processor_clusters_lock();
+		clusterid = linux64_cluster_get_id();
 
-		/* Search for cluster ID. */
-		for (int i = 0; i < PROCESSOR_CLUSTERS_NUM; i++)
-		{
-			if (clusters.pids[i] == clusterid)
+		linux64_processor_clusters_lock();
+
+			/* Search for cluster ID. */
+			for (int i = 0; i < PROCESSOR_CLUSTERS_NUM; i++)
 			{
-				linux64_processor_clusters_unlock();
-				return (i);
+				if (clusters.pids[i] == clusterid)
+				{
+					linux64_processor_clusters_unlock();
+					return (clusternum = i);
+				}
 			}
-		}
 
-	linux64_processor_clusters_unlock();
+		linux64_processor_clusters_unlock();
 
-	kpanic("[hal][processor] unattached process");
-	UNREACHABLE();
+		kpanic("[hal][processor] unattached process");
+		UNREACHABLE();
 
-	return (-1);
+		return (clusternum);
+	}
+
+	return (clusternum);
 }
 
 /*============================================================================*
@@ -292,6 +299,13 @@ PUBLIC void linux64_processor_clusters_shutdown(void)
 	KASSERT(munmap(clusters.pids, clusters_sz) != -1);
 	KASSERT(close(clusters.shm) != -1);
 	KASSERT(sem_close(clusters.lock) != -1);
+
+	/* Unlink virtual clusters. */
+	if (cluster_get_num() == PROCESSOR_CLUSTERNUM_MASTER)
+	{
+		KASSERT(shm_unlink(UNIX64_CLUSTERS_NAME) != -1);
+		KASSERT(sem_unlink(UNIX64_CLUSTERS_LOCK_NAME) != -1);
+	}
 }
 
 /*============================================================================*

@@ -94,7 +94,8 @@ PRIVATE int unix64_boot(int nclusters)
  */
 PUBLIC NORETURN void unix64_poweroff(void)
 {
-	kprintf("[hal][target] powering off...");
+	if (cluster_get_num() == PROCESSOR_CLUSTERNUM_MASTER)
+		kprintf("[hal][target] powering off...");
 
 	unix64_sync_shutdown();
 	unix64_mailbox_shutdown();

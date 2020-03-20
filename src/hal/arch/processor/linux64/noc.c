@@ -343,4 +343,11 @@ PUBLIC void linux64_processor_noc_shutdown(void)
 	KASSERT(munmap(noc.nodes, nodes_sz) != -1);
 	KASSERT(close(noc.shm) != -1);
 	KASSERT(sem_close(noc.lock) != -1);
+
+	/* Unlink virtual NoC. */
+	if (cluster_get_num() == PROCESSOR_CLUSTERNUM_MASTER)
+	{
+		KASSERT(shm_unlink(UNIX64_NOC_NAME) != -1);
+		KASSERT(sem_unlink(UNIX64_NOC_LOCK_NAME) != -1);
+	}
 }
