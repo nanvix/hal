@@ -147,28 +147,35 @@ PRIVATE int linux64_cluster_get_id(void)
  */
 PUBLIC int linux64_cluster_get_num(void)
 {
-	int clusterid;
+	static int clusternum = -1;
 
-	clusterid = linux64_cluster_get_id();
+	if (clusternum == -1)
+	{
+		int clusterid;
 
-	linux64_processor_clusters_lock();
+		clusterid = linux64_cluster_get_id();
 
-		/* Search for cluster ID. */
-		for (int i = 0; i < PROCESSOR_CLUSTERS_NUM; i++)
-		{
-			if (clusters.pids[i] == clusterid)
+		linux64_processor_clusters_lock();
+
+			/* Search for cluster ID. */
+			for (int i = 0; i < PROCESSOR_CLUSTERS_NUM; i++)
 			{
-				linux64_processor_clusters_unlock();
-				return (i);
+				if (clusters.pids[i] == clusterid)
+				{
+					linux64_processor_clusters_unlock();
+					return (clusternum = i);
+				}
 			}
-		}
 
-	linux64_processor_clusters_unlock();
+		linux64_processor_clusters_unlock();
 
-	kpanic("[hal][processor] unattached process");
-	UNREACHABLE();
+		kpanic("[hal][processor] unattached process");
+		UNREACHABLE();
 
-	return (-1);
+		return (clusternum);
+	}
+
+	return (clusternum);
 }
 
 /*============================================================================*
