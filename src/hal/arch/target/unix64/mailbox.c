@@ -610,4 +610,5 @@ PUBLIC ssize_t unix64_mailbox_aread(int mbxid, void *buf, size_t n)
  */
 PUBLIC void unix64_mailbox_shutdown(void)
 {
+	noop();
 }

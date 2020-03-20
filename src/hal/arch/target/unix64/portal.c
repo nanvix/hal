@@ -917,18 +917,21 @@ PUBLIC void unix64_portal_shutdown(void)
 		sem_close(portaltab.txs[i].lock);
 	}
 
-	/* Unlink portas. */
-	for (int i = 0; i < PROCESSOR_NOC_NODES_NUM; i++)
+	/* Unlink portals. */
+	if (cluster_get_num() == PROCESSOR_CLUSTERNUM_MASTER)
 	{
-		char pathname[UNIX64_PORTAL_NAME_LENGTH];
-
-		for (int j = 0; j < PROCESSOR_NOC_NODES_NUM; j++)
+		for (int i = 0; i < PROCESSOR_NOC_NODES_NUM; i++)
 		{
-			sprintf(pathname, "%s-%d-%d", UNIX64_PORTAL_BASENAME, i, j);
-			shm_unlink(pathname);
-		}
+			char pathname[UNIX64_PORTAL_NAME_LENGTH];
 
-		sprintf(pathname,"%s-%d", UNIX64_PORTAL_BASENAME, i);
-		sem_unlink(pathname);
+			for (int j = 0; j < PROCESSOR_NOC_NODES_NUM; j++)
+			{
+				sprintf(pathname, "%s-%d-%d", UNIX64_PORTAL_BASENAME, i, j);
+				shm_unlink(pathname);
+			}
+
+			sprintf(pathname,"%s-%d", UNIX64_PORTAL_BASENAME, i);
+			sem_unlink(pathname);
+		}
 	}
 }
