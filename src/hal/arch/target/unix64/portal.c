@@ -775,7 +775,7 @@ again:
 	unix64_portals_lock();
 
 		/* Bad local NoC node. */
-		if (portaltab.rxs[portalid].local != processor_node_get_num(core_get_id()))
+		if (portaltab.rxs[portalid].local != processor_node_get_num())
 		{
 			unix64_portals_unlock();
 			return (-EPERM);

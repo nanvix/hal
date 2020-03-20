@@ -267,7 +267,7 @@ PRIVATE int do_unix64_sync_create(const int *nodes, int nnodes, int type)
 	char *pathname;     /* NoC connector name.    */
 	uint64_t nodeslist; /* Target nodes list.     */
 
-	nodenum = processor_node_get_num(core_get_id());
+	nodenum = processor_node_get_num();
 
 	unix64_sync_lock();
 
@@ -384,7 +384,7 @@ PRIVATE int do_unix64_sync_open(const int *nodes, int nnodes, int type)
 	char *pathname;     /* NoC connector name.    */
 	uint64_t nodeslist; /* Target nodes list.     */
 
-	nodenum = processor_node_get_num(core_get_id());
+	nodenum = processor_node_get_num();
 
 	unix64_sync_lock();
 
@@ -700,7 +700,7 @@ again:
 	 */
 	unix64_sync_unlock();
 
-	nodenum = processor_node_get_num(core_get_id());
+	nodenum = processor_node_get_num();
 
 	/* Broadcast. */
 	ret = (synctab.txs[syncid].type == UNIX64_SYNC_ONE_TO_ALL) ?

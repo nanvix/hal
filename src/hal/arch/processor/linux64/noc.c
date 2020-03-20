@@ -88,36 +88,6 @@ struct
 	}
 };
 
-/**
- * @brief Map of core ids to nodenums.
- */
-PRIVATE int linux64_corenums[CORES_NUM];
-
-/*============================================================================*
- * linux64_processor_node_get_id()                                            *
- *============================================================================*/
-
-/**
- * @todo TODO: Provide a detailed description to this function.
- */
-PRIVATE int linux64_processor_node_get_id(void)
-{
-	return (linux64_cluster_get_num());
-}
-
-/*=======================================================================*
- * linux64_processor_noc_setup()                                         *
- *=======================================================================*/
-
-/**
- * @brief Initializes the noc interface.
- */
-PUBLIC void linux64_processor_noc_setup(void)
-{
-	for (int i = 0; i < CORES_NUM; ++i)
-		linux64_corenums[i] = linux64_processor_node_get_id();
-}
-
 /*============================================================================*
  * linux64_processor_noc_lock()                                               *
  *============================================================================*/
@@ -167,60 +137,6 @@ PRIVATE int linux64_processor_noc_node_to_cluster_num(int nodenum)
 
 		j += noc.configuration[i];
 	}
-
-	return (0);
-}
-
-/*============================================================================*
- * linux64_processor_node_get_num()                                           *
- *============================================================================*/
-
-/**
- * @brief Gets the logic number of the target NoC node
- * attached with a core.
- *
- * @param coreid Attached core ID.
- *
- * @returns The logic number of the target NoC node attached
- * with the @p coreid.
- */
-PUBLIC int linux64_processor_node_get_num(int coreid)
-{
-	/* Invalid coreid. */
-	if (!WITHIN(coreid, 0, CORES_NUM))
-		return (-EINVAL);
-
-	return (linux64_corenums[coreid]);
-}
-
-/*============================================================================*
- * linux64_processor_node_get_num()                                           *
- *============================================================================*/
-
-/**
- * @brief Exchange the logic number of the target NoC node
- * attached with a core.
- *
- * @param coreid  Attached core ID.
- * @param nodenum Logic ID of the target NoC node.
- *
- * @returns Zero if the target NoC node is successfully attached
- * to the requested @p coreid, and non zero otherwise.
- */
-PUBLIC int linux64_processor_node_set_num(int coreid, int nodenum)
-{
-	/* Invalid coreid. */
-	if (!WITHIN(coreid, 0, CORES_NUM))
-		return (-EINVAL);
-
-	if (!WITHIN(nodenum, 0, PROCESSOR_NOC_NODES_NUM))
-		return (-EINVAL);
-
-	/* Invalid nodenum. */
-	if (cluster_get_num() != linux64_processor_noc_node_to_cluster_num(nodenum))
-		return (-EINVAL);
-
-	linux64_corenums[coreid] = nodenum;
 
 	return (0);
 }
