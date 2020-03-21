@@ -576,7 +576,7 @@ PRIVATE int mppa256_portal_send_data(int portalid)
 
 	/* Checks if succesfully allocated a DTAG. */
 	if (ret != 0)
-		return (-EAGAIN);
+		return (-EBUSY);
 
 	/* Target parameters*/
 	target_dtag = UNDERLYING_CREATE_DTAG(
@@ -631,17 +631,19 @@ PRIVATE int mppa256_portal_send_data(int portalid)
  */
 PRIVATE ssize_t do_mppa256_portal_awrite(int portalid, const void * buffer, uint64_t size)
 {
+	int ret;
+
 	if (!portaltab.txs[portalid].is_allowed)
-		return (-EAGAIN);
+		return (-EACCES);
 
 	portaltab.txs[portalid].buffer = buffer;
 	portaltab.txs[portalid].size   = size;
 	resource_set_busy(&portaltab.txs[portalid].resource);
 
-	if (mppa256_portal_send_data(portalid) != 0)
+	if ((ret = mppa256_portal_send_data(portalid)) != 0)
 	{
 		resource_set_notbusy(&portaltab.txs[portalid].resource);
-		return (-EAGAIN);
+		return (ret);
 	}
 
 	return (size);
