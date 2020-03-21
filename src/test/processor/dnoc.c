@@ -108,7 +108,7 @@ PRIVATE void test_dnoc_loopback_with_events(void)
 	char rx_buffer[BUFFER_MAX_SIZE];
 	char tx_buffer[BUFFER_MAX_SIZE];
 
-	local = processor_node_get_num(COREID_MASTER);
+	local = processor_node_get_num();
 
 	kmemset(rx_buffer, 0, BUFFER_MAX_SIZE);
 	kmemset(tx_buffer, 1, BUFFER_MAX_SIZE);
@@ -176,7 +176,7 @@ PRIVATE void test_dnoc_loopback_with_interrupts(void)
 	char rx_buffer[BUFFER_MAX_SIZE];
 	char tx_buffer[BUFFER_MAX_SIZE];
 
-	local = processor_node_get_num(COREID_MASTER);
+	local = processor_node_get_num();
 
 	kmemset(rx_buffer, 0, BUFFER_MAX_SIZE);
 	kmemset(tx_buffer, 1, BUFFER_MAX_SIZE);
@@ -250,7 +250,7 @@ PRIVATE void test_dnoc_loopback_with_offset(void)
 	char tx_buffer[10];
 
 	offset = 10;
-	local = processor_node_get_num(COREID_MASTER);
+	local = processor_node_get_num();
 
 	kmemset(rx_buffer, 0, 100);
 	kmemset(rx_buffer, 1, 10);

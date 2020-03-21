@@ -41,7 +41,7 @@
 
 	/* Feature Checking */
 	#ifndef PROCESSOR_HAS_NOC
-	#error "Does  this processor have a NoC?"
+	#error "Does this processor have a NoC?"
 	#endif
 
 	#if (PROCESSOR_HAS_NOC)
@@ -69,9 +69,6 @@
 		#endif
 		#ifndef __processor_node_get_num_fn
 		#error "__processor_node_get_num() not defined?"
-		#endif
-		#ifndef __processor_node_set_num_fn
-		#error "__processor_node_set_num() not defined?"
 		#endif
 
 	#endif
@@ -131,24 +128,10 @@
 	 * @brief Gets the logic number of the target NoC node
 	 * attached with a core.
 	 *
-	 * @param coreid Attached core ID.
-	 *
 	 * @returns The logic number of the target NoC node attached
 	 * with the @p coreid.
 	 */
-	EXTERN int processor_node_get_num(int coreid);
-
-	/**
-	 * @brief Exchange the logic number of the target NoC node
-	 * attached with a core.
-	 *
-	 * @param coreid  Attached core ID.
-	 * @param nodenum Logic ID of the target NoC node.
-	 *
-	 * @returns Zero if the target NoC node is successfully attached
-	 * to the requested @p coreid, and non zero otherwise.
-	 */
-	EXTERN int processor_node_set_num(int coreid, int nodenum);
+	EXTERN int processor_node_get_num(void);
 
 	/**
 	 * @brief Asserts whether or not a node number is valid.
@@ -175,7 +158,7 @@
 	 */
 	static inline int node_is_local(int nodenum)
 	{
-		return (nodenum == processor_node_get_num(core_get_id()));
+		return (nodenum == processor_node_get_num());
 	}
 
 /**@}*/

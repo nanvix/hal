@@ -49,7 +49,7 @@ PRIVATE void test_node_get_num(void)
 {
 	int nodenum;
 
-	nodenum = processor_node_get_num(COREID_MASTER);
+	nodenum = processor_node_get_num();
 
 #if (TEST_NOC_VERBOSE)
 	kprintf("[test][processor][node][api] noc node %d online", nodenum);
@@ -71,115 +71,13 @@ PRIVATE void test_node_get_type(void)
 	KASSERT(!processor_noc_is_cnode(PROCESSOR_NODENUM_MASTER));
 }
 
-/*----------------------------------------------------------------------------*
- * Exchange Logical NoC Node Number                                           *
- *----------------------------------------------------------------------------*/
-
-/**
- * @brief API Test: Exchange Logical NoC Node Number
- */
-PRIVATE void test_node_set_num(void)
-{
-	int nodenum;
-
-	nodenum = processor_node_get_num(COREID_MASTER);
-	KASSERT(nodenum == PROCESSOR_NODENUM_MASTER);
-
-#if (TEST_NOC_VERBOSE)
-	kprintf("[test][processor][node][api] noc node %d online", nodenum);
-#endif
-
-	/* New nodenum (1 % (Interfaces available in only one IO Cluster)) */
-	nodenum += (1 % (PROCESSOR_NOC_IONODES_NUM / PROCESSOR_IOCLUSTERS_NUM));
-
-#if (TEST_NOC_VERBOSE)
-	kprintf("[test][processor][node][api] exchange noc node number to %d", nodenum);
-#endif
-
-	KASSERT(processor_node_set_num(COREID_MASTER, nodenum) == 0);
-	KASSERT(processor_node_get_num(COREID_MASTER) == nodenum);
-
-	/* Restoure old nodenum. */
-	nodenum -= (1 % (PROCESSOR_NOC_IONODES_NUM / PROCESSOR_IOCLUSTERS_NUM));
-
-	KASSERT(processor_node_set_num(COREID_MASTER, nodenum) == 0);
-}
-
 /**
  * @brief API Tests.
  */
 PRIVATE struct test test_api_node[] = {
 	{ test_node_get_num,  "get logical noc node num" },
-	{ test_node_set_num,  "set logical noc node num" },
 	{ test_node_get_type, "get noc node type       " },
 	{ NULL,                NULL                      },
-};
-
-/*============================================================================*
- * FAULT Tests                                                                *
- *============================================================================*/
-
-/*----------------------------------------------------------------------------*
- * Query Logical NoC Node Number with invalid arguments                       *
- *----------------------------------------------------------------------------*/
-
-/**
- * @brief FAULT Test: Invalid Get Logical NoC Node Number
- */
-PRIVATE void test_node_invalid_get_num(void)
-{
-	KASSERT(processor_node_get_num(-1) == -EINVAL);
-	KASSERT(processor_node_get_num(CORES_NUM) == -EINVAL);
-}
-
-/*----------------------------------------------------------------------------*
- * Exchange Logical NoC Node Number with invalid arguments                    *
- *----------------------------------------------------------------------------*/
-
-/**
- * @brief FAULT Test: Invalid Set Logical NoC Node Number
- */
-PRIVATE void test_node_invalid_set_num(void)
-{
-	/* Invalid coreid. */
-	KASSERT(processor_node_set_num(-1, PROCESSOR_NODENUM_MASTER) == -EINVAL);
-	KASSERT(processor_node_set_num(CORES_NUM, PROCESSOR_NODENUM_MASTER) == -EINVAL);
-
-	/* Invalid nodenum. */
-	KASSERT(processor_node_set_num(COREID_MASTER, -1) == -EINVAL);
-	KASSERT(processor_node_set_num(COREID_MASTER, PROCESSOR_NOC_NODES_NUM) == -EINVAL);
-}
-
-/*----------------------------------------------------------------------------*
- * Exchange Logical NoC Node Number with bad arguments                        *
- *----------------------------------------------------------------------------*/
-
-/**
- * @brief FAULT Test: Bad Set Logical NoC Node Number
- */
-PRIVATE void test_node_bad_set_num(void)
-{
-	int nodenum;
-
-	/* nodenum + (Interfaces available in only one IO Cluster). */
-	nodenum = PROCESSOR_NODENUM_MASTER + (PROCESSOR_NOC_IONODES_NUM / PROCESSOR_IOCLUSTERS_NUM);
-
-	/* Bad nodenum. */
-	KASSERT(processor_node_set_num(COREID_MASTER, nodenum) == -EINVAL);
-}
-
-/*============================================================================*
- * Test Driver                                                                *
- *============================================================================*/
-
-/**
- * @brief API Tests.
- */
-PRIVATE struct test test_fault_node[] = {
-	{ test_node_invalid_get_num, "invalid get logical noc node num" },
-	{ test_node_invalid_set_num, "invalid set logical noc node num" },
-	{ test_node_bad_set_num,     "bad set logical noc node num    " },
-	{ NULL,                       NULL                              },
 };
 
 /**
@@ -198,16 +96,6 @@ PUBLIC void test_noc(void)
 		test_api_node[i].test_fn();
 		kprintf("[test][processor][node][api] %s [passed]",
 			test_api_node[i].name
-		);
-	}
-
-	/* FAULT Tests */
-	kprintf(HLINE);
-	for (int i = 0; test_fault_node[i].test_fn != NULL; i++)
-	{
-		test_fault_node[i].test_fn();
-		kprintf("[test][processor][node][api] %s [passed]",
-			test_fault_node[i].name
 		);
 	}
 }
