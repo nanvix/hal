@@ -58,6 +58,7 @@ PRIVATE int resource_dumb_alloc(const struct resource_pool *pool)
 		/* Found. */
 		if (!resource_is_used(resource))
 		{
+			*resource = RESOURCE_INITIALIZER;
 			resource_set_used(resource);
 			return (i);
 		}

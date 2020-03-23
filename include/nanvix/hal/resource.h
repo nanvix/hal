@@ -46,6 +46,11 @@
 	/**@}*/
 
 	/**
+	 * @brief Static initializer for a resource.
+	 */
+	#define RESOURCE_INITIALIZER (struct resource){ 0 }
+
+	/**
 	 * @brief Resource.
 	 */
 	struct resource
@@ -70,7 +75,6 @@
 	typedef int (*alloc_fn)(const struct resource_pool *);
 	typedef void (*free_fn)(const struct resource_pool *, int);
 	/**@}*/
-
 
 	/**
 	 * @brief Sets a resource as used.
