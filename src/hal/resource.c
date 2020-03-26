@@ -22,6 +22,9 @@
  * SOFTWARE.
  */
 
+/* Must come fist. */
+#define __NEED_RESOURCE
+
 #include <nanvix/hal/resource.h>
 #include <nanvix/hlib.h>
 #include <nanvix/const.h>
