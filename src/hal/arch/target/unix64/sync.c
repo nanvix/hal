@@ -24,6 +24,7 @@
 
 /* Must come first. */
 #define __NEED_HAL_PROCESSOR
+#define __NEED_RESOURCE
 
 #include <arch/target/unix64/unix64/sync.h>
 #include <nanvix/hal/processor.h>
@@ -52,7 +53,11 @@
  */
 struct sync
 {
-	struct resource resource;               /**< Underlying resource.            */
+	/*
+	 * XXX: Don't Touch! This Must Come First!
+	 */
+	struct resource resource;               /**< Generic resource information.   */
+
 	int type;                               /**< Type.                           */
 	mqd_t fd;                               /**< Underlying file descriptor.     */
 	int ncount;                             /**< Number of remotes in broadcast. */
