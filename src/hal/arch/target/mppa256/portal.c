@@ -24,9 +24,9 @@
 
 /* Must come fist. */
 #define __NEED_HAL_TARGET
+#define __NEED_RESOURCE
 
 #include <nanvix/hal/target.h>
-
 #include <nanvix/hal/resource.h>
 #include <nanvix/hlib.h>
 #include <posix/errno.h>
@@ -69,7 +69,10 @@ PRIVATE struct portal
 	 */
 	struct rx
 	{
-		struct resource resource; /**< Control flags.                                      */
+		/*
+		 * XXX: Don't Touch! This Must Come First!
+		 */
+		struct resource resource; /**< Generic resource information.                       */
 
 		/* Control parameters */
 		int remote;               /**< Logic ID of the remote node allowed to communicate. */
@@ -84,7 +87,10 @@ PRIVATE struct portal
 	 */
 	struct tx
 	{
-		struct resource resource; /**< Control flags.                                      */
+		/*
+		 * XXX: Don't Touch! This Must Come First!
+		 */
+		struct resource resource; /**< Generic resource information.                       */
 
 		/* Control parameters */
 		int remote;               /**< Logic ID of the remote node allowed to communicate. */

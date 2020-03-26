@@ -24,9 +24,9 @@
 
 /* Must come fist. */
 #define __NEED_HAL_TARGET
+#define __NEED_RESOURCE
 
 #include <nanvix/hal/target.h>
-
 #include <nanvix/hal/resource.h>
 #include <nanvix/hlib.h>
 #include <posix/errno.h>
@@ -75,9 +75,13 @@ PRIVATE struct sync
 	 */
 	struct rx
 	{
-		struct resource resource; /**< Control flags.  */
-		uint64_t mask;            /**< Initial value.  */
-		k1b_spinlock_t lock;      /**< Wait condition. */
+		/*
+		 * XXX: Don't Touch! This Must Come First!
+		 */
+		struct resource resource; /**< Generic resource information. */
+
+		uint64_t mask;            /**< Initial value.                */
+		k1b_spinlock_t lock;      /**< Wait condition.               */
 	} ALIGN(sizeof(dword_t)) rxs[MPPA256_SYNC_CREATE_MAX];
 
 	/**
@@ -85,11 +89,15 @@ PRIVATE struct sync
 	 */
 	struct tx
 	{
-		struct resource resource;             /**< Control flags.     */
-		int remotes[PROCESSOR_NOC_NODES_NUM]; /**< Targets Logic IDs. */
-		int nremotes;                         /**< Number of remotes. */
-		int remote_tag;                       /**< Master tag.        */
-		uint64_t mask;                        /**< Signal mask.       */
+		/*
+		 * XXX: Don't Touch! This Must Come First!
+		 */
+		struct resource resource;            /**< Generic resource information. */
+
+		int remotes[PROCESSOR_NOC_NODES_NUM]; /**< Targets Logic IDs.           */
+		int nremotes;                         /**< Number of remotes.           */
+		int remote_tag;                       /**< Master tag.                  */
+		uint64_t mask;                        /**< Signal mask.                 */
 	} ALIGN(sizeof(dword_t)) txs[MPPA256_SYNC_OPEN_MAX];
 } synctab = {
 	.rxs[0 ... MPPA256_SYNC_CREATE_MAX-1] = { {0}, 0, K1B_SPINLOCK_UNLOCKED },
