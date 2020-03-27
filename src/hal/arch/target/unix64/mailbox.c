@@ -22,6 +22,7 @@
 
 /* Must come fist. */
 #define __NEED_HAL_PROCESSOR
+#define __NEED_RESOURCE
 
 #include <arch/target/unix64/unix64/mailbox.h>
 #include <nanvix/hal/processor.h>
@@ -51,11 +52,15 @@
  */
 struct mailbox
 {
-	struct resource resource;                  /**< Underlying resource.        */
-	mqd_t fd;                                  /**< Underlying file descriptor. */
-	char pathname[UNIX64_MAILBOX_NAME_LENGTH]; /**< Name of underlying mqueue.  */
-	int nodenum;                               /**< ID of underlying node.      */
-	int refcount;                              /**< Reference counter.          */
+	/*
+	 * XXX: Don't Touch! This Must Come First!
+	 */
+	struct resource resource;                  /**< Generic resource information. */
+
+	mqd_t fd;                                  /**< Underlying file descriptor.   */
+	char pathname[UNIX64_MAILBOX_NAME_LENGTH]; /**< Name of underlying mqueue.    */
+	int nodenum;                               /**< ID of underlying node.        */
+	int refcount;                              /**< Reference counter.            */
 };
 
 /**

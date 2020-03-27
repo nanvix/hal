@@ -31,6 +31,7 @@
 
 #ifndef NANVIX_HAL_RESOURCE_H_
 #define NANVIX_HAL_RESOURCE_H_
+#ifdef __NEED_RESOURCE
 
 	#include <nanvix/const.h>
 
@@ -282,4 +283,5 @@
 	 */
 	EXTERN free_fn resource_free;
 
+#endif /* __NEED_RESOURCE */
 #endif /** NANVIX_HAL_RESOURCE_H_ */

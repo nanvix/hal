@@ -22,6 +22,7 @@
 
 /* Must come fist. */
 #define __NEED_HAL_PROCESSOR
+#define __NEED_RESOURCE
 
 #include <arch/target/unix64/unix64/portal.h>
 #include <nanvix/hal/processor.h>
@@ -62,7 +63,11 @@ struct portal_buffer
  */
 struct portal
 {
+	/*
+	 * XXX: Don't Touch! This Must Come First!
+	 */
 	struct resource resource;                               /**< Generic resource information.  */
+
 	int remote;                                             /**< Remote NoC node ID.            */
 	int local;                                              /**< Local NoC node ID.             */
 	sem_t *lock;                                            /**< Portal lock.                   */

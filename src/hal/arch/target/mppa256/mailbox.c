@@ -24,9 +24,9 @@
 
 /* Must come fist. */
 #define __NEED_HAL_TARGET
+#define __NEED_RESOURCE
 
 #include <nanvix/hal/target.h>
-
 #include <nanvix/hal/resource.h>
 #include <nanvix/hlib.h>
 #include <posix/errno.h>
@@ -103,16 +103,19 @@ PRIVATE struct mailbox
 	 */
 	struct rx
 	{
-		struct resource resource;                              /**< Control flags.            */
+		/*
+		 * XXX: Don't Touch! This Must Come First!
+		 */
+		struct resource resource;                              /**< Generic resource information. */
 
 		/* Control parameters */
-		struct underliyng_message messages[MQUEUE_MSG_AMOUNT]; /**< Message Queue.            */
-		k1b_byte_t initial_message;                            /**< Last position read.       */
-		k1b_byte_t message_count;                              /**< Received messages.        */
+		struct underliyng_message messages[MQUEUE_MSG_AMOUNT]; /**< Message Queue.                */
+		k1b_byte_t initial_message;                            /**< Last position read.           */
+		k1b_byte_t message_count;                              /**< Received messages.            */
 
 		/* Receiver requisition on hold. */
-		k1b_spinlock_t lock;                                   /**< Receiver request barrier. */
-		void * buffer;                                         /**< Receiver buffer.          */
+		k1b_spinlock_t lock;                                   /**< Receiver request barrier.     */
+		void * buffer;                                         /**< Receiver buffer.              */
 	} ALIGN(sizeof(dword_t)) rxs[MPPA256_MAILBOX_CREATE_MAX];
 
 	/**
@@ -120,7 +123,10 @@ PRIVATE struct mailbox
 	 */
 	struct tx
 	{
-		struct resource resource;          /**< Control flags.                                            */
+		/*
+		 * XXX: Don't Touch! This Must Come First!
+		 */
+		struct resource resource;          /**< Generic resource information.                             */
 
 		/* Control parameters */
 		k1b_byte_t source_ctag;            /**< Source Control Tag ID.                                    */
