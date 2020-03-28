@@ -98,6 +98,11 @@
 	 */
 	EXTERN void bostan_cnoc_setup(void);
 
+	/**
+	 * @brief Verify lost interrupts.
+	 */
+	EXTERN void bostan_cnoc_it_verify(void);
+
 /*============================================================================*
  * C-Noc Receiver Interface                                                   *
  *============================================================================*/
