@@ -95,6 +95,7 @@ PRIVATE struct portal
 		/* Control parameters */
 		int remote;               /**< Logic ID of the remote node allowed to communicate. */
 		k1b_byte_t is_allowed;    /**< Permission signal to sends the message.             */
+		k1b_byte_t commit;        /**< Indicates whether it is need send the data.         */
 
 		/* Sender requisition on hold. */
 		const void * buffer;      /**< Buffer of the data.                                 */
@@ -103,7 +104,7 @@ PRIVATE struct portal
 	} ALIGN(sizeof(dword_t)) txs[MPPA256_PORTAL_OPEN_MAX];
 } ALIGN(sizeof(dword_t)) portaltab = {
 	.rxs[0 ... MPPA256_PORTAL_CREATE_MAX-1] = { {0}, -1, 0, K1B_SPINLOCK_UNLOCKED },
-	.txs[0 ... MPPA256_PORTAL_OPEN_MAX-1]   = { {0}, -1, 0, NULL, 0, K1B_SPINLOCK_UNLOCKED }
+	.txs[0 ... MPPA256_PORTAL_OPEN_MAX-1]   = { {0}, -1, 0, 0, NULL, 0, K1B_SPINLOCK_UNLOCKED }
 };
 
 /**
@@ -236,11 +237,15 @@ PRIVATE void mppa256_portal_sender_handler(int interface, int tag)
 			continue;
 
 		portaltab.txs[i].is_allowed = 1;
+
 		dcache_invalidate();
 
 		/* Sends requested message. */
-		if (resource_is_busy(&portaltab.txs[i].resource))
+		if (portaltab.txs[i].commit != 0)
 		{
+			portaltab.txs[i].commit     = 0;
+			portaltab.txs[i].is_allowed = 0;
+
 			if (mppa256_portal_send_data(i) != 0)
 				kpanic("[hal][target][portal] Sender Handler failed!");
 		}
@@ -414,6 +419,7 @@ PRIVATE int do_mppa256_portal_open(int localnum, int remotenum)
 	/* Allocates associated resource. */
 	portaltab.txs[portalid].remote     = remotenum;
 	portaltab.txs[portalid].buffer     = NULL;
+	portaltab.txs[portalid].commit     = 0;
 	portaltab.txs[portalid].size       = 0;
 	portaltab.txs[portalid].is_allowed = 0;
 	resource_set_used(&portaltab.txs[portalid].resource);
@@ -613,7 +619,6 @@ PRIVATE int mppa256_portal_send_data(int portalid)
 
 	portaltab.txs[portalid].buffer     = NULL;
 	portaltab.txs[portalid].size       = 0;
-	portaltab.txs[portalid].is_allowed = 0;
 	resource_set_notbusy(&portaltab.txs[portalid].resource);
 
 	spinlock_unlock(&portaltab.txs[portalid].lock);
@@ -637,22 +642,38 @@ PRIVATE int mppa256_portal_send_data(int portalid)
  */
 PRIVATE ssize_t do_mppa256_portal_awrite(int portalid, const void * buffer, uint64_t size)
 {
-	int ret;
+	ssize_t ret;
 
-	if (!portaltab.txs[portalid].is_allowed)
-		return (-EACCES);
+	ret = size;
 
-	portaltab.txs[portalid].buffer = buffer;
-	portaltab.txs[portalid].size   = size;
-	resource_set_busy(&portaltab.txs[portalid].resource);
+	interrupt_mask(K1B_INT_CNOC);
 
-	if ((ret = mppa256_portal_send_data(portalid)) != 0)
-	{
-		resource_set_notbusy(&portaltab.txs[portalid].resource);
-		return (ret);
-	}
+		dcache_invalidate();
 
-	return (size);
+		portaltab.txs[portalid].buffer = buffer;
+		portaltab.txs[portalid].size   = size;
+		portaltab.txs[portalid].commit = 1;
+		resource_set_busy(&portaltab.txs[portalid].resource);
+
+		if (portaltab.txs[portalid].is_allowed)
+		{
+			portaltab.txs[portalid].commit     = 0;
+			portaltab.txs[portalid].is_allowed = 0;
+
+			if (mppa256_portal_send_data(portalid) != 0)
+			{
+				resource_set_notbusy(&portaltab.txs[portalid].resource);
+				portaltab.txs[portalid].is_allowed = 1;
+				ret = (-EACCES);
+			}
+		}
+
+		/* Double check. */
+		bostan_cnoc_it_verify();
+
+	interrupt_unmask(K1B_INT_CNOC);
+
+	return (ret);
 }
 
 /**
