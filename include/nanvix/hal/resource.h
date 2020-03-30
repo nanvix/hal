@@ -39,11 +39,13 @@
 	 * @brief Resource flags.
 	 */
 	/**@{*/
-	#define RESOURCE_FLAGS_USED  (1 << 0) /**< Used synchronization point? */
-	#define RESOURCE_FLAGS_BUSY  (1 << 1) /**< Busy?                       */
-	#define RESOURCE_FLAGS_WRITE (1 << 2) /**< Writable?                   */
-	#define RESOURCE_FLAGS_READ  (1 << 3) /**< Readable?                   */
-	#define RESOURCE_FLAGS_ASYNC (1 << 4) /**< Asynchronous?               */
+	#define RESOURCE_FLAGS_USED   (1 << 0) /**< Used synchronization point? */
+	#define RESOURCE_FLAGS_BUSY   (1 << 1) /**< Busy?                       */
+	#define RESOURCE_FLAGS_WRITE  (1 << 2) /**< Writable?                   */
+	#define RESOURCE_FLAGS_READ   (1 << 3) /**< Readable?                   */
+	#define RESOURCE_FLAGS_ASYNC  (1 << 4) /**< Asynchronous?               */
+	#define RESOURCE_FLAGS_SHARED (1 << 5) /**< Shared?                     */
+	#define RESOURCE_FLAGS_MAPPED (1 << 6) /**< Mapped?                     */
 	/**@}*/
 
 	/**
@@ -174,6 +176,50 @@
 	}
 
 	/**
+	 * @brief Sets a resource as private.
+	 *
+	 * @param rsrc Target resource.
+	 *
+	 * @note A resource cannot be private and shared at the same time.
+	 */
+	static inline void resource_set_private(struct resource *rsrc)
+	{
+		rsrc->flags &= ~RESOURCE_FLAGS_SHARED;
+	}
+
+	/**
+	 * @brief Sets a resource as shared.
+	 *
+	 * @param rsrc Target resource.
+	 *
+	 * @note A resource cannot be private and shared at the same time.
+	 */
+	static inline void resource_set_shared(struct resource *rsrc)
+	{
+		rsrc->flags |= RESOURCE_FLAGS_SHARED;
+	}
+
+	/**
+	 * @brief Sets a resource as mapped.
+	 *
+	 * @param rsrc Target resource.
+	 */
+	static inline void resource_set_mapped(struct resource *rsrc)
+	{
+		rsrc->flags |= RESOURCE_FLAGS_MAPPED;
+	}
+
+	/**
+	 * @brief Sets a resource as unmapped.
+	 *
+	 * @param rsrc Target resource.
+	 */
+	static inline void resource_set_unmapped(struct resource *rsrc)
+	{
+		rsrc->flags &= ~RESOURCE_FLAGS_MAPPED;
+	}
+
+	/**
 	 * @brief Asserts whether or not a resource is in use.
 	 *
 	 * @param rsrc Target resource.
@@ -271,6 +317,48 @@
 	static inline int resource_is_sync(const struct resource *rsrc)
 	{
 		return (!(rsrc->flags & RESOURCE_FLAGS_ASYNC));
+	}
+
+	/**
+	 * @brief Asserts whether or not a resource is private.
+	 *
+	 * @param rsrc Target resource.
+	 *
+	 * @returns One if the target resource is private and zero otherwise.
+	 *
+	 * @note A resource cannot be private and aprivate at the same time.
+	 */
+	static inline int resource_is_private(const struct resource *rsrc)
+	{
+		return (!(rsrc->flags & RESOURCE_FLAGS_SHARED));
+	}
+
+	/**
+	 * @brief Asserts whether or not a resource is shared.
+	 *
+	 * @param rsrc Target resource.
+	 *
+	 * @returns One if the target resource is shared and zero otherwise.
+	 *
+	 * @note A resource cannot be shared and ashared at the same time.
+	 */
+	static inline int resource_is_shared(const struct resource *rsrc)
+	{
+		return (rsrc->flags & RESOURCE_FLAGS_SHARED);
+	}
+
+	/**
+	 * @brief Asserts whether or not a resource is mapped.
+	 *
+	 * @param rsrc Target resource.
+	 *
+	 * @returns One if the target resource is mapped and zero otherwise.
+	 *
+	 * @note A resource cannot be mapped and amapped at the same time.
+	 */
+	static inline int resource_is_mapped(const struct resource *rsrc)
+	{
+		return (rsrc->flags & RESOURCE_FLAGS_MAPPED);
 	}
 
 	/**
