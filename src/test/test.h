@@ -26,6 +26,19 @@
 #define _HAL_TEST_H_
 
 	/**
+	* @name Node numbers for stress tests
+	*/
+	/**@{*/
+	#define NODES_AMOUNT   2
+	#define NODENUM_MASTER 0
+	#ifdef __mppa256__
+		#define NODENUM_SLAVE  (PROCESSOR_NODENUM_MASTER + PROCESSOR_NOC_IONODES_NUM)
+	#else
+		#define NODENUM_SLAVE  (PROCESSOR_NODENUM_MASTER + 1)
+	#endif
+	/**@}*/
+
+	/**
 	 * @brief Unit test.
 	 */
 	struct test
@@ -130,7 +143,7 @@
 	EXTERN void test_clusters(void);
 
 	/**
-	 * @brief Test driver for the NoCInterface
+	 * @brief Test driver for the NoC Interface
 	 */
 	EXTERN void test_noc(void);
 
