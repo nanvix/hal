@@ -147,4 +147,27 @@
 	 */
 	EXTERN void test_noc(void);
 
+	/**
+	 * @name Auxiliar functions of Stress Tests
+	 */
+	/**@{*/
+	EXTERN void test_stress_setup(void);
+	EXTERN void test_stress_cleanup(void);
+	/**@}*/
+
+	/**
+	 * @brief Stress test driver for the Mailbox Interface
+	 */
+	EXTERN void test_stress_mailbox(void);
+
+	/**
+	 * @brief Stress test driver for the Portal Interface
+	 */
+	EXTERN void test_stress_portal(void);
+
+	/**
+	 * @brief Stress test driver for the combination of Mailbox and Portal Interfaces
+	 */
+	EXTERN void test_stress_combination(void);
+
 #endif /* _HAL_TEST_H_ */

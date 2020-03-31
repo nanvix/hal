@@ -46,7 +46,8 @@ C_SRC = $(wildcard *.c)           \
         $(wildcard core/*.c)      \
         $(wildcard cluster/*.c)   \
         $(wildcard processor/*.c) \
-        $(wildcard target/*.c)
+        $(wildcard target/*.c)    \
+		$(wildcard stress/*.c)
 
 #===============================================================================
 # Sources (Target Specific)

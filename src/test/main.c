@@ -112,6 +112,22 @@ PRIVATE void test_target_al(void)
 #endif
 }
 
+/**
+ * @brief Launches unit tests on Target AL.
+ */
+PRIVATE void test_stress_al(void)
+{
+#if (__TARGET_HAS_SYNC && __TARGET_HAS_MAILBOX && __TARGET_HAS_PORTAL)
+	test_stress_setup();
+
+		test_stress_mailbox();
+		test_stress_portal();
+		test_stress_combination();
+
+	test_stress_cleanup();
+#endif /* __TARGET_HAS_SYNC && __TARGET_HAS_MAILBOX && __TARGET_HAS_PORTAL */
+}
+
 #ifndef __unix64__
 
 /**
@@ -132,8 +148,11 @@ PUBLIC int main(int argc, const char *argv[])
  */
 PUBLIC NORETURN void kmain(int argc, const char *argv[])
 {
+	int nodenum;
+
 	UNUSED(argc);
 	UNUSED(argv);
+	UNUSED(nodenum);
 
 	/*
 	 * Initializes the HAL. Must come
@@ -148,7 +167,8 @@ PUBLIC NORETURN void kmain(int argc, const char *argv[])
 #endif
 
 #if (PROCESSOR_IS_MULTICLUSTER)
-	if (cluster_get_num() == PROCESSOR_CLUSTERNUM_MASTER)
+	nodenum = processor_node_get_num();
+	if (nodenum == NODENUM_MASTER)
 #endif
 	{
 		/* Run unit tests. */
@@ -157,6 +177,14 @@ PUBLIC NORETURN void kmain(int argc, const char *argv[])
 		test_processor_al();
 		test_target_al();
 	}
+
+#if (PROCESSOR_IS_MULTICLUSTER)
+	if ((nodenum == NODENUM_MASTER) || (nodenum == NODENUM_SLAVE))
+	{
+		/* Run binary tests. */
+		test_stress_al();
+	}
+#endif
 
 	target_poweroff();
 }
