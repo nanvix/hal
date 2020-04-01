@@ -88,6 +88,7 @@
 	{
 		while (!k1b_spinlock_trylock(lock))
 			/* noop */;
+		k1b_dcache_inval();
 	}
 
 	/**
