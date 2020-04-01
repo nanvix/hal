@@ -354,7 +354,7 @@ PRIVATE inline void unix64_portal_unlock(struct portal *portal)
  */
 PRIVATE int unix64_portal_rx_exists(int local)
 {
-	for (int i = 0; i < UNIX64_PORTAL_MAX; i++)
+	for (int i = 0; i < UNIX64_PORTAL_CREATE_MAX; i++)
 	{
 		/* Skip invalid portals. */
 		if (!resource_is_used(&portaltab.rxs[i].resource))
@@ -523,7 +523,7 @@ PUBLIC int unix64_portal_allow(int portalid, int remote)
  */
 PRIVATE int unix64_portal_tx_exists(int local, int remote)
 {
-	for (int i = 0; i < UNIX64_PORTAL_MAX; i++)
+	for (int i = 0; i < UNIX64_PORTAL_OPEN_MAX; i++)
 	{
 		/* Skip invalid portals. */
 		if (!resource_is_used(&portaltab.txs[i].resource))

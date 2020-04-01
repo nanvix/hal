@@ -56,11 +56,6 @@
 	/**@}*/
 
 	/**
-	 * @brief Total number of mailboxes.
-	 */
-	#define UNIX64_MAILBOX_MAX (UNIX64_MAILBOX_CREATE_MAX + UNIX64_MAILBOX_OPEN_MAX)
-
-	/**
 	 * @name Sizes (in bytes) of a mailbox message.
 	 */
 	/**@{*/
