@@ -150,7 +150,7 @@ PRIVATE int do_unix64_mailbox_create(int nodenum)
 	char *pathname; /* NoC connector name. */
 
 	/* Check if input mailbox was already created. */
-	for (int i = 0; i < UNIX64_MAILBOX_MAX; i++)
+	for (int i = 0; i < UNIX64_MAILBOX_CREATE_MAX; i++)
 	{
 		/* Skip invalid entries. */
 		if (!resource_is_used(&mailboxtab.rxs[i].resource))
@@ -275,7 +275,7 @@ again:
 	 * Check if we should just duplicate
 	 * the underlying file descriptor.
 	 */
-	for (int i = 0; i < UNIX64_MAILBOX_MAX; i++)
+	for (int i = 0; i < UNIX64_MAILBOX_OPEN_MAX; i++)
 	{
 		/* Skip unused mailboxes. */
 		if (!resource_is_used(&mailboxtab.txs[i].resource))
