@@ -729,7 +729,7 @@ PRIVATE int mppa256_mailbox_msg_copy(int mbxid, void * buffer)
 			if (msg->source != MPPA256_MAILBOX_MESSAGE_INVALID && msg->confirm == MPPA256_MAILBOX_MESSAGE_VALID)
 				break;
 
-			remotenum = (remotenum + 1) < ((int) MQUEUE_MSG_AMOUNT) ? (remotenum + 1) : 0;
+			remotenum = (remotenum + 1) % MQUEUE_MSG_AMOUNT;
 		}
 	} while (msg->confirm != MPPA256_MAILBOX_MESSAGE_VALID);
 
@@ -739,8 +739,8 @@ PRIVATE int mppa256_mailbox_msg_copy(int mbxid, void * buffer)
 	msg->confirm = MPPA256_MAILBOX_MESSAGE_INVALID;
 
 	/* Updates message queue parameters. */
-	--mqueue->message_count;
-	mqueue->initial_message = (msg - mqueue->messages);
+	mqueue->message_count++;
+	mqueue->initial_message = ((msg - mqueue->messages) + 1) % MQUEUE_MSG_AMOUNT;
 
 	KASSERT(remotenum != MPPA256_MAILBOX_MESSAGE_INVALID);
 
@@ -767,16 +767,25 @@ PRIVATE int mppa256_mailbox_msg_copy(int mbxid, void * buffer)
 		(~0)
 	);
 
+	/* Does an error occurred on send the signal? */
 	if (ret < 0)
-		return (-EINVAL);
+	{
+		/* Return the message to the queue. */
+		msg->source  = remotenum;
+		msg->confirm = MPPA256_MAILBOX_MESSAGE_VALID;
+		mqueue->message_count++;
+		dcache_invalidate();
+	}
+	else
+	{
+		/* Updates message queue. */
+		dcache_invalidate();
 
-	/* Updates message queue. */
-	dcache_invalidate();
+		/* Releases reads. */
+		spinlock_unlock(&mbxtab.rxs[mbxid].lock);
+	}
 
-	/* Releases reads. */
-	spinlock_unlock(&mbxtab.rxs[mbxid].lock);
-
-	return (0);
+	return (ret);
 }
 
 /*============================================================================*
@@ -824,6 +833,9 @@ PRIVATE ssize_t do_mppa256_mailbox_aread(int mbxid, void * buffer, uint64_t size
 
 	interrupt_unmask(K1B_INT_DNOC);
 
+	if (ret < 0)
+		resource_set_notbusy(&mbxtab.rxs[mbxid].resource);
+
 	return (ret);
 }
 
@@ -858,14 +870,16 @@ PUBLIC ssize_t mppa256_mailbox_aread(int mbxid, void * buffer, uint64_t size)
  */
 PUBLIC int mppa256_mailbox_wait(int mbxid)
 {
+	dcache_invalidate();
+
 	/* Is it a rx operation? */
 	if (mbxid < MPPA256_MAILBOX_OPEN_OFFSET)
 	{
 		mbxid -= MPPA256_MAILBOX_CREATE_OFFSET;
 
-			/* Bad sync. */
-			if (!resource_is_used(&mbxtab.rxs[mbxid].resource))
-				return (-EBADF);
+		/* Bad sync. */
+		if (!resource_is_used(&mbxtab.rxs[mbxid].resource))
+			return (-EBADF);
 
 		/* Waits for the handler release the lock. */
 		spinlock_lock(&mbxtab.rxs[mbxid].lock);
@@ -876,9 +890,9 @@ PUBLIC int mppa256_mailbox_wait(int mbxid)
 	{
 		mbxid -= MPPA256_MAILBOX_OPEN_OFFSET;
 
-			/* Bad sync. */
-			if (!resource_is_used(&mbxtab.txs[mbxid].resource))
-				return (-EBADF);
+		/* Bad sync. */
+		if (!resource_is_used(&mbxtab.txs[mbxid].resource))
+			return (-EBADF);
 
 		/* Waits for the handler release the lock. */
 		spinlock_lock(&mbxtab.txs[mbxid].lock);
