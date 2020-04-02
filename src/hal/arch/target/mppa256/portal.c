@@ -40,7 +40,7 @@
  */
 /**@{*/
 #define PORTAL_CONTROL_TAG_BASE (BOSTAN_PORTAL_CNOC_TX_BASE) /**< Associated Control Tag.  */
-#define PORTAL_DATA_TAG_BASE    (BOSTAN_PORTAL_DNOC_TX_BASE) /**< Associated Data Tag.  */
+#define PORTAL_DATA_TAG_BASE    (BOSTAN_PORTAL_DNOC_TX_BASE) /**< Associated Data Tag.     */
 /**@}*/
 
 /**
@@ -75,6 +75,7 @@ PRIVATE struct portal
 		struct resource resource; /**< Generic resource information.                       */
 
 		/* Control parameters */
+		int ret;                  /**< Returned value on a copy.                           */
 		int remote;               /**< Logic ID of the remote node allowed to communicate. */
 		k1b_byte_t is_allowed;    /**< One read allowed bu portal_allow() call.            */
 
@@ -93,6 +94,7 @@ PRIVATE struct portal
 		struct resource resource; /**< Generic resource information.                       */
 
 		/* Control parameters */
+		int ret;                  /**< Returned value on a send.                           */
 		int remote;               /**< Logic ID of the remote node allowed to communicate. */
 		k1b_byte_t is_allowed;    /**< Permission signal to sends the message.             */
 		k1b_byte_t commit;        /**< Indicates whether it is need send the data.         */
@@ -103,8 +105,8 @@ PRIVATE struct portal
 		k1b_spinlock_t lock;      /**< Transfer request barrier.                           */
 	} ALIGN(sizeof(dword_t)) txs[MPPA256_PORTAL_OPEN_MAX];
 } ALIGN(sizeof(dword_t)) portaltab = {
-	.rxs[0 ... MPPA256_PORTAL_CREATE_MAX-1] = { {0}, -1, 0, K1B_SPINLOCK_UNLOCKED },
-	.txs[0 ... MPPA256_PORTAL_OPEN_MAX-1]   = { {0}, -1, 0, 0, NULL, 0, K1B_SPINLOCK_UNLOCKED }
+	.rxs[0 ... MPPA256_PORTAL_CREATE_MAX-1] = { {0}, -1, -1, 0, K1B_SPINLOCK_UNLOCKED },
+	.txs[0 ... MPPA256_PORTAL_OPEN_MAX-1]   = { {0}, -1, -1, 0, 0, NULL, 0, K1B_SPINLOCK_UNLOCKED }
 };
 
 /**
@@ -119,6 +121,30 @@ PRIVATE struct portalpools
 	.tx_pool = {portaltab.txs, MPPA256_PORTAL_OPEN_MAX,   sizeof(struct tx)},
 };
 
+/**
+ * @brief Global lock
+ */
+PRIVATE k1b_spinlock_t portaltab_lock = K1B_SPINLOCK_UNLOCKED;
+
+/*============================================================================*
+ * mppa256_portal_lock()                                                      *
+ *============================================================================*/
+
+PRIVATE void mppa256_portal_lock(void)
+{
+	k1b_spinlock_lock(&portaltab_lock);
+}
+
+/*============================================================================*
+ * mppa256_portal_unlock()                                                    *
+ *============================================================================*/
+
+
+PRIVATE void mppa256_portal_unlock(void)
+{
+	k1b_spinlock_unlock(&portaltab_lock);
+}
+
 /*============================================================================*
  * mppa256_get_free_resource_rx()                                             *
  *============================================================================*/
@@ -132,7 +158,7 @@ PRIVATE struct portalpools
  */
 PRIVATE int mppa256_get_free_resource_rx(int nodenum)
 {
-	unsigned base;
+	unsigned base; /* Initial index. */
 
 	UNUSED(portalpools);
 
@@ -158,7 +184,7 @@ PRIVATE int mppa256_get_free_resource_rx(int nodenum)
  */
 PRIVATE int mppa256_get_free_resource_tx(int nodenum)
 {
-	unsigned base;
+	unsigned base; /* Initial index. */
 
 	base = (nodenum % BOSTAN_PROCESSOR_NOC_INTERFACES_NUM) * BOSTAN_PORTAL_OPEN_PER_DMA;
 
@@ -181,14 +207,20 @@ PRIVATE int mppa256_get_free_resource_tx(int nodenum)
  */
 PRIVATE void mppa256_portal_receiver_handler(int interface, int tag)
 {
-	unsigned begin;
-	unsigned end;
+	unsigned begin; /* Initial index. */
+	unsigned end;   /* Limit index.   */
 
 	begin = (interface * BOSTAN_PORTAL_CREATE_PER_DMA);
 	end   = (begin + MPPA256_PORTAL_CREATE_MAX);
 
 	for (unsigned i = begin; i < end; ++i)
 	{
+		/**
+		 * This verification cannot be protected by the global lock
+		 * because the handler can interrupt the master core when
+		 * it's inside a critical region. That's create a deadlock
+		 * situation.
+		 */
 		if (!resource_is_used(&portaltab.rxs[i].resource))
 			continue;
 
@@ -196,10 +228,10 @@ PRIVATE void mppa256_portal_receiver_handler(int interface, int tag)
 			continue;
 
 		portaltab.rxs[i].is_allowed = 0;
-		resource_set_notbusy(&portaltab.rxs[i].resource);
+		portaltab.rxs[i].ret        = 0;
 
 		/* Releases the wait condition. */
-		spinlock_unlock(&portaltab.rxs[i].lock);
+		k1b_spinlock_unlock(&portaltab.rxs[i].lock);
 
 		break;
 	}
@@ -222,14 +254,20 @@ PRIVATE int mppa256_portal_send_data(int portalid);
  */
 PRIVATE void mppa256_portal_sender_handler(int interface, int tag)
 {
-	unsigned begin;
-	unsigned end;
+	unsigned begin; /* Initial index. */
+	unsigned end;   /* Limit index.   */
 
 	begin = (interface * BOSTAN_PORTAL_OPEN_PER_DMA);
 	end   = (begin + MPPA256_PORTAL_OPEN_MAX);
 
 	for (unsigned i = begin; i < end; ++i)
 	{
+		/**
+		 * This verification cannot be protected by the global lock
+		 * because the handler can interrupt the master core when
+		 * it's inside a critical region. That's create a deadlock
+		 * situation.
+		 */
 		if (!resource_is_used(&portaltab.txs[i].resource))
 			continue;
 
@@ -247,7 +285,12 @@ PRIVATE void mppa256_portal_sender_handler(int interface, int tag)
 			portaltab.txs[i].is_allowed = 0;
 
 			if (mppa256_portal_send_data(i) != 0)
-				kpanic("[hal][target][portal] Sender Handler failed!");
+			{
+				portaltab.txs[i].is_allowed = 1;
+				
+				/* The failure does not cause kpanic because it is recoverable. */
+				kprintf("[hal][portal][handler] Sender Handler failed!");
+			}
 		}
 
 		break;
@@ -269,32 +312,46 @@ PRIVATE void mppa256_portal_sender_handler(int interface, int tag)
  */
 PRIVATE int do_mppa256_portal_create(int nodenum)
 {
-	int ctag;
-	int portalid;
-	int interface;
+	int ret;       /* Return value.           */
+	int ctag;      /* Underlying control tag. */
+	int portalid;  /* Portal ID.              */
+	int interface; /* Underlying interface.   */
+
+	mppa256_portal_lock();
+
+	ret = (-EBUSY);
 
 	/* Gets portal index not used. */
 	if ((portalid = mppa256_get_free_resource_rx(nodenum)) < 0)
-		return (-EBUSY);
+		goto error;
 
 	/* Gets underlying parameters. */
 	ctag      = UNDERLYING_CREATE_CTAG(portalid);
 	interface = UNDERLYING_CREATE_INTERFACE(portalid);
 
+	ret = (-EAGAIN);
+
 	/* Opens control sender point. */
 	if (bostan_dma_control_open(interface, ctag) != 0)
-		return (-EAGAIN);
+		goto error;
 
 	/* Configures lock from asynchronous operations. */
-	spinlock_lock(&portaltab.rxs[portalid].lock);
+	k1b_spinlock_init(&portaltab.rxs[portalid].lock);
+	k1b_spinlock_lock(&portaltab.rxs[portalid].lock);
 
 	/* Allocates associated resource. */
 	portaltab.rxs[portalid].remote     = -1;
 	portaltab.rxs[portalid].is_allowed = 0;
+	portaltab.rxs[portalid].ret        = (-EAGAIN);
 	resource_set_used(&portaltab.rxs[portalid].resource);
 	resource_set_notbusy(&portaltab.rxs[portalid].resource);
 
-	return (MPPA256_PORTAL_CREATE_OFFSET + portalid);
+	ret = (MPPA256_PORTAL_CREATE_OFFSET + portalid);
+
+error:
+	mppa256_portal_unlock();
+
+	return (ret);
 }
 
 /**
@@ -320,8 +377,8 @@ PUBLIC int mppa256_portal_create(int nodenum)
  */
 PRIVATE int do_mppa256_portal_allow(int portalid, int remotenum)
 {
-	int dtag;
-	int interface;
+	int dtag;      /* Underlying data tag.    */
+	int interface; /* Underlying interface.   */
 
 	/* Gets dma interface. */
 	interface = UNDERLYING_CREATE_INTERFACE(portalid);
@@ -364,19 +421,32 @@ PRIVATE int do_mppa256_portal_allow(int portalid, int remotenum)
  */
 PUBLIC int mppa256_portal_allow(int portalid, int remotenum)
 {
-	/* Bad portal. */
-	if (!resource_is_used(&portaltab.rxs[portalid].resource))
-		return (-EBADF);
-
-	/* Bad portal. */
-	if (resource_is_busy(&portaltab.rxs[portalid].resource))
-		return (-EBUSY);
-
 	portalid -= MPPA256_PORTAL_CREATE_OFFSET;
 
-	/* Read already allowed. */
-	if (portaltab.rxs[portalid].is_allowed)
-		return (-EBUSY);
+	mppa256_portal_lock();
+
+		/* Bad portal. */
+		if (!resource_is_used(&portaltab.rxs[portalid].resource))
+		{
+			mppa256_portal_unlock();
+			return (-EBADF);
+		}
+
+		/* Bad portal. */
+		if (resource_is_busy(&portaltab.rxs[portalid].resource))
+		{
+			mppa256_portal_unlock();
+			return (-EBUSY);
+		}
+
+		/* Read already allowed. */
+		if (portaltab.rxs[portalid].is_allowed)
+		{
+			mppa256_portal_unlock();
+			return (-EBUSY);
+		}
+
+	mppa256_portal_unlock();
 
 	return (do_mppa256_portal_allow(portalid, remotenum));
 }
@@ -397,26 +467,35 @@ PUBLIC int mppa256_portal_allow(int portalid, int remotenum)
  */
 PRIVATE int do_mppa256_portal_open(int localnum, int remotenum)
 {
-	int ctag;
-	int portalid;
-	int interface;
+	int ret;       /* Return value.           */
+	int ctag;      /* Underlying control tag. */
+	int portalid;  /* Portal ID.              */
+	int interface; /* Underlying interface.   */
+
+	mppa256_portal_lock();
+
+	ret = (-EBUSY);
 
 	/* Gets portal index not used. */
 	if ((portalid = mppa256_get_free_resource_tx(localnum)) < 0)
-		return (-EBUSY);
+		goto error;
 
 	/* Gets underlying parameters. */
 	ctag      = UNDERLYING_OPEN_CTAG(remotenum);
 	interface = UNDERLYING_OPEN_INTERFACE(portalid);
 
+	ret = (-EAGAIN);
+
 	/* Opens control sender point. */
 	if (bostan_dma_control_create(interface, ctag, (1), mppa256_portal_sender_handler) != 0)
-		return (-EAGAIN);
+		goto error;
 
 	/* Configures lock from asynchronous operations. */
-	spinlock_lock(&portaltab.txs[portalid].lock);
+	k1b_spinlock_init(&portaltab.txs[portalid].lock);
+	k1b_spinlock_lock(&portaltab.txs[portalid].lock);
 
 	/* Allocates associated resource. */
+	portaltab.txs[portalid].ret        = (-EAGAIN);
 	portaltab.txs[portalid].remote     = remotenum;
 	portaltab.txs[portalid].buffer     = NULL;
 	portaltab.txs[portalid].commit     = 0;
@@ -425,7 +504,12 @@ PRIVATE int do_mppa256_portal_open(int localnum, int remotenum)
 	resource_set_used(&portaltab.txs[portalid].resource);
 	resource_set_notbusy(&portaltab.txs[portalid].resource);
 
-	return (MPPA256_PORTAL_OPEN_OFFSET + portalid);
+	ret = (MPPA256_PORTAL_OPEN_OFFSET + portalid);
+
+error:
+	mppa256_portal_unlock();
+
+	return (ret);
 }
 
 /**
@@ -450,9 +534,26 @@ PUBLIC int mppa256_portal_open(int localnum, int remotenum)
  */
 PRIVATE int do_mppa256_portal_unlink(int portalid)
 {
-	int ctag;
-	int dtag;
-	int interface;
+	int ret;       /* Return value.           */
+	int ctag;      /* Underlying control tag. */
+	int dtag;      /* Underlying data tag.    */
+	int interface; /* Underlying interface.   */
+
+	mppa256_portal_lock();
+
+	ret = (-EBADF);
+
+	/* Bad portal. */
+	if (!resource_is_used(&portaltab.rxs[portalid].resource))
+		goto error;
+
+	ret = (-EBUSY);
+
+	/* Bad portal. */
+	if (resource_is_busy(&portaltab.rxs[portalid].resource))
+		goto error;
+
+	ret = (-EINVAL);
 
 	/* Gets underlying parameters. */
 	ctag = UNDERLYING_CREATE_CTAG(portalid);
@@ -463,23 +564,24 @@ PRIVATE int do_mppa256_portal_unlink(int portalid)
 		dtag = UNDERLYING_CREATE_DTAG(portaltab.rxs[portalid].remote);
 
 		if (bostan_dma_data_unlink(interface, dtag) != 0)
-			return (-EINVAL);
+			goto error;
 	}
 
 	/* Opens control sender point. */
 	if (bostan_dma_control_close(interface, ctag) != 0)
-		return (-EAGAIN);
-
-	/* Configures lock from asynchronous operations. */
-	spinlock_unlock(&portaltab.rxs[portalid].lock);
+		kpanic("[hal][portal][unlink] Failed to release signal emitter after unlinking the data receiver.");
 
 	/* Allocates associated resource. */
 	portaltab.rxs[portalid].remote     = -1;
 	portaltab.rxs[portalid].is_allowed = 0;
 	resource_set_unused(&portaltab.rxs[portalid].resource);
-	resource_set_notbusy(&portaltab.rxs[portalid].resource);
 
-	return (0);
+	ret = 0;
+
+error:
+	mppa256_portal_unlock();
+
+	return (ret);
 }
 
 /**
@@ -487,12 +589,7 @@ PRIVATE int do_mppa256_portal_unlink(int portalid)
  */
 PUBLIC int mppa256_portal_unlink(int portalid)
 {
-
 	portalid -= MPPA256_PORTAL_CREATE_OFFSET;
-
-	/* Bad portal. */
-	if (!resource_is_used(&portaltab.rxs[portalid].resource))
-		return (-EBADF);
 
 	return (do_mppa256_portal_unlink(portalid));
 }
@@ -511,27 +608,45 @@ PUBLIC int mppa256_portal_unlink(int portalid)
  */
 PRIVATE int do_mppa256_portal_close(int portalid)
 {
-	int ctag;
-	int interface;
+	int ret;       /* Return value.           */
+	int ctag;      /* Underlying control tag. */
+	int interface; /* Underlying interface.   */
+
+	mppa256_portal_lock();
+
+	ret = (-EBADF);
+
+	/* Bad portal. */
+	if (!resource_is_used(&portaltab.txs[portalid].resource))
+		goto error;
+
+	ret = (-EBUSY);
+
+	/* Bad portal. */
+	if (resource_is_busy(&portaltab.txs[portalid].resource))
+		goto error;
 
 	/* Gets underlying parameters. */
 	ctag      = UNDERLYING_OPEN_CTAG(portaltab.txs[portalid].remote);
 	interface = UNDERLYING_OPEN_INTERFACE(portalid);
 
+	ret = (-EINVAL);
+
 	/* Unlinks control sender point. */
 	if (bostan_dma_control_unlink(interface, ctag) != 0)
-		return (-EAGAIN);
-
-	/* Configures lock from asynchronous operations. */
-	spinlock_unlock(&portaltab.txs[portalid].lock);
+		goto error;
 
 	/* Allocates associated resource. */
 	portaltab.txs[portalid].remote     = -1;
 	portaltab.txs[portalid].is_allowed = 0;
-	resource_set_unused(&portaltab.txs[portalid].resource);
-	resource_set_notbusy(&portaltab.txs[portalid].resource);
+	resource_free(&portalpools.tx_pool, portalid);
 
-	return (0);
+	ret = 0;
+
+error:
+	mppa256_portal_unlock();
+
+	return (ret);
 }
 
 /**
@@ -540,10 +655,6 @@ PRIVATE int do_mppa256_portal_close(int portalid)
 PUBLIC int mppa256_portal_close(int portalid)
 {
 	portalid -= MPPA256_PORTAL_OPEN_OFFSET;
-
-	/* Bad portal. */
-	if (!resource_is_used(&portaltab.txs[portalid].resource))
-		return (-EBADF);
 
 	return (do_mppa256_portal_close(portalid));
 }
@@ -562,11 +673,11 @@ PUBLIC int mppa256_portal_close(int portalid)
  */
 PRIVATE int mppa256_portal_send_data(int portalid)
 {
-	int ret;
-	int ctag;
-	int dtag;
-	int interface;
-	int target_dtag;
+	int ret;         /* Return value.               */
+	int ctag;        /* Underlying control tag.     */
+	int dtag;        /* Underlying data tag.        */
+	int interface;   /* Underlying interface.       */
+	int target_dtag; /* Underlying target data tag. */
 
 	/* Local Parameters. */
 	ctag      = UNDERLYING_OPEN_CTAG(portaltab.txs[portalid].remote);
@@ -574,7 +685,8 @@ PRIVATE int mppa256_portal_send_data(int portalid)
 
 	/* Opens data sender point. */
 	dtag = PORTAL_DATA_TAG_BASE;
-	ret = -1;
+
+	ret = (-EBUSY);
 
 	/* Try to find not busy dtag. */
 	for (int i = 0; i < BOSTAN_DNOC_TXS_PER_COMM_SERVICE; ++i)
@@ -588,16 +700,18 @@ PRIVATE int mppa256_portal_send_data(int portalid)
 
 	/* Checks if succesfully allocated a DTAG. */
 	if (ret != 0)
-		return (-EBUSY);
+		goto error1;
 
 	/* Target parameters*/
 	target_dtag = UNDERLYING_CREATE_DTAG(
 		bostan_processor_noc_cluster_to_node_num(cluster_get_num()) + interface
 	);
 
+	ret = (-EAGAIN);
+
 	/* Reconfigures signal receiver. */
 	if (bostan_dma_control_config(interface, ctag, (1), mppa256_portal_sender_handler) < 0)
-		return (-EINVAL);
+		goto error2;
 
 	/* Sends data. */
 	ret = bostan_dma_data_write(
@@ -610,20 +724,19 @@ PRIVATE int mppa256_portal_send_data(int portalid)
 		0
 	);
 
+error2:
 	/* Closes data sender point. */
 	if (bostan_dma_data_close(interface, dtag) != 0)
-		return (-EAGAIN);
+		kpanic("[hal][portal][send] Failed to close the data transmission channel.");
 
-	if (ret < 0)
-		return (ret);
+error1:
+	portaltab.txs[portalid].buffer = NULL;
+	portaltab.txs[portalid].size   = 0;
+	portaltab.txs[portalid].ret    = (ret < 0) ? (-EAGAIN) : 0;
 
-	portaltab.txs[portalid].buffer     = NULL;
-	portaltab.txs[portalid].size       = 0;
-	resource_set_notbusy(&portaltab.txs[portalid].resource);
+	k1b_spinlock_unlock(&portaltab.txs[portalid].lock);
 
-	spinlock_unlock(&portaltab.txs[portalid].lock);
-
-	return (0);
+	return (ret);
 }
 
 /*============================================================================*
@@ -642,18 +755,19 @@ PRIVATE int mppa256_portal_send_data(int portalid)
  */
 PRIVATE ssize_t do_mppa256_portal_awrite(int portalid, const void * buffer, uint64_t size)
 {
-	ssize_t ret;
+	ssize_t ret; /* Returned value. */
 
 	ret = size;
 
-	interrupt_mask(K1B_INT_CNOC);
+	mppa256_portal_lock();
+		resource_set_busy(&portaltab.txs[portalid].resource);
+	mppa256_portal_unlock();
 
-		dcache_invalidate();
+	interrupt_mask(K1B_INT_CNOC);
 
 		portaltab.txs[portalid].buffer = buffer;
 		portaltab.txs[portalid].size   = size;
 		portaltab.txs[portalid].commit = 1;
-		resource_set_busy(&portaltab.txs[portalid].resource);
 
 		if (portaltab.txs[portalid].is_allowed)
 		{
@@ -662,7 +776,6 @@ PRIVATE ssize_t do_mppa256_portal_awrite(int portalid, const void * buffer, uint
 
 			if (mppa256_portal_send_data(portalid) != 0)
 			{
-				resource_set_notbusy(&portaltab.txs[portalid].resource);
 				portaltab.txs[portalid].is_allowed = 1;
 				ret = (-EACCES);
 			}
@@ -672,6 +785,13 @@ PRIVATE ssize_t do_mppa256_portal_awrite(int portalid, const void * buffer, uint
 		bostan_cnoc_it_verify();
 
 	interrupt_unmask(K1B_INT_CNOC);
+
+	if (ret < 0)
+	{
+		mppa256_portal_lock();
+			resource_set_notbusy(&portaltab.txs[portalid].resource);
+		mppa256_portal_unlock();
+	}
 
 	return (ret);
 }
@@ -685,13 +805,23 @@ PUBLIC ssize_t mppa256_portal_awrite(int portalid, const void * buffer, uint64_t
 {
 	portalid -= MPPA256_PORTAL_OPEN_OFFSET;
 
-	/* Bad portal. */
-	if (!resource_is_used(&portaltab.txs[portalid].resource))
-		return (-EBADF);
+	mppa256_portal_lock();
 
-	/* Busy portal. */
-	if (resource_is_busy(&portaltab.txs[portalid].resource))
-		return (-EAGAIN);
+		/* Bad portal. */
+		if (!resource_is_used(&portaltab.txs[portalid].resource))
+		{
+			mppa256_portal_unlock();
+			return (-EBADF);
+		}
+
+		/* Busy portal. */
+		if (resource_is_busy(&portaltab.txs[portalid].resource))
+		{
+			mppa256_portal_unlock();
+			return (-EBUSY);
+		}
+
+	mppa256_portal_unlock();
 
 	return (do_mppa256_portal_awrite(portalid, buffer, size));
 }
@@ -712,11 +842,15 @@ PUBLIC ssize_t mppa256_portal_awrite(int portalid, const void * buffer, uint64_t
  */
 PUBLIC ssize_t do_mppa256_portal_aread(int portalid, void * buffer, uint64_t size)
 {
-	int ret;
-	int ctag;
-	int dtag;
-	int interface;
-	int target_ctag;
+	ssize_t ret;     /* Return value.                  */
+	int ctag;        /* Underlying control tag.        */
+	int dtag;        /* Underlying data tag.           */
+	int interface;   /* Underlying interface.          */
+	int target_ctag; /* Underlying target control tag. */
+
+	mppa256_portal_lock();
+		resource_set_busy(&portaltab.rxs[portalid].resource);
+	mppa256_portal_unlock();
 
 	/* Data parameters. */
 	interface = UNDERLYING_CREATE_INTERFACE(portalid);
@@ -735,16 +869,13 @@ PUBLIC ssize_t do_mppa256_portal_aread(int portalid, void * buffer, uint64_t siz
 
 	/* Setup successful? */
 	if (ret < 0)
-		return (ret);
+		goto error;
 
 	/* Control parameters. */
 	ctag        = UNDERLYING_CREATE_CTAG(portalid);
 	target_ctag = UNDERLYING_OPEN_CTAG(
 		bostan_processor_noc_cluster_to_node_num(cluster_get_num()) + interface
 	);
-
-	/* Marks resource as busy. */
-	resource_set_busy(&portaltab.rxs[portalid].resource);
 
 	/* Sends permission to transmit the data. */
 	ret = bostan_dma_control_signal(
@@ -756,14 +887,18 @@ PUBLIC ssize_t do_mppa256_portal_aread(int portalid, void * buffer, uint64_t siz
 		(~0)
 	);
 
+error:
 	/* Sent successful? */
-	if (ret < 0)
+	if (ret >= 0)
+		ret = size;
+	else
 	{
-		resource_set_notbusy(&portaltab.rxs[portalid].resource);
-		return (ret);
+		mppa256_portal_lock();
+			resource_set_notbusy(&portaltab.rxs[portalid].resource);
+		mppa256_portal_unlock();
 	}
 
-	return (size);
+	return (ret);
 }
 
 /**
@@ -773,20 +908,32 @@ PUBLIC ssize_t do_mppa256_portal_aread(int portalid, void * buffer, uint64_t siz
  */
 PUBLIC ssize_t mppa256_portal_aread(int portalid, void * buffer, uint64_t size)
 {
-
 	portalid -= MPPA256_PORTAL_CREATE_OFFSET;
 
-	/* Bad portal. */
-	if (!resource_is_used(&portaltab.rxs[portalid].resource))
-		return (-EBADF);
+	mppa256_portal_lock();
 
-	/* Busy portal. */
-	if (resource_is_busy(&portaltab.rxs[portalid].resource))
-		return (-EBUSY);
+		/* Bad portal. */
+		if (!resource_is_used(&portaltab.rxs[portalid].resource))
+		{
+			mppa256_portal_unlock();
+			return (-EBADF);
+		}
 
-	/* Read not allowed. */
-	if (!portaltab.rxs[portalid].is_allowed)
-		return (-EINVAL);
+		/* Busy portal. */
+		if (resource_is_busy(&portaltab.rxs[portalid].resource))
+		{
+			mppa256_portal_unlock();
+			return (-EBUSY);
+		}
+
+		/* Read not allowed. */
+		if (!portaltab.rxs[portalid].is_allowed)
+		{
+			mppa256_portal_unlock();
+			return (-EINVAL);
+		}
+
+	mppa256_portal_unlock();
 
 	return (do_mppa256_portal_aread(portalid, buffer, size));
 }
@@ -804,19 +951,39 @@ PUBLIC ssize_t mppa256_portal_aread(int portalid, void * buffer, uint64_t size)
  */
 PUBLIC int mppa256_portal_wait(int portalid)
 {
+	int ret; /* Return value. */
+
 	/* Is it a rx operation? */
 	if (portalid < MPPA256_PORTAL_OPEN_OFFSET)
 	{
 		portalid -= MPPA256_PORTAL_CREATE_OFFSET;
 
-		#if 1 /* Is the slave with correct data cached? */
+		mppa256_portal_lock();
+
 			/* Bad sync. */
 			if (!resource_is_used(&portaltab.rxs[portalid].resource))
-				return (-EBADF);
-		#endif
+				goto error;
+
+			/* Bad sync. */
+			if (!resource_is_busy(&portaltab.rxs[portalid].resource))
+				goto error;
+
+		mppa256_portal_unlock();
 
 		/* Waits for the handler release the lock. */
-		spinlock_lock(&portaltab.rxs[portalid].lock);
+		k1b_spinlock_lock(&portaltab.rxs[portalid].lock);
+
+		/**
+		 * The attribution of the return value is allowed on the slave
+		 * side because it will be protected by the busy flag release
+		 * by the own slave core.
+		 **/
+		ret = portaltab.rxs[portalid].ret;
+		portaltab.rxs[portalid].ret = (-EAGAIN);
+
+		mppa256_portal_lock();
+			resource_set_notbusy(&portaltab.rxs[portalid].resource);
+		mppa256_portal_unlock();
 	}
 
 	/* Is it a tx operation? */
@@ -824,15 +991,38 @@ PUBLIC int mppa256_portal_wait(int portalid)
 	{
 		portalid -= MPPA256_PORTAL_OPEN_OFFSET;
 
-		#if 1 /* Is the slave with correct data cached? */
+		mppa256_portal_lock();
+
 			/* Bad sync. */
 			if (!resource_is_used(&portaltab.txs[portalid].resource))
-				return (-EBADF);
-		#endif
+				goto error;
+
+			/* Bad sync. */
+			if (!resource_is_busy(&portaltab.txs[portalid].resource))
+				goto error;
+
+		mppa256_portal_unlock();
 
 		/* Waits for the handler release the lock. */
-		spinlock_lock(&portaltab.txs[portalid].lock);
+		k1b_spinlock_lock(&portaltab.txs[portalid].lock);
+
+		/**
+		 * The attribution of the return value is allowed on the slave
+		 * side because it will be protected by the busy flag release
+		 * by the own slave core.
+		 **/
+		ret = portaltab.txs[portalid].ret;
+		portaltab.txs[portalid].ret = (-EAGAIN);
+
+		mppa256_portal_lock();
+			resource_set_notbusy(&portaltab.txs[portalid].resource);
+		mppa256_portal_unlock();
 	}
 
-	return (0);
+	return (ret);
+
+error:
+	mppa256_portal_unlock();
+
+	return (-EBADF);
 }
