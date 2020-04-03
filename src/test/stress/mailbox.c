@@ -93,26 +93,26 @@ PRIVATE void stress_mailbox_broadcast(void)
 
 	if (local == NODENUM_MASTER)
 	{
-		message[0] = local;
-
 		for (unsigned int i = 0; i < NSETUPS; ++i)
 		{
 			KASSERT((mbxid = mailbox_open(remote)) >= 0);
 
-			test_stress_barrier();
-
-			for (unsigned int j = 0; j < NCOMMUNICATIONS; ++j)
+			for (int j = 0; j < NCOMMUNICATIONS; ++j)
 			{
-				ret = -EBUSY;
-				while (ret != HAL_MAILBOX_MSG_SIZE)
+				message[0] = (j % sizeof(char));
+
+				do
 				{
 					ret = mailbox_awrite(mbxid, message, HAL_MAILBOX_MSG_SIZE);
 					KASSERT(ret == -EAGAIN || ret == -EBUSY || ret == HAL_MAILBOX_MSG_SIZE);
-				}
+				} while (ret != HAL_MAILBOX_MSG_SIZE);
+
 				KASSERT(mailbox_wait(mbxid) == 0);
 			}
 
 			KASSERT(mailbox_close(mbxid) == 0);
+
+			test_stress_barrier();
 		}
 	}
 	else
@@ -121,24 +121,24 @@ PRIVATE void stress_mailbox_broadcast(void)
 		{
 			KASSERT((mbxid = mailbox_create(local)) >= 0);
 
-			test_stress_barrier();
-
-			for (unsigned int j = 0; j < NCOMMUNICATIONS; ++j)
+			for (int j = 0; j < NCOMMUNICATIONS; ++j)
 			{
-				message[0] = local;
+				message[0] = -1;
 
-				ret = -EBUSY;
-				while (ret != HAL_MAILBOX_MSG_SIZE)
+				do
 				{
 					ret = mailbox_aread(mbxid, message, HAL_MAILBOX_MSG_SIZE);
-					KASSERT(ret == -EAGAIN || ret == -ETIMEDOUT || ret == -EBUSY || ret == HAL_MAILBOX_MSG_SIZE);
-				}
+					KASSERT(ret == -ETIMEDOUT || ret == -EBUSY || ret == HAL_MAILBOX_MSG_SIZE);
+				} while (ret != HAL_MAILBOX_MSG_SIZE);
+
 				KASSERT(mailbox_wait(mbxid) == 0);
 
-				KASSERT(message[0] == remote);
+				KASSERT(message[0] == (j % sizeof(char)));
 			}
 
 			KASSERT(mailbox_unlink(mbxid) == 0);
+
+			test_stress_barrier();
 		}
 	}
 }
@@ -159,26 +159,26 @@ PRIVATE void stress_mailbox_gather(void)
 
 	if (local == NODENUM_SLAVE)
 	{
-		message[0] = local;
-
 		for (unsigned int i = 0; i < NSETUPS; ++i)
 		{
 			KASSERT((mbxid = mailbox_open(remote)) >= 0);
 
-			test_stress_barrier();
-
-			for (unsigned int j = 0; j < NCOMMUNICATIONS; ++j)
+			for (int j = 0; j < NCOMMUNICATIONS; ++j)
 			{
-				ret = -EBUSY;
-				while (ret != HAL_MAILBOX_MSG_SIZE)
+				message[0] = (j % sizeof(char));
+
+				do
 				{
 					ret = mailbox_awrite(mbxid, message, HAL_MAILBOX_MSG_SIZE);
 					KASSERT(ret == -EAGAIN || ret == -EBUSY || ret == HAL_MAILBOX_MSG_SIZE);
-				}
+				} while (ret != HAL_MAILBOX_MSG_SIZE);
+
 				KASSERT(mailbox_wait(mbxid) == 0);
 			}
 
 			KASSERT(mailbox_close(mbxid) == 0);
+
+			test_stress_barrier();
 		}
 	}
 	else
@@ -187,24 +187,24 @@ PRIVATE void stress_mailbox_gather(void)
 		{
 			KASSERT((mbxid = mailbox_create(local)) >= 0);
 
-			test_stress_barrier();
-
-			for (unsigned int j = 0; j < NCOMMUNICATIONS; ++j)
+			for (int j = 0; j < NCOMMUNICATIONS; ++j)
 			{
-				message[0] = local;
+				message[0] = -1;
 
-				ret = -EBUSY;
-				while (ret != HAL_MAILBOX_MSG_SIZE)
+				do
 				{
 					ret = mailbox_aread(mbxid, message, HAL_MAILBOX_MSG_SIZE);
-					KASSERT(ret == -EAGAIN || ret == -ETIMEDOUT || ret == -EBUSY || ret == HAL_MAILBOX_MSG_SIZE);
-				}
+					KASSERT(ret == -ETIMEDOUT || ret == -EBUSY || ret == HAL_MAILBOX_MSG_SIZE);
+				} while (ret != HAL_MAILBOX_MSG_SIZE);
+
 				KASSERT(mailbox_wait(mbxid) == 0);
 
-				KASSERT(message[0] == remote);
+				KASSERT(message[0] == (j % sizeof(char)));
 			}
 
 			KASSERT(mailbox_unlink(mbxid) == 0);
+
+			test_stress_barrier();
 		}
 	}
 }
@@ -225,68 +225,69 @@ PRIVATE void stress_mailbox_pingpong(void)
 	local = processor_node_get_num();
 	remote = local == NODENUM_MASTER ? NODENUM_SLAVE : NODENUM_MASTER;
 
-	msg_out[0] = local;
-
 	for (unsigned int i = 0; i < NSETUPS; ++i)
 	{
 		KASSERT((inbox = mailbox_create(local)) >= 0);
 		KASSERT((outbox = mailbox_open(remote)) >= 0);
 
-		test_stress_barrier();
-
 		if (local == NODENUM_SLAVE)
 		{
-			for (unsigned int j = 0; j < NCOMMUNICATIONS; ++j)
+			for (int j = 0; j < NCOMMUNICATIONS; ++j)
 			{
-				msg_in[0] = local;
+				msg_in[0]  = (-1);
+				msg_out[0] = ((j + 1) % sizeof(char));
 
-				ret = -EBUSY;
-				while (ret != HAL_MAILBOX_MSG_SIZE)
+				do
 				{
 					ret = mailbox_aread(inbox, msg_in, HAL_MAILBOX_MSG_SIZE);
-					KASSERT(ret == -EAGAIN || ret == -ETIMEDOUT || ret == -EBUSY || ret == HAL_MAILBOX_MSG_SIZE);
-				}
+					KASSERT(ret == -ETIMEDOUT || ret == -EBUSY || ret == HAL_MAILBOX_MSG_SIZE);
+				} while (ret != HAL_MAILBOX_MSG_SIZE);
+
 				KASSERT(mailbox_wait(inbox) == 0);
 
-				KASSERT(msg_in[0] == remote);
+				KASSERT(msg_in[0] == (j % sizeof(char)));
 
-				ret = -EBUSY;
-				while (ret != HAL_MAILBOX_MSG_SIZE)
+				do
 				{
 					ret = mailbox_awrite(outbox, msg_out, HAL_MAILBOX_MSG_SIZE);
 					KASSERT(ret == -EAGAIN || ret == -EBUSY || ret == HAL_MAILBOX_MSG_SIZE);
-				}
+				} while (ret != HAL_MAILBOX_MSG_SIZE);
+
 				KASSERT(mailbox_wait(outbox) == 0);
 			}
 		}
 		else
 		{
-			for (unsigned int j = 0; j < NCOMMUNICATIONS; ++j)
+			for (int j = 0; j < NCOMMUNICATIONS; ++j)
 			{
+				msg_in[0]  = (-1);
+				msg_out[0] = (j % sizeof(char));
 				ret = -EBUSY;
-				while (ret != HAL_MAILBOX_MSG_SIZE)
+
+				do
 				{
 					ret = mailbox_awrite(outbox, msg_out, HAL_MAILBOX_MSG_SIZE);
 					KASSERT(ret == -EAGAIN || ret == -EBUSY || ret == HAL_MAILBOX_MSG_SIZE);
-				}
+				} while (ret != HAL_MAILBOX_MSG_SIZE);
+
 				KASSERT(mailbox_wait(outbox) == 0);
 
-				msg_in[0] = local;
-
-				ret = -EBUSY;
-				while (ret != HAL_MAILBOX_MSG_SIZE)
+				do
 				{
 					ret = mailbox_aread(inbox, msg_in, HAL_MAILBOX_MSG_SIZE);
 					KASSERT(ret == -EAGAIN || ret == -ETIMEDOUT || ret == -EBUSY || ret == HAL_MAILBOX_MSG_SIZE);
-				}
+				} while (ret != HAL_MAILBOX_MSG_SIZE);
+
 				KASSERT(mailbox_wait(inbox) == 0);
 
-				KASSERT(msg_in[0] == remote);
+				KASSERT(msg_in[0] == ((j + 1) % sizeof(char)));
 			}
 		}
 
 		KASSERT(mailbox_close(outbox) == 0);
 		KASSERT(mailbox_unlink(inbox) == 0);
+
+		test_stress_barrier();
 	}
 }
 
