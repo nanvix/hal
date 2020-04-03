@@ -102,26 +102,26 @@ PRIVATE void stress_portal_broadcast(void)
 
 	if (local == NODENUM_MASTER)
 	{
-		msg_in[0] = local;
-
 		for (unsigned int i = 0; i < NSETUPS; ++i)
 		{
 			KASSERT((portalid = portal_open(local, remote)) >= 0);
 
-			test_stress_barrier();
-
-			for (unsigned int j = 0; j < NCOMMUNICATIONS; ++j)
+			for (int j = 0; j < NCOMMUNICATIONS; ++j)
 			{
-				ret = -EACCES;
-				while (ret != HAL_PORTAL_MAX_SIZE)
+				msg_out[0] = (j % sizeof(char));
+
+				do
 				{
-					ret = portal_awrite(portalid, msg_in, HAL_PORTAL_MAX_SIZE);
+					ret = portal_awrite(portalid, msg_out, HAL_PORTAL_MAX_SIZE);
 					KASSERT(ret == -EACCES || ret == -EBUSY || ret == HAL_PORTAL_MAX_SIZE);
-				}
+				} while (ret != HAL_PORTAL_MAX_SIZE);
+
 				KASSERT(portal_wait(portalid) == 0);
 			}
 
 			KASSERT(portal_close(portalid) == 0);
+
+			test_stress_barrier();
 		}
 	}
 	else
@@ -130,25 +130,26 @@ PRIVATE void stress_portal_broadcast(void)
 		{
 			KASSERT((portalid = portal_create(local)) >= 0);
 
-			test_stress_barrier();
-
-			for (unsigned int j = 0; j < NCOMMUNICATIONS; ++j)
+			for (int j = 0; j < NCOMMUNICATIONS; ++j)
 			{
-				ret        = -EBUSY;
-				msg_in[0] = local;
+				msg_in[0] = (-1);
 
 				KASSERT(portal_allow(portalid, remote) == 0);
-				while (ret != HAL_PORTAL_MAX_SIZE)
+
+				do
 				{
 					ret = portal_aread(portalid, msg_in, HAL_PORTAL_MAX_SIZE);
 					KASSERT(ret == -EBUSY || ret == -ENOMSG || ret == HAL_PORTAL_MAX_SIZE);
-				}
+				} while (ret != HAL_PORTAL_MAX_SIZE);
+
 				KASSERT(portal_wait(portalid) == 0);
 
-				KASSERT(msg_in[0] == remote);
+				KASSERT(msg_in[0] == (j % sizeof(char)));
 			}
 
 			KASSERT(portal_unlink(portalid) == 0);
+
+			test_stress_barrier();
 		}
 	}
 }
@@ -168,26 +169,26 @@ PRIVATE void stress_portal_gather(void)
 
 	if (local == NODENUM_SLAVE)
 	{
-		msg_in[0] = local;
-
 		for (unsigned int i = 0; i < NSETUPS; ++i)
 		{
 			KASSERT((portalid = portal_open(local, remote)) >= 0);
 
-			test_stress_barrier();
-
 			for (unsigned int j = 0; j < NCOMMUNICATIONS; ++j)
 			{
-				ret = -EACCES;
-				while (ret != HAL_PORTAL_MAX_SIZE)
+				msg_out[0] = (j % sizeof(char));
+
+				do
 				{
-					ret = portal_awrite(portalid, msg_in, HAL_PORTAL_MAX_SIZE);
+					ret = portal_awrite(portalid, msg_out, HAL_PORTAL_MAX_SIZE);
 					KASSERT(ret == -EACCES || ret == -EBUSY || ret == HAL_PORTAL_MAX_SIZE);
-				}
+				} while (ret != HAL_PORTAL_MAX_SIZE);
+
 				KASSERT(portal_wait(portalid) == 0);
 			}
 
 			KASSERT(portal_close(portalid) == 0);
+
+			test_stress_barrier();
 		}
 	}
 	else
@@ -196,25 +197,26 @@ PRIVATE void stress_portal_gather(void)
 		{
 			KASSERT((portalid = portal_create(local)) >= 0);
 
-			test_stress_barrier();
-
 			for (unsigned int j = 0; j < NCOMMUNICATIONS; ++j)
 			{
-				ret        = -EBUSY;
-				msg_in[0] = local;
+				msg_in[0] = (-1);
 
 				KASSERT(portal_allow(portalid, remote) == 0);
-				while (ret != HAL_PORTAL_MAX_SIZE)
+
+				do
 				{
 					ret = portal_aread(portalid, msg_in, HAL_PORTAL_MAX_SIZE);
 					KASSERT(ret == -EBUSY || ret == -ENOMSG || ret == HAL_PORTAL_MAX_SIZE);
-				}
+				} while (ret != HAL_PORTAL_MAX_SIZE);
+
 				KASSERT(portal_wait(portalid) == 0);
 
-				KASSERT(msg_in[0] == remote);
+				KASSERT(msg_in[0] == (j % sizeof(char)));
 			}
 
 			KASSERT(portal_unlink(portalid) == 0);
+
+			test_stress_barrier();
 		}
 	}
 }
@@ -233,70 +235,74 @@ PRIVATE void stress_portal_pingpong(void)
 	local = processor_node_get_num();
 	remote = local == NODENUM_MASTER ? NODENUM_SLAVE : NODENUM_MASTER;
 
-	msg_out[0] = local;
-
 	for (unsigned int i = 0; i < NSETUPS; ++i)
 	{
 		KASSERT((inportal = portal_create(local)) >= 0);
 		KASSERT((outportal = portal_open(local, remote)) >= 0);
 
-		test_stress_barrier();
-
 		if (local == NODENUM_SLAVE)
 		{
 			for (unsigned int j = 0; j < NCOMMUNICATIONS; ++j)
 			{
-				ret       = -EBUSY;
-				msg_in[0] = local;
+				msg_in[0] = (-1);
 
 				KASSERT(portal_allow(inportal, remote) == 0);
-				while (ret != HAL_PORTAL_MAX_SIZE)
+
+				do
 				{
 					ret = portal_aread(inportal, msg_in, HAL_PORTAL_MAX_SIZE);
 					KASSERT(ret == -EBUSY || ret == -ENOMSG || ret == HAL_PORTAL_MAX_SIZE);
-				}
+				} while (ret != HAL_PORTAL_MAX_SIZE);
+
 				KASSERT(portal_wait(inportal) == 0);
 
-				KASSERT(msg_in[0] == remote);
+				KASSERT(msg_in[0] == (j % sizeof(char)));
 
-				ret = -EACCES;
-				while (ret != HAL_PORTAL_MAX_SIZE)
+				msg_out[0] = ((j + 1) % sizeof(char));
+
+				do
 				{
 					ret = portal_awrite(outportal, msg_out, HAL_PORTAL_MAX_SIZE);
 					KASSERT(ret == -EACCES || ret == -EBUSY || ret == HAL_PORTAL_MAX_SIZE);
-				}
+				} while (ret != HAL_PORTAL_MAX_SIZE);
+
 				KASSERT(portal_wait(outportal) == 0);
 			}
 		}
 		else
 		{
-			for (unsigned int j = 0; j < NCOMMUNICATIONS; ++j)
+			for (int j = 0; j < NCOMMUNICATIONS; ++j)
 			{
-				ret = -EACCES;
-				while (ret != HAL_PORTAL_MAX_SIZE)
+				msg_out[0] = (j % sizeof(char));
+
+				do
 				{
 					ret = portal_awrite(outportal, msg_out, HAL_PORTAL_MAX_SIZE);
 					KASSERT(ret == -EACCES || ret == -EBUSY || ret == HAL_PORTAL_MAX_SIZE);
-				}
+				} while (ret != HAL_PORTAL_MAX_SIZE);
+
 				KASSERT(portal_wait(outportal) == 0);
 
-				ret       = -EBUSY;
-				msg_in[0] = local;
+				msg_in[0] = (-1);
 
 				KASSERT(portal_allow(inportal, remote) == 0);
-				while (ret != HAL_PORTAL_MAX_SIZE)
+
+				do
 				{
 					ret = portal_aread(inportal, msg_in, HAL_PORTAL_MAX_SIZE);
 					KASSERT(ret == -EBUSY || ret == -ENOMSG || ret == HAL_PORTAL_MAX_SIZE);
-				}
+				} while (ret != HAL_PORTAL_MAX_SIZE);
+
 				KASSERT(portal_wait(inportal) == 0);
 
-				KASSERT(msg_in[0] == remote);
+				KASSERT(msg_in[0] == ((j + 1) % sizeof(char)));
 			}
 		}
 
 		KASSERT(portal_close(outportal) == 0);
 		KASSERT(portal_unlink(inportal) == 0);
+
+		test_stress_barrier();
 	}
 }
 
