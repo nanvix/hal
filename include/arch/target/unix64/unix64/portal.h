@@ -56,11 +56,6 @@
 	/**@}*/
 
 	/**
-	 * @brief Total number of portals.
-	 */
-	#define UNIX64_PORTAL_MAX (UNIX64_PORTAL_CREATE_MAX + UNIX64_PORTAL_OPEN_MAX)
-
-	/**
 	 * @brief Maximum size of transfer data.
 	 */
 	#define UNIX64_PORTAL_MAX_SIZE (8*KB)
