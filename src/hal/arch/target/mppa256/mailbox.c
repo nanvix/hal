@@ -108,14 +108,17 @@ PRIVATE struct mailbox
 		 */
 		struct resource resource;                              /**< Generic resource information. */
 
-		/* Control parameters */
-		struct underliyng_message messages[MQUEUE_MSG_AMOUNT]; /**< Message Queue.                */
+		/* Control parameters. */
+		int ret;                                               /**< Returned value on a copy.     */
 		k1b_byte_t initial_message;                            /**< Last position read.           */
 		k1b_byte_t message_count;                              /**< Received messages.            */
 
 		/* Receiver requisition on hold. */
 		k1b_spinlock_t lock;                                   /**< Receiver request barrier.     */
 		void * buffer;                                         /**< Receiver buffer.              */
+
+		/* Underlying buffers. */
+		struct underliyng_message messages[MQUEUE_MSG_AMOUNT]; /**< Message Queue.                */
 	} ALIGN(sizeof(dword_t)) rxs[MPPA256_MAILBOX_CREATE_MAX];
 
 	/**
@@ -129,31 +132,46 @@ PRIVATE struct mailbox
 		struct resource resource;          /**< Generic resource information.                             */
 
 		/* Control parameters */
+		int ret;                           /**< Returned value on a send.                                 */
 		k1b_byte_t source_ctag;            /**< Source Control Tag ID.                                    */
 		k1b_byte_t remote;                 /**< Logical ID of the Target NoC Node.                        */
-		k1b_byte_t is_first_msg : 1;       /**< Indicates whether it is the first message.                */
-		k1b_byte_t ack          : 1;       /**< Indicates that the receiver cosumes the previous message. */
+		k1b_byte_t ack                : 1; /**< Indicates that the receiver cosumes the previous message. */
 
 		/* Sender requisition on hold. */
-		k1b_byte_t commit       : 1;       /**< Indicates whether it is need send the message.            */
-		k1b_byte_t unused       : 5;       /**< Unused.                                                   */
+		k1b_byte_t commit             : 1; /**< Indicates whether it is need send the message.            */
+		k1b_byte_t unused             : 6; /**< Unused.                                                   */
 		k1b_spinlock_t lock;               /**< Receiver request barrier.                                 */
 		struct underliyng_message message; /**< Underlying buffer for sending asynchronously.             */
 	} ALIGN(sizeof(dword_t)) txs[MPPA256_MAILBOX_OPEN_MAX];
 } mbxtab = {
-	.rxs[0 ... MPPA256_MAILBOX_CREATE_MAX-1] = {
-		.resource = {0},
-		.messages[0 ... MQUEUE_MSG_AMOUNT-1] = {
-			.source  = MPPA256_MAILBOX_MESSAGE_INVALID,
-			.buffer = {0, },
-			.confirm = MPPA256_MAILBOX_MESSAGE_INVALID
-		},
+	.rxs[0 ... MPPA256_MAILBOX_CREATE_MAX - 1] = {
+		.resource        = {0, },
+		.ret             = -1,
 		.initial_message = 0,
 		.message_count   = 0,
 		.lock            = K1B_SPINLOCK_UNLOCKED,
-		.buffer          = NULL
+		.buffer          = NULL,
+		.messages[0 ... MQUEUE_MSG_AMOUNT - 1] = {
+			.source  = MPPA256_MAILBOX_MESSAGE_INVALID,
+			.buffer  = {0, },
+			.confirm = MPPA256_MAILBOX_MESSAGE_INVALID
+		}
 	},
-	.txs[0 ... MPPA256_MAILBOX_OPEN_MAX-1]   = { {0}, 0, 0, 0, 0, 0, 0, K1B_SPINLOCK_UNLOCKED, {MPPA256_MAILBOX_MESSAGE_INVALID, {0}, MPPA256_MAILBOX_MESSAGE_INVALID} }
+	.txs[0 ... MPPA256_MAILBOX_OPEN_MAX - 1]   = {
+		.resource    = {0, },
+		.ret         = -1,
+		.source_ctag = 0,
+		.remote      = 0,
+		.ack         = 0,
+		.commit      = 0,
+		.unused      = 0,
+		.lock        = K1B_SPINLOCK_UNLOCKED,
+		.message = {
+			.source  = MPPA256_MAILBOX_MESSAGE_INVALID,
+			.buffer  = {0, },
+			.confirm = MPPA256_MAILBOX_MESSAGE_INVALID
+		}
+	}
 };
 
 /**
@@ -259,8 +277,9 @@ PRIVATE void mppa256_mailbox_rx_handler(int interface, int tag)
 
 		mbxtab.rxs[mbxid].buffer = NULL;
 
+		/* The failure does not cause kpanic because it is recoverable. */
 		if (mppa256_mailbox_msg_copy(mbxid, buffer) != 0)
-			kpanic("[hal][mailbox][handler] Handler failed on copy the message or send the ack to transfer node!");
+			kprintf("[hal][mailbox][handler] Handler failed on copy the message or send the ack to transfer node!");
 	}
 }
 
@@ -303,8 +322,16 @@ PRIVATE void mppa256_mailbox_tx_handler(int interface, int tag)
 		/* Sends requested message. */
 		if (mbxtab.txs[mbxid].commit != 0)
 		{
+			mbxtab.txs[mbxid].ack    = 0;
+			mbxtab.txs[mbxid].commit = 0;
+
 			if (mppa256_mailbox_send_msg(mbxid) != 0)
-				kpanic("[hal][mailbox][handler] Sender Handler failed!");
+			{
+				mbxtab.txs[mbxid].ack = 1;
+
+				/* The failure does not cause kpanic because it is recoverable. */
+				kprintf("[hal][mailbox][handler] Sender Handler failed!");
+			}
 		}
 
 		break;
@@ -362,6 +389,7 @@ PRIVATE int do_mppa256_mailbox_create(int nodenum)
 
 	mbxtab.rxs[mbxid].initial_message = 0;
 	mbxtab.rxs[mbxid].message_count   = 0;
+	mbxtab.rxs[mbxid].ret             = (-EAGAIN);
 	k1b_spinlock_trylock(&mbxtab.rxs[mbxid].lock);
 
 	/* Configures a message slot for each node available. */
@@ -471,9 +499,9 @@ PRIVATE int do_mppa256_mailbox_open(int nodenum)
 	}
 
 	/* Configures associated resource. */
+	mbxtab.rxs[mbxid].ret             = (-EAGAIN);
 	mbxtab.txs[mbxid].commit          = 0;
 	mbxtab.txs[mbxid].ack             = 1;
-	mbxtab.txs[mbxid].is_first_msg    = 1;
 	mbxtab.txs[mbxid].source_ctag     = ctag;
 	mbxtab.txs[mbxid].remote          = nodenum;
 	mbxtab.txs[mbxid].message.source  = localnum;
@@ -668,7 +696,7 @@ PRIVATE int mppa256_mailbox_send_msg(int mbxid)
 	if (bostan_dma_data_open(interface, dtag) != 0)
 		goto error;
 
-	ret = (-EINVAL);
+	ret = (-EAGAIN);
 
 	if (bostan_dma_control_config(interface, ctag, (1), mppa256_mailbox_tx_handler) != 0)
 		goto error;
@@ -689,11 +717,9 @@ error:
 	if (bostan_dma_data_close(interface, dtag) != 0)
 		kpanic("[hal][mailbox][send] Failed to close the data transmission channel.");
 
-	mbxtab.txs[mbxid].commit = 0;
-	mbxtab.txs[mbxid].ack    = 0;
+	mbxtab.txs[mbxid].ret = (ret < 0) ? (-EAGAIN) : 0;
 
-	if (ret >= 0)
-		k1b_spinlock_unlock(&mbxtab.txs[mbxid].lock);
+	k1b_spinlock_unlock(&mbxtab.txs[mbxid].lock);
 
 	return (ret);
 }
@@ -734,6 +760,9 @@ PRIVATE ssize_t do_mppa256_mailbox_awrite(int mbxid, const void * buffer, uint64
 		*/
 		if (mbxtab.txs[mbxid].ack != 0)
 		{
+			mbxtab.txs[mbxid].ack = 0;
+			mbxtab.txs[mbxid].commit = 0;
+
 			/* Sends the message and configurates the control receiver buffet. */
 			if (mppa256_mailbox_send_msg(mbxid) != 0)
 			{
@@ -809,9 +838,11 @@ PRIVATE int mppa256_mailbox_msg_copy(int mbxid, void * buffer)
 	/* Current mailbox. */
 	mqueue = &mbxtab.rxs[mbxid];
 
+	ret = (-EAGAIN);
+
 	/* Is the buffer valid or mqueue doesn't have a message? */
 	if((buffer == NULL) || (mqueue->message_count == 0))
-		return (-EINVAL);
+		goto error;
 
 	/* While not find a valid message. */
 	do
@@ -828,21 +859,20 @@ PRIVATE int mppa256_mailbox_msg_copy(int mbxid, void * buffer)
 			if (msg->source != MPPA256_MAILBOX_MESSAGE_INVALID && msg->confirm == MPPA256_MAILBOX_MESSAGE_VALID)
 				break;
 
-			remotenum = (remotenum + 1) < ((int) MQUEUE_MSG_AMOUNT) ? (remotenum + 1) : 0;
+			remotenum = (remotenum + 1) % MQUEUE_MSG_AMOUNT;
 		}
 	} while (msg->confirm != MPPA256_MAILBOX_MESSAGE_VALID);
 
 	/* Cleans underlying message. */
-	remotenum    = msg->source;
-	msg->source  = MPPA256_MAILBOX_MESSAGE_INVALID;
-	msg->confirm = MPPA256_MAILBOX_MESSAGE_INVALID;
-
-	/* Updates message queue parameters. */
-	--mqueue->message_count;
-	mqueue->initial_message = (msg - mqueue->messages);
+	remotenum = msg->source;
 
 	/* Assert that remotenum is a valid node. */
-	KASSERT(remotenum != MPPA256_MAILBOX_MESSAGE_INVALID);
+	if (remotenum == MPPA256_MAILBOX_MESSAGE_INVALID)
+		kpanic("[hal][mailbox][copy] The chosen message is invalid.");
+
+	/* Take the message off the queue. */
+	msg->source  = MPPA256_MAILBOX_MESSAGE_INVALID;
+	msg->confirm = MPPA256_MAILBOX_MESSAGE_INVALID;
 
 	/* Copies message data. */
 	kmemcpy(buffer, msg->buffer, MPPA256_MAILBOX_MSG_SIZE);
@@ -863,16 +893,31 @@ PRIVATE int mppa256_mailbox_msg_copy(int mbxid, void * buffer)
 		(~0)
 	);
 
+	/* Wasn't there an error sending the signal? */
 	if (ret < 0)
-		return (-EINVAL);
+	{
+		/* Return the message to the queue. */
+		msg->source  = remotenum;
+		msg->confirm = MPPA256_MAILBOX_MESSAGE_VALID;
 
-	/* Updates message queue. */
-	dcache_invalidate();
+		ret = (-EAGAIN);
+	}
+	else
+	{
+		/* Updates message queue parameters. */
+		mqueue->message_count--;
+		mqueue->initial_message = ((msg - mqueue->messages) + 1) % MQUEUE_MSG_AMOUNT;
 
-	/* Releases reads. */
-	spinlock_unlock(&mbxtab.rxs[mbxid].lock);
+		ret = 0;
+	}
 
-	return (0);
+error:
+	/* Releases to be read again. */
+	mbxtab.rxs[mbxid].ret = ret;
+
+	k1b_spinlock_unlock(&mbxtab.rxs[mbxid].lock);
+
+	return (ret);
 }
 
 /*============================================================================*
@@ -971,6 +1016,8 @@ PUBLIC ssize_t mppa256_mailbox_aread(int mbxid, void * buffer, uint64_t size)
  */
 PUBLIC int mppa256_mailbox_wait(int mbxid)
 {
+	int ret; /* Return value. */
+
 	/* Is it a rx operation? */
 	if (mbxid < MPPA256_MAILBOX_OPEN_OFFSET)
 	{
@@ -990,6 +1037,14 @@ PUBLIC int mppa256_mailbox_wait(int mbxid)
 
 		/* Waits for the handler release the lock. */
 		k1b_spinlock_lock(&mbxtab.rxs[mbxid].lock);
+
+		/**
+		 * The attribution of the return value is allowed on the slave
+		 * side because it will be protected by the busy flag release
+		 * by the own slave core.
+		 **/
+		ret = mbxtab.rxs[mbxid].ret;
+		mbxtab.rxs[mbxid].ret = (-EAGAIN);
 
 		mppa256_mailbox_lock();
 			resource_set_notbusy(&mbxtab.rxs[mbxid].resource);
@@ -1016,12 +1071,20 @@ PUBLIC int mppa256_mailbox_wait(int mbxid)
 		/* Waits for the handler release the lock. */
 		k1b_spinlock_lock(&mbxtab.txs[mbxid].lock);
 
+		/**
+		 * The attribution of the return value is allowed on the slave
+		 * side because it will be protected by the busy flag release
+		 * by the own slave core.
+		 **/
+		ret = mbxtab.txs[mbxid].ret;
+		mbxtab.txs[mbxid].ret = (-EAGAIN);
+
 		mppa256_mailbox_lock();
 			resource_set_notbusy(&mbxtab.txs[mbxid].resource);
 		mppa256_mailbox_unlock();
 	}
 
-	return (0);
+	return (ret);
 
 error:
 	mppa256_mailbox_unlock();
