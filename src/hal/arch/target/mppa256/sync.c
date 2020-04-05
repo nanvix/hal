@@ -48,7 +48,7 @@
  */
 /**@{*/
 #define RESOURCEID_RX(interface, tag) ((interface * BOSTAN_SYNC_CREATE_PER_DMA) + (tag - BOSTAN_SYNC_RX_OFF)) /**< synctab.rxs' index. */
-#define RESOURCEID_TX(interface)      (interface * BOSTAN_SYNC_OPEN_PER_DMA)                                /**< synctab.txs' index. */
+#define RESOURCEID_TX(interface)      (interface * BOSTAN_SYNC_OPEN_PER_DMA)                                  /**< synctab.txs' index. */
 /**@}*/
 
 /**
@@ -92,12 +92,12 @@ PRIVATE struct sync
 		/*
 		 * XXX: Don't Touch! This Must Come First!
 		 */
-		struct resource resource;            /**< Generic resource information. */
+		struct resource resource;             /**< Generic resource information. */
 
-		int remotes[PROCESSOR_NOC_NODES_NUM]; /**< Targets Logic IDs.           */
-		int nremotes;                         /**< Number of remotes.           */
-		int remote_tag;                       /**< Master tag.                  */
-		uint64_t mask;                        /**< Signal mask.                 */
+		int remotes[PROCESSOR_NOC_NODES_NUM]; /**< Targets Logic IDs.            */
+		int nremotes;                         /**< Number of remotes.            */
+		int remote_tag;                       /**< Master tag.                   */
+		uint64_t mask;                        /**< Signal mask.                  */
 	} ALIGN(sizeof(dword_t)) txs[MPPA256_SYNC_OPEN_MAX];
 } synctab = {
 	.rxs[0 ... MPPA256_SYNC_CREATE_MAX-1] = { {0}, 0, K1B_SPINLOCK_UNLOCKED },
@@ -173,7 +173,7 @@ PRIVATE int mppa256_sync_tx_is_valid(int syncid)
  */
 PRIVATE int mppa256_sync_node_list_is_valid(int local, const int *nodenums, int nnodes)
 {
-	uint64_t checks;
+	uint64_t checks; /* Bit-stream of nodenums. */
 
 	checks = 0ULL;
 
@@ -236,7 +236,9 @@ PRIVATE int mppa256_sync_is_local(int nodenum, const int *nodenums, int nnodes)
  */
 PRIVATE int mppa256_sync_is_remote(int nodenum, const int *nodenums, int nnodes)
 {
-	int found = 0;
+	int found; /* Bool variable. */
+
+	found = 0;
 
 	/* Underlying NoC node SHOULD NOT be here. */
 	if (nodenum == nodenums[0])
@@ -265,8 +267,8 @@ PRIVATE int mppa256_sync_is_remote(int nodenum, const int *nodenums, int nnodes)
  */
 PRIVATE void mppa256_sync_it_handler(int interface, int tag)
 {
-	int ret;
-	int syncid;
+	int ret;    /* Return value. */
+	int syncid; /* Sync ID.      */
 
 	UNUSED(interface);
 	UNUSED(tag);
@@ -284,7 +286,7 @@ PRIVATE void mppa256_sync_it_handler(int interface, int tag)
 		);
 
 		if (ret < 0)
-			kpanic("[hal][sync] Reconfiguration of the sync falied!");
+			kpanic("[hal][sync][handler] Reconfiguration of the sync falied!");
 
 		/* Releases slave. */
 		k1b_spinlock_unlock(&synctab.rxs[syncid].lock);
@@ -306,11 +308,11 @@ PRIVATE void mppa256_sync_it_handler(int interface, int tag)
  */
 PRIVATE int mppa256_sync_select_rx_interface(const int *nodenums, int nnodes, int type)
 {
-	int i;
-	int tag;
-	int syncid;
-	int interface;
-	int clusternum;
+	int i;          /* Iterator value.         */
+	int tag;        /* Underlying control tag. */
+	int syncid;     /* Sync ID.                */
+	int interface;  /* Underlying interface.   */
+	int clusternum; /* Local node number.      */
 
 	clusternum = bostan_processor_noc_cluster_to_node_num(cluster_get_num());
 
@@ -356,12 +358,12 @@ PRIVATE int mppa256_sync_select_rx_interface(const int *nodenums, int nnodes, in
  */
 PRIVATE int do_mppa256_sync_create(const int *nodenums, int nnodes, int type)
 {
-	int ret;
-	int tag;
-	int syncid;
-	int nodenum;
-	int interface;
-	uint64_t mask;
+	int ret;       /* Return value.           */
+	int tag;       /* Underlying control tag. */
+	int syncid;    /* Sync ID.                */
+	int nodenum;   /* Local nodenum.          */
+	int interface; /* Underlying interface.   */
+	uint64_t mask; /* Sync mask.              */
 
 	if ((interface = mppa256_sync_select_rx_interface(nodenums, nnodes, type)) < 0)
 		return (-EINVAL);
@@ -450,10 +452,10 @@ PUBLIC int mppa256_sync_create(const int *nodenums, int nnodes, int type)
  */
 PRIVATE int mppa256_sync_select_tx_interface(const int *nodenums, int nnodes, int type)
 {
-	int i;
-	int syncid;
-	int interface;
-	int clusternum;
+	int i;          /* Iterator value.         */
+	int syncid;     /* Sync ID.                */
+	int interface;  /* Underlying interface.   */
+	int clusternum; /* Local node number.      */
 
 	clusternum = bostan_processor_noc_cluster_to_node_num(cluster_get_num());
 
@@ -498,11 +500,11 @@ PRIVATE int mppa256_sync_select_tx_interface(const int *nodenums, int nnodes, in
  */
 PRIVATE int do_mppa256_sync_open(const int *nodenums, int nnodes, int type)
 {
-	int ret;
-	int tag;
-	int syncid;
-	int localnum;
-	int interface;
+	int ret;       /* Return value.           */
+	int tag;       /* Underlying control tag. */
+	int syncid;    /* Sync ID.                */
+	int localnum;  /* Local nodenum.          */
+	int interface; /* Underlying interface.   */
 
 	if ((interface = mppa256_sync_select_tx_interface(nodenums, nnodes, type)) < 0)
 		return (-EINVAL);
@@ -590,9 +592,9 @@ PUBLIC int mppa256_sync_open(const int *nodenums, int nnodes, int type)
  */
 PRIVATE int do_mppa256_sync_unlink(int syncid)
 {
-	int ret;
-	int tag;
-	int interface;
+	int ret;       /* Return value.           */
+	int tag;       /* Underlying control tag. */
+	int interface; /* Underlying interface.   */
 
 	tag       = UNDERLYING_RX_TAG(syncid);
 	interface = UNDERLYING_RX_INTERFACE(syncid);
@@ -636,9 +638,9 @@ PUBLIC int mppa256_sync_unlink(int syncid)
  */
 PRIVATE int do_mppa256_sync_close(int syncid)
 {
-	int ret;
-	int tag;
-	int interface;
+	int ret;       /* Return value.           */
+	int tag;       /* Underlying control tag. */
+	int interface; /* Underlying interface.   */
 
 	tag       = UNDERLYING_TX_TAG(syncid);
 	interface = UNDERLYING_TX_INTERFACE(syncid);
@@ -714,8 +716,8 @@ PUBLIC int mppa256_sync_wait(int syncid)
  */
 PRIVATE int do_mppa256_sync_signal(int syncid)
 {
-	int tag;
-	int interface;
+	int tag;       /* Underlying control tag. */
+	int interface; /* Underlying interface.   */
 
 	tag       = UNDERLYING_TX_TAG(syncid);
 	interface = UNDERLYING_TX_INTERFACE(syncid);
