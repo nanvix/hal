@@ -116,6 +116,30 @@ PRIVATE struct syncpools
 	.tx_pool = {synctab.txs, MPPA256_SYNC_OPEN_MAX,   sizeof(struct tx)},
 };
 
+/**
+ * @brief Global lock
+ */
+PRIVATE k1b_spinlock_t synctab_lock = K1B_SPINLOCK_UNLOCKED;
+
+/*============================================================================*
+ * mppa256_sync_lock()                                                        *
+ *============================================================================*/
+
+PRIVATE void mppa256_sync_lock(void)
+{
+	k1b_spinlock_lock(&synctab_lock);
+}
+
+/*============================================================================*
+ * mppa256_sync_unlock()                                                      *
+ *============================================================================*/
+
+
+PRIVATE void mppa256_sync_unlock(void)
+{
+	k1b_spinlock_unlock(&synctab_lock);
+}
+
 /*============================================================================*
  * mppa256_sync_rx_is_valid()                                                 *
  *============================================================================*/
@@ -291,6 +315,8 @@ PRIVATE void mppa256_sync_it_handler(int interface, int tag)
 		/* Releases slave. */
 		k1b_spinlock_unlock(&synctab.rxs[syncid].lock);
 	}
+	else
+		kprintf("[hal][sync][handler] Loses a signal for syncid %d!", syncid);
 }
 
 /*============================================================================*
@@ -365,19 +391,23 @@ PRIVATE int do_mppa256_sync_create(const int *nodenums, int nnodes, int type)
 	int interface; /* Underlying interface.   */
 	uint64_t mask; /* Sync mask.              */
 
+	mppa256_sync_lock();
+
+	ret = (-EINVAL);
+
 	if ((interface = mppa256_sync_select_rx_interface(nodenums, nnodes, type)) < 0)
-		return (-EINVAL);
+		goto error;
 
 	nodenum = bostan_processor_noc_cluster_to_node_num(cluster_get_num()) + interface;
 
 	if (!mppa256_sync_node_list_is_valid(nodenum, nodenums, nnodes))
-		return (-EINVAL);
+		goto error;
 
 	/* Broadcast. */
 	if (type == MPPA256_SYNC_ONE_TO_ALL)
 	{
 		if (!mppa256_sync_is_remote(nodenum, nodenums, nnodes))
-			return (-EINVAL);
+			goto error;
 
 		mask = (1ULL);
 	}
@@ -386,7 +416,7 @@ PRIVATE int do_mppa256_sync_create(const int *nodenums, int nnodes, int type)
 	else
 	{
 		if (!mppa256_sync_is_local(nodenum, nodenums, nnodes))
-			return (-EINVAL);
+			goto error;
 
 		mask = 0ULL;
 		for (int i = 1; i < nnodes; i++)
@@ -397,8 +427,10 @@ PRIVATE int do_mppa256_sync_create(const int *nodenums, int nnodes, int type)
 	tag = bostan_processor_node_sync_tag(nodenums[0]);
 	syncid = RESOURCEID_RX(interface, tag);
 
+	ret = (-EBADF);
+
 	if (resource_is_used(&synctab.rxs[syncid].resource))
-		return (-EBADF);
+		goto error;
 
 	ret = bostan_dma_control_create(
 		interface,
@@ -408,16 +440,24 @@ PRIVATE int do_mppa256_sync_create(const int *nodenums, int nnodes, int type)
 	);
 
 	if (ret < 0)
-		return (ret);
+	{
+		ret = (-EINVAL);
+		goto error;
+	}
 
 	synctab.rxs[syncid].mask = mask;
-	k1b_spinlock_lock(&synctab.rxs[syncid].lock);
+	k1b_spinlock_trylock(&synctab.rxs[syncid].lock);
 
 	resource_set_used(&synctab.rxs[syncid].resource);
 	resource_set_async(&synctab.rxs[syncid].resource);
 	resource_set_notbusy(&synctab.rxs[syncid].resource);
 
-	return (MPPA256_SYNC_CREATE_OFFSET + syncid);
+	ret = (MPPA256_SYNC_CREATE_OFFSET + syncid);
+
+error:
+	mppa256_sync_unlock();
+
+	return (ret);
 }
 
 /**
@@ -506,28 +546,25 @@ PRIVATE int do_mppa256_sync_open(const int *nodenums, int nnodes, int type)
 	int localnum;  /* Local nodenum.          */
 	int interface; /* Underlying interface.   */
 
+	mppa256_sync_lock();
+
+	ret = (-EINVAL);
+
 	if ((interface = mppa256_sync_select_tx_interface(nodenums, nnodes, type)) < 0)
-		return (-EINVAL);
+		goto error;
 
 	syncid   = RESOURCEID_TX(interface);
 	localnum = bostan_processor_noc_cluster_to_node_num(cluster_get_num()) + interface;
 
 	if (!mppa256_sync_node_list_is_valid(localnum, nodenums, nnodes))
-		return (-EINVAL);
+		goto error;
 
 	/* Broadcast. */
 	if (type == MPPA256_SYNC_ONE_TO_ALL)
 	{
-#if 1 /* First alternative of the check. */
 		if (nodenums[0] != localnum)
-			return (-EINVAL);
-#else
-		if (!WITHIN(nodenums[0], clusternum, clusternum + BOSTAN_PROCESSOR_NOC_INTERFACES_NUM))
-			return (-EINVAL);
+			goto error;
 
-		if (!mppa256_sync_is_local(nodenum, nodenums, nnodes))
-			return (-EINVAL);
-#endif
 		kmemcpy(synctab.txs[syncid].remotes, &nodenums[1], sizeof(int) * (nnodes - 1));
 		synctab.txs[syncid].nremotes = (nnodes - 1);
 		synctab.txs[syncid].mask     = ~(1ULL);
@@ -537,7 +574,7 @@ PRIVATE int do_mppa256_sync_open(const int *nodenums, int nnodes, int type)
 	else
 	{
 		if (!mppa256_sync_is_remote(localnum, nodenums, nnodes))
-			return (-EINVAL);
+			goto error;
 
 		synctab.txs[syncid].remotes[0] = nodenums[0];
 		synctab.txs[syncid].nremotes   = 1;
@@ -547,14 +584,19 @@ PRIVATE int do_mppa256_sync_open(const int *nodenums, int nnodes, int type)
 	synctab.txs[syncid].remote_tag = bostan_processor_node_sync_tag(nodenums[0]);
 	tag = UNDERLYING_TX_TAG(syncid);
 
-	if ((ret = bostan_dma_control_open(interface, tag)) < 0)
-		return (ret);
+	if (bostan_dma_control_open(interface, tag) < 0)
+		goto error;
 
 	resource_set_used(&synctab.txs[syncid].resource);
 	resource_set_sync(&synctab.txs[syncid].resource);
 	resource_set_notbusy(&synctab.txs[syncid].resource);
 
-	return (MPPA256_SYNC_OPEN_OFFSET + syncid);
+	ret = (MPPA256_SYNC_OPEN_OFFSET + syncid);
+
+error:
+	mppa256_sync_unlock();
+
+	return (ret);
 }
 
 /**
@@ -592,19 +634,23 @@ PUBLIC int mppa256_sync_open(const int *nodenums, int nnodes, int type)
  */
 PRIVATE int do_mppa256_sync_unlink(int syncid)
 {
-	int ret;       /* Return value.           */
 	int tag;       /* Underlying control tag. */
 	int interface; /* Underlying interface.   */
 
 	tag       = UNDERLYING_RX_TAG(syncid);
 	interface = UNDERLYING_RX_INTERFACE(syncid);
 
-	if ((ret = bostan_dma_control_unlink(interface, tag)) < 0)
-		return (ret);
+	mppa256_sync_lock();
 
-	resource_free(&syncpools.rx_pool, syncid);
+		if (bostan_dma_control_unlink(interface, tag) != 0)
+		{
+			mppa256_sync_unlock();
+			return (-EINVAL);
+		}
 
-	k1b_spinlock_unlock(&synctab.rxs[syncid].lock);
+		resource_free(&syncpools.rx_pool, syncid);
+
+	mppa256_sync_unlock();
 
 	return (0);
 }
@@ -619,8 +665,16 @@ PUBLIC int mppa256_sync_unlink(int syncid)
 
 	syncid -= MPPA256_SYNC_CREATE_OFFSET;
 
-	if (!resource_is_used(&synctab.rxs[syncid].resource))
-		return (-EBADF);
+	mppa256_sync_lock();
+
+		/* Bad sync. */
+		if (!resource_is_used(&synctab.rxs[syncid].resource))
+		{
+			mppa256_sync_unlock();
+			return (-EBADF);
+		}
+
+	mppa256_sync_unlock();
 
 	return (do_mppa256_sync_unlink(syncid));
 }
@@ -638,17 +692,23 @@ PUBLIC int mppa256_sync_unlink(int syncid)
  */
 PRIVATE int do_mppa256_sync_close(int syncid)
 {
-	int ret;       /* Return value.           */
 	int tag;       /* Underlying control tag. */
 	int interface; /* Underlying interface.   */
 
 	tag       = UNDERLYING_TX_TAG(syncid);
 	interface = UNDERLYING_TX_INTERFACE(syncid);
 
-	if ((ret = bostan_dma_control_close(interface, tag)) < 0)
-		return (ret);
+	mppa256_sync_lock();
 
-	resource_free(&syncpools.tx_pool, syncid);
+		if (bostan_dma_control_close(interface, tag) != 0)
+		{
+			mppa256_sync_unlock();
+			return (-EINVAL);
+		}
+
+		resource_free(&syncpools.tx_pool, syncid);
+
+	mppa256_sync_unlock();
 
 	return (0);
 }
@@ -663,9 +723,16 @@ PUBLIC int mppa256_sync_close(int syncid)
 
 	syncid -= MPPA256_SYNC_OPEN_OFFSET;
 
-	/* Bad sync. */
-	if (!resource_is_used(&synctab.txs[syncid].resource))
-		return (-EBADF);
+	mppa256_sync_lock();
+
+		/* Bad sync. */
+		if (!resource_is_used(&synctab.txs[syncid].resource))
+		{
+			mppa256_sync_unlock();
+			return (-EBADF);
+		}
+
+	mppa256_sync_unlock();
 
 	return (do_mppa256_sync_close(syncid));
 }
@@ -691,11 +758,16 @@ PUBLIC int mppa256_sync_wait(int syncid)
 
 	syncid -= MPPA256_SYNC_CREATE_OFFSET;
 
-#if 1 /* Is the slave with correct data cached? */
-	/* Bad sync. */
-	if (!resource_is_used(&synctab.rxs[syncid].resource))
-		return (-EBADF);
-#endif
+	mppa256_sync_lock();
+
+		/* Bad sync. */
+		if (!resource_is_used(&synctab.rxs[syncid].resource))
+		{
+			mppa256_sync_unlock();
+			return (-EBADF);
+		}
+
+	mppa256_sync_unlock();
 
 	/* Waits for the handler release the lock. */
 	k1b_spinlock_lock(&synctab.rxs[syncid].lock);
@@ -742,9 +814,16 @@ PUBLIC int mppa256_sync_signal(int syncid)
 
 	syncid -= MPPA256_SYNC_OPEN_OFFSET;
 
-	/* Bad sync. */
-	if (!resource_is_used(&synctab.txs[syncid].resource))
-		return (-EBADF);
+	mppa256_sync_lock();
+
+		/* Bad sync. */
+		if (!resource_is_used(&synctab.txs[syncid].resource))
+		{
+			mppa256_sync_unlock();
+			return (-EBADF);
+		}
+
+	mppa256_sync_unlock();
 
 	return (do_mppa256_sync_signal(syncid));
 }
