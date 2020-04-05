@@ -50,7 +50,7 @@
  */
 /**@{*/
 #define RESOURCEID_RX(nodenum)       (nodenum % BOSTAN_PROCESSOR_NOC_INTERFACES_NUM) /**< mbxid.rxs' index. */
-#define MAILBOXID_RX(interface, tag) (interface)                                /**< mbxid.rxs' index. */
+#define MAILBOXID_RX(interface, tag) (interface)                                     /**< mbxid.rxs' index. */
 /**@}*/
 
 /**
@@ -61,13 +61,13 @@
 #define MAILBOX_DATA_TAG_BASE (BOSTAN_PORTAL_DNOC_TX_BASE)  /**< Associated Data Tag.    */
 
 #define UNDERLYING_OPEN_INTERFACE(mbxid)   (mbxid / BOSTAN_MAILBOX_OPEN_PER_DMA) /**< Transfer interface.      */
-#define UNDERLYING_OPEN_TAG(mbxid)         (BOSTAN_MAILBOX_DNOC_TX_BASE                                \
-                                              + (mbxid % BOSTAN_DNOC_TXS_PER_COMM_SERVICE) \
+#define UNDERLYING_OPEN_TAG(mbxid)         (BOSTAN_MAILBOX_DNOC_TX_BASE                  \
+                                            + (mbxid % BOSTAN_DNOC_TXS_PER_COMM_SERVICE) \
                                            )                                     /**< Transfer tag.            */
 #define UNDERLYING_CREATE_INTERFACE(mbxid) (mbxid)                               /**< Receiver tag ID.         */
-#define UNDERLYING_CREATE_TAG(mbxid)       (bostan_processor_node_mailbox_tag(                         \
-                                                bostan_processor_noc_cluster_to_node_num(cluster_get_num()) +  \
-												UNDERLYING_CREATE_INTERFACE(mbxid)                     \
+#define UNDERLYING_CREATE_TAG(mbxid)       (bostan_processor_node_mailbox_tag(                             \
+                                             bostan_processor_noc_cluster_to_node_num(cluster_get_num()) + \
+                                             UNDERLYING_CREATE_INTERFACE(mbxid)                            \
                                            ))                                    /**< Receiver DMA channel ID. */
 /**@}*/
 
@@ -179,8 +179,8 @@ PRIVATE struct mbxpools
  */
 PRIVATE void mppa256_mailbox_count_messages(struct rx * mqueue)
 {
-	k1b_byte_t total;
-	struct underliyng_message * msg;
+	k1b_byte_t total;                /* Count total of messages.   */
+	struct underliyng_message * msg; /* Auxiliar message variable. */
 
 	total = 0;
 
@@ -219,8 +219,8 @@ PRIVATE int mppa256_mailbox_msg_copy(int mbxid, void * buffer);
  */
 PRIVATE void mppa256_mailbox_rx_handler(int interface, int tag)
 {
-	int mbxid;
-	void * buffer;
+	int mbxid;     /* Mailbox ID.  */
+	void * buffer; /* User buffer. */
 
 	UNUSED(interface);
 	UNUSED(tag);
@@ -236,7 +236,7 @@ PRIVATE void mppa256_mailbox_rx_handler(int interface, int tag)
 		mbxtab.rxs[mbxid].buffer = NULL;
 
 		if (mppa256_mailbox_msg_copy(mbxid, buffer) != 0)
-			kpanic("[hal][mailbox] Handler failed on copy the message or send the ack to transfer node!");
+			kpanic("[hal][mailbox][handler] Handler failed on copy the message or send the ack to transfer node!");
 	}
 }
 
@@ -274,7 +274,7 @@ PRIVATE void mppa256_mailbox_tx_handler(int interface, int tag)
 		if (mbxtab.txs[mbxid].commit != 0)
 		{
 			if (mppa256_mailbox_send_msg(mbxid) != 0)
-				kpanic("[hal][target][mailbox] Sender Handler failed!");
+				kpanic("[hal][mailbox][handler] Sender Handler failed!");
 		}
 
 		break;
@@ -296,10 +296,10 @@ PRIVATE void mppa256_mailbox_tx_handler(int interface, int tag)
  */
 PRIVATE int do_mppa256_mailbox_create(int nodenum)
 {
-	int ret;
-	int tag;
-	int mbxid;
-	int interface;
+	int ret;       /* Return value.         */
+	int tag;       /* Underlying data tag.  */
+	int mbxid;     /* Mailbox ID.           */
+	int interface; /* Underlying interface. */
 
 	/* Gets Mailbox index. */
 	mbxid = RESOURCEID_RX(nodenum);
@@ -399,10 +399,10 @@ PUBLIC int mppa256_mailbox_create(int nodenum)
  */
 PRIVATE int do_mppa256_mailbox_open(int nodenum)
 {
-	int ctag;
-	int localnum;
-	int mbxid;
-	int interface;
+	int ctag;      /* Underlying control tag. */
+	int mbxid;     /* Mailbox ID.             */
+	int localnum;  /* Local nodenum.          */
+	int interface; /* Underlying interface.   */
 
 	/* Allocates a resource. */
 	if ((mbxid = resource_alloc(&mbxpools.tx_pool)) < 0)
@@ -455,8 +455,8 @@ PUBLIC int mppa256_mailbox_open(int nodenum)
  */
 PRIVATE int do_mppa256_mailbox_unlink(int mbxid)
 {
-	int tag;
-	int interface;
+	int tag;       /* Underlying data tag.  */
+	int interface; /* Underlying interface. */
 
 	mbxid -= MPPA256_MAILBOX_CREATE_OFFSET;
 
@@ -511,8 +511,8 @@ PUBLIC int mppa256_mailbox_unlink(int mbxid)
  */
 PRIVATE int do_mppa256_mailbox_close(int mbxid)
 {
-	int ctag;
-	int interface;
+	int ctag;      /* Underlying control tag. */
+	int interface; /* Underlying interface.   */
 
 	/* Data parameters. */
 	interface = UNDERLYING_OPEN_INTERFACE(mbxid);
@@ -561,12 +561,12 @@ PUBLIC int mppa256_mailbox_close(int mbxid)
  */
 PRIVATE int mppa256_mailbox_send_msg(int mbxid)
 {
-	int ret;
-	int ctag;
-	int dtag;
-	int remotenum;
-	int localnum;
-	int interface;
+	int ret;       /* Return value.           */
+	int ctag;      /* Underlying control tag. */
+	int dtag;      /* Underlying data tag.    */
+	int localnum;  /* Local nodenum.          */
+	int remotenum; /* Remote nodenum.         */
+	int interface; /* Underlying interface.   */
 
 	/* Defines parameters. */
 	interface = UNDERLYING_OPEN_INTERFACE(mbxid);
@@ -685,12 +685,12 @@ PUBLIC ssize_t mppa256_mailbox_awrite(int mbxid, const void * buffer, uint64_t s
  */
 PRIVATE int mppa256_mailbox_msg_copy(int mbxid, void * buffer)
 {
-	int ret;
-	int tag;
-	int interface;
-	int remotenum;
-	struct rx * mqueue;
-	struct underliyng_message * msg;
+	int ret;                         /* Return value.             */
+	int tag;                         /* Underlying control tag.   */
+	int interface;                   /* Underlying interface.     */
+	int remotenum;                   /* Remote nodenum.           */
+	struct rx * mqueue;              /* Auxiliar mqueue variable. */
+	struct underliyng_message * msg; /* Auxiliar msg variable.    */
 
 	/* Current mailbox. */
 	mqueue = &mbxtab.rxs[mbxid];
@@ -727,6 +727,7 @@ PRIVATE int mppa256_mailbox_msg_copy(int mbxid, void * buffer)
 	--mqueue->message_count;
 	mqueue->initial_message = (msg - mqueue->messages);
 
+	/* Assert that remotenum is a valid node. */
 	KASSERT(remotenum != MPPA256_MAILBOX_MESSAGE_INVALID);
 
 	/* Copies message data. */
@@ -737,12 +738,11 @@ PRIVATE int mppa256_mailbox_msg_copy(int mbxid, void * buffer)
 
 	/* Gets underlying parameters. */
 	interface = UNDERLYING_CREATE_INTERFACE(mbxid);
-
-	/* Confirms receiving with message source. */
 	tag = bostan_processor_node_mailbox_tag(
 		bostan_processor_noc_cluster_to_node_num(cluster_get_num()) + interface
 	);
 
+	/* Confirms receiving with message source. */
 	ret = bostan_dma_control_signal(
 		interface,
 		MAILBOX_CONTROL_TAG,
