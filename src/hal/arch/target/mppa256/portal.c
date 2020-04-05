@@ -720,6 +720,7 @@ error1:
 	if (ret >= 0)
 		k1b_spinlock_unlock(&portaltab.txs[portalid].lock);
 
+
 	return (ret);
 }
 
@@ -741,28 +742,34 @@ PRIVATE ssize_t do_mppa256_portal_awrite(int portalid, const void * buffer, uint
 {
 	ssize_t ret; /* Return value. */
 
-	ret = (-EACCES);
+	ret = size;
 
 	mppa256_portal_lock();
-
-	if (!portaltab.txs[portalid].is_allowed)
-		goto error;
-
-	portaltab.txs[portalid].buffer = buffer;
-	portaltab.txs[portalid].size   = ret = size;
-	resource_set_busy(&portaltab.txs[portalid].resource);
-
- 	if (mppa256_portal_send_data(portalid) != 0)
-	{
-		portaltab.txs[portalid].buffer = NULL;
-		portaltab.txs[portalid].size   = 0;
-		ret = (-EACCES);
-
-		resource_set_notbusy(&portaltab.txs[portalid].resource);
-	}
-
-error:
+		resource_set_busy(&portaltab.txs[portalid].resource);
 	mppa256_portal_unlock();
+
+	interrupt_mask(K1B_INT_CNOC);
+
+		portaltab.txs[portalid].buffer = buffer;
+		portaltab.txs[portalid].size   = size;
+
+		if (portaltab.txs[portalid].is_allowed)
+			if (mppa256_portal_send_data(portalid) != 0)
+				ret = (-EACCES);
+
+		/* Double check. */
+		bostan_cnoc_it_verify();
+
+	interrupt_unmask(K1B_INT_CNOC);
+
+	if (ret < 0)
+	{
+		mppa256_portal_lock();
+			portaltab.txs[portalid].buffer = NULL;
+			portaltab.txs[portalid].size   = 0;
+			resource_set_notbusy(&portaltab.txs[portalid].resource);
+		mppa256_portal_unlock();
+	}
 
 	return (ret);
 }
