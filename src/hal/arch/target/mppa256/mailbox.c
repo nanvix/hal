@@ -716,38 +716,43 @@ PRIVATE ssize_t do_mppa256_mailbox_awrite(int mbxid, const void * buffer, uint64
 {
 	ssize_t ret; /* Return value. */
 
-	mppa256_mailbox_lock();
-
-	/* Programs the next write. */
-	kmemcpy(&mbxtab.txs[mbxid].message.buffer, buffer, MPPA256_MAILBOX_MSG_SIZE);
-	resource_set_busy(&mbxtab.txs[mbxid].resource);
-	mbxtab.txs[mbxid].commit = 1;
 	ret = size;
 
-	/* Is this the first message? Then we send the message. */
-	if (mbxtab.txs[mbxid].is_first_msg)
-		mbxtab.txs[mbxid].is_first_msg = 0;
+	mppa256_mailbox_lock();
+		resource_set_busy(&mbxtab.txs[mbxid].resource);
+	mppa256_mailbox_unlock();
 
-	/**
-	 * Do we not receive the acknowledge signal from the receiver yet?
-	 * Then don't send the message.
-	 */
-	else if (mbxtab.txs[mbxid].ack == 0)
-		goto finish;
+	interrupt_mask(K1B_INT_CNOC);
 
-	/* Sends the message and configurates the control receiver buffet. */
-	if (mppa256_mailbox_send_msg(mbxid) != 0)
-		ret = (-EAGAIN);
+		/* Programs the next write. */
+		kmemcpy(&mbxtab.txs[mbxid].message.buffer, buffer, MPPA256_MAILBOX_MSG_SIZE);
+		mbxtab.txs[mbxid].commit = 1;
 
-finish:
+		/**
+		* Do we not receive the acknowledge signal from the receiver yet?
+		* Then don't send the message.
+		*/
+		if (mbxtab.txs[mbxid].ack != 0)
+		{
+			/* Sends the message and configurates the control receiver buffet. */
+			if (mppa256_mailbox_send_msg(mbxid) != 0)
+			{
+				mbxtab.txs[mbxid].ack = 1;
+				ret = -EAGAIN;
+			}
+		}
+
+		/* Double check. */
+		bostan_cnoc_it_verify();
+
+	interrupt_unmask(K1B_INT_CNOC);
+
 	if (ret < 0)
 	{
-		mbxtab.txs[mbxid].ack    = 1;
-		mbxtab.txs[mbxid].commit = 0;
-		resource_set_notbusy(&mbxtab.txs[mbxid].resource);
+		mppa256_mailbox_lock();
+			resource_set_notbusy(&mbxtab.txs[mbxid].resource);
+		mppa256_mailbox_unlock();
 	}
-
-	mppa256_mailbox_unlock();
 
 	return (ret);
 }
@@ -841,9 +846,6 @@ PRIVATE int mppa256_mailbox_msg_copy(int mbxid, void * buffer)
 
 	/* Copies message data. */
 	kmemcpy(buffer, msg->buffer, MPPA256_MAILBOX_MSG_SIZE);
-
-	/* Releases to be read again. */
-	resource_set_notbusy(&mbxtab.rxs[mbxid].resource);
 
 	/* Gets underlying parameters. */
 	interface = UNDERLYING_CREATE_INTERFACE(mbxid);
