@@ -108,14 +108,17 @@ PRIVATE struct mailbox
 		 */
 		struct resource resource;                              /**< Generic resource information. */
 
-		/* Control parameters */
-		struct underliyng_message messages[MQUEUE_MSG_AMOUNT]; /**< Message Queue.                */
+		/* Control parameters. */
+		int ret;                                               /**< Returned value on a copy.     */
 		k1b_byte_t initial_message;                            /**< Last position read.           */
 		k1b_byte_t message_count;                              /**< Received messages.            */
 
 		/* Receiver requisition on hold. */
 		k1b_spinlock_t lock;                                   /**< Receiver request barrier.     */
 		void * buffer;                                         /**< Receiver buffer.              */
+
+		/* Underlying buffers. */
+		struct underliyng_message messages[MQUEUE_MSG_AMOUNT]; /**< Message Queue.                */
 	} ALIGN(sizeof(dword_t)) rxs[MPPA256_MAILBOX_CREATE_MAX];
 
 	/**
@@ -129,31 +132,46 @@ PRIVATE struct mailbox
 		struct resource resource;          /**< Generic resource information.                             */
 
 		/* Control parameters */
+		int ret;                           /**< Returned value on a send.                                 */
 		k1b_byte_t source_ctag;            /**< Source Control Tag ID.                                    */
 		k1b_byte_t remote;                 /**< Logical ID of the Target NoC Node.                        */
-		k1b_byte_t is_first_msg : 1;       /**< Indicates whether it is the first message.                */
-		k1b_byte_t ack          : 1;       /**< Indicates that the receiver cosumes the previous message. */
+		k1b_byte_t ack                : 1; /**< Indicates that the receiver cosumes the previous message. */
 
 		/* Sender requisition on hold. */
-		k1b_byte_t commit       : 1;       /**< Indicates whether it is need send the message.            */
-		k1b_byte_t unused       : 5;       /**< Unused.                                                   */
+		k1b_byte_t commit             : 1; /**< Indicates whether it is need send the message.            */
+		k1b_byte_t unused             : 6; /**< Unused.                                                   */
 		k1b_spinlock_t lock;               /**< Receiver request barrier.                                 */
 		struct underliyng_message message; /**< Underlying buffer for sending asynchronously.             */
 	} ALIGN(sizeof(dword_t)) txs[MPPA256_MAILBOX_OPEN_MAX];
 } mbxtab = {
-	.rxs[0 ... MPPA256_MAILBOX_CREATE_MAX-1] = {
-		.resource = {0},
-		.messages[0 ... MQUEUE_MSG_AMOUNT-1] = {
-			.source  = MPPA256_MAILBOX_MESSAGE_INVALID,
-			.buffer = {0, },
-			.confirm = MPPA256_MAILBOX_MESSAGE_INVALID
-		},
+	.rxs[0 ... MPPA256_MAILBOX_CREATE_MAX - 1] = {
+		.resource        = {0, },
+		.ret             = -1,
 		.initial_message = 0,
 		.message_count   = 0,
 		.lock            = K1B_SPINLOCK_UNLOCKED,
-		.buffer          = NULL
+		.buffer          = NULL,
+		.messages[0 ... MQUEUE_MSG_AMOUNT - 1] = {
+			.source  = MPPA256_MAILBOX_MESSAGE_INVALID,
+			.buffer  = {0, },
+			.confirm = MPPA256_MAILBOX_MESSAGE_INVALID
+		}
 	},
-	.txs[0 ... MPPA256_MAILBOX_OPEN_MAX-1]   = { {0}, 0, 0, 0, 0, 0, 0, K1B_SPINLOCK_UNLOCKED, {MPPA256_MAILBOX_MESSAGE_INVALID, {0}, MPPA256_MAILBOX_MESSAGE_INVALID} }
+	.txs[0 ... MPPA256_MAILBOX_OPEN_MAX - 1]   = {
+		.resource    = {0, },
+		.ret         = -1,
+		.source_ctag = 0,
+		.remote      = 0,
+		.ack         = 0,
+		.commit      = 0,
+		.unused      = 0,
+		.lock        = K1B_SPINLOCK_UNLOCKED,
+		.message = {
+			.source  = MPPA256_MAILBOX_MESSAGE_INVALID,
+			.buffer  = {0, },
+			.confirm = MPPA256_MAILBOX_MESSAGE_INVALID
+		}
+	}
 };
 
 /**
@@ -167,6 +185,30 @@ PRIVATE struct mbxpools
 	.rx_pool = {mbxtab.rxs, MPPA256_MAILBOX_CREATE_MAX, sizeof(struct rx)},
 	.tx_pool = {mbxtab.txs, MPPA256_MAILBOX_OPEN_MAX,   sizeof(struct tx)},
 };
+
+/**
+ * @brief Global lock
+ */
+PRIVATE k1b_spinlock_t mbxtab_lock = K1B_SPINLOCK_UNLOCKED;
+
+/*============================================================================*
+ * mppa256_mailbox_lock()                                                     *
+ *============================================================================*/
+
+PRIVATE void mppa256_mailbox_lock(void)
+{
+	k1b_spinlock_lock(&mbxtab_lock);
+}
+
+/*============================================================================*
+ * mppa256_mailbox_unlock()                                                   *
+ *============================================================================*/
+
+
+PRIVATE void mppa256_mailbox_unlock(void)
+{
+	k1b_spinlock_unlock(&mbxtab_lock);
+}
 
 /*============================================================================*
  * mppa256_mailbox_rx_handler()                                               *
@@ -235,8 +277,9 @@ PRIVATE void mppa256_mailbox_rx_handler(int interface, int tag)
 
 		mbxtab.rxs[mbxid].buffer = NULL;
 
+		/* The failure does not cause kpanic because it is recoverable. */
 		if (mppa256_mailbox_msg_copy(mbxid, buffer) != 0)
-			kpanic("[hal][mailbox][handler] Handler failed on copy the message or send the ack to transfer node!");
+			kprintf("[hal][mailbox][handler] Handler failed on copy the message or send the ack to transfer node!");
 	}
 }
 
@@ -262,6 +305,12 @@ PRIVATE void mppa256_mailbox_tx_handler(int interface, int tag)
 
 	for (k1b_byte_t mbxid = 0; mbxid < MPPA256_MAILBOX_OPEN_MAX; ++mbxid)
 	{
+		/**
+		 * This verification cannot be protected by the global lock
+		 * because the handler can interrupt the master core when
+		 * it's inside a critical region. That's create a deadlock
+		 * situation.
+		 */
 		if (!resource_is_used(&mbxtab.txs[mbxid].resource))
 			continue;
 
@@ -273,8 +322,16 @@ PRIVATE void mppa256_mailbox_tx_handler(int interface, int tag)
 		/* Sends requested message. */
 		if (mbxtab.txs[mbxid].commit != 0)
 		{
+			mbxtab.txs[mbxid].ack    = 0;
+			mbxtab.txs[mbxid].commit = 0;
+
 			if (mppa256_mailbox_send_msg(mbxid) != 0)
-				kpanic("[hal][mailbox][handler] Sender Handler failed!");
+			{
+				mbxtab.txs[mbxid].ack = 1;
+
+				/* The failure does not cause kpanic because it is recoverable. */
+				kprintf("[hal][mailbox][handler] Sender Handler failed!");
+			}
 		}
 
 		break;
@@ -299,21 +356,29 @@ PRIVATE int do_mppa256_mailbox_create(int nodenum)
 	int ret;       /* Return value.         */
 	int tag;       /* Underlying data tag.  */
 	int mbxid;     /* Mailbox ID.           */
+	int target;    /* Target nodenum.       */
 	int interface; /* Underlying interface. */
 
 	/* Gets Mailbox index. */
 	mbxid = RESOURCEID_RX(nodenum);
 
+	target = -1;
+	ret = (-EBADF);
+
+	mppa256_mailbox_lock();
+
 	/* Mailbox is used. */
 	if (resource_is_used(&mbxtab.rxs[mbxid].resource))
-		return (-EBADF);
+		goto release_global_lock;
 
 	/* Gets underlying parameters. */
 	interface = UNDERLYING_CREATE_INTERFACE(mbxid);
 
+	ret = (-EINVAL);
+
 	/* Opens control sender point. */
 	if (bostan_dma_control_open(interface, MAILBOX_CONTROL_TAG) != 0)
-		return (-EINVAL);
+		goto release_global_lock;
 
 	/* Configures underlying message queue. */
 	for (unsigned i = 0; i < MQUEUE_MSG_AMOUNT; i++)
@@ -324,25 +389,20 @@ PRIVATE int do_mppa256_mailbox_create(int nodenum)
 
 	mbxtab.rxs[mbxid].initial_message = 0;
 	mbxtab.rxs[mbxid].message_count   = 0;
-	spinlock_lock(&mbxtab.rxs[mbxid].lock);
+	mbxtab.rxs[mbxid].ret             = (-EAGAIN);
+	k1b_spinlock_trylock(&mbxtab.rxs[mbxid].lock);
 
 	/* Configures a message slot for each node available. */
-	for (int target = 0; target < ((int) PROCESSOR_NOC_NODES_NUM); target++)
+	for (target = 0; target < ((int) PROCESSOR_NOC_NODES_NUM); target++)
 	{
 		tag = bostan_processor_node_mailbox_tag(target);
 
 		/* Creates data reciever point. */
 		if (bostan_dma_data_create(interface, tag) != 0)
 		{
-			bostan_dma_control_close(interface, MAILBOX_CONTROL_TAG);
-
-			for (target--; target >= 0; target--)
-			{
-				tag = bostan_processor_node_mailbox_tag(target);
-				bostan_dma_control_unlink(interface, tag);
-			}
-
-			return (-EINVAL);
+			/* We were unable to create for this target, ignore it. */
+			target--;
+			goto release_dma_resources;
 		}
 
 		ret = bostan_dma_data_aread(
@@ -356,24 +416,36 @@ PRIVATE int do_mppa256_mailbox_create(int nodenum)
 		);
 
 		if (ret < 0)
-		{
-			bostan_dma_control_close(interface, MAILBOX_CONTROL_TAG);
-
-			for (target--; target >= 0; target--)
-			{
-				tag = bostan_processor_node_mailbox_tag(target);
-				bostan_dma_control_unlink(interface, tag);
-			}
-
-			return (ret);
-		}
+			goto release_dma_resources;
 	}
 
 	/* Allocates associated resource. */
 	resource_set_used(&mbxtab.rxs[mbxid].resource);
 	resource_set_notbusy(&mbxtab.rxs[mbxid].resource);
 
+	mppa256_mailbox_unlock();
+
 	return (MPPA256_MAILBOX_CREATE_OFFSET + mbxid);
+
+release_dma_resources:
+	if (bostan_dma_control_close(interface, MAILBOX_CONTROL_TAG) != 0)
+		kpanic("[hal][mailbox][create] Failed on releasing control dma emitter.");
+
+	for (target--; target >= 0; target--)
+	{
+		tag = bostan_processor_node_mailbox_tag(target);
+
+		if (bostan_dma_data_unlink(interface, tag) != 0)
+			kpanic("[hal][mailbox][create] Failed on releasing data dma receiver.");
+	}
+
+	ret = (-EINVAL);
+
+release_global_lock:
+	mppa256_mailbox_unlock();
+
+	return (ret);
+
 }
 
 /**
@@ -399,14 +471,19 @@ PUBLIC int mppa256_mailbox_create(int nodenum)
  */
 PRIVATE int do_mppa256_mailbox_open(int nodenum)
 {
+	int ret;       /* Return value.           */
 	int ctag;      /* Underlying control tag. */
 	int mbxid;     /* Mailbox ID.             */
 	int localnum;  /* Local nodenum.          */
 	int interface; /* Underlying interface.   */
 
+	mppa256_mailbox_lock();
+
+	ret = (-EINVAL);
+
 	/* Allocates a resource. */
 	if ((mbxid = resource_alloc(&mbxpools.tx_pool)) < 0)
-		return (-EINVAL);
+		goto error;
 
 	/* Control arguments. */
 	ctag      = bostan_processor_node_mailbox_tag(nodenum);
@@ -416,21 +493,29 @@ PRIVATE int do_mppa256_mailbox_open(int nodenum)
 
 	/* Creates control reciever point. */
 	if (bostan_dma_control_create(interface, ctag, (1), mppa256_mailbox_tx_handler) != 0)
-		return (-EINVAL);
+	{
+		resource_free(&mbxpools.tx_pool, mbxid);
+		goto error;
+	}
 
 	/* Configures associated resource. */
+	mbxtab.rxs[mbxid].ret             = (-EAGAIN);
 	mbxtab.txs[mbxid].commit          = 0;
 	mbxtab.txs[mbxid].ack             = 1;
-	mbxtab.txs[mbxid].is_first_msg    = 1;
 	mbxtab.txs[mbxid].source_ctag     = ctag;
 	mbxtab.txs[mbxid].remote          = nodenum;
 	mbxtab.txs[mbxid].message.source  = localnum;
 	mbxtab.txs[mbxid].message.confirm = localnum;
-	spinlock_lock(&mbxtab.txs[mbxid].lock);
+	k1b_spinlock_trylock(&mbxtab.txs[mbxid].lock);
 
 	resource_set_notbusy(&mbxtab.txs[mbxid].resource);
 
-	return (MPPA256_MAILBOX_OPEN_OFFSET + mbxid);
+	ret = (MPPA256_MAILBOX_OPEN_OFFSET + mbxid);
+
+error:
+	mppa256_mailbox_unlock();
+
+	return (ret);
 }
 
 /**
@@ -455,21 +540,32 @@ PUBLIC int mppa256_mailbox_open(int nodenum)
  */
 PRIVATE int do_mppa256_mailbox_unlink(int mbxid)
 {
+	int ret;       /* Return value.         */
 	int tag;       /* Underlying data tag.  */
 	int interface; /* Underlying interface. */
 
-	mbxid -= MPPA256_MAILBOX_CREATE_OFFSET;
+	mppa256_mailbox_lock();
+
+	ret = (-EBADF);
 
 	/* Bad mailbox. */
 	if (!resource_is_used(&mbxtab.rxs[mbxid].resource))
-		return (-EBADF);
+		goto error;
+
+	ret = (-EBUSY);
+
+	/* Bad mailbox. */
+	if (resource_is_busy(&mbxtab.rxs[mbxid].resource))
+		goto error;
 
 	/* Gets underlying parameters. */
 	interface = UNDERLYING_CREATE_INTERFACE(mbxid);
 
+	ret = (-EINVAL);
+
 	/* Close control sender point. */
 	if (bostan_dma_control_close(interface, MAILBOX_CONTROL_TAG) != 0)
-		return (-EINVAL);
+		goto error;
 
 	/* Configures a message slot for each node available. */
 	for (unsigned int target = 0; target < PROCESSOR_NOC_NODES_NUM; target++)
@@ -478,15 +574,19 @@ PRIVATE int do_mppa256_mailbox_unlink(int mbxid)
 
 		/* Unlink data reciever point. */
 		if (bostan_dma_data_unlink(interface, tag) != 0)
-			return (-EINVAL);
+			kpanic("[hal][mailbox][unlink] Failed on closing a mailbox.");
 	}
 
 	/* Releases associated resource. */
 	resource_free(&mbxpools.rx_pool, mbxid);
 	mbxtab.rxs[mbxid].buffer = NULL;
-	spinlock_unlock(&mbxtab.rxs[mbxid].lock);
 
-	return (0);
+	ret = 0;
+
+error:
+	mppa256_mailbox_unlock();
+
+	return (ret);
 }
 
 /**
@@ -494,6 +594,8 @@ PRIVATE int do_mppa256_mailbox_unlink(int mbxid)
  */
 PUBLIC int mppa256_mailbox_unlink(int mbxid)
 {
+	mbxid -= MPPA256_MAILBOX_CREATE_OFFSET;
+
 	return (do_mppa256_mailbox_unlink(mbxid));
 }
 
@@ -511,8 +613,17 @@ PUBLIC int mppa256_mailbox_unlink(int mbxid)
  */
 PRIVATE int do_mppa256_mailbox_close(int mbxid)
 {
+	int ret;       /* Return value.           */
 	int ctag;      /* Underlying control tag. */
 	int interface; /* Underlying interface.   */
+
+	mppa256_mailbox_lock();
+
+	ret = (-EBADF);
+
+	/* Bad mailbox. */
+	if (!resource_is_used(&mbxtab.txs[mbxid].resource))
+		goto error;
 
 	/* Data parameters. */
 	interface = UNDERLYING_OPEN_INTERFACE(mbxid);
@@ -521,16 +632,22 @@ PRIVATE int do_mppa256_mailbox_close(int mbxid)
 	ctag = bostan_processor_node_mailbox_tag(mbxtab.txs[mbxid].remote);
 
 	/* Unlink control reciever point. */
-	if (bostan_dma_control_unlink(interface, ctag) != 0)
-		return (-EINVAL);
+	if (bostan_dma_control_unlink(interface, ctag) == 0)
+	{
+		/* Releases associated resource. */
+		resource_free(&mbxpools.tx_pool, mbxid);
+		mbxtab.txs[mbxid].commit = 0;
+		mbxtab.txs[mbxid].ack    = 1;
 
-	/* Releases associated resource. */
-	resource_free(&mbxpools.tx_pool, mbxid);
-	mbxtab.txs[mbxid].commit = 0;
-	mbxtab.txs[mbxid].ack    = 1;
-	spinlock_unlock(&mbxtab.txs[mbxid].lock);
+		ret = 0;
+	}
+	else
+		ret = (-EINVAL);
 
-	return (0);
+error:
+	mppa256_mailbox_unlock();
+
+	return (ret);
 }
 
 /**
@@ -539,10 +656,6 @@ PRIVATE int do_mppa256_mailbox_close(int mbxid)
 PUBLIC int mppa256_mailbox_close(int mbxid)
 {
 	mbxid -= MPPA256_MAILBOX_OPEN_OFFSET;
-
-	/* Bad mailbox. */
-	if (!resource_is_used(&mbxtab.txs[mbxid].resource))
-		return (-EBADF);
 
 	return (do_mppa256_mailbox_close(mbxid));
 }
@@ -576,14 +689,17 @@ PRIVATE int mppa256_mailbox_send_msg(int mbxid)
 
 	/* Opens data sender point. */
 	dtag = UNDERLYING_OPEN_TAG(mbxid);
-	ret = -1;
+
+	ret = (-EBUSY);
 
 	/* Tries to open DMA Data Channel. */
-	if ((ret = bostan_dma_data_open(interface, dtag)) != 0)
-		return (-EBUSY);
+	if (bostan_dma_data_open(interface, dtag) != 0)
+		goto error;
 
-	if (bostan_dma_control_config(interface, ctag, (1), mppa256_mailbox_tx_handler) < 0)
-		return (-EINVAL);
+	ret = (-EAGAIN);
+
+	if (bostan_dma_control_config(interface, ctag, (1), mppa256_mailbox_tx_handler) != 0)
+		goto error;
 
 	/* Send message. */
 	ret = bostan_dma_data_write(
@@ -596,20 +712,16 @@ PRIVATE int mppa256_mailbox_send_msg(int mbxid)
 		0
 	);
 
+error:
 	/* Close data sender point. */
 	if (bostan_dma_data_close(interface, dtag) != 0)
-		return (-EINVAL);
+		kpanic("[hal][mailbox][send] Failed to close the data transmission channel.");
 
-	if (ret != 0)
-		return (ret);
+	mbxtab.txs[mbxid].ret = (ret < 0) ? (-EAGAIN) : 0;
 
-	mbxtab.txs[mbxid].commit = 0;
-	mbxtab.txs[mbxid].ack    = 0;
-	resource_set_notbusy(&mbxtab.txs[mbxid].resource);
+	k1b_spinlock_unlock(&mbxtab.txs[mbxid].lock);
 
-	spinlock_unlock(&mbxtab.txs[mbxid].lock);
-
-	return (0);
+	return (ret);
 }
 
 /*============================================================================*
@@ -628,29 +740,50 @@ PRIVATE int mppa256_mailbox_send_msg(int mbxid)
  */
 PRIVATE ssize_t do_mppa256_mailbox_awrite(int mbxid, const void * buffer, uint64_t size)
 {
-	dcache_invalidate();
+	ssize_t ret; /* Return value. */
 
-	/* Programs the next write. */
-	kmemcpy(&mbxtab.txs[mbxid].message.buffer, buffer, MPPA256_MAILBOX_MSG_SIZE);
-	resource_set_busy(&mbxtab.txs[mbxid].resource);
-	mbxtab.txs[mbxid].commit = 1;
+	ret = size;
 
-	/* Is this the first message? Then we send the message. */
-	if (mbxtab.txs[mbxid].is_first_msg)
-		mbxtab.txs[mbxid].is_first_msg = 0;
+	mppa256_mailbox_lock();
+		resource_set_busy(&mbxtab.txs[mbxid].resource);
+	mppa256_mailbox_unlock();
 
-	/**
-	 * Do we not receive the acknowledge signal from the receiver yet?
-	 * Then don't send the message.
-	 */
-	else if (mbxtab.txs[mbxid].ack == 0)
-		return (size);
+	interrupt_mask(K1B_INT_CNOC);
 
-	/* Sends the message and configurates the control receiver buffet. */
-	if (mppa256_mailbox_send_msg(mbxid) != 0)
-		return (-EAGAIN);
+		/* Programs the next write. */
+		kmemcpy(&mbxtab.txs[mbxid].message.buffer, buffer, MPPA256_MAILBOX_MSG_SIZE);
+		mbxtab.txs[mbxid].commit = 1;
 
-	return (size);
+		/**
+		* Do we not receive the acknowledge signal from the receiver yet?
+		* Then don't send the message.
+		*/
+		if (mbxtab.txs[mbxid].ack != 0)
+		{
+			mbxtab.txs[mbxid].ack = 0;
+			mbxtab.txs[mbxid].commit = 0;
+
+			/* Sends the message and configurates the control receiver buffet. */
+			if (mppa256_mailbox_send_msg(mbxid) != 0)
+			{
+				mbxtab.txs[mbxid].ack = 1;
+				ret = -EAGAIN;
+			}
+		}
+
+		/* Double check. */
+		bostan_cnoc_it_verify();
+
+	interrupt_unmask(K1B_INT_CNOC);
+
+	if (ret < 0)
+	{
+		mppa256_mailbox_lock();
+			resource_set_notbusy(&mbxtab.txs[mbxid].resource);
+		mppa256_mailbox_unlock();
+	}
+
+	return (ret);
 }
 
 /**
@@ -660,13 +793,23 @@ PUBLIC ssize_t mppa256_mailbox_awrite(int mbxid, const void * buffer, uint64_t s
 {
 	mbxid -= MPPA256_MAILBOX_OPEN_OFFSET;
 
-	/* Bad mailbox. */
-	if (!resource_is_used(&mbxtab.txs[mbxid].resource))
-		return (-EBADF);
+	mppa256_mailbox_lock();
 
-	/* Busy mailbox */
-	if (resource_is_busy(&mbxtab.txs[mbxid].resource))
-		return (-EBUSY);
+		/* Bad mailbox. */
+		if (!resource_is_used(&mbxtab.txs[mbxid].resource))
+		{
+			mppa256_mailbox_unlock();
+			return (-EBADF);
+		}
+
+		/* Busy mailbox */
+		if (resource_is_busy(&mbxtab.txs[mbxid].resource))
+		{
+			mppa256_mailbox_unlock();
+			return (-EBUSY);
+		}
+
+	mppa256_mailbox_unlock();
 
 	return (do_mppa256_mailbox_awrite(mbxid, buffer, size));
 }
@@ -695,9 +838,11 @@ PRIVATE int mppa256_mailbox_msg_copy(int mbxid, void * buffer)
 	/* Current mailbox. */
 	mqueue = &mbxtab.rxs[mbxid];
 
+	ret = (-EAGAIN);
+
 	/* Is the buffer valid or mqueue doesn't have a message? */
 	if((buffer == NULL) || (mqueue->message_count == 0))
-		return (-EINVAL);
+		goto error;
 
 	/* While not find a valid message. */
 	do
@@ -714,27 +859,23 @@ PRIVATE int mppa256_mailbox_msg_copy(int mbxid, void * buffer)
 			if (msg->source != MPPA256_MAILBOX_MESSAGE_INVALID && msg->confirm == MPPA256_MAILBOX_MESSAGE_VALID)
 				break;
 
-			remotenum = (remotenum + 1) < ((int) MQUEUE_MSG_AMOUNT) ? (remotenum + 1) : 0;
+			remotenum = (remotenum + 1) % MQUEUE_MSG_AMOUNT;
 		}
 	} while (msg->confirm != MPPA256_MAILBOX_MESSAGE_VALID);
 
 	/* Cleans underlying message. */
-	remotenum    = msg->source;
+	remotenum = msg->source;
+
+	/* Assert that remotenum is a valid node. */
+	if (remotenum == MPPA256_MAILBOX_MESSAGE_INVALID)
+		kpanic("[hal][mailbox][copy] The chosen message is invalid.");
+
+	/* Take the message off the queue. */
 	msg->source  = MPPA256_MAILBOX_MESSAGE_INVALID;
 	msg->confirm = MPPA256_MAILBOX_MESSAGE_INVALID;
 
-	/* Updates message queue parameters. */
-	--mqueue->message_count;
-	mqueue->initial_message = (msg - mqueue->messages);
-
-	/* Assert that remotenum is a valid node. */
-	KASSERT(remotenum != MPPA256_MAILBOX_MESSAGE_INVALID);
-
 	/* Copies message data. */
 	kmemcpy(buffer, msg->buffer, MPPA256_MAILBOX_MSG_SIZE);
-
-	/* Releases to be read again. */
-	resource_set_notbusy(&mbxtab.rxs[mbxid].resource);
 
 	/* Gets underlying parameters. */
 	interface = UNDERLYING_CREATE_INTERFACE(mbxid);
@@ -752,16 +893,31 @@ PRIVATE int mppa256_mailbox_msg_copy(int mbxid, void * buffer)
 		(~0)
 	);
 
+	/* Wasn't there an error sending the signal? */
 	if (ret < 0)
-		return (-EINVAL);
+	{
+		/* Return the message to the queue. */
+		msg->source  = remotenum;
+		msg->confirm = MPPA256_MAILBOX_MESSAGE_VALID;
 
-	/* Updates message queue. */
-	dcache_invalidate();
+		ret = (-EAGAIN);
+	}
+	else
+	{
+		/* Updates message queue parameters. */
+		mqueue->message_count--;
+		mqueue->initial_message = ((msg - mqueue->messages) + 1) % MQUEUE_MSG_AMOUNT;
 
-	/* Releases reads. */
-	spinlock_unlock(&mbxtab.rxs[mbxid].lock);
+		ret = 0;
+	}
 
-	return (0);
+error:
+	/* Releases to be read again. */
+	mbxtab.rxs[mbxid].ret = ret;
+
+	k1b_spinlock_unlock(&mbxtab.rxs[mbxid].lock);
+
+	return (ret);
 }
 
 /*============================================================================*
@@ -780,11 +936,15 @@ PRIVATE int mppa256_mailbox_msg_copy(int mbxid, void * buffer)
  */
 PRIVATE ssize_t do_mppa256_mailbox_aread(int mbxid, void * buffer, uint64_t size)
 {
-	resource_set_busy(&mbxtab.rxs[mbxid].resource);
+	ssize_t ret; /* Return value. */
+
+	ret = size;
+
+	mppa256_mailbox_lock();
+		resource_set_busy(&mbxtab.rxs[mbxid].resource);
+	mppa256_mailbox_unlock();
 
 	interrupt_mask(K1B_INT_DNOC);
-
-		dcache_invalidate();
 
 		/* Check on underlying messages. */
 		mppa256_mailbox_count_messages(&mbxtab.rxs[mbxid]);
@@ -795,7 +955,7 @@ PRIVATE ssize_t do_mppa256_mailbox_aread(int mbxid, void * buffer, uint64_t size
 			mbxtab.rxs[mbxid].buffer = NULL;
 
 			if (mppa256_mailbox_msg_copy(mbxid, buffer) != 0)
-				return (-EAGAIN);
+				ret = (-EAGAIN);
 		}
 		else
 			mbxtab.rxs[mbxid].buffer = buffer;
@@ -805,7 +965,14 @@ PRIVATE ssize_t do_mppa256_mailbox_aread(int mbxid, void * buffer, uint64_t size
 
 	interrupt_unmask(K1B_INT_DNOC);
 
-	return (size);
+	if (ret < 0)
+	{
+		mppa256_mailbox_lock();
+			resource_set_notbusy(&mbxtab.rxs[mbxid].resource);
+		mppa256_mailbox_unlock();
+	}
+
+	return (ret);
 }
 
 /**
@@ -815,13 +982,23 @@ PUBLIC ssize_t mppa256_mailbox_aread(int mbxid, void * buffer, uint64_t size)
 {
 	mbxid -= MPPA256_MAILBOX_CREATE_OFFSET;
 
-	/* Bad mailbox. */
-	if (!resource_is_used(&mbxtab.rxs[mbxid].resource))
-		return (-EBADF);
+	mppa256_mailbox_lock();
 
-	/* Busy mailbox. */
-	if (resource_is_busy(&mbxtab.rxs[mbxid].resource))
-		return (-EBUSY);
+		/* Bad mailbox. */
+		if (!resource_is_used(&mbxtab.rxs[mbxid].resource))
+		{
+			mppa256_mailbox_unlock();
+			return (-EBADF);
+		}
+
+		/* Busy mailbox. */
+		if (resource_is_busy(&mbxtab.rxs[mbxid].resource))
+		{
+			mppa256_mailbox_unlock();
+			return (-EBUSY);
+		}
+
+	mppa256_mailbox_unlock();
 
 	return (do_mppa256_mailbox_aread(mbxid, buffer, size));
 }
@@ -839,17 +1016,39 @@ PUBLIC ssize_t mppa256_mailbox_aread(int mbxid, void * buffer, uint64_t size)
  */
 PUBLIC int mppa256_mailbox_wait(int mbxid)
 {
+	int ret; /* Return value. */
+
 	/* Is it a rx operation? */
 	if (mbxid < MPPA256_MAILBOX_OPEN_OFFSET)
 	{
 		mbxid -= MPPA256_MAILBOX_CREATE_OFFSET;
 
+		mppa256_mailbox_lock();
+
 			/* Bad sync. */
 			if (!resource_is_used(&mbxtab.rxs[mbxid].resource))
-				return (-EBADF);
+				goto error;
+
+			/* Bad sync. */
+			if (!resource_is_busy(&mbxtab.rxs[mbxid].resource))
+				goto error;
+
+		mppa256_mailbox_unlock();
 
 		/* Waits for the handler release the lock. */
-		spinlock_lock(&mbxtab.rxs[mbxid].lock);
+		k1b_spinlock_lock(&mbxtab.rxs[mbxid].lock);
+
+		/**
+		 * The attribution of the return value is allowed on the slave
+		 * side because it will be protected by the busy flag release
+		 * by the own slave core.
+		 **/
+		ret = mbxtab.rxs[mbxid].ret;
+		mbxtab.rxs[mbxid].ret = (-EAGAIN);
+
+		mppa256_mailbox_lock();
+			resource_set_notbusy(&mbxtab.rxs[mbxid].resource);
+		mppa256_mailbox_unlock();
 	}
 
 	/* Is it a tx operation? */
@@ -857,13 +1056,38 @@ PUBLIC int mppa256_mailbox_wait(int mbxid)
 	{
 		mbxid -= MPPA256_MAILBOX_OPEN_OFFSET;
 
+		mppa256_mailbox_lock();
+
 			/* Bad sync. */
 			if (!resource_is_used(&mbxtab.txs[mbxid].resource))
-				return (-EBADF);
+				goto error;
+
+			/* Bad sync. */
+			if (!resource_is_busy(&mbxtab.txs[mbxid].resource))
+				goto error;
+
+		mppa256_mailbox_unlock();
 
 		/* Waits for the handler release the lock. */
-		spinlock_lock(&mbxtab.txs[mbxid].lock);
+		k1b_spinlock_lock(&mbxtab.txs[mbxid].lock);
+
+		/**
+		 * The attribution of the return value is allowed on the slave
+		 * side because it will be protected by the busy flag release
+		 * by the own slave core.
+		 **/
+		ret = mbxtab.txs[mbxid].ret;
+		mbxtab.txs[mbxid].ret = (-EAGAIN);
+
+		mppa256_mailbox_lock();
+			resource_set_notbusy(&mbxtab.txs[mbxid].resource);
+		mppa256_mailbox_unlock();
 	}
 
-	return (0);
+	return (ret);
+
+error:
+	mppa256_mailbox_unlock();
+
+	return (-EBADF);
 }

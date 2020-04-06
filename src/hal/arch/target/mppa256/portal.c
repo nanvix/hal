@@ -766,7 +766,6 @@ PRIVATE ssize_t do_mppa256_portal_awrite(int portalid, const void * buffer, uint
 		portaltab.txs[portalid].buffer = buffer;
 		portaltab.txs[portalid].size   = size;
 		portaltab.txs[portalid].commit = 1;
-		k1b_spinlock_trylock(&portaltab.txs[portalid].lock);
 
 		if (portaltab.txs[portalid].is_allowed)
 		{
