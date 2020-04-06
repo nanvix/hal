@@ -40,7 +40,7 @@
  */
 /**@{*/
 #define PORTAL_CONTROL_TAG_BASE (BOSTAN_PORTAL_CNOC_TX_BASE) /**< Associated Control Tag.  */
-#define PORTAL_DATA_TAG_BASE    (BOSTAN_PORTAL_DNOC_TX_BASE) /**< Associated Data Tag.  */
+#define PORTAL_DATA_TAG_BASE    (BOSTAN_PORTAL_DNOC_TX_BASE) /**< Associated Data Tag.     */
 /**@}*/
 
 /**
@@ -131,7 +131,7 @@ PRIVATE struct portalpools
  */
 PRIVATE int mppa256_get_free_resource_rx(int nodenum)
 {
-	unsigned base;
+	unsigned base; /* Initial index. */
 
 	UNUSED(portalpools);
 
@@ -157,7 +157,7 @@ PRIVATE int mppa256_get_free_resource_rx(int nodenum)
  */
 PRIVATE int mppa256_get_free_resource_tx(int nodenum)
 {
-	unsigned base;
+	unsigned base; /* Initial index. */
 
 	base = (nodenum % BOSTAN_PROCESSOR_NOC_INTERFACES_NUM) * BOSTAN_PORTAL_OPEN_PER_DMA;
 
@@ -180,8 +180,8 @@ PRIVATE int mppa256_get_free_resource_tx(int nodenum)
  */
 PRIVATE void mppa256_portal_receiver_handler(int interface, int tag)
 {
-	unsigned begin;
-	unsigned end;
+	unsigned begin; /* Initial index. */
+	unsigned end;   /* Limit index.   */
 
 	begin = (interface * BOSTAN_PORTAL_CREATE_PER_DMA);
 	end   = (begin + MPPA256_PORTAL_CREATE_MAX);
@@ -221,8 +221,8 @@ PRIVATE int mppa256_portal_send_data(int portalid);
  */
 PRIVATE void mppa256_portal_sender_handler(int interface, int tag)
 {
-	unsigned begin;
-	unsigned end;
+	unsigned begin; /* Initial index. */
+	unsigned end;   /* Limit index.   */
 
 	begin = (interface * BOSTAN_PORTAL_OPEN_PER_DMA);
 	end   = (begin + MPPA256_PORTAL_OPEN_MAX);
@@ -242,7 +242,7 @@ PRIVATE void mppa256_portal_sender_handler(int interface, int tag)
 		if (resource_is_busy(&portaltab.txs[i].resource))
 		{
 			if (mppa256_portal_send_data(i) != 0)
-				kpanic("[hal][target][portal] Sender Handler failed!");
+				kpanic("[hal][portal][handler] Sender Handler failed!");
 		}
 
 		break;
@@ -264,9 +264,9 @@ PRIVATE void mppa256_portal_sender_handler(int interface, int tag)
  */
 PRIVATE int do_mppa256_portal_create(int nodenum)
 {
-	int ctag;
-	int portalid;
-	int interface;
+	int ctag;      /* Underlying control tag. */
+	int portalid;  /* Portal ID.              */
+	int interface; /* Underlying interface.   */
 
 	/* Gets portal index not used. */
 	if ((portalid = mppa256_get_free_resource_rx(nodenum)) < 0)
@@ -315,8 +315,8 @@ PUBLIC int mppa256_portal_create(int nodenum)
  */
 PRIVATE int do_mppa256_portal_allow(int portalid, int remotenum)
 {
-	int dtag;
-	int interface;
+	int dtag;      /* Underlying data tag.    */
+	int interface; /* Underlying interface.   */
 
 	/* Gets dma interface. */
 	interface = UNDERLYING_CREATE_INTERFACE(portalid);
@@ -392,9 +392,9 @@ PUBLIC int mppa256_portal_allow(int portalid, int remotenum)
  */
 PRIVATE int do_mppa256_portal_open(int localnum, int remotenum)
 {
-	int ctag;
-	int portalid;
-	int interface;
+	int ctag;      /* Underlying control tag. */
+	int portalid;  /* Portal ID.              */
+	int interface; /* Underlying interface.   */
 
 	/* Gets portal index not used. */
 	if ((portalid = mppa256_get_free_resource_tx(localnum)) < 0)
@@ -444,9 +444,9 @@ PUBLIC int mppa256_portal_open(int localnum, int remotenum)
  */
 PRIVATE int do_mppa256_portal_unlink(int portalid)
 {
-	int ctag;
-	int dtag;
-	int interface;
+	int ctag;      /* Underlying control tag. */
+	int dtag;      /* Underlying data tag.    */
+	int interface; /* Underlying interface.   */
 
 	/* Gets underlying parameters. */
 	ctag = UNDERLYING_CREATE_CTAG(portalid);
@@ -505,8 +505,8 @@ PUBLIC int mppa256_portal_unlink(int portalid)
  */
 PRIVATE int do_mppa256_portal_close(int portalid)
 {
-	int ctag;
-	int interface;
+	int ctag;      /* Underlying control tag. */
+	int interface; /* Underlying interface.   */
 
 	/* Gets underlying parameters. */
 	ctag      = UNDERLYING_OPEN_CTAG(portaltab.txs[portalid].remote);
@@ -556,11 +556,11 @@ PUBLIC int mppa256_portal_close(int portalid)
  */
 PRIVATE int mppa256_portal_send_data(int portalid)
 {
-	int ret;
-	int ctag;
-	int dtag;
-	int interface;
-	int target_dtag;
+	int ret;         /* Return value.               */
+	int ctag;        /* Underlying control tag.     */
+	int dtag;        /* Underlying data tag.        */
+	int interface;   /* Underlying interface.       */
+	int target_dtag; /* Underlying target data tag. */
 
 	/* Local Parameters. */
 	ctag      = UNDERLYING_OPEN_CTAG(portaltab.txs[portalid].remote);
@@ -637,7 +637,7 @@ PRIVATE int mppa256_portal_send_data(int portalid)
  */
 PRIVATE ssize_t do_mppa256_portal_awrite(int portalid, const void * buffer, uint64_t size)
 {
-	int ret;
+	ssize_t ret; /* Return value. */
 
 	if (!portaltab.txs[portalid].is_allowed)
 		return (-EACCES);
@@ -691,11 +691,11 @@ PUBLIC ssize_t mppa256_portal_awrite(int portalid, const void * buffer, uint64_t
  */
 PUBLIC ssize_t do_mppa256_portal_aread(int portalid, void * buffer, uint64_t size)
 {
-	int ret;
-	int ctag;
-	int dtag;
-	int interface;
-	int target_ctag;
+	ssize_t ret;     /* Return value.                  */
+	int ctag;        /* Underlying control tag.        */
+	int dtag;        /* Underlying data tag.           */
+	int interface;   /* Underlying interface.          */
+	int target_ctag; /* Underlying target control tag. */
 
 	/* Data parameters. */
 	interface = UNDERLYING_CREATE_INTERFACE(portalid);
