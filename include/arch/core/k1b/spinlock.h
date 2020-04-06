@@ -86,6 +86,7 @@
 	 */
 	static inline void k1b_spinlock_lock(k1b_spinlock_t *lock)
 	{
+		k1b_dcache_inval();
 		while (!k1b_spinlock_trylock(lock))
 			/* noop */;
 	}
