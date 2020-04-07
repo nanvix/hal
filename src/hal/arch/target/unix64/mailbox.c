@@ -460,8 +460,8 @@ PUBLIC int unix64_mailbox_close(int mbxid)
 PRIVATE ssize_t do_unix64_mailbox_awrite(int mbxid, const void *buf, size_t n)
 {
 	int err;
-
-again:
+	ssize_t nwritten;
+	int ntries = 5;
 
 	unix64_mailbox_lock();
 
@@ -475,8 +475,8 @@ again:
 		/* Busy mailbox. */
 		if (resource_is_busy(&mailboxtab.txs[mbxid].resource))
 		{
-			unix64_mailbox_unlock();
-			goto again;
+			err = -EBUSY;
+			goto error1;
 		}
 
 		/* Set mailbox as busy. */
@@ -487,11 +487,31 @@ again:
 	 */
 	unix64_mailbox_unlock();
 
-	if (mq_send(mailboxtab.txs[mbxid].fd, buf, n, 1) == -1)
+	do
 	{
-		err = -EAGAIN;
-		goto error2;
-	}
+		struct timespec tm;
+
+		if (ntries-- == 0)
+		{
+			err = -ETIMEDOUT;
+			goto error2;
+		}
+
+		clock_gettime(CLOCK_REALTIME, &tm);
+		tm.tv_sec += 1;
+
+		if ((nwritten = mq_timedsend(mailboxtab.txs[mbxid].fd, buf, n, 1, &tm)) == -1)
+		{
+			if (errno == EAGAIN)
+				continue;
+
+			err = -EAGAIN;
+			goto error2;
+		}
+
+		break;
+
+	} while (1);
 
 	unix64_mailbox_lock();
 		resource_set_notbusy(&mailboxtab.txs[mbxid].resource);
@@ -530,8 +550,6 @@ PRIVATE ssize_t do_unix64_mailbox_aread(int mbxid, void *buf, size_t n)
 	ssize_t nread;
 	int ntries = 5;
 
-again:
-
 	unix64_mailbox_lock();
 
 		/* Bad mailbox. */
@@ -544,8 +562,8 @@ again:
 		/* Busy mailbox. */
 		if (resource_is_busy(&mailboxtab.rxs[mbxid].resource))
 		{
-			unix64_mailbox_unlock();
-			goto again;
+			err = -EBUSY;
+			goto error1;
 		}
 
 		/* Set mailbox as busy. */
@@ -555,7 +573,6 @@ again:
 	 * Release lock, since we may sleep below.
 	 */
 	unix64_mailbox_unlock();
-
 
 	do
 	{
@@ -575,7 +592,6 @@ again:
 			if (errno == EAGAIN)
 				continue;
 
-			kprintf("mailbox read error: %d", errno);
 			err = -EAGAIN;
 			goto error2;
 		}
