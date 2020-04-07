@@ -611,8 +611,9 @@ PRIVATE ssize_t do_unix64_portal_read(int portalid, void *buf, size_t n)
 {
 	int nread;
 	int remote;
+	int err;
 
-again:
+	err = -EBADF;
 
 	unix64_portals_lock();
 
@@ -623,8 +624,8 @@ again:
 		/* Busy portal. */
 		if (resource_is_busy(&portaltab.rxs[portalid].resource))
 		{
-			unix64_portals_unlock();
-			goto again;
+			err = -EBUSY;
+			goto error0;
 		}
 
 		/* No read operation is ongoing. */
@@ -648,7 +649,7 @@ again:
 		{
 			resource_set_notbusy(&portaltab.rxs[portalid].resource);
 			unix64_portal_unlock(&portaltab.rxs[portalid]);
-			goto again;
+			return (-ENOMSG);
 		}
 
 		kmemcpy(buf, portaltab.rxs[portalid].buffers[remote]->data, nread = n);
@@ -665,7 +666,7 @@ again:
 
 error0:
 	unix64_portals_unlock();
-	return (-EBADF);
+	return (err);
 }
 
 /**
@@ -693,20 +694,22 @@ PRIVATE ssize_t do_unix64_portal_write(int portalid, const void *buf, size_t n)
 {
 	int nwrite;
 	int local;
-
-again:
+	int err;
 
 	unix64_portals_lock();
 
 		/* Bad portal. */
 		if (!resource_is_used(&portaltab.txs[portalid].resource))
+		{
+			err = -EBADF;
 			goto error0;
+		}
 
 		/* Busy portal. */
 		if (resource_is_busy(&portaltab.txs[portalid].resource))
 		{
-			unix64_portals_unlock();
-			goto again;
+			err = -EBUSY;
+			goto error0;
 		}
 
 		/*
@@ -724,17 +727,15 @@ again:
 		/* Remote is not ready. */
 		if (!portaltab.txs[portalid].buffers[local]->ready)
 		{
-			resource_set_notbusy(&portaltab.txs[portalid].resource);
-			unix64_portal_unlock(&portaltab.txs[portalid]);
-			goto again;
+			err = -EACCES;
+			goto error1;
 		}
 
 		/* On-going transter. */
 		if (portaltab.txs[portalid].buffers[local]->busy)
 		{
-			resource_set_notbusy(&portaltab.txs[portalid].resource);
-			unix64_portal_unlock(&portaltab.txs[portalid]);
-			goto again;
+			err = -EBUSY;
+			goto error1;
 		}
 
 		kmemcpy(portaltab.txs[portalid].buffers[local]->data, buf, nwrite = n);
@@ -747,9 +748,14 @@ again:
 
 	return (nwrite);
 
+error1:
+	resource_set_notbusy(&portaltab.txs[portalid].resource);
+	unix64_portal_unlock(&portaltab.txs[portalid]);
+	return (err);
+
 error0:
 	unix64_portals_unlock();
-	return (-EBADF);
+	return (err);
 }
 
 /**
