@@ -952,13 +952,11 @@ PRIVATE ssize_t do_mppa256_mailbox_aread(int mbxid, void * buffer, uint64_t size
 		/* Is the message queue not empty? */
 		if (mbxtab.rxs[mbxid].message_count > 0)
 		{
-			mbxtab.rxs[mbxid].buffer = NULL;
-
 			if (mppa256_mailbox_msg_copy(mbxid, buffer) != 0)
 				ret = (-EAGAIN);
 		}
 		else
-			mbxtab.rxs[mbxid].buffer = buffer;
+			ret = (-ENOMSG);
 
 		/* Double check. */
 		bostan_dnoc_it_verify();
