@@ -52,6 +52,9 @@
 		#ifndef PROCESSOR_CLUSTERNUM_MASTER
 		#error "PROCESSOR_CLUSTERNUM_MASTER not defined"
 		#endif
+		#ifndef PROCESSOR_CLUSTERNUM_LEADER
+		#error "PROCESSOR_CLUSTERNUM_LEADER not defined"
+		#endif
 
 		/* Functions */
 		#ifndef __cluster_get_num_fn
