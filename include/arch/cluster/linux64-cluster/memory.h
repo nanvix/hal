@@ -166,6 +166,7 @@
 	 */
 	/**@{*/
 	#define __tlb_flush_fn /**< tlb_flush() */
+	#define __tlbe_dump_fn /**< tlb_dump()  */
 	/**@}*/
 
 	/**
@@ -174,6 +175,17 @@
 	static inline int tlb_flush(void)
 	{
 		return (linux64_cluster_tlb_flush());
+	}
+
+	/**
+	 * @see linux64_cluster_tlb_flush().
+	 */
+	static inline int tlbe_dump(int tlb_type, unsigned idx)
+	{
+		UNUSED(tlb_type);
+		UNUSED(idx);
+
+		return (0);
 	}
 
 /**@endcond*/

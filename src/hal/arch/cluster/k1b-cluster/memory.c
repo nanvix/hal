@@ -231,10 +231,10 @@ PUBLIC int k1b_cluster_tlb_flush(void)
  *============================================================================*/
 
 /**
- * The k1b_tlbe_dump() function dumps information about the TLB entry
- * @p idx on the kernel output device.
+ * The k1b_cluster_tlbe_dump() function dumps information about the TLB
+ * entry @p idx on the kernel output device.
  */
-PUBLIC void k1b_tlbe_dump(int idx)
+PUBLIC void k1b_cluster_tlbe_dump(int idx)
 {
 	const struct tlbe *tlbe;
 	static const char *status[4] = {"i", "p", "m", "a"};

@@ -112,6 +112,9 @@
 		#ifndef __tlb_get_vaddr_info_fn
 			#error "tlb_get_vaddr_info() not defined?"
 		#endif
+		#ifndef __tlbe_dump_fn
+			#error "tlbe_dump() not defined?"
+		#endif
 
 	#endif
 
@@ -287,6 +290,29 @@
 		UNUSED(pgdir);
 
 		return (0);
+	}
+#endif
+
+	/**
+	 * @brief Dumps a TLB entry.
+	 *
+	 * @param tlb_type Target TLB.
+	 * @param idx      Target index.
+	 *
+	 * @return Upon successful completion, zero is returned. Upon
+	 * failure a negative error code is returned instead.
+	 */
+	EXTERN int tlbe_dump(int tlb_type, unsigned idx);
+
+	/**
+	 * @brief Dumps the contents of the TLB.
+	 */
+#if (!CORE_HAS_TLB_HW)
+	EXTERN void tlb_dump(void);
+#else
+	static inline void tlb_dump(void)
+	{
+		noop();
 	}
 #endif
 

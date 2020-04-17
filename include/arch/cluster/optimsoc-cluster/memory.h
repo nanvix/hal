@@ -282,6 +282,7 @@
 	 */
 	/**@{*/
 	#define __tlb_flush_fn          /**< tlb_flush()          */
+	#define __tlbe_dump_fn          /**< tlbe_dump()          */
 	#define __tlb_init_fn           /**< tlb_init()           */
 	#define __tlb_get_vaddr_info_fn /**< tlb_get_vaddr_info() */
 	#define __tlb_get_utlb_fn       /**< tlb_get_utlb()       */
@@ -332,6 +333,17 @@
 	static inline int tlb_flush(void)
 	{
 		return (optimsoc_cluster_tlb_flush());
+	}
+
+	/**
+	 * @see or1k_cluster_tlb_flush().
+	 */
+	static inline int tlbe_dump(int tlb_type, unsigned idx)
+	{
+		UNUSED(tlb_type);
+		UNUSED(idx);
+
+		return (0);
 	}
 
 	/**

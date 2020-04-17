@@ -321,6 +321,7 @@
 	#define __tlb_get_vaddr_info_fn /**< tlb_get_vaddr_info() */
 	#define __tlb_get_utlb_fn       /**< tlb_get_utlb()       */
 	#define __tlb_shootdown_fn      /**< tlb_shootdown()      */
+	#define __tlbe_dump_fn          /**< tlbe_dump()          */
 	/**@}*/
 
 	/**
@@ -374,6 +375,26 @@
 	static inline int tlb_shootdown(vaddr_t vaddr)
 	{
 		return (k1b_cluster_tlb_shootdown(vaddr));
+	}
+
+	/**
+	 * @see k1b_tlbe_dump().
+	 */
+	static inline int tlbe_dump(int tlb_type, unsigned idx)
+	{
+		/* Invalid TLB type. */
+		if ((tlb_type != K1B_TLB_INSTRUCTION) && (tlb_type != K1B_TLB_DATA))
+			return (-EINVAL);
+
+		/* Invalid TLB index. */
+		if (idx >= K1B_TLB_LENGTH)
+			return (-ERANGE);
+
+		UNUSED(tlb_type);
+
+		k1b_cluster_tlbe_dump(idx);
+
+		return (0);
 	}
 
 	/**
