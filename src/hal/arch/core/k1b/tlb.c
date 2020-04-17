@@ -79,8 +79,7 @@ PUBLIC int k1b_tlbe_write(
 		unsigned protection
 )
 {
-	struct tlbe _tlbe;      /**< Temporary tlbe.  */
-	__k1_tlb_entry_t utlbe; /**< Underlying tlbe. */
+	struct tlbe _tlbe;
 
 	/* Invalid TLB entry. */
 	if (tlbe == NULL)
@@ -96,19 +95,18 @@ PUBLIC int k1b_tlbe_write(
 	_tlbe.size = (shift == 12) ? 1 : 0;
 	_tlbe.status = K1B_TLBE_STATUS_AMODIFIED;
 
-	kmemcpy(&utlbe, &_tlbe, K1B_TLBE_SIZE);
-
 	/* Write to hardware TLB. */
-	if (mOS_mem_write_jtlb(utlbe, way) != 0)
-	{
-		kprintf("[hal] failed to write tlb %x", vaddr);
+	if (k1b_tlbe_flush(&_tlbe, way) < 0)
 		return (-EAGAIN);
-	}
 
 	kmemcpy(tlbe, &_tlbe, K1B_TLBE_SIZE);
 
 	return (0);
 }
+
+/*============================================================================*
+ * k1b_tlbe_inval()                                                           *
+ *============================================================================*/
 
 /**
  * The k1b_tlbe_inval() function invalidates the TLB entry that
@@ -123,8 +121,7 @@ PUBLIC int k1b_tlbe_inval(
 	unsigned way
 )
 {
-	struct tlbe _tlbe;      /**< Temporary tlbe.  */
-	__k1_tlb_entry_t utlbe; /**< Underlying tlbe. */
+	struct tlbe _tlbe;
 
 	/* Invalid TLB entry. */
 	if (tlbe == NULL)
@@ -140,14 +137,9 @@ PUBLIC int k1b_tlbe_inval(
 	_tlbe.size = (shift == 12) ? 1 : 0;
 	_tlbe.status = K1B_TLBE_STATUS_INVALID;
 
-	kmemcpy(&utlbe, &_tlbe, K1B_TLBE_SIZE);
-
 	/* Write to hardware TLB. */
-	if (mOS_mem_write_jtlb(utlbe, way) != 0)
-	{
-		kprintf("[hal] failed to invalidate tlb %x", vaddr);
+	if (k1b_tlbe_flush(&_tlbe, way) < 0)
 		return (-EAGAIN);
-	}
 
 	kmemcpy(tlbe, &_tlbe, K1B_TLBE_SIZE);
 
