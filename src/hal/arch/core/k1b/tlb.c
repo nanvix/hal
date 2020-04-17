@@ -27,7 +27,40 @@
 #include <posix/errno.h>
 
 /*============================================================================*
- * k1b_tlb_write()                                                            *
+ * k1b_tlbe_flush()                                                           *
+ *============================================================================*/
+
+/**
+ * The k1b_tlbe_function() flushes the software TLB entry pointed to by
+ * @p tlbe to the hardware TLB. In this entry, the set-associative way
+ * @p way is used.
+ */
+PUBLIC int k1b_tlbe_flush(const struct tlbe *tlbe, int way)
+{
+	__k1_tlb_entry_t utlbe; /**< Underlying tlbe. */
+
+	/* Invalid TLB entry. */
+	if (tlbe == NULL)
+		return (-EINVAL);
+
+	/* Invalid way. */
+	if ((way != 0) && (way != 1))
+		return (-EINVAL);
+
+	kmemcpy(&utlbe, tlbe, K1B_TLBE_SIZE);
+
+	/* Write to hardware TLB. */
+	if (mOS_mem_write_jtlb(utlbe, way) != 0)
+	{
+		kprintf("[hal] failed to write to tlb");
+		return (-EAGAIN);
+	}
+
+	return (0);
+}
+
+/*============================================================================*
+ * k1b_tlbe_write()                                                           *
  *============================================================================*/
 
 /**

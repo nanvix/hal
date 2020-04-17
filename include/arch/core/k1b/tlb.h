@@ -274,6 +274,17 @@
 	}
 
 	/**
+	 * @brief Flushes a TLB entry.
+	 *
+	 * @param tlbe Target TLB entry.
+	 * @param way  Target set-associative way.
+	 *
+	 * @param Upont successful completion zero is returned. Upon failure
+	 * a negative error code is returned instead.
+	 */
+	EXTERN int k1b_tlbe_flush(const struct tlbe *tlbe, int way);
+
+	/**
 	 * @brief Writes a TLB entry.
 	 *
 	 * @param tlbe       The updated value of target TLB entry.
