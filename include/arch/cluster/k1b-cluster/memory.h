@@ -371,9 +371,9 @@
 	/**
 	 * @see k1b_cluster_tlb_shootdown().
 	 */
-	static inline void tlb_shootdown(vaddr_t vaddr)
+	static inline int tlb_shootdown(vaddr_t vaddr)
 	{
-		k1b_cluster_tlb_shootdown(vaddr);
+		return (k1b_cluster_tlb_shootdown(vaddr));
 	}
 
 	/**

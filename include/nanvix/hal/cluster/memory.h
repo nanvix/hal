@@ -305,7 +305,7 @@
 	 *
 	 * @return Zero if successful, non zero otherwise.
 	 */
-	EXTERN void tlb_shootdown(vaddr_t vaddr);
+	EXTERN int tlb_shootdown(vaddr_t vaddr);
 
 	/**
 	 * @brief Does a memory warmup in the underlying cluster.
