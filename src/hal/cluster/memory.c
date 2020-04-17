@@ -209,6 +209,27 @@ PUBLIC int tlb_inval(int tlb_type, vaddr_t vaddr)
 	return (0);
 }
 
+/*============================================================================*
+ * tlb_dump()                                                                 *
+ *============================================================================*/
+
+/**
+ * The tlb_dump() function dumps the contents of the TLB on the standard
+ * output device.
+ *
+ * @author Pedro Henrique Penna
+ */
+PUBLIC void tlb_dump(void)
+{
+	/* Dump D-TLB */
+	for (unsigned  i = 0; i < TLB_LENGTH; i++)
+		tlbe_dump(TLB_DATA, i);
+
+	/* Dump I-TLB */
+	for (unsigned i = 0; i < TLB_LENGTH; i++)
+		tlbe_dump(TLB_INSTRUCTION, i);
+}
+
 #endif /* !CORE_HAS_TLB_HW */
 
 /*============================================================================*

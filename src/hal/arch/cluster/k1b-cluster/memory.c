@@ -223,6 +223,16 @@ PRIVATE inline const struct tlbe *k1b_tlbe_get(int idx)
  */
 PUBLIC int k1b_cluster_tlb_flush(void)
 {
+	int coreid;
+
+	coreid = k1b_core_get_id();
+
+	for (unsigned i = 0; i < K1B_JTLB_LENGTH; i++)
+	{
+		if (k1b_tlbe_flush(&k1b_tlb[coreid].jtlb[i], i & 1) < 0)
+			return (-EAGAIN);
+	}
+
 	return (0);
 }
 
@@ -231,10 +241,10 @@ PUBLIC int k1b_cluster_tlb_flush(void)
  *============================================================================*/
 
 /**
- * The k1b_tlbe_dump() function dumps information about the TLB entry
- * @p idx on the kernel output device.
+ * The k1b_cluster_tlbe_dump() function dumps information about the TLB
+ * entry @p idx on the kernel output device.
  */
-PUBLIC void k1b_tlbe_dump(int idx)
+PUBLIC void k1b_cluster_tlbe_dump(int idx)
 {
 	const struct tlbe *tlbe;
 	static const char *status[4] = {"i", "p", "m", "a"};

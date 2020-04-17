@@ -27,7 +27,40 @@
 #include <posix/errno.h>
 
 /*============================================================================*
- * k1b_tlb_write()                                                            *
+ * k1b_tlbe_flush()                                                           *
+ *============================================================================*/
+
+/**
+ * The k1b_tlbe_function() flushes the software TLB entry pointed to by
+ * @p tlbe to the hardware TLB. In this entry, the set-associative way
+ * @p way is used.
+ */
+PUBLIC int k1b_tlbe_flush(const struct tlbe *tlbe, int way)
+{
+	__k1_tlb_entry_t utlbe; /**< Underlying tlbe. */
+
+	/* Invalid TLB entry. */
+	if (tlbe == NULL)
+		return (-EINVAL);
+
+	/* Invalid way. */
+	if ((way != 0) && (way != 1))
+		return (-EINVAL);
+
+	kmemcpy(&utlbe, tlbe, K1B_TLBE_SIZE);
+
+	/* Write to hardware TLB. */
+	if (mOS_mem_write_jtlb(utlbe, way) != 0)
+	{
+		kprintf("[hal] failed to write to tlb");
+		return (-EAGAIN);
+	}
+
+	return (0);
+}
+
+/*============================================================================*
+ * k1b_tlbe_write()                                                           *
  *============================================================================*/
 
 /**
@@ -46,8 +79,7 @@ PUBLIC int k1b_tlbe_write(
 		unsigned protection
 )
 {
-	struct tlbe _tlbe;      /**< Temporary tlbe.  */
-	__k1_tlb_entry_t utlbe; /**< Underlying tlbe. */
+	struct tlbe _tlbe;
 
 	/* Invalid TLB entry. */
 	if (tlbe == NULL)
@@ -63,19 +95,18 @@ PUBLIC int k1b_tlbe_write(
 	_tlbe.size = (shift == 12) ? 1 : 0;
 	_tlbe.status = K1B_TLBE_STATUS_AMODIFIED;
 
-	kmemcpy(&utlbe, &_tlbe, K1B_TLBE_SIZE);
-
 	/* Write to hardware TLB. */
-	if (mOS_mem_write_jtlb(utlbe, way) != 0)
-	{
-		kprintf("[hal] failed to write tlb %x", vaddr);
+	if (k1b_tlbe_flush(&_tlbe, way) < 0)
 		return (-EAGAIN);
-	}
 
 	kmemcpy(tlbe, &_tlbe, K1B_TLBE_SIZE);
 
 	return (0);
 }
+
+/*============================================================================*
+ * k1b_tlbe_inval()                                                           *
+ *============================================================================*/
 
 /**
  * The k1b_tlbe_inval() function invalidates the TLB entry that
@@ -90,8 +121,7 @@ PUBLIC int k1b_tlbe_inval(
 	unsigned way
 )
 {
-	struct tlbe _tlbe;      /**< Temporary tlbe.  */
-	__k1_tlb_entry_t utlbe; /**< Underlying tlbe. */
+	struct tlbe _tlbe;
 
 	/* Invalid TLB entry. */
 	if (tlbe == NULL)
@@ -107,19 +137,18 @@ PUBLIC int k1b_tlbe_inval(
 	_tlbe.size = (shift == 12) ? 1 : 0;
 	_tlbe.status = K1B_TLBE_STATUS_INVALID;
 
-	kmemcpy(&utlbe, &_tlbe, K1B_TLBE_SIZE);
-
 	/* Write to hardware TLB. */
-	if (mOS_mem_write_jtlb(utlbe, way) != 0)
-	{
-		kprintf("[hal] failed to invalidate tlb %x", vaddr);
+	if (k1b_tlbe_flush(&_tlbe, way) < 0)
 		return (-EAGAIN);
-	}
 
 	kmemcpy(tlbe, &_tlbe, K1B_TLBE_SIZE);
 
 	return (0);
 }
+
+/*============================================================================*
+ * k1b_tlbe_shootdown()                                                       *
+ *============================================================================*/
 
 /**
  * The k1b_tlbe_shootdown() function invalidates the TLB entry that
@@ -133,40 +162,5 @@ PUBLIC int k1b_tlbe_shootdown(
 	unsigned shift
 )
 {
-	struct tlbe _tlbe;      /* Temporary tlbe.    */
-	uint32_t inval_list;    /* Invalidation list. */
-	__k1_tlb_entry_t utlbe; /* Underlying tlbe.   */
-
-	/* Invalid TLB entry. */
-	if (tlbe == NULL)
-		return (-EINVAL);
-
-	_tlbe.addr_ext = 0;
-	_tlbe.addrspace = 0;
-	_tlbe.cache_policy = 0;
-	_tlbe.frame = 0;
-	_tlbe.global = 0;
-	_tlbe.page = (vaddr >> 12) | (1 << (shift - 12 - 1));
-	_tlbe.protection = 0;
-	_tlbe.size = (shift == 12) ? 1 : 0;
-	_tlbe.status = K1B_TLBE_STATUS_INVALID;
-
-#if defined(__k1bdp__)
-	inval_list = 0xffff;
-#else
-	inval_list = 0xf;
-#endif
-
-	kmemcpy(&utlbe, &_tlbe, K1B_TLBE_SIZE);
-
-	/* Write to hardware TLB. */
-	if (mOS_mem_shootdown_jtlb(utlbe, inval_list) != 0)
-	{
-		kprintf("[hal] failed to shootdown tlb %x", vaddr);
-		return (-EAGAIN);
-	}
-
-	kmemcpy(tlbe, &_tlbe, K1B_TLBE_SIZE);
-
-	return (0);
+	return (k1b_tlbe_inval(tlbe, vaddr, shift, 0));
 }
