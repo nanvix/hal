@@ -121,6 +121,10 @@ PUBLIC int k1b_tlbe_inval(
 	return (0);
 }
 
+/*============================================================================*
+ * k1b_tlbe_shootdown()                                                       *
+ *============================================================================*/
+
 /**
  * The k1b_tlbe_shootdown() function invalidates the TLB entry that
  * encodes the virtual address @p vaddr in all cores.
@@ -133,40 +137,5 @@ PUBLIC int k1b_tlbe_shootdown(
 	unsigned shift
 )
 {
-	struct tlbe _tlbe;      /* Temporary tlbe.    */
-	uint32_t inval_list;    /* Invalidation list. */
-	__k1_tlb_entry_t utlbe; /* Underlying tlbe.   */
-
-	/* Invalid TLB entry. */
-	if (tlbe == NULL)
-		return (-EINVAL);
-
-	_tlbe.addr_ext = 0;
-	_tlbe.addrspace = 0;
-	_tlbe.cache_policy = 0;
-	_tlbe.frame = 0;
-	_tlbe.global = 0;
-	_tlbe.page = (vaddr >> 12) | (1 << (shift - 12 - 1));
-	_tlbe.protection = 0;
-	_tlbe.size = (shift == 12) ? 1 : 0;
-	_tlbe.status = K1B_TLBE_STATUS_INVALID;
-
-#if defined(__k1bdp__)
-	inval_list = 0xffff;
-#else
-	inval_list = 0xf;
-#endif
-
-	kmemcpy(&utlbe, &_tlbe, K1B_TLBE_SIZE);
-
-	/* Write to hardware TLB. */
-	if (mOS_mem_shootdown_jtlb(utlbe, inval_list) != 0)
-	{
-		kprintf("[hal] failed to shootdown tlb %x", vaddr);
-		return (-EAGAIN);
-	}
-
-	kmemcpy(tlbe, &_tlbe, K1B_TLBE_SIZE);
-
-	return (0);
+	return (k1b_tlbe_inval(tlbe, vaddr, shift, 0));
 }
