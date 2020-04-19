@@ -30,17 +30,6 @@
 
 #if (__TARGET_HAS_MAILBOX)
 
-/**
- * @brief ID of master NoC node.
- */
-#define NODES_AMOUNT   2
-#define NODENUM_MASTER PROCESSOR_NODENUM_MASTER
-#ifdef __mppa256__
-	#define NODENUM_SLAVE (PROCESSOR_NODENUM_MASTER + PROCESSOR_NOC_IONODES_NUM)
-#else
-	#define NODENUM_SLAVE (PROCESSOR_NODENUM_MASTER + 1)
-#endif
-
 /*============================================================================*
  * API Tests                                                                  *
  *============================================================================*/
