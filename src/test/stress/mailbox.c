@@ -45,12 +45,13 @@
  /**@{*/
 #define AREAD_CHECKS(_ret)             \
 	  ((_ret == -ETIMEDOUT)            \
+	|| (_ret == -EAGAIN)               \
 	|| (_ret == -EBUSY)                \
 	|| (_ret == -ENOMSG)               \
-	|| (_ret == -EAGAIN)               \
 	|| (_ret == HAL_MAILBOX_MSG_SIZE))
 #define AWRITE_CHECKS(_ret)            \
-	  ((_ret == -EAGAIN)               \
+	  ((_ret == -ETIMEDOUT)            \
+	|| (_ret == -EAGAIN)               \
 	|| (_ret == -EBUSY)                \
 	|| (_ret == HAL_MAILBOX_MSG_SIZE))
 /**@}*/
