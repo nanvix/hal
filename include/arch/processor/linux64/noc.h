@@ -41,12 +41,12 @@
 	/**
 	 * @brief Number of NoC nodes attached to an IO cluster.
 	 */
-	#define LINUX64_PROCESSOR_NOC_IONODES_NUM 2
+	#define LINUX64_PROCESSOR_NOC_IONODES_NUM 4
 
 	/**
 	 * @brief Number of NoC nodes not attached to an compute cluster.
 	 */
-	#define LINUX64_PROCESSOR_NOC_CNODES_NUM 16
+	#define LINUX64_PROCESSOR_NOC_CNODES_NUM 8
 
 	/**
 	 * @brief Logical NoC node ID of master.
