@@ -80,10 +80,9 @@ struct
 	/* TODO check if sums up number of nodes */
 	.configuration = {
 		/* IO clusters. */
-		1, 1,
+		1, 1, 1, 1,
 
 		/* Compute clusters. */
-		1, 1, 1, 1, 1, 1, 1, 1,
 		1, 1, 1, 1, 1, 1, 1, 1
 	}
 };

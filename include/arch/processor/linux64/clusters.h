@@ -41,12 +41,12 @@
 	/**
 	 * @brief Number of IO Clusters.
 	 */
-	#define LINUX64_PROCESSOR_IOCLUSTERS_NUM 2
+	#define LINUX64_PROCESSOR_IOCLUSTERS_NUM 4
 
 	/**
 	 * @brief Number of compute clusters.
 	 */
-	#define LINUX64_PROCESSOR_CCLUSTERS_NUM 16
+	#define LINUX64_PROCESSOR_CCLUSTERS_NUM 8
 
 	/**
 	 * @brief Types of Clusters
@@ -64,7 +64,7 @@
 	/**
 	 * @brief Logical ID of leader cluster.
 	 */
-	#define LINUX64_PROCESSOR_CLUSTERNUM_LEADER 2
+	#define LINUX64_PROCESSOR_CLUSTERNUM_LEADER (LINUX64_PROCESSOR_IOCLUSTERS_NUM + 0)
 
 #ifdef __NANVIX_HAL
 
