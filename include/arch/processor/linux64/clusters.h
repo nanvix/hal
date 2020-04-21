@@ -64,7 +64,7 @@
 	/**
 	 * @brief Logical ID of leader cluster.
 	 */
-	#define LINUX64_PROCESSOR_CLUSTERNUM_LEADER 2
+	#define LINUX64_PROCESSOR_CLUSTERNUM_LEADER (LINUX64_PROCESSOR_IOCLUSTERS_NUM + 0)
 
 #ifdef __NANVIX_HAL
 
