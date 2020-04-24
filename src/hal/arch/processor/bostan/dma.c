@@ -48,6 +48,7 @@
 PUBLIC int bostan_dma_control_create(
 	int interface,
 	int tag,
+	int mode,
 	uint64_t mask,
 	bostan_processor_noc_handler_fn handler
 )
@@ -55,7 +56,7 @@ PUBLIC int bostan_dma_control_create(
 	if (bostan_cnoc_rx_alloc(interface, tag) != 0)
 		return (-EBUSY);
 
-	if (bostan_cnoc_rx_config(interface, tag, BOSTAN_CNOC_BARRIER_MODE, mask, handler) != 0)
+	if (bostan_cnoc_rx_config(interface, tag, mode, mask, handler) != 0)
 	{
 		bostan_cnoc_rx_free(interface, tag);
 		return (-ECONNABORTED);
@@ -83,7 +84,7 @@ PUBLIC int bostan_dma_control_create(
 PUBLIC int bostan_dma_control_signal(
 	int interface,
 	int tag,
-	const int *remotes,
+	const int * remotes,
 	int nremotes,
 	int remote_tag,
 	uint64_t mask

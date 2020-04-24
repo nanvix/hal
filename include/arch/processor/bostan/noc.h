@@ -137,11 +137,12 @@
 	 * @brief Returns the synchronization NoC tag for a target NoC node ID.
 	 *
 	 * @param nodenum Logical ID of the target NoC node.
+	 * @param slot    Slot of tags (0 or 1).
 	 *
 	 * @returns The NoC tag attached to the underlying node ID is
 	 * returned.
 	 */
-	EXTERN int bostan_processor_node_sync_tag(int nodenum);
+	EXTERN int bostan_processor_node_sync_tag(int nodenum, int slot);
 
     /**
 	 * @brief Returns the mailbox NoC tag for a target NoC node ID.
