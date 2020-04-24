@@ -55,6 +55,14 @@
 	/**@}*/
 
 	/**
+	* @name File descriptor offset.
+	*/
+	/**@{*/
+	#define UNIX64_SYNC_CREATE_OFFSET 0                      /**< Initial File Descriptor ID for Creates. */
+	#define UNIX64_SYNC_OPEN_OFFSET   UNIX64_SYNC_CREATE_MAX /**< Initial File Descriptor ID for Opens.   */
+	/**@}*/
+
+	/**
 	 * @brief Total number of sync points.
 	 */
 	#define UNIX64_SYNC_MAX (UNIX64_SYNC_CREATE_MAX + UNIX64_SYNC_OPEN_MAX)
@@ -67,6 +75,11 @@
 	PUBLIC void unix64_sync_shutdown(void);
 
 #endif
+
+	/**
+	 * @todo TODO: rely on dummy platform-independent dummy function.
+	 */
+	EXTERN void unix64_sync_setup(void);
 
 	/**
 	 * @brief Allocates and configures the receiving side of the synchronization point.
@@ -161,67 +174,55 @@
 	/**@}*/
 
 	/**@{*/
-	#define SYNC_ONE_TO_ALL UNIX64_SYNC_ONE_TO_ALL /**< UNIX64_SYNC_ONE_TO_ALL */
-	#define SYNC_ALL_TO_ONE UNIX64_SYNC_ALL_TO_ONE /**< UNIX64_SYNC_ALL_TO_ONE */
-	#define SYNC_CREATE_MAX UNIX64_SYNC_CREATE_MAX /**< UNIX64_SYNC_CREATE_MAX */
-	#define SYNC_OPEN_MAX   UNIX64_SYNC_OPEN_MAX   /**< UNIX64_SYNC_OPEN_MAX   */
+	#define SYNC_ONE_TO_ALL    UNIX64_SYNC_ONE_TO_ALL    /**< UNIX64_SYNC_ONE_TO_ALL    */
+	#define SYNC_ALL_TO_ONE    UNIX64_SYNC_ALL_TO_ONE    /**< UNIX64_SYNC_ALL_TO_ONE    */
+	#define SYNC_CREATE_MAX    UNIX64_SYNC_CREATE_MAX    /**< UNIX64_SYNC_CREATE_MAX    */
+	#define SYNC_CREATE_OFFSET UNIX64_SYNC_CREATE_OFFSET /**< UNIX64_SYNC_CREATE_OFFSET */
+	#define SYNC_OPEN_MAX      UNIX64_SYNC_OPEN_MAX      /**< UNIX64_SYNC_OPEN_MAX      */
+	#define SYNC_OPEN_OFFSET   UNIX64_SYNC_OPEN_OFFSET   /**< UNIX64_SYNC_OPEN_OFFSET   */
 	/**@}*/
 
 	/**
-	 * @todo TODO: rely on dummy platform-independent dummy function.
+	 * @see unix64_sync_setup()
 	 */
-	static inline void sync_setup(void)
-	{
-
-	}
+	#define __sync_setup() \
+		unix64_sync_setup()
 
 	/**
 	 * @see unix64_sync_create()
 	 */
-	static inline int sync_create(const int *nodes, int nnodes, int type)
-	{
-		return (unix64_sync_create(nodes, nnodes, type));
-	}
+	#define __sync_create(nodes, nnodes, type) \
+		unix64_sync_create(nodes, nnodes, type)
 
 	/**
 	 * @see unix64_sync_open()
 	 */
-	static inline int sync_open(const int *nodes, int nnodes, int type)
-	{
-		return (unix64_sync_open(nodes, nnodes, type));
-	}
+	#define __sync_open(nodes, nnodes, type) \
+		unix64_sync_open(nodes, nnodes, type)
 
 	/**
 	 * @see unix64_sync_unlink()
 	 */
-	static inline int sync_unlink(int syncid)
-	{
-		return (unix64_sync_unlink(syncid));
-	}
+	#define __sync_unlink(syncid) \
+		unix64_sync_unlink(syncid)
 
 	/**
 	 * @see unix64_sync_close()
 	 */
-	static inline int sync_close(int syncid)
-	{
-		return (unix64_sync_close(syncid));
-	}
+	#define __sync_close(syncid) \
+		unix64_sync_close(syncid)
 
 	/**
 	 * @see unix64_sync_wait()
 	 */
-	static inline int sync_wait(int syncid)
-	{
-		return (unix64_sync_wait(syncid));
-	}
+	#define __sync_wait(syncid) \
+		unix64_sync_wait(syncid)
 
 	/**
 	 * @see unix64_sync_signal()
 	 */
-	static inline int sync_signal(int syncid)
-	{
-		return (unix64_sync_signal(syncid));
-	}
+	#define __sync_signal(syncid) \
+		unix64_sync_signal(syncid)
 
 /**@}*/
 

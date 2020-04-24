@@ -48,22 +48,25 @@
  */
 #define UNIX64_SYNC_BASENAME "nanvix-sync"
 
+struct hash
+{
+	uint64_t source    :  5;
+	uint64_t type      :  1;
+	uint64_t master    :  5;
+	uint64_t nodeslist : 20;
+	uint64_t unused    : 33;
+};
+
+#define HASH_INITIALIZER ((struct hash){-1, 0, -1, 0, 0})
+
 /**
  * @brief Synchronization point.
  */
-struct sync
+PRIVATE struct queue
 {
-	/*
-	 * XXX: Don't Touch! This Must Come First!
-	 */
-	struct resource resource;               /**< Generic resource information.   */
-
-	int type;                               /**< Type.                           */
-	mqd_t fd;                               /**< Underlying file descriptor.     */
-	int ncount;                             /**< Number of remotes in broadcast. */
-	char pathname[UNIX64_SYNC_NAME_LENGTH]; /**< Name of underlying mqueue.      */
-	int nodes[PROCESSOR_NOC_NODES_NUM];     /**< IDs of attached nodes.          */
-};
+	mqd_t fd;                               /**< Underlying file descriptor. */
+	char pathname[UNIX64_SYNC_NAME_LENGTH]; /**< Name of underlying mqueue.  */
+} mqueues[PROCESSOR_NOC_NODES_NUM];
 
 /**
  * @brief Table of synchronization points.
@@ -73,18 +76,39 @@ PRIVATE struct
 	/**
 	 * @brief Receiver Synchronization Points
 	 */
-	struct sync rxs[UNIX64_SYNC_CREATE_MAX];
+	struct rx
+	{
+		/*
+		 * XXX: Don't Touch! This Must Come First!
+		 */
+		struct resource resource; /**< Generic resource information.   */
+
+		int nbarriers;            /**< Number of barriers completed.   */
+		struct hash hash;         /**< IDs of attached nodes.          */
+		struct hash barrier;      /**< IDs of attached nodes.          */
+	} rxs[UNIX64_SYNC_CREATE_MAX];
 
 	/**
 	 * @brief Sender Synchronization Points
 	 */
-	struct sync txs[UNIX64_SYNC_OPEN_MAX];
+	struct tx
+	{
+		/*
+		 * XXX: Don't Touch! This Must Come First!
+		 */
+		struct resource resource;               /**< Generic resource information.        */
+
+		int nnodes;                             /**< Number of remotes in broadcast.      */
+		int nodes[PROCESSOR_NOC_NODES_NUM];     /**< IDs of attached nodes.               */
+		int sent[PROCESSOR_NOC_NODES_NUM];      /**< Signals when a signal has been sent. */
+		struct hash hash;                       /**< IDs of attached nodes.               */
+	} txs[UNIX64_SYNC_OPEN_MAX];
 } synctab = {
-	.rxs[0 ... UNIX64_SYNC_CREATE_MAX - 1] = {
+	.rxs[0 ... (UNIX64_SYNC_CREATE_MAX - 1)] = {
 		.resource = {0},
 	},
 
-	.txs[0 ... UNIX64_SYNC_OPEN_MAX - 1] = {
+	.txs[0 ... (UNIX64_SYNC_OPEN_MAX - 1)] = {
 		.resource = {0},
 	},
 };
@@ -97,8 +121,8 @@ PRIVATE struct
 	const struct resource_pool rx;
 	const struct resource_pool tx;
 } pool = {
-	.rx = {synctab.rxs, UNIX64_SYNC_CREATE_MAX, sizeof(struct sync)},
-	.tx = {synctab.txs, UNIX64_SYNC_OPEN_MAX,   sizeof(struct sync)},
+	.rx = {synctab.rxs, UNIX64_SYNC_CREATE_MAX, sizeof(struct rx)},
+	.tx = {synctab.txs, UNIX64_SYNC_OPEN_MAX,   sizeof(struct tx)},
 };
 
 /**
@@ -111,7 +135,7 @@ PRIVATE pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
  */
 PRIVATE struct mq_attr mq_attr = {
 	.mq_maxmsg = PROCESSOR_NOC_NODES_NUM,
-	.mq_msgsize = sizeof(int)
+	.mq_msgsize = sizeof(struct hash)
 };
 
 /*============================================================================*
@@ -153,196 +177,54 @@ PRIVATE uint64_t unix64_sync_build_nodeslist(const int *nodes, int nnodes)
 }
 
 /*============================================================================*
- * unix64_sync_rx_is_valid()                                                  *
+ * do_unix64_sync_search_rx()                                                 *
  *============================================================================*/
 
-/**
- * @brief Asserts if a receiver synchronization point is valid.
- *
- * @param syncid ID of the target synchronization point.
- *
- * @returns One if the target synchronization point is valid, and false
- * otherwise.
- *
- * @note This function is non-blocking.
- * @note This function is thread-safe.
- * @note This function is reentrant.
- */
-PRIVATE int unix64_sync_rx_is_valid(int syncid)
+PRIVATE int do_unix64_sync_search_rx(struct hash * hash)
 {
-	return ((syncid >= 0) && (syncid < UNIX64_SYNC_CREATE_MAX));
-}
-
-/*============================================================================*
- * unix64_sync_tx_is_valid()                                                  *
- *============================================================================*/
-
-/**
- * @brief Asserts if a sender synchronization point is valid.
- *
- * @param syncid ID of the target synchronization point.
- *
- * @returns One if the target synchronization point is valid, and false
- * otherwise.
- *
- * @note This function is non-blocking.
- * @note This function is thread-safe.
- * @note This function is reentrant.
- */
-PRIVATE int unix64_sync_tx_is_valid(int syncid)
-{
-	return ((syncid >= 0) && (syncid < UNIX64_SYNC_OPEN_MAX));
-}
-
-/*============================================================================*
- * unix64_sync_is_remote()                                                    *
- *============================================================================*/
-
-/**
- * @brief Sync remote point validation.
- *
- * @param nodenum Logic ID of local node.
- * @param nodes   IDs of target NoC nodes.
- * @param nnodes  Number of target NoC nodes.
- *
- * @return Zero if remote point is valid and non zero otherwise.
- */
-PRIVATE int unix64_sync_is_remote(int nodenum, const int *nodes, int nnodes)
-{
-	int found = 0;
-
-	/* Underlying NoC node SHOULD NOT be here. */
-	if (nodenum == nodes[0])
-		return (0);
-
-	/* Underlying NoC node SHOULD be here. */
-	for (int i = 1; i < nnodes; i++)
+	for (unsigned i = 0; i < UNIX64_SYNC_CREATE_MAX; ++i)
 	{
-		if (nodenum == nodes[i])
-			found++;
+		if (!resource_is_used(&synctab.rxs[i].resource))
+			continue;
+
+		if (synctab.rxs[i].hash.type != hash->type)
+			continue;
+
+		if (synctab.rxs[i].hash.nodeslist != hash->nodeslist)
+			continue;
+
+		return (i);
 	}
 
-	if (found != 1)
-		return (0);
-
-	return (1);
+	return (-EINVAL);
 }
 
 /*============================================================================*
- * unix64_sync_is_local()                                                     *
+ * do_unix64_sync_search_tx()                                                 *
  *============================================================================*/
 
-/**
- * @brief Sync local point validation.
- *
- * @param nodenum Logic ID of local node.
- * @param nodes   IDs of target NoC nodes.
- * @param nnodes  Number of target NoC nodes.
- *
- * @return Non zero if local point is valid and zero otherwise.
- */
-PRIVATE int unix64_sync_is_local(int nodenum, const int *nodes, int nnodes)
+PRIVATE int do_unix64_sync_search_tx(struct hash * hash)
 {
-	/* Underlying NoC node SHOULD be here. */
-	if (nodenum != nodes[0])
-		return (0);
-
-	/* Underlying NoC node SHOULD be here. */
-	for (int i = 1; i < nnodes; i++)
+	for (unsigned i = 0; i < UNIX64_SYNC_OPEN_MAX; ++i)
 	{
-		if (nodenum == nodes[i])
-			return (0);
+		if (!resource_is_used(&synctab.txs[i].resource))
+			continue;
+
+		if (synctab.txs[i].hash.type != hash->type)
+			continue;
+
+		if (synctab.txs[i].hash.nodeslist != hash->nodeslist)
+			continue;
+
+		return (i);
 	}
 
-	return (1);
+	return (-EINVAL);
 }
 
 /*============================================================================*
  * unix64_sync_create()                                                       *
  *============================================================================*/
-
-/**
- * @see unix64_sync_create().
- */
-PRIVATE int do_unix64_sync_create(const int *nodes, int nnodes, int type)
-{
-	int fd;             /* NoC connector.         */
-	int nodenum;        /* NoC node number.       */
-	int syncid;         /* Synchronization point. */
-	char *pathname;     /* NoC connector name.    */
-	uint64_t nodeslist; /* Target nodes list.     */
-
-	nodenum = processor_node_get_num();
-
-	unix64_sync_lock();
-
-		/* Allocate a synchronization point. */
-		if ((syncid = resource_alloc(&pool.rx)) < 0)
-		{
-			unix64_sync_unlock();
-			return (-EAGAIN);
-		}
-
-		nodeslist = unix64_sync_build_nodeslist(nodes, nnodes);
-		pathname = synctab.rxs[syncid].pathname;
-
-		/* Broadcast. */
-		if (type == UNIX64_SYNC_ONE_TO_ALL)
-		{
-			if (!unix64_sync_is_remote(nodenum, nodes, nnodes))
-			{
-				resource_free(&pool.rx, syncid);
-				unix64_sync_unlock();
-				return (-EINVAL);
-			}
-
-			/* Build pathname for NoC connector. */
-			sprintf(pathname,
-				"/%s-%d-%lx-broadcast",
-				UNIX64_SYNC_BASENAME,
-				nodes[0],
-				nodeslist
-			);
-		}
-
-		else
-		{
-			if (!unix64_sync_is_local(nodenum, nodes, nnodes))
-			{
-				resource_free(&pool.rx, syncid);
-				unix64_sync_unlock();
-				return (-EINVAL);
-			}
-
-			/* Build pathname for NoC connector. */
-			sprintf(pathname,
-				"/%s-%d-%lx-gather",
-				UNIX64_SYNC_BASENAME,
-				nodes[0],
-				nodeslist
-			);
-		}
-
-		/* Open NoC connector. */
-		if ((fd = mq_open(pathname, O_RDONLY | O_CREAT, S_IRUSR | S_IWUSR, &mq_attr)) == -1)
-		{
-			resource_free(&pool.rx, syncid);
-			unix64_sync_unlock();
-			return (-EAGAIN);
-		}
-
-		/* Initialize synchronization point. */
-		synctab.rxs[syncid].fd = fd;
-		synctab.rxs[syncid].ncount = nnodes;
-		kmemcpy(synctab.rxs[syncid].nodes, nodes, nnodes*sizeof(int));
-		synctab.rxs[syncid].type = type;
-		resource_set_rdonly(&synctab.rxs[syncid].resource);
-		resource_set_notbusy(&synctab.rxs[syncid].resource);
-
-	unix64_sync_unlock();
-
-	return (syncid);
-}
 
 /**
  * @todo TODO: provide a long description for this function.
@@ -351,21 +233,41 @@ PRIVATE int do_unix64_sync_create(const int *nodes, int nnodes, int type)
  * @note This function is thread-safe.
  * @note This function is reentrant.
  */
-PUBLIC int unix64_sync_create(const int *nodes, int nnodes, int type)
+PUBLIC int unix64_sync_create(const int * nodes, int nnodes, int type)
 {
-	/*  Invalid nodes list. */
-	if (nodes == NULL)
-		return (-EINVAL);
+	int syncid;       /* Synchronization point. */
+	struct hash hash; /* Synch point Hash.      */
 
-	/* Bad nodes list. */
-	if (!WITHIN(nnodes, 2, PROCESSOR_NOC_NODES_NUM + 1))
-		return (-EINVAL);
+	unix64_sync_lock();
 
-	/* Bad sync type. */
-	if ((type != UNIX64_SYNC_ONE_TO_ALL) && (type != UNIX64_SYNC_ALL_TO_ONE))
-		return (-EINVAL);
+		hash.source    = processor_node_get_num();
+		hash.type      = type;
+		hash.master    = nodes[0];
+		hash.nodeslist = unix64_sync_build_nodeslist(nodes, nnodes);
 
-	return (do_unix64_sync_create(nodes, nnodes, type));
+		/* Searchs existing syncid. */
+		if (do_unix64_sync_search_rx(&hash) >= 0)
+			goto error;
+
+		/* Allocate a synchronization point. */
+		if ((syncid = resource_alloc(&pool.rx)) < 0)
+			goto error;
+
+		/* Initialize synchronization point. */
+		synctab.rxs[syncid].hash      = hash;
+		synctab.rxs[syncid].barrier   = HASH_INITIALIZER;
+		synctab.rxs[syncid].nbarriers = 0;
+
+		resource_set_rdonly(&synctab.rxs[syncid].resource);
+		resource_set_notbusy(&synctab.rxs[syncid].resource);
+
+	unix64_sync_unlock();
+
+	return (syncid + UNIX64_SYNC_CREATE_OFFSET);
+
+error:
+	unix64_sync_unlock();
+	return (-EAGAIN);
 }
 
 /*============================================================================*
@@ -381,195 +283,47 @@ PUBLIC int unix64_sync_create(const int *nodes, int nnodes, int type)
  *
  * @todo Check for Invalid Remote
  */
-PRIVATE int do_unix64_sync_open(const int *nodes, int nnodes, int type)
+PUBLIC int unix64_sync_open(const int * nodes, int nnodes, int type)
 {
-	int fd;             /* NoC connector.         */
-	int nodenum;        /* NoC node number.       */
-	int syncid;         /* Synchronization point. */
-	char *pathname;     /* NoC connector name.    */
-	uint64_t nodeslist; /* Target nodes list.     */
-
-	nodenum = processor_node_get_num();
+	int syncid;       /* Synchronization point. */
+	struct hash hash; /* Synch point hash.      */
 
 	unix64_sync_lock();
 
+		hash.source    = processor_node_get_num();
+		hash.type      = type;
+		hash.master    = nodes[0];
+		hash.nodeslist = unix64_sync_build_nodeslist(nodes, nnodes);
+
+		/* Searchs existing syncid. */
+		if (do_unix64_sync_search_tx(&hash) >= 0)
+			goto error;
+
 		/* Allocate a synchronization point. */
 		if ((syncid = resource_alloc(&pool.tx)) < 0)
-			goto error0;
-
-		nodeslist = unix64_sync_build_nodeslist(nodes, nnodes);
-		pathname = synctab.txs[syncid].pathname;
-
-		/* Broadcast. */
-		if (type == UNIX64_SYNC_ONE_TO_ALL)
-		{
-			if (!unix64_sync_is_local(nodenum, nodes, nnodes))
-			{
-				resource_free(&pool.tx, syncid);
-				unix64_sync_unlock();
-				return (-EINVAL);
-			}
-
-			/* Build pathname for NoC connector. */
-			sprintf(pathname,
-				"/%s-%d-%lx-broadcast",
-				UNIX64_SYNC_BASENAME,
-				nodes[0],
-				nodeslist
-			);
-		}
-
-		else
-		{
-			if (!unix64_sync_is_remote(nodenum, nodes, nnodes))
-			{
-				resource_free(&pool.tx, syncid);
-				unix64_sync_unlock();
-				return (-EINVAL);
-			}
-
-			/* Build pathname for NoC connector. */
-			sprintf(pathname,
-				"/%s-%d-%lx-gather",
-				UNIX64_SYNC_BASENAME,
-				nodes[0],
-				nodeslist
-			);
-		}
-
-		/* Open NoC connector. */
-		if ((fd = mq_open(pathname, O_WRONLY | O_CREAT, S_IRUSR | S_IWUSR, &mq_attr)) == -1)
-			goto error1;
+			goto error;
 
 		/* Initialize synchronization point. */
-		synctab.txs[syncid].fd = fd;
-		synctab.txs[syncid].ncount = nnodes;
-		kmemcpy(synctab.txs[syncid].nodes, nodes, nnodes*sizeof(int));
-		synctab.txs[syncid].type = type;
+		synctab.txs[syncid].hash   = hash;
+		synctab.txs[syncid].nnodes = nnodes;
+		kmemcpy(synctab.txs[syncid].nodes, nodes, nnodes * sizeof(int));
+		kmemset(synctab.txs[syncid].sent, 0, nnodes * sizeof(int));
+
 		resource_set_wronly(&synctab.txs[syncid].resource);
 		resource_set_notbusy(&synctab.txs[syncid].resource);
 
 	unix64_sync_unlock();
 
-	return (syncid);
+	return (syncid + UNIX64_SYNC_OPEN_OFFSET);
 
-error1:
-	resource_free(&pool.tx, syncid);
-error0:
+error:
 	unix64_sync_unlock();
 	return (-EAGAIN);
 }
 
-/**
- * @see do_unix64_sync_open().
- */
-PUBLIC int unix64_sync_open(const int *nodes, int nnodes, int type)
-{
-	/*  Invalid nodes list. */
-	if (nodes == NULL)
-		return (-EINVAL);
-
-	/* Bad nodes list. */
-	if (!WITHIN(nnodes, 2, PROCESSOR_NOC_NODES_NUM + 1))
-		return (-EINVAL);
-
-	/* Bad sync type. */
-	if ((type != UNIX64_SYNC_ONE_TO_ALL) && (type != UNIX64_SYNC_ALL_TO_ONE))
-		return (-EINVAL);
-
-	return (do_unix64_sync_open(nodes, nnodes, type));
-}
-
 /*============================================================================*
- * unix64_sync_wait()                                                         *
+ * unix64_sync_unlink()                                                       *
  *============================================================================*/
-
-/**
- * @brief Waits for a signal.
- *
- * @param syncid ID of the target sync.
- * @param sig    Place where the received signal should be stored.
- *
- * @returns Upon successful completion, zero is returned. Upon
- * failure, a negative error code is returned instead.
- */
-PRIVATE int do_unix64_sync_wait(int syncid, int *sig)
-{
-	if (mq_receive(synctab.rxs[syncid].fd, (char *)sig, sizeof(int), NULL) == -1)
-		return (-EAGAIN);
-
-	return (0);
-}
-
-/**
- * @brief Waits for a broadcast signal.
- *
- * @param syncid ID of the target sync.
- *
- * @returns Upon successful completion, zero is returned. Upon
- * failure, a negative error code is returned instead.
- */
-PRIVATE inline int do_unix64_sync_wait_broadcast(int syncid)
-{
-	int sig;
-	int ret = 0;
-
-	if ((ret = do_unix64_sync_wait(syncid, &sig)) == 0)
-	{
-		if (sig != synctab.rxs[syncid].nodes[0])
-			ret = -EAGAIN;
-	}
-
-	return (ret);
-}
-
-
-/**
- * @brief Gathers broadcast signals.
- *
- * @param syncid ID of the target sync.
- *
- * @returns Upon successful completion, zero is returned. Upon
- * failure, a negative error code is returned instead.
- */
-PRIVATE int do_unix64_sync_wait_gather(int syncid)
-{
-	int nsignals = synctab.rxs[syncid].ncount - 1;
-	int signals[PROCESSOR_NOC_NODES_NUM];
-
-	kmemset(signals, 0, nsignals*sizeof(int));
-
-	/* Wait. */
-	do
-	{
-		int err;
-		int sig;
-
-		if ((err = do_unix64_sync_wait(syncid, &sig)) < 0)
-			return (err);
-
-		/* Check if node is in the list. */
-		err = -EINVAL;
-		for (int i = 1; i < synctab.rxs[syncid].ncount; i++)
-		{
-			/* Not this node. */
-			if (synctab.rxs[syncid].nodes[i] != sig)
-				continue;
-
-			if (signals[i - 1] == 0)
-			{
-				signals[i - 1] = 1;
-				nsignals--;
-				err = 0;
-				break;
-			}
-		}
-
-		KASSERT(err == 0);
-	} while (nsignals > 0);
-
-	return (0);
-}
 
 /**
  * @todo TODO: provide a detailed description for this function.
@@ -578,21 +332,20 @@ PRIVATE int do_unix64_sync_wait_gather(int syncid)
  * @note This function is thread-safe.
  * @note This function is reentrant.
  */
-PUBLIC int unix64_sync_wait(int syncid)
+PUBLIC int unix64_sync_unlink(int syncid)
 {
-	int ret;
-
-	/* Invalid sync. */
-	if (!unix64_sync_rx_is_valid(syncid))
-		goto error0;
+	syncid -= UNIX64_SYNC_CREATE_OFFSET;
 
 again:
-
 	unix64_sync_lock();
 
 		/* Bad sync. */
 		if (!resource_is_used(&synctab.rxs[syncid].resource))
-			goto error1;
+			goto error;
+
+		/* Bad sync. */
+		if (resource_is_writable(&synctab.rxs[syncid].resource))
+			goto error;
 
 		/* Busy sync. */
 		if (resource_is_busy(&synctab.rxs[syncid].resource))
@@ -601,126 +354,17 @@ again:
 			goto again;
 		}
 
-		/* Set sync as busy. */
-		resource_set_busy(&synctab.rxs[syncid].resource);
+		synctab.rxs[syncid].hash    = HASH_INITIALIZER;
+		synctab.rxs[syncid].barrier = HASH_INITIALIZER;
 
-	/*
-	 * Release lock, since we may sleep below.
-	 */
+		resource_free(&pool.rx, syncid);
+
 	unix64_sync_unlock();
 
-	/* Broadcast. */
-	ret = (synctab.rxs[syncid].type == UNIX64_SYNC_ONE_TO_ALL) ?
-		do_unix64_sync_wait_broadcast(syncid) :
-		do_unix64_sync_wait_gather(syncid);
+	return (0);
 
-	unix64_sync_lock();
-		resource_set_notbusy(&synctab.rxs[syncid].resource);
+error:
 	unix64_sync_unlock();
-
-	return ((ret == -1) ? -EAGAIN : 0);
-
-error1:
-	unix64_sync_unlock();
-error0:
-	return (-EBADF);
-}
-
-/*============================================================================*
- * unix64_sync_signal()                                                       *
- *============================================================================*/
-
-/**
- * @brief Sends a signal.
- *
- * @param syncid ID of the target sync.
- * @param sig    Signal.
- *
- * @returns Upon successful completion, zero is returned. Upon
- * failure, a negative error code is returned instead.
- */
-PRIVATE inline int do_unix64_sync_signal(int syncid, int sig)
-{
-	return (mq_send(synctab.txs[syncid].fd, (char *) &sig, sizeof(int), 1));
-}
-
-/**
- * @brief Broadcasts a signal.
- *
- * @param syncid ID of the target sync.
- * @param sig    Signal.
- *
- * @returns Upon successful completion, zero is returned. Upon
- * failure, a negative error code is returned instead.
- */
-PRIVATE inline int do_unix64_sync_signal_broadcast(int syncid, int sig)
-{
-	int ret = 0;
-
-	for (int i = 1; i < synctab.txs[syncid].ncount; i++)
-	{
-		if ((ret = do_unix64_sync_signal(syncid, sig)) == -1)
-			break;
-	}
-
-	return (ret);
-}
-
-/**
- * @todo TODO: provide a detailed description for this function.
- *
- * @note This function is blocking.
- * @note This function is thread-safe.
- * @note This function is reentrant.
- */
-PUBLIC int unix64_sync_signal(int syncid)
-{
-	int ret;
-	int nodenum;
-
-	/* Invalid sync. */
-	if (!unix64_sync_tx_is_valid(syncid))
-		goto error0;
-
-again:
-
-	unix64_sync_lock();
-
-		/* Bad sync. */
-		if (!resource_is_used(&synctab.txs[syncid].resource))
-			goto error1;
-
-		/* Busy sync. */
-		if (resource_is_busy(&synctab.txs[syncid].resource))
-		{
-			unix64_sync_unlock();
-			goto again;
-		}
-
-		/* Set sync as busy. */
-		resource_set_busy(&synctab.txs[syncid].resource);
-
-	/*
-	 * Release lock, since we may sleep below.
-	 */
-	unix64_sync_unlock();
-
-	nodenum = processor_node_get_num();
-
-	/* Broadcast. */
-	ret = (synctab.txs[syncid].type == UNIX64_SYNC_ONE_TO_ALL) ?
-		do_unix64_sync_signal_broadcast(syncid, nodenum) :
-		do_unix64_sync_signal(syncid, nodenum);
-
-	unix64_sync_lock();
-		resource_set_notbusy(&synctab.txs[syncid].resource);
-	unix64_sync_unlock();
-
-	return ((ret == -1) ? -EAGAIN : 0);
-
-error1:
-	unix64_sync_unlock();
-error0:
 	return (-EBADF);
 }
 
@@ -737,21 +381,18 @@ error0:
  */
 PUBLIC int unix64_sync_close(int syncid)
 {
-	/* Invalid sync. */
-	if (!unix64_sync_tx_is_valid(syncid))
-		goto error0;
+	syncid -= UNIX64_SYNC_OPEN_OFFSET;
 
 again:
-
 	unix64_sync_lock();
 
 		/* Bad sync. */
 		if (!resource_is_used(&synctab.txs[syncid].resource))
-			goto error1;
+			goto error;
 
 		/* Bad sync. */
 		if (!resource_is_writable(&synctab.txs[syncid].resource))
-			goto error1;
+			goto error;
 
 		/* Busy sync. */
 		if (resource_is_busy(&synctab.txs[syncid].resource))
@@ -760,7 +401,9 @@ again:
 			goto again;
 		}
 
-		KASSERT(mq_close(synctab.txs[syncid].fd) == 0);
+		/* Initialize synchronization point. */
+		synctab.txs[syncid].hash   = HASH_INITIALIZER;
+		synctab.txs[syncid].nnodes = 0;
 
 		resource_free(&pool.tx, syncid);
 
@@ -768,14 +411,122 @@ again:
 
 	return (0);
 
-error1:
+error:
 	unix64_sync_unlock();
-error0:
 	return (-EBADF);
 }
 
 /*============================================================================*
- * unix64_sync_unlink()                                                       *
+ * do_unix64_sync_ignore_signal()                                               *
+ *============================================================================*/
+
+PRIVATE void do_unix64_sync_ignore_signal(char * message, struct hash * hash)
+{
+	int source         = hash->source;
+	int type           = hash->type;
+	int master         = hash->master;
+	uint64_t nodeslist = hash->nodeslist;
+
+	kprintf("[sync] %d (source:%d, type:%d, master:%d, nodeslist:%ld)",
+		message,
+		source,
+		type,
+		master,
+		nodeslist
+	);
+}
+
+/*============================================================================*
+ * unix64_sync_wait()                                                         *
+ *============================================================================*/
+
+/**
+ * @brief Sync module lock.
+ */
+PRIVATE pthread_mutex_t lock_wait = PTHREAD_MUTEX_INITIALIZER;
+
+/*============================================================================*
+ * unix64_sync_barrier_is_complete()                                          *
+ *============================================================================*/
+
+PRIVATE int unix64_sync_barrier_is_complete(struct rx * rx)
+{
+	int received;
+	int expected;
+
+	received = rx->barrier.nodeslist;
+
+	/* Does master notifies it? */
+	if (rx->hash.type == UNIX64_SYNC_ONE_TO_ALL)
+		expected = (rx->hash.nodeslist & (1 << rx->hash.master));
+	
+	/* Does slaves notifies it? */
+	else
+		expected = (rx->hash.nodeslist & ~(1 << rx->hash.master));
+	
+	return (received == expected);
+}
+
+/**
+ * @brief Waits for a signal.
+ *
+ * @param syncid ID of the target sync.
+ * @param sig    Place where the received signal should be stored.
+ *
+ * @returns Upon successful completion, zero is returned. Upon
+ * failure, a negative error code is returned instead.
+ */
+PRIVATE int do_unix64_sync_wait(struct rx * local_rx)
+{
+	int syncid;       /* Synchronization point. */
+	struct hash hash; /* Hash buffer.           */
+
+	spinlock_lock(&lock_wait);
+
+		unix64_sync_lock();
+			/* Did the last message release me? */
+			if (local_rx->nbarriers)
+				goto release;
+		unix64_sync_unlock();
+
+		if (mq_receive(mqueues[local_rx->hash.source].fd, (char *) &hash, sizeof(struct hash), NULL) == -1)
+		{
+			spinlock_unlock(&lock_wait);
+			return (-EAGAIN);
+		}
+
+		unix64_sync_lock();
+
+			if ((syncid = do_unix64_sync_search_rx(&hash)) < 0)
+			{
+				do_unix64_sync_ignore_signal("Drop signal", &hash);
+				goto release;
+			}
+
+			if (synctab.rxs[syncid].barrier.nodeslist & (1 << hash.source))
+			{
+				do_unix64_sync_ignore_signal("Double signal", &hash);
+				goto release;
+			}
+
+			synctab.rxs[syncid].barrier.nodeslist |= (1 << hash.source);
+
+			if (unix64_sync_barrier_is_complete(&synctab.rxs[syncid]))
+			{
+				synctab.rxs[syncid].barrier.nodeslist = 0;
+				synctab.rxs[syncid].nbarriers++;
+			}
+
+release:
+		unix64_sync_unlock();
+
+	spinlock_unlock(&lock_wait);
+
+	return (0);
+}
+
+/*============================================================================*
+ * unix64_sync_wait()                                                         *
  *============================================================================*/
 
 /**
@@ -785,23 +536,22 @@ error0:
  * @note This function is thread-safe.
  * @note This function is reentrant.
  */
-PUBLIC int unix64_sync_unlink(int syncid)
+PUBLIC int unix64_sync_wait(int syncid)
 {
-	/* Invalid sync. */
-	if (!unix64_sync_rx_is_valid(syncid))
-		goto error0;
+	int ret;
+
+	ret     = (0);
+	syncid -= UNIX64_SYNC_CREATE_OFFSET;
 
 again:
-
 	unix64_sync_lock();
 
 		/* Bad sync. */
 		if (!resource_is_used(&synctab.rxs[syncid].resource))
-			goto error1;
-
-		/* Bad sync. */
-		if (resource_is_writable(&synctab.rxs[syncid].resource))
-			goto error1;
+		{
+			unix64_sync_unlock();
+			return (-EBADF);
+		}
 
 		/* Busy sync. */
 		if (resource_is_busy(&synctab.rxs[syncid].resource))
@@ -810,32 +560,232 @@ again:
 			goto again;
 		}
 
-		/*
-		 * Note that we intentionally assert for unlinking only when
-		 * it is a gather sync. That is because in this case we have
-		 * multiple peers that may call this.
-		 */
-		if (synctab.rxs[syncid].type == UNIX64_SYNC_ONE_TO_ALL)
+		if (synctab.rxs[syncid].nbarriers)
 		{
-			KASSERT(mq_close(synctab.rxs[syncid].fd) == 0);
-			mq_unlink(synctab.rxs[syncid].pathname);
-		}
-		else
-		{
-			KASSERT(mq_close(synctab.rxs[syncid].fd) == 0);
-			KASSERT(mq_unlink(synctab.rxs[syncid].pathname) == 0);
+			synctab.rxs[syncid].nbarriers--;
+			goto exit;
 		}
 
-		resource_free(&pool.rx, syncid);
+		/* Set sync as busy. */
+		resource_set_busy(&synctab.rxs[syncid].resource);
 
+	/*
+	 * Release lock, since we may sleep below.
+	 */
 	unix64_sync_unlock();
 
-	return (0);
+	while (true)
+	{
+		unix64_sync_lock();
+			if (synctab.rxs[syncid].nbarriers)
+			{
+				synctab.rxs[syncid].nbarriers--;
+				goto release;
+			}
+		unix64_sync_unlock();
 
-error1:
+		if ((ret = do_unix64_sync_wait(&synctab.rxs[syncid])) != 0)
+			break;
+	}
+
+	unix64_sync_lock();
+release:
+		resource_set_notbusy(&synctab.rxs[syncid].resource);
+exit:
 	unix64_sync_unlock();
-error0:
-	return (-EBADF);
+
+	return ((ret != 0) ? (-EAGAIN) : (0));
+}
+
+/*============================================================================*
+ * unix64_sync_signal()                                                       *
+ *============================================================================*/
+
+/**
+ * @brief Broadcasts a signal.
+ *
+ * @param i      Initial node ID.
+ * @param nnodes Number of nodes.
+ * @param nodes  Node IDs.
+ * @param hash   Message.
+ *
+ * @returns Upon successful completion, zero is returned. Upon
+ * failure, a negative error code is returned instead.
+ */
+PRIVATE inline int do_unix64_sync_signal(
+	int i,
+	int nnodes,
+	const int * nodes,
+	int * sent,
+	const struct hash * hash
+)
+{
+	int ret;        /* Return value.    */
+	int ntries = 5; /* Number of tries. */
+
+	for (; i < nnodes; ++i)
+	{
+		if (sent[i])
+			continue;
+
+		do
+		{
+			struct timespec tm;
+
+			if (ntries-- == 0)
+			{
+				ret = (-ETIMEDOUT);
+				goto error;
+			}
+
+			clock_gettime(CLOCK_REALTIME, &tm);
+			tm.tv_sec += 1;
+
+			if (mq_timedsend(mqueues[nodes[i]].fd, (char *) hash, sizeof(struct hash), 1, &tm) == -1)
+			{
+				if (errno == EAGAIN)
+					continue;
+
+				ret = (-EAGAIN);
+				goto error;
+			}
+
+			sent[i] = 1;
+			break;
+
+		} while (1);
+	}
+
+	ret = 0;
+
+error:
+	return (ret);
+}
+
+/**
+ * @todo TODO: provide a detailed description for this function.
+ *
+ * @note This function is blocking.
+ * @note This function is thread-safe.
+ * @note This function is reentrant.
+ */
+PUBLIC int unix64_sync_signal(int syncid)
+{
+	int ret; /* Return value. */
+
+	syncid -= UNIX64_SYNC_OPEN_OFFSET;
+
+again:
+	unix64_sync_lock();
+
+		/* Bad sync. */
+		if (!resource_is_used(&synctab.txs[syncid].resource))
+		{
+			unix64_sync_unlock();
+			return (-EBADF);
+		}
+
+		/* Busy sync. */
+		if (resource_is_busy(&synctab.txs[syncid].resource))
+		{
+			unix64_sync_unlock();
+			goto again;
+		}
+
+		/* Set sync as busy. */
+		resource_set_busy(&synctab.txs[syncid].resource);
+
+	/*
+	 * Release lock, since we may sleep below.
+	 */
+	unix64_sync_unlock();
+
+	/* Broadcast. */
+	if (synctab.txs[syncid].hash.type == UNIX64_SYNC_ONE_TO_ALL)
+	{
+		ret = do_unix64_sync_signal(
+			1,
+			synctab.txs[syncid].nnodes,
+			synctab.txs[syncid].nodes,
+			synctab.txs[syncid].sent,
+			&synctab.txs[syncid].hash
+		);
+
+		if (ret == 0)
+		{
+			for (int i = 1; i < synctab.txs[syncid].nnodes; ++i)
+				synctab.txs[syncid].sent[i] = 0;
+		}
+	}
+
+	/* Gather. */
+	else
+	{
+		ret = do_unix64_sync_signal(
+			0,
+			1,
+			synctab.txs[syncid].nodes,
+			synctab.txs[syncid].sent,
+			&synctab.txs[syncid].hash
+		);
+
+		if (ret == 0)
+			synctab.txs[syncid].sent[0] = 0;
+	}
+
+	unix64_sync_lock();
+		resource_set_notbusy(&synctab.txs[syncid].resource);
+	unix64_sync_unlock();
+
+	return ((ret != 0) ? (-EAGAIN) : (0));
+}
+
+/*============================================================================*
+ * unix64_sync_setup()                                                        *
+ *============================================================================*/
+
+/**
+ * @todo TODO: rely on dummy platform-independent dummy function.
+ */
+PUBLIC void unix64_sync_setup(void)
+{
+	int local;
+
+	local = processor_node_get_num();
+
+	/* Build pathname for NoC connector. */
+	sprintf(mqueues[local].pathname, "/%s-%d", UNIX64_SYNC_BASENAME, local);
+
+	/* Open NoC connector. */
+	KASSERT(
+		(mqueues[local].fd = 
+			mq_open(mqueues[local].pathname,
+				(O_RDONLY | O_CREAT),
+				(S_IRUSR | S_IWUSR),
+				&mq_attr
+			)
+		) != -1
+	);
+
+	for (int i = 0; i < PROCESSOR_NOC_NODES_NUM; ++i)
+	{
+		if (i == local)
+			continue;
+
+		sprintf(mqueues[i].pathname, "/%s-%d", UNIX64_SYNC_BASENAME, i);
+
+		/* Open NoC connector. */
+		KASSERT(
+			(mqueues[i].fd = 
+				mq_open(mqueues[i].pathname,
+					(O_WRONLY | O_CREAT | O_NONBLOCK),
+					(S_IRUSR | S_IWUSR),
+					&mq_attr
+				)
+			) != -1
+		);
+	}
+
 }
 
 /*============================================================================*
@@ -847,5 +797,18 @@ error0:
  */
 PUBLIC void unix64_sync_shutdown(void)
 {
-	noop();
+	int local;
+
+	local = processor_node_get_num();
+
+	KASSERT(mq_close(mqueues[local].fd) == 0);
+	KASSERT(mq_unlink(mqueues[local].pathname) == 0);
+
+	for (int i = 0; i < PROCESSOR_NOC_NODES_NUM; ++i)
+	{
+		if (i == local)
+			continue;
+
+		KASSERT(mq_close(mqueues[i].fd) == 0);
+	}
 }
