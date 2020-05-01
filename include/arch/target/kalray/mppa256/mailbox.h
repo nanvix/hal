@@ -55,7 +55,7 @@
 	 * @name Sizes (in bytes) of a mailbox message.
 	 */
 	/**@{*/
-	#define MPPA256_MAILBOX_MSG_SIZE 120 /**< Data size. */
+	#define MPPA256_MAILBOX_MSG_SIZE 128 /**< Data size. */
 	/**@}*/
 
 	/**

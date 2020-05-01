@@ -59,7 +59,7 @@
 	 * @name Sizes (in bytes) of a mailbox message.
 	 */
 	/**@{*/
-	#define UNIX64_MAILBOX_MSG_SIZE 120 /**< Data size. */
+	#define UNIX64_MAILBOX_MSG_SIZE 128 /**< Data size. */
 	/**@}*/
 
 #ifdef __NANVIX_HAL
