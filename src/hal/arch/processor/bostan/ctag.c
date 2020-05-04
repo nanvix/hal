@@ -635,6 +635,28 @@ PUBLIC int bostan_cnoc_rx_config(
 }
 
 /*============================================================================*
+ * bostan_cnoc_rx_read()                                                      *
+ *============================================================================*/
+
+/**
+ * @brief Wait events on C-NoC receiver tag.
+ *
+ * @param interface Number of the DMA channel.
+ * @param tag       Number of receiver tag.
+ *
+ * @return Receiver buffer value.
+ */
+PUBLIC int bostan_cnoc_rx_read(int interface, int tag)
+{
+	if (!bostan_cnoc_rx_is_valid(interface, tag))
+		return (-EINVAL);
+
+	if (!bostan_cnoc_rx_is_used(interface, tag))
+		return (-EINVAL);
+
+	return (mppa_cnoc[interface]->message_ram[tag].dword);
+}
+/*============================================================================*
  * bostan_cnoc_tx_alloc()                                                     *
  *============================================================================*/
 

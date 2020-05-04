@@ -59,6 +59,22 @@
 	/**@}*/
 
 	/**
+	* @name File descriptor offset.
+	*/
+	/**@{*/
+	#define MPPA256_SYNC_CREATE_OFFSET 0                       /**< Initial File Descriptor ID for Creates. */
+	#define MPPA256_SYNC_OPEN_OFFSET   MPPA256_SYNC_CREATE_MAX /**< Initial File Descriptor ID for Opens.   */
+	/**@}*/
+
+	/**
+	 * @todo TODO: rely on dummy platform-independent dummy function.
+	 *
+	 * @todo Maybe this function can be used to initialize the intercluster
+	 * fence resources.
+	 */
+	EXTERN void mppa256_sync_setup(void);
+
+	/**
 	 * @brief Allocates and configures the receiving side of the synchronization point.
 	 *
 	 * @param nodenums Logic IDs of target NoC nodes.
@@ -147,67 +163,52 @@
 	 * @see BOSTAN_SYNC_OPEN_MAX
 	 */
 	/**@{*/
-	#define SYNC_CREATE_MAX MPPA256_SYNC_CREATE_MAX
-	#define SYNC_OPEN_MAX   MPPA256_SYNC_OPEN_MAX
+	#define SYNC_CREATE_MAX    MPPA256_SYNC_CREATE_MAX    /**< MPPA256_SYNC_CREATE_MAX    */
+	#define SYNC_CREATE_OFFSET MPPA256_SYNC_CREATE_OFFSET /**< MPPA256_SYNC_CREATE_OFFSET */
+	#define SYNC_OPEN_MAX      MPPA256_SYNC_OPEN_MAX      /**< MPPA256_SYNC_OPEN_MAX      */
+	#define SYNC_OPEN_OFFSET   MPPA256_SYNC_OPEN_OFFSET   /**< MPPA256_SYNC_OPEN_OFFSET   */
 	/**@}*/
 
 	/**
-	 * @todo TODO: rely on dummy platform-independent dummy function.
-	 *
-	 * @todo Maybe this function can be used to initialize the intercluster
-	 * fence resources.
+	 * @see mppa256_sync_setup()
 	 */
-	static inline void sync_setup(void)
-	{
-
-	}
+	#define __sync_setup() \
+		mppa256_sync_setup()
 
 	/**
 	 * @see mppa256_sync_create()
 	 */
-	static inline int sync_create(const int *nodenums, int nnodes, int type)
-	{
-		return mppa256_sync_create(nodenums, nnodes, type);
-	}
+	#define __sync_create(nodenums, nnodes, type) \
+		mppa256_sync_create(nodenums, nnodes, type)
 
 	/**
 	 * @see mppa256_sync_open()
 	 */
-	static inline int sync_open(const int *nodenums, int nnodes, int type)
-	{
-		return mppa256_sync_open(nodenums, nnodes, type);
-	}
+	#define __sync_open(nodenums, nnodes, type) \
+		mppa256_sync_open(nodenums, nnodes, type)
 
 	/**
 	 * @see mppa256_sync_unlink()
 	 */
-	static inline int sync_unlink(int syncid)
-	{
-		return mppa256_sync_unlink(syncid);
-	}
+	#define __sync_unlink(syncid) \
+		mppa256_sync_unlink(syncid)
 
 	/**
 	 * @see mppa256_sync_close()
 	 */
-	static inline int sync_close(int syncid)
-	{
-		return mppa256_sync_close(syncid);
-	}
+	#define __sync_close(syncid) \
+		mppa256_sync_close(syncid)
 
 	/**
 	 * @see mppa256_sync_wait()
 	 */
-	static inline int sync_wait(int syncid)
-	{
-		return mppa256_sync_wait(syncid);
-	}
+	#define __sync_wait(syncid) \
+		mppa256_sync_wait(syncid)
 
 	/**
 	 * @see mppa256_sync_signal()
 	 */
-	static inline int sync_signal(int syncid)
-	{
-		return mppa256_sync_signal(syncid);
-	}
+	#define __sync_signal(syncid) \
+		mppa256_sync_signal(syncid)
 
 #endif /* TARGET_KALRAY_MPPA256_SYNC_H_ */

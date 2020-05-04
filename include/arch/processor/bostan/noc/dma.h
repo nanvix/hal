@@ -65,6 +65,7 @@
 	 *
 	 * @param interface Number of the DMA channel.
 	 * @param tag       Number of the control receiver buffer.
+	 * @param mode      C-NoC receiver mode.
 	 * @param mask      Initial value of the buffer.
 	 * @param handler   Interrupt handler to receive the signal (if NULL use events).
 	 *
@@ -73,6 +74,7 @@
 	EXTERN int bostan_dma_control_create(
 		int interface,
 		int tag,
+		int mode,
 		uint64_t mask,
 		bostan_processor_noc_handler_fn handler
 	);
@@ -82,6 +84,7 @@
 	 *
 	 * @param interface Number of the DMA channel.
 	 * @param tag       Number of the control receiver buffer.
+	 * @param mode      C-NoC receiver mode.
 	 * @param mask      Initial value of the buffer.
 	 * @param handler   Interrupt handler to receive the signal (if NULL use events).
 	 *
@@ -90,6 +93,7 @@
 	static inline int bostan_dma_control_config(
 		int interface,
 		int tag,
+		int mode,
 		uint64_t mask,
 		bostan_processor_noc_handler_fn handler
 	)
@@ -97,7 +101,7 @@
 		return bostan_cnoc_rx_config(
 			interface,
 			tag,
-			BOSTAN_CNOC_BARRIER_MODE,
+			mode,
 			mask,
 			handler
 		);
@@ -172,9 +176,9 @@
 	EXTERN int bostan_dma_control_signal(
 		int interface,
 		int tag,
-		const int *remotes,
+		const int * remotes,
 		int nremotes,
-		int remote_tag,
+		const int * remotes_tags,
 		uint64_t mask
 	);
 

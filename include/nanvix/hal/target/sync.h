@@ -52,8 +52,14 @@
 		#ifndef SYNC_CREATE_MAX
 		#error "SYNC_CREATE_MAX not defined"
 		#endif
+		#ifndef SYNC_OPEN_OFFSET
+		#error "SYNC_OPEN_OFFSET not defined"
+		#endif
 		#ifndef SYNC_OPEN_MAX
 		#error "SYNC_OPEN_MAX not defined"
+		#endif
+		#ifndef SYNC_OPEN_OFFSET
+		#error "SYNC_OPEN_OFFSET not defined"
 		#endif
 
 		/* Functions */
@@ -86,10 +92,12 @@
 /* Dummy Constants */
 #if (!__TARGET_HAS_SYNC)
 
-	#define SYNC_ONE_TO_ALL 0
-	#define SYNC_ALL_TO_ONE 1
-	#define SYNC_CREATE_MAX 1
-	#define SYNC_OPEN_MAX   1
+	#define SYNC_ONE_TO_ALL    0
+	#define SYNC_ALL_TO_ONE    1
+	#define SYNC_CREATE_MAX    1
+	#define SYNC_CREATE_OFFSET 0
+	#define SYNC_OPEN_MAX      1
+	#define SYNC_OPEN_OFFSET   SYNC_CREATE_MAX
 
 #endif /* !__TARGET_HAS_SYNC */
 
@@ -112,14 +120,7 @@
 	/**
 	 * @brief Initializes the sync interface.
 	 */
-#if (__TARGET_HAS_SYNC)
 	EXTERN void sync_setup(void);
-#else
-	static inline void sync_setup(void)
-	{
-
-	}
-#endif
 
 	/**
 	 * @brief Allocates and configures the receiving side of the synchronization point.
@@ -130,18 +131,7 @@
 	 *
 	 * @return The tag of underlying resource ID.
 	 */
-#if (__TARGET_HAS_SYNC)
 	EXTERN int sync_create(const int *nodenums, int nnodes, int type);
-#else
-	static inline int sync_create(const int *nodenums, int nnodes, int type)
-	{
-		UNUSED(nodenums);
-		UNUSED(nnodes);
-		UNUSED(type);
-
-		return (-ENOSYS);
-	}
-#endif
 
 	/**
 	 * @brief Allocates and configures the sending side of the synchronization point.
@@ -152,19 +142,7 @@
 	 *
 	 * @return The tag of underlying resource ID.
 	 */
-#if (__TARGET_HAS_SYNC)
 	EXTERN int sync_open(const int *nodenums, int nnodes, int type);
-#else
-	static inline int sync_open(const int *nodenums, int nnodes, int type)
-	{
-		UNUSED(nodenums);
-		UNUSED(nnodes);
-		UNUSED(type);
-
-		return (-ENOSYS);
-	}
-#endif
-
 	/**
 	 * @brief Releases and cleans receiver buffer.
 	 *
@@ -172,16 +150,7 @@
 	 *
 	 * @return Zero if free the resource and non zero otherwise.
 	 */
-#if (__TARGET_HAS_SYNC)
 	EXTERN int sync_unlink(int syncid);
-#else
-	static inline int sync_unlink(int syncid)
-	{
-		UNUSED(syncid);
-
-		return (-ENOSYS);
-	}
-#endif
 
 	/**
 	 * @brief Releases the sender resources on a specific DMA channel.
@@ -190,16 +159,7 @@
 	 *
 	 * @return Zero if free the resource and non zero otherwise.
 	 */
-#if (__TARGET_HAS_SYNC)
 	EXTERN int sync_close(int syncid);
-#else
-	static inline int sync_close(int syncid)
-	{
-		UNUSED(syncid);
-
-		return (-ENOSYS);
-	}
-#endif
 
 	/**
 	 * @brief Wait signal on a specific synchronization point.
@@ -208,16 +168,7 @@
 	 *
 	 * @return Zero if wait signal correctly and non zero otherwise.
 	 */
-#if (__TARGET_HAS_SYNC)
 	EXTERN int sync_wait(int syncid);
-#else
-	static inline int sync_wait(int syncid)
-	{
-		UNUSED(syncid);
-
-		return (-ENOSYS);
-	}
-#endif
 
 	/**
 	 * @brief Send signal on a specific synchronization point.
@@ -229,16 +180,7 @@
 	 *
 	 * @return Zero if send signal correctly and non zero otherwise.
 	 */
-#if (__TARGET_HAS_SYNC)
 	EXTERN int sync_signal(int syncid);
-#else
-	static inline int sync_signal(int syncid)
-	{
-		UNUSED(syncid);
-
-		return (-ENOSYS);
-	}
-#endif
 
 /**@}*/
 

@@ -87,9 +87,9 @@
 	 */
 	/**@{*/
 	#define BOSTAN_MAILBOX_CNOC_TX_BASE 0 /**< C-NoC Transfer Tag reserved for Mailbox. */
-	#define BOSTAN_SYNC_CNOC_TX_BASE    1 /**< C-NoC Transfer Tag reserved for Sync.    */
-	#define BOSTAN_PORTAL_CNOC_TX_BASE  2 /**< C-NoC Transfer Tag reserved for Portal.  */
-//! #define BOSTAN_PORTAL_CNOC_TX_BASE  3 /**< C-NoC Transfer Tag reserved for Portal.  */
+	#define BOSTAN_PORTAL_CNOC_TX_BASE  1 /**< C-NoC Transfer Tag reserved for Portal.  */
+	#define BOSTAN_SYNC_CNOC_TX_BASE    2 /**< C-NoC Transfer Tag reserved for Sync.    */
+//! #define BOSTAN_PORTAL_CNOC_TX_BASE  3 /**< C-NoC Transfer Tag reserved for Sync.    */
 	/**@}*/
 
 	/**
@@ -163,6 +163,16 @@
 		uint64_t mask,
 		bostan_processor_noc_handler_fn handler
 	);
+
+	/**
+	 * @brief Reads C-NoC buffer.
+	 *
+	 * @param interface Number of the DMA channel.
+	 * @param tag       Number of receiver buffer.
+	 *
+	 * @return Receiver buffer value.
+	 */
+	EXTERN uint64_t bostan_cnoc_rx_read(int interface, int tag);
 
 /*============================================================================*
  * C-Noc Transfer Interface                                                   *

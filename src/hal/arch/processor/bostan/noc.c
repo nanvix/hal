@@ -196,15 +196,16 @@ PUBLIC int bostan_processor_node_portal_tag(int nodenum)
  * @brief Returns the synchronization NoC tag for a target NoC node ID.
  *
  * @param nodenum Logic ID of the target NoC node.
+ * @param slot    Slot of tags (0 or 1).
  *
  * @note This function is non-blocking.
  * @note This function is thread-safe.
  */
-PUBLIC int bostan_processor_node_sync_tag(int nodenum)
+PUBLIC int bostan_processor_node_sync_tag(int nodenum, int slot)
 {
 	/* Invalid nodenum. */
 	if (!WITHIN(nodenum, 0, PROCESSOR_NOC_NODES_NUM))
 		return (-EINVAL);
 
-	return (BOSTAN_SYNC_RX_OFF + nodenum);
+	return (BOSTAN_SYNC_RX_OFF + nodenum + (slot * PROCESSOR_NOC_NODES_NUM));
 }
