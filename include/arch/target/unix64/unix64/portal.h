@@ -56,9 +56,13 @@
 	/**@}*/
 
 	/**
-	 * @brief Maximum size of transfer data.
+	 * @name Sizes (in bytes) of a portal message.
 	 */
-	#define UNIX64_PORTAL_MAX_SIZE (8*KB)
+	/**@{*/
+	#define UNIX64_PORTAL_RESERVED_SIZE (3 * 4)                                                 /**< Header size (3 * sizeof(int)). */
+	#define UNIX64_PORTAL_DATA_SIZE     (8*KB)                                                  /**< Maximum data size.             */
+	#define UNIX64_PORTAL_MAX_SIZE      (UNIX64_PORTAL_RESERVED_SIZE + UNIX64_PORTAL_DATA_SIZE) /**< Maximum size.                  */
+	/**@}*/
 
 #ifdef __NANVIX_HAL
 
@@ -182,11 +186,13 @@
 	 * @name Provided Constants
 	 */
 	/**@{*/
-	#define HAL_PORTAL_CREATE_MAX    UNIX64_PORTAL_CREATE_MAX    /**< UNIX64_PORTAL_CREATE_MAX    */
-	#define HAL_PORTAL_CREATE_OFFSET UNIX64_PORTAL_CREATE_OFFSET /**< UNIX64_PORTAL_CREATE_OFFSET */
-	#define HAL_PORTAL_OPEN_MAX      UNIX64_PORTAL_OPEN_MAX      /**< UNIX64_PORTAL_OPEN_MAX      */
-	#define HAL_PORTAL_OPEN_OFFSET   UNIX64_PORTAL_OPEN_OFFSET   /**< UNIX64_PORTAL_OPEN_OFFSET   */
-	#define HAL_PORTAL_MAX_SIZE      UNIX64_PORTAL_MAX_SIZE      /**< UNIX64_PORTAL_MAX_SIZE      */
+	#define HAL_PORTAL_CREATE_MAX    UNIX64_PORTAL_CREATE_MAX    /**< @see UNIX64_PORTAL_CREATE_MAX    */
+	#define HAL_PORTAL_CREATE_OFFSET UNIX64_PORTAL_CREATE_OFFSET /**< @see UNIX64_PORTAL_CREATE_OFFSET */
+	#define HAL_PORTAL_OPEN_MAX      UNIX64_PORTAL_OPEN_MAX      /**< @see UNIX64_PORTAL_OPEN_MAX      */
+	#define HAL_PORTAL_OPEN_OFFSET   UNIX64_PORTAL_OPEN_OFFSET   /**< @see UNIX64_PORTAL_OPEN_OFFSET   */
+	#define HAL_PORTAL_RESERVED_SIZE UNIX64_PORTAL_RESERVED_SIZE /**< @see UNIX64_PORTAL_RESERVED_SIZE */
+	#define HAL_PORTAL_DATA_SIZE     UNIX64_PORTAL_DATA_SIZE     /**< @see UNIX64_PORTAL_DATA_SIZE     */
+	#define HAL_PORTAL_MAX_SIZE      UNIX64_PORTAL_MAX_SIZE      /**< @see UNIX64_PORTAL_MAX_SIZE      */
 	/**@}*/
 
 	/**

@@ -55,6 +55,12 @@
 		#ifndef HAL_PORTAL_OPEN_OFFSET
 		#error "HAL_PORTAL_OPEN_OFFSET not defined"
 		#endif
+		#ifndef HAL_PORTAL_RESERVED_SIZE
+		#error "HAL_PORTAL_RESERVED_SIZE not defined"
+		#endif
+		#ifndef HAL_PORTAL_DATA_SIZE
+		#error "HAL_PORTAL_DATA_SIZE not defined"
+		#endif
 		#ifndef HAL_PORTAL_MAX_SIZE
 		#error "HAL_PORTAL_MAX_SIZE not defined"
 		#endif
