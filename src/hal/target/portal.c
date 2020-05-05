@@ -255,7 +255,7 @@ PUBLIC ssize_t portal_awrite(int portalid, const void *buffer, uint64_t size)
 		return (-EINVAL);
 
 	/* Bad size. */
-	if (size == 0)
+	if (size == 0 || size > HAL_PORTAL_MAX_SIZE)
 		return (-EINVAL);
 
 	return (__portal_awrite(portalid, buffer, size));
@@ -289,7 +289,7 @@ PUBLIC ssize_t portal_aread(int portalid, void *buffer, uint64_t size)
 		return (-EINVAL);
 
 	/* Bad size. */
-	if (size == 0)
+	if (size == 0 || size > HAL_PORTAL_MAX_SIZE)
 		return (-EINVAL);
 
 	return (__portal_aread(portalid, buffer, size));
