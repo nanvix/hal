@@ -43,9 +43,6 @@
 	#if (__TARGET_HAS_MAILBOX)
 
 		/* Constants */
-		#ifndef HAL_MAILBOX_MSG_SIZE
-		#error "HAL_MAILBOX_MSG_SIZE not defined"
-		#endif
 		#ifndef HAL_MAILBOX_CREATE_OFFSET
 		#error "HAL_MAILBOX_CREATE_OFFSET not defined"
 		#endif
@@ -57,6 +54,15 @@
 		#endif
 		#ifndef HAL_MAILBOX_OPEN_MAX
 		#error "HAL_MAILBOX_OPEN_MAX not defined"
+		#endif
+		#ifndef HAL_MAILBOX_MSG_SIZE
+		#error "HAL_MAILBOX_MSG_SIZE not defined"
+		#endif
+		#ifndef HAL_MAILBOX_RESERVED_SIZE
+		#error "HAL_MAILBOX_RESERVED_SIZE not defined"
+		#endif
+		#ifndef HAL_MAILBOX_DATA_SIZE
+		#error "HAL_PORTAL_DATA_SIZE not defined"
 		#endif
 
 		/* Functions */

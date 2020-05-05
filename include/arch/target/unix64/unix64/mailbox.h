@@ -59,7 +59,9 @@
 	 * @name Sizes (in bytes) of a mailbox message.
 	 */
 	/**@{*/
-	#define UNIX64_MAILBOX_MSG_SIZE 128 /**< Data size. */
+	#define UNIX64_MAILBOX_RESERVED_SIZE (3 * 4)                                                   /**< Header size (3 * sizeof(int)). */
+	#define UNIX64_MAILBOX_DATA_SIZE     (120)                                                     /**< Data size.                     */
+	#define UNIX64_MAILBOX_MSG_SIZE      (UNIX64_MAILBOX_RESERVED_SIZE + UNIX64_MAILBOX_DATA_SIZE) /**< Message size.                  */
 	/**@}*/
 
 #ifdef __NANVIX_HAL
@@ -165,11 +167,13 @@
 	 * @name Provided Constants
 	 */
 	/**@{*/
-	#define HAL_MAILBOX_MSG_SIZE      UNIX64_MAILBOX_MSG_SIZE      /**< UNIX64_MAILBOX_MSG_SIZE      */
-	#define HAL_MAILBOX_CREATE_OFFSET UNIX64_MAILBOX_CREATE_OFFSET /**< UNIX64_MAILBOX_CREATE_OFFSET */
-	#define HAL_MAILBOX_OPEN_OFFSET   UNIX64_MAILBOX_OPEN_OFFSET   /**< UNIX64_MAILBOX_OPEN_OFFSET   */
-	#define HAL_MAILBOX_CREATE_MAX    UNIX64_MAILBOX_CREATE_MAX    /**< UNIX64_MAILBOX_CREATE_MAX    */
-	#define HAL_MAILBOX_OPEN_MAX      UNIX64_MAILBOX_OPEN_MAX      /**< UNIX64_MAILBOX_OPEN_MAX      */
+	#define HAL_MAILBOX_CREATE_OFFSET UNIX64_MAILBOX_CREATE_OFFSET /**< @see UNIX64_MAILBOX_CREATE_OFFSET */
+	#define HAL_MAILBOX_OPEN_OFFSET   UNIX64_MAILBOX_OPEN_OFFSET   /**< @see UNIX64_MAILBOX_OPEN_OFFSET   */
+	#define HAL_MAILBOX_CREATE_MAX    UNIX64_MAILBOX_CREATE_MAX    /**< @see UNIX64_MAILBOX_CREATE_MAX    */
+	#define HAL_MAILBOX_OPEN_MAX      UNIX64_MAILBOX_OPEN_MAX      /**< @see UNIX64_MAILBOX_OPEN_MAX      */
+	#define HAL_MAILBOX_RESERVED_SIZE UNIX64_MAILBOX_RESERVED_SIZE /**< @see UNIX64_MAILBOX_RESERVED_SIZE */
+	#define HAL_MAILBOX_DATA_SIZE     UNIX64_MAILBOX_DATA_SIZE     /**< @see UNIX64_MAILBOX_DATA_SIZE     */
+	#define HAL_MAILBOX_MSG_SIZE      UNIX64_MAILBOX_MSG_SIZE      /**< @see UNIX64_MAILBOX_MSG_SIZE      */
 	/**@}*/
 
 #ifdef __NANVIX_HAL
