@@ -26,7 +26,7 @@
 #define TARGET_KALRAY_MPPA256_PORTAL_H_
 
 /*============================================================================*
- *                            Mailbox Interface                               *
+ *                            Portal Interface                                *
  *============================================================================*/
 
 	/* Processor API. */
@@ -52,9 +52,13 @@
 	/**@}*/
 
 	/**
-	 * @brief Maximum size of transfer data.
+	 * @name Sizes (in bytes) of a portal message.
 	 */
-	#define MPPA256_PORTAL_MAX_SIZE (8*KB)
+	/**@{*/
+	#define MPPA256_PORTAL_RESERVED_SIZE (3 * 4)                                                   /**< Header size (3 * sizeof(int)). */
+	#define MPPA256_PORTAL_DATA_SIZE     (8*KB)                                                    /**< Maximum data size.             */
+	#define MPPA256_PORTAL_MAX_SIZE      (MPPA256_PORTAL_RESERVED_SIZE + MPPA256_PORTAL_DATA_SIZE) /**< Maximum size.                  */
+	/**@}*/
 
 	/**
 	 * @brief Creates a portal.
@@ -166,11 +170,13 @@
 	 * @name Provided Constants
 	 */
 	/**@{*/
-	#define HAL_PORTAL_CREATE_MAX    MPPA256_PORTAL_CREATE_MAX    /**< @see MPPA256_PORTAL_CREATE_MAX */
-	#define HAL_PORTAL_CREATE_OFFSET MPPA256_PORTAL_CREATE_OFFSET /**< MPPA256_PORTAL_CREATE_OFFSET   */
-	#define HAL_PORTAL_OPEN_MAX      MPPA256_PORTAL_OPEN_MAX      /**< @see MPPA256_PORTAL_OPEN_MAX   */
-	#define HAL_PORTAL_OPEN_OFFSET   MPPA256_PORTAL_OPEN_OFFSET   /**< MPPA256_PORTAL_OPEN_OFFSET     */
-	#define HAL_PORTAL_MAX_SIZE      MPPA256_PORTAL_MAX_SIZE      /**< @see MPPA256_PORTAL_MAX_SIZE   */
+	#define HAL_PORTAL_CREATE_MAX    MPPA256_PORTAL_CREATE_MAX    /**< @see MPPA256_PORTAL_CREATE_MAX    */
+	#define HAL_PORTAL_CREATE_OFFSET MPPA256_PORTAL_CREATE_OFFSET /**< @see MPPA256_PORTAL_CREATE_OFFSET */
+	#define HAL_PORTAL_OPEN_MAX      MPPA256_PORTAL_OPEN_MAX      /**< @see MPPA256_PORTAL_OPEN_MAX      */
+	#define HAL_PORTAL_OPEN_OFFSET   MPPA256_PORTAL_OPEN_OFFSET   /**< @see MPPA256_PORTAL_OPEN_OFFSET   */
+	#define HAL_PORTAL_RESERVED_SIZE MPPA256_PORTAL_RESERVED_SIZE /**< @see MPPA256_PORTAL_RESERVED_SIZE */
+	#define HAL_PORTAL_DATA_SIZE     MPPA256_PORTAL_DATA_SIZE     /**< @see MPPA256_PORTAL_DATA_SIZE     */
+	#define HAL_PORTAL_MAX_SIZE      MPPA256_PORTAL_MAX_SIZE      /**< @see MPPA256_PORTAL_MAX_SIZE      */
 	/**@}*/
 
 	/**

@@ -43,23 +43,23 @@
 	#if (__TARGET_HAS_SYNC)
 
 		/* Constants */
-		#ifndef SYNC_ONE_TO_ALL
-		#error "SYNC_ONE_TO_ALL not defined"
-		#endif
-		#ifndef SYNC_ALL_TO_ONE
-		#error "SYNC_ALL_TO_ONE not defined"
-		#endif
 		#ifndef SYNC_CREATE_MAX
 		#error "SYNC_CREATE_MAX not defined"
 		#endif
-		#ifndef SYNC_OPEN_OFFSET
-		#error "SYNC_OPEN_OFFSET not defined"
+		#ifndef SYNC_CREATE_OFFSET
+		#error "SYNC_CREATE_OFFSET not defined"
 		#endif
 		#ifndef SYNC_OPEN_MAX
 		#error "SYNC_OPEN_MAX not defined"
 		#endif
 		#ifndef SYNC_OPEN_OFFSET
 		#error "SYNC_OPEN_OFFSET not defined"
+		#endif
+		#ifndef SYNC_ONE_TO_ALL
+		#error "SYNC_ONE_TO_ALL not defined"
+		#endif
+		#ifndef SYNC_ALL_TO_ONE
+		#error "SYNC_ALL_TO_ONE not defined"
 		#endif
 
 		/* Functions */
