@@ -49,7 +49,7 @@ export LD := $(TOOLCHAIN_DIR)/riscv32-elf-ld
 export AR := $(TOOLCHAIN_DIR)/riscv32-elf-ar
 
 # Timeout Variable
-export TIMEOUT ?= 10
+export TIMEOUT ?= 30
 
 # Compiler Options
 export CFLAGS += -march=rv32imac -mabi=ilp32 -mcmodel=medany
