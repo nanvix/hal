@@ -153,7 +153,16 @@ PUBLIC void core_idle(void)
  */
 PUBLIC void core_sleep(void)
 {
-	int coreid = core_get_id();
+	int state;
+	int coreid;
+
+	coreid = core_get_id();
+
+	/* Stores the current state. (RUNNING or ZOMBIE). */
+	spinlock_lock(&cores[coreid].lock);
+	dcache_invalidate();
+		state = cores[coreid].state;
+	spinlock_unlock(&cores[coreid].lock);
 
 	while (true)
 	{
@@ -163,8 +172,9 @@ PUBLIC void core_sleep(void)
 			/* Awaken. */
 			if (cores[coreid].wakeups > 0)
 			{
+				/* Restores the previous state. */
+				cores[coreid].state = state;
 				cores[coreid].wakeups--;
-				cores[coreid].state = CORE_RUNNING;
 
 				dcache_invalidate();
 				spinlock_unlock(&cores[coreid].lock);
@@ -262,31 +272,38 @@ again:
 	spinlock_lock(&cores[coreid].lock);
 	dcache_invalidate();
 
-	/* Wait for reset. */
-	if (cores[coreid].state == CORE_RESETTING)
-	{
-		spinlock_unlock(&cores[coreid].lock);
-
-		if (ntrials++ < CORE_START_NTRIALS)
+		/* Wait for resetting state. */
+		if (cores[coreid].state == CORE_ZOMBIE)
+		{
+			spinlock_unlock(&cores[coreid].lock);
 			goto again;
+		}
 
-		kprintf("[hal][cluster] failed to start core");
-		goto error;
-	}
+		/* Wait for reset. */
+		if (cores[coreid].state == CORE_RESETTING)
+		{
+			spinlock_unlock(&cores[coreid].lock);
 
-	/* Wakeup target core. */
-	if (cores[coreid].state == CORE_IDLE)
-	{
-		cores[coreid].state = CORE_RUNNING;
-		cores[coreid].start = start;
-		cores[coreid].wakeups = 0;
-		dcache_invalidate();
+			if (ntrials++ < CORE_START_NTRIALS)
+				goto again;
 
-		event_notify(coreid);
+			kprintf("[hal][cluster] failed to start core");
+			goto error;
+		}
 
-		spinlock_unlock(&cores[coreid].lock);
-		return (0);
-	}
+		/* Wakeup target core. */
+		if (cores[coreid].state == CORE_IDLE)
+		{
+			cores[coreid].state = CORE_RUNNING;
+			cores[coreid].start = start;
+			cores[coreid].wakeups = 0;
+			dcache_invalidate();
+
+			event_notify(coreid);
+
+			spinlock_unlock(&cores[coreid].lock);
+			return (0);
+		}
 
 	spinlock_unlock(&cores[coreid].lock);
 
@@ -329,6 +346,45 @@ PUBLIC void core_run(void)
 }
 
 /*----------------------------------------------------------------------------*
+ * core_release()                                                             *
+ *----------------------------------------------------------------------------*/
+
+/**
+ * The core_reset() function puts the underlying core in a pre-resetting state
+ * to signal that this core will reset soon. This zombie state ensures that
+ * function core_start() knows when a core is close to reset.
+ *
+ * @return Upon successful completion, this function return zero.
+ * Upon failure, a negative error code is returned instead.
+ *
+ * @see core_reset()
+ * @see core_start()
+ *
+ * @author João Vicente Souto 
+ */
+PUBLIC int core_release(void)
+{
+	int coreid = core_get_id();
+
+	/*
+	 * The Master core is not allowed to reset, thus
+	 * this function will return an error code. If
+	 * invoked by a slave, no value will be returned.
+	 */
+	if (coreid == COREID_MASTER)
+		return (-EINVAL);
+
+	spinlock_lock(&cores[coreid].lock);
+
+		cores[coreid].state = CORE_ZOMBIE;
+
+	dcache_invalidate();
+	spinlock_unlock(&cores[coreid].lock);
+
+	return (0);
+}
+
+/*----------------------------------------------------------------------------*
  * core_reset()                                                               *
  *----------------------------------------------------------------------------*/
 
@@ -357,6 +413,10 @@ PUBLIC int core_reset(void)
 		return (-EINVAL);
 
 	spinlock_lock(&cores[coreid].lock);
+	dcache_invalidate();
+
+		/* Ensures that core has signaled that it will reset. */
+		KASSERT(cores[coreid].state == CORE_ZOMBIE);
 
 		cores[coreid].state = CORE_RESETTING;
 		dcache_invalidate();
@@ -399,3 +459,4 @@ PUBLIC NORETURN void core_shutdown(void)
 
 	core_poweroff();
 }
+
