@@ -204,6 +204,7 @@ PRIVATE void slave(void)
 
 	fence_join(&slave_fence);
 
+	KASSERT(core_release() == 0);
 	core_reset();
 }
 
@@ -234,7 +235,10 @@ PRIVATE void slave_reset(void)
 
 	/* If first invocation, lets reset. */
 	if (slave_nstarts == 1)
+	{
+		KASSERT(core_release() == 0);
 		core_reset();
+	}
 
 #if (TEST_CORES_VERBOSE)
 	kprintf("[test][cluster][cores] core %d stopping", core_get_id());
@@ -342,6 +346,7 @@ PRIVATE void leader(void)
 
 	fence_join(&leader_fence);
 
+	KASSERT(core_release() == 0);
 	core_reset();
 }
 
@@ -664,6 +669,7 @@ PRIVATE void test_cluster_core_fault_start_inval(void)
  */
 PRIVATE void test_cluster_core_fault_reset_master(void)
 {
+	KASSERT(core_release() == -EINVAL);
 	KASSERT(core_reset() == -EINVAL);
 }
 
@@ -863,6 +869,7 @@ PRIVATE void consumer(void)
 
 	fence_join(&slave_fence);
 
+	KASSERT(core_release() == 0);
 	core_reset();
 }
 

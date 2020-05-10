@@ -113,11 +113,12 @@
 	 * @name States of a Core
 	 */
 	/**@{*/
-	#define CORE_IDLE      0 /**< Idle        */
-	#define CORE_SLEEPING  1 /**< Sleeping    */
-	#define CORE_RUNNING   2 /**< Running     */
-	#define CORE_RESETTING 3 /**< Resetting   */
-	#define CORE_OFFLINE   4 /**< Powered Off */
+	#define CORE_IDLE      0 /**< Idle          */
+	#define CORE_SLEEPING  1 /**< Sleeping      */
+	#define CORE_RUNNING   2 /**< Running       */
+	#define CORE_ZOMBIE    3 /**< Pre-resetting */
+	#define CORE_RESETTING 4 /**< Resetting     */
+	#define CORE_OFFLINE   5 /**< Powered Off   */
 	/**@}*/
 
 	/**
@@ -234,6 +235,11 @@
 	 * @brief Resumes instruction execution in the underlying core.
 	 */
 	EXTERN void core_run(void);
+
+	/**
+	 * @brief Pre-reset the underlying core.
+	 */
+	EXTERN int core_release(void);
 
 	/**
 	 * @brief Reset the underlying core.
