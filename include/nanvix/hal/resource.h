@@ -326,7 +326,7 @@
 	 *
 	 * @returns One if the target resource is private and zero otherwise.
 	 *
-	 * @note A resource cannot be private and aprivate at the same time.
+	 * @note A resource cannot be private and shared at the same time.
 	 */
 	static inline int resource_is_private(const struct resource *rsrc)
 	{
@@ -340,7 +340,7 @@
 	 *
 	 * @returns One if the target resource is shared and zero otherwise.
 	 *
-	 * @note A resource cannot be shared and ashared at the same time.
+	 * @note A resource cannot be shared and private at the same time.
 	 */
 	static inline int resource_is_shared(const struct resource *rsrc)
 	{
@@ -354,7 +354,7 @@
 	 *
 	 * @returns One if the target resource is mapped and zero otherwise.
 	 *
-	 * @note A resource cannot be mapped and amapped at the same time.
+	 * @note A resource cannot be mapped and unmapped at the same time.
 	 */
 	static inline int resource_is_mapped(const struct resource *rsrc)
 	{
