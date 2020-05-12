@@ -46,6 +46,7 @@
 	#define RESOURCE_FLAGS_ASYNC  (1 << 4) /**< Asynchronous?               */
 	#define RESOURCE_FLAGS_SHARED (1 << 5) /**< Shared?                     */
 	#define RESOURCE_FLAGS_MAPPED (1 << 6) /**< Mapped?                     */
+	#define RESOURCE_FLAGS_VALID  (1 << 7) /**< Valid?                      */
 	/**@}*/
 
 	/**
@@ -220,6 +221,26 @@
 	}
 
 	/**
+	 * @brief Sets a resource as invalid.
+	 *
+	 * @param rsrc Target resource.
+	 */
+	static inline void resource_set_invalid(struct resource *rsrc)
+	{
+		rsrc->flags &= ~RESOURCE_FLAGS_VALID;
+	}
+
+	/**
+	 * @brief Sets a resource as valid.
+	 *
+	 * @param rsrc Target resource.
+	 */
+	static inline void resource_set_valid(struct resource *rsrc)
+	{
+		rsrc->flags |= RESOURCE_FLAGS_VALID;
+	}
+
+	/**
 	 * @brief Asserts whether or not a resource is in use.
 	 *
 	 * @param rsrc Target resource.
@@ -359,6 +380,20 @@
 	static inline int resource_is_mapped(const struct resource *rsrc)
 	{
 		return (rsrc->flags & RESOURCE_FLAGS_MAPPED);
+	}
+
+	/**
+	 * @brief Asserts whether or not a resource is valid.
+	 *
+	 * @param rsrc Target resource.
+	 *
+	 * @returns One if the target resource is valid and zero otherwise.
+	 *
+	 * @note A resource cannot be valid and invalid at the same time.
+	 */
+	static inline int resource_is_valid(const struct resource *rsrc)
+	{
+		return (rsrc->flags & RESOURCE_FLAGS_VALID);
 	}
 
 	/**
