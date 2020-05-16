@@ -46,6 +46,8 @@
 	#define RESOURCE_FLAGS_ASYNC  (1 << 4) /**< Asynchronous?               */
 	#define RESOURCE_FLAGS_SHARED (1 << 5) /**< Shared?                     */
 	#define RESOURCE_FLAGS_MAPPED (1 << 6) /**< Mapped?                     */
+	#define RESOURCE_FLAGS_VALID  (1 << 7) /**< Valid?                      */
+	#define RESOURCE_FLAGS_DIRTY  (1 << 8) /**< Dirty?                      */
 	/**@}*/
 
 	/**
@@ -220,6 +222,46 @@
 	}
 
 	/**
+	 * @brief Sets a resource as invalid.
+	 *
+	 * @param rsrc Target resource.
+	 */
+	static inline void resource_set_invalid(struct resource *rsrc)
+	{
+		rsrc->flags &= ~RESOURCE_FLAGS_VALID;
+	}
+
+	/**
+	 * @brief Sets a resource as valid.
+	 *
+	 * @param rsrc Target resource.
+	 */
+	static inline void resource_set_valid(struct resource *rsrc)
+	{
+		rsrc->flags |= RESOURCE_FLAGS_VALID;
+	}
+
+	/**
+	 * @brief Sets a resource as clean.
+	 *
+	 * @param rsrc Target resource.
+	 */
+	static inline void resource_set_clean(struct resource *rsrc)
+	{
+		rsrc->flags &= ~RESOURCE_FLAGS_DIRTY;
+	}
+
+	/**
+	 * @brief Sets a resource as dirty.
+	 *
+	 * @param rsrc Target resource.
+	 */
+	static inline void resource_set_dirty(struct resource *rsrc)
+	{
+		rsrc->flags |= RESOURCE_FLAGS_DIRTY;
+	}
+
+	/**
 	 * @brief Asserts whether or not a resource is in use.
 	 *
 	 * @param rsrc Target resource.
@@ -326,7 +368,7 @@
 	 *
 	 * @returns One if the target resource is private and zero otherwise.
 	 *
-	 * @note A resource cannot be private and aprivate at the same time.
+	 * @note A resource cannot be private and shared at the same time.
 	 */
 	static inline int resource_is_private(const struct resource *rsrc)
 	{
@@ -340,7 +382,7 @@
 	 *
 	 * @returns One if the target resource is shared and zero otherwise.
 	 *
-	 * @note A resource cannot be shared and ashared at the same time.
+	 * @note A resource cannot be shared and private at the same time.
 	 */
 	static inline int resource_is_shared(const struct resource *rsrc)
 	{
@@ -354,11 +396,39 @@
 	 *
 	 * @returns One if the target resource is mapped and zero otherwise.
 	 *
-	 * @note A resource cannot be mapped and amapped at the same time.
+	 * @note A resource cannot be mapped and unmapped at the same time.
 	 */
 	static inline int resource_is_mapped(const struct resource *rsrc)
 	{
 		return (rsrc->flags & RESOURCE_FLAGS_MAPPED);
+	}
+
+	/**
+	 * @brief Asserts whether or not a resource is valid.
+	 *
+	 * @param rsrc Target resource.
+	 *
+	 * @returns One if the target resource is valid and zero otherwise.
+	 *
+	 * @note A resource cannot be valid and invalid at the same time.
+	 */
+	static inline int resource_is_valid(const struct resource *rsrc)
+	{
+		return (rsrc->flags & RESOURCE_FLAGS_VALID);
+	}
+
+	/**
+	 * @brief Asserts whether or not a resource is dirty.
+	 *
+	 * @param rsrc Target resource.
+	 *
+	 * @returns One if the target resource is dirty and zero otherwise.
+	 *
+	 * @note A resource cannot be dirty and indirty at the same time.
+	 */
+	static inline int resource_is_dirty(const struct resource *rsrc)
+	{
+		return (rsrc->flags & RESOURCE_FLAGS_DIRTY);
 	}
 
 	/**
