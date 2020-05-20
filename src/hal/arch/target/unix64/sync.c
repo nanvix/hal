@@ -81,11 +81,12 @@ PRIVATE struct
 		/*
 		 * XXX: Don't Touch! This Must Come First!
 		 */
-		struct resource resource; /**< Generic resource information.   */
+		struct resource resource;               /**< Generic resource information. */
 
-		int nbarriers;            /**< Number of barriers completed.   */
-		struct hash hash;         /**< IDs of attached nodes.          */
-		struct hash barrier;      /**< IDs of attached nodes.          */
+		int nbarriers;                          /**< Number of barriers completed. */
+		struct hash hash;                       /**< Local sync hash.              */
+		struct hash barrier;                    /**< Barrier control.              */
+		int nreceived[PROCESSOR_NOC_NODES_NUM]; /**< Number of signals received.   */
 	} rxs[UNIX64_SYNC_CREATE_MAX];
 
 	/**
@@ -101,15 +102,23 @@ PRIVATE struct
 		int nnodes;                             /**< Number of remotes in broadcast.      */
 		int nodes[PROCESSOR_NOC_NODES_NUM];     /**< IDs of attached nodes.               */
 		int sent[PROCESSOR_NOC_NODES_NUM];      /**< Signals when a signal has been sent. */
-		struct hash hash;                       /**< IDs of attached nodes.               */
+		struct hash hash;                       /**< Local sync hash.                     */
 	} txs[UNIX64_SYNC_OPEN_MAX];
 } synctab = {
 	.rxs[0 ... (UNIX64_SYNC_CREATE_MAX - 1)] = {
-		.resource = {0},
+		.resource  = RESOURCE_INITIALIZER,
+		.nbarriers = 0,
+		.hash      = HASH_INITIALIZER,
+		.barrier   = HASH_INITIALIZER,
+		.nreceived = {0, },
 	},
 
 	.txs[0 ... (UNIX64_SYNC_OPEN_MAX - 1)] = {
-		.resource = {0},
+		.resource = RESOURCE_INITIALIZER,
+		.nnodes   = 0,
+		.nodes    = {0, },
+		.sent     = {0, },
+		.hash     = HASH_INITIALIZER,
 	},
 };
 
@@ -257,6 +266,7 @@ PUBLIC int unix64_sync_create(const int * nodes, int nnodes, int type)
 		synctab.rxs[syncid].hash      = hash;
 		synctab.rxs[syncid].barrier   = HASH_INITIALIZER;
 		synctab.rxs[syncid].nbarriers = 0;
+		kmemset(synctab.rxs[syncid].nreceived, 0, PROCESSOR_NOC_NODES_NUM * sizeof(int));
 
 		resource_set_rdonly(&synctab.rxs[syncid].resource);
 		resource_set_notbusy(&synctab.rxs[syncid].resource);
@@ -422,12 +432,12 @@ error:
 
 PRIVATE void do_unix64_sync_ignore_signal(char * message, struct hash * hash)
 {
-	int source         = hash->source;
-	int type           = hash->type;
-	int master         = hash->master;
-	uint64_t nodeslist = hash->nodeslist;
+	int source    = hash->source;
+	int type      = hash->type;
+	int master    = hash->master;
+	int nodeslist = hash->nodeslist;
 
-	kprintf("[sync] %d (source:%d, type:%d, master:%d, nodeslist:%ld)",
+	kprintf("[sync][unix64] Dropping signal: %s | hash = (source:%d, type:%d, master:%d, nodeslist:%d)",
 		message,
 		source,
 		type,
@@ -467,6 +477,51 @@ PRIVATE int unix64_sync_barrier_is_complete(struct rx * rx)
 	return (received == expected);
 }
 
+/*============================================================================*
+ * unix64_sync_barrier_reset()                                                *
+ *============================================================================*/
+
+PRIVATE void unix64_sync_barrier_reset(struct rx * rx)
+{
+	for (unsigned i = 0; i < PROCESSOR_NOC_NODES_NUM; ++i)
+	{
+		if (rx->barrier.nodeslist & (1 << i))
+		{
+			/**
+			 * Consume a signals and reset barrier if there are no
+			 * signals from that node.
+			 **/
+			if ((--rx->nreceived[i]) == 0)
+				rx->barrier.nodeslist &= ~(1 << i);
+		}
+	}
+}
+
+/*============================================================================*
+ * unix64_sync_barrier_consume()                                              *
+ *============================================================================*/
+
+PRIVATE int unix64_sync_barrier_consume(struct rx * rx)
+{
+	int consumed; /* Indicates if the barrier is consumed. */
+
+	unix64_sync_lock();
+
+		consumed = rx->nbarriers;
+
+		/* Is the barrier complete? */
+		if (consumed)
+			rx->nbarriers--;
+
+	unix64_sync_unlock();
+
+	return (consumed);
+}
+
+/*============================================================================*
+ * do_unix64_sync_wait()                                                      *
+ *============================================================================*/
+
 /**
  * @brief Waits for a signal.
  *
@@ -476,20 +531,26 @@ PRIVATE int unix64_sync_barrier_is_complete(struct rx * rx)
  * @returns Upon successful completion, zero is returned. Upon
  * failure, a negative error code is returned instead.
  */
-PRIVATE int do_unix64_sync_wait(struct rx * local_rx)
+PRIVATE int do_unix64_sync_wait(struct rx * rx)
 {
 	int syncid;       /* Synchronization point. */
 	struct hash hash; /* Hash buffer.           */
 
+	/* Is the previous wait released me? */
+	if (unix64_sync_barrier_consume(rx))
+		return (0);
+
 	spinlock_lock(&lock_wait);
 
-		unix64_sync_lock();
-			/* Did the last message release me? */
-			if (local_rx->nbarriers)
-				goto release;
-		unix64_sync_unlock();
+		/* Is other core released me? */
+		if (unix64_sync_barrier_consume(rx))
+		{
+			spinlock_unlock(&lock_wait);
+			return (0);
+		}
 
-		if (mq_receive(mqueues[local_rx->hash.source].fd, (char *) &hash, sizeof(struct hash), NULL) == -1)
+		/* Reads a signal. */ 
+		if (mq_receive(mqueues[rx->hash.source].fd, (char *) &hash, sizeof(struct hash), NULL) == -1)
 		{
 			spinlock_unlock(&lock_wait);
 			return (-EAGAIN);
@@ -497,32 +558,33 @@ PRIVATE int do_unix64_sync_wait(struct rx * local_rx)
 
 		unix64_sync_lock();
 
-			if ((syncid = do_unix64_sync_search_rx(&hash)) < 0)
+			if (!node_is_valid(hash.source))
 			{
-				do_unix64_sync_ignore_signal("Drop signal", &hash);
+				do_unix64_sync_ignore_signal("Invalid source.", &hash);
 				goto release;
 			}
 
-			if (synctab.rxs[syncid].barrier.nodeslist & (1 << hash.source))
+			if ((syncid = do_unix64_sync_search_rx(&hash)) < 0)
 			{
-				do_unix64_sync_ignore_signal("Double signal", &hash);
+				do_unix64_sync_ignore_signal("Sync point not found.", &hash);
 				goto release;
 			}
 
 			synctab.rxs[syncid].barrier.nodeslist |= (1 << hash.source);
+			synctab.rxs[syncid].nreceived[hash.source]++;
 
 			if (unix64_sync_barrier_is_complete(&synctab.rxs[syncid]))
 			{
-				synctab.rxs[syncid].barrier.nodeslist = 0;
+				unix64_sync_barrier_reset(&synctab.rxs[syncid]);
 				synctab.rxs[syncid].nbarriers++;
 			}
 
 release:
 		unix64_sync_unlock();
-
 	spinlock_unlock(&lock_wait);
 
-	return (0);
+	/* Do again. */
+	return (1);
 }
 
 /*============================================================================*
@@ -574,22 +636,9 @@ again:
 	 */
 	unix64_sync_unlock();
 
-	while (true)
-	{
-		unix64_sync_lock();
-			if (synctab.rxs[syncid].nbarriers)
-			{
-				synctab.rxs[syncid].nbarriers--;
-				goto release;
-			}
-		unix64_sync_unlock();
-
-		if ((ret = do_unix64_sync_wait(&synctab.rxs[syncid])) != 0)
-			break;
-	}
+	while ((ret = do_unix64_sync_wait(&synctab.rxs[syncid])) > 0);
 
 	unix64_sync_lock();
-release:
 		resource_set_notbusy(&synctab.rxs[syncid].resource);
 exit:
 	unix64_sync_unlock();
