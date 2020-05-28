@@ -149,6 +149,19 @@
 	}
 
 	/**
+	 * @brief Reads C-NoC buffer.
+	 *
+	 * @param interface Number of the DMA channel.
+	 * @param tag       Number of receiver buffer.
+	 *
+	 * @return Receiver buffer value.
+	 */
+	static inline uint64_t bostan_dma_control_read(int interface, int tag)
+	{
+		return bostan_cnoc_rx_read(interface, tag);
+	}
+
+	/**
 	 * @brief Wait an event on the control receiver buffer.
 	 *
 	 * @param interface Number of the DMA channel.
@@ -178,7 +191,7 @@
 		int tag,
 		const int * remotes,
 		int nremotes,
-		const int * remotes_tags,
+		int remotes_tag,
 		uint64_t mask
 	);
 

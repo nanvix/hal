@@ -639,14 +639,14 @@ PUBLIC int bostan_cnoc_rx_config(
  *============================================================================*/
 
 /**
- * @brief Wait events on C-NoC receiver tag.
+ * @brief Reads C-NoC buffer.
  *
  * @param interface Number of the DMA channel.
- * @param tag       Number of receiver tag.
+ * @param tag       Number of receiver buffer.
  *
  * @return Receiver buffer value.
  */
-PUBLIC int bostan_cnoc_rx_read(int interface, int tag)
+PUBLIC uint64_t bostan_cnoc_rx_read(int interface, int tag)
 {
 	if (!bostan_cnoc_rx_is_valid(interface, tag))
 		return (-EINVAL);

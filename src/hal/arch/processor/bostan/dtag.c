@@ -470,7 +470,8 @@ PRIVATE void bostan_dnoc_it_handler(int ev_src)
 							(void *) &bostan_dnoc_rx_handlers[interface][tag]
 						);
 
-						handler(interface, tag);
+						if (handler)
+							handler(interface, tag);
 					}
 				}
 			}
