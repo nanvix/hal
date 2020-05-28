@@ -280,3 +280,17 @@ PUBLIC int mailbox_wait(int mbxid)
 	return (-ENOSYS);
 #endif
 }
+
+/*============================================================================*
+ * mailbox_setup()                                                            *
+ *============================================================================*/
+
+/**
+ * @todo TODO: provide a detailed description for this function.
+ */
+PUBLIC void mailbox_setup(void)
+{
+#if (__TARGET_HAS_MAILBOX)
+	__mailbox_setup();
+#endif /* __TARGET_HAS_MAILBOX */
+}

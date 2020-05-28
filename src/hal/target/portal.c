@@ -326,3 +326,17 @@ PUBLIC int portal_wait(int portalid)
 	return (-ENOSYS);
 #endif
 }
+
+/*============================================================================*
+ * portal_setup()                                                             *
+ *============================================================================*/
+
+/**
+ * @todo TODO: provide a detailed description for this function.
+ */
+PUBLIC void portal_setup(void)
+{
+#if (__TARGET_HAS_PORTAL)
+	__portal_setup();
+#endif /* __TARGET_HAS_PORTAL */
+}
