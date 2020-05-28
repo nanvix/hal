@@ -67,16 +67,16 @@
 #ifdef __NANVIX_HAL
 
 	/**
-	 * @brief Initializes the portal interface.
-	 */
-	PUBLIC void unix64_portal_setup(void);
-
-	/**
 	 * @brief Shutdowns the portal interface.
 	 */
 	PUBLIC void unix64_portal_shutdown(void);
 
 #endif
+
+	/**
+	 * @brief Initializes the portal interface.
+	 */
+	PUBLIC void unix64_portal_setup(void);
 
 	/**
 	 * @brief Creates a portal.
@@ -196,16 +196,10 @@
 	/**@}*/
 
 	/**
-	 * @todo TODO: call unix64_portal_setup().
+	 * @see unix64_portal_setup()
 	 */
-	static inline void portal_setup(void)
-	{
-		/*
-		 * Afterwards we provide a platform-independent initialization
-		 * for the target we can add a call to unix64_portal_setup()
-		 * here.
-		 */
-	}
+	#define __portal_setup() \
+		unix64_portal_setup()
 
 	/**
 	 * @see unix64_portal_create()
