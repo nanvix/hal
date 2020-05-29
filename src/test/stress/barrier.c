@@ -99,15 +99,25 @@ void test_stress_cleanup(void)
  */
 void test_stress_barrier(void)
 {
+	int ret;
+
 	if (processor_node_get_num() == NODENUM_MASTER)
 	{
-		KASSERT(sync_signal(_syncout) == 0);
+		do
+			ret = sync_signal(_syncout);
+		while (ret == (-EAGAIN));
+		KASSERT(ret == 0);
+
 		KASSERT(sync_wait(_syncin) == 0);
 	}
 	else
 	{
 		KASSERT(sync_wait(_syncin) == 0);
-		KASSERT(sync_signal(_syncout) == 0);
+
+		do
+			ret = sync_signal(_syncout);
+		while (ret == (-EAGAIN));
+		KASSERT(ret == 0);
 	}
 }
 
