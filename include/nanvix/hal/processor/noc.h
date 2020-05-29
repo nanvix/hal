@@ -56,6 +56,9 @@
 		#ifndef PROCESSOR_NODENUM_MASTER
 		#error "PROCESSOR_NODENUM_MASTER not defined"
 		#endif
+		#ifndef PROCESSOR_NODENUM_LEADER
+		#error "PROCESSOR_NODENUM_LEADER not defined"
+		#endif
 
 		/* Functions */
 		#ifndef __processor_noc_setup_fn
