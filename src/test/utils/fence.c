@@ -22,12 +22,57 @@
  * SOFTWARE.
  */
 
-#ifndef _STRESS_BARRIER_H_
-#define _STRESS_BARRIER_H_
+#include <nanvix/hal/hal.h>
+#include <nanvix/const.h>
+#include <nanvix/hlib.h>
+#include "../test.h"
 
-	/**
-	 * @brief Synchronization step of the stress tests.
-	 */
-	EXTERN void test_stress_barrier(void);
+/*----------------------------------------------------------------------------*
+ * Fence                                                                      *
+ *----------------------------------------------------------------------------*/
 
-#endif /* _STRESS_BARRIER_H_ */
+/**
+ * @brief Initializes a fence.
+ *
+ * @param b      Target fence.
+ * @param ncores Number of cores in the fence.
+ */
+PUBLIC void fence_init(struct fence *b, int ncores)
+{
+	b->nreached = 0;
+	b->ncores = ncores;
+	spinlock_init(&b->lock);
+	dcache_invalidate();
+}
+
+/**
+ * @brief Waits in a fence.
+ */
+PUBLIC void fence_wait(struct fence *b)
+{
+	again:
+
+		spinlock_lock(&b->lock);
+
+			if (b->nreached < b->ncores)
+			{
+				spinlock_unlock(&b->lock);
+				goto again;
+			}
+
+		spinlock_unlock(&b->lock);
+}
+
+/**
+ * @brief Joins a fence.
+ *
+ * @param b Target fence.
+ */
+PUBLIC void fence_join(struct fence *b)
+{
+	spinlock_lock(&b->lock);
+
+		b->nreached++;
+
+	spinlock_unlock(&b->lock);
+}

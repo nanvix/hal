@@ -27,7 +27,7 @@
 #include <nanvix/hlib.h>
 #include <posix/errno.h>
 #include "../test.h"
-#include "barrier.h"
+#include "stress.h"
 
 #if (__TARGET_HAS_MAILBOX && __TARGET_HAS_PORTAL)
 

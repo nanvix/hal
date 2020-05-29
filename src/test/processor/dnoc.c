@@ -34,10 +34,10 @@
  * @name Tests arguments
  */
 /**@{*/
-#define INTERFACE   0        /**< DMA channel used.             */
-#define RX_TAG      58       /**< Receiver identificantion tag. */
-#define TX_TAG      0        /**< Transfer identificantion tag. */
-#define BUFFER_MAX_SIZE 1024 /**< Maximum data exchange size.   */
+#define INTERFACE       (0)    /**< DMA channel used.             */
+#define RX_TAG          (120)  /**< Receiver identificantion tag. */
+#define TX_TAG          (0)    /**< Transfer identificantion tag. */
+#define BUFFER_MAX_SIZE (1024) /**< Maximum data exchange size.   */
 /**@}*/
 
 /**
