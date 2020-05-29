@@ -104,10 +104,7 @@ PRIVATE struct portal
 		uint64_t size;            /**< Size of the buffer.                                 */
 		k1b_spinlock_t lock;      /**< Transfer request barrier.                           */
 	} ALIGN(sizeof(dword_t)) txs[MPPA256_PORTAL_OPEN_MAX];
-} ALIGN(sizeof(dword_t)) portaltab = {
-	.rxs[0 ... MPPA256_PORTAL_CREATE_MAX-1] = { {0}, -1, -1, 0, K1B_SPINLOCK_UNLOCKED },
-	.txs[0 ... MPPA256_PORTAL_OPEN_MAX-1]   = { {0}, -1, -1, 0, 0, NULL, 0, K1B_SPINLOCK_UNLOCKED }
-};
+} ALIGN(sizeof(dword_t)) portaltab;
 
 /**
  * @brief Pools of Portals
@@ -164,7 +161,7 @@ PRIVATE int mppa256_get_free_resource_rx(int nodenum)
 
 	base = (nodenum % BOSTAN_PROCESSOR_NOC_INTERFACES_NUM) * BOSTAN_PORTAL_CREATE_PER_DMA;
 
-	for (unsigned i = base; i < (base + BOSTAN_PORTAL_CREATE_PER_DMA); ++i)
+	for (unsigned i = base; i < (base + BOSTAN_PORTAL_CREATE_PER_DMA); i++)
 		if (!resource_is_used(&portaltab.rxs[i].resource))
 			return (i);
 
@@ -188,7 +185,7 @@ PRIVATE int mppa256_get_free_resource_tx(int nodenum)
 
 	base = (nodenum % BOSTAN_PROCESSOR_NOC_INTERFACES_NUM) * BOSTAN_PORTAL_OPEN_PER_DMA;
 
-	for (unsigned i = base; i < (base + BOSTAN_PORTAL_OPEN_PER_DMA); ++i)
+	for (unsigned i = base; i < (base + BOSTAN_PORTAL_OPEN_PER_DMA); i++)
 		if (!resource_is_used(&portaltab.txs[i].resource))
 			return (i);
 
@@ -213,7 +210,7 @@ PRIVATE void mppa256_portal_receiver_handler(int interface, int tag)
 	begin = (interface * BOSTAN_PORTAL_CREATE_PER_DMA);
 	end   = (begin + MPPA256_PORTAL_CREATE_MAX);
 
-	for (unsigned i = begin; i < end; ++i)
+	for (unsigned i = begin; i < end; i++)
 	{
 		/**
 		 * This verification cannot be protected by the global lock
@@ -260,7 +257,7 @@ PRIVATE void mppa256_portal_sender_handler(int interface, int tag)
 	begin = (interface * BOSTAN_PORTAL_OPEN_PER_DMA);
 	end   = (begin + MPPA256_PORTAL_OPEN_MAX);
 
-	for (unsigned i = begin; i < end; ++i)
+	for (unsigned i = begin; i < end; i++)
 	{
 		/**
 		 * This verification cannot be protected by the global lock
@@ -483,11 +480,20 @@ PRIVATE int do_mppa256_portal_open(int localnum, int remotenum)
 	ctag      = UNDERLYING_OPEN_CTAG(remotenum);
 	interface = UNDERLYING_OPEN_INTERFACE(portalid);
 
-	ret = (-EAGAIN);
+	ret = bostan_dma_control_create(
+		interface,
+		ctag,
+		BOSTAN_CNOC_BARRIER_MODE,
+		(1),
+		mppa256_portal_sender_handler
+	);
 
 	/* Opens control sender point. */
-	if (bostan_dma_control_create(interface, ctag, (1), mppa256_portal_sender_handler) != 0)
+	if (ret != 0)
+	{
+		ret = (-EAGAIN);
 		goto error;
+	}
 
 	/* Configures lock from asynchronous operations. */
 	k1b_spinlock_trylock(&portaltab.txs[portalid].lock);
@@ -687,7 +693,7 @@ PRIVATE int mppa256_portal_send_data(int portalid)
 	ret = (-EBUSY);
 
 	/* Try to find not busy dtag. */
-	for (int i = 0; i < BOSTAN_DNOC_TXS_PER_COMM_SERVICE; ++i)
+	for (int i = 0; i < BOSTAN_DNOC_TXS_PER_COMM_SERVICE; i++)
 	{
 		/* Tries to open DMA Data Channel. */
 		if ((ret = bostan_dma_data_open(interface, dtag)) != -EBUSY)
@@ -705,11 +711,20 @@ PRIVATE int mppa256_portal_send_data(int portalid)
 		bostan_processor_noc_cluster_to_node_num(cluster_get_num()) + interface
 	);
 
-	ret = (-EAGAIN);
+	ret = bostan_dma_control_config(
+		interface,
+		ctag,
+		BOSTAN_CNOC_BARRIER_MODE,
+		(1),
+		mppa256_portal_sender_handler
+	);
 
 	/* Reconfigures signal receiver. */
-	if (bostan_dma_control_config(interface, ctag, (1), mppa256_portal_sender_handler) < 0)
+	if (ret < 0)
+	{
+		ret = (-EAGAIN);
 		goto error2;
+	}
 
 	/* Sends data. */
 	ret = bostan_dma_data_write(
@@ -1025,4 +1040,51 @@ error:
 	mppa256_portal_unlock();
 
 	return (-EBADF);
+}
+
+/*============================================================================*
+ * mppa256_portal_setup()                                                     *
+ *============================================================================*/
+
+/**
+ * @see mppa256_portal_setup().
+ */
+PUBLIC void mppa256_portal_setup(void)
+{
+	kprintf("[hal][portal] Portal Initialization.");
+
+	for (unsigned i = 0; i < MPPA256_PORTAL_CREATE_MAX; i++)
+	{
+		portaltab.rxs[i].resource   = RESOURCE_INITIALIZER;
+		portaltab.rxs[i].ret        = (-EAGAIN);
+		portaltab.rxs[i].remote     = (-1);
+		portaltab.rxs[i].is_allowed = 0;
+		k1b_spinlock_init(&portaltab.rxs[i].lock);
+		k1b_spinlock_lock(&portaltab.rxs[i].lock);
+	}
+
+	for (unsigned i = 0; i < MPPA256_PORTAL_OPEN_MAX; i++)
+	{
+		portaltab.txs[i].resource   = RESOURCE_INITIALIZER;
+		portaltab.txs[i].ret        = (-EAGAIN);
+		portaltab.txs[i].remote     = (-1);
+		portaltab.txs[i].is_allowed = 0;
+		portaltab.txs[i].commit     = 0;
+		portaltab.txs[i].buffer     = NULL;
+		portaltab.txs[i].size       = 0ULL;
+		k1b_spinlock_init(&portaltab.txs[i].lock);
+		k1b_spinlock_lock(&portaltab.txs[i].lock);
+	}
+}
+
+/*============================================================================*
+ * mppa256_portal_shutdown()                                                     *
+ *============================================================================*/
+
+/**
+ * @todo TODO: provide a detailed description for this function.
+ */
+PUBLIC void mppa256_portal_shutdown(void)
+{
+
 }
