@@ -670,12 +670,6 @@ PRIVATE int mppa256_mailbox_send_msg(int mbxid)
 	/* Opens data sender point. */
 	dtag = UNDERLYING_OPEN_TAG(mbxid);
 
-	ret = (-EBUSY);
-
-	/* Tries to open DMA Data Channel. */
-	if (bostan_dma_data_open(interface, dtag) != 0)
-		goto error;
-
 	ret = (bostan_dma_control_config(
 		interface,
 		ctag,
@@ -685,10 +679,7 @@ PRIVATE int mppa256_mailbox_send_msg(int mbxid)
 	));
 
 	if (ret != 0)
-	{
-		ret = (-EAGAIN);
 		goto error;
-	}
 
 	/* Send message. */
 	ret = bostan_dma_data_write(
@@ -702,10 +693,6 @@ PRIVATE int mppa256_mailbox_send_msg(int mbxid)
 	);
 
 error:
-	/* Close data sender point. */
-	if (bostan_dma_data_close(interface, dtag) != 0)
-		kpanic("[hal][mailbox][send] Failed to close the data transmission channel.");
-
 	mbxtab.txs[mbxid].ret = (ret < 0) ? (-EAGAIN) : 0;
 
 	k1b_spinlock_unlock(&mbxtab.txs[mbxid].lock);
@@ -1090,6 +1077,10 @@ PUBLIC void mppa256_mailbox_setup(void)
 {
 	kprintf("[hal][mailbox] Mailbox Initialization.");
 
+	for (unsigned i = BOSTAN_MAILBOX_DNOC_TX_BASE; i < BOSTAN_DNOC_TXS_PER_COMM_SERVICE; i++)
+		if (bostan_dma_data_open(0, i) != 0)
+			kpanic("[hal][mailbox] Cannot open data channel.");
+
 	for (unsigned i = 0; i < MPPA256_MAILBOX_CREATE_MAX; i++)
 	{
 		mbxtab.rxs[i].resource        = RESOURCE_INITIALIZER;
@@ -1133,5 +1124,7 @@ PUBLIC void mppa256_mailbox_setup(void)
  */
 PUBLIC void mppa256_mailbox_shutdown(void)
 {
-
+	for (unsigned i = BOSTAN_MAILBOX_DNOC_TX_BASE; i < BOSTAN_DNOC_TXS_PER_COMM_SERVICE; i++)
+		if (bostan_dma_data_close(0, i) != 0)
+			kpanic("[hal][mailbox][mppa256] Cannot close data channel.");
 }
