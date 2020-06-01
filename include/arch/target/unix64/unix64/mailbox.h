@@ -69,14 +69,14 @@
 	/**
 	 * @brief Shutdowns the mailbox interface.
 	 */
-	PUBLIC void unix64_mailbox_shutdown(void);
+	EXTERN void unix64_mailbox_shutdown(void);
 
 #endif /* __NANVIX_HAL */
 
 	/**
 	 * @brief Setup the mailbox interface.
 	 */
-	PUBLIC void unix64_mailbox_setup(void);
+	EXTERN void unix64_mailbox_setup(void);
 
 	/**
 	 * @brief Creates a mailbox.

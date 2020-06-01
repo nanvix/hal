@@ -69,14 +69,14 @@
 	/**
 	 * @brief Shutdowns the portal interface.
 	 */
-	PUBLIC void unix64_portal_shutdown(void);
+	EXTERN void unix64_portal_shutdown(void);
 
 #endif
 
 	/**
 	 * @brief Initializes the portal interface.
 	 */
-	PUBLIC void unix64_portal_setup(void);
+	EXTERN void unix64_portal_setup(void);
 
 	/**
 	 * @brief Creates a portal.
