@@ -284,7 +284,7 @@ PRIVATE void mppa256_portal_sender_handler(int interface, int tag)
 			if (mppa256_portal_send_data(i) != 0)
 			{
 				portaltab.txs[i].is_allowed = 1;
-				
+
 				/* The failure does not cause kpanic because it is recoverable. */
 				kprintf("[hal][portal][handler] Sender Handler failed!");
 			}
@@ -667,6 +667,8 @@ PUBLIC int mppa256_portal_close(int portalid)
  * mppa256_portal_send_data()                                                 *
  *============================================================================*/
 
+PRIVATE struct resource bostan_portal_tx_channels[BOSTAN_DNOC_TXS_PER_COMM_SERVICE];
+
 /**
  * @brief Underlying sender funtion.
  *
@@ -688,22 +690,21 @@ PRIVATE int mppa256_portal_send_data(int portalid)
 	interface = UNDERLYING_OPEN_INTERFACE(portalid);
 
 	/* Opens data sender point. */
-	dtag = PORTAL_DATA_TAG_BASE;
-
-	ret = (-EBUSY);
+	ret  = (dtag = (-EBUSY));
 
 	/* Try to find not busy dtag. */
 	for (int i = 0; i < BOSTAN_DNOC_TXS_PER_COMM_SERVICE; i++)
 	{
-		/* Tries to open DMA Data Channel. */
-		if ((ret = bostan_dma_data_open(interface, dtag)) != -EBUSY)
+		if (!resource_is_busy(&bostan_portal_tx_channels[i]))
+		{
+			dtag = (PORTAL_DATA_TAG_BASE + i);
+			resource_set_busy(&bostan_portal_tx_channels[i]);
 			break;
-
-		dtag++;
+		}
 	}
 
 	/* Checks if succesfully allocated a DTAG. */
-	if (ret != 0)
+	if (dtag < 0)
 		goto error1;
 
 	/* Target parameters*/
@@ -738,9 +739,7 @@ PRIVATE int mppa256_portal_send_data(int portalid)
 	);
 
 error2:
-	/* Closes data sender point. */
-	if (bostan_dma_data_close(interface, dtag) != 0)
-		kpanic("[hal][portal][send] Failed to close the data transmission channel.");
+	resource_set_notbusy(&bostan_portal_tx_channels[(dtag - PORTAL_DATA_TAG_BASE)]);
 
 error1:
 	portaltab.txs[portalid].buffer = NULL;
@@ -1051,7 +1050,20 @@ error:
  */
 PUBLIC void mppa256_portal_setup(void)
 {
+	int dtag;
+
 	kprintf("[hal][portal] Portal Initialization.");
+
+	for (unsigned i = 0; i < BOSTAN_DNOC_TXS_PER_COMM_SERVICE; i++)
+	{
+		bostan_portal_tx_channels[i] = RESOURCE_INITIALIZER;
+		resource_set_used(&bostan_portal_tx_channels[i]);
+
+		/* Opens data sender point. */
+		dtag = (PORTAL_DATA_TAG_BASE + i);
+		if (bostan_dma_data_open(0, dtag) < 0)
+			kpanic("[hal][portal] Cannot open data channel.");
+	}
 
 	for (unsigned i = 0; i < MPPA256_PORTAL_CREATE_MAX; i++)
 	{
@@ -1086,5 +1098,13 @@ PUBLIC void mppa256_portal_setup(void)
  */
 PUBLIC void mppa256_portal_shutdown(void)
 {
+	int dtag;
 
+	for (unsigned i = 0; i < BOSTAN_DNOC_TXS_PER_COMM_SERVICE; i++)
+	{
+		/* Opens data sender point. */
+		dtag = (PORTAL_DATA_TAG_BASE + i);
+		if (bostan_dma_data_close(0, dtag) < 0)
+			kpanic("[hal][portal] Cannot close data channel.");
+	}
 }
