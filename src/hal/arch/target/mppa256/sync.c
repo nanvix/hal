@@ -49,7 +49,7 @@
 /**@{*/
 #define UNDERLYING_RX_TAG(syncid)       ((syncid % BOSTAN_SYNC_CREATE_PER_DMA) + BOSTAN_SYNC_RX_OFF) /**< Receiver tag ID.         */
 #define UNDERLYING_RX_INTERFACE(syncid) (syncid / BOSTAN_SYNC_CREATE_PER_DMA)                        /**< Receiver DMA channel ID. */
-#define UNDERLYING_TX_TAG(_is_ack)      (BOSTAN_SYNC_CNOC_TX_BASE + _is_ack)                         /**< Transfer tag ID.         */
+#define UNDERLYING_TX_TAG               (BOSTAN_SYNC_CNOC_TX_BASE)                                   /**< Transfer tag ID.         */
 #define UNDERLYING_TX_INTERFACE(syncid) (syncid)                                                     /**< Transfer DMA channel ID. */
 /**@}*/
 
@@ -557,6 +557,19 @@ PRIVATE inline int do_mppa256_sync_signal(int i, int n, const int * nodes, char 
 	expected = (i == 0) ? (1) : (n - 1);
 	local    = processor_node_get_num();
 
+	/* Only sends when has all acks. */
+	for (int j = i; j < n; j++)
+	{
+		/* Already sended. */
+		if (sended[j]) 
+			continue;
+
+		/* Not sended and not allowed. */
+		if (!sync_ack[nodes[j]])
+			return (-EAGAIN);
+	}
+
+	/* Sends signals. */
 	for (; i < n; i++)
 	{
 		/* Already sended. */
@@ -566,14 +579,10 @@ PRIVATE inline int do_mppa256_sync_signal(int i, int n, const int * nodes, char 
 			continue;
 		}
 
-		/* Previous signal not consumed. */
-		if (!sync_ack[nodes[i]])
-			continue;	
-
 		/* Sends signal. */
 		ret = bostan_dma_control_signal(
 			0,
-			UNDERLYING_TX_TAG(0),
+			UNDERLYING_TX_TAG,
 			&nodes[i],
 			1,
 			bostan_processor_node_sync_tag(local, 0),
@@ -583,12 +592,13 @@ PRIVATE inline int do_mppa256_sync_signal(int i, int n, const int * nodes, char 
 		if (ret != 0)
 			break;
 
+		emitted++;
+
 		/* Sets current node busy. */
 		sync_ack[nodes[i]] = 0;
 
 		/* Sets current target notified. */
 		sended[i] = 1;
-		emitted++;
 	}
 
 	return (emitted == expected) ? (0) : (-EAGAIN);
@@ -636,29 +646,36 @@ again:
 	 */
 	mppa256_sync_unlock();
 
-	/* Broadcast. */
-	if (synctab.txs[syncid].hash.type == MPPA256_SYNC_ONE_TO_ALL)
-	{
-		ret = do_mppa256_sync_signal(
-			1,
-			synctab.txs[syncid].nnodes,
-			synctab.txs[syncid].nodes,
-			synctab.txs[syncid].sended,
-			&synctab.txs[syncid].hash
-		);
-	}
+	interrupt_mask(K1B_INT_CNOC);
 
-	/* Gather. */
-	else
-	{
-		ret = do_mppa256_sync_signal(
-			0,
-			1,
-			synctab.txs[syncid].nodes,
-			synctab.txs[syncid].sended,
-			&synctab.txs[syncid].hash
-		);
-	}
+		/* Broadcast. */
+		if (synctab.txs[syncid].hash.type == MPPA256_SYNC_ONE_TO_ALL)
+		{
+			ret = do_mppa256_sync_signal(
+				1,
+				synctab.txs[syncid].nnodes,
+				synctab.txs[syncid].nodes,
+				synctab.txs[syncid].sended,
+				&synctab.txs[syncid].hash
+			);
+		}
+
+		/* Gather. */
+		else
+		{
+			ret = do_mppa256_sync_signal(
+				0,
+				1,
+				synctab.txs[syncid].nodes,
+				synctab.txs[syncid].sended,
+				&synctab.txs[syncid].hash
+			);
+		}
+
+		/* Losing interrupts? */
+		bostan_cnoc_it_verify();
+
+	interrupt_unmask(K1B_INT_CNOC);
 
 	mppa256_sync_lock();
 		resource_set_notbusy(&synctab.txs[syncid].resource);
@@ -690,7 +707,7 @@ PRIVATE inline int mppa256_sync_send_ack(int interface, int tag, int target)
 	return (
 		bostan_dma_control_signal(
 			interface,
-			UNDERLYING_TX_TAG(1),
+			UNDERLYING_TX_TAG,
 			&target,
 			1,
 			bostan_processor_node_sync_tag(local, 1),
@@ -895,8 +912,7 @@ PUBLIC void mppa256_sync_setup(void)
 			synctab.txs[i].sended[j] = 0;
 	}
 
-	KASSERT(bostan_dma_control_open(0, UNDERLYING_TX_TAG(0)) >= 0);
-	KASSERT(bostan_dma_control_open(0, UNDERLYING_TX_TAG(1)) >= 0);
+	KASSERT(bostan_dma_control_open(0, UNDERLYING_TX_TAG) >= 0);
 
 	for (unsigned node = 0; node < PROCESSOR_NOC_NODES_NUM; ++node)
 	{
@@ -963,8 +979,7 @@ PUBLIC void mppa256_sync_shutdown(void)
 		);
 	}
 
-	KASSERT(bostan_dma_control_close(0, UNDERLYING_TX_TAG(0)) >= 0);
-	KASSERT(bostan_dma_control_close(0, UNDERLYING_TX_TAG(1)) >= 0);
+	KASSERT(bostan_dma_control_close(0, UNDERLYING_TX_TAG) >= 0);
 }
 
 /*============================================================================*
