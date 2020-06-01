@@ -126,18 +126,6 @@
 	#include <posix/errno.h>
 
 	/**
-	 * @brief Initializes the portal interface.
-	 */
-#if (__TARGET_HAS_PORTAL)
-	EXTERN void portal_setup(void);
-#else
-	static inline void portal_setup(void)
-	{
-
-	}
-#endif
-
-	/**
 	 * @brief Creates a portal.
 	 *
 	 * @param nodenum Logic ID of the underlying NoC node.
@@ -223,6 +211,11 @@
 	 * @return Zero if wait read correctly and non zero otherwise.
 	 */
 	EXTERN int portal_wait(int portalid);
+
+	/**
+	 * @brief Initializes the portal interface.
+	 */
+	EXTERN void portal_setup(void);
 
 /**@}*/
 

@@ -118,11 +118,6 @@
 	#include <posix/errno.h>
 
 	/**
-	 * @brief Initializes the sync interface.
-	 */
-	EXTERN void sync_setup(void);
-
-	/**
 	 * @brief Allocates and configures the receiving side of the synchronization point.
 	 *
 	 * @param nodenums IDs of target NoC nodes.
@@ -181,6 +176,11 @@
 	 * @return Zero if send signal correctly and non zero otherwise.
 	 */
 	EXTERN int sync_signal(int syncid);
+
+	/**
+	 * @brief Initializes the sync interface.
+	 */
+	EXTERN void sync_setup(void);
 
 /**@}*/
 

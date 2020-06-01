@@ -122,22 +122,6 @@
 	#include <nanvix/hlib.h>
 	#include <posix/errno.h>
 
-#ifdef __NANVIX_HAL
-
-	/**
-	 * @brief Initializes the mailbox interface.
-	 */
-#if (__TARGET_HAS_MAILBOX)
-	EXTERN void mailbox_setup(void);
-#else
-	static inline void mailbox_setup(void)
-	{
-
-	}
-#endif
-
-#endif /* __NANVIX_HAL */
-
 	/**
 	 * @brief Creates a mailbox.
 	 *
@@ -212,6 +196,11 @@
 	 * @return Zero if wait read correctly and non zero otherwise.
 	 */
 	EXTERN int mailbox_wait(int mbxid);
+
+	/**
+	 * @brief Initializes the mailbox interface.
+	 */
+	EXTERN void mailbox_setup(void);
 
 /**@}*/
 
