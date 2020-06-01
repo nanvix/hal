@@ -56,7 +56,7 @@
 	/**
 	 * @brief Logical NoC node ID of leader.
 	 */
-	#define LINUX64_PROCESSOR_NODENUM_LEADER 0
+	#define LINUX64_PROCESSOR_NODENUM_LEADER (LINUX64_PROCESSOR_NOC_IONODES_NUM + 0)
 
 #ifdef __NANVIX_HAL
 
