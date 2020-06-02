@@ -75,7 +75,7 @@ export EXEC := test-driver.$(TARGET)
 # Target-Specific Make Rules
 #===============================================================================
 
-include $(MAKEDIR)/makefile
+include $(MAKEDIR)/makefile.hal
 
 #===============================================================================
 # Toolchain Configuration
@@ -135,7 +135,7 @@ documentation:
 # Contrib Install and Uninstall Rules
 #===============================================================================
 
-include $(BUILDDIR)/makefile.contrib
+include $(BUILDDIR)/makefile.hal
 
 #===============================================================================
 # Install and Uninstall Rules

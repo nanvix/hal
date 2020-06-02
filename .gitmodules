@@ -4,3 +4,6 @@
 [submodule "contrib/barelib"]
 	path = contrib/barelib
 	url = https://github.com/nanvix/barelib.git
+[submodule "build"]
+	path = build
+	url = https://github.com/nanvix/build.git
