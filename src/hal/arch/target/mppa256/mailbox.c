@@ -143,36 +143,7 @@ PRIVATE struct mailbox
 		k1b_spinlock_t lock;               /**< Receiver request barrier.                                 */
 		struct underliyng_message message; /**< Underlying buffer for sending asynchronously.             */
 	} ALIGN(sizeof(dword_t)) txs[MPPA256_MAILBOX_OPEN_MAX];
-} mbxtab = {
-	.rxs[0 ... MPPA256_MAILBOX_CREATE_MAX - 1] = {
-		.resource        = {0, },
-		.ret             = -1,
-		.initial_message = 0,
-		.message_count   = 0,
-		.lock            = K1B_SPINLOCK_UNLOCKED,
-		.buffer          = NULL,
-		.messages[0 ... MQUEUE_MSG_AMOUNT - 1] = {
-			.source  = MPPA256_MAILBOX_MESSAGE_INVALID,
-			.buffer  = {0, },
-			.confirm = MPPA256_MAILBOX_MESSAGE_INVALID
-		}
-	},
-	.txs[0 ... MPPA256_MAILBOX_OPEN_MAX - 1]   = {
-		.resource    = {0, },
-		.ret         = -1,
-		.source_ctag = 0,
-		.remote      = 0,
-		.ack         = 0,
-		.commit      = 0,
-		.unused      = 0,
-		.lock        = K1B_SPINLOCK_UNLOCKED,
-		.message = {
-			.source  = MPPA256_MAILBOX_MESSAGE_INVALID,
-			.buffer  = {0, },
-			.confirm = MPPA256_MAILBOX_MESSAGE_INVALID
-		}
-	}
-};
+} mbxtab;
 
 /**
  * @brief Pools of Mailbox
@@ -226,7 +197,7 @@ PRIVATE void mppa256_mailbox_count_messages(struct rx * mqueue)
 
 	total = 0;
 
-	for (unsigned i = 0; i < MQUEUE_MSG_AMOUNT; ++i)
+	for (unsigned i = 0; i < MQUEUE_MSG_AMOUNT; i++)
 	{
 		msg = &mqueue->messages[i];
 
@@ -491,9 +462,18 @@ PRIVATE int do_mppa256_mailbox_open(int nodenum)
 
 	localnum = bostan_processor_noc_cluster_to_node_num(cluster_get_num()) + interface;
 
+	ret = (bostan_dma_control_create(
+		interface,
+		ctag,
+		BOSTAN_CNOC_BARRIER_MODE,
+		(1),
+		mppa256_mailbox_tx_handler
+	));
+
 	/* Creates control reciever point. */
-	if (bostan_dma_control_create(interface, ctag, (1), mppa256_mailbox_tx_handler) != 0)
+	if (ret != 0)
 	{
+		ret = (-EINVAL);
 		resource_free(&mbxpools.tx_pool, mbxid);
 		goto error;
 	}
@@ -690,15 +670,15 @@ PRIVATE int mppa256_mailbox_send_msg(int mbxid)
 	/* Opens data sender point. */
 	dtag = UNDERLYING_OPEN_TAG(mbxid);
 
-	ret = (-EBUSY);
+	ret = (bostan_dma_control_config(
+		interface,
+		ctag,
+		BOSTAN_CNOC_BARRIER_MODE,
+		(1),
+		mppa256_mailbox_tx_handler
+	));
 
-	/* Tries to open DMA Data Channel. */
-	if (bostan_dma_data_open(interface, dtag) != 0)
-		goto error;
-
-	ret = (-EAGAIN);
-
-	if (bostan_dma_control_config(interface, ctag, (1), mppa256_mailbox_tx_handler) != 0)
+	if (ret != 0)
 		goto error;
 
 	/* Send message. */
@@ -713,10 +693,6 @@ PRIVATE int mppa256_mailbox_send_msg(int mbxid)
 	);
 
 error:
-	/* Close data sender point. */
-	if (bostan_dma_data_close(interface, dtag) != 0)
-		kpanic("[hal][mailbox][send] Failed to close the data transmission channel.");
-
 	mbxtab.txs[mbxid].ret = (ret < 0) ? (-EAGAIN) : 0;
 
 	k1b_spinlock_unlock(&mbxtab.txs[mbxid].lock);
@@ -852,7 +828,7 @@ PRIVATE int mppa256_mailbox_msg_copy(int mbxid, void * buffer)
 
 		/* Searches for a received message. */
 		remotenum = mqueue->initial_message;
-		for (unsigned i = 0; i < MQUEUE_MSG_AMOUNT; ++i)
+		for (unsigned i = 0; i < MQUEUE_MSG_AMOUNT; i++)
 		{
 			msg = &mqueue->messages[remotenum];
 
@@ -1088,4 +1064,67 @@ error:
 	mppa256_mailbox_unlock();
 
 	return (-EBADF);
+}
+
+/*============================================================================*
+ * mppa256_mailbox_setup()                                                    *
+ *============================================================================*/
+
+/**
+ * @see mppa256_mailbox_setup().
+ */
+PUBLIC void mppa256_mailbox_setup(void)
+{
+	kprintf("[hal][mailbox] Mailbox Initialization.");
+
+	for (unsigned i = BOSTAN_MAILBOX_DNOC_TX_BASE; i < BOSTAN_DNOC_TXS_PER_COMM_SERVICE; i++)
+		if (bostan_dma_data_open(0, i) != 0)
+			kpanic("[hal][mailbox] Cannot open data channel.");
+
+	for (unsigned i = 0; i < MPPA256_MAILBOX_CREATE_MAX; i++)
+	{
+		mbxtab.rxs[i].resource        = RESOURCE_INITIALIZER;
+		mbxtab.rxs[i].ret             = (-EAGAIN);
+		mbxtab.rxs[i].initial_message = 0;
+		mbxtab.rxs[i].message_count   = 0;
+		mbxtab.rxs[i].buffer          = NULL;
+		k1b_spinlock_init(&mbxtab.rxs[i].lock);
+		k1b_spinlock_lock(&mbxtab.rxs[i].lock);
+
+		/* Configures underlying message queue. */
+		for (unsigned j = 0; j < MQUEUE_MSG_AMOUNT; j++)
+		{
+			mbxtab.rxs[i].messages[j].source  = MPPA256_MAILBOX_MESSAGE_INVALID;
+			mbxtab.rxs[i].messages[j].confirm = MPPA256_MAILBOX_MESSAGE_INVALID;
+		}
+	}
+
+	for (unsigned i = 0; i < MPPA256_MAILBOX_OPEN_MAX; i++)
+	{
+		mbxtab.txs[i].resource    = RESOURCE_INITIALIZER;
+		mbxtab.txs[i].ret         = (-EAGAIN);
+		mbxtab.txs[i].source_ctag = -1;
+		mbxtab.txs[i].remote      = -1;
+		mbxtab.txs[i].ack         = 0;
+		mbxtab.txs[i].commit      = 0;
+		mbxtab.txs[i].unused      = 0;
+		mbxtab.txs[i].message.source  = MPPA256_MAILBOX_MESSAGE_INVALID;
+		mbxtab.txs[i].message.confirm = MPPA256_MAILBOX_MESSAGE_INVALID;
+		k1b_spinlock_init(&mbxtab.txs[i].lock);
+		k1b_spinlock_lock(&mbxtab.txs[i].lock);
+	}
+}
+
+/*============================================================================*
+ * mppa256_mailbox_shutdown()                                                 *
+ *============================================================================*/
+
+/**
+ * @todo TODO: provide a detailed description for this function.
+ */
+PUBLIC void mppa256_mailbox_shutdown(void)
+{
+	for (unsigned i = BOSTAN_MAILBOX_DNOC_TX_BASE; i < BOSTAN_DNOC_TXS_PER_COMM_SERVICE; i++)
+		if (bostan_dma_data_close(0, i) != 0)
+			kpanic("[hal][mailbox][mppa256] Cannot close data channel.");
 }

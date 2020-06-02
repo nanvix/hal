@@ -56,9 +56,14 @@
 	 */
 	/**@{*/
 	#define MPPA256_PORTAL_RESERVED_SIZE (3 * 4)                                                   /**< Header size (3 * sizeof(int)). */
-	#define MPPA256_PORTAL_DATA_SIZE     (8*KB)                                                    /**< Maximum data size.             */
+	#define MPPA256_PORTAL_DATA_SIZE     (PAGE_SIZE)                                               /**< Maximum data size.             */
 	#define MPPA256_PORTAL_MAX_SIZE      (MPPA256_PORTAL_RESERVED_SIZE + MPPA256_PORTAL_DATA_SIZE) /**< Maximum size.                  */
 	/**@}*/
+
+	/**
+	 * @brief Setup portal module.
+	 */
+	EXTERN void mppa256_portal_setup(void);
 
 	/**
 	 * @brief Creates a portal.
@@ -180,12 +185,10 @@
 	/**@}*/
 
 	/**
-	 * @todo TODO: rely on dummy platform-independent dummy function.
+	 * @see mppa256_portal_setup()
 	 */
-	static inline void portal_setup(void)
-	{
-
-	}
+	#define __portal_setup() \
+		mppa256_portal_setup()
 
 	/**
 	 * @see mppa256_portal_create()

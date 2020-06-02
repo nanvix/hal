@@ -55,10 +55,15 @@
 	 * @name Sizes (in bytes) of a mailbox message.
 	 */
 	/**@{*/
-	#define MPPA256_MAILBOX_HEADER_SIZE (3 * 4)                                                   /**< Header size (3 * sizeof(int)). */
-	#define MPPA256_MAILBOX_DATA_SIZE   (120)                                                     /**< Data size.                     */
-	#define MPPA256_MAILBOX_MSG_SIZE    (MPPA256_MAILBOX_HEADER_SIZE + MPPA256_MAILBOX_DATA_SIZE) /**< Message size.                  */
+	#define MPPA256_MAILBOX_RESERVED_SIZE (3 * 4)                                                     /**< Header size (3 * sizeof(int)). */
+	#define MPPA256_MAILBOX_DATA_SIZE     (120)                                                       /**< Data size.                     */
+	#define MPPA256_MAILBOX_MSG_SIZE      (MPPA256_MAILBOX_RESERVED_SIZE + MPPA256_MAILBOX_DATA_SIZE) /**< Message size.                  */
 	/**@}*/
+
+	/**
+	 * @brief Setup mailbox module.
+	 */
+	EXTERN void mppa256_mailbox_setup(void);
 
 	/**
 	 * @brief Creates a mailbox.
@@ -157,22 +162,20 @@
 	 * @name Provided Constants
 	 */
 	/**@{*/
-	#define HAL_MAILBOX_CREATE_OFFSET MPPA256_MAILBOX_CREATE_OFFSET /**< MPPA256_MAILBOX_CREATE_OFFSET */
-	#define HAL_MAILBOX_OPEN_OFFSET   MPPA256_MAILBOX_OPEN_OFFSET   /**< MPPA256_MAILBOX_OPEN_OFFSET   */
-	#define HAL_MAILBOX_CREATE_MAX    MPPA256_MAILBOX_CREATE_MAX    /**< MPPA256_MAILBOX_CREATE_MAX    */
-	#define HAL_MAILBOX_OPEN_MAX      MPPA256_MAILBOX_OPEN_MAX      /**< MPPA256_MAILBOX_OPEN_MAX      */
-	#define HAL_MAILBOX_HEADER_SIZE   MPPA256_MAILBOX_HEADER_SIZE   /**< MPPA256_MAILBOX_MSG_SIZE      */
-	#define HAL_MAILBOX_DATA_SIZE     MPPA256_MAILBOX_DATA_SIZE     /**< MPPA256_MAILBOX_MSG_SIZE      */
-	#define HAL_MAILBOX_MSG_SIZE      MPPA256_MAILBOX_MSG_SIZE      /**< MPPA256_MAILBOX_MSG_SIZE      */
+	#define HAL_MAILBOX_CREATE_OFFSET MPPA256_MAILBOX_CREATE_OFFSET /**< @see MPPA256_MAILBOX_CREATE_OFFSET */
+	#define HAL_MAILBOX_OPEN_OFFSET   MPPA256_MAILBOX_OPEN_OFFSET   /**< @see MPPA256_MAILBOX_OPEN_OFFSET   */
+	#define HAL_MAILBOX_CREATE_MAX    MPPA256_MAILBOX_CREATE_MAX    /**< @see MPPA256_MAILBOX_CREATE_MAX    */
+	#define HAL_MAILBOX_OPEN_MAX      MPPA256_MAILBOX_OPEN_MAX      /**< @see MPPA256_MAILBOX_OPEN_MAX      */
+	#define HAL_MAILBOX_RESERVED_SIZE MPPA256_MAILBOX_RESERVED_SIZE /**< @see MPPA256_MAILBOX_RESERVED_SIZE */
+	#define HAL_MAILBOX_DATA_SIZE     MPPA256_MAILBOX_DATA_SIZE     /**< @see MPPA256_MAILBOX_DATA_SIZE     */
+	#define HAL_MAILBOX_MSG_SIZE      MPPA256_MAILBOX_MSG_SIZE      /**< @see MPPA256_MAILBOX_MSG_SIZE      */
 	/**@}*/
 
 	/**
-	 * @todo TODO: rely on dummy platform-independent dummy function.
+	 * @see mppa256_mailbox_setup()
 	 */
-	static inline void mailbox_setup(void)
-	{
-
-	}
+	#define __mailbox_setup() \
+		mppa256_mailbox_setup()
 
 	/**
 	 * @see mppa256_mailbox_create()

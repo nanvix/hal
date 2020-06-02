@@ -51,18 +51,39 @@ PRIVATE void dummy_handler(int num)
 }
 
 /**
+ * @brief Setup interrupts.
+ */
+PUBLIC void test_stress_interrupt_setup(void)
+{
+	/* Ignores spurious interrupts. */
+	if (core_get_id() == 0)
+		KASSERT(interrupt_register(INTERRUPT_TIMER, dummy_handler) == 0);
+
+	interrupts_enable();
+}
+
+/**
+ * @brief Cleanup interrupts.
+ */
+PUBLIC void test_stress_interrupt_cleanup(void)
+{
+	interrupts_disable();
+
+	/* Unregister interrupt handler. */
+	if (core_get_id() == 0)
+		KASSERT(interrupt_unregister(INTERRUPT_TIMER) == 0);
+}
+
+/**
  * @brief Setup synchronization points.
  */
-void test_stress_setup(void)
+PUBLIC void test_stress_setup(void)
 {
 	int local;
 	int remote;
 	int nodes[2];
 
-	/* Ignores spurious interrupts. */
-	KASSERT(interrupt_register(INTERRUPT_TIMER, dummy_handler) == 0);
-
-	interrupts_enable();
+	test_stress_interrupt_setup();
 
 	local  = processor_node_get_num();
 	remote = local == NODENUM_MASTER ? NODENUM_SLAVE : NODENUM_MASTER;
@@ -81,7 +102,7 @@ void test_stress_setup(void)
 /**
  * @brief Cleanup synchronization points.
  */
-void test_stress_cleanup(void)
+PUBLIC void test_stress_cleanup(void)
 {
 	KASSERT(sync_unlink(_syncin) == 0);
 	KASSERT(sync_close(_syncout) == 0);
@@ -89,25 +110,33 @@ void test_stress_cleanup(void)
 	_syncin  = -1;
 	_syncout = -1;
 
-	interrupts_disable();
-
-	KASSERT(interrupt_unregister(INTERRUPT_TIMER) == 0);
+	test_stress_interrupt_cleanup();
 }
 
 /**
  * @brief Synchronization step.
  */
-void test_stress_barrier(void)
+PUBLIC void test_stress_barrier(void)
 {
+	int ret;
+
 	if (processor_node_get_num() == NODENUM_MASTER)
 	{
-		KASSERT(sync_signal(_syncout) == 0);
+		do
+			ret = sync_signal(_syncout);
+		while (ret == (-EAGAIN));
+		KASSERT(ret == 0);
+
 		KASSERT(sync_wait(_syncin) == 0);
 	}
 	else
 	{
 		KASSERT(sync_wait(_syncin) == 0);
-		KASSERT(sync_signal(_syncout) == 0);
+
+		do
+			ret = sync_signal(_syncout);
+		while (ret == (-EAGAIN));
+		KASSERT(ret == 0);
 	}
 }
 

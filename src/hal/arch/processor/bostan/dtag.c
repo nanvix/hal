@@ -434,7 +434,8 @@ PRIVATE void bostan_dnoc_it_handler(int ev_src)
 	volatile dword_t * field_status;
 	bostan_processor_noc_handler_fn handler;
 
-	UNUSED(ev_src);
+	if (ev_src > 0)
+		interrupt_mask(K1B_INT_DNOC);
 
 	dcache_invalidate();
 
@@ -470,12 +471,16 @@ PRIVATE void bostan_dnoc_it_handler(int ev_src)
 							(void *) &bostan_dnoc_rx_handlers[interface][tag]
 						);
 
-						handler(interface, tag);
+						if (handler)
+							handler(interface, tag);
 					}
 				}
 			}
 		}
 	}
+
+	if (ev_src > 0)
+		interrupt_unmask(K1B_INT_DNOC);
 }
 
 /*============================================================================*

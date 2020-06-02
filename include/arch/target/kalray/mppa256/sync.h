@@ -67,10 +67,7 @@
 	/**@}*/
 
 	/**
-	 * @todo TODO: rely on dummy platform-independent dummy function.
-	 *
-	 * @todo Maybe this function can be used to initialize the intercluster
-	 * fence resources.
+	 * @brief Setup sync module.
 	 */
 	EXTERN void mppa256_sync_setup(void);
 

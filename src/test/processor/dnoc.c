@@ -34,10 +34,10 @@
  * @name Tests arguments
  */
 /**@{*/
-#define INTERFACE   0        /**< DMA channel used.             */
-#define RX_TAG      58       /**< Receiver identificantion tag. */
-#define TX_TAG      0        /**< Transfer identificantion tag. */
-#define BUFFER_MAX_SIZE 1024 /**< Maximum data exchange size.   */
+#define INTERFACE       (0)    /**< DMA channel used.             */
+#define RX_TAG          (120)  /**< Receiver identificantion tag. */
+#define TX_TAG          (0)    /**< Transfer identificantion tag. */
+#define BUFFER_MAX_SIZE (1024) /**< Maximum data exchange size.   */
 /**@}*/
 
 /**
@@ -340,6 +340,8 @@ PRIVATE struct test dnoc_tests_api[] = {
  */
 PUBLIC void test_dnoc(void)
 {
+	KASSERT(bostan_dma_data_close(INTERFACE, TX_TAG) == 0);
+
 	/* API Tests */
 	kprintf(HLINE);
 	for (int i = 0; dnoc_tests_api[i].test_fn != NULL; i++)
@@ -347,6 +349,8 @@ PUBLIC void test_dnoc(void)
 		dnoc_tests_api[i].test_fn();
 		kprintf("[test][api][noc][data] %s [passed]", dnoc_tests_api[i].name);
 	}
+
+	KASSERT(bostan_dma_data_open(INTERFACE, TX_TAG) == 0);
 }
 
 #endif

@@ -34,11 +34,11 @@
  * @name Tests arguments
  */
 /**@{*/
-#define INTERFACE 0          /**< DMA channel used.             */
-#define RX_TAG    58         /**< Receiver identificantion tag. */
-#define RX_MASK   (0x1)      /**< Receiver default mask.        */
-#define TX_TAG    1          /**< Transfer identificantion tag. */
-#define TX_MASK   (~RX_MASK) /**< Transfer default mask.        */
+#define INTERFACE (0)                           /**< DMA channel used.             */
+#define RX_TAG    (120)                         /**< Receiver identificantion tag. */
+#define RX_MASK   (0x1)                         /**< Receiver default mask.        */
+#define TX_TAG    (BOSTAN_MAILBOX_CNOC_TX_BASE) /**< Transfer identificantion tag. */
+#define TX_MASK   (~RX_MASK)                    /**< Transfer default mask.        */
 /**@}*/
 
 /**
@@ -66,11 +66,11 @@ PRIVATE void test_cnoc_dummy_handler(int interface, int tag)
  */
 PRIVATE void test_cnoc_create_unlink(void)
 {
-	KASSERT(bostan_dma_control_create(INTERFACE, RX_TAG, RX_MASK, NULL) == 0);
+	KASSERT(bostan_dma_control_create(INTERFACE, RX_TAG, BOSTAN_CNOC_BARRIER_MODE, RX_MASK, NULL) == 0);
 	KASSERT(bostan_dma_control_unlink(INTERFACE, RX_TAG) == 0);
 
-	KASSERT(bostan_dma_control_create(INTERFACE, RX_TAG, RX_MASK, NULL) == 0);
-	KASSERT(bostan_dma_control_config(INTERFACE, RX_TAG, RX_MASK, NULL) == 0);
+	KASSERT(bostan_dma_control_create(INTERFACE, RX_TAG, BOSTAN_CNOC_BARRIER_MODE, RX_MASK, NULL) == 0);
+	KASSERT(bostan_dma_control_config(INTERFACE, RX_TAG, BOSTAN_CNOC_BARRIER_MODE, RX_MASK, NULL) == 0);
 	KASSERT(bostan_dma_control_unlink(INTERFACE, RX_TAG) == 0);
 }
 
@@ -95,7 +95,7 @@ PRIVATE void test_cnoc_loopback_with_events(void)
 
 	local = processor_node_get_num();
 
-	KASSERT(bostan_dma_control_create(INTERFACE, RX_TAG, RX_MASK, NULL) == 0);
+	KASSERT(bostan_dma_control_create(INTERFACE, RX_TAG, BOSTAN_CNOC_BARRIER_MODE, RX_MASK, NULL) == 0);
 	KASSERT(bostan_dma_control_open(INTERFACE, TX_TAG) == 0);
 
 	KASSERT(
@@ -124,7 +124,7 @@ PRIVATE void test_cnoc_loopback_with_interrupts(void)
 
 	local = processor_node_get_num();
 
-	KASSERT(bostan_dma_control_create(INTERFACE, RX_TAG, RX_MASK, test_cnoc_dummy_handler) == 0);
+	KASSERT(bostan_dma_control_create(INTERFACE, RX_TAG, BOSTAN_CNOC_BARRIER_MODE, RX_MASK, test_cnoc_dummy_handler) == 0);
 	KASSERT(bostan_dma_control_open(INTERFACE, TX_TAG) == 0);
 
 	interrupts_enable();
@@ -151,13 +151,79 @@ PRIVATE void test_cnoc_loopback_with_interrupts(void)
 /**
  * @brief API Test: Synchronization Point With Events
  */
+PRIVATE void test_cnoc_mailbox_with_events(void)
+{
+	int local;
+
+	local = processor_node_get_num();
+
+	KASSERT(bostan_dma_control_create(INTERFACE, RX_TAG, BOSTAN_CNOC_MAILBOX_MODE, 0ULL, NULL) == 0);
+	KASSERT(bostan_dma_control_open(INTERFACE, TX_TAG) == 0);
+
+	KASSERT(
+		bostan_dma_control_signal(
+			INTERFACE,
+			TX_TAG,
+			&local,
+			1,
+			RX_TAG,
+			0xdeadbeef
+		) == 0
+	);
+
+	KASSERT(bostan_dma_control_wait(INTERFACE, RX_TAG) == 0);
+
+	KASSERT(bostan_dma_control_read(INTERFACE, RX_TAG) == 0xdeadbeef);
+
+	KASSERT(bostan_dma_control_close(INTERFACE, TX_TAG) == 0);
+	KASSERT(bostan_dma_control_unlink(INTERFACE, RX_TAG) == 0);
+}
+
+/**
+ * @brief API Test: Synchronization Point With Interrupts
+ */
+PRIVATE void test_cnoc_mailbox_with_interrupts(void)
+{
+	int local;
+
+	local = processor_node_get_num();
+
+	KASSERT(bostan_dma_control_create(INTERFACE, RX_TAG, BOSTAN_CNOC_MAILBOX_MODE, 0ULL, test_cnoc_dummy_handler) == 0);
+	KASSERT(bostan_dma_control_open(INTERFACE, TX_TAG) == 0);
+
+	interrupts_enable();
+
+		KASSERT(
+			bostan_dma_control_signal(
+				INTERFACE,
+				TX_TAG,
+				&local,
+				1,
+				RX_TAG,
+				0xdeadbeef
+			) == 0
+		);
+
+		spinlock_lock(&test_cnoc_lock);
+
+	interrupts_disable();
+
+	KASSERT(bostan_dma_control_read(INTERFACE, RX_TAG) == 0xdeadbeef);
+
+	KASSERT(bostan_dma_control_close(INTERFACE, TX_TAG) == 0);
+	KASSERT(bostan_dma_control_unlink(INTERFACE, RX_TAG) == 0);
+}
+
+/**
+ * @brief API Test: Synchronization Point With Events
+ */
 static void test_cnoc_stress_with_events(void)
 {
 	int local;
 
 	local = processor_node_get_num();
 
-	KASSERT(bostan_dma_control_create(INTERFACE, RX_TAG, RX_MASK, NULL) == 0);
+	KASSERT(bostan_dma_control_create(INTERFACE, RX_TAG, BOSTAN_CNOC_BARRIER_MODE, RX_MASK, NULL) == 0);
 	KASSERT(bostan_dma_control_open(INTERFACE, TX_TAG) == 0);
 
 	for (int i = 0; i < 10; ++i)
@@ -175,7 +241,7 @@ static void test_cnoc_stress_with_events(void)
 
 		KASSERT(bostan_dma_control_wait(INTERFACE, RX_TAG) == 0);
 
-		KASSERT(bostan_dma_control_config(INTERFACE, RX_TAG, RX_MASK, NULL) == 0);
+		KASSERT(bostan_dma_control_config(INTERFACE, RX_TAG, BOSTAN_CNOC_BARRIER_MODE, RX_MASK, NULL) == 0);
 	}
 
 	KASSERT(bostan_dma_control_close(INTERFACE, TX_TAG) == 0);
@@ -191,7 +257,7 @@ static void test_cnoc_stress_with_interrupts(void)
 
 	local = processor_node_get_num();
 
-	KASSERT(bostan_dma_control_create(INTERFACE, RX_TAG, RX_MASK, test_cnoc_dummy_handler) == 0);
+	KASSERT(bostan_dma_control_create(INTERFACE, RX_TAG, BOSTAN_CNOC_BARRIER_MODE, RX_MASK, test_cnoc_dummy_handler) == 0);
 	KASSERT(bostan_dma_control_open(INTERFACE, TX_TAG) == 0);
 
 	interrupts_enable();
@@ -211,7 +277,7 @@ static void test_cnoc_stress_with_interrupts(void)
 
 			spinlock_lock(&test_cnoc_lock);
 
-			KASSERT(bostan_dma_control_config(INTERFACE, RX_TAG, RX_MASK, test_cnoc_dummy_handler) == 0);
+			KASSERT(bostan_dma_control_config(INTERFACE, RX_TAG, BOSTAN_CNOC_BARRIER_MODE, RX_MASK, test_cnoc_dummy_handler) == 0);
 		}
 
 	interrupts_disable();
@@ -233,6 +299,8 @@ struct test cnoc_tests_api[] = {
 	{test_cnoc_open_close,               "Open Close                       " },
 	{test_cnoc_loopback_with_events,     "Loopback a signal with events    " },
 	{test_cnoc_loopback_with_interrupts, "Loopback a signal with interrupts" },
+	{test_cnoc_mailbox_with_events,      "Mailbox a signal with events     " },
+	{test_cnoc_mailbox_with_interrupts,  "Mailbox a signal with interrupts " },
 	{test_cnoc_stress_with_events,       "Stress a signal with events      " },
 	{test_cnoc_stress_with_interrupts,   "Stress a signal with interrupts  " },
 	{NULL,                               NULL                                },

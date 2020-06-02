@@ -30,9 +30,9 @@
 	*/
 	/**@{*/
 	#define NODES_AMOUNT   2
-	#define NODENUM_MASTER 0
+	#define NODENUM_MASTER PROCESSOR_NODENUM_MASTER
 	#ifdef __mppa256__
-		#define NODENUM_SLAVE  (PROCESSOR_NODENUM_MASTER + PROCESSOR_NOC_IONODES_NUM)
+		#define NODENUM_SLAVE  (PROCESSOR_NODENUM_LEADER)
 	#else
 		#define NODENUM_SLAVE  (PROCESSOR_NODENUM_MASTER + 1)
 	#endif
@@ -148,26 +148,43 @@
 	EXTERN void test_noc(void);
 
 	/**
-	 * @name Auxiliar functions of Stress Tests
-	 */
-	/**@{*/
-	EXTERN void test_stress_setup(void);
-	EXTERN void test_stress_cleanup(void);
-	/**@}*/
-
-	/**
 	 * @brief Stress test driver for the Mailbox Interface
 	 */
-	EXTERN void test_stress_mailbox(void);
+	EXTERN void test_stress_al(void);
+
+/*----------------------------------------------------------------------------*
+ * Fence                                                                      *
+ *----------------------------------------------------------------------------*/
 
 	/**
-	 * @brief Stress test driver for the Portal Interface
+	 * @brief A simple fence.
 	 */
-	EXTERN void test_stress_portal(void);
+	struct fence
+	{
+		int nreached;    /**< Number of cores that reached the fence */
+		int ncores;      /**< Number of cores in the fence.          */
+		spinlock_t lock; /**< Lock.                                  */
+	};
+
+	EXTERN void fence_init(struct fence *, int);
+	EXTERN void fence_wait(struct fence *);
+	EXTERN void fence_join(struct fence *);
+
+/*----------------------------------------------------------------------------*
+ * Semaphore                                                                  *
+ *----------------------------------------------------------------------------*/
 
 	/**
-	 * @brief Stress test driver for the combination of Mailbox and Portal Interfaces
+	 * @brief A simple semaphore
 	 */
-	EXTERN void test_stress_combination(void);
+	struct semaphore
+	{
+		spinlock_t lock; /**< Semaphore lock.    */
+		int count;       /**< Semaphore counter. */
+	};
+
+	EXTERN void semaphore_init(struct semaphore *, int);
+	EXTERN void semaphore_down(struct semaphore *);
+	EXTERN void semaphore_up(struct semaphore *);
 
 #endif /* _HAL_TEST_H_ */

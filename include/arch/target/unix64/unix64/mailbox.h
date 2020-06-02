@@ -69,9 +69,14 @@
 	/**
 	 * @brief Shutdowns the mailbox interface.
 	 */
-	PUBLIC void unix64_mailbox_shutdown(void);
+	EXTERN void unix64_mailbox_shutdown(void);
 
 #endif /* __NANVIX_HAL */
+
+	/**
+	 * @brief Setup the mailbox interface.
+	 */
+	EXTERN void unix64_mailbox_setup(void);
 
 	/**
 	 * @brief Creates a mailbox.
@@ -176,17 +181,11 @@
 	#define HAL_MAILBOX_MSG_SIZE      UNIX64_MAILBOX_MSG_SIZE      /**< @see UNIX64_MAILBOX_MSG_SIZE      */
 	/**@}*/
 
-#ifdef __NANVIX_HAL
-
 	/**
-	 * @todo TODO: rely on dummy platform-independent dummy function.
+	 * @see unix64_mailbox_setup()
 	 */
-	static inline void mailbox_setup(void)
-	{
-
-	}
-
-#endif /* __NANVIX_HAL */
+	#define __mailbox_setup() \
+		unix64_mailbox_setup()
 
 	/**
 	 * @see unix64_mailbox_create()

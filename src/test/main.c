@@ -112,22 +112,6 @@ PRIVATE void test_target_al(void)
 #endif
 }
 
-/**
- * @brief Launches unit tests on Target AL.
- */
-PRIVATE void test_stress_al(void)
-{
-#if (__TARGET_HAS_SYNC && __TARGET_HAS_MAILBOX && __TARGET_HAS_PORTAL)
-	test_stress_setup();
-
-		test_stress_mailbox();
-		test_stress_portal();
-		test_stress_combination();
-
-	test_stress_cleanup();
-#endif /* __TARGET_HAS_SYNC && __TARGET_HAS_MAILBOX && __TARGET_HAS_PORTAL */
-}
-
 #ifndef __unix64__
 
 /**
@@ -179,11 +163,9 @@ PUBLIC NORETURN void kmain(int argc, const char *argv[])
 	}
 
 #if (PROCESSOR_IS_MULTICLUSTER)
+	/* Run Inter-Cluster tests. */
 	if ((nodenum == NODENUM_MASTER) || (nodenum == NODENUM_SLAVE))
-	{
-		/* Run binary tests. */
 		test_stress_al();
-	}
 #endif
 
 	target_poweroff();

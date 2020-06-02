@@ -296,7 +296,10 @@ PRIVATE void bostan_cnoc_it_handler(int ev_src)
 	volatile dword_t * field_status;
 	bostan_processor_noc_handler_fn handler;
 
-	UNUSED(ev_src);
+	if (ev_src > 0)
+		interrupt_mask(K1B_INT_CNOC);
+
+	dcache_invalidate();
 
 	do
 	{
@@ -345,6 +348,9 @@ PRIVATE void bostan_cnoc_it_handler(int ev_src)
 			bostan_cnoc_clear_interface_flags(interface);
 		}
 	} while (possible_lost_it);
+
+	if (ev_src > 0)
+		interrupt_unmask(K1B_INT_CNOC);
 }
 
 /*============================================================================*
@@ -639,14 +645,14 @@ PUBLIC int bostan_cnoc_rx_config(
  *============================================================================*/
 
 /**
- * @brief Wait events on C-NoC receiver tag.
+ * @brief Reads C-NoC buffer.
  *
  * @param interface Number of the DMA channel.
- * @param tag       Number of receiver tag.
+ * @param tag       Number of receiver buffer.
  *
  * @return Receiver buffer value.
  */
-PUBLIC int bostan_cnoc_rx_read(int interface, int tag)
+PUBLIC uint64_t bostan_cnoc_rx_read(int interface, int tag)
 {
 	if (!bostan_cnoc_rx_is_valid(interface, tag))
 		return (-EINVAL);

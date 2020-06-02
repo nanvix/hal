@@ -59,6 +59,11 @@
 	#define BOSTAN_PROCESSOR_NODENUM_MASTER 0
 
 	/**
+	 * @brief Logical NoC node ID of leader.
+	 */
+	#define BOSTAN_PROCESSOR_NODENUM_LEADER (BOSTAN_PROCESSOR_NOC_IONODES_NUM + 0)
+
+	/**
 	 * @name Number of NoC nodes per DMA Channel.
 	 */
 	/**@{*/
@@ -67,7 +72,7 @@
 	#define BOSTAN_PORTAL_CREATE_PER_DMA  2                              /**< 1 D-NoC RX and 1 C-NoC TX             */
 	#define BOSTAN_PORTAL_OPEN_PER_DMA    BOSTAN_PROCESSOR_NOC_NODES_NUM /**< 1 D-NoC TX (by demand) and 1 C-NoC RX */
 	#define BOSTAN_SYNC_CREATE_PER_DMA    BOSTAN_PROCESSOR_NOC_NODES_NUM /**< 1 C-NoC RX                            */
-	#define BOSTAN_SYNC_OPEN_PER_DMA      1                              /**< 1 C-NoC TX                            */
+	#define BOSTAN_SYNC_OPEN_PER_DMA      BOSTAN_PROCESSOR_NOC_NODES_NUM /**< 1 C-NoC TX                            */
 	/**@}*/
 
 	/**
@@ -181,6 +186,7 @@
 	#define PROCESSOR_NOC_IONODES_NUM BOSTAN_PROCESSOR_NOC_IONODES_NUM /**< BOSTAN_PROCESSOR_NOC_IONODES_NUM */
 	#define PROCESSOR_NOC_CNODES_NUM  BOSTAN_PROCESSOR_NOC_CNODES_NUM  /**< BOSTAN_PROCESSOR_NOC_CNODES_NUM  */
 	#define PROCESSOR_NODENUM_MASTER  BOSTAN_PROCESSOR_NODENUM_MASTER  /**< BOSTAN_PROCESSOR_NODENUM_MASTER  */
+	#define PROCESSOR_NODENUM_LEADER  BOSTAN_PROCESSOR_NODENUM_LEADER  /**< BOSTAN_PROCESSOR_NODENUM_LEADER  */
 	/**@}*/
 
 	/**
