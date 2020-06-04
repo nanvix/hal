@@ -40,8 +40,11 @@ export RELEASE ?= no
 # Installation Prefix
 export PREFIX ?= $(HOME)
 
-# Run Arguments
-export RUN_ARGS ?= "--all"
+# Use Docker?
+export DOCKER ?= no
+
+# Stall regression tests?
+export SUPPRESS_TESTS ?= no
 
 #===============================================================================
 # Directories
