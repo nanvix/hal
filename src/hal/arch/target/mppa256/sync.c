@@ -62,8 +62,8 @@ struct hash
 	uint64_t source    :  5;
 	uint64_t type      :  1;
 	uint64_t master    :  5;
-	uint64_t nodeslist : 20;
-	uint64_t unused    : 33;
+	uint64_t nodeslist : 24;
+	uint64_t unused    : 29;
 };
 
 #define HASH_INITIALIZER ((struct hash){-1, 0, -1, 0, 0})
