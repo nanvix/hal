@@ -31,7 +31,7 @@
  * sync_rx_is_valid()                                                         *
  *============================================================================*/
 
-#if (__TARGET_HAS_SYNC)
+#if (__TARGET_HAS_SYNC && !__NANVIX_IKC_USES_ONLY_MAILBOX)
 
 /**
  * @brief Asserts whether or not a receiver portal is valid.
@@ -62,7 +62,7 @@ PRIVATE int sync_rx_is_valid(int syncid)
  * sync_tx_is_valid()                                                         *
  *============================================================================*/
 
-#if (__TARGET_HAS_SYNC)
+#if (__TARGET_HAS_SYNC && !__NANVIX_IKC_USES_ONLY_MAILBOX)
 
 /**
  * @brief Asserts whether or not a sender portal is valid.
@@ -93,7 +93,7 @@ PRIVATE int sync_tx_is_valid(int syncid)
  * sync_nodelist_is_valid()                                                   *
  *============================================================================*/
 
-#if (__TARGET_HAS_SYNC)
+#if (__TARGET_HAS_SYNC && !__NANVIX_IKC_USES_ONLY_MAILBOX)
 
 /**
  * @brief Node list validation.
@@ -149,7 +149,7 @@ PRIVATE int sync_nodelist_is_valid(const int * nodes, int nnodes, int is_the_one
  */
 PUBLIC int sync_create(const int * nodes, int nnodes, int type)
 {
-#if (__TARGET_HAS_SYNC)
+#if (__TARGET_HAS_SYNC && !__NANVIX_IKC_USES_ONLY_MAILBOX)
 	int is_the_one;
 
 	/*  Invalid nodes list. */
@@ -190,7 +190,7 @@ PUBLIC int sync_create(const int * nodes, int nnodes, int type)
  */
 PUBLIC int sync_open(const int * nodes, int nnodes, int type)
 {
-#if (__TARGET_HAS_SYNC)
+#if (__TARGET_HAS_SYNC && !__NANVIX_IKC_USES_ONLY_MAILBOX)
 	int is_the_one;
 
 	/*  Invalid nodes list. */
@@ -231,7 +231,7 @@ PUBLIC int sync_open(const int * nodes, int nnodes, int type)
  */
 PUBLIC int sync_unlink(int syncid)
 {
-#if (__TARGET_HAS_SYNC)
+#if (__TARGET_HAS_SYNC && !__NANVIX_IKC_USES_ONLY_MAILBOX)
 
 	/* Invalid portal. */
 	if (!sync_rx_is_valid(syncid))
@@ -255,7 +255,7 @@ PUBLIC int sync_unlink(int syncid)
  */
 PUBLIC int sync_close(int syncid)
 {
-#if (__TARGET_HAS_SYNC)
+#if (__TARGET_HAS_SYNC && !__NANVIX_IKC_USES_ONLY_MAILBOX)
 
 	/* Invalid portal. */
 	if (!sync_tx_is_valid(syncid))
@@ -279,7 +279,7 @@ PUBLIC int sync_close(int syncid)
  */
 PUBLIC ssize_t sync_signal(int syncid)
 {
-#if (__TARGET_HAS_SYNC)
+#if (__TARGET_HAS_SYNC && !__NANVIX_IKC_USES_ONLY_MAILBOX)
 
 	/* Invalid NoC node ID. */
 	if (!sync_tx_is_valid(syncid))
@@ -303,7 +303,7 @@ PUBLIC ssize_t sync_signal(int syncid)
  */
 PUBLIC int sync_wait(int syncid)
 {
-#if (__TARGET_HAS_SYNC)
+#if (__TARGET_HAS_SYNC && !__NANVIX_IKC_USES_ONLY_MAILBOX)
 
 	/* Invalid mailbox. */
 	if (!sync_rx_is_valid(syncid))
@@ -327,7 +327,7 @@ PUBLIC int sync_wait(int syncid)
  */
 PUBLIC void sync_setup(void)
 {
-#if (__TARGET_HAS_SYNC)
+#if (__TARGET_HAS_SYNC && !__NANVIX_IKC_USES_ONLY_MAILBOX)
 	__sync_setup();
 #endif /* __TARGET_HAS_SYNC */
 }

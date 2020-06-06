@@ -38,6 +38,8 @@
 #include <posix/errno.h>
 #include <stdio.h>
 
+#if !__NANVIX_IKC_USES_ONLY_MAILBOX
+
 /**
  * @brief Length of sync name.
  */
@@ -861,3 +863,6 @@ PUBLIC void unix64_sync_shutdown(void)
 		KASSERT(mq_close(mqueues[i].fd) == 0);
 	}
 }
+
+#endif /* !__NANVIX_IKC_USES_ONLY_MAILBOX */
+

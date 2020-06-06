@@ -96,6 +96,9 @@ export CFLAGS += -Wno-unused-function
 export CFLAGS += -I $(INCDIR)
 export CFLAGS += -D__NANVIX_HAL
 
+# Enable sync and portal implementation that uses mailboxes
+export CFLAGS += -D__NANVIX_IKC_USES_ONLY_MAILBOX=0
+
 # Additional C Flags
 include $(BUILDDIR)/makefile.cflags
 

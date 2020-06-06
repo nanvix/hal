@@ -29,7 +29,7 @@
 #include "../test.h"
 #include "stress.h"
 
-#if (__TARGET_HAS_SYNC && __TARGET_HAS_MAILBOX && __TARGET_HAS_PORTAL)
+#if (__TARGET_HAS_SYNC && __TARGET_HAS_MAILBOX && __TARGET_HAS_PORTAL && !__NANVIX_IKC_USES_ONLY_MAILBOX)
 
 /**
  * @brief Stress core fence.
@@ -93,4 +93,4 @@ PUBLIC void test_stress_al(void)
 
 }
 
-#endif /* __TARGET_HAS_SYNC && __TARGET_HAS_MAILBOX && __TARGET_HAS_PORTAL */
+#endif /* __TARGET_HAS_SYNC && __TARGET_HAS_MAILBOX && __TARGET_HAS_PORTAL && !__NANVIX_IKC_USES_ONLY_MAILBOX */

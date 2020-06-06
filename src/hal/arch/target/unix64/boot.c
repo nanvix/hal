@@ -97,9 +97,11 @@ PUBLIC NORETURN void unix64_poweroff(void)
 	if (cluster_get_num() == PROCESSOR_CLUSTERNUM_MASTER)
 		kprintf("[hal][target] powering off...");
 
-	unix64_sync_shutdown();
 	unix64_mailbox_shutdown();
+#if !__NANVIX_IKC_USES_ONLY_MAILBOX
+	unix64_sync_shutdown();
 	unix64_portal_shutdown();
+#endif /* !__NANVIX_IKC_USES_ONLY_MAILBOX  */
 
 	processor_poweroff();
 }

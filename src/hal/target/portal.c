@@ -31,7 +31,7 @@
  * portal_rx_is_valid()                                                       *
  *============================================================================*/
 
-#if (__TARGET_HAS_PORTAL)
+#if (__TARGET_HAS_PORTAL && !__NANVIX_IKC_USES_ONLY_MAILBOX)
 
 /**
  * @brief Asserts whether or not a receiver portal is valid.
@@ -62,7 +62,7 @@ PRIVATE int portal_rx_is_valid(int portalid)
  * portal_tx_is_valid()                                                       *
  *============================================================================*/
 
-#if (__TARGET_HAS_PORTAL)
+#if (__TARGET_HAS_PORTAL && !__NANVIX_IKC_USES_ONLY_MAILBOX)
 
 /**
  * @brief Asserts whether or not a sender portal is valid.
@@ -98,7 +98,7 @@ PRIVATE int portal_tx_is_valid(int portalid)
  */
 PUBLIC int portal_create(int nodenum)
 {
-#if (__TARGET_HAS_PORTAL)
+#if (__TARGET_HAS_PORTAL && !__NANVIX_IKC_USES_ONLY_MAILBOX)
 
 	/* Is local valid? */
 	if (!node_is_valid(nodenum))
@@ -126,7 +126,7 @@ PUBLIC int portal_create(int nodenum)
  */
 PUBLIC int portal_open(int localnum, int remotenum)
 {
-#if (__TARGET_HAS_PORTAL)
+#if (__TARGET_HAS_PORTAL && !__NANVIX_IKC_USES_ONLY_MAILBOX)
 
 	/* Invalid local NoC node. */
 	if (!node_is_valid(localnum))
@@ -163,7 +163,7 @@ PUBLIC int portal_open(int localnum, int remotenum)
  */
 PUBLIC int portal_allow(int portalid, int nodenum)
 {
-#if (__TARGET_HAS_PORTAL)
+#if (__TARGET_HAS_PORTAL && !__NANVIX_IKC_USES_ONLY_MAILBOX)
 
 	/* Is nodenum valid? */
 	if (!node_is_valid(nodenum))
@@ -196,7 +196,7 @@ PUBLIC int portal_allow(int portalid, int nodenum)
  */
 PUBLIC int portal_unlink(int portalid)
 {
-#if (__TARGET_HAS_PORTAL)
+#if (__TARGET_HAS_PORTAL && !__NANVIX_IKC_USES_ONLY_MAILBOX)
 
 	/* Invalid portal. */
 	if (!portal_rx_is_valid(portalid))
@@ -220,7 +220,7 @@ PUBLIC int portal_unlink(int portalid)
  */
 PUBLIC int portal_close(int portalid)
 {
-#if (__TARGET_HAS_PORTAL)
+#if (__TARGET_HAS_PORTAL && !__NANVIX_IKC_USES_ONLY_MAILBOX)
 
 	/* Invalid portal. */
 	if (!portal_tx_is_valid(portalid))
@@ -244,7 +244,7 @@ PUBLIC int portal_close(int portalid)
  */
 PUBLIC ssize_t portal_awrite(int portalid, const void *buffer, uint64_t size)
 {
-#if (__TARGET_HAS_PORTAL)
+#if (__TARGET_HAS_PORTAL && !__NANVIX_IKC_USES_ONLY_MAILBOX)
 
 	/* Invalid NoC node ID. */
 	if (!portal_tx_is_valid(portalid))
@@ -278,7 +278,7 @@ PUBLIC ssize_t portal_awrite(int portalid, const void *buffer, uint64_t size)
  */
 PUBLIC ssize_t portal_aread(int portalid, void *buffer, uint64_t size)
 {
-#if (__TARGET_HAS_PORTAL)
+#if (__TARGET_HAS_PORTAL && !__NANVIX_IKC_USES_ONLY_MAILBOX)
 
 	/* Invalid NoC node ID. */
 	if (!portal_rx_is_valid(portalid))
@@ -312,7 +312,7 @@ PUBLIC ssize_t portal_aread(int portalid, void *buffer, uint64_t size)
  */
 PUBLIC int portal_wait(int portalid)
 {
-#if (__TARGET_HAS_PORTAL)
+#if (__TARGET_HAS_PORTAL && !__NANVIX_IKC_USES_ONLY_MAILBOX)
 
 	/* Invalid mailbox. */
 	if (!(portal_rx_is_valid(portalid) || portal_tx_is_valid(portalid)))
@@ -336,7 +336,7 @@ PUBLIC int portal_wait(int portalid)
  */
 PUBLIC void portal_setup(void)
 {
-#if (__TARGET_HAS_PORTAL)
+#if (__TARGET_HAS_PORTAL && !__NANVIX_IKC_USES_ONLY_MAILBOX)
 	__portal_setup();
 #endif /* __TARGET_HAS_PORTAL */
 }

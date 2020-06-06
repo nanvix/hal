@@ -60,6 +60,8 @@
 	#define MPPA256_PORTAL_MAX_SIZE      (MPPA256_PORTAL_RESERVED_SIZE + MPPA256_PORTAL_DATA_SIZE) /**< Maximum size.                  */
 	/**@}*/
 
+#if !__NANVIX_IKC_USES_ONLY_MAILBOX
+
 	/**
 	 * @brief Setup portal module.
 	 */
@@ -152,6 +154,8 @@
 	 */
 	EXTERN int mppa256_portal_wait(int portalid);
 
+#endif /* !__NANVIX_IKC_USES_ONLY_MAILBOX */
+
 /*============================================================================*
  *                              Exported Interface                            *
  *============================================================================*/
@@ -183,6 +187,8 @@
 	#define HAL_PORTAL_DATA_SIZE     MPPA256_PORTAL_DATA_SIZE     /**< @see MPPA256_PORTAL_DATA_SIZE     */
 	#define HAL_PORTAL_MAX_SIZE      MPPA256_PORTAL_MAX_SIZE      /**< @see MPPA256_PORTAL_MAX_SIZE      */
 	/**@}*/
+
+#if !__NANVIX_IKC_USES_ONLY_MAILBOX
 
 	/**
 	 * @see mppa256_portal_setup()
@@ -237,5 +243,7 @@
 	 */
 	#define __portal_wait(portalid) \
 		mppa256_portal_wait(portalid)
+
+#endif /* !__NANVIX_IKC_USES_ONLY_MAILBOX */
 
 #endif /* TARGET_KALRAY_MPPA256_PORTAL_H_ */
