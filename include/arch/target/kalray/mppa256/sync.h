@@ -66,6 +66,8 @@
 	#define MPPA256_SYNC_OPEN_OFFSET   MPPA256_SYNC_CREATE_MAX /**< Initial File Descriptor ID for Opens.   */
 	/**@}*/
 
+#if !__NANVIX_IKC_USES_ONLY_MAILBOX
+
 	/**
 	 * @brief Setup sync module.
 	 */
@@ -129,6 +131,8 @@
 	 */
 	EXTERN int mppa256_sync_signal(int syncid);
 
+#endif /* !__NANVIX_IKC_USES_ONLY_MAILBOX */
+
 /*============================================================================*
  *                              Exported Interface                            *
  *============================================================================*/
@@ -165,6 +169,8 @@
 	#define SYNC_OPEN_MAX      MPPA256_SYNC_OPEN_MAX      /**< MPPA256_SYNC_OPEN_MAX      */
 	#define SYNC_OPEN_OFFSET   MPPA256_SYNC_OPEN_OFFSET   /**< MPPA256_SYNC_OPEN_OFFSET   */
 	/**@}*/
+
+#if !__NANVIX_IKC_USES_ONLY_MAILBOX
 
 	/**
 	 * @see mppa256_sync_setup()
@@ -207,5 +213,7 @@
 	 */
 	#define __sync_signal(syncid) \
 		mppa256_sync_signal(syncid)
+
+#endif /* !__NANVIX_IKC_USES_ONLY_MAILBOX */
 
 #endif /* TARGET_KALRAY_MPPA256_SYNC_H_ */

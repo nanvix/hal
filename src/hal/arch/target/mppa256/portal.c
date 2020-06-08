@@ -31,6 +31,8 @@
 #include <nanvix/hlib.h>
 #include <posix/errno.h>
 
+#if !__NANVIX_IKC_USES_ONLY_MAILBOX
+
 /*============================================================================*
  * Definitions                                                                *
  *============================================================================*/
@@ -1108,3 +1110,6 @@ PUBLIC void mppa256_portal_shutdown(void)
 			kpanic("[hal][portal] Cannot close data channel.");
 	}
 }
+
+#endif /* !__NANVIX_IKC_USES_ONLY_MAILBOX */
+

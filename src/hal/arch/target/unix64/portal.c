@@ -38,6 +38,8 @@
 #include <stdio.h>
 #include <unistd.h>
 
+#if !__NANVIX_IKC_USES_ONLY_MAILBOX
+
 /**
  * @brief Length of portal name.
  */
@@ -946,3 +948,6 @@ PUBLIC void unix64_portal_shutdown(void)
 		}
 	}
 }
+
+#endif /* !__NANVIX_IKC_USES_ONLY_MAILBOX */
+

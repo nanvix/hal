@@ -67,6 +67,8 @@
 	 */
 	#define UNIX64_SYNC_MAX (UNIX64_SYNC_CREATE_MAX + UNIX64_SYNC_OPEN_MAX)
 
+#if !__NANVIX_IKC_USES_ONLY_MAILBOX
+
 #ifdef __NANVIX_HAL
 
 	/**
@@ -150,6 +152,8 @@
 	 */
 	EXTERN int unix64_sync_signal(int syncid);
 
+#endif /* !__NANVIX_IKC_USES_ONLY_MAILBOX */
+
 /**@}*/
 
 /*============================================================================*
@@ -181,6 +185,8 @@
 	#define SYNC_OPEN_MAX      UNIX64_SYNC_OPEN_MAX      /**< UNIX64_SYNC_OPEN_MAX      */
 	#define SYNC_OPEN_OFFSET   UNIX64_SYNC_OPEN_OFFSET   /**< UNIX64_SYNC_OPEN_OFFSET   */
 	/**@}*/
+
+#if !__NANVIX_IKC_USES_ONLY_MAILBOX
 
 	/**
 	 * @see unix64_sync_setup()
@@ -223,6 +229,8 @@
 	 */
 	#define __sync_signal(syncid) \
 		unix64_sync_signal(syncid)
+
+#endif /* !__NANVIX_IKC_USES_ONLY_MAILBOX */
 
 /**@}*/
 

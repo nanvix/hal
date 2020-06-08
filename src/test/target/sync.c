@@ -28,7 +28,7 @@
 #include <posix/errno.h>
 #include "../test.h"
 
-#if (__TARGET_HAS_SYNC)
+#if (__TARGET_HAS_SYNC && !__NANVIX_IKC_USES_ONLY_MAILBOX)
 
 /*============================================================================*
  * API Tests                                                                  *
@@ -432,6 +432,8 @@ PRIVATE struct test sync_tests_fault[] = {
 	{ NULL,                      NULL            },
 };
 
+#endif /* __TARGET_HAS_SYNC && !__NANVIX_IKC_USES_ONLY_MAILBOX */
+
 /**
  * The test_sync() function launches testing units on the sync
  * interface of the HAL.
@@ -440,6 +442,7 @@ PRIVATE struct test sync_tests_fault[] = {
  */
 PUBLIC void test_sync(void)
 {
+#if (__TARGET_HAS_SYNC && !__NANVIX_IKC_USES_ONLY_MAILBOX)
 	/* API Tests */
 	kprintf(HLINE);
 	for (int i = 0; sync_tests_api[i].test_fn != NULL; i++)
@@ -455,6 +458,6 @@ PUBLIC void test_sync(void)
 		sync_tests_fault[i].test_fn();
 		kprintf("[test][fault][sync] %s [passed]", sync_tests_fault[i].name);
 	}
+#endif /* !__TARGET_HAS_SYNC && !__NANVIX_IKC_USES_ONLY_MAILBOX */
 }
 
-#endif /* !__TARGET_HAS_SYNC */

@@ -28,7 +28,7 @@
 #include <posix/errno.h>
 #include "../test.h"
 
-#if (__TARGET_HAS_PORTAL)
+#if (__TARGET_HAS_PORTAL && !__NANVIX_IKC_USES_ONLY_MAILBOX)
 
 /**
  * @brief Size of exchange data.
@@ -293,13 +293,13 @@ PRIVATE void test_portal_double_allow(void)
 	KASSERT(portal_unlink(portalid) == 0);
 }
 
-#endif /* __TARGET_HAS_PORTAL */
+#endif /* __TARGET_HAS_PORTAL && !__NANVIX_IKC_USES_ONLY_MAILBOX */
 
 /*============================================================================*
  * Test Driver                                                                *
  *============================================================================*/
 
-#if __TARGET_HAS_PORTAL
+#if (__TARGET_HAS_PORTAL && !__NANVIX_IKC_USES_ONLY_MAILBOX)
 
 /**
  * @brief API unit tests.
@@ -333,7 +333,7 @@ PRIVATE struct test portal_tests_fault[] = {
 	{ NULL,                        NULL            },
 };
 
-#endif /* __TARGET_HAS_PORTAL */
+#endif /* __TARGET_HAS_PORTAL && !__NANVIX_IKC_USES_ONLY_MAILBOX */
 
 /**
  * The test_portal() function launches testing units on the portal
@@ -343,7 +343,7 @@ PRIVATE struct test portal_tests_fault[] = {
  */
 PUBLIC void test_portal(void)
 {
-#if (__TARGET_HAS_PORTAL)
+#if (__TARGET_HAS_PORTAL && !__NANVIX_IKC_USES_ONLY_MAILBOX)
 
 	/* API Tests */
 	kprintf(HLINE);
@@ -361,5 +361,5 @@ PUBLIC void test_portal(void)
 		kprintf("[test][fault][portal] %s [passed]", portal_tests_fault[i].name);
 	}
 
-#endif /* __TARGET_HAS_PORTAL */
+#endif /* __TARGET_HAS_PORTAL && !__NANVIX_IKC_USES_ONLY_MAILBOX */
 }

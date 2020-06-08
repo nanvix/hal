@@ -31,6 +31,8 @@
 #include <nanvix/hlib.h>
 #include <posix/errno.h>
 
+#if !__NANVIX_IKC_USES_ONLY_MAILBOX
+
 /*============================================================================*
  * Definitions                                                                *
  *============================================================================*/
@@ -1087,3 +1089,6 @@ PRIVATE int mppa256_sync_select_tx_interface(const int *nodenums, int nnodes, in
 }
 
 #endif /* MPPA256_USING_MULTIPLE_DMA_INTERFACES */
+
+#endif /* !__NANVIX_IKC_USES_ONLY_MAILBOX */
+

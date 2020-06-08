@@ -36,6 +36,8 @@ PUBLIC void unix64_setup(void)
 {
 	kprintf("[hal][target] initializing target...");
 
+#if !__NANVIX_IKC_USES_ONLY_MAILBOX
 	unix64_portal_setup();
+#endif /* !__NANVIX_IKC_USES_ONLY_MAILBOX  */
 	linux64_processor_setup();
 }
