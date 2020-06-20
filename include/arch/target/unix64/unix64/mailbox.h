@@ -59,8 +59,8 @@
 	 * @name Sizes (in bytes) of a mailbox message.
 	 */
 	/**@{*/
-	#define UNIX64_MAILBOX_RESERVED_SIZE (3 * 4)                                                   /**< Header size (3 * sizeof(int)). */
-	#define UNIX64_MAILBOX_DATA_SIZE     (120)                                                     /**< Data size.                     */
+	#define UNIX64_MAILBOX_RESERVED_SIZE (4 * 4)                                                   /**< Header size (4 * sizeof(int)). */
+	#define UNIX64_MAILBOX_DATA_SIZE     (128)                                                     /**< Data size.                     */
 	#define UNIX64_MAILBOX_MSG_SIZE      (UNIX64_MAILBOX_RESERVED_SIZE + UNIX64_MAILBOX_DATA_SIZE) /**< Message size.                  */
 	/**@}*/
 
