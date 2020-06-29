@@ -23,8 +23,11 @@
 #
 
 #===============================================================================
-# Sources
+# Binaries Soucers and Objects
 #===============================================================================
+
+# Binary
+ARCHIVE = $(LIBHAL)
 
 # C Source Files
 C_SRC = $(wildcard *.c)                             \
@@ -39,21 +42,18 @@ C_SRC = $(wildcard *.c)                             \
         $(wildcard stdout/klog.c)
 
 # Asembly Source Files
-ASM_SRC = $(wildcard arch/core/$(CORE)/*.S)       \
+ASM_SRC = $(wildcard arch/core/$(CORE)/*.S)         \
           $(wildcard arch/cluster/$(CLUSTER)/*.S)
 
-#===============================================================================
 # Sources (Target Specific)
-#===============================================================================
-
 ifeq ($(TARGET), mppa256)
 
 C_SRC += $(wildcard stdout/jtag.c)
 
 else ifeq ($(TARGET), optimsoc)
 
-C_SRC += $(wildcard arch/core/or1k/*.c)
-C_SRC += $(wildcard stdout/systrace.c)
+C_SRC += $(wildcard arch/core/or1k/*.c)   \
+         $(wildcard stdout/systrace.c)
 ASM_SRC += $(wildcard arch/core/or1k/*.S)
 
 else ifeq ($(TARGET), qemu-openrisc)
@@ -75,56 +75,10 @@ C_SRC += stdout/tty-virt.c
 
 endif
 
-#===============================================================================
 # Object Files
-#===============================================================================
-
 OBJ = $(ASM_SRC:.S=.$(OBJ_SUFFIX).o) \
-	  $(C_SRC:.c=.$(OBJ_SUFFIX).o)
+      $(C_SRC:.c=.$(OBJ_SUFFIX).o)
 
 #===============================================================================
 
-# Builds all object files.
-all: $(OBJ)
-ifeq ($(VERBOSE), no)
-	@echo [AR] $(LIBHAL)
-	@$(AR) $(ARFLAGS) $(LIBDIR)/$(LIBHAL) $(OBJ)
-else
-	$(AR) $(ARFLAGS) $(LIBDIR)/$(LIBHAL) $(OBJ)
-endif
-
-# Cleans all object files.
-clean:
-ifeq ($(VERBOSE), no)
-	@echo [CLEAN] $(OBJ)
-	@rm -rf $(OBJ)
-else
-	rm -rf $(OBJ)
-endif
-
-# Cleans everything.
-distclean: clean
-ifeq ($(VERBOSE), no)
-	@echo [CLEAN] $(LIBHAL)
-	@rm -rf $(LIBDIR)/$(LIBHAL)
-else
-	rm -rf $(LIBDIR)/$(LIBHAL)
-endif
-
-# builds a C source file.
-%.$(OBJ_SUFFIX).o: %.c
-ifeq ($(VERBOSE), no)
-	@echo [CC] $@
-	@$(CC) $(CFLAGS) $< -c -o $@
-else
-	$(CC) $(CFLAGS) $< -c -o $@
-endif
-
-# Builds an ASM source file.
-%.$(OBJ_SUFFIX).o: %.S
-ifeq ($(VERBOSE), no)
-	@echo [CC] $@
-	@$(CC) $(CFLAGS) $< -c -o $@
-else
-	$(CC) $(CFLAGS) $< -c -o $@
-endif
+include $(BUILDDIR)/makefile.archive

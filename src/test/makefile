@@ -22,8 +22,10 @@
 # SOFTWARE.
 #
 
+include $(BUILDDIR)/makefile.config
+
 #===============================================================================
-# Toolchain Configuration
+# Binaries Sources and Objects
 #===============================================================================
 
 # Stress Tests Flag
@@ -31,15 +33,8 @@ ifeq ($(__ENABLE_STRESS_TESTS),yes)
   CFLAGS += -D__ENABLE_STRESS_TESTS
 endif
 
-# Libraries
-LIBS := -Wl,--whole-archive
-LIBS += $(LIBDIR)/$(LIBHAL)
-LIBS += -Wl,--no-whole-archive
-LIBS += $(LIBDIR)/$(BARELIB) $(THEIR_LIBS)
-
-#===============================================================================
-# Sources
-#===============================================================================
+# Binary
+EXEC = hal-tests.$(OBJ_SUFFIX)
 
 # Source Files
 C_SRC = $(wildcard *.c)           \
@@ -47,13 +42,10 @@ C_SRC = $(wildcard *.c)           \
         $(wildcard cluster/*.c)   \
         $(wildcard processor/*.c) \
         $(wildcard target/*.c)    \
-		$(wildcard stress/*.c)    \
-		$(wildcard utils/*.c)
+        $(wildcard stress/*.c)    \
+        $(wildcard utils/*.c)
 
-#===============================================================================
 # Sources (Target Specific)
-#===============================================================================
-
 ifeq ($(TARGET), mppa256)
 
 ASM_SRC = $(wildcard core/arch/k1b.S)
@@ -88,62 +80,10 @@ C_SRC += core/perf.c
 
 endif
 
-#===============================================================================
 # Object Files
-#===============================================================================
-
 OBJ = $(ASM_SRC:.S=.$(OBJ_SUFFIX).o) \
-	  $(C_SRC:.c=.$(OBJ_SUFFIX).o)
+      $(C_SRC:.c=.$(OBJ_SUFFIX).o)
 
 #===============================================================================
 
-ifeq ($(TARGET),unix64)
-LINKER_SCRIPT=
-else
-LINKER_SCRIPT = -L $(LINKERDIR)/ -T link.ld
-endif
-
-# Builds All Object Files
-all: $(OBJ)
-ifeq ($(VERBOSE), no)
-	@echo [CC] $(BINDIR)/$(EXEC)
-	@$(CC) $(LDFLAGS) $(LINKER_SCRIPT) -o $(BINDIR)/$(EXEC) $(OBJ) $(LIBS)
-else
-	$(CC) $(LDFLAGS) $(LINKER_SCRIPT) -o $(BINDIR)/$(EXEC) $(OBJ) $(LIBS)
-endif
-
-# Cleans All Object Files
-clean:
-ifeq ($(VERBOSE), no)
-	@echo [CLEAN] $(OBJ)
-	@rm -rf $(OBJ)
-else
-	rm -rf $(OBJ)
-endif
-
-# Cleans Everything
-distclean: clean
-ifeq ($(VERBOSE), no)
-	@echo [CLEAN] $(BINDIR)/$(EXEC)
-	@rm -rf $(BINDIR)/$(EXEC)
-else
-	rm -rf $(BINDIR)/$(EXEC)
-endif
-
-# builds a C source file.
-%.$(OBJ_SUFFIX).o: %.c
-ifeq ($(VERBOSE), no)
-	@echo [CC] $@
-	@$(CC) $(CFLAGS) $< -c -o $@
-else
-	$(CC) $(CFLAGS) $< -c -o $@
-endif
-
-# Builds an ASM source file.
-%.$(OBJ_SUFFIX).o: %.S
-ifeq ($(VERBOSE), no)
-	@echo [CC] $@
-	@$(CC) $(CFLAGS) $< -c -o $@
-else
-	$(CC) $(CFLAGS) $< -c -o $@
-endif
+include $(BUILDDIR)/makefile.executable
