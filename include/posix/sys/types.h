@@ -63,6 +63,9 @@
 	/* Used for link counts. */
 	typedef int nlink_t;
 
+	/* Used for interprocess communication. */
+	typedef int key_t;
+
 	#define __need_size_t
 	#define __need_ssize_t
 	#include <posix/decl.h>
