@@ -724,7 +724,7 @@ PRIVATE ssize_t do_mppa256_mailbox_awrite(int mbxid, const void * buffer, uint64
 		resource_set_busy(&mbxtab.txs[mbxid].resource);
 	mppa256_mailbox_unlock();
 
-	interrupt_mask(K1B_INT_CNOC);
+	bostan_noc_it_mask();
 
 		/* Programs the next write. */
 		kmemcpy(&mbxtab.txs[mbxid].message.buffer, buffer, MPPA256_MAILBOX_MSG_SIZE);
@@ -747,10 +747,10 @@ PRIVATE ssize_t do_mppa256_mailbox_awrite(int mbxid, const void * buffer, uint64
 			}
 		}
 
-		/* Double check. */
-		bostan_cnoc_it_verify();
+	bostan_noc_it_unmask();
 
-	interrupt_unmask(K1B_INT_CNOC);
+	/* Losing interrupts? */
+	bostan_noc_it_verify();
 
 	if (ret < 0)
 	{
@@ -920,7 +920,7 @@ PRIVATE ssize_t do_mppa256_mailbox_aread(int mbxid, void * buffer, uint64_t size
 		resource_set_busy(&mbxtab.rxs[mbxid].resource);
 	mppa256_mailbox_unlock();
 
-	interrupt_mask(K1B_INT_DNOC);
+	bostan_noc_it_mask();
 
 		/* Check on underlying messages. */
 		mppa256_mailbox_count_messages(&mbxtab.rxs[mbxid]);
@@ -934,10 +934,10 @@ PRIVATE ssize_t do_mppa256_mailbox_aread(int mbxid, void * buffer, uint64_t size
 		else
 			ret = (-ENOMSG);
 
-		/* Double check. */
-		bostan_dnoc_it_verify();
+	bostan_noc_it_unmask();
 
-	interrupt_unmask(K1B_INT_DNOC);
+	/* Losing interrupts? */
+	bostan_noc_it_verify();
 
 	if (ret < 0)
 	{

@@ -648,7 +648,7 @@ again:
 	 */
 	mppa256_sync_unlock();
 
-	interrupt_mask(K1B_INT_CNOC);
+	bostan_noc_it_mask();
 
 		/* Broadcast. */
 		if (synctab.txs[syncid].hash.type == MPPA256_SYNC_ONE_TO_ALL)
@@ -674,10 +674,10 @@ again:
 			);
 		}
 
-		/* Losing interrupts? */
-		bostan_cnoc_it_verify();
+	bostan_noc_it_unmask();
 
-	interrupt_unmask(K1B_INT_CNOC);
+	/* Losing interrupts? */
+	bostan_noc_it_verify();
 
 	mppa256_sync_lock();
 		resource_set_notbusy(&synctab.txs[syncid].resource);
@@ -1091,4 +1091,3 @@ PRIVATE int mppa256_sync_select_tx_interface(const int *nodenums, int nnodes, in
 #endif /* MPPA256_USING_MULTIPLE_DMA_INTERFACES */
 
 #endif /* !__NANVIX_IKC_USES_ONLY_MAILBOX */
-

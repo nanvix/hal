@@ -89,7 +89,7 @@
 	#define BOSTAN_MAILBOX_CNOC_TX_BASE 0 /**< C-NoC Transfer Tag reserved for Mailbox. */
 	#define BOSTAN_PORTAL_CNOC_TX_BASE  1 /**< C-NoC Transfer Tag reserved for Portal.  */
 	#define BOSTAN_SYNC_CNOC_TX_BASE    2 /**< C-NoC Transfer Tag reserved for Sync.    */
-	#define BOSTAN_CNOC_TX_UNUSED       3 /**< C-NoC Transfer Tag reserved unused.      */
+	#define BOSTAN_CNOC_TX_UNUSED       3 /**< Unused C-NoC Transfer Tag.               */
 	/**@}*/
 
 	/**

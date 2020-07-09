@@ -208,6 +208,33 @@
 	}
 
 	/**
+	 * @brief Mask NoC interrupts.
+	 */
+	static inline void bostan_noc_it_mask(void)
+	{
+		interrupt_mask(K1B_INT_CNOC);
+		interrupt_mask(K1B_INT_DNOC);
+	}
+
+	/**
+	 * @brief Unnask NoC interrupts.
+	 */
+	static inline void bostan_noc_it_unmask(void)
+	{
+		interrupt_unmask(K1B_INT_DNOC);
+		interrupt_unmask(K1B_INT_CNOC);
+	}
+
+	/**
+	 * @brief Verify lost interrupts.
+	 */
+	static inline void bostan_noc_it_verify(void)
+	{
+		bostan_cnoc_it_verify();
+		bostan_dnoc_it_verify();
+	}
+
+	/**
 	 * @brief Asserts whether a NoC node is attached to an IO cluster.
 	 *
 	 * @param nodenum Logic ID of the target NoC node.
