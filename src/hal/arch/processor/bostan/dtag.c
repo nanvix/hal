@@ -434,7 +434,7 @@ PRIVATE void bostan_dnoc_it_handler(int ev_src)
 	volatile dword_t * field_status;
 	bostan_processor_noc_handler_fn handler;
 
-	if (ev_src > 0)
+	if (ev_src < 0)
 		interrupt_mask(K1B_INT_DNOC);
 
 	dcache_invalidate();
@@ -479,7 +479,7 @@ PRIVATE void bostan_dnoc_it_handler(int ev_src)
 		}
 	}
 
-	if (ev_src > 0)
+	if (ev_src < 0)
 		interrupt_unmask(K1B_INT_DNOC);
 }
 
@@ -492,8 +492,7 @@ PRIVATE void bostan_dnoc_it_handler(int ev_src)
  */
 PUBLIC void bostan_dnoc_it_verify(void)
 {
-	if (bostan_dnoc_it_received())
-		bostan_dnoc_it_handler(-1);
+	bostan_dnoc_it_handler(-1);
 }
 
 /*============================================================================*

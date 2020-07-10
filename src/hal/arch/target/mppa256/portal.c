@@ -777,7 +777,7 @@ PRIVATE ssize_t do_mppa256_portal_awrite(int portalid, const void * buffer, uint
 		resource_set_busy(&portaltab.txs[portalid].resource);
 	mppa256_portal_unlock();
 
-	interrupt_mask(K1B_INT_CNOC);
+	bostan_noc_it_mask();
 
 		portaltab.txs[portalid].buffer = buffer;
 		portaltab.txs[portalid].size   = size;
@@ -795,10 +795,10 @@ PRIVATE ssize_t do_mppa256_portal_awrite(int portalid, const void * buffer, uint
 			}
 		}
 
-		/* Double check. */
-		bostan_cnoc_it_verify();
+	bostan_noc_it_unmask();
 
-	interrupt_unmask(K1B_INT_CNOC);
+	/* Losing interrupts? */
+	bostan_noc_it_verify();
 
 	if (ret < 0)
 	{
@@ -872,38 +872,45 @@ PUBLIC ssize_t do_mppa256_portal_aread(int portalid, void * buffer, uint64_t siz
 	interface = UNDERLYING_CREATE_INTERFACE(portalid);
 	dtag      = UNDERLYING_CREATE_DTAG(portaltab.rxs[portalid].remote);
 
-	/* Configures the underlying resources to receive the data. */
-	ret = bostan_dma_data_aread(
-		interface,
-		dtag,
-		buffer,
-		size,
-		size,
-		0,
-		mppa256_portal_receiver_handler
-	);
+	bostan_noc_it_mask();
 
-	/* Setup successful? */
-	if (ret < 0)
-		goto error;
+		/* Configures the underlying resources to receive the data. */
+		ret = bostan_dma_data_aread(
+			interface,
+			dtag,
+			buffer,
+			size,
+			size,
+			0,
+			mppa256_portal_receiver_handler
+		);
 
-	/* Control parameters. */
-	ctag        = UNDERLYING_CREATE_CTAG(portalid);
-	target_ctag = UNDERLYING_OPEN_CTAG(
-		bostan_processor_noc_cluster_to_node_num(cluster_get_num()) + interface
-	);
+		/* Setup successful? */
+		if (ret < 0)
+			goto error;
 
-	/* Sends permission to transmit the data. */
-	ret = bostan_dma_control_signal(
-		interface,
-		ctag,
-		&portaltab.rxs[portalid].remote,
-		1,
-		target_ctag,
-		(~0)
-	);
+		/* Control parameters. */
+		ctag        = UNDERLYING_CREATE_CTAG(portalid);
+		target_ctag = UNDERLYING_OPEN_CTAG(
+			bostan_processor_noc_cluster_to_node_num(cluster_get_num()) + interface
+		);
+
+		/* Sends permission to transmit the data. */
+		ret = bostan_dma_control_signal(
+			interface,
+			ctag,
+			&portaltab.rxs[portalid].remote,
+			1,
+			target_ctag,
+			(~0)
+		);
 
 error:
+	bostan_noc_it_unmask();
+
+	/* Losing interrupts? */
+	bostan_noc_it_verify();
+
 	/* Sent successful? */
 	if (ret >= 0)
 		ret = size;
