@@ -46,8 +46,8 @@
 	 */
 	/**@{*/
 	#define LINUX64_BYTE_BIT    8 /**< Byte        */
-	#define LINUX64_HWORD_BIT  16 /**< Half Word   */
-	#define LINUX64_WORD_BIT   32 /**< Word        */
+	#define LINUX64_HWORD_BIT  32 /**< Half Word   */
+	#define LINUX64_WORD_BIT   64 /**< Word        */
 	#define LINUX64_DWORD_BIT  64 /**< Double Word */
 	/**@}*/
 
@@ -56,8 +56,8 @@
 	 */
 	/**@{*/
 	#define LINUX64_BYTE_SIZE   1 /**< Byte        */
-	#define LINUX64_HWORD_SIZE  2 /**< Half Word   */
-	#define LINUX64_WORD_SIZE   4 /**< Word        */
+	#define LINUX64_HWORD_SIZE  4 /**< Half Word   */
+	#define LINUX64_WORD_SIZE   8 /**< Word        */
 	#define LINUX64_DWORD_SIZE  8 /**< Double Word */
 	/**@}*/
 
@@ -150,7 +150,7 @@
 		 */
 		/**@{*/
 		typedef uint8_t linux64_byte_t;   /**< Byte        */
-		typedef uint16_t linux64_hword_t; /**< Half Word   */
+		typedef uint32_t linux64_hword_t; /**< Half Word   */
 		typedef uint64_t linux64_word_t;  /**< Word        */
 		typedef uint64_t linux64_dword_t; /**< Double Word */
 		/**@}*/
