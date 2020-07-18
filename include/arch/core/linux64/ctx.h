@@ -57,7 +57,7 @@
 	struct context
 	{
 		linux64_dword_t id;
-	} PACK;
+	} PACK ALIGN(LINUX64_DWORD_SIZE);
 
 /**@endcond*/
 

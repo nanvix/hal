@@ -158,7 +158,7 @@
 			k1b_word_t ps;                                     /**< Processing Status Register         */
 			k1b_word_t sps;                                    /**< Shadow Processing Status Register  */
 			k1b_byte_t RESERVED[4];                            /**< Required padding.                  */
-		} PACK;
+		} PACK ALIGN(K1B_WORD_SIZE);
 
 	/**@endcond*/
 
