@@ -61,14 +61,15 @@
 
 struct hash
 {
-	uint64_t source    :  5;
-	uint64_t type      :  1;
-	uint64_t master    :  5;
-	uint64_t nodeslist : 24;
-	uint64_t unused    : 29;
-};
+	uint8_t type;       /**< Sync type.                   (1 bit used)   */
+	uint8_t source;     /**< Source node of the hash.     (5 bits used)  */
+	uint8_t master;     /**< Master node of the sync.     (5 bits used)  */
+	uint8_t unused;     /**< Unused.                                     */ 
+	uint32_t nodeslist; /**< Bit-field of the nodes list. (24 bits used) */
+} ALIGN(8);
 
-#define HASH_INITIALIZER ((struct hash){-1, 0, -1, 0, 0})
+#define HASH_INITIALIZER ((struct hash){0x0, 0xF, 0xF, 0x0, 0x0})
+#define HASH_ACCESS_VALUE(_hash) (*((uint64_t *) (_hash)))
 
 /**
  * @brief Synchronization Points Table
@@ -76,7 +77,6 @@ struct hash
 PRIVATE int sync_ack[PROCESSOR_NOC_NODES_NUM] = {
 	[0 ... (PROCESSOR_NOC_NODES_NUM - 1)] = 1
 };
-
 
 /*----------------------------------------------------------------------------*
  * Semaphore                                                                  *
@@ -217,12 +217,12 @@ PRIVATE void mppa256_sync_unlock(void)
  * mppa256_sync_build_nodeslist()                                              *
  *============================================================================*/
 
-PRIVATE uint64_t mppa256_sync_build_nodeslist(const int *nodes, int nnodes)
+PRIVATE uint32_t mppa256_sync_build_nodeslist(const int * nodes, int nnodes)
 {
-	uint64_t nodeslist = 0ULL;
+	uint32_t nodeslist = 0U;
 
 	for (int j = 0; j < nnodes; j++)
-		nodeslist |= (1ULL << nodes[j]);
+		nodeslist |= (1U << nodes[j]);
 
 	return (nodeslist);
 }
@@ -297,6 +297,7 @@ PUBLIC int mppa256_sync_create(const int * nodes, int nnodes, int type)
 
 	mppa256_sync_lock();
 
+		hash           = HASH_INITIALIZER;
 		hash.source    = processor_node_get_num();
 		hash.type      = type;
 		hash.master    = nodes[0];
@@ -351,6 +352,7 @@ PUBLIC int mppa256_sync_open(const int * nodes, int nnodes, int type)
 
 	mppa256_sync_lock();
 
+		hash           = HASH_INITIALIZER;
 		hash.source    = processor_node_get_num();
 		hash.type      = type;
 		hash.master    = nodes[0];
@@ -367,10 +369,12 @@ PUBLIC int mppa256_sync_open(const int * nodes, int nnodes, int type)
 		/* Initialize synchronization point. */
 		synctab.txs[syncid].hash   = hash;
 		synctab.txs[syncid].nnodes = nnodes;
-		kmemcpy(synctab.txs[syncid].nodes, nodes, nnodes * sizeof(int));
 
 		for (int i = 0; i < nnodes; i++)
+		{
+			synctab.txs[syncid].nodes[i]  = nodes[i];
 			synctab.txs[syncid].sended[i] = 0;
+		}
 
 		resource_set_wronly(&synctab.txs[syncid].resource);
 		resource_set_notbusy(&synctab.txs[syncid].resource);
@@ -588,7 +592,7 @@ PRIVATE inline int do_mppa256_sync_signal(int i, int n, const int * nodes, char 
 			&nodes[i],
 			1,
 			bostan_processor_node_sync_tag(local, 0),
-			*((uint64_t *)(hash))
+			HASH_ACCESS_VALUE(hash)
 		);
 
 		if (ret != 0)
@@ -719,43 +723,23 @@ PRIVATE inline int mppa256_sync_send_ack(int interface, int tag, int target)
 }
 
 /*============================================================================*
- * do_mppa256_sync_ignore_signal()                                               *
- *============================================================================*/
-
-PRIVATE inline void do_mppa256_sync_ignore_signal(char * message, struct hash * hash)
-{
-	int source         = hash->source;
-	int type           = hash->type;
-	int master         = hash->master;
-	uint64_t nodeslist = (uint64_t) hash->nodeslist;
-
-	kprintf("[sync] %s (source:%d, type:%d, master:%d, nodeslist:%x)",
-		message,
-		source,
-		type,
-		master,
-		nodeslist
-	);
-}
-
-/*============================================================================*
  * mppa256_sync_barrier_is_complete()                                          *
  *============================================================================*/
 
 PRIVATE int mppa256_sync_barrier_is_complete(struct rx * rx)
 {
-	int received;
-	int expected;
+	uint32_t received;
+	uint32_t expected;
 
 	received = rx->barrier.nodeslist;
 
 	/* Does master notifies it? */
 	if (rx->hash.type == MPPA256_SYNC_ONE_TO_ALL)
-		expected = (rx->hash.nodeslist & (1 << rx->hash.master));
+		expected = (rx->hash.nodeslist & (1U << rx->hash.master));
 
 	/* Does slaves notifies it? */
 	else
-		expected = (rx->hash.nodeslist & ~(1 << rx->hash.master));
+		expected = (rx->hash.nodeslist & ~(1U << rx->hash.master));
 
 	return (received == expected);
 }
@@ -768,7 +752,7 @@ PRIVATE void mppa256_sync_barrier_reset(struct rx * rx)
 {
 	for (unsigned i = 0; i < PROCESSOR_NOC_NODES_NUM; ++i)
 	{
-		if (rx->barrier.nodeslist & (1 << i))
+		if (rx->barrier.nodeslist & (1U << i))
 		{
 			/**
 			 * Consume a signals and reset barrier if there are no
@@ -777,13 +761,34 @@ PRIVATE void mppa256_sync_barrier_reset(struct rx * rx)
 			rx->nreceived[i]--; 
 
 			if (rx->nreceived[i] == 0)
-				rx->barrier.nodeslist &= ~(1 << i);
+				rx->barrier.nodeslist &= ~(1U << i);
 
 			KASSERT(rx->nreceived[i] >= 0);
 		}
 	}
 }
 
+/*============================================================================*
+ * do_mppa256_sync_hash_panic()                                            *
+ *============================================================================*/
+
+PRIVATE inline void do_mppa256_sync_hash_panic(char * message, struct hash * hash)
+{
+	int type      = hash->type;
+	int source    = hash->source;
+	int master    = hash->master;
+	int unused    = hash->unused;
+	int nodeslist = hash->nodeslist;
+
+	kpanic("[sync] %s (type:%d, source:%d, master:%d, unused:%d, nodeslist:%d)",
+		message,
+		type,
+		source,
+		master,
+		unused,
+		nodeslist
+	);
+}
 
 /*============================================================================*
  * mppa256_sync_hash_handler()                                                *
@@ -801,24 +806,15 @@ PRIVATE void mppa256_sync_hash_handler(int interface, int tag)
 	int syncid;       /* Sync ID.      */
 	struct hash hash; /* Signal value. */
 
-	UNUSED(interface);
-	UNUSED(tag);
-
-	*((uint64_t *)(&hash)) = bostan_dma_control_read(interface, tag);
+	HASH_ACCESS_VALUE(&hash) = bostan_dma_control_read(interface, tag);
 
 	if (!node_is_valid(hash.source))
-	{
-		do_mppa256_sync_ignore_signal("Invalid source.", &hash);
-		goto config;
-	}
+		do_mppa256_sync_hash_panic("Invalid source.", &hash);
 
 	if ((syncid = do_mppa256_sync_search_rx(&hash)) < 0)
-	{
-		do_mppa256_sync_ignore_signal("Sync point not found.", &hash);
-		goto config;
-	}
+		do_mppa256_sync_hash_panic("Sync point not found.", &hash);
 
-	synctab.rxs[syncid].barrier.nodeslist |= (1 << hash.source);
+	synctab.rxs[syncid].barrier.nodeslist |= (1U << hash.source);
 	synctab.rxs[syncid].nreceived[hash.source]++;
 
 	if (mppa256_sync_barrier_is_complete(&synctab.rxs[syncid]))
@@ -827,7 +823,6 @@ PRIVATE void mppa256_sync_hash_handler(int interface, int tag)
 		semaphore_up(&synctab.rxs[syncid].sem);
 	}
 
-config:
 	/* Reconfigure sync point. */
 	ret = bostan_dma_control_config(
 		interface,
