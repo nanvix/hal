@@ -55,7 +55,7 @@
 	 * @name Sizes (in bytes) of a portal message.
 	 */
 	/**@{*/
-	#define MPPA256_PORTAL_RESERVED_SIZE (3 * 4)                                                   /**< Header size (3 * sizeof(int)). */
+	#define MPPA256_PORTAL_RESERVED_SIZE (4 * 4)                                                   /**< Header size (4 * sizeof(int)). */
 	#define MPPA256_PORTAL_DATA_SIZE     (PAGE_SIZE)                                               /**< Maximum data size.             */
 	#define MPPA256_PORTAL_MAX_SIZE      (MPPA256_PORTAL_RESERVED_SIZE + MPPA256_PORTAL_DATA_SIZE) /**< Maximum size.                  */
 	/**@}*/

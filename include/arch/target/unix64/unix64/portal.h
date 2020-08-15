@@ -59,8 +59,8 @@
 	 * @name Sizes (in bytes) of a portal message.
 	 */
 	/**@{*/
-	#define UNIX64_PORTAL_RESERVED_SIZE (3 * 4)                                                 /**< Header size (3 * sizeof(int)). */
-	#define UNIX64_PORTAL_DATA_SIZE     (8*KB)                                                  /**< Maximum data size.             */
+	#define UNIX64_PORTAL_RESERVED_SIZE (4 * 4)                                                 /**< Header size (3 * sizeof(int)). */
+	#define UNIX64_PORTAL_DATA_SIZE     (PAGE_SIZE)                                             /**< Maximum data size.             */
 	#define UNIX64_PORTAL_MAX_SIZE      (UNIX64_PORTAL_RESERVED_SIZE + UNIX64_PORTAL_DATA_SIZE) /**< Maximum size.                  */
 	/**@}*/
 

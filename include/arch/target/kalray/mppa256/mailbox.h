@@ -55,8 +55,8 @@
 	 * @name Sizes (in bytes) of a mailbox message.
 	 */
 	/**@{*/
-	#define MPPA256_MAILBOX_RESERVED_SIZE (3 * 4)                                                     /**< Header size (3 * sizeof(int)). */
-	#define MPPA256_MAILBOX_DATA_SIZE     (120)                                                       /**< Data size.                     */
+	#define MPPA256_MAILBOX_RESERVED_SIZE (4 * 4)                                                     /**< Header size (4 * sizeof(int)). */
+	#define MPPA256_MAILBOX_DATA_SIZE     (128)                                                       /**< Data size.                     */
 	#define MPPA256_MAILBOX_MSG_SIZE      (MPPA256_MAILBOX_RESERVED_SIZE + MPPA256_MAILBOX_DATA_SIZE) /**< Message size.                  */
 	/**@}*/
 
