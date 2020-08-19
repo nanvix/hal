@@ -249,9 +249,9 @@ PUBLIC void mem_info(void)
 	int i; /* Loop index. */
 
 	kprintf("[hal][cluster] text = %d KB data = %d KB bss = %d KB",
-		(&__TEXT_END - &__TEXT_START)/KB,
-		(&__DATA_END - &__DATA_START)/KB,
-		(&__BSS_END  - &__BSS_START)/KB
+		__div((&__TEXT_END - &__TEXT_START), KB),
+		__div((&__DATA_END - &__DATA_START), KB),
+		__div((&__BSS_END  - &__BSS_START), KB)
 	);
 	for (i = 0; i < MEM_REGIONS; i++)
 	{
