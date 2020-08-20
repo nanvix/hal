@@ -40,9 +40,9 @@
 	 * @name Aliases for Registers
 	 */
 	/**@{*/
-	#define sp r12 /**< Stack Pointer Pointer              */
-	#define bp r13 /**< Stack Base Pointer Register        */
-	#define pi pcr /**< Processing Identification Register */
+	#define sp r12 /**< Stack Pointer Pointer               */
+	#define bp r13 /**< Thread Local Store Pointer Register */
+	#define pi pcr /**< Processing Identification Register  */
 	/**@}*/
 
 /*============================================================================*
@@ -57,7 +57,7 @@
 	/*
 	 * Allocates the red zone in the current stack frame.
 	 */
-	.macro redzone_alloc
+	.macro _redzone_alloc
 		add $sp = $sp, -REDZONE_SIZE
 		;;
 	.endm
@@ -65,7 +65,7 @@
 	/*
 	 * Frees the red zone in the current stack frame.
 	 */
-	.macro redzone_free
+	.macro _redzone_free
 		add $sp = $sp, REDZONE_SIZE
 		;;
 	.endm
@@ -206,7 +206,7 @@
 	/*
 	 * Saves the current execution context in the current stack.
 	 */
-	.macro k1b_context_save dest
+	.macro _k1b_context_save
 
 		/* Allocate some memory. */
 		add $r12, $r12, -K1B_CONTEXT_SIZE
@@ -318,7 +318,7 @@
 	/*
 	 * Restores an execution context from the current stack.
 	 */
-	.macro k1b_context_restore src
+	.macro _k1b_context_restore
 
 		/*
 		 * Restore SFRs. Note that $spc,
