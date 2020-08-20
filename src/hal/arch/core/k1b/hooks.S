@@ -36,6 +36,7 @@
 
 .global _k1b_do_kcall
 .global _k1b_do_excp
+.global _k1b_do_int
 
 .section .text
 
@@ -240,6 +241,115 @@ _k1b_do_excp:
 	 * from current stack.
 	 */
 	add $sp, $sp, K1B_EXCP_SIZE
+	;;
+
+	_scoreboard_get $r2 $r3
+	;;
+
+	/* Restore saved program counter. */
+	lw  $r4 = K1B_CONTEXT_SPC[$sp]
+	;;
+	sw  MOS_VC_REG_SPC[$r2], $r4
+	;;
+
+	/* Restore shadow stack pointer. */
+	lw  $r4 = K1B_CONTEXT_SSP[$sp]
+	;;
+	sw  MOS_VC_REG_SSP[$r2], $r4
+	;;
+
+	/*
+	 * Restore saved execution context.
+	 */
+	k1b_context_restore
+	;;
+
+	/* Restore exception context. */
+	scall MOS_VC_RFE
+	;;
+	ret
+	;;
+
+/*===========================================================================*
+ * _do_int()                                                                 *
+ *===========================================================================*/
+
+/*
+ * Interrupt hook.
+ */
+.align 8
+_k1b_do_int:
+
+	/*
+	 * Save execution context
+	 * in the current stack.
+	 */
+	k1b_context_save
+	;;
+
+	/*
+	 * Save a reference to execution context
+	 * into r1. The high-level exception handler
+	 * dispatcher will need it.
+	 */
+	copy $r1 = $sp
+	;;
+
+	_scoreboard_get $r2 $r3
+	;;
+
+	/* Processing Status. */
+	lw  $r4 = MOS_VC_REG_PS[$r2]
+	;;
+	sw  K1B_CONTEXT_PS[$r1], $r4
+	;;
+
+	/* Saved Processing Status */
+	lw  $r4 = MOS_VC_REG_SPS[$r2]
+	;;
+	sw  K1B_CONTEXT_SPS[$r1], $r4
+	;;
+
+	/* Saved Program Counter. */
+	lw  $r4 = MOS_VC_REG_SPC[$r2]
+	;;
+	sw  K1B_CONTEXT_SPC[$r1], $r4
+	;;
+
+	/* Shadow Stack Pointer. */
+	lw  $r4 = MOS_VC_REG_SSP[$r2]
+	;;
+	sw  K1B_CONTEXT_SSP[$r1], $r4
+	;;
+
+	/* Shadow Shadow Stack Pointer. */
+	lw  $r4 = MOS_VC_REG_SSSP[$r2]
+	;;
+	sw  K1B_CONTEXT_SSSP[$r1], $r4
+	;;
+
+	/* Shadow Shadow Shadow Stack Pointer. */
+	lw  $r4 = MOS_VC_REG_SSSSP[$r2]
+	;;
+	sw  K1B_CONTEXT_SSSSP[$r1], $r4
+	;;
+
+	/*
+	 * Save interrupt number into r0.
+	 */
+	lw  $r5 = MOS_VC_REG_PS[$r2]
+	;;
+	srl $r0 = $r5, 28                 /* Interrupt code. */
+	;;
+
+	/*
+	 * Call exception dispatcher.
+	 */
+	redzone_alloc
+	;;
+	call __k1b_do_int
+	;;
+	redzone_free
 	;;
 
 	_scoreboard_get $r2 $r3

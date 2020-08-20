@@ -90,6 +90,10 @@
 	 */
 	EXTERN int k1b_int_unmask(int intnum);
 
+	/**
+	 * @brief Low-level interrupt dispatcher.
+	 */
+	EXTERN void _k1b_do_int(void);
 
 	/**
 	 * @brief Enables interrupts.
