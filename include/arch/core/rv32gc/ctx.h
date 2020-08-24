@@ -29,9 +29,6 @@
 		#error "do not include this file"
 	#endif
 
-	/* Must come first. */
-	#define __NEED_CORE_TYPES
-
 /**
  * @addtogroup rv32gc-core-context Context
  * @ingroup rv32gc-core
@@ -40,7 +37,7 @@
  */
 /**@{*/
 
-	#include <arch/core/rv32gc/types.h>
+	#include <arch/core/rv32gc/core.h>
 	#include <nanvix/hlib.h>
 
 	/**
@@ -110,7 +107,7 @@
 			rv32gc_word_t s7, s8, s9, s10, s11;   /**< Saved Registers 7 to 11                  */
 			rv32gc_word_t t3, t4, t5, t6;         /**< Temporary Registers 3 to 6               */
 			rv32gc_word_t pc;                     /**< Program Counter                          */
-		} PACK;
+		} PACK ALIGN(RV32GC_WORD_SIZE);
 
 	/**@endcond*/
 

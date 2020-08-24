@@ -89,7 +89,7 @@
         i486_word_t gs, fs, es, ds;                    /**< Segment Registers         */
         i486_word_t edi, esi, ebp, edx, ecx, ebx, eax; /**< General Purpose Registers */
         i486_word_t eip, cs, eflags, useresp, ss;      /**< Special Registers         */
-	} PACK;
+	} PACK ALIGN(I486_WORD_SIZE);
 
 /**@endcond*/
 

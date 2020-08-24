@@ -105,7 +105,7 @@
 			or1k_word_t eear;                                   /**< Shadow Effective Address Register  */
 			or1k_word_t  esr;                                   /**< Shadow Status Register             */
 			or1k_byte_t RESERVED[4];                            /**< Required padding                   */
-		} PACK;
+		} PACK ALIGN(OR1K_WORD_SIZE);
 
 	/**@endcond*/
 
