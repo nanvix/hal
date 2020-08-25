@@ -126,11 +126,12 @@
 	#define K1B_CONTEXT_SSP   71*K1B_WORD_SIZE /**< Shadow Stack Pointer Register                   */
 	#define K1B_CONTEXT_SSSP  72*K1B_WORD_SIZE /**< Shadow Shadow Stack Pointer Register            */
 	#define K1B_CONTEXT_SSSSP 73*K1B_WORD_SIZE /**< Shadow Shadow Shadown Stack Pointer Register    */
-	#define K1B_CONTEXT_RA    74*K1B_WORD_SIZE /**< Return Address Register                         */
-	#define K1B_CONTEXT_CS    75*K1B_WORD_SIZE /**< Compute Status Register                         */
-	#define K1B_CONTEXT_LC    76*K1B_WORD_SIZE /**< Loop Count Register                             */
-	#define K1B_CONTEXT_LS    77*K1B_WORD_SIZE /**< Loop Start Register                             */
-	#define K1B_CONTEXT_LE    78*K1B_WORD_SIZE /**< Loop Exit Register                              */
+	#define K1B_CONTEXT_KSP   74*K1B_WORD_SIZE /**< Kernel Stack Pointer Register                   */
+	#define K1B_CONTEXT_RA    75*K1B_WORD_SIZE /**< Return Address Register                         */
+	#define K1B_CONTEXT_CS    76*K1B_WORD_SIZE /**< Compute Status Register                         */
+	#define K1B_CONTEXT_LC    77*K1B_WORD_SIZE /**< Loop Count Register                             */
+	#define K1B_CONTEXT_LS    78*K1B_WORD_SIZE /**< Loop Start Register                             */
+	#define K1B_CONTEXT_LE    79*K1B_WORD_SIZE /**< Loop Exit Register                              */
 	/**@}*/
 
 #ifndef _ASM_FILE_
@@ -154,13 +155,12 @@
 			k1b_word_t r56, r57, r58, r59, r60, r61, r62, r63; /**< General Purpose Registers 56 to 63 */
 			k1b_word_t ps, sps, ssps, sssps;                   /**< Processing Status Registers        */
 			k1b_word_t spc, sspc, ssspc;                       /**< Shadow Program Counter Registers   */
-			k1b_word_t ssp, sssp, ssssp;                       /**< Shadow Stack Pointer Registers     */
+			k1b_word_t ssp, sssp, ssssp, ksp;                  /**< Shadow Stack Pointer Registers     */
 			k1b_word_t ra;                                     /**< Return Address Register            */
 			k1b_word_t cs;                                     /**< Compute Status Register            */
 			k1b_word_t lc;                                     /**< Loop Count Register                */
 			k1b_word_t ls;                                     /**< Loop Start Register                */
 			k1b_word_t le;                                     /**< Loop Exit Register                 */
-			k1b_byte_t RESERVED[4];                            /**< Required padding.                  */
 		} PACK ALIGN(K1B_WORD_SIZE);
 
 	/**@endcond*/

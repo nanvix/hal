@@ -144,6 +144,12 @@
 	sw K1B_CONTEXT_SSSSP[\to], \tmp
 	;;
 
+	/* Save Kernel Stack Pointer. */
+	lw \tmp = MOS_VC_REG_KERNEL_SP[\from]
+	;;
+	sw K1B_CONTEXT_KSP[\to], \tmp
+	;;
+
 .endm
 
 /*===========================================================================*
@@ -155,6 +161,11 @@
  */
 .macro _k1b_mos_context_restore from to tmp
 
+	/* Restore Kernel Stack Pointer. */
+	lw \tmp = K1B_CONTEXT_KSP[\from]
+	;;
+	sw MOS_VC_REG_KERNEL_SP[\to], \tmp
+	;;
 
 	/* Restore Shadow Shadow Shadow Stack Pointer. */
 	lw \tmp = K1B_CONTEXT_SSSSP[\from]

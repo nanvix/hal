@@ -57,7 +57,7 @@ PUBLIC void k1b_context_dump(const struct context *ctx)
 	/* Dump special function registers. */
 	kprintf("[k1b]   ps=%x   sps=%x  ssps=%x sssps=%x", ctx->ps,  ctx->sps,  ctx->ssps,  ctx->sssps);
 	kprintf("[k1b]  spc=%x  sspc=%x ssspc=%x",          ctx->spc, ctx->sspc, ctx->ssspc);
-	kprintf("[k1b]  ssp=%x  sssp=%x ssssp=%x",          ctx->ssp, ctx->sssp, ctx->ssssp);
+	kprintf("[k1b]  ssp=%x  sssp=%x ssssp=%x   ksp=%x", ctx->ssp, ctx->sssp, ctx->ssssp, ctx->ksp);
 	kprintf("[k1b]   lc=%x    ls=%x    le=%x",          ctx->lc,  ctx->ls,   ctx->le);
 }
 
