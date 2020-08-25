@@ -29,6 +29,12 @@
 #include "../test.h"
 
 /**
+ * @brief Launch upcall tests? We will probably drop support from upcall due
+ * to Issue #558, so testing is disabled by default.
+ */
+#define UPCALL_TEST_DISABLE 1
+
+/**
  * @brief Launch verbose tests?
  */
 #define UPCALL_TEST_VERBOSE 0
@@ -190,6 +196,9 @@ PRIVATE void test_upcall_issue(void)
  * @brief Unit tests.
  */
 PRIVATE struct test upcall_tests_api[] = {
+#if UPCALL_TEST_DISABLE
+	{ NULL,               NULL          },
+#endif
 	{ test_upcall_forge, "forge upcall" },
 	{ test_upcall_issue, "issue upcall" },
 	{ NULL,               NULL          },
