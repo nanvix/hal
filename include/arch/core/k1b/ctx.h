@@ -46,87 +46,91 @@
 	/**
 	 * @brief Execution context size (in bytes).
 	 */
-	#define K1B_CONTEXT_SIZE 304
+	#define K1B_CONTEXT_SIZE 320
 
 	/**
 	 * @name Offsets to the Context Structure
 	 */
 	/**@{*/
-	#define K1B_CONTEXT_R0     0*K1B_WORD_SIZE /**< General Purpose Register  0                  */
-	#define K1B_CONTEXT_R1     1*K1B_WORD_SIZE /**< General Purpose Register  1                  */
-	#define K1B_CONTEXT_R2     2*K1B_WORD_SIZE /**< General Purpose Register  2                  */
-	#define K1B_CONTEXT_R3     3*K1B_WORD_SIZE /**< General Purpose Register  3                  */
-	#define K1B_CONTEXT_R4     4*K1B_WORD_SIZE /**< General Purpose Register  4                  */
-	#define K1B_CONTEXT_R5     5*K1B_WORD_SIZE /**< General Purpose Register  5                  */
-	#define K1B_CONTEXT_R6     6*K1B_WORD_SIZE /**< General Purpose Register  6                  */
-	#define K1B_CONTEXT_R7     7*K1B_WORD_SIZE /**< General Purpose Register  7                  */
-	#define K1B_CONTEXT_R8     8*K1B_WORD_SIZE /**< General Purpose Register  8                  */
-	#define K1B_CONTEXT_R9     9*K1B_WORD_SIZE /**< General Purpose Register  9                  */
-	#define K1B_CONTEXT_R10   10*K1B_WORD_SIZE /**< General Purpose Register 10                  */
-	#define K1B_CONTEXT_R11   11*K1B_WORD_SIZE /**< General Purpose Register 11                  */
-	#define K1B_CONTEXT_R12   12*K1B_WORD_SIZE /**< General Purpose Register 12                  */
-	#define K1B_CONTEXT_R13   13*K1B_WORD_SIZE /**< General Purpose Register 13                  */
-	#define K1B_CONTEXT_R14   14*K1B_WORD_SIZE /**< General Purpose Register 14                  */
-	#define K1B_CONTEXT_R15   15*K1B_WORD_SIZE /**< General Purpose Register 15                  */
-	#define K1B_CONTEXT_R16   16*K1B_WORD_SIZE /**< General Purpose Register 16                  */
-	#define K1B_CONTEXT_R17   17*K1B_WORD_SIZE /**< General Purpose Register 17                  */
-	#define K1B_CONTEXT_R18   18*K1B_WORD_SIZE /**< General Purpose Register 18                  */
-	#define K1B_CONTEXT_R19   19*K1B_WORD_SIZE /**< General Purpose Register 19                  */
-	#define K1B_CONTEXT_R20   20*K1B_WORD_SIZE /**< General Purpose Register 20                  */
-	#define K1B_CONTEXT_R21   21*K1B_WORD_SIZE /**< General Purpose Register 21                  */
-	#define K1B_CONTEXT_R22   22*K1B_WORD_SIZE /**< General Purpose Register 22                  */
-	#define K1B_CONTEXT_R23   23*K1B_WORD_SIZE /**< General Purpose Register 23                  */
-	#define K1B_CONTEXT_R24   24*K1B_WORD_SIZE /**< General Purpose Register 24                  */
-	#define K1B_CONTEXT_R25   25*K1B_WORD_SIZE /**< General Purpose Register 25                  */
-	#define K1B_CONTEXT_R26   26*K1B_WORD_SIZE /**< General Purpose Register 26                  */
-	#define K1B_CONTEXT_R27   27*K1B_WORD_SIZE /**< General Purpose Register 27                  */
-	#define K1B_CONTEXT_R28   28*K1B_WORD_SIZE /**< General Purpose Register 28                  */
-	#define K1B_CONTEXT_R29   29*K1B_WORD_SIZE /**< General Purpose Register 29                  */
-	#define K1B_CONTEXT_R30   30*K1B_WORD_SIZE /**< General Purpose Register 30                  */
-	#define K1B_CONTEXT_R31   31*K1B_WORD_SIZE /**< General Purpose Register 31                  */
-	#define K1B_CONTEXT_R32   32*K1B_WORD_SIZE /**< General Purpose Register 32                  */
-	#define K1B_CONTEXT_R33   33*K1B_WORD_SIZE /**< General Purpose Register 33                  */
-	#define K1B_CONTEXT_R34   34*K1B_WORD_SIZE /**< General Purpose Register 34                  */
-	#define K1B_CONTEXT_R35   35*K1B_WORD_SIZE /**< General Purpose Register 35                  */
-	#define K1B_CONTEXT_R36   36*K1B_WORD_SIZE /**< General Purpose Register 36                  */
-	#define K1B_CONTEXT_R37   37*K1B_WORD_SIZE /**< General Purpose Register 37                  */
-	#define K1B_CONTEXT_R38   38*K1B_WORD_SIZE /**< General Purpose Register 38                  */
-	#define K1B_CONTEXT_R39   39*K1B_WORD_SIZE /**< General Purpose Register 39                  */
-	#define K1B_CONTEXT_R40   40*K1B_WORD_SIZE /**< General Purpose Register 40                  */
-	#define K1B_CONTEXT_R41   41*K1B_WORD_SIZE /**< General Purpose Register 41                  */
-	#define K1B_CONTEXT_R42   42*K1B_WORD_SIZE /**< General Purpose Register 42                  */
-	#define K1B_CONTEXT_R43   43*K1B_WORD_SIZE /**< General Purpose Register 43                  */
-	#define K1B_CONTEXT_R44   44*K1B_WORD_SIZE /**< General Purpose Register 44                  */
-	#define K1B_CONTEXT_R45   45*K1B_WORD_SIZE /**< General Purpose Register 45                  */
-	#define K1B_CONTEXT_R46   46*K1B_WORD_SIZE /**< General Purpose Register 46                  */
-	#define K1B_CONTEXT_R47   47*K1B_WORD_SIZE /**< General Purpose Register 47                  */
-	#define K1B_CONTEXT_R48   48*K1B_WORD_SIZE /**< General Purpose Register 48                  */
-	#define K1B_CONTEXT_R49   49*K1B_WORD_SIZE /**< General Purpose Register 49                  */
-	#define K1B_CONTEXT_R50   50*K1B_WORD_SIZE /**< General Purpose Register 50                  */
-	#define K1B_CONTEXT_R51   51*K1B_WORD_SIZE /**< General Purpose Register 51                  */
-	#define K1B_CONTEXT_R52   52*K1B_WORD_SIZE /**< General Purpose Register 52                  */
-	#define K1B_CONTEXT_R53   53*K1B_WORD_SIZE /**< General Purpose Register 53                  */
-	#define K1B_CONTEXT_R54   54*K1B_WORD_SIZE /**< General Purpose Register 54                  */
-	#define K1B_CONTEXT_R55   55*K1B_WORD_SIZE /**< General Purpose Register 55                  */
-	#define K1B_CONTEXT_R56   56*K1B_WORD_SIZE /**< General Purpose Register 56                  */
-	#define K1B_CONTEXT_R57   57*K1B_WORD_SIZE /**< General Purpose Register 57                  */
-	#define K1B_CONTEXT_R58   58*K1B_WORD_SIZE /**< General Purpose Register 58                  */
-	#define K1B_CONTEXT_R59   59*K1B_WORD_SIZE /**< General Purpose Register 59                  */
-	#define K1B_CONTEXT_R60   60*K1B_WORD_SIZE /**< General Purpose Register 60                  */
-	#define K1B_CONTEXT_R61   61*K1B_WORD_SIZE /**< General Purpose Register 61                  */
-	#define K1B_CONTEXT_R62   62*K1B_WORD_SIZE /**< General Purpose Register 62                  */
-	#define K1B_CONTEXT_R63   63*K1B_WORD_SIZE /**< General Purpose Register 63                  */
-	#define K1B_CONTEXT_SPC   64*K1B_WORD_SIZE /**< Shadow Program Counter Register              */
-	#define K1B_CONTEXT_RA    65*K1B_WORD_SIZE /**< Return Address Register                      */
-	#define K1B_CONTEXT_CS    66*K1B_WORD_SIZE /**< Compute Status Register                      */
-	#define K1B_CONTEXT_SSP   67*K1B_WORD_SIZE /**< Shadow Stack Pointer Register                */
-	#define K1B_CONTEXT_SSSP  68*K1B_WORD_SIZE /**< Shadow Shadow Stack Pointer Register         */
-	#define K1B_CONTEXT_SSSSP 69*K1B_WORD_SIZE /**< Shadow Shadow Shadown Stack Pointer Register */
-	#define K1B_CONTEXT_LC    70*K1B_WORD_SIZE /**< Loop Count Register                          */
-	#define K1B_CONTEXT_LS    71*K1B_WORD_SIZE /**< Loop Start Register                          */
-	#define K1B_CONTEXT_LE    72*K1B_WORD_SIZE /**< Loop Exit Register                           */
-	#define K1B_CONTEXT_PS    73*K1B_WORD_SIZE /**< Processing Status Register                   */
-	#define K1B_CONTEXT_SPS   74*K1B_WORD_SIZE /**< Shadow Processing Status Register            */
+	#define K1B_CONTEXT_R0     0*K1B_WORD_SIZE /**< General Purpose Register  0                     */
+	#define K1B_CONTEXT_R1     1*K1B_WORD_SIZE /**< General Purpose Register  1                     */
+	#define K1B_CONTEXT_R2     2*K1B_WORD_SIZE /**< General Purpose Register  2                     */
+	#define K1B_CONTEXT_R3     3*K1B_WORD_SIZE /**< General Purpose Register  3                     */
+	#define K1B_CONTEXT_R4     4*K1B_WORD_SIZE /**< General Purpose Register  4                     */
+	#define K1B_CONTEXT_R5     5*K1B_WORD_SIZE /**< General Purpose Register  5                     */
+	#define K1B_CONTEXT_R6     6*K1B_WORD_SIZE /**< General Purpose Register  6                     */
+	#define K1B_CONTEXT_R7     7*K1B_WORD_SIZE /**< General Purpose Register  7                     */
+	#define K1B_CONTEXT_R8     8*K1B_WORD_SIZE /**< General Purpose Register  8                     */
+	#define K1B_CONTEXT_R9     9*K1B_WORD_SIZE /**< General Purpose Register  9                     */
+	#define K1B_CONTEXT_R10   10*K1B_WORD_SIZE /**< General Purpose Register 10                     */
+	#define K1B_CONTEXT_R11   11*K1B_WORD_SIZE /**< General Purpose Register 11                     */
+	#define K1B_CONTEXT_R12   12*K1B_WORD_SIZE /**< General Purpose Register 12                     */
+	#define K1B_CONTEXT_R13   13*K1B_WORD_SIZE /**< General Purpose Register 13                     */
+	#define K1B_CONTEXT_R14   14*K1B_WORD_SIZE /**< General Purpose Register 14                     */
+	#define K1B_CONTEXT_R15   15*K1B_WORD_SIZE /**< General Purpose Register 15                     */
+	#define K1B_CONTEXT_R16   16*K1B_WORD_SIZE /**< General Purpose Register 16                     */
+	#define K1B_CONTEXT_R17   17*K1B_WORD_SIZE /**< General Purpose Register 17                     */
+	#define K1B_CONTEXT_R18   18*K1B_WORD_SIZE /**< General Purpose Register 18                     */
+	#define K1B_CONTEXT_R19   19*K1B_WORD_SIZE /**< General Purpose Register 19                     */
+	#define K1B_CONTEXT_R20   20*K1B_WORD_SIZE /**< General Purpose Register 20                     */
+	#define K1B_CONTEXT_R21   21*K1B_WORD_SIZE /**< General Purpose Register 21                     */
+	#define K1B_CONTEXT_R22   22*K1B_WORD_SIZE /**< General Purpose Register 22                     */
+	#define K1B_CONTEXT_R23   23*K1B_WORD_SIZE /**< General Purpose Register 23                     */
+	#define K1B_CONTEXT_R24   24*K1B_WORD_SIZE /**< General Purpose Register 24                     */
+	#define K1B_CONTEXT_R25   25*K1B_WORD_SIZE /**< General Purpose Register 25                     */
+	#define K1B_CONTEXT_R26   26*K1B_WORD_SIZE /**< General Purpose Register 26                     */
+	#define K1B_CONTEXT_R27   27*K1B_WORD_SIZE /**< General Purpose Register 27                     */
+	#define K1B_CONTEXT_R28   28*K1B_WORD_SIZE /**< General Purpose Register 28                     */
+	#define K1B_CONTEXT_R29   29*K1B_WORD_SIZE /**< General Purpose Register 29                     */
+	#define K1B_CONTEXT_R30   30*K1B_WORD_SIZE /**< General Purpose Register 30                     */
+	#define K1B_CONTEXT_R31   31*K1B_WORD_SIZE /**< General Purpose Register 31                     */
+	#define K1B_CONTEXT_R32   32*K1B_WORD_SIZE /**< General Purpose Register 32                     */
+	#define K1B_CONTEXT_R33   33*K1B_WORD_SIZE /**< General Purpose Register 33                     */
+	#define K1B_CONTEXT_R34   34*K1B_WORD_SIZE /**< General Purpose Register 34                     */
+	#define K1B_CONTEXT_R35   35*K1B_WORD_SIZE /**< General Purpose Register 35                     */
+	#define K1B_CONTEXT_R36   36*K1B_WORD_SIZE /**< General Purpose Register 36                     */
+	#define K1B_CONTEXT_R37   37*K1B_WORD_SIZE /**< General Purpose Register 37                     */
+	#define K1B_CONTEXT_R38   38*K1B_WORD_SIZE /**< General Purpose Register 38                     */
+	#define K1B_CONTEXT_R39   39*K1B_WORD_SIZE /**< General Purpose Register 39                     */
+	#define K1B_CONTEXT_R40   40*K1B_WORD_SIZE /**< General Purpose Register 40                     */
+	#define K1B_CONTEXT_R41   41*K1B_WORD_SIZE /**< General Purpose Register 41                     */
+	#define K1B_CONTEXT_R42   42*K1B_WORD_SIZE /**< General Purpose Register 42                     */
+	#define K1B_CONTEXT_R43   43*K1B_WORD_SIZE /**< General Purpose Register 43                     */
+	#define K1B_CONTEXT_R44   44*K1B_WORD_SIZE /**< General Purpose Register 44                     */
+	#define K1B_CONTEXT_R45   45*K1B_WORD_SIZE /**< General Purpose Register 45                     */
+	#define K1B_CONTEXT_R46   46*K1B_WORD_SIZE /**< General Purpose Register 46                     */
+	#define K1B_CONTEXT_R47   47*K1B_WORD_SIZE /**< General Purpose Register 47                     */
+	#define K1B_CONTEXT_R48   48*K1B_WORD_SIZE /**< General Purpose Register 48                     */
+	#define K1B_CONTEXT_R49   49*K1B_WORD_SIZE /**< General Purpose Register 49                     */
+	#define K1B_CONTEXT_R50   50*K1B_WORD_SIZE /**< General Purpose Register 50                     */
+	#define K1B_CONTEXT_R51   51*K1B_WORD_SIZE /**< General Purpose Register 51                     */
+	#define K1B_CONTEXT_R52   52*K1B_WORD_SIZE /**< General Purpose Register 52                     */
+	#define K1B_CONTEXT_R53   53*K1B_WORD_SIZE /**< General Purpose Register 53                     */
+	#define K1B_CONTEXT_R54   54*K1B_WORD_SIZE /**< General Purpose Register 54                     */
+	#define K1B_CONTEXT_R55   55*K1B_WORD_SIZE /**< General Purpose Register 55                     */
+	#define K1B_CONTEXT_R56   56*K1B_WORD_SIZE /**< General Purpose Register 56                     */
+	#define K1B_CONTEXT_R57   57*K1B_WORD_SIZE /**< General Purpose Register 57                     */
+	#define K1B_CONTEXT_R58   58*K1B_WORD_SIZE /**< General Purpose Register 58                     */
+	#define K1B_CONTEXT_R59   59*K1B_WORD_SIZE /**< General Purpose Register 59                     */
+	#define K1B_CONTEXT_R60   60*K1B_WORD_SIZE /**< General Purpose Register 60                     */
+	#define K1B_CONTEXT_R61   61*K1B_WORD_SIZE /**< General Purpose Register 61                     */
+	#define K1B_CONTEXT_R62   62*K1B_WORD_SIZE /**< General Purpose Register 62                     */
+	#define K1B_CONTEXT_R63   63*K1B_WORD_SIZE /**< General Purpose Register 63                     */
+	#define K1B_CONTEXT_PS    64*K1B_WORD_SIZE /**< Processing Status Register                      */
+	#define K1B_CONTEXT_SPS   65*K1B_WORD_SIZE /**< Shadow Processing Status Register               */
+	#define K1B_CONTEXT_SSPS  66*K1B_WORD_SIZE /**< Shadow Shadow Processing Status Register        */
+	#define K1B_CONTEXT_SSSPS 67*K1B_WORD_SIZE /**< Shadow Shadow Shadow Processing Status Register */
+	#define K1B_CONTEXT_SPC   68*K1B_WORD_SIZE /**< Shadow Program Counter Register                 */
+	#define K1B_CONTEXT_SSPC  69*K1B_WORD_SIZE /**< Shadow Shadow Program Counter Register          */
+	#define K1B_CONTEXT_SSSPC 70*K1B_WORD_SIZE /**< Shadow Shadow Shadow Program Counter Register   */
+	#define K1B_CONTEXT_SSP   71*K1B_WORD_SIZE /**< Shadow Stack Pointer Register                   */
+	#define K1B_CONTEXT_SSSP  72*K1B_WORD_SIZE /**< Shadow Shadow Stack Pointer Register            */
+	#define K1B_CONTEXT_SSSSP 73*K1B_WORD_SIZE /**< Shadow Shadow Shadown Stack Pointer Register    */
+	#define K1B_CONTEXT_RA    74*K1B_WORD_SIZE /**< Return Address Register                         */
+	#define K1B_CONTEXT_CS    75*K1B_WORD_SIZE /**< Compute Status Register                         */
+	#define K1B_CONTEXT_LC    76*K1B_WORD_SIZE /**< Loop Count Register                             */
+	#define K1B_CONTEXT_LS    77*K1B_WORD_SIZE /**< Loop Start Register                             */
+	#define K1B_CONTEXT_LE    78*K1B_WORD_SIZE /**< Loop Exit Register                              */
 	/**@}*/
 
 #ifndef _ASM_FILE_
@@ -148,15 +152,14 @@
 			k1b_word_t r40, r41, r42, r43, r44, r45, r46, r47; /**< General Purpose Registers 40 to 47 */
 			k1b_word_t r48, r49, r50, r51, r52, r53, r54, r55; /**< General Purpose Registers 48 to 55 */
 			k1b_word_t r56, r57, r58, r59, r60, r61, r62, r63; /**< General Purpose Registers 56 to 63 */
-			k1b_word_t spc;                                    /**< Shadow Program Counter Register    */
+			k1b_word_t ps, sps, ssps, sssps;                   /**< Processing Status Registers        */
+			k1b_word_t spc, sspc, ssspc;                       /**< Shadow Program Counter Registers   */
+			k1b_word_t ssp, sssp, ssssp;                       /**< Shadow Stack Pointer Registers     */
 			k1b_word_t ra;                                     /**< Return Address Register            */
 			k1b_word_t cs;                                     /**< Compute Status Register            */
-			k1b_word_t ssp, sssp, ssssp;                       /**< Stack Pointer Registers            */
 			k1b_word_t lc;                                     /**< Loop Count Register                */
 			k1b_word_t ls;                                     /**< Loop Start Register                */
 			k1b_word_t le;                                     /**< Loop Exit Register                 */
-			k1b_word_t ps;                                     /**< Processing Status Register         */
-			k1b_word_t sps;                                    /**< Shadow Processing Status Register  */
 			k1b_byte_t RESERVED[4];                            /**< Required padding.                  */
 		} PACK ALIGN(K1B_WORD_SIZE);
 

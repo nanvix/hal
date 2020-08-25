@@ -84,40 +84,64 @@
  */
 .macro _k1b_mos_context_save from to tmp
 
-	/* Processing Status. */
-	lw  \tmp = MOS_VC_REG_PS[\from]
+	/* Save Processing Status. */
+	lw \tmp = MOS_VC_REG_PS[\from]
 	;;
-	sw  K1B_CONTEXT_PS[\to], \tmp
-	;;
-
-	/* Saved Processing Status */
-	lw  \tmp = MOS_VC_REG_SPS[\from]
-	;;
-	sw  K1B_CONTEXT_SPS[\to], \tmp
+	sw K1B_CONTEXT_PS[\to], \tmp
 	;;
 
-	/* Saved Program Counter. */
-	lw  \tmp = MOS_VC_REG_SPC[\from]
+	/* Save Shadow Processing Status */
+	lw \tmp = MOS_VC_REG_SPS[\from]
 	;;
-	sw  K1B_CONTEXT_SPC[\to], \tmp
-	;;
-
-	/* Shadow Stack Pointer. */
-	lw  \tmp = MOS_VC_REG_SSP[\from]
-	;;
-	sw  K1B_CONTEXT_SSP[\to], \tmp
+	sw K1B_CONTEXT_SPS[\to], \tmp
 	;;
 
-	/* Shadow Shadow Stack Pointer. */
-	lw  \tmp = MOS_VC_REG_SSSP[\from]
+	/* Save Shadow Shadow Processing Status */
+	lw \tmp = MOS_VC_REG_SSPS[\from]
 	;;
-	sw  K1B_CONTEXT_SSSP[\to], \tmp
+	sw K1B_CONTEXT_SSPS[\to], \tmp
 	;;
 
-	/* Shadow Shadow Shadow Stack Pointer. */
-	lw  \tmp = MOS_VC_REG_SSSSP[\from]
+	/* Save Shadow Shadow Shadow Processing Status */
+	lw \tmp = MOS_VC_REG_SSSPS[\from]
 	;;
-	sw  K1B_CONTEXT_SSSSP[\to], \tmp
+	sw K1B_CONTEXT_SSSPS[\to], \tmp
+	;;
+
+	/* Save Shadown Program Counter. */
+	lw \tmp = MOS_VC_REG_SPC[\from]
+	;;
+	sw K1B_CONTEXT_SPC[\to], \tmp
+	;;
+
+	/* Save Shadown Shadown Program Counter. */
+	lw \tmp = MOS_VC_REG_SSPC[\from]
+	;;
+	sw K1B_CONTEXT_SSPC[\to], \tmp
+	;;
+
+	/* Save Shadown Shadown Shadown Program Counter. */
+	lw \tmp = MOS_VC_REG_SSSPC[\from]
+	;;
+	sw K1B_CONTEXT_SSSPC[\to], \tmp
+	;;
+
+	/* Save Shadow Stack Pointer. */
+	lw \tmp = MOS_VC_REG_SSP[\from]
+	;;
+	sw K1B_CONTEXT_SSP[\to], \tmp
+	;;
+
+	/* Save Shadow Shadow Stack Pointer. */
+	lw \tmp = MOS_VC_REG_SSSP[\from]
+	;;
+	sw K1B_CONTEXT_SSSP[\to], \tmp
+	;;
+
+	/* Save Shadow Shadow Shadow Stack Pointer. */
+	lw \tmp = MOS_VC_REG_SSSSP[\from]
+	;;
+	sw K1B_CONTEXT_SSSSP[\to], \tmp
 	;;
 
 .endm
@@ -131,17 +155,69 @@
  */
 .macro _k1b_mos_context_restore from to tmp
 
-		/* Restore saved program counter. */
-		lw  $r4 = K1B_CONTEXT_SPC[\from]
-		;;
-		sw  MOS_VC_REG_SPC[\to], \tmp
-		;;
 
-		/* Restore shadow stack pointer. */
-		lw  $r4 = K1B_CONTEXT_SSP[\from]
-		;;
-		sw  MOS_VC_REG_SSP[\to], \tmp
-		;;
+	/* Restore Shadow Shadow Shadow Stack Pointer. */
+	lw \tmp = K1B_CONTEXT_SSSSP[\from]
+	;;
+	sw MOS_VC_REG_SSSSP[\to], \tmp
+	;;
+
+	/* Restore Shadow Shadow Stack Pointer. */
+	lw \tmp = K1B_CONTEXT_SSSP[\from]
+	;;
+	sw MOS_VC_REG_SSSP[\to], \tmp
+	;;
+
+	/* Restore Shadow Stack Pointer. */
+	lw \tmp = K1B_CONTEXT_SSP[\from]
+	;;
+	sw MOS_VC_REG_SSP[\to], \tmp
+	;;
+
+	/* Restore Program Counter. */
+	lw \tmp = K1B_CONTEXT_SSSPC[\from]
+	;;
+	sw MOS_VC_REG_SSSPC[\to], \tmp
+	;;
+
+	/* Restore Program Counter. */
+	lw \tmp = K1B_CONTEXT_SSPC[\from]
+	;;
+	sw MOS_VC_REG_SSPC[\to], \tmp
+	;;
+
+	/* Restore program counter. */
+	lw $r4 = K1B_CONTEXT_SPC[\from]
+	;;
+	sw MOS_VC_REG_SPC[\to], \tmp
+	;;
+
+	/* Restore Shadow Shadow Shadow Processing Status */
+	lw \tmp = K1B_CONTEXT_SSSPS[\from]
+	;;
+	sw MOS_VC_REG_SSSPS[\to], \tmp
+	;;
+
+	/* Restore Shadow Shadow Processing Status */
+	lw \tmp = K1B_CONTEXT_SSPS[\from]
+	;;
+	sw MOS_VC_REG_SSPS[\to], \tmp
+	;;
+
+	/* Restore Shadow Processing Status */
+	lw \tmp = K1B_CONTEXT_SPS[\from]
+	;;
+	sw MOS_VC_REG_SPS[\to], \tmp
+	;;
+
+	/**
+	 * Restore Processing Status
+	 * @todo Is it Necessary? It is will be overwritten.
+	 **/
+	lw \tmp = K1B_CONTEXT_PS[\from]
+	;;
+	sw MOS_VC_REG_PS[\to], \tmp
+	;;
 
 .endm
 
