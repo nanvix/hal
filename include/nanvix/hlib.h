@@ -166,15 +166,14 @@
 /**@{*/
 
 	/**
-	 * @see __vsprintf().
-	 */
-	#define kvsprintf(str,fmt,args) __vsprintf(str,fmt,args)
-
-	/**
 	 * @see __sprintf().
 	 */
 	#define ksprintf(str,fmt,...) __sprintf(str,fmt,__VA_ARGS__)
 
+	/**
+	 * @see __vsnprintf().
+	 */
+	#define kvsnprintf(str,size,fmt,args) __vsnprintf(str,size,fmt,args)
 /**@}*/
 
 /*============================================================================*
