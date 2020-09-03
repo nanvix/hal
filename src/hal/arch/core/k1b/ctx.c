@@ -26,8 +26,20 @@
 #define __NEED_CORE_CONTEXT
 
 #include <arch/core/k1b/ctx.h>
+#include <arch/core/k1b/mmu.h>
+#include <arch/core/k1b/mOS.h>
 #include <nanvix/const.h>
 #include <nanvix/hlib.h>
+
+/**
+ * @brief Size of red zone (in bytes).
+ */
+#define K1B_REDZONE_SIZE (16)
+
+/**
+ * @brief Reset value of Compute Status Register specified by Kalray.
+ */
+#define K1B_CONTEXT_RESET_CS 0x00008000
 
 /**
  * @todo TODO provide a detailed description for this function.
@@ -59,5 +71,87 @@ PUBLIC void k1b_context_dump(const struct context *ctx)
 	kprintf("[k1b]  spc=%x  sspc=%x ssspc=%x",          ctx->spc, ctx->sspc, ctx->ssspc);
 	kprintf("[k1b]  ssp=%x  sssp=%x ssssp=%x   ksp=%x", ctx->ssp, ctx->sssp, ctx->ssssp, ctx->ksp);
 	kprintf("[k1b]   lc=%x    ls=%x    le=%x",          ctx->lc,  ctx->ls,   ctx->le);
+}
+
+/**
+ * @brief Create a context.
+ *
+ * @param start  Start routine.
+ * @param ustack User stack pointer.
+ * @param kstack Kernel stack pointer.
+ *
+ * @returns Context struct create into the kernel stack.
+ *
+ * @author João Vicente Souto
+ */
+PUBLIC struct context * k1b_context_create(
+	void (*start)(void),
+	struct stack * ustack,
+	struct stack * kstack
+)
+{
+	k1b_word_t * sp;
+	k1b_word_t * bp;
+	k1b_word_t * ksp;
+	mOS_vc_vps_t ps;
+	struct context * ctx;
+
+	KASSERT(start != NULL && ustack != NULL && kstack != NULL);
+
+	/* Default Processing Status (from Simple OS example). */
+	ps.word = 0; /*< Reset all values.                   */
+	ps.itt  = 0; /**< Interrupt not taken.               */
+	ps.ext  = 0; /**< Exception not taken.               */
+	ps.isw  = 1; /**< Use kernel stack on interrupts.    */
+	ps.esw  = 1; /**< Use kernel stack on traps.         */
+	ps.ie   = 1; /**< Enable interrupt.                  */
+	ps.hle  = 1; /**< Enable hardware loop.              */
+	ps.ice  = 1; /**< Enable instruction cache.          */
+	ps.use  = 1; /**< Enable uncached streaming.         */
+	ps.dce  = 1; /**< Enable data cache.                 */
+	ps.gme  = 0; /**< Disable group mode.                */
+	ps.il   = 0; /**< All interrupt enable (Int. level). */
+	ps.sn   = 0; /**< Default syscall number.            */
+	ps.ec   = 0; /**< Default exception cause.           */
+
+	/* Sets magic number. */
+	ustack->magic = K1B_CONTEXT_MAGIC_NUMBER;
+	kstack->magic = K1B_CONTEXT_MAGIC_NUMBER;
+
+	/**
+	 * Stacks grows negatively. We point to the next address that is outside
+	 * the stack so that the decremented stack pointer points to the beginning
+	 * of the specified structure and to ensure that the addresses of the stack
+	 * are aligned to 8 bytes. This alignment is mandatory.
+	 **/
+	ksp = (&kstack->begin + 1);
+	bp  = (&ustack->begin + 1);
+	sp  = bp;
+
+	/* Allocate red zone. */
+	sp -= (K1B_REDZONE_SIZE / K1B_WORD_SIZE);
+
+	/* Allocate context into kernel stack. */
+	ctx = (struct context *) (ksp - (K1B_CONTEXT_SIZE / K1B_WORD_SIZE));
+
+	/* Reset all registers. */
+	kmemset((void *) ctx, 0, K1B_CONTEXT_SIZE);
+
+	/* Populate context. */
+	ctx->ps  = ps.word;              /**< Processing Status.                           */
+	ctx->sps = ps.word;              /**< Shadown Processing Status.                   */
+	ctx->spc = (word_t) start;       /**< Start routine called.                        */
+	ctx->ssp = (word_t) sp;          /**< User stack prepared to call start routine.   */
+	ctx->ksp = (word_t) ksp;         /**< Kernel stack pointer.                        */
+	ctx->r12 = (word_t) ctx;         /**< Kernel stack where context will be consumed. */
+	ctx->r13 = (word_t) bp;          /**< Base stack pointer.                          */
+	ctx->cs  = K1B_CONTEXT_RESET_CS; /**< Reset compute status register.               */
+
+	KASSERT((((word_t) ctx)      & 7) == 0);
+	KASSERT((((word_t) ctx->ssp) & 7) == 0);
+	KASSERT((((word_t) ctx->ksp) & 7) == 0);
+	KASSERT((((word_t) ctx->r12) & 7) == 0);
+
+	return (ctx);
 }
 

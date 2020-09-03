@@ -39,6 +39,7 @@
 
 #ifndef _ASM_FILE_
 	#include <arch/core/k1b/core.h>
+	#include <arch/core/k1b/mmu.h>
 	#include <nanvix/const.h>
 	#include <nanvix/hlib.h>
 #endif
@@ -134,6 +135,11 @@
 	#define K1B_CONTEXT_LE    79*K1B_WORD_SIZE /**< Loop Exit Register                              */
 	/**@}*/
 
+	/**
+	 * @brief Execution context size (in bytes).
+	 */
+	#define K1B_CONTEXT_MAGIC_NUMBER 0xdeadbeef;
+
 #ifndef _ASM_FILE_
 
 	/**
@@ -163,6 +169,16 @@
 			k1b_word_t le;                                     /**< Loop Exit Register                 */
 		} PACK ALIGN(K1B_WORD_SIZE);
 
+		/**
+		 * Execution stack.
+		 */
+		struct stack
+		{
+			k1b_word_t magic;                                     /**< Magic number to protection.                   */
+			k1b_word_t data[(K1B_PAGE_SIZE / K1B_WORD_SIZE) - 2]; /**< Data.                                         */
+			k1b_word_t begin;                                     /**< First address because stack grows negatively. */
+		} PACK ALIGN(K1B_PAGE_SIZE);
+
 	/**@endcond*/
 
 	/**
@@ -171,6 +187,22 @@
 	 * @param ctx Saved execution context.
 	 */
 	EXTERN void k1b_context_dump(const struct context *ctx);
+
+	/**
+	 * @brief Create a context.
+	 *
+	 * @param start  Start routine.
+	 * @param ustack User stack pointer.
+	 * @param kstack Kernel stack pointer.
+	 *
+	 * @returns Valid pointer if the context struct was created
+	 * into the kernel stack correctly, NULL pointer otherwise.
+	 */
+	EXTERN struct context * k1b_context_create(
+		void (* start)(void),
+		struct stack * ustack,
+		struct stack * kstack
+	);
 
 	/**
 	 * @brief Gets the value of the stack pointer register.
@@ -236,7 +268,8 @@
 	 * Exported Constants
 	 */
 	/**@{*/
-	#define CONTEXT_SIZE K1B_CONTEXT_SIZE /**< @see K1B_CONTEXT_SIZE */
+	#define CONTEXT_SIZE K1B_CONTEXT_SIZE                 /**< @see K1B_CONTEXT_SIZE         */
+	#define CONTEXT_MAGIC_NUMBER K1B_CONTEXT_MAGIC_NUMBER /**< @see K1B_CONTEXT_MAGIC_NUMBER */
 	/**@}*/
 
 	/**
@@ -244,17 +277,19 @@
 	 */
 	/**@{*/
 	#define __context_struct /**< @see context */
+	#define __stack_struct   /**< @see stack   */
 	/**@}*/
 
 	/**
 	 * @brief Exported Functions
 	 */
 	/**@{*/
-	#define __context_get_sp_fn /**< context_get_sp() */
-	#define __context_get_pc_fn /**< context_get_pc() */
-	#define __context_set_sp_fn /**< context_set_sp() */
-	#define __context_set_pc_fn /**< context_set_pc() */
-	#define __context_dump_fn   /**< context_dump()   */
+	#define __context_get_sp_fn    /**< context_get_sp()    */
+	#define __context_get_pc_fn    /**< context_get_pc()    */
+	#define __context_set_sp_fn    /**< context_set_sp()    */
+	#define __context_set_pc_fn    /**< context_set_pc()    */
+	#define __context_dump_fn      /**< context_dump()      */
+	#define __context_create_fn    /**< context_create()    */
 	/**@}*/
 
 #ifndef _ASM_FILE_
@@ -298,6 +333,12 @@
 	{
 		k1b_context_dump(ctx);
 	}
+
+	/**
+	 * @see k1b_context_create()
+	 */
+	#define __context_create(start, ustack, kstack) \
+		k1b_context_create(start, ustack, kstack)
 
 #endif /* _ASM_FILE_ */
 
