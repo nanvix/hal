@@ -120,7 +120,7 @@
 		unsigned writable :  1; /**< Writable page?     */
 		unsigned user     :  1; /**< User page?         */
 		unsigned accessed :  1; /**< Accessed?          */
-		unsigned          :  8; /**< Unused.            */
+		unsigned          : 12; /**< Unused.            */
 		unsigned frame    : 32; /**< Frame number.      */
 	} PACK;
 
@@ -133,7 +133,7 @@
 		unsigned writable :  1; /**< Writable page?     */
 		unsigned user     :  1; /**< User page?         */
 		unsigned accessed :  1; /**< Accessed?          */
-		unsigned          :  8; /**< Unused.            */
+		unsigned          : 12; /**< Unused.            */
 		unsigned frame    : 32; /**< Frame number.      */
 	} PACK;
 
