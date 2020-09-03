@@ -69,7 +69,7 @@
 	#define CORE_HAS_CACHE_HW            0 /**< Has Hardware-Managed Cache?        */
 	#define CORE_HAS_HUGE_PAGES          0 /**< Are Huge Pages Supported?          */
 	#define CORE_IS_LITTLE_ENDIAN        1 /**< Is Little Endian?                  */
-	#define CORE_SUPPORTS_MULTITHREADING 0 /**< Has support for context switching? */
+	#define CORE_SUPPORTS_MULTITHREADING 1 /**< Has support for context switching? */
 	/**@}*/
 
 /**@endcond*/

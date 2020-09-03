@@ -37,6 +37,7 @@
 .global _k1b_do_kcall
 .global _k1b_do_excp
 .global _k1b_do_int
+.global k1b_context_switch_to
 
 .section .text
 
@@ -460,8 +461,167 @@ _k1b_do_int:
 	_k1b_context_restore
 	;;
 
-	/* Restore exception context. */
+	/* Restore interrupt context. */
 	scall MOS_VC_RFE
 	;;
 	ret
 	;;
+
+/*===========================================================================*
+ * k1b_context_switch_to()                                                   *
+ *===========================================================================*/
+
+/**
+ * @brief Switch between contexts.
+ *
+ * @details The previous context will be store into kernel stack
+ * and the pointer to it will be store into @previous parameter.
+ * And the next context will be restore from the @next parameter.
+ *
+ * @param previous Pointer to store the pointer of the previous context.
+ * @param next     Pointer to get the pointer to the next context.
+ */
+.align 8
+k1b_context_switch_to:
+
+	/**
+	 * Save previous context 
+	 **/
+
+		/*
+		 * Save execution context
+		 * in the current stack.
+		 */
+		_k1b_context_save
+		;;
+
+		_scoreboard_get $r2 $r3
+		;;
+
+		/* Save Processing Status. */
+		lw $r4 = MOS_VC_REG_PS[$r2]
+		;;
+		sw K1B_CONTEXT_SPS[$sp], $r4
+		;;
+
+		/* Save Shadow Processing Status */
+		lw $r4 = MOS_VC_REG_SPS[$r2]
+		;;
+		sw K1B_CONTEXT_SSPS[$sp], $r4
+		;;
+
+		/* Save Shadow Shadow Processing Status */
+		lw $r4 = MOS_VC_REG_SSPS[$r2]
+		;;
+		sw K1B_CONTEXT_SSSPS[$sp], $r4
+		;;
+
+		/* Change where the context will be restored. */
+		make $r4 = k1b_context_switch_to.return
+		;;
+		sw K1B_CONTEXT_SPC[$sp], $r4
+		;;
+
+		/* Save Shadown Program Counter. */
+		lw $r4 = MOS_VC_REG_SPC[$r2]
+		;;
+		sw K1B_CONTEXT_SSPC[$sp], $r4
+		;;
+
+		/* Save Shadown Shadown Program Counter. */
+		lw $r4 = MOS_VC_REG_SSPC[$r2]
+		;;
+		sw K1B_CONTEXT_SSSPC[$sp], $r4
+		;;
+
+		/* Save Shadow Stack Pointer. */
+		add $r4, $sp, K1B_CONTEXT_SIZE
+		;;
+		sw K1B_CONTEXT_SSP[$sp], $r4
+		;;
+
+		/* Save Shadow Shadow Stack Pointer. */
+		lw $r4 = MOS_VC_REG_SSP[$r2]
+		;;
+		sw K1B_CONTEXT_SSSP[$sp], $r4
+		;;
+
+		/* Save Shadow Shadow Shadow Stack Pointer. */
+		lw $r4 = MOS_VC_REG_SSSP[$r2]
+		;;
+		sw K1B_CONTEXT_SSSSP[$sp], $r4
+		;;
+
+		/* Save Kernel Stack Pointer. */
+		lw $r4 = MOS_VC_REG_KERNEL_SP[$r2]
+		;;
+		sw K1B_CONTEXT_KSP[$sp], $r4
+		;;
+
+	/**
+	 * Store previous context pointer and switch stacks 
+	 **/
+
+		/**
+		 * Load saved parameters
+		 * r0 = struct context ** previous
+		 * r1 = const struct context ** next
+		 **/
+		ld $p0 = K1B_CONTEXT_R0[$sp] /**< r0 + r1  */
+		;;
+
+		/* Store pointer to previous context. */
+		sw 0[$r0], $sp
+		;;
+
+		/* Switch stack. */
+		lw $sp = 0[$r1]
+		;;
+
+		/* Clear next context pointer pointer. */
+		make $r4 = 0
+		;;
+		sw 0[$r1], $r4
+		;;
+
+	/**
+	 * Restore next context 
+	 **/
+
+		/* Restore saved execution mos context. */
+		_k1b_mos_context_restore $sp $r2 $r4
+		;;
+
+		/* Restore saved execution context. */
+		_k1b_context_restore
+		;;
+
+		/* Invalidate the cache. */
+		wpurge
+		;;
+		fence
+		;;
+		dinval
+		;;
+
+		/* Restore exception context. */
+		scall MOS_VC_RFE
+		;;
+
+	/**
+	 * Return of preempted context. 
+	 **/
+
+	k1b_context_switch_to.return:
+
+		/* Invalidate the cache. */
+		wpurge
+		;;
+		fence
+		;;
+		dinval
+		;;
+
+		/* Return normal execution. */
+		ret
+		;;

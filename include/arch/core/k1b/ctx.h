@@ -205,6 +205,21 @@
 	);
 
 	/**
+	 * @brief Switch between contexts.
+	 *
+	 * @details The previous context will be store into kernel stack
+	 * and the pointer to it will be store into @previous parameter.
+	 * And the next context will be restore from the @next parameter.
+	 *
+	 * @param previous Pointer to store the pointer of the previous context.
+	 * @param next     Pointer to get the pointer to the next context.
+	 */
+	EXTERN void k1b_context_switch_to(
+		struct context ** previous,
+		struct context ** next
+	);
+
+	/**
 	 * @brief Gets the value of the stack pointer register.
 	 *
 	 * @param ctx Target context.
@@ -290,6 +305,7 @@
 	#define __context_set_pc_fn    /**< context_set_pc()    */
 	#define __context_dump_fn      /**< context_dump()      */
 	#define __context_create_fn    /**< context_create()    */
+	#define __context_switch_to_fn /**< context_switch_to() */
 	/**@}*/
 
 #ifndef _ASM_FILE_
@@ -339,6 +355,12 @@
 	 */
 	#define __context_create(start, ustack, kstack) \
 		k1b_context_create(start, ustack, kstack)
+
+	/**
+	 * @see k1b_context_switch_to()
+	 */
+	#define __context_switch_to(previous, next) \
+		k1b_context_switch_to(previous, next)
 
 #endif /* _ASM_FILE_ */
 
