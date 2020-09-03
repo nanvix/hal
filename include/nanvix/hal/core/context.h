@@ -69,6 +69,9 @@
 		#ifndef __context_create_fn
 		#error "context_create() not defined?"
 		#endif
+		#ifndef __context_switch_to_fn
+		#error "context_switch_to() not defined?"
+		#endif
 	#endif
 
 #endif
@@ -160,6 +163,24 @@
 		void (* start)(void),
 		struct stack * ustack,
 		struct stack * kstack
+	);
+
+	/**
+	 * @brief Switch between contexts.
+	 *
+	 * @details The previous context will be store into kernel stack
+	 * and the pointer to it will be store into @previous parameter.
+	 * And the next context will be restore from the @next parameter.
+	 *
+	 * @param previous Pointer to store the pointer of the previous context.
+	 * @param next     Pointer to get the pointer to the next context.
+	 *
+	 * @returns Zero if the context was switched and restored, non-zero if
+	 * the arguments are invalid.
+	 */
+	EXTERN int context_switch_to(
+		struct context ** previous,
+		struct context ** next
 	);
 
 /**@}*/
