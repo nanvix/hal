@@ -43,6 +43,11 @@
 	#ifndef __context_struct
 	#error "struct context not defined?"
 	#endif
+	#if CORE_SUPPORTS_MULTITHREADING
+		#ifndef __stack_struct
+		#error "struct stack not defined?"
+		#endif
+	#endif
 
 	/* Functions */
 	#ifndef __context_get_sp_fn
@@ -59,6 +64,11 @@
 	#endif
 	#ifndef __context_dump_fn
 	#error "context_dump() not defined?"
+	#endif
+	#if CORE_SUPPORTS_MULTITHREADING
+		#ifndef __context_create_fn
+		#error "context_create() not defined?"
+		#endif
 	#endif
 
 #endif
@@ -81,6 +91,17 @@
 	 * @brief Execution context.
 	 */
 	struct context;
+
+	/**
+	 * @brief Execution Stack.
+	 */
+	#if CORE_SUPPORTS_MULTITHREADING
+		struct stack;
+	#else
+		struct stack {
+			word_t dummy;
+		};
+	#endif
 
 	/**
 	 * @brief Gets the value of the stack pointer register.
@@ -124,6 +145,22 @@
 	 * @param ctx Saved execution context.
 	 */
 	EXTERN void context_dump(const struct context *ctx);
+
+	/**
+	 * @brief Create a context.
+	 *
+	 * @param start  Start routine.
+	 * @param ustack User stack pointer.
+	 * @param kstack Kernel stack pointer.
+	 *
+	 * @returns Valid pointer if the context struct was created
+	 * into the kernel stack correctly, NULL pointer otherwise.
+	 */
+	EXTERN struct context * context_create(
+		void (* start)(void),
+		struct stack * ustack,
+		struct stack * kstack
+	);
 
 /**@}*/
 
