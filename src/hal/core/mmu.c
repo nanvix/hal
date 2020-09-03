@@ -22,12 +22,12 @@
  * SOFTWARE.
  */
 
-#ifndef __unix64__
-
 #include <nanvix/const.h>
 #include <nanvix/hlib.h>
 #include <nanvix/hal/core/_core.h>
 #include <nanvix/hal/core/mmu.h>
+
+#ifndef __unix64__
 
 /**
  * @brief Megabyte shift
@@ -114,6 +114,4 @@ out:
 		return (void*)(vaddr + (paddr - paddr_aligned));
 }
 
-#else
-typedef int make_iso_compilers_happy;
 #endif
