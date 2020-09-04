@@ -59,6 +59,16 @@
 	;;
 .endm
 
+/*
+ * Gets exception/interrupt cause (28: exception cause in PS register)
+ */
+.macro _get_suspension_cause from to tmp
+	lw  \tmp = MOS_VC_REG_PS[\from]
+	;;
+	srl \to = \tmp, 28
+	;;
+.endm
+
 /*===========================================================================*
  * _do_kcall()                                                             *
  *===========================================================================*/
@@ -203,9 +213,7 @@ _k1b_do_excp:
 	 */
 	add  $sp, $sp, -K1B_EXCP_SIZE
 	;;
-	lw  $r5 = MOS_VC_REG_PS[$r2]
-	;;
-	srl $r4 = $r5, 28                 /* Exception code. */
+	_get_suspension_cause $r2 $r4 $r5  /* Exception code. */
 	;;
 	sw  K1B_EXCP_NR[$sp], $r4
 	;;
@@ -337,9 +345,7 @@ _k1b_do_int:
 	/*
 	 * Save interrupt number into r0.
 	 */
-	lw  $r5 = MOS_VC_REG_PS[$r2]
-	;;
-	srl $r0 = $r5, 28                 /* Interrupt code. */
+	_get_suspension_cause $r2 $r0 $r5  /* Interrupt code. */
 	;;
 
 	/*
