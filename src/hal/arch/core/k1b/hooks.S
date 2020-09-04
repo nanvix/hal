@@ -36,13 +36,19 @@
 
 .global _k1b_do_kcall
 .global _k1b_do_excp
+.global _k1b_do_int
 
 .section .text
+
+/*===========================================================================*
+ * _scoreboard_get()                                                         *
+ *===========================================================================*/
 
 /*
  * Gets the scoreboard of the underlying core.
  */
 .macro _scoreboard_get s0 s1
+
 	/* Get core ID. */
 	get   \s1, $pi
 	;;
@@ -56,10 +62,178 @@
 	;;
 	add  \s0, \s0, \s1
 	;;
+
+.endm
+
+/*
+ * Gets exception/interrupt cause (28: exception cause in PS register)
+ */
+.macro _get_suspension_cause from to tmp
+	lw  \tmp = MOS_VC_REG_PS[\from]
+	;;
+	srl \to = \tmp, 28
+	;;
 .endm
 
 /*===========================================================================*
- * _do_kcall()                                                             *
+ * _k1b_mos_context_save()                                                   *
+ *===========================================================================*/
+
+/*
+ * Save mOS specific register to currently stack pointer.
+ */
+.macro _k1b_mos_context_save from to tmp
+
+	/* Save Processing Status. */
+	lw \tmp = MOS_VC_REG_PS[\from]
+	;;
+	sw K1B_CONTEXT_PS[\to], \tmp
+	;;
+
+	/* Save Shadow Processing Status */
+	lw \tmp = MOS_VC_REG_SPS[\from]
+	;;
+	sw K1B_CONTEXT_SPS[\to], \tmp
+	;;
+
+	/* Save Shadow Shadow Processing Status */
+	lw \tmp = MOS_VC_REG_SSPS[\from]
+	;;
+	sw K1B_CONTEXT_SSPS[\to], \tmp
+	;;
+
+	/* Save Shadow Shadow Shadow Processing Status */
+	lw \tmp = MOS_VC_REG_SSSPS[\from]
+	;;
+	sw K1B_CONTEXT_SSSPS[\to], \tmp
+	;;
+
+	/* Save Shadown Program Counter. */
+	lw \tmp = MOS_VC_REG_SPC[\from]
+	;;
+	sw K1B_CONTEXT_SPC[\to], \tmp
+	;;
+
+	/* Save Shadown Shadown Program Counter. */
+	lw \tmp = MOS_VC_REG_SSPC[\from]
+	;;
+	sw K1B_CONTEXT_SSPC[\to], \tmp
+	;;
+
+	/* Save Shadown Shadown Shadown Program Counter. */
+	lw \tmp = MOS_VC_REG_SSSPC[\from]
+	;;
+	sw K1B_CONTEXT_SSSPC[\to], \tmp
+	;;
+
+	/* Save Shadow Stack Pointer. */
+	lw \tmp = MOS_VC_REG_SSP[\from]
+	;;
+	sw K1B_CONTEXT_SSP[\to], \tmp
+	;;
+
+	/* Save Shadow Shadow Stack Pointer. */
+	lw \tmp = MOS_VC_REG_SSSP[\from]
+	;;
+	sw K1B_CONTEXT_SSSP[\to], \tmp
+	;;
+
+	/* Save Shadow Shadow Shadow Stack Pointer. */
+	lw \tmp = MOS_VC_REG_SSSSP[\from]
+	;;
+	sw K1B_CONTEXT_SSSSP[\to], \tmp
+	;;
+
+	/* Save Kernel Stack Pointer. */
+	lw \tmp = MOS_VC_REG_KERNEL_SP[\from]
+	;;
+	sw K1B_CONTEXT_KSP[\to], \tmp
+	;;
+
+.endm
+
+/*===========================================================================*
+ * _k1b_mos_context_restore()                                                *
+ *===========================================================================*/
+
+/*
+ * Restore mOS specific register from currently stack pointer.
+ */
+.macro _k1b_mos_context_restore from to tmp
+
+	/* Restore Kernel Stack Pointer. */
+	lw \tmp = K1B_CONTEXT_KSP[\from]
+	;;
+	sw MOS_VC_REG_KERNEL_SP[\to], \tmp
+	;;
+
+	/* Restore Shadow Shadow Shadow Stack Pointer. */
+	lw \tmp = K1B_CONTEXT_SSSSP[\from]
+	;;
+	sw MOS_VC_REG_SSSSP[\to], \tmp
+	;;
+
+	/* Restore Shadow Shadow Stack Pointer. */
+	lw \tmp = K1B_CONTEXT_SSSP[\from]
+	;;
+	sw MOS_VC_REG_SSSP[\to], \tmp
+	;;
+
+	/* Restore Shadow Stack Pointer. */
+	lw \tmp = K1B_CONTEXT_SSP[\from]
+	;;
+	sw MOS_VC_REG_SSP[\to], \tmp
+	;;
+
+	/* Restore Program Counter. */
+	lw \tmp = K1B_CONTEXT_SSSPC[\from]
+	;;
+	sw MOS_VC_REG_SSSPC[\to], \tmp
+	;;
+
+	/* Restore Program Counter. */
+	lw \tmp = K1B_CONTEXT_SSPC[\from]
+	;;
+	sw MOS_VC_REG_SSPC[\to], \tmp
+	;;
+
+	/* Restore program counter. */
+	lw $r4 = K1B_CONTEXT_SPC[\from]
+	;;
+	sw MOS_VC_REG_SPC[\to], \tmp
+	;;
+
+	/* Restore Shadow Shadow Shadow Processing Status */
+	lw \tmp = K1B_CONTEXT_SSSPS[\from]
+	;;
+	sw MOS_VC_REG_SSSPS[\to], \tmp
+	;;
+
+	/* Restore Shadow Shadow Processing Status */
+	lw \tmp = K1B_CONTEXT_SSPS[\from]
+	;;
+	sw MOS_VC_REG_SSPS[\to], \tmp
+	;;
+
+	/* Restore Shadow Processing Status */
+	lw \tmp = K1B_CONTEXT_SPS[\from]
+	;;
+	sw MOS_VC_REG_SPS[\to], \tmp
+	;;
+
+	/**
+	 * Restore Processing Status
+	 * @todo Is it Necessary? It is will be overwritten.
+	 **/
+	lw \tmp = K1B_CONTEXT_PS[\from]
+	;;
+	sw MOS_VC_REG_PS[\to], \tmp
+	;;
+
+.endm
+
+/*===========================================================================*
+ * _do_kcall()                                                               *
  *===========================================================================*/
 
 /*
@@ -77,20 +251,12 @@ _k1b_do_kcall:
 		_scoreboard_get $r2 $r3
 		;;
 
-		/* Restore saved program counter. */
-		lw  $r4 = K1B_CONTEXT_SPC[$sp]
-		;;
-		sw  MOS_VC_REG_SPC[$r2], $r4
-		;;
-
-		/* Restore shadow stack pointer. */
-		lw  $r4 = K1B_CONTEXT_SSP[$sp]
-		;;
-		sw  MOS_VC_REG_SSP[$r2], $r4
+		/* Restore saved execution mos context. */
+		_k1b_mos_context_restore $sp $r2 $r4
 		;;
 
 		/* Restore saved execution context. */
-		k1b_context_restore
+		_k1b_context_restore
 		;;
 
 		goto _do_kcall.out
@@ -114,11 +280,11 @@ _k1b_do_kcall:
 		/*
 		 * Invoke system call dispatcher.
 		 */
-		redzone_alloc
+		_redzone_alloc
 		;;
 		call do_kcall
 		;;
-		redzone_free
+		_redzone_free
 		;;
 
 		/* Restore preserved registers. */
@@ -146,7 +312,7 @@ _k1b_do_excp:
 	 * Save execution context
 	 * in the current stack.
 	 */
-	k1b_context_save
+	_k1b_context_save
 	;;
 
 	/*
@@ -160,40 +326,11 @@ _k1b_do_excp:
 	_scoreboard_get $r2 $r3
 	;;
 
-	/* Processing Status. */
-	lw  $r4 = MOS_VC_REG_PS[$r2]
-	;;
-	sw  K1B_CONTEXT_PS[$r1], $r4
-	;;
-
-	/* Saved Processing Status */
-	lw  $r4 = MOS_VC_REG_SPS[$r2]
-	;;
-	sw  K1B_CONTEXT_SPS[$r1], $r4
-	;;
-
-	/* Saved Program Counter. */
-	lw  $r4 = MOS_VC_REG_SPC[$r2]
-	;;
-	sw  K1B_CONTEXT_SPC[$r1], $r4
-	;;
-
-	/* Shadow Stack Pointer. */
-	lw  $r4 = MOS_VC_REG_SSP[$r2]
-	;;
-	sw  K1B_CONTEXT_SSP[$r1], $r4
-	;;
-
-	/* Shadow Shadow Stack Pointer. */
-	lw  $r4 = MOS_VC_REG_SSSP[$r2]
-	;;
-	sw  K1B_CONTEXT_SSSP[$r1], $r4
-	;;
-
-	/* Shadow Shadow Shadow Stack Pointer. */
-	lw  $r4 = MOS_VC_REG_SSSSP[$r2]
-	;;
-	sw  K1B_CONTEXT_SSSSP[$r1], $r4
+	/*
+	 * Save execution mos context
+	 * in the current stack.
+	 */
+	_k1b_mos_context_save $r2 $r1 $r4
 	;;
 
 	/*
@@ -202,9 +339,7 @@ _k1b_do_excp:
 	 */
 	add  $sp, $sp, -K1B_EXCP_SIZE
 	;;
-	lw  $r5 = MOS_VC_REG_PS[$r2]
-	;;
-	srl $r4 = $r5, 28                 /* Exception code. */
+	_get_suspension_cause $r2 $r4 $r5  /* Exception code. */
 	;;
 	sw  K1B_EXCP_NR[$sp], $r4
 	;;
@@ -228,11 +363,11 @@ _k1b_do_excp:
 	/*
 	 * Call exception dispatcher.
 	 */
-	redzone_alloc
+	_redzone_alloc
 	;;
 	call do_exception
 	;;
-	redzone_free
+	_redzone_free
 	;;
 
 	/*
@@ -245,22 +380,84 @@ _k1b_do_excp:
 	_scoreboard_get $r2 $r3
 	;;
 
-	/* Restore saved program counter. */
-	lw  $r4 = K1B_CONTEXT_SPC[$sp]
-	;;
-	sw  MOS_VC_REG_SPC[$r2], $r4
-	;;
-
-	/* Restore shadow stack pointer. */
-	lw  $r4 = K1B_CONTEXT_SSP[$sp]
-	;;
-	sw  MOS_VC_REG_SSP[$r2], $r4
+	/* Restore saved execution mos context. */
+	_k1b_mos_context_restore $sp $r2 $r4
 	;;
 
 	/*
 	 * Restore saved execution context.
 	 */
-	k1b_context_restore
+	_k1b_context_restore
+	;;
+
+	/* Restore exception context. */
+	scall MOS_VC_RFE
+	;;
+	ret
+	;;
+
+/*===========================================================================*
+ * _do_int()                                                                 *
+ *===========================================================================*/
+
+/*
+ * Interrupt hook.
+ */
+.align 8
+_k1b_do_int:
+
+	/*
+	 * Save execution context
+	 * in the current stack.
+	 */
+	_k1b_context_save
+	;;
+
+	/*
+	 * Save a reference to execution context
+	 * into r1. The high-level exception handler
+	 * dispatcher will need it.
+	 */
+	copy $r1 = $sp
+	;;
+
+	_scoreboard_get $r2 $r3
+	;;
+
+	/*
+	 * Save execution mos context
+	 * in the current stack.
+	 */
+	_k1b_mos_context_save $r2 $r1 $r4
+	;;
+
+	/*
+	 * Save interrupt number into r0.
+	 */
+	_get_suspension_cause $r2 $r0 $r5  /* Interrupt code. */
+	;;
+
+	/*
+	 * Call interrupt dispatcher.
+	 */
+	_redzone_alloc
+	;;
+	call __k1b_do_int
+	;;
+	_redzone_free
+	;;
+
+	_scoreboard_get $r2 $r3
+	;;
+
+	/* Restore saved execution mos context. */
+	_k1b_mos_context_restore $sp $r2 $r4
+	;;
+
+	/*
+	 * Restore saved execution context.
+	 */
+	_k1b_context_restore
 	;;
 
 	/* Restore exception context. */

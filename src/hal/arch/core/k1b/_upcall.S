@@ -51,11 +51,11 @@ k1b_upcall_ret:
 	add $r0, $sp, 2*K1B_WORD_SIZE # Argument
 	;;
 
-	redzone_alloc
+	_redzone_alloc
 	;;
 	icall $r1
 	;;
-	redzone_free
+	_redzone_free
 	;;
 
 	/* Wipe out upcall stack frame. */
