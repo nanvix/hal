@@ -104,9 +104,11 @@
 
 	/**
 	 * @brief Kernel page pool size (in bytes).
+	 *
+	 * @bug FIXME: https://github.com/nanvix/hal/issues/619
 	 */
 	#define OR1K_CLUSTER_KPOOL_SIZE \
-		(OR1K_CLUSTER_KPOOL_END_PHYS - OR1K_CLUSTER_KPOOL_BASE_PHYS)
+		((OR1K_CLUSTER_KPOOL_END_PHYS - OR1K_CLUSTER_KPOOL_BASE_PHYS)/32)
 
 	/**
 	 * @brief User memory size (in bytes).
