@@ -791,6 +791,145 @@ PRIVATE void test_cluster_cores_stress_spinlocks(void)
 		while (true);
 }
 
+#if CORE_SUPPORTS_MULTITHREADING
+
+/*----------------------------------------------------------------------------*
+ * Context switch                                                             *
+ *----------------------------------------------------------------------------*/
+
+/**
+ * @name Auxiliar variables.
+ */
+/**@{*/
+PRIVATE struct context * level_0_ctx;
+PRIVATE struct context * level_1_ctx;
+PRIVATE struct context * level_2_ctx;
+PRIVATE struct stack ustack1;
+PRIVATE struct stack kstack1;
+PRIVATE struct stack ustack2;
+PRIVATE struct stack kstack2;
+/**@}*/
+
+/**
+ * @name Context fences.
+ */
+/**@{*/
+PRIVATE struct fence level_0_fence;
+PRIVATE struct fence level_1_fence;
+PRIVATE struct fence level_2_fence;
+/**@}*/
+
+/**
+ * @brief API Test: Next context function.
+ */
+PRIVATE void context_level_2(void)
+{
+
+#if (TEST_CORES_VERBOSE)
+	kprintf("[test][core] Level 2: New context started.");
+#endif
+
+	fence_join(&level_2_fence);
+
+#if (TEST_CORES_VERBOSE)
+	kprintf("[test][core] Level 2: Restore level 1 context.");
+#endif
+
+	KASSERT(context_switch_to(&level_2_ctx, &level_1_ctx) == 0);
+}
+
+/**
+ * @brief API Test: Next context function.
+ */
+PRIVATE void context_level_1(void)
+{
+#if (TEST_CORES_VERBOSE)
+	kprintf("[test][core] Level 1: New context started.");
+	kprintf("[test][core] Level 1: Switch to level 2.");
+#endif
+
+	KASSERT(context_switch_to(&level_1_ctx, &level_2_ctx) == 0);
+
+#if (TEST_CORES_VERBOSE)
+	kprintf("[test][core] Level 1: Context restored back.");
+#endif
+
+	fence_join(&level_1_fence);
+
+#if (TEST_CORES_VERBOSE)
+	kprintf("[test][core] Level 1: Restore level 0 context.");
+#endif
+
+	KASSERT(context_switch_to(&level_1_ctx, &level_0_ctx) == 0);
+}
+
+
+/**
+ * @brief API Test: Previous context function.
+ */
+PRIVATE void core_switch_context(void)
+{
+#if (TEST_CORES_VERBOSE)
+	kprintf("[test][core] Level 0: Core prepare to switch context.");
+#endif
+
+	KASSERT(context_switch_to(&level_0_ctx, &level_1_ctx) == 0);
+
+#if (TEST_CORES_VERBOSE)
+	kprintf("[test][core] Level 0: Context restored back.");
+#endif
+
+	fence_join(&level_0_fence);
+}
+
+/**
+ * @brief API Test: Restore a context.
+ */
+PRIVATE void test_cluster_core_restore_context(void)
+{
+	for (int t = 0; t < NITERATIONS; t++)
+	{
+		KASSERT((level_1_ctx = context_create(context_level_1, &ustack1, &kstack1)) != NULL);
+		KASSERT((level_2_ctx = context_create(context_level_2, &ustack2, &kstack2)) != NULL);
+
+		/* Start the producer/consumer. */
+		fence_init(&level_0_fence, 1);
+		fence_init(&level_1_fence, 1);
+		fence_init(&level_2_fence, 1);
+
+			/* Start the first available slave core. */
+			for (int i = 0; i < CORES_NUM; i++)
+			{
+				if (i != COREID_MASTER)
+				{
+					KASSERT(core_start(i, core_switch_context) == 0);
+					break;
+				}
+			}
+
+#if (TEST_CORES_VERBOSE)
+		kprintf("[test][core] Master: Wait level 2");
+#endif
+		fence_wait(&level_2_fence);
+
+#if (TEST_CORES_VERBOSE)
+		kprintf("[test][core] Master: Wait level 1");
+#endif
+		fence_wait(&level_1_fence);
+
+#if (TEST_CORES_VERBOSE)
+		kprintf("[test][core] Master: Wait level 0");
+#endif
+		fence_wait(&level_0_fence);
+
+#if (TEST_CORES_VERBOSE)
+		kprintf("[test][core] Master: Done");
+#endif
+	}
+}
+
+#endif /* CORE_SUPPORTS_MULTITHREADING */
+
 /*============================================================================*
  * Test Driver                                                                *
  *============================================================================*/
@@ -806,6 +945,9 @@ PRIVATE struct test core_tests_api[] = {
 	{ test_cluster_core_api_sleep_wakeup_slave,  "suspend and resume a slave core    " },
 	{ test_cluster_core_api_start_leader,        "start execution from slave         " },
 	{ test_cluster_core_api_sleep_wakeup_leader, "suspend and resume from slave core " },
+#if CORE_SUPPORTS_MULTITHREADING
+	{ test_cluster_core_restore_context,         "Create a context and restore it    " },
+#endif
 	{ NULL,                                       NULL                                 },
 };
 

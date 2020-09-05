@@ -59,13 +59,14 @@
 	 * @name Core Features
 	 */
 	/**@{*/
-	#define CORE_HAS_PERF         0 /**< Has Performance Monitors?   */
-	#define CORE_HAS_ATOMICS      1 /**< Has Atomic Instructions?    */
-	#define CORE_HAS_PMIO         1 /**< Has Programmed I/O?         */
-	#define CORE_HAS_TLB_HW       1 /**< Has Hardware-Managed TLB?   */
-	#define CORE_HAS_CACHE_HW     1 /**< Has Hardware-Managed Cache? */
-	#define CORE_HAS_HUGE_PAGES   0 /**< Are Huge Pages Supported?   */
-	#define CORE_IS_LITTLE_ENDIAN 1 /**< Is Little Endian?           */
+	#define CORE_HAS_PERF                0 /**< Has Performance Monitors?          */
+	#define CORE_HAS_ATOMICS             1 /**< Has Atomic Instructions?           */
+	#define CORE_HAS_PMIO                1 /**< Has Programmed I/O?                */
+	#define CORE_HAS_TLB_HW              1 /**< Has Hardware-Managed TLB?          */
+	#define CORE_HAS_CACHE_HW            1 /**< Has Hardware-Managed Cache?        */
+	#define CORE_HAS_HUGE_PAGES          0 /**< Are Huge Pages Supported?          */
+	#define CORE_IS_LITTLE_ENDIAN        1 /**< Is Little Endian?                  */
+	#define CORE_SUPPORTS_MULTITHREADING 0 /**< Has support for context switching? */
 	/**@}*/
 
 /**@endcond*/

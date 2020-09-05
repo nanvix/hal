@@ -41,7 +41,7 @@
 	 */
 	/**@{*/
 	#define sp r12 /**< Stack Pointer Pointer               */
-	#define bp r13 /**< Thread Local Store Pointer Register */
+	#define bp r13 /**< Base Stack Pointer Register         */
 	#define pi pcr /**< Processing Identification Register  */
 	/**@}*/
 

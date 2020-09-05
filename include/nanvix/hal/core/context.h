@@ -43,6 +43,11 @@
 	#ifndef __context_struct
 	#error "struct context not defined?"
 	#endif
+	#if CORE_SUPPORTS_MULTITHREADING
+		#ifndef __stack_struct
+		#error "struct stack not defined?"
+		#endif
+	#endif
 
 	/* Functions */
 	#ifndef __context_get_sp_fn
@@ -59,6 +64,14 @@
 	#endif
 	#ifndef __context_dump_fn
 	#error "context_dump() not defined?"
+	#endif
+	#if CORE_SUPPORTS_MULTITHREADING
+		#ifndef __context_create_fn
+		#error "context_create() not defined?"
+		#endif
+		#ifndef __context_switch_to_fn
+		#error "context_switch_to() not defined?"
+		#endif
 	#endif
 
 #endif
@@ -81,6 +94,17 @@
 	 * @brief Execution context.
 	 */
 	struct context;
+
+	/**
+	 * @brief Execution Stack.
+	 */
+	#if CORE_SUPPORTS_MULTITHREADING
+		struct stack;
+	#else
+		struct stack {
+			word_t dummy;
+		};
+	#endif
 
 	/**
 	 * @brief Gets the value of the stack pointer register.
@@ -124,6 +148,40 @@
 	 * @param ctx Saved execution context.
 	 */
 	EXTERN void context_dump(const struct context *ctx);
+
+	/**
+	 * @brief Create a context.
+	 *
+	 * @param start  Start routine.
+	 * @param ustack User stack pointer.
+	 * @param kstack Kernel stack pointer.
+	 *
+	 * @returns Valid pointer if the context struct was created
+	 * into the kernel stack correctly, NULL pointer otherwise.
+	 */
+	EXTERN struct context * context_create(
+		void (* start)(void),
+		struct stack * ustack,
+		struct stack * kstack
+	);
+
+	/**
+	 * @brief Switch between contexts.
+	 *
+	 * @details The previous context will be store into kernel stack
+	 * and the pointer to it will be store into @previous parameter.
+	 * And the next context will be restore from the @next parameter.
+	 *
+	 * @param previous Pointer to store the pointer of the previous context.
+	 * @param next     Pointer to get the pointer to the next context.
+	 *
+	 * @returns Zero if the context was switched and restored, non-zero if
+	 * the arguments are invalid.
+	 */
+	EXTERN int context_switch_to(
+		struct context ** previous,
+		struct context ** next
+	);
 
 /**@}*/
 

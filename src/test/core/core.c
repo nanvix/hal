@@ -62,11 +62,9 @@ PRIVATE void test_core_get_id(void)
 	KASSERT(coreid == COREID_MASTER);
 }
 
-
 /*----------------------------------------------------------------------------*
  * Core Poweroff                                                              *
  *----------------------------------------------------------------------------*/
-
 
 /**
  * @brief API Test: Poweroff the core
@@ -80,6 +78,39 @@ PRIVATE void test_core_poweroff(void)
 	core_poweroff();
 }
 
+#if CORE_SUPPORTS_MULTITHREADING
+
+/*----------------------------------------------------------------------------*
+ * Context create                                                             *
+ *----------------------------------------------------------------------------*/
+
+PRIVATE struct stack ustack;
+PRIVATE struct stack kstack;
+
+PRIVATE void dummy_start(void)
+{
+	kprintf("[test][core] Dummy function start.");
+}
+
+/**
+ * @brief API Test: Poweroff the core
+ */
+PRIVATE void test_context_create(void)
+{
+	struct context * ctx;
+
+	KASSERT((ctx = context_create(dummy_start, &ustack, &kstack)) != NULL);
+
+	KASSERT(context_get_pc(ctx) == (word_t) dummy_start);
+	KASSERT(WITHIN(
+		context_get_sp(ctx),
+		(word_t) (&ustack),
+		(word_t) (&ustack + 1)
+	));
+}
+
+#endif /* CORE_SUPPORTS_MULTITHREADING */
+
 /*============================================================================*
  * Test Driver                                                                *
  *============================================================================*/
@@ -88,9 +119,12 @@ PRIVATE void test_core_poweroff(void)
  * @brief API Tests.
  */
 PRIVATE struct test core_tests_api[] = {
-	{ test_core_get_id,   "get core id   " },
-	{ test_core_poweroff, "power off core" },
-	{ NULL,                NULL            },
+	{ test_core_get_id,    "get core id   " },
+	{ test_core_poweroff,  "power off core" },
+#if CORE_SUPPORTS_MULTITHREADING
+	{ test_context_create, "create context" },
+#endif
+	{ NULL,                NULL             },
 };
 
 /**

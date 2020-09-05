@@ -39,6 +39,7 @@
 
 	#include <HAL/hal/board/boot_args.h>
 	#include <HAL/hal/core/diagnostic.h>
+	#include <HAL/hal/core/legacy.h>
 	#include <HAL/hal/cluster/dsu.h>
 	#include "HAL/hal/cluster/cnoc.h"
 	#include "HAL/hal/cluster/dnoc.h"
