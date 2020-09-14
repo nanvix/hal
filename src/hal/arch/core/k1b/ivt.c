@@ -55,8 +55,18 @@ PUBLIC void __k1b_do_int(int irqnum, struct context * ctx)
 
 	KASSERT((intnum = k1b_irq_to_int(irqnum)) >= 0);
 
+	if (UNLIKELY(intnum == K1B_INT_IPI))
+	{
+		bsp_inter_pe_interrupt_clear(BSP_IT_PE_0);
+		mOS_it_clear_num(irqnum);
+		dcache_invalidate();
+	}
+
 	if (LIKELY(_do_interrupt != NULL))
 		_do_interrupt(intnum);
+
+	if (UNLIKELY(intnum == K1B_INT_IPI))
+		dcache_invalidate();
 }
 
 /**

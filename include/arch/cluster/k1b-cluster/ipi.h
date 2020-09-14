@@ -22,51 +22,97 @@
  * SOFTWARE.
  */
 
-#ifndef CLUSTER_K1B_CLUSTER_H_
-#define CLUSTER_K1B_CLUSTER_H_
-
-	#ifndef __NEED_CLUSTER_K1B
-		#error "bad cluster configuration?"
-	#endif
+#ifndef ARCH_CLUSTER_K1B_CLUSTER_IPI_H_
+#define ARCH_CLUSTER_K1B_CLUSTER_IPI_H_
 
 	/* Cluster Interface Implementation */
 	#include <arch/cluster/k1b-cluster/_k1b-cluster.h>
+
+/**
+ * @addtogroup k1b-cluster-ipi IPI
+ * @ingroup k1b-cluster
+ *
+ * @brief IPI Interface
+ */
+/**@{*/
+
+	#include <nanvix/const.h>
+
+#ifndef _ASM_FILE_
+
+	/**
+	 * @brief Sends an interrupt to another core.
+	 *
+	 * @param coreid ID of target core.
+	 */
+	EXTERN void k1b_cluster_ipi_send(int coreid);
+
+	/**
+	 * @brief Complete the interrupt that came from another core.
+	 *
+	 * @details The clear of the mOS interrupt line used
+	 * is automatically done by the interrupt dispatcher.
+	 */
+	static inline void k1b_cluster_ipi_ack(void)
+	{
+		/* noop. */
+	}
+
+	/**
+	 * @brief Waits for an IPI interrupt.
+	 */
+	EXTERN void k1b_cluster_ipi_wait(void);
+
+#endif /* _ASM_FILE_ */
+
+/**@}*/
 
 /*============================================================================*
  * Exported Interface                                                         *
  *============================================================================*/
 
 /**
- * @addtogroup k1b-cluster Bostan Cluster
- * @ingroup clusters
- *
- * @brief Bostan Cluster
+ * @cond k1b_cluster
  */
-/**@{*/
-
-	#include <arch/cluster/k1b-cluster/cores.h>
-	#include <arch/cluster/k1b-cluster/timer.h>
-	#include <arch/cluster/k1b-cluster/ipi.h>
-	#include <arch/cluster/k1b-cluster/event.h>
-	#include <arch/cluster/k1b-cluster/memory.h>
 
 	/**
-	 * @name Provided Features
+	 * @name Exported Functions
 	 */
 	/**@{*/
-	#define CLUSTER_IS_MULTICORE   1 /**< Multicore Cluster */
-	#ifdef __k1io__
-		#define CLUSTER_IS_IO      1 /**< I/O Cluster       */
-		#define CLUSTER_IS_COMPUTE 0 /**< Compute Cluster   */
-	#else
-		#define CLUSTER_IS_IO      0 /**< I/O Cluster       */
-		#define CLUSTER_IS_COMPUTE 1 /**< Compute Cluster   */
-	#endif
-	#define CLUSTER_HAS_EVENTS     1 /**< Event Support?    */
-	#define CLUSTER_HAS_RTC        1 /**< RTC Support?      */
-	#define CLUSTER_HAS_IPI        1 /**< IPI Support?      */
+	#define __cluster_ipi_send_fn /**< cluster_ipi_send() */
+	#define __cluster_ipi_ack_fn  /**< cluster_ipi_ack()  */
+	#define __cluster_ipi_wait_fn /**< cluster_ipi_wait() */
 	/**@}*/
 
-/**@}*/
+#ifndef _ASM_FILE_
 
-#endif /* CLUSTER_K1B_CLUSTER_H_ */
+	/**
+	 * @see k1b_cluster_ipi_send().
+	 */
+	static inline void cluster_ipi_send(int coreid)
+	{
+		k1b_cluster_ipi_send(coreid);
+	}
+
+	/**
+	 * @see k1b_cluster_ipi_ack().
+	 */
+	static inline void cluster_ipi_ack(void)
+	{
+		k1b_cluster_ipi_ack();
+	}
+
+	/**
+	 * @see k1b_cluster_ipi_wait().
+	 */
+	static inline void cluster_ipi_wait(void)
+	{
+		k1b_cluster_ipi_wait();
+	}
+
+#endif /* _ASM_FILE_ */
+
+/**@endcond*/
+
+#endif /* ARCH_CLUSTER_K1B_CLUSTER_IPI_H_ */
+

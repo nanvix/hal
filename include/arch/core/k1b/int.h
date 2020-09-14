@@ -57,7 +57,7 @@
 	#define K1B_INT_DNOC       4 /**< Data NoC             */
 	#define K1B_INT_DMA        5 /**< DMA                  */
 	#define K1B_INT_NOC_ERR    6 /**< NoC Error            */
-	#define K1B_INT_VIRT       7 /**< Virtual Line         */
+	#define K1B_INT_IPI        7 /**< IPI Line             */
 	#define K1B_INT_TIMER_ERR  8 /**< Watchdog Timer Error */
 	#define K1B_INT_DEBUG      9 /**< Debug                */
 	#ifdef __k1io__
@@ -65,7 +65,6 @@
 	#define K1B_INT_GIC2      11 /**< GIC 2                */
 	#define K1B_INT_GIC3      12 /**< GIC2                 */
 	#endif
-	#define K1B_INT_IPI              256 /**< Dummy IPI interrupt  */
 	/**@}*/
 
 #ifndef _ASM_FILE_
