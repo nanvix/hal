@@ -74,8 +74,8 @@ PRIVATE void stress_portal_create_unlink(void)
 
 	for (unsigned int i = 0; i < NSETUPS; ++i)
 	{
-		KASSERT((portalid = portal_create(local)) >= 0);
-		KASSERT(portal_unlink(portalid) == 0);
+		KASSERT((portalid = vsys_portal_create(local)) >= 0);
+		KASSERT(vsys_portal_unlink(portalid) == 0);
 	}
 }
 
@@ -93,8 +93,8 @@ PRIVATE void stress_portal_open_close(void)
 
 	for (unsigned int i = 0; i < NSETUPS; ++i)
 	{
-		KASSERT((portalid = portal_open(local, remote)) >= 0);
-		KASSERT(portal_close(portalid) == 0);
+		KASSERT((portalid = vsys_portal_open(local, remote)) >= 0);
+		KASSERT(vsys_portal_close(portalid) == 0);
 	}
 }
 
@@ -108,7 +108,7 @@ PRIVATE void do_sender(int local, int remote)
 
 	for (unsigned int i = 0; i < NSETUPS; ++i)
 	{
-		KASSERT((portalid = portal_open(local, remote)) >= 0);
+		KASSERT((portalid = vsys_portal_open(local, remote)) >= 0);
 
 		test_stress_barrier();
 
@@ -117,13 +117,13 @@ PRIVATE void do_sender(int local, int remote)
 				data[0] = (j % sizeof(char));
 				do
 				{
-					ret = portal_awrite(portalid, data, HAL_PORTAL_MAX_SIZE);
+					ret = vsys_portal_awrite(portalid, data, HAL_PORTAL_MAX_SIZE);
 					KASSERT(AWRITE_CHECKS(ret));
 				} while (ret != HAL_PORTAL_MAX_SIZE);
-				KASSERT(portal_wait(portalid) == 0);
+				KASSERT(vsys_portal_wait(portalid) == 0);
 			}
 
-		KASSERT(portal_close(portalid) == 0);
+		KASSERT(vsys_portal_close(portalid) == 0);
 
 		test_stress_barrier();
 	}
@@ -139,25 +139,25 @@ PRIVATE void do_receiver(int local, int remote)
 
 	for (unsigned int i = 0; i < NSETUPS; ++i)
 	{
-		KASSERT((portalid = portal_create(local)) >= 0);
+		KASSERT((portalid = vsys_portal_create(local)) >= 0);
 
 		test_stress_barrier();
 
 			for (int j = 0; j < NCOMMUNICATIONS; ++j)
 			{
 				data[0] = (-1);
-				KASSERT(portal_allow(portalid, remote) == 0);
+				KASSERT(vsys_portal_allow(portalid, remote) == 0);
 				do
 				{
-					ret = portal_aread(portalid, data, HAL_PORTAL_MAX_SIZE);
+					ret = vsys_portal_aread(portalid, data, HAL_PORTAL_MAX_SIZE);
 					KASSERT(AREAD_CHECKS(ret));
 				} while (ret != HAL_PORTAL_MAX_SIZE);
-				KASSERT(portal_wait(portalid) == 0);
+				KASSERT(vsys_portal_wait(portalid) == 0);
 
 				KASSERT(data[0] == (j % sizeof(char)));
 			}
 
-		KASSERT(portal_unlink(portalid) == 0);
+		KASSERT(vsys_portal_unlink(portalid) == 0);
 
 		test_stress_barrier();
 	}
@@ -201,8 +201,8 @@ PRIVATE void stress_portal_pingpong(void)
 
 	for (unsigned int i = 0; i < NSETUPS; ++i)
 	{
-		KASSERT((inportal = portal_create(local)) >= 0);
-		KASSERT((outportal = portal_open(local, remote)) >= 0);
+		KASSERT((inportal = vsys_portal_create(local)) >= 0);
+		KASSERT((outportal = vsys_portal_open(local, remote)) >= 0);
 
 		test_stress_barrier();
 
@@ -211,23 +211,23 @@ PRIVATE void stress_portal_pingpong(void)
 			for (unsigned int j = 0; j < NCOMMUNICATIONS; ++j)
 			{
 				data[0] = (-1);
-				KASSERT(portal_allow(inportal, remote) == 0);
+				KASSERT(vsys_portal_allow(inportal, remote) == 0);
 				do
 				{
-					ret = portal_aread(inportal, data, HAL_PORTAL_MAX_SIZE);
+					ret = vsys_portal_aread(inportal, data, HAL_PORTAL_MAX_SIZE);
 					KASSERT(AREAD_CHECKS(ret));
 				} while (ret != HAL_PORTAL_MAX_SIZE);
-				KASSERT(portal_wait(inportal) == 0);
+				KASSERT(vsys_portal_wait(inportal) == 0);
 
 				KASSERT(data[0] == (j % sizeof(char)));
 
 				data[0] = ((j + 1) % sizeof(char));
 				do
 				{
-					ret = portal_awrite(outportal, data, HAL_PORTAL_MAX_SIZE);
+					ret = vsys_portal_awrite(outportal, data, HAL_PORTAL_MAX_SIZE);
 					KASSERT(AWRITE_CHECKS(ret));
 				} while (ret != HAL_PORTAL_MAX_SIZE);
-				KASSERT(portal_wait(outportal) == 0);
+				KASSERT(vsys_portal_wait(outportal) == 0);
 			}
 		}
 		else
@@ -237,26 +237,26 @@ PRIVATE void stress_portal_pingpong(void)
 				data[0] = (j % sizeof(char));
 				do
 				{
-					ret = portal_awrite(outportal, data, HAL_PORTAL_MAX_SIZE);
+					ret = vsys_portal_awrite(outportal, data, HAL_PORTAL_MAX_SIZE);
 					KASSERT(AWRITE_CHECKS(ret));
 				} while (ret != HAL_PORTAL_MAX_SIZE);
-				KASSERT(portal_wait(outportal) == 0);
+				KASSERT(vsys_portal_wait(outportal) == 0);
 
 				data[0] = (-1);
-				KASSERT(portal_allow(inportal, remote) == 0);
+				KASSERT(vsys_portal_allow(inportal, remote) == 0);
 				do
 				{
-					ret = portal_aread(inportal, data, HAL_PORTAL_MAX_SIZE);
+					ret = vsys_portal_aread(inportal, data, HAL_PORTAL_MAX_SIZE);
 					KASSERT(AREAD_CHECKS(ret));
 				} while (ret != HAL_PORTAL_MAX_SIZE);
-				KASSERT(portal_wait(inportal) == 0);
+				KASSERT(vsys_portal_wait(inportal) == 0);
 
 				KASSERT(data[0] == ((j + 1) % sizeof(char)));
 			}
 		}
 
-		KASSERT(portal_close(outportal) == 0);
-		KASSERT(portal_unlink(inportal) == 0);
+		KASSERT(vsys_portal_close(outportal) == 0);
+		KASSERT(vsys_portal_unlink(inportal) == 0);
 
 		test_stress_barrier();
 	}

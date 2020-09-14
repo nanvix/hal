@@ -49,6 +49,7 @@ PRIVATE void do_test_stress_al(void)
 
 	test_stress_cleanup();
 
+	vsys_exit();
 	fence_join(&stress_fence);
 
 	KASSERT(core_release() == 0);
@@ -63,6 +64,7 @@ PRIVATE void do_test_stress_al(void)
  */
 PUBLIC void test_stress_al(void)
 {
+	vsys_setup();
 	test_stress_interrupt_setup();
 	fence_init(&stress_fence, 1);
 
@@ -75,6 +77,8 @@ PUBLIC void test_stress_al(void)
 				break;
 			}
 		}
+
+		vsys_loop();
 
     fence_wait(&stress_fence);
 	test_stress_interrupt_cleanup();

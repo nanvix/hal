@@ -25,6 +25,8 @@
 #ifndef _STRESS_H_
 #define _STRESS_H_
 
+	#include "vsyscall.h"
+
 	/**
 	 * @name Auxiliar functions of Stress Tests
 	 */

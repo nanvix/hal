@@ -27,6 +27,7 @@
 #include <nanvix/hlib.h>
 #include <posix/errno.h>
 #include "../test.h"
+#include "vsyscall.h"
 
 #if (__TARGET_HAS_SYNC)
 
@@ -91,12 +92,12 @@ PUBLIC void test_stress_setup(void)
 	/* Create sync. */
 	nodes[0] = remote;
 	nodes[1] = local;
-	KASSERT((_syncin = sync_create(nodes, 2, SYNC_ONE_TO_ALL)) >= 0);
+	KASSERT((_syncin = vsys_sync_create(nodes, 2, SYNC_ONE_TO_ALL)) >= 0);
 
 	/* Open sync. */
 	nodes[0] = local;
 	nodes[1] = remote;
-	KASSERT((_syncout = sync_open(nodes, 2, SYNC_ONE_TO_ALL)) >= 0);
+	KASSERT((_syncout = vsys_sync_open(nodes, 2, SYNC_ONE_TO_ALL)) >= 0);
 }
 
 /**
@@ -104,8 +105,8 @@ PUBLIC void test_stress_setup(void)
  */
 PUBLIC void test_stress_cleanup(void)
 {
-	KASSERT(sync_unlink(_syncin) == 0);
-	KASSERT(sync_close(_syncout) == 0);
+	KASSERT(vsys_sync_unlink(_syncin) == 0);
+	KASSERT(vsys_sync_close(_syncout) == 0);
 
 	_syncin  = -1;
 	_syncout = -1;
@@ -123,18 +124,18 @@ PUBLIC void test_stress_barrier(void)
 	if (processor_node_get_num() == NODENUM_MASTER)
 	{
 		do
-			ret = sync_signal(_syncout);
+			ret = vsys_sync_signal(_syncout);
 		while (ret == (-EAGAIN));
 		KASSERT(ret == 0);
 
-		KASSERT(sync_wait(_syncin) == 0);
+		KASSERT(vsys_sync_wait(_syncin) == 0);
 	}
 	else
 	{
-		KASSERT(sync_wait(_syncin) == 0);
+		KASSERT(vsys_sync_wait(_syncin) == 0);
 
 		do
-			ret = sync_signal(_syncout);
+			ret = vsys_sync_signal(_syncout);
 		while (ret == (-EAGAIN));
 		KASSERT(ret == 0);
 	}

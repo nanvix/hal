@@ -72,8 +72,8 @@ PRIVATE void stress_mailbox_create_unlink(void)
 
 	for (unsigned int i = 0; i < NSETUPS; ++i)
 	{
-		KASSERT((mbxid = mailbox_create(local)) >= 0);
-		KASSERT(mailbox_unlink(mbxid) == 0);
+		KASSERT((mbxid = vsys_mailbox_create(local)) >= 0);
+		KASSERT(vsys_mailbox_unlink(mbxid) == 0);
 	}
 }
 
@@ -89,8 +89,8 @@ PRIVATE void stress_mailbox_open_close(void)
 
 	for (unsigned int i = 0; i < NSETUPS; ++i)
 	{
-		KASSERT((mbxid = mailbox_open(remote)) >= 0);
-		KASSERT(mailbox_close(mbxid) == 0);
+		KASSERT((mbxid = vsys_mailbox_open(remote)) >= 0);
+		KASSERT(vsys_mailbox_close(mbxid) == 0);
 	}
 }
 
@@ -105,7 +105,7 @@ PRIVATE void do_sender(int remote)
 
 	for (unsigned int i = 0; i < NSETUPS; ++i)
 	{
-		KASSERT((mbxid = mailbox_open(remote)) >= 0);
+		KASSERT((mbxid = vsys_mailbox_open(remote)) >= 0);
 
 		test_stress_barrier();
 
@@ -114,13 +114,13 @@ PRIVATE void do_sender(int remote)
 				message[0] = (j % sizeof(char));
 				do
 				{
-					ret = mailbox_awrite(mbxid, message, HAL_MAILBOX_MSG_SIZE);
+					ret = vsys_mailbox_awrite(mbxid, message, HAL_MAILBOX_MSG_SIZE);
 					KASSERT(AWRITE_CHECKS(ret));
 				} while (ret != HAL_MAILBOX_MSG_SIZE);
-				KASSERT(mailbox_wait(mbxid) == 0);
+				KASSERT(vsys_mailbox_wait(mbxid) == 0);
 			}
 
-		KASSERT(mailbox_close(mbxid) == 0);
+		KASSERT(vsys_mailbox_close(mbxid) == 0);
 
 		test_stress_barrier();
 	}
@@ -137,7 +137,7 @@ PRIVATE void do_receiver(int local)
 
 	for (unsigned int i = 0; i < NSETUPS; ++i)
 	{
-		KASSERT((mbxid = mailbox_create(local)) >= 0);
+		KASSERT((mbxid = vsys_mailbox_create(local)) >= 0);
 
 		test_stress_barrier();
 
@@ -146,15 +146,15 @@ PRIVATE void do_receiver(int local)
 				message[0] = -1;
 				do
 				{
-					ret = mailbox_aread(mbxid, message, HAL_MAILBOX_MSG_SIZE);
+					ret = vsys_mailbox_aread(mbxid, message, HAL_MAILBOX_MSG_SIZE);
 					KASSERT(AREAD_CHECKS(ret));
 				} while (ret != HAL_MAILBOX_MSG_SIZE);
-				KASSERT(mailbox_wait(mbxid) == 0);
+				KASSERT(vsys_mailbox_wait(mbxid) == 0);
 
 				KASSERT(message[0] == (j % sizeof(char)));
 			}
 
-		KASSERT(mailbox_unlink(mbxid) == 0);
+		KASSERT(vsys_mailbox_unlink(mbxid) == 0);
 
 		test_stress_barrier();
 	}
@@ -199,8 +199,8 @@ PRIVATE void stress_mailbox_pingpong(void)
 
 	for (unsigned int i = 0; i < NSETUPS; ++i)
 	{
-		KASSERT((inbox = mailbox_create(local)) >= 0);
-		KASSERT((outbox = mailbox_open(remote)) >= 0);
+		KASSERT((inbox = vsys_mailbox_create(local)) >= 0);
+		KASSERT((outbox = vsys_mailbox_open(remote)) >= 0);
 
 		test_stress_barrier();
 
@@ -211,20 +211,20 @@ PRIVATE void stress_mailbox_pingpong(void)
 				message[0]  = (-1);
 				do
 				{
-					ret = mailbox_aread(inbox, message, HAL_MAILBOX_MSG_SIZE);
+					ret = vsys_mailbox_aread(inbox, message, HAL_MAILBOX_MSG_SIZE);
 					KASSERT(AREAD_CHECKS(ret));
 				} while (ret != HAL_MAILBOX_MSG_SIZE);
-				KASSERT(mailbox_wait(inbox) == 0);
+				KASSERT(vsys_mailbox_wait(inbox) == 0);
 
 				KASSERT(message[0] == (j % sizeof(char)));
 
 				message[0] = ((j + 1) % sizeof(char));
 				do
 				{
-					ret = mailbox_awrite(outbox, message, HAL_MAILBOX_MSG_SIZE);
+					ret = vsys_mailbox_awrite(outbox, message, HAL_MAILBOX_MSG_SIZE);
 					KASSERT(AWRITE_CHECKS(ret));
 				} while (ret != HAL_MAILBOX_MSG_SIZE);
-				KASSERT(mailbox_wait(outbox) == 0);
+				KASSERT(vsys_mailbox_wait(outbox) == 0);
 			}
 		}
 		else
@@ -234,25 +234,25 @@ PRIVATE void stress_mailbox_pingpong(void)
 				message[0] = (j % sizeof(char));
 				do
 				{
-					ret = mailbox_awrite(outbox, message, HAL_MAILBOX_MSG_SIZE);
+					ret = vsys_mailbox_awrite(outbox, message, HAL_MAILBOX_MSG_SIZE);
 					KASSERT(AWRITE_CHECKS(ret));
 				} while (ret != HAL_MAILBOX_MSG_SIZE);
-				KASSERT(mailbox_wait(outbox) == 0);
+				KASSERT(vsys_mailbox_wait(outbox) == 0);
 
 				message[0]  = (-1);
 				do
 				{
-					ret = mailbox_aread(inbox, message, HAL_MAILBOX_MSG_SIZE);
+					ret = vsys_mailbox_aread(inbox, message, HAL_MAILBOX_MSG_SIZE);
 					KASSERT(AREAD_CHECKS(ret));
 				} while (ret != HAL_MAILBOX_MSG_SIZE);
-				KASSERT(mailbox_wait(inbox) == 0);
+				KASSERT(vsys_mailbox_wait(inbox) == 0);
 
 				KASSERT(message[0] == ((j + 1) % sizeof(char)));
 			}
 		}
 
-		KASSERT(mailbox_close(outbox) == 0);
-		KASSERT(mailbox_unlink(inbox) == 0);
+		KASSERT(vsys_mailbox_close(outbox) == 0);
+		KASSERT(vsys_mailbox_unlink(inbox) == 0);
 
 		test_stress_barrier();
 	}
