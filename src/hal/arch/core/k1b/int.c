@@ -93,3 +93,39 @@ PUBLIC int k1b_int_unmask(int intnum)
 
 	return (0);
 }
+
+/**
+ * @brief Convert a valid interrupt number to the corresponding IRQ number.
+ *
+ * @returns Upon successful completion, interrupt number is returned. Upon
+ * failure, a negative error code is returned instead.
+ *
+ * @author João Vicente Souto
+ */
+PUBLIC int k1b_int_to_irq(int intnum)
+{
+	/* Invalid interrupt number. */
+	if ((intnum < 0) || (intnum >= K1B_INT_NUM))
+		return (-EINVAL);
+
+	return (k1b_irqs[intnum]);
+}
+
+/**
+ * @brief Convert a valid IRQ number to the corresponding interrupt number.
+ *
+ * @returns Upon successful completion, interrupt number is returned. Upon
+ * failure, a negative error code is returned instead.
+ *
+ * @author João Vicente Souto
+ */
+PUBLIC int k1b_irq_to_int(int irqnum)
+{
+	for (int it = 0; it < K1B_INT_NUM; ++it)
+	{
+		if (k1b_irqs[it] == irqnum)
+			return (it);
+	}
+
+	return (-EINVAL);
+}

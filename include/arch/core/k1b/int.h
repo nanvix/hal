@@ -50,20 +50,20 @@
 	 * @name Hardware Interrupts for Kalray MPPA-256 Target
 	 */
 	/**@{*/
-	#define K1B_INT_TIMER0     K1B_IRQ_0 /**< Timer 0              */
-	#define K1B_INT_TIMER1     K1B_IRQ_1 /**< Timer 1              */
-	#define K1B_INT_TIMER      K1B_IRQ_2 /**< Watchdog Timer       */
-	#define K1B_INT_CNOC       K1B_IRQ_3 /**< Control NoC          */
-	#define K1B_INT_DNOC       K1B_IRQ_4 /**< Data NoC             */
-	#define K1B_INT_DMA        K1B_IRQ_5 /**< DMA                  */
-	#define K1B_INT_NOC_ERR    K1B_IRQ_6 /**< NoC Error            */
-	#define K1B_INT_VIRT       K1B_IRQ_7 /**< Virtual Line         */
-	#define K1B_INT_TIMER_ERR  K1B_IRQ_8 /**< Watchdog Timer Error */
-	#define K1B_INT_DEBUG      K1B_IRQ_9 /**< Debug                */
+	#define K1B_INT_TIMER0     0 /**< Timer 0              */
+	#define K1B_INT_TIMER1     1 /**< Timer 1              */
+	#define K1B_INT_TIMER      2 /**< Watchdog Timer       */
+	#define K1B_INT_CNOC       3 /**< Control NoC          */
+	#define K1B_INT_DNOC       4 /**< Data NoC             */
+	#define K1B_INT_DMA        5 /**< DMA                  */
+	#define K1B_INT_NOC_ERR    6 /**< NoC Error            */
+	#define K1B_INT_VIRT       7 /**< Virtual Line         */
+	#define K1B_INT_TIMER_ERR  8 /**< Watchdog Timer Error */
+	#define K1B_INT_DEBUG      9 /**< Debug                */
 	#ifdef __k1io__
-	#define K1B_INT_GIC1      K1B_IRQ_10 /**< GIC 1                */
-	#define K1B_INT_GIC2      K1B_IRQ_11 /**< GIC 2                */
-	#define K1B_INT_GIC3      K1B_IRQ_12 /**< GIC2                 */
+	#define K1B_INT_GIC1      10 /**< GIC 1                */
+	#define K1B_INT_GIC2      11 /**< GIC 2                */
+	#define K1B_INT_GIC3      12 /**< GIC2                 */
 	#endif
 	#define K1B_INT_IPI              256 /**< Dummy IPI interrupt  */
 	/**@}*/
@@ -89,6 +89,26 @@
 	 * failure, a negative error code is returned instead.
 	 */
 	EXTERN int k1b_int_unmask(int intnum);
+
+	/**
+	 * @brief Convert a valid interrupt number to the corresponding IRQ number.
+	 *
+	 * @returns Upon successful completion, interrupt number is returned. Upon
+	 * failure, a negative error code is returned instead.
+	 *
+	 * @author João Vicente Souto
+	 */
+	EXTERN int k1b_int_to_irq(int intnum);
+
+	/**
+	 * @brief Convert a valid IRQ number to the corresponding interrupt number.
+	 *
+	 * @returns Upon successful completion, interrupt number is returned. Upon
+	 * failure, a negative error code is returned instead.
+	 *
+	 * @author João Vicente Souto
+	 */
+	EXTERN int k1b_irq_to_int(int irqnum);
 
 	/**
 	 * @brief Low-level interrupt dispatcher.
