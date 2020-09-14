@@ -42,6 +42,7 @@
 
 	#include <arch/cluster/optimsoc-cluster/timer.h>
 	#include <arch/cluster/optimsoc-cluster/cores.h>
+	#include <arch/cluster/optimsoc-cluster/ipi.h>
 	#include <arch/cluster/optimsoc-cluster/memory.h>
 	#include <arch/cluster/optimsoc-cluster/ompic.h>
 
@@ -54,7 +55,7 @@
 	#define CLUSTER_IS_COMPUTE    0 /**< Compute Cluster   */
 	#define CLUSTER_HAS_EVENTS    0 /**< Event Support?    */
 	#define CLUSTER_HAS_RTC       0 /**< RTC Support?      */
-	#define CLUSTER_HAS_IPI       0 /**< IPI Support?      */
+	#define CLUSTER_HAS_IPI       1 /**< IPI Support?      */
 	/**@}*/
 
 /**@}*/

@@ -36,6 +36,7 @@
 	/* External functions. */
 	EXTERN void or1k_cluster_ompic_init(void);
 	EXTERN void or1k_cluster_ompic_send_ipi(uint32_t dstcore, uint16_t data);
+	EXTERN void or1k_cluster_ompic_ack_ipi(void);
 
 	/**
 	 * @see or1k_cluster_ompic_init().
@@ -51,6 +52,14 @@
 	static inline void optimsoc_cluster_ompic_send_ipi(uint32_t dstcore, uint16_t data)
 	{
 		or1k_cluster_ompic_send_ipi(dstcore, data);
+	}
+
+	/**
+	 * @see or1k_cluster_ompic_ipi_ack()
+	 */
+	static inline void optimsoc_cluster_ompic_ack_ipi(void)
+	{
+		or1k_cluster_ompic_ack_ipi();
 	}
 
 #endif /* _ASM_FILE_ */
