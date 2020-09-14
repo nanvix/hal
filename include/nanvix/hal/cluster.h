@@ -83,6 +83,7 @@
 /**@{*/
 
 	#include <nanvix/hal/cluster/timer.h>
+	#include <nanvix/hal/cluster/ipi.h>
 	#include <nanvix/hal/cluster/event.h>
 	#include <nanvix/hal/cluster/memory.h>
 #ifndef __unix64__

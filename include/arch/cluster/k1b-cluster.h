@@ -63,6 +63,7 @@
 	#endif
 	#define CLUSTER_HAS_EVENTS     1 /**< Event Support?    */
 	#define CLUSTER_HAS_RTC        1 /**< RTC Support?      */
+	#define CLUSTER_HAS_IPI        0 /**< IPI Support?      */
 	/**@}*/
 
 /**@}*/

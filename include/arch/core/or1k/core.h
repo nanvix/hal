@@ -59,7 +59,6 @@
 		return (or1k_mfspr(OR1K_SPR_COREID));
 	}
 
-
 #endif /* _ASM_FILE_ */
 
 /**@}*/
