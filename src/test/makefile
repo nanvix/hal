@@ -69,6 +69,7 @@ ASM_SRC = $(wildcard core/arch/i486.S)
 else ifeq ($(TARGET), unix64)
 
 C_SRC := $(filter-out $(wildcard core/*.c), $(C_SRC))
+C_SRC += core/arithmetic.c
 C_SRC += core/core.c
 C_SRC += core/mmu.c
 C_SRC += core/spinlock.c
