@@ -53,6 +53,7 @@ PUBLIC const char *HLINE = \
  */
 PRIVATE void test_core_al(void)
 {
+	test_arithmetic();
 	test_core();
 	test_exception();
 	test_interrupt();

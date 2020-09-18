@@ -58,6 +58,11 @@
 	EXTERN void test_timer(void);
 
 	/**
+	 * @brief Test driver for Arithmetic Operations.
+	 */
+	EXTERN void test_arithmetic(void);
+
+	/**
 	 * @brief Test driver for the Core Interface.
 	 */
 	EXTERN void test_core(void);
