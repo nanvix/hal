@@ -98,7 +98,7 @@
 	/**
 	 * @see linux64_timer_init().
 	 */
-	static inline void timer_init(unsigned freq)
+	static inline void __timer_init(unsigned freq)
 	{
 		UNUSED(freq);
 		linux64_timer_init();
@@ -117,8 +117,8 @@
 	 */
 	static inline uint64_t clock_read(void)
 	{
-		return (linux64_cluster_clock_read());
-	}
+ 		return (linux64_cluster_clock_read());
+ 	}
 
 #endif /* !_ASM_FILE_ */
 

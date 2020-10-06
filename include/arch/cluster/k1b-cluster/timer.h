@@ -88,10 +88,8 @@
 	/**
 	 * @see k1b_timer_init().
 	 */
-	static inline void timer_init(unsigned freq)
-	{
-		k1b_timer_init(freq);
-	}
+	#define __timer_init(freq) \
+		k1b_timer_init(freq)
 
 	/**
 	 * Dummy function
@@ -104,10 +102,7 @@
 	/**
 	 * @see k1b_cluster_clock_read().
 	 */
-	static inline uint64_t clock_read(void)
-	{
-		return (k1b_cluster_clock_read());
-	}
+	#define clock_read(void) k1b_cluster_clock_read(void)
 
 #endif /* !_ASM_FILE_ */
 

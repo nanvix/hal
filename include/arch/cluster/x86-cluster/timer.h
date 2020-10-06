@@ -68,10 +68,8 @@
 	/**
 	 * @see i486_timer_init().
 	 */
-	static inline void timer_init(unsigned freq)
-	{
-		i486_timer_init(freq);
-	}
+	#define __timer_init(freq) \
+		i486_timer_init(freq)
 
 	/**
 	 * @see i486_timer_reset().
