@@ -42,7 +42,11 @@
 	#ifndef __event_wait_fn
 	#error "event_wait() not defined?"
 	#endif
-
+	#if (CLUSTER_HAS_IPI)
+		#ifndef __event_reset_fn
+		#error "event_reset() not defined?"
+		#endif
+	#endif
 #endif
 #endif
 
@@ -89,7 +93,7 @@
 	 * interrupt number for the IPI handler, exports the function,
 	 * otherwise, defines a dummy reset function.
 	 */
-#if (CLUSTER_HAS_EVENTS && INTERRUPT_IPI < INTERRUPTS_NUM)
+#if (CLUSTER_HAS_EVENTS && CLUSTER_HAS_IPI)
 	EXTERN void event_reset(void);
 #else
 	static inline void event_reset(void)
