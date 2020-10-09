@@ -54,6 +54,15 @@
 	EXTERN void linux64_interrupts_enable(void);
 
 	/**
+	 * @brief Sets the interrupt level of the underlying core.
+	 *
+	 * @param newlevel New interrupt level.
+	 *
+	 * @returns The old interrupt level.
+	 */
+	EXTERN int linux64_interrupts_level(int newlevel);
+
+	/**
 	 * @brief Unmask a interrupt.
 	 *
 	 * @param The number of the interrupt to mask.
@@ -92,8 +101,12 @@
 	 * @name Exported Constants
 	 */
 	/**@{*/
-	#define INTERRUPTS_NUM  LINUX64_INT_MAX_NUM /**< @ref LINUX64_INT_NUM */
-	#define INTERRUPT_IPI	LINUX64_INT_IPI     /**< @ref LINUX64_INT_IPI */
+	#define INTERRUPTS_NUM         LINUX64_INT_MAX_NUM /**< @ref LINUX64_INT_NUM */
+	#define INTERRUPT_IPI	       LINUX64_INT_IPI     /**< @ref LINUX64_INT_IPI */
+	#define INTERRUPT_LEVEL_LOW    0 /**< Interrupts enable.  */
+	#define INTERRUPT_LEVEL_MEDIUM 1 /**< Interrupts enable.  */
+	#define INTERRUPT_LEVEL_HIGH   1 /**< Timer enable.       */
+	#define INTERRUPT_LEVEL_NONE   2 /**< Interrupts disable. */
 	/**@}*/
 
 	/**
@@ -109,6 +122,7 @@
 	/**@{*/
 	#define __interrupts_disable_fn /**< @ref interrupts_disable() */
 	#define __interrupts_enable_fn  /**< @ref interrupts_enable()  */
+	#define __interrupts_level_fn   /**< @ref interrupts_level()   */
 	#define __interrupt_next_fn     /**< @ref interrupt_next()     */
 	#define __interrupt_mask_fn     /**< @ref interrupt_mask()     */
 	#define __interrupt_unmask_fn   /**< @ref interrupt_unmask()   */
@@ -129,6 +143,14 @@
 	static inline void interrupts_enable(void)
 	{
 		linux64_interrupts_enable();
+	}
+
+	/**
+	 * @see linux64_interrupts_level().
+	 */
+	static inline int interrupts_level(int newlevel)
+	{
+		return (linux64_interrupts_level(newlevel));
 	}
 
 	/**

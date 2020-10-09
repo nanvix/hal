@@ -27,6 +27,11 @@
 #include <nanvix/const.h>
 
 /**
+ * @brief Current level. 
+ */
+PRIVATE int current_it_level = INTERRUPT_LEVEL_NONE;
+
+/**
  * @brief Generic handler of an interrupt
  */
 PRIVATE void linux64_do_interrupt(int intnum)
@@ -67,6 +72,8 @@ PUBLIC void linux64_interrupts_enable(void)
 {
 	for (int i = 0; linux64_int_signals[i] != -1; i++)
 		signal(linux64_int_signals[i], do_interrupt);
+
+	current_it_level = INTERRUPT_LEVEL_LOW;
 }
 
 /**
@@ -76,6 +83,51 @@ PUBLIC void linux64_interrupts_disable(void)
 {
 	for (int i = 0; linux64_int_signals[i] != -1; i++)
 		signal(linux64_int_signals[i], NULL);
+
+	current_it_level = INTERRUPT_LEVEL_NONE;
+}
+
+/**
+ * @brief Change interrupt level.
+ */
+PUBLIC int linux64_interrupts_level(int newlevel)
+{
+	int oldlevel;
+
+	if (newlevel < INTERRUPT_LEVEL_LOW || newlevel > INTERRUPT_LEVEL_NONE)
+		return (-EINVAL);
+
+	oldlevel = current_it_level;
+
+	switch (newlevel)
+	{
+		/* INTERRUPT_LEVEL_HIGH */
+		case 0:
+		{
+			linux64_interrupts_enable();
+		} break;
+
+		/**
+		 * INTERRUPT_LEVEL_HIGH:
+		 * INTERRUPT_LEVEL_MEDIUM:
+		 */
+		case 1:
+		{
+
+			/* Disable SIGINT interrupt. */
+			signal(linux64_int_signals[1], NULL);
+
+			current_it_level = newlevel;
+		} break;
+
+		/* INTERRUPT_LEVEL_NONE */
+		default:
+		{
+			linux64_interrupts_disable();
+		} break;
+	}
+
+	return (oldlevel);
 }
 
 /**
