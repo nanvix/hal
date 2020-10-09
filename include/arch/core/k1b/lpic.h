@@ -122,6 +122,15 @@
 #ifndef _ASM_FILE_
 
 	/**
+	 * @brief Sets the interrupt level of the underlying core.
+	 *
+	 * @param newlevel New interrupt level.
+	 *
+	 * @returns The old interrupt level.
+	 */
+	EXTERN int k1b_pic_lvl_set(int newlevel);
+
+	/**
 	 * @brief Masks an interrupt.
 	 *
 	 * @param irq Number of the target interrupt.
