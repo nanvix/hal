@@ -211,20 +211,19 @@ PRIVATE struct test interrupt_tests_fault_injection[] = {
  */
 PUBLIC void test_interrupt(void)
 {
-	/* API Tests */
-	kprintf(HLINE);
+	CLUSTER_KPRINTF(HLINE);
 	for (int i = 0; interrupt_tests_api[i].test_fn != NULL; i++)
 	{
 		interrupt_tests_api[i].test_fn();
-		kprintf("[test][api][interrupt] %s [passed]", interrupt_tests_api[i].name);
+		CLUSTER_KPRINTF("[test][api][interrupt] %s [passed]", interrupt_tests_api[i].name);
 	}
 
 	/* Fault Tests */
-	kprintf(HLINE);
+	CLUSTER_KPRINTF(HLINE);
 	for (int i = 0; interrupt_tests_fault_injection[i].test_fn != NULL; i++)
 	{
 		interrupt_tests_fault_injection[i].test_fn();
-		kprintf("[test][fault][interrupt] %s [passed]", interrupt_tests_fault_injection[i].name);
+		CLUSTER_KPRINTF("[test][fault][interrupt] %s [passed]", interrupt_tests_fault_injection[i].name);
 	}
 }
 

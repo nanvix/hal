@@ -213,19 +213,18 @@ PRIVATE struct test perf_tests_fault[] = {
  */
 PUBLIC void test_perf(void)
 {
-	/* API Tests */
-	kprintf(HLINE);
+	CLUSTER_KPRINTF(HLINE);
 	for (int i = 0; perf_tests_api[i].test_fn != NULL; i++)
 	{
 		perf_tests_api[i].test_fn();
-		kprintf("[test][core][perf][api] %s [passed]", perf_tests_api[i].name);
+		CLUSTER_KPRINTF("[test][core][perf][api] %s [passed]", perf_tests_api[i].name);
 	}
 
 	/* Fault Injection Tests */
-	kprintf(HLINE);
+	CLUSTER_KPRINTF(HLINE);
 	for (int i = 0; perf_tests_fault[i].test_fn != NULL; i++)
 	{
 		perf_tests_fault[i].test_fn();
-		kprintf("[test][core][perf][fault] %s [passed]", perf_tests_fault[i].name);
+		CLUSTER_KPRINTF("[test][core][perf][fault] %s [passed]", perf_tests_fault[i].name);
 	}
 }

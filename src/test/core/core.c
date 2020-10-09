@@ -135,11 +135,12 @@ PRIVATE struct test core_tests_api[] = {
  */
 PUBLIC void test_core(void)
 {
-	/* API Tests */
-	kprintf(HLINE);
+	CLUSTER_KPRINTF(HLINE);
+
 	for (int i = 0; core_tests_api[i].test_fn != NULL; i++)
 	{
 		core_tests_api[i].test_fn();
-		kprintf("[test][core][core][api] %s [passed]", core_tests_api[i].name);
+
+		CLUSTER_KPRINTF("[test][core][core][api] %s [passed]", core_tests_api[i].name);
 	}
 }

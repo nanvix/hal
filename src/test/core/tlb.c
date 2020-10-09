@@ -380,19 +380,19 @@ PUBLIC void test_tlb(void)
 #endif
 
 	/* API Tests */
-	kprintf(HLINE);
+	CLUSTER_KPRINTF(HLINE);
 	for (int i = 0; tlb_api_tests[i].test_fn != NULL; i++)
 	{
 		tlb_api_tests[i].test_fn();
-		kprintf("[test][api][tlb] %s [passed]", tlb_api_tests[i].name);
+		CLUSTER_KPRINTF("[test][api][tlb] %s [passed]", tlb_api_tests[i].name);
 	}
 
 	/* Fault Tests */
-	kprintf(HLINE);
+	CLUSTER_KPRINTF(HLINE);
 	for (int i = 0; tlb_fault_tests[i].test_fn != NULL; i++)
 	{
 		tlb_fault_tests[i].test_fn();
-		kprintf("[test][fault][tlb] %s [passed]", tlb_fault_tests[i].name);
+		CLUSTER_KPRINTF("[test][fault][tlb] %s [passed]", tlb_fault_tests[i].name);
 	}
 }
 

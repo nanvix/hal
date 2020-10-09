@@ -333,18 +333,18 @@ PRIVATE struct test exception_fault_tests[] = {
  */
 PUBLIC void test_exception(void)
 {
-	kprintf(HLINE);
+	CLUSTER_KPRINTF(HLINE);
 	for (int i = 0; exception_api_tests[i].test_fn != NULL; i++)
 	{
 		exception_api_tests[i].test_fn();
-		kprintf("[test][api][exception] %s [passed]", exception_api_tests[i].name);
+		CLUSTER_KPRINTF("[test][api][exception] %s [passed]", exception_api_tests[i].name);
 	}
 
-	kprintf(HLINE);
+	CLUSTER_KPRINTF(HLINE);
 	for (int i = 0; exception_fault_tests[i].test_fn != NULL; i++)
 	{
 		exception_fault_tests[i].test_fn();
-		kprintf("[test][fault][exception] %s [passed]", exception_fault_tests[i].name);
+		CLUSTER_KPRINTF("[test][fault][exception] %s [passed]", exception_fault_tests[i].name);
 	}
 }
 

@@ -213,10 +213,10 @@ PRIVATE struct test upcall_tests_api[] = {
 PUBLIC void test_upcall(void)
 {
 	/* API Tests */
-	kprintf(HLINE);
+	CLUSTER_KPRINTF(HLINE);
 	for (int i = 0; upcall_tests_api[i].test_fn != NULL; i++)
 	{
 		upcall_tests_api[i].test_fn();
-		kprintf("[test][upcall][api] %s [passed]", upcall_tests_api[i].name);
+		CLUSTER_KPRINTF("[test][upcall][api] %s [passed]", upcall_tests_api[i].name);
 	}
 }

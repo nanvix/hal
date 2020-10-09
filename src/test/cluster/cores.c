@@ -985,28 +985,28 @@ PRIVATE struct test stress_tests_api[] = {
 PUBLIC void test_cluster_cores(void)
 {
 	/* API Tests */
-	kprintf(HLINE);
+	CLUSTER_KPRINTF(HLINE);
 	for (int i = 0; core_tests_api[i].test_fn != NULL; i++)
 	{
 		core_tests_api[i].test_fn();
-		kprintf("[test][cluster][cores][api] %s [passed]", core_tests_api[i].name);
+		CLUSTER_KPRINTF("[test][cluster][cores][api] %s [passed]", core_tests_api[i].name);
 	}
 
 	/* Fault Tests */
-	kprintf(HLINE);
+	CLUSTER_KPRINTF(HLINE);
 	for (int i = 0; fault_tests_api[i].test_fn != NULL; i++)
 	{
 		fault_tests_api[i].test_fn();
-		kprintf("[test][cluster][cores][fault] %s [passed]", fault_tests_api[i].name);
+		CLUSTER_KPRINTF("[test][cluster][cores][fault] %s [passed]", fault_tests_api[i].name);
 	}
 
 	/* Stress Tests */
 #if defined(__ENABLE_STRESS_TESTS)
-	kprintf(HLINE);
+	CLUSTER_KPRINTF(HLINE);
 	for (int i = 0; stress_tests_api[i].test_fn != NULL; i++)
 	{
 		stress_tests_api[i].test_fn();
-		kprintf("[test][cluster][cores][stress] %s [passed]", stress_tests_api[i].name);
+		CLUSTER_KPRINTF("[test][cluster][cores][stress] %s [passed]", stress_tests_api[i].name);
 	}
 #endif
 }

@@ -122,11 +122,11 @@ PRIVATE struct test test_api_arithmetic[] = {
 PUBLIC void test_arithmetic(void)
 {
 	/* API Tests */
-	kprintf(HLINE);
+	CLUSTER_KPRINTF(HLINE);
 	for (int i = 0; test_api_arithmetic[i].test_fn != NULL; i++)
 	{
 		test_api_arithmetic[i].test_fn();
-		kprintf("[test][api][arithmetic] %s [passed]", test_api_arithmetic[i].name);
+		CLUSTER_KPRINTF("[test][api][arithmetic] %s [passed]", test_api_arithmetic[i].name);
 	}
 }
 

@@ -37,6 +37,13 @@
 		#define NODENUM_SLAVE  (PROCESSOR_NODENUM_MASTER + 1)
 	#endif
 	/**@}*/
+	#if (PROCESSOR_IS_MULTICLUSTER)
+		#define CLUSTER_KPRINTF(...)                              \
+		    if (cluster_get_num() == PROCESSOR_CLUSTERNUM_MASTER) \
+				kprintf(__VA_ARGS__)
+	#else
+		#define CLUSTER_KPRINTF(...) kprintf(__VA_ARGS__)
+	#endif
 
 	/**
 	 * @brief Unit test.

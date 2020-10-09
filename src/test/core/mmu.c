@@ -500,19 +500,19 @@ PRIVATE struct test mmu_fault_tests[] = {
 PUBLIC void test_mmu(void)
 {
 	/* API Tests */
-	kprintf(HLINE);
+	CLUSTER_KPRINTF(HLINE);
 	for (int i = 0; mmu_api_tests[i].test_fn != NULL; i++)
 	{
 		mmu_api_tests[i].test_fn();
-		kprintf("[test][api][mmu] %s [passed]", mmu_api_tests[i].name);
+		CLUSTER_KPRINTF("[test][api][mmu] %s [passed]", mmu_api_tests[i].name);
 	}
 
 	/* Fault Tests */
-	kprintf(HLINE);
+	CLUSTER_KPRINTF(HLINE);
 	for (int i = 0; mmu_fault_tests[i].test_fn != NULL; i++)
 	{
 		mmu_fault_tests[i].test_fn();
-		kprintf("[test][fault][mmu] %s [passed]", mmu_fault_tests[i].name);
+		CLUSTER_KPRINTF("[test][fault][mmu] %s [passed]", mmu_fault_tests[i].name);
 	}
 }
 

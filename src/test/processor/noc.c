@@ -89,6 +89,11 @@ PRIVATE struct test test_api_node[] = {
  */
 PUBLIC void test_noc(void)
 {
+#if (PROCESSOR_IS_MULTICLUSTER)
+	if (processor_node_get_num() == NODENUM_SLAVE)
+		return;
+#endif
+
 	/* API Tests */
 	kprintf(HLINE);
 	for (int i = 0; test_api_node[i].test_fn != NULL; i++)

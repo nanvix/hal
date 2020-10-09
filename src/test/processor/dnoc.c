@@ -65,8 +65,8 @@ PRIVATE spinlock_t test_dnoc_lock = K1B_SPINLOCK_LOCKED;
  */
 PRIVATE void test_dnoc_dummy_handler(int interface, int tag)
 {
-	UNUSED(tag);
-	UNUSED(interface);
+	KASSERT(interface == INTERFACE);
+	KASSERT(tag       == RX_TAG);
 
 	spinlock_unlock(&test_dnoc_lock);
 }
@@ -343,11 +343,11 @@ PUBLIC void test_dnoc(void)
 	KASSERT(bostan_dma_data_close(INTERFACE, TX_TAG) == 0);
 
 	/* API Tests */
-	kprintf(HLINE);
+	CLUSTER_KPRINTF(HLINE);
 	for (int i = 0; dnoc_tests_api[i].test_fn != NULL; i++)
 	{
 		dnoc_tests_api[i].test_fn();
-		kprintf("[test][api][noc][data] %s [passed]", dnoc_tests_api[i].name);
+		CLUSTER_KPRINTF("[test][api][noc][data] %s [passed]", dnoc_tests_api[i].name);
 	}
 
 	KASSERT(bostan_dma_data_open(INTERFACE, TX_TAG) == 0);
