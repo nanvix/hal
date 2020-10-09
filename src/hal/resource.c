@@ -96,6 +96,100 @@ PRIVATE void resource_dumb_free(const struct resource_pool *pool, int id)
 }
 
 /*============================================================================*
+ * resource_dumb_enqueue()                                                    *
+ *============================================================================*/
+
+/**
+ * @brief Dumb resource queuing.
+ *
+ * @param queue    Target generic resource queue.
+ * @param resource Target generic resource.
+ *
+ * @returns Upon successful completion, the @p resource has been enqueued.
+ *
+ * @note This function is non-blocking.
+ * @note This function is @b NOT thread safe.
+ */
+PRIVATE void resource_dumb_enqueue(struct resource_queue * queue, struct resource * resource)
+{
+	KASSERT(queue && resource && !resource->next);
+
+	/* Empty queue. */
+	if (queue->size == 0)
+	{
+		KASSERT(queue->head == NULL);
+		KASSERT(queue->tail == NULL);
+
+		queue->head = resource;
+	}
+
+	/* Update next resource of the tail. */
+	else
+		queue->tail->next = resource;
+
+	queue->size++;
+	queue->tail    = resource;
+	resource->next = NULL;
+}
+
+/*============================================================================*
+ * resource_dumb_dequeue()                                                    *
+ *============================================================================*/
+
+/**
+ * @brief Dumb resource dequeuing.
+ *
+ * @param queue    Target generic resource queue.
+ *
+ * @returns Upon successful completion, the first resource will be returned.
+ *
+ * @note This function is non-blocking.
+ * @note This function is @b NOT thread safe.
+ */
+PRIVATE struct resource * resource_dumb_dequeue(struct resource_queue * queue)
+{
+	struct resource * resource;
+
+	KASSERT(queue != NULL);
+
+	resource = queue->head;
+
+	/* Queue size cases. */
+	switch (queue->size)
+	{
+		/* Empty. */
+		case 0: {
+			KASSERT(queue->head == NULL);
+			KASSERT(queue->tail == NULL);
+		} break;
+
+		/* Last. */
+		case 1: {
+			KASSERT(queue->head != NULL);
+			KASSERT(queue->head == queue->tail);
+
+			queue->size = 0;
+			queue->head = NULL;
+			queue->tail = NULL;
+			resource->next = NULL;
+		} break;
+
+		/* More than 2. */
+		default: {
+			KASSERT(queue->head != NULL);
+			KASSERT(queue->tail != NULL);
+			KASSERT(queue->head != queue->tail);
+
+			queue->size--;
+			queue->head    = resource->next;
+			resource->next = NULL;
+		} break;
+	}
+
+	return (resource);
+}
+
+/*============================================================================*
  * Resource Allocator                                                         *
  *============================================================================*/
 
@@ -108,3 +202,13 @@ alloc_fn resource_alloc = resource_dumb_alloc;
  * @brief Default resource de-allocator.
  */
 free_fn resource_free = resource_dumb_free;
+
+/**
+ * @brief Default resource allocator.
+ */
+enqueue_fn resource_enqueue = resource_dumb_enqueue;
+
+/**
+ * @brief Default resource de-allocator.
+ */
+dequeue_fn resource_dequeue = resource_dumb_dequeue;

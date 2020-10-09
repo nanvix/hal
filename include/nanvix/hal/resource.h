@@ -39,28 +39,49 @@
 	 * @brief Resource flags.
 	 */
 	/**@{*/
-	#define RESOURCE_FLAGS_USED   (1 << 0) /**< Used synchronization point? */
-	#define RESOURCE_FLAGS_BUSY   (1 << 1) /**< Busy?                       */
-	#define RESOURCE_FLAGS_WRITE  (1 << 2) /**< Writable?                   */
-	#define RESOURCE_FLAGS_READ   (1 << 3) /**< Readable?                   */
-	#define RESOURCE_FLAGS_ASYNC  (1 << 4) /**< Asynchronous?               */
-	#define RESOURCE_FLAGS_SHARED (1 << 5) /**< Shared?                     */
-	#define RESOURCE_FLAGS_MAPPED (1 << 6) /**< Mapped?                     */
-	#define RESOURCE_FLAGS_VALID  (1 << 7) /**< Valid?                      */
-	#define RESOURCE_FLAGS_DIRTY  (1 << 8) /**< Dirty?                      */
+	#define RESOURCE_FLAGS_USED   (1 << 0) /**< Used?         */
+	#define RESOURCE_FLAGS_BUSY   (1 << 1) /**< Busy?         */
+	#define RESOURCE_FLAGS_WRITE  (1 << 2) /**< Writable?     */
+	#define RESOURCE_FLAGS_READ   (1 << 3) /**< Readable?     */
+	#define RESOURCE_FLAGS_ASYNC  (1 << 4) /**< Asynchronous? */
+	#define RESOURCE_FLAGS_SHARED (1 << 5) /**< Shared?       */
+	#define RESOURCE_FLAGS_MAPPED (1 << 6) /**< Mapped?       */
+	#define RESOURCE_FLAGS_VALID  (1 << 7) /**< Valid?        */
+	#define RESOURCE_FLAGS_DIRTY  (1 << 8) /**< Dirty?        */
 	/**@}*/
 
 	/**
 	 * @brief Static initializer for a resource.
 	 */
-	#define RESOURCE_INITIALIZER (struct resource){ 0 }
+	/**@{*/
+	#define RESOURCE_STATIC_INITIALIZER                          \
+		{ 0, NULL }
+	#define RESOURCE_POOL_STATIC_INITIALIZER(base, amount, size) \
+		{ base, amount, size }
+	#define RESOURCE_QUEUE_STATIC_INITIALIZER                    \
+		{ NULL, NULL, 0 }
+	/**@}*/
+
+	/**
+	 * @brief Initializer for a resource.
+	 */
+	/**@{*/
+	#define RESOURCE_INITIALIZER                          \
+		(struct resource) RESOURCE_STATIC_INITIALIZER
+	#define RESOURCE_POOL_INITIALIZER(base, amount, size) \
+		(struct resource_pool) RESOURCE_POOL_STATIC_INITIALIZER(base, amount, size)
+	#define RESOURCE_QUEUE_INITIALIZER                    \
+		(struct resource_queue) RESOURCE_QUEUE_STATIC_INITIALIZER
+	/**@}*/
+
 
 	/**
 	 * @brief Resource.
 	 */
 	struct resource
 	{
-		int flags; /**< Flags. */
+		int flags;              /**< Flags.                */
+		struct resource * next; /**< Linked struct helper. */
 	};
 
 	/**
@@ -68,9 +89,19 @@
 	 */
 	struct resource_pool
 	{
-		void *resources;	  /**< Pool of resources.       */
-		int nresources;		  /**< Number of resources.     */
+		void * resources;     /**< Pool of resources.       */
+		int nresources;       /**< Number of resources.     */
 		size_t resource_size; /**< Resource size (in byes). */
+	};
+
+	/**
+	 * @brief Resource queue (First In First Out).
+	 */
+	struct resource_queue
+	{
+		struct resource * head; /**< First resource queued.      */
+		struct resource * tail; /**< Last resource queued.       */
+		size_t size;            /**< Number of resources queued. */
 	};
 
 	/**
@@ -79,6 +110,8 @@
 	/**@{*/
 	typedef int (*alloc_fn)(const struct resource_pool *);
 	typedef void (*free_fn)(const struct resource_pool *, int);
+	typedef void (*enqueue_fn)(struct resource_queue *, struct resource *);
+	typedef struct resource * (*dequeue_fn)(struct resource_queue *);
 	/**@}*/
 
 	/**
@@ -440,6 +473,16 @@
 	 * @brief Resource de-allocator.
 	 */
 	EXTERN free_fn resource_free;
+
+	/**
+	 * @brief Resource queuing.
+	 */
+	EXTERN enqueue_fn resource_enqueue;
+
+	/**
+	 * @brief Resource dequeuing.
+	 */
+	EXTERN dequeue_fn resource_dequeue;
 
 #endif /** NANVIX_HAL_RESOURCE_H_ */
 #endif /* __NEED_RESOURCE */
