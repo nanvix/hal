@@ -75,6 +75,7 @@
 	/**@{*/
 	#define __event_notify_fn /**< event_notify() */
 	#define __event_wait_fn   /**< event_wait()   */
+	#define __event_reset_fn  /**< event_reset()  */
 	/**@}*/
 
 #ifndef _ASM_FILE_
