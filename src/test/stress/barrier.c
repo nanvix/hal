@@ -61,6 +61,8 @@ PUBLIC void test_stress_interrupt_setup(void)
 		KASSERT(interrupt_register(INTERRUPT_TIMER, dummy_handler) == 0);
 
 	interrupts_enable();
+
+	interrupt_mask(INTERRUPT_TIMER);
 }
 
 /**
@@ -68,6 +70,8 @@ PUBLIC void test_stress_interrupt_setup(void)
  */
 PUBLIC void test_stress_interrupt_cleanup(void)
 {
+	interrupt_unmask(INTERRUPT_TIMER);
+
 	interrupts_disable();
 
 	/* Unregister interrupt handler. */
