@@ -94,7 +94,7 @@
 	/**
 	 * @see k1b_cluster_event_notify().
 	 */
-	static inline void event_notify(int coreid)
+	static inline void __event_notify(int coreid)
 	{
 		k1b_cluster_event_notify(coreid);
 	}
@@ -102,15 +102,15 @@
 	/**
 	 * @see k1b_cluster_event_wait().
 	 */
-	static inline void event_wait(void)
+	static inline void __event_wait(void)
 	{
 		k1b_cluster_event_wait();
 	}
 
 	/**
-	 * @brief K1b does not need to reset anything.
+	 * @brief Dummy function.
 	 */
-	static inline void event_reset(void)
+	static inline void __event_reset(void)
 	{
 		/* noop. */
 	}
