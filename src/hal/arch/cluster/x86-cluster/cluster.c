@@ -60,8 +60,6 @@ PUBLIC void x86_cluster_setup(void)
 
 	core_setup(NULL);
 
-	event_setup();
-
 	/* Kernel main. */
 	kmain(0, NULL);
 }
