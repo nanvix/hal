@@ -70,6 +70,7 @@
 	/**@{*/
 	#define __event_notify_fn /**< event_notify() */
 	#define __event_wait_fn   /**< event_wait()   */
+	#define __event_reset_fn  /**< event_reset()  */
 	/**@}*/
 
 #ifndef _ASM_FILE_
@@ -77,21 +78,30 @@
 	/**
 	 * @see riscv32_cluster_event_notify()
 	 */
-	static inline void event_notify(int coreid)
+	static inline int __event_notify(int coreid)
 	{
-		riscv32_cluster_event_notify(coreid);
+		return (riscv32_cluster_event_notify(coreid));
 	}
 
 	/**
 	 * @see riscv32_cluster_event_wait().
 	 */
-	static inline void event_wait(void)
+	static inline void __event_wait(void)
 	{
 		riscv32_cluster_event_wait();
+	}
+
+	/**
+	 * @brief Dummy function
+	 */
+	static inline void __event_reset(void)
+	{
+		/* noop. */
 	}
 
 #endif /* _ASM_FILE_ */
 
 /**@endcond*/
 
-#endif /* ARCH_CLUSTER_RISCV32_EVENT_H_ */
+#endif /* ARCH_CLUSTER_RISCV32_CLUSTER_EVENT_H_ */
+
