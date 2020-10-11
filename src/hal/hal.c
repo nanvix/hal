@@ -55,6 +55,8 @@ PUBLIC void hal_init(void)
 
 	exception_setup();
 	interrupt_setup();
+	event_setup();
+
 #if (PROCESSOR_HAS_NOC)
 	processor_noc_setup();
 #endif
