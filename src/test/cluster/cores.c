@@ -930,6 +930,125 @@ PRIVATE void test_cluster_core_restore_context(void)
 
 #endif /* CORE_SUPPORTS_MULTITHREADING */
 
+#if CLUSTER_HAS_IPI
+
+/*----------------------------------------------------------------------------*
+ * IPI                                                                        *
+ *----------------------------------------------------------------------------*/
+
+/**
+ * @brief IPI semaphore.
+ */
+PRIVATE struct semaphore ipi_sem;
+
+/**
+ * @brief Counter.
+ */
+PRIVATE volatile int ipi_counter ALIGN(CACHE_LINE_SIZE);
+PRIVATE volatile int ipi_master  ALIGN(CACHE_LINE_SIZE);
+PRIVATE volatile int ipi_coreid  ALIGN(CACHE_LINE_SIZE);
+
+/**
+ * @brief IPI Handler.
+ */
+PRIVATE void ipi_handler(void)
+{
+	KASSERT(ipi_coreid == core_get_id());
+
+	if (ipi_counter == ipi_master)
+		ipi_counter++;
+	else
+		kprintf("[test][cluster][event][ipi] Spurious interrupt!");
+}
+
+/**
+ * @brief Interruptible rule.
+ */
+PRIVATE void interruptible(void)
+{
+	ipi_counter = 0;
+	ipi_master  = 0;
+
+	event_drop();
+
+	interrupts_enable();
+	interrupt_mask(INTERRUPT_TIMER);
+
+		semaphore_up(&ipi_sem);
+
+			event_wait();
+
+			/* Handler will release this while. */
+			KASSERT(ipi_counter == 1);
+
+		semaphore_up(&ipi_sem);
+
+			event_wait();
+
+			/* Handler will release this while. */
+			KASSERT(ipi_counter == 2);
+
+	interrupt_unmask(INTERRUPT_TIMER);
+	interrupts_disable();
+
+	semaphore_up(&ipi_sem);
+
+	KASSERT(core_release() == 0);
+	core_reset();
+}
+
+/**
+ * @brief Interruptor rule.
+ */
+PRIVATE void interruptor(int coreid)
+{
+
+	/* Waits core wake up. */
+	semaphore_down(&ipi_sem);
+
+		event_notify(coreid);
+
+	/* Intermediarie wait. */
+	semaphore_down(&ipi_sem);
+
+		ipi_master++;
+
+		event_notify(coreid);
+
+	/* Waits core finishes. */
+	semaphore_down(&ipi_sem);
+
+		ipi_master++;
+}
+
+/**
+ * @brief Inter Core Interrupts
+ */
+PRIVATE void test_cluster_core_api_inter_core_interrupt(void)
+{
+	KASSERT(event_register_handler(ipi_handler) == 0);
+
+	/* Start the first available slave core. */
+	for (int i = 0; i < CORES_NUM; i++)
+	{
+		if (i != COREID_MASTER)
+		{
+			ipi_coreid = i;
+
+			/* Start the producer/consumer. */
+			semaphore_init(&ipi_sem, 0);
+
+			KASSERT(core_start(i, interruptible) == 0);
+
+			interruptor(i);
+		}
+	}
+
+	KASSERT(event_unregister_handler() == 0);
+}
+
+#endif /* CLUSTER_HAS_IPI */
+
 /*============================================================================*
  * Test Driver                                                                *
  *============================================================================*/
@@ -938,17 +1057,20 @@ PRIVATE void test_cluster_core_restore_context(void)
  * @brief API Tests.
  */
 PRIVATE struct test core_tests_api[] = {
-	{ test_cluster_core_api_start_slave,         "start execution in a slave core    " },
+	{ test_cluster_core_api_start_slave,          "start execution in a slave core    " },
 #ifndef __unix64__
-	{ test_cluster_core_api_reset_slave,         "reset slave a core                 " },
+	{ test_cluster_core_api_reset_slave,          "reset slave a core                 " },
 #endif /* !__unix64__ */
-	{ test_cluster_core_api_sleep_wakeup_slave,  "suspend and resume a slave core    " },
-	{ test_cluster_core_api_start_leader,        "start execution from slave         " },
-	{ test_cluster_core_api_sleep_wakeup_leader, "suspend and resume from slave core " },
+	{ test_cluster_core_api_sleep_wakeup_slave,   "suspend and resume a slave core    " },
+	{ test_cluster_core_api_start_leader,         "start execution from slave         " },
+	{ test_cluster_core_api_sleep_wakeup_leader,  "suspend and resume from slave core " },
 #if CORE_SUPPORTS_MULTITHREADING
-	{ test_cluster_core_restore_context,         "Create a context and restore it    " },
+	{ test_cluster_core_restore_context,          "Create a context and restore it    " },
 #endif
-	{ NULL,                                       NULL                                 },
+#if CLUSTER_HAS_IPI
+	{ test_cluster_core_api_inter_core_interrupt, "interrupt others cores             " },
+#endif
+	{ NULL,                                       NULL                                  },
 };
 
 /**
