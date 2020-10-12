@@ -112,10 +112,10 @@ PRIVATE struct test test_api_spinlock[] = {
 PUBLIC void test_spinlock(void)
 {
 	/* API Tests */
-	kprintf(HLINE);
+	CLUSTER_KPRINTF(HLINE);
 	for (int i = 0; test_api_spinlock[i].test_fn != NULL; i++)
 	{
 		test_api_spinlock[i].test_fn();
-		kprintf("[test][api][spinlock] %s [passed]", test_api_spinlock[i].name);
+		CLUSTER_KPRINTF("[test][api][spinlock] %s [passed]", test_api_spinlock[i].name);
 	}
 }

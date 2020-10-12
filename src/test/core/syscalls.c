@@ -22,9 +22,9 @@
  * SOFTWARE.
  */
 
+#include <nanvix/hal/hal.h>
 #include <nanvix/const.h>
 #include <nanvix/hlib.h>
-#include <nanvix/hal/core/trap.h>
 #include "../test.h"
 
 /**
@@ -230,10 +230,10 @@ PRIVATE struct test trap_tests_api[] = {
 PUBLIC void test_trap(void)
 {
 	/* API Tests */
-	kprintf(HLINE);
+	CLUSTER_KPRINTF(HLINE);
 	for (int i = 0; trap_tests_api[i].test_fn != NULL; i++)
 	{
 		trap_tests_api[i].test_fn();
-		kprintf("[test][api][trap] %s [passed]", trap_tests_api[i].name);
+		CLUSTER_KPRINTF("[test][api][trap] %s [passed]", trap_tests_api[i].name);
 	}
 }

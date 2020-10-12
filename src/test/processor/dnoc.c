@@ -56,6 +56,14 @@ PRIVATE uint64_t data_exchange_sizes[] = {
 /**@}*/
 
 /**
+ * @name Data buffers
+ */
+/**@{*/
+PRIVATE char rx_buffer[BUFFER_MAX_SIZE];
+PRIVATE char tx_buffer[BUFFER_MAX_SIZE];
+/**@}*/
+
+/**
  * @brief Lock used for wait the completion of Data NoC operations.
  */
 PRIVATE spinlock_t test_dnoc_lock = K1B_SPINLOCK_LOCKED;
@@ -65,8 +73,8 @@ PRIVATE spinlock_t test_dnoc_lock = K1B_SPINLOCK_LOCKED;
  */
 PRIVATE void test_dnoc_dummy_handler(int interface, int tag)
 {
-	UNUSED(tag);
-	UNUSED(interface);
+	KASSERT(interface == INTERFACE);
+	KASSERT(tag       == RX_TAG);
 
 	spinlock_unlock(&test_dnoc_lock);
 }
@@ -105,8 +113,6 @@ PRIVATE void test_dnoc_open_close(void)
 PRIVATE void test_dnoc_loopback_with_events(void)
 {
 	int local;
-	char rx_buffer[BUFFER_MAX_SIZE];
-	char tx_buffer[BUFFER_MAX_SIZE];
 
 	local = processor_node_get_num();
 
@@ -173,8 +179,6 @@ PRIVATE void test_dnoc_loopback_with_events(void)
 PRIVATE void test_dnoc_loopback_with_interrupts(void)
 {
 	int local;
-	char rx_buffer[BUFFER_MAX_SIZE];
-	char tx_buffer[BUFFER_MAX_SIZE];
 
 	local = processor_node_get_num();
 
@@ -246,14 +250,12 @@ PRIVATE void test_dnoc_loopback_with_offset(void)
 {
 	int local;
 	uint64_t offset;
-	char rx_buffer[100];
-	char tx_buffer[10];
 
 	offset = 10;
 	local = processor_node_get_num();
 
 	kmemset(rx_buffer, 0, 100);
-	kmemset(rx_buffer, 1, 10);
+	kmemset(tx_buffer, 1, 10);
 
 	for (uint64_t i = 0; i < 100; i++)
 		KASSERT(rx_buffer[i] != tx_buffer[0]);
@@ -342,12 +344,14 @@ PUBLIC void test_dnoc(void)
 {
 	KASSERT(bostan_dma_data_close(INTERFACE, TX_TAG) == 0);
 
+	BUFFER_SIZE = 50; 
+
 	/* API Tests */
-	kprintf(HLINE);
+	CLUSTER_KPRINTF(HLINE);
 	for (int i = 0; dnoc_tests_api[i].test_fn != NULL; i++)
 	{
 		dnoc_tests_api[i].test_fn();
-		kprintf("[test][api][noc][data] %s [passed]", dnoc_tests_api[i].name);
+		CLUSTER_KPRINTF("[test][api][noc][data] %s [passed]", dnoc_tests_api[i].name);
 	}
 
 	KASSERT(bostan_dma_data_open(INTERFACE, TX_TAG) == 0);

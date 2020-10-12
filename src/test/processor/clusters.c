@@ -91,6 +91,11 @@ PRIVATE struct test test_api_clusters[] = {
  */
 PUBLIC void test_clusters(void)
 {
+#if (PROCESSOR_IS_MULTICLUSTER)
+	if (processor_node_get_num() == NODENUM_SLAVE)
+		return;
+#endif
+
 	/* API Tests */
 	kprintf(HLINE);
 	for (int i = 0; test_api_clusters[i].test_fn != NULL; i++)

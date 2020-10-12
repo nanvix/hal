@@ -290,14 +290,12 @@ PUBLIC void test_stress_portal(void)
 	test_stress_barrier();
 
 	/* API Tests */
-	if (processor_node_get_num() == NODENUM_MASTER)
-		kprintf(HLINE);
+	CLUSTER_KPRINTF(HLINE);
 	for (int i = 0; stress_portal_tests[i].test_fn != NULL; i++)
 	{
 		stress_portal_tests[i].test_fn();
 
-		if (processor_node_get_num() == NODENUM_MASTER)
-			kprintf("[test][stress][portal] %s [passed]", stress_portal_tests[i].name);
+		CLUSTER_KPRINTF("[test][stress][portal] %s [passed]", stress_portal_tests[i].name);
 
 		test_stress_barrier();
 	}

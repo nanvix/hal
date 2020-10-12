@@ -87,6 +87,7 @@ PRIVATE void test_processor_al(void)
 	test_cnoc();
 	test_dnoc();
 #endif
+
 #if (PROCESSOR_IS_MULTICLUSTER)
 	test_clusters();
 #endif
@@ -133,11 +134,8 @@ PUBLIC int main(int argc, const char *argv[])
  */
 PUBLIC NORETURN void kmain(int argc, const char *argv[])
 {
-	int nodenum;
-
 	UNUSED(argc);
 	UNUSED(argv);
-	UNUSED(nodenum);
 
 	/*
 	 * Initializes the HAL. Must come
@@ -151,22 +149,32 @@ PUBLIC NORETURN void kmain(int argc, const char *argv[])
 
 #endif
 
-#if (PROCESSOR_IS_MULTICLUSTER)
-	nodenum = processor_node_get_num();
-	if (nodenum == NODENUM_MASTER)
-#endif
+#if (!PROCESSOR_IS_MULTICLUSTER)
+
+	test_core_al();
+	test_cluster_al();
+	test_processor_al();
+	test_target_al();
+
+#else
+
+	int nodenum = processor_node_get_num();
+
+	/* Run local unit tests. */
+	if ((nodenum == NODENUM_MASTER) || (nodenum == NODENUM_SLAVE))
 	{
-		/* Run unit tests. */
 		test_core_al();
 		test_cluster_al();
 		test_processor_al();
-		test_target_al();
+
+		/* Run comm. service unit tests. */
+		if (nodenum == NODENUM_MASTER)
+			test_target_al();
+
+		/* Run Inter-Cluster tests. */
+		test_stress_al();
 	}
 
-#if (PROCESSOR_IS_MULTICLUSTER)
-	/* Run Inter-Cluster tests. */
-	if ((nodenum == NODENUM_MASTER) || (nodenum == NODENUM_SLAVE))
-		test_stress_al();
 #endif
 
 	target_poweroff();

@@ -31,6 +31,11 @@
 #ifdef __mppa256__
 
 /**
+ * @brief Tests arguments
+ */
+#define NOC_ITERATIONS (10)
+
+/**
  * @name Tests arguments
  */
 /**@{*/
@@ -51,8 +56,8 @@ PRIVATE spinlock_t test_cnoc_lock = K1B_SPINLOCK_LOCKED;
  */
 PRIVATE void test_cnoc_dummy_handler(int interface, int tag)
 {
-	UNUSED(tag);
-	UNUSED(interface);
+	KASSERT(interface == INTERFACE);
+	KASSERT(tag       == RX_TAG);
 
 	spinlock_unlock(&test_cnoc_lock);
 }
@@ -226,7 +231,7 @@ static void test_cnoc_stress_with_events(void)
 	KASSERT(bostan_dma_control_create(INTERFACE, RX_TAG, BOSTAN_CNOC_BARRIER_MODE, RX_MASK, NULL) == 0);
 	KASSERT(bostan_dma_control_open(INTERFACE, TX_TAG) == 0);
 
-	for (int i = 0; i < 10; ++i)
+	for (int i = 0; i < NOC_ITERATIONS; ++i)
 	{
 		KASSERT(
 			bostan_dma_control_signal(
@@ -262,7 +267,7 @@ static void test_cnoc_stress_with_interrupts(void)
 
 	interrupts_enable();
 
-		for (int i = 0; i < 10; ++i)
+		for (int i = 0; i < NOC_ITERATIONS; ++i)
 		{
 			KASSERT(
 				bostan_dma_control_signal(
@@ -315,11 +320,11 @@ struct test cnoc_tests_api[] = {
 PUBLIC void test_cnoc(void)
 {
 	/* API Tests */
-	kprintf(HLINE);
+	CLUSTER_KPRINTF(HLINE);
 	for (int i = 0; cnoc_tests_api[i].test_fn != NULL; i++)
 	{
 		cnoc_tests_api[i].test_fn();
-		kprintf("[test][api][noc][control] %s [passed]", cnoc_tests_api[i].name);
+		CLUSTER_KPRINTF("[test][api][noc][control] %s [passed]", cnoc_tests_api[i].name);
 	}
 }
 
