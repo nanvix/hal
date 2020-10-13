@@ -64,6 +64,13 @@
 	#define UNIX64_PORTAL_MAX_SIZE      (UNIX64_PORTAL_RESERVED_SIZE + UNIX64_PORTAL_DATA_SIZE) /**< Maximum size.                  */
 	/**@}*/
 
+	/**
+	 * @name IO control requests.
+	 */
+	/**@{*/
+	#define UNIX64_PORTAL_IOCTL_SET_ASYNC_BEHAVIOR 0 /**< Sets the wait/wakeup functions on a resource. */
+	/**@}*/
+
 #ifdef __NANVIX_HAL
 
 	/**
@@ -156,6 +163,18 @@
 	 */
 	EXTERN int unix64_portal_close(int portalid);
 
+	/**
+	 * @brief Request an I/O operation on a portal.
+	 *
+	 * @param portalid portal resource.
+	 * @param request  Type of request.
+	 * @param args     Arguments of the request.
+	 *
+	 * @returns Upon successful completion, zero is returned.
+	 * Upon failure, a negative error code is returned instead.
+	 */
+	EXTERN int unix64_portal_ioctl(int portalid, unsigned request, va_list args);
+
 /**@}*/
 
 /*============================================================================*
@@ -180,6 +199,7 @@
 	#define __portal_awrite_fn /**< portal_write()  */
 	#define __portal_aread_fn  /**< portal_aread()  */
 	#define __portal_wait_fn   /**< portal_wait()   */
+	#define __portal_ioctl_fn  /**< portal_ioctl()  */
 	/**@}*/
 
 	/**
@@ -193,6 +213,13 @@
 	#define HAL_PORTAL_RESERVED_SIZE UNIX64_PORTAL_RESERVED_SIZE /**< @see UNIX64_PORTAL_RESERVED_SIZE */
 	#define HAL_PORTAL_DATA_SIZE     UNIX64_PORTAL_DATA_SIZE     /**< @see UNIX64_PORTAL_DATA_SIZE     */
 	#define HAL_PORTAL_MAX_SIZE      UNIX64_PORTAL_MAX_SIZE      /**< @see UNIX64_PORTAL_MAX_SIZE      */
+	/**@}*/
+
+	/**
+	 * @name IO control requests.
+	 */
+	/**@{*/
+	#define HAL_PORTAL_IOCTL_SET_ASYNC_BEHAVIOR UNIX64_PORTAL_IOCTL_SET_ASYNC_BEHAVIOR /**< @see UNIX64_PORTAL_IOCTL_SET_ASYNC_BEHAVIOR */
 	/**@}*/
 
 	/**
@@ -249,6 +276,12 @@
 	 * @param portalid Unused.
 	 */
 	#define __portal_wait(portalid) (0)
+
+	/**
+	 * @see unix64_portal_ioctl()
+	 */
+	#define __portal_ioctl(portalid, request, args) \
+		unix64_portal_ioctl(portalid, request, args)
 
 /**@}*/
 
