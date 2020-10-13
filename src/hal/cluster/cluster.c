@@ -117,9 +117,8 @@ PUBLIC void core_idle(void)
 
 	spinlock_unlock(&cores[coreid].lock);
 
-	interrupts_enable();
 	interrupts_level(INTERRUPT_LEVEL_LOW);
-	interrupt_mask(INTERRUPT_TIMER);
+	interrupts_enable();
 
 	while (true)
 	{
@@ -416,8 +415,8 @@ PUBLIC int core_reset(void)
 	if (coreid == COREID_MASTER)
 		return (-EINVAL);
 
-	interrupts_level(INTERRUPT_LEVEL_NONE);
 	interrupts_disable();
+	interrupts_level(INTERRUPT_LEVEL_NONE);
 
 	spinlock_lock(&cores[coreid].lock);
 	dcache_invalidate();
