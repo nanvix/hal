@@ -66,6 +66,13 @@
 	#define MPPA256_SYNC_OPEN_OFFSET   MPPA256_SYNC_CREATE_MAX /**< Initial File Descriptor ID for Opens.   */
 	/**@}*/
 
+	/**
+	 * @name IO control requests.
+	 */
+	/**@{*/
+	#define MPPA256_SYNC_IOCTL_SET_ASYNC_BEHAVIOR 0 /**< Sets the wait/wakeup functions on a resource. */
+	/**@}*/
+
 #if !__NANVIX_IKC_USES_ONLY_MAILBOX
 
 	/**
@@ -131,6 +138,18 @@
 	 */
 	EXTERN int mppa256_sync_signal(int syncid);
 
+	/**
+	 * @brief Request an I/O operation on a synchronization point.
+	 *
+	 * @param syncid  Sync resource.
+	 * @param request Type of request.
+	 * @param args    Arguments of the request.
+	 *
+	 * @returns Upon successful completion, zero is returned.
+	 * Upon failure, a negative error code is returned instead.
+	 */
+	EXTERN int mppa256_sync_ioctl(int syncid, unsigned request, va_list args);
+
 #endif /* !__NANVIX_IKC_USES_ONLY_MAILBOX */
 
 /*============================================================================*
@@ -148,26 +167,26 @@
 	#define __sync_close_fn  /**< sync_close()  */
 	#define __sync_wait_fn   /**< sync_wait()   */
 	#define __sync_signal_fn /**< sync_signal() */
+	#define __sync_ioctl_fn  /**< sync_ioctl()  */
 	/**@}*/
 
 	/**
-	 * @see MPPA256_SYNC_ONE_TO_ALL
-	 * @see MPPA256_SYNC_ALL_TO_ONE
+	 * @name Provided Constants.
 	 */
 	/**@{*/
-	#define SYNC_ONE_TO_ALL MPPA256_SYNC_ONE_TO_ALL
-	#define SYNC_ALL_TO_ONE MPPA256_SYNC_ALL_TO_ONE
+	#define SYNC_ONE_TO_ALL    MPPA256_SYNC_ONE_TO_ALL    /**< @see MPPA256_SYNC_ONE_TO_ALL    */
+	#define SYNC_ALL_TO_ONE    MPPA256_SYNC_ALL_TO_ONE    /**< @see MPPA256_SYNC_ALL_TO_ONE    */
+	#define SYNC_CREATE_MAX    MPPA256_SYNC_CREATE_MAX    /**< @see MPPA256_SYNC_CREATE_MAX    */
+	#define SYNC_CREATE_OFFSET MPPA256_SYNC_CREATE_OFFSET /**< @see MPPA256_SYNC_CREATE_OFFSET */
+	#define SYNC_OPEN_MAX      MPPA256_SYNC_OPEN_MAX      /**< @see MPPA256_SYNC_OPEN_MAX      */
+	#define SYNC_OPEN_OFFSET   MPPA256_SYNC_OPEN_OFFSET   /**< @see MPPA256_SYNC_OPEN_OFFSET   */
 	/**@}*/
 
 	/**
-	 * @see BOSTAN_SYNC_CREATE_MAX
-	 * @see BOSTAN_SYNC_OPEN_MAX
+	 * @name IO control requests.
 	 */
 	/**@{*/
-	#define SYNC_CREATE_MAX    MPPA256_SYNC_CREATE_MAX    /**< MPPA256_SYNC_CREATE_MAX    */
-	#define SYNC_CREATE_OFFSET MPPA256_SYNC_CREATE_OFFSET /**< MPPA256_SYNC_CREATE_OFFSET */
-	#define SYNC_OPEN_MAX      MPPA256_SYNC_OPEN_MAX      /**< MPPA256_SYNC_OPEN_MAX      */
-	#define SYNC_OPEN_OFFSET   MPPA256_SYNC_OPEN_OFFSET   /**< MPPA256_SYNC_OPEN_OFFSET   */
+	#define SYNC_IOCTL_SET_ASYNC_BEHAVIOR MPPA256_SYNC_IOCTL_SET_ASYNC_BEHAVIOR /**< @see MPPA256_SYNC_IOCTL_SET_ASYNC_BEHAVIOR */
 	/**@}*/
 
 #if !__NANVIX_IKC_USES_ONLY_MAILBOX
@@ -213,6 +232,12 @@
 	 */
 	#define __sync_signal(syncid) \
 		mppa256_sync_signal(syncid)
+
+	/**
+	 * @see mppa256_sync_ioctl()
+	 */
+	#define __sync_ioctl(syncid, request, args) \
+		mppa256_sync_ioctl(syncid, request, args)
 
 #endif /* !__NANVIX_IKC_USES_ONLY_MAILBOX */
 
