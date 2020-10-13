@@ -63,6 +63,14 @@
 	#include <nanvix/hal/target/portal.h>
 
 	/**
+	 * @name Functions to wait/wakeup for a comm resource.
+	 */
+	/**{**/
+	typedef void (*target_comm_wait_fn)(int id);
+	typedef void (*target_comm_wakeup_fn)(int id);
+	/**}**/
+
+	/**
 	 * @brief Powers off the underlying target.
 	 */
 	#ifdef __target_poweroff_fn

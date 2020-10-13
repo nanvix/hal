@@ -61,6 +61,9 @@
 		#ifndef SYNC_ALL_TO_ONE
 		#error "SYNC_ALL_TO_ONE not defined"
 		#endif
+		#ifndef SYNC_IOCTL_SET_ASYNC_BEHAVIOR
+		#error "SYNC_IOCTL_SET_ASYNC_BEHAVIOR not defined"
+		#endif
 
 		/* Functions */
 		#ifndef __sync_setup_fn
@@ -84,6 +87,9 @@
 		#ifndef __sync_signal_fn
 		#error "sync_signal() not defined?"
 		#endif
+		#ifndef __sync_ioctl_fn
+		#error "sync_ioctl() not defined?"
+		#endif
 
 	#endif
 
@@ -92,12 +98,13 @@
 /* Dummy Constants */
 #if (!__TARGET_HAS_SYNC)
 
-	#define SYNC_ONE_TO_ALL    0
-	#define SYNC_ALL_TO_ONE    1
-	#define SYNC_CREATE_MAX    1
-	#define SYNC_CREATE_OFFSET 0
-	#define SYNC_OPEN_MAX      1
-	#define SYNC_OPEN_OFFSET   SYNC_CREATE_MAX
+	#define SYNC_ONE_TO_ALL               0
+	#define SYNC_ALL_TO_ONE               1
+	#define SYNC_CREATE_MAX               1
+	#define SYNC_CREATE_OFFSET            0
+	#define SYNC_OPEN_MAX                 1
+	#define SYNC_OPEN_OFFSET              SYNC_CREATE_MAX
+	#define SYNC_IOCTL_SET_ASYNC_BEHAVIOR 0
 
 #endif /* !__TARGET_HAS_SYNC */
 
@@ -176,6 +183,18 @@
 	 * @return Zero if send signal correctly and non zero otherwise.
 	 */
 	EXTERN int sync_signal(int syncid);
+
+	/**
+	 * @brief Performs control operations in a sync.
+	 *
+	 * @param syncid  Target sync.
+	 * @param request Request.
+	 * @param ...     Additional arguments.
+	 *
+	 * @param Upon successful completion, zero is returned. Upon failure,
+	 * a negative error code is returned instead.
+	 */
+	EXTERN int sync_ioctl(int syncid, unsigned request, ...);
 
 	/**
 	 * @brief Initializes the sync interface.

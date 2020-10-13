@@ -328,6 +328,47 @@ PUBLIC int portal_wait(int portalid)
 }
 
 /*============================================================================*
+ * portal_ioctl()                                                             *
+ *============================================================================*/
+
+/**
+ * @todo TODO: provide a detailed description for this function.
+ */
+PUBLIC int portal_ioctl(int portalid, unsigned request, ...)
+{
+#if (__TARGET_HAS_PORTAL && !__NANVIX_IKC_USES_ONLY_MAILBOX)
+	int ret;
+	va_list args;
+
+	/* Invalid portal. */
+	if (!portal_rx_is_valid(portalid) && !portal_tx_is_valid(portalid))
+		return (-EBADF);
+
+	va_start(args, request);
+
+		dcache_invalidate();
+
+		ret = __portal_ioctl(
+			portalid,
+			request,
+			args
+		);
+
+		dcache_invalidate();
+
+	va_end(args);
+
+	return (ret);
+
+#else /* __TARGET_HAS_PORTAL */
+	UNUSED(portalid);
+	UNUSED(request);
+
+	return (-ENOSYS);
+#endif /* __TARGET_HAS_PORTAL */
+}
+
+/*============================================================================*
  * portal_setup()                                                             *
  *============================================================================*/
 
