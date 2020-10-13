@@ -131,10 +131,14 @@
 	 * @name Exported Constants
 	 */
 	/**@{*/
-	#define INTERRUPTS_NUM  K1B_INT_NUM    /**< @ref K1b_INT_NUM    */
-	#define INTERRUPT_TIMER K1B_INT_TIMER0 /**< @ref K1B_INT_TIMER0 */
-	#define INTERRUPT_IPI   K1B_INT_IPI    /**< @ref K1B_INT_IPI    */
-	#define HAL_INT_CNOC    K1B_INT_CNOC   /**< @ref K1B_INT_CNOC   */
+	#define INTERRUPTS_NUM         K1B_INT_NUM    /**< @ref K1b_INT_NUM    */
+	#define INTERRUPT_TIMER        K1B_INT_TIMER0 /**< @ref K1B_INT_TIMER0 */
+	#define INTERRUPT_IPI          K1B_INT_IPI    /**< @ref K1B_INT_IPI    */
+	#define HAL_INT_CNOC           K1B_INT_CNOC   /**< @ref K1B_INT_CNOC   */
+	#define INTERRUPT_LEVEL_LOW    K1B_IRQLVL_0   /**< @ref K1B_IRQLVL_0   */
+	#define INTERRUPT_LEVEL_MEDIUM K1B_IRQLVL_6   /**< @ref K1B_IRQLVL_6   */
+	#define INTERRUPT_LEVEL_HIGH   K1B_IRQLVL_10  /**< @ref K1B_IRQLVL_10  */
+	#define INTERRUPT_LEVEL_NONE   K1B_IRQLVL_13  /**< @ref K1B_IRQLVL_13  */
 	/**@}*/
 
 	/**
@@ -150,6 +154,7 @@
 	/**@{*/
 	#define __interrupts_disable_fn /**< @ref interrupts_disable() */
 	#define __interrupts_enable_fn  /**< @ref interrupts_enable()  */
+	#define __interrupts_level_fn   /**< @ref interrupts_level()   */
 	#define __interrupt_next_fn     /**< @ref interrupt_next()     */
 	#define __interrupt_mask_fn     /**< @ref interrupt_mask()     */
 	#define __interrupt_unmask_fn   /**< @ref interrupt_unmask()   */
@@ -172,6 +177,14 @@
 	static inline void interrupts_disable(void)
 	{
 		k1b_int_disable();
+	}
+
+	/**
+	 * @see k1b_pic_lvl_set().
+	 */
+	static inline int interrupts_level(int newlevel)
+	{
+		return (k1b_pic_lvl_set(newlevel));
 	}
 
 	/**

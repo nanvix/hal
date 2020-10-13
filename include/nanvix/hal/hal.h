@@ -43,6 +43,7 @@
 
 	#include <nanvix/hal/log.h>
 	#include <nanvix/hal/resource.h>
+	#include <nanvix/hal/section_guard.h>
 	#include <nanvix/const.h>
 
 	/**

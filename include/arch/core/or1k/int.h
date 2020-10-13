@@ -129,9 +129,13 @@
 	 * @name Exported Constants
 	 */
 	/**@{*/
-	#define INTERRUPTS_NUM  OR1K_INT_NUM   /**< @ref OR1K_INT_NUM   */
-	#define INTERRUPT_TIMER OR1K_INT_TIMER /**< @ref OR1K_INT_TIMER */
-	#define INTERRUPT_IPI   OR1K_INT_OMPIC /**< @ref OR1K_INT_TIMER */
+	#define INTERRUPTS_NUM         OR1K_INT_NUM   /**< @ref OR1K_INT_NUM   */
+	#define INTERRUPT_TIMER        OR1K_INT_TIMER /**< @ref OR1K_INT_TIMER */
+	#define INTERRUPT_IPI          OR1K_INT_OMPIC /**< @ref OR1K_INT_TIMER */
+	#define INTERRUPT_LEVEL_LOW    OR1K_IRQLVL_5  /**< @ref OR1K_IRQLVL_5  */
+	#define INTERRUPT_LEVEL_MEDIUM OR1K_IRQLVL_3  /**< @ref OR1K_IRQLVL_3  */
+	#define INTERRUPT_LEVEL_HIGH   OR1K_IRQLVL_1  /**< @ref OR1K_IRQLVL_1  */
+	#define INTERRUPT_LEVEL_NONE   OR1K_IRQLVL_0  /**< @ref OR1K_IRQLVL_0  */
 	/**@}*/
 
 	/**
@@ -147,6 +151,7 @@
 	/**@{*/
 	#define __interrupts_disable_fn /**< @ref interrupts_disable() */
 	#define __interrupts_enable_fn  /**< @ref interrupts_enable()  */
+	#define __interrupts_level_fn   /**< @ref interrupts_level()   */
 	#define __interrupt_next_fn     /**< @ref interrupt_next()     */
 	#define __interrupt_mask_fn     /**< @ref interrupt_mask()     */
 	#define __interrupt_unmask_fn   /**< @ref interrupt_unmask()   */
@@ -169,6 +174,14 @@
 	static inline void interrupts_disable(void)
 	{
 		or1k_int_disable();
+	}
+
+	/**
+	 * @see or1k_pic_lvl_set().
+	 */
+	static inline int interrupts_level(int newlevel)
+	{
+		return (or1k_pic_lvl_set(newlevel));
 	}
 
 	/**

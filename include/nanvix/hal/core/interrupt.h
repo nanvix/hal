@@ -38,6 +38,18 @@
 	#ifndef INTERRUPTS_NUM
 	#error "INTERRUPTS_NUM not defined"
 	#endif
+	#ifndef INTERRUPT_LEVEL_LOW
+	#error "INTERRUPT_LEVEL_LOW not defined"
+	#endif
+	#ifndef INTERRUPT_LEVEL_MEDIUM
+	#error "INTERRUPT_LEVEL_MEDIUM not defined"
+	#endif
+	#ifndef INTERRUPT_LEVEL_HIGH
+	#error "INTERRUPT_LEVEL_HIGH not defined"
+	#endif
+	#ifndef INTERRUPT_LEVEL_NONE
+	#error "INTERRUPT_LEVEL_NONE not defined"
+	#endif
 
 	/* Structures & Types */
 	#ifndef __context_struct
@@ -55,6 +67,9 @@
 	#endif
 	#ifndef __interrupts_enable_fn
 	#error "interrupts_enable() not defined?"
+	#endif
+	#ifndef __interrupts_level_fn
+	#error "interrupts_level() not defined?"
 	#endif
 	#ifndef __interrupt_mask_fn
 	#error "interrupt_mask() not defined?"
@@ -132,6 +147,12 @@
 	 * @brief Enables all hardware interrupts.
 	 */
 	EXTERN void interrupts_enable(void);
+
+	/**
+	 * @brief Change interrupt level, i.e., change the minimum interrupt
+	 * priority that can be accepted.
+	 */
+	EXTERN int interrupts_level(int newlevel);
 
 	/**
 	 * @brief Registers an interrupt handler.

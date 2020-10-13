@@ -131,9 +131,13 @@
 	 * @name Exported Constants
 	 */
 	/**@{*/
-	#define INTERRUPTS_NUM  RV32GC_INT_NUM          /**< @ref RV32GC_INT_NUM          */
-	#define INTERRUPT_TIMER RV32GC_INT_TIMER_KERNEL /**< @ref RV32GC_INT_TIMER_KERNEL */
-	#define INTERRUPT_IPI   RV32GC_INT_IPI          /**< @ref RV32GC_INT_IPI          */
+	#define INTERRUPTS_NUM         RV32GC_INT_NUM          /**< @ref RV32GC_INT_NUM          */
+	#define INTERRUPT_TIMER        RV32GC_INT_TIMER_KERNEL /**< @ref RV32GC_INT_TIMER_KERNEL */
+	#define INTERRUPT_IPI          RV32GC_INT_IPI          /**< @ref RV32GC_INT_IPI          */
+	#define INTERRUPT_LEVEL_LOW    0                       /**< TODO Implement this.         */
+	#define INTERRUPT_LEVEL_MEDIUM 0                       /**< TODO Implement this.         */
+	#define INTERRUPT_LEVEL_HIGH   0                       /**< TODO Implement this.         */
+	#define INTERRUPT_LEVEL_NONE   0                       /**< TODO Implement this.         */
 	/**@}*/
 
 	/**
@@ -149,6 +153,7 @@
 	/**@{*/
 	#define __interrupts_disable_fn /**< @ref interrupts_disable() */
 	#define __interrupts_enable_fn  /**< @ref interrupts_enable()  */
+	#define __interrupts_level_fn   /**< @ref interrupts_level()   */
 	#define __interrupt_next_fn     /**< @ref interrupt_next()     */
 	#define __interrupt_mask_fn     /**< @ref interrupt_mask()     */
 	#define __interrupt_unmask_fn   /**< @ref interrupt_unmask()   */
@@ -171,6 +176,16 @@
 	static inline void interrupts_disable(void)
 	{
 		rv32gc_int_disable();
+	}
+
+	/**
+	 * @brief TODO Implement this function. 
+	 */
+	static inline int interrupts_level(int newlevel)
+	{
+		UNUSED(newlevel);
+
+		return (0);
 	}
 
 	/**

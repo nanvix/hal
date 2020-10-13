@@ -25,43 +25,12 @@
 /* Must come first. */
 #define __NEED_CORE_LPIC
 
+#include <arch/core/k1b/core.h>
 #include <arch/core/k1b/lpic.h>
 #include <arch/core/k1b/mOS.h>
 #include <nanvix/const.h>
 #include <posix/errno.h>
 #include <posix/stdint.h>
-
-/**
- * @brief Current interrupt mask.
- */
-PRIVATE uint32_t currmask = K1B_IRQLVL_MASK_5;
-
-/**
- * @brief Current interrupt level.
- */
-PRIVATE int currlevel = K1B_IRQLVL_0;
-
-/**
- * @brief Lookup table for masks of interrupt levels.
- */
-PRIVATE uint32_t intlvl_masks[K1B_NUM_IRQLVL] = {
-	K1B_IRQLVL_MASK_0,
-	K1B_IRQLVL_MASK_1,
-	K1B_IRQLVL_MASK_2,
-	K1B_IRQLVL_MASK_3,
-	K1B_IRQLVL_MASK_4,
-	K1B_IRQLVL_MASK_5,
-	K1B_IRQLVL_MASK_6,
-	K1B_IRQLVL_MASK_7,
-	K1B_IRQLVL_MASK_8,
-	K1B_IRQLVL_MASK_9,
-	K1B_IRQLVL_MASK_10,
-	K1B_IRQLVL_MASK_11,
-	K1B_IRQLVL_MASK_12,
-	K1B_IRQLVL_MASK_13,
-	K1B_IRQLVL_MASK_14,
-	K1B_IRQLVL_MASK_15
-};
 
 /**
  * @brief Sets the interrupt level of the underlying core.
@@ -72,14 +41,17 @@ PRIVATE uint32_t intlvl_masks[K1B_NUM_IRQLVL] = {
  */
 PUBLIC int k1b_pic_lvl_set(int newlevel)
 {
-	uint32_t mask;
 	int oldlevel;
 
-	mOS_set_it_level(mask = intlvl_masks[newlevel]);
+	/* Invalid interrupt level.  */
+	if (UNLIKELY(newlevel < 0 || newlevel >= K1B_NUM_IRQLVL))
+		return (-EINVAL);
 
-	currmask = mask;
-	oldlevel = currlevel;
-	currlevel = newlevel;
+	/* Gets old interrupt level. */
+	oldlevel = _scoreboard_start.SCB_VCORE.PER_CPU[core_get_id()].SFR_PS.il;
+
+	/* Sets new interrupt level. */
+	mOS_set_it_level(newlevel);
 
 	return (oldlevel);
 }

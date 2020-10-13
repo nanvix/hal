@@ -108,7 +108,7 @@ PRIVATE struct
 	} txs[UNIX64_SYNC_OPEN_MAX];
 } synctab = {
 	.rxs[0 ... (UNIX64_SYNC_CREATE_MAX - 1)] = {
-		.resource  = RESOURCE_INITIALIZER,
+		.resource  = RESOURCE_STATIC_INITIALIZER,
 		.nbarriers = 0,
 		.hash      = HASH_INITIALIZER,
 		.barrier   = HASH_INITIALIZER,
@@ -116,7 +116,7 @@ PRIVATE struct
 	},
 
 	.txs[0 ... (UNIX64_SYNC_OPEN_MAX - 1)] = {
-		.resource = RESOURCE_INITIALIZER,
+		.resource = RESOURCE_STATIC_INITIALIZER,
 		.nnodes   = 0,
 		.nodes    = {0, },
 		.sent     = {0, },
