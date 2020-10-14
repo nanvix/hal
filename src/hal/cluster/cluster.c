@@ -118,7 +118,7 @@ PUBLIC void core_idle(void)
 	spinlock_unlock(&cores[coreid].lock);
 
 	interrupts_level(INTERRUPT_LEVEL_LOW);
-	interrupts_enable();
+	interrupt_unmask(INTERRUPT_IPI);
 
 	while (true)
 	{
@@ -415,7 +415,7 @@ PUBLIC int core_reset(void)
 	if (coreid == COREID_MASTER)
 		return (-EINVAL);
 
-	interrupts_disable();
+	interrupt_mask(INTERRUPT_IPI);
 	interrupts_level(INTERRUPT_LEVEL_NONE);
 
 	spinlock_lock(&cores[coreid].lock);
