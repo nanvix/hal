@@ -78,15 +78,50 @@
 	}
 
 	/**
+	 * @brief Backoff factor range.
+	 */
+#ifdef __k1io__
+	#define FACTOR_RANGE 4
+#else
+	#define FACTOR_RANGE 16
+#endif
+
+	/**
 	 * @brief Locks a k1b_spinlock_t.
 	 *
 	 * @param lock Target k1b_spinlock_t.
 	 */
 	static inline void k1b_spinlock_lock(k1b_spinlock_t *lock)
 	{
+		int a, b, busy;
+
+		/**
+		 * Initial values:
+		 * a: Related to each core so we insert some different behavior.
+		 * b: First busy factor is the smaller one.
+		 */
+		a = core_get_id();
+		b = 1;
+
 		k1b_dcache_inval();
+
 			while (!k1b_spinlock_trylock(lock))
-				/* noop */;
+			{
+				/* Compute the amount of busy work. */
+				busy = a * b;
+
+				/* Do some busy work. */
+				while (busy--);
+
+				/**
+				 * Update factors.
+				 * a: Linear related to each core.
+				 * b: +3 to insert some variability to range (modulus).
+				 */
+				a = (a + 1) % FACTOR_RANGE;
+				b = (b + 3) % FACTOR_RANGE;
+			}
+
 		k1b_dcache_inval();
 	}
 
