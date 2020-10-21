@@ -92,6 +92,7 @@ PUBLIC void test_stress_setup(void)
 
 	local  = processor_node_get_num();
 	remote = local == NODENUM_MASTER ? NODENUM_SLAVE : NODENUM_MASTER;
+	
 
 	/* Create sync. */
 	nodes[0] = remote;
