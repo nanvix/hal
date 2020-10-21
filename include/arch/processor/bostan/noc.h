@@ -41,7 +41,7 @@
 	/**
 	 * @name Number of NoC nodes attached to an IO device.
 	 */
-	#define BOSTAN_PROCESSOR_NOC_IONODES_NUM 8
+	#define BOSTAN_PROCESSOR_NOC_IONODES_NUM 2
 
 	/**
 	 * @name Number of NoC nodes not attached to an IO device.

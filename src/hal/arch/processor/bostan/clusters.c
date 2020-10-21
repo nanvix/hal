@@ -29,8 +29,14 @@
 
 /**
  * @brief Macro to get the number of NoC nodes inside an IO Cluster.
+ * 
+ * @details The hardware of Compute Clusters have one NoC interface and IO clusters have four.
  */
-#define BOSTAN_PROCESSOR_NOC_NODES_PER_IOCLUSTER (PROCESSOR_NOC_IONODES_NUM / PROCESSOR_IOCLUSTERS_NUM)
+#ifdef __k1bio__
+    #define BOSTAN_PROCESSOR_NOC_NODES_PER_IOCLUSTER 4 
+#else
+    #define BOSTAN_PROCESSOR_NOC_NODES_PER_IOCLUSTER 1 
+#endif
 
 /**
  * @brief Map of logical IDs to physical IDs of Clusters.
