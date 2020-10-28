@@ -93,7 +93,7 @@
 	#if defined(__ioddr__) || defined(__ioeth__)
 		#define K1B_CLUSTER_KPOOL_SIZE (0x10000)
 	#elif defined(__node__)
-		#define K1B_CLUSTER_KPOOL_SIZE (0x10000)
+		#define K1B_CLUSTER_KPOOL_SIZE (0x28000)
 	#endif
 
 	/**
