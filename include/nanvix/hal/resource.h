@@ -60,6 +60,8 @@
 		{ base, amount, size }
 	#define RESOURCE_QUEUE_STATIC_INITIALIZER                    \
 		{ NULL, NULL, 0 }
+	#define RESOURCE_LIST_STATIC_INITIALIZER                     \
+		{ NULL, NULL, 0 }
 	/**@}*/
 
 	/**
@@ -72,6 +74,8 @@
 		(struct resource_pool) RESOURCE_POOL_STATIC_INITIALIZER(base, amount, size)
 	#define RESOURCE_QUEUE_INITIALIZER                    \
 		(struct resource_queue) RESOURCE_QUEUE_STATIC_INITIALIZER
+	#define RESOURCE_LIST_INITIALIZER                     \
+		(struct resource_list) RESOURCE_LIST_STATIC_INITIALIZER
 	/**@}*/
 
 
@@ -105,6 +109,16 @@
 	};
 
 	/**
+	 * @brief Resource list (Linked list).
+	 */
+	struct resource_list
+	{
+		struct resource * head; /**< First resource queued.      */
+		struct resource * tail; /**< Last resource queued.       */
+		size_t size;            /**< Number of resources queued. */
+	};
+
+	/**
 	 * @brief Resource allocation interface.
 	 */
 	/**@{*/
@@ -112,6 +126,8 @@
 	typedef void (*free_fn)(const struct resource_pool *, int);
 	typedef void (*enqueue_fn)(struct resource_queue *, struct resource *);
 	typedef struct resource * (*dequeue_fn)(struct resource_queue *);
+	typedef void (*push_back_fn)(struct resource_list *, struct resource *);
+	typedef int (*pop_fn)(struct resource_list *, struct resource *);
 	/**@}*/
 
 	/**
@@ -483,6 +499,16 @@
 	 * @brief Resource dequeuing.
 	 */
 	EXTERN dequeue_fn resource_dequeue;
+
+	/**
+	 * @brief Resource push back on a list.
+	 */
+	EXTERN push_back_fn resource_push_back;
+
+	/**
+	 * @brief Resource pop from on a list.
+	 */
+	EXTERN pop_fn resource_pop;
 
 #endif /** NANVIX_HAL_RESOURCE_H_ */
 #endif /* __NEED_RESOURCE */
