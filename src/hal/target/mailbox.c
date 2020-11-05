@@ -282,6 +282,48 @@ PUBLIC int mailbox_wait(int mbxid)
 }
 
 /*============================================================================*
+ * mailbox_ioctl()                                                            *
+ *============================================================================*/
+
+/**
+ * @todo TODO: provide a detailed description for this function.
+ */
+PUBLIC int mailbox_ioctl(int mbxid, unsigned request, ...)
+{
+#if (__TARGET_HAS_MAILBOX)
+	int ret;
+	va_list args;
+
+	/* Invalid mailbox. */
+	if (!mailbox_rx_is_valid(mbxid) && !mailbox_tx_is_valid(mbxid))
+		return (-EBADF);
+
+	va_start(args, request);
+
+		dcache_invalidate();
+
+		ret = __mailbox_ioctl(
+			mbxid,
+			request,
+			args
+		);
+
+		dcache_invalidate();
+
+	va_end(args);
+
+	return (ret);
+
+#else /* __TARGET_HAS_MAILBOX */
+	UNUSED(mbxid);
+	UNUSED(request);
+
+	return (-ENOSYS);
+#endif /* __TARGET_HAS_MAILBOX */
+}
+
+
+/*============================================================================*
  * mailbox_setup()                                                            *
  *============================================================================*/
 

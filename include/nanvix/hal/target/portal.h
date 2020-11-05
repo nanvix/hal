@@ -64,6 +64,9 @@
 		#ifndef HAL_PORTAL_MAX_SIZE
 		#error "HAL_PORTAL_MAX_SIZE not defined"
 		#endif
+		#ifndef HAL_PORTAL_IOCTL_SET_ASYNC_BEHAVIOR
+		#error "HAL_PORTAL_IOCTL_SET_ASYNC_BEHAVIOR not defined"
+		#endif
 
 		/* Functions */
 		#ifndef __portal_setup_fn
@@ -93,6 +96,9 @@
 		#ifndef __portal_wait_fn
 		#error "portal_wait() not defined?"
 		#endif
+		#ifndef __portal_ioctl_fn
+		#error "portal_ioctl() not defined?"
+		#endif
 
 	#endif
 
@@ -101,11 +107,12 @@
 /* Dummy Constants */
 #if (!__TARGET_HAS_PORTAL)
 
-	#define HAL_PORTAL_CREATE_MAX    1
-	#define HAL_PORTAL_CREATE_OFFSET 0
-	#define HAL_PORTAL_OPEN_MAX      1
-	#define HAL_PORTAL_OPEN_OFFSET   0
-	#define HAL_PORTAL_MAX_SIZE      1
+	#define HAL_PORTAL_CREATE_MAX               1
+	#define HAL_PORTAL_CREATE_OFFSET            0
+	#define HAL_PORTAL_OPEN_MAX                 1
+	#define HAL_PORTAL_OPEN_OFFSET              0
+	#define HAL_PORTAL_MAX_SIZE                 1
+	#define HAL_PORTAL_IOCTL_SET_ASYNC_BEHAVIOR 0
 
 #endif /* !__TARGET_HAS_PORTAL */
 
@@ -211,6 +218,18 @@
 	 * @return Zero if wait read correctly and non zero otherwise.
 	 */
 	EXTERN int portal_wait(int portalid);
+
+	/**
+	 * @brief Performs control operations in a portal.
+	 *
+	 * @param portalid Target portal.
+	 * @param request  Request.
+	 * @param ...      Additional arguments.
+	 *
+	 * @param Upon successful completion, zero is returned. Upon failure,
+	 * a negative error code is returned instead.
+	 */
+	EXTERN int portal_ioctl(int syncid, unsigned request, ...);
 
 	/**
 	 * @brief Initializes the portal interface.

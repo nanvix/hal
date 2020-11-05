@@ -64,6 +64,13 @@
 	#define UNIX64_MAILBOX_MSG_SIZE      (UNIX64_MAILBOX_RESERVED_SIZE + UNIX64_MAILBOX_DATA_SIZE) /**< Message size.                  */
 	/**@}*/
 
+	/**
+	 * @name IO control requests.
+	 */
+	/**@{*/
+	#define UNIX64_MAILBOX_IOCTL_SET_ASYNC_BEHAVIOR 0 /**< Sets the wait/wakeup functions on a resource. */
+	/**@}*/
+
 #ifdef __NANVIX_HAL
 
 	/**
@@ -144,6 +151,18 @@
 	 */
 	EXTERN ssize_t unix64_mailbox_aread(int mbxid, void *buffer, uint64_t size);
 
+	/**
+	 * @brief Request an I/O operation on a mailbox.
+	 *
+	 * @param mbxid   Mailbox resource.
+	 * @param request Type of request.
+	 * @param args    Arguments of the request.
+	 *
+	 * @returns Upon successful completion, zero is returned.
+	 * Upon failure, a negative error code is returned instead.
+	 */
+	EXTERN int unix64_mailbox_ioctl(int mbxid, unsigned request, va_list args);
+
 /**@}*/
 
 /*============================================================================*
@@ -166,6 +185,7 @@
 	#define __mailbox_awrite_fn /**< mailbox_awrite() */
 	#define __mailbox_aread_fn  /**< mailbox_aread()  */
 	#define __mailbox_wait_fn   /**< mailbox_wait()   */
+	#define __mailbox_ioctl_fn  /**< mailbox_ioctl()  */
 	/**@}*/
 
 	/**
@@ -179,6 +199,13 @@
 	#define HAL_MAILBOX_RESERVED_SIZE UNIX64_MAILBOX_RESERVED_SIZE /**< @see UNIX64_MAILBOX_RESERVED_SIZE */
 	#define HAL_MAILBOX_DATA_SIZE     UNIX64_MAILBOX_DATA_SIZE     /**< @see UNIX64_MAILBOX_DATA_SIZE     */
 	#define HAL_MAILBOX_MSG_SIZE      UNIX64_MAILBOX_MSG_SIZE      /**< @see UNIX64_MAILBOX_MSG_SIZE      */
+	/**@}*/
+
+	/**
+	 * @name IO control requests.
+	 */
+	/**@{*/
+	#define HAL_MAILBOX_IOCTL_SET_ASYNC_BEHAVIOR UNIX64_MAILBOX_IOCTL_SET_ASYNC_BEHAVIOR /**< @see UNIX64_MAILBOX_IOCTL_SET_ASYNC_BEHAVIOR */
 	/**@}*/
 
 	/**
@@ -229,6 +256,12 @@
 	 * @param mbxid Unused.
 	 */
 	#define __mailbox_wait(mbxid) (0)
+
+	/**
+	 * @see unix64_mailbox_ioctl()
+	 */
+	#define __mailbox_ioctl(mbxid, request, args) \
+		unix64_mailbox_ioctl(mbxid, request, args)
 
 /**@}*/
 

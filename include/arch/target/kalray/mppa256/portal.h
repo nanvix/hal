@@ -60,6 +60,13 @@
 	#define MPPA256_PORTAL_MAX_SIZE      (MPPA256_PORTAL_RESERVED_SIZE + MPPA256_PORTAL_DATA_SIZE) /**< Maximum size.                  */
 	/**@}*/
 
+	/**
+	 * @name IO control requests.
+	 */
+	/**@{*/
+	#define MPPA256_PORTAL_IOCTL_SET_ASYNC_BEHAVIOR 0 /**< Sets the wait/wakeup functions on a resource. */
+	/**@}*/
+
 #if !__NANVIX_IKC_USES_ONLY_MAILBOX
 
 	/**
@@ -154,6 +161,18 @@
 	 */
 	EXTERN int mppa256_portal_wait(int portalid);
 
+	/**
+	 * @brief Request an I/O operation on a portal.
+	 *
+	 * @param portalid portal resource.
+	 * @param request  Type of request.
+	 * @param args     Arguments of the request.
+	 *
+	 * @returns Upon successful completion, zero is returned.
+	 * Upon failure, a negative error code is returned instead.
+	 */
+	EXTERN int mppa256_portal_ioctl(int portalid, unsigned request, va_list args);
+
 #endif /* !__NANVIX_IKC_USES_ONLY_MAILBOX */
 
 /*============================================================================*
@@ -173,6 +192,7 @@
 	#define __portal_awrite_fn /**< portal_write()  */
 	#define __portal_aread_fn  /**< portal_aread()  */
 	#define __portal_wait_fn   /**< portal_wait()   */
+	#define __portal_ioctl_fn  /**< portal_ioctl()  */
 	/**@}*/
 
 	/**
@@ -186,6 +206,13 @@
 	#define HAL_PORTAL_RESERVED_SIZE MPPA256_PORTAL_RESERVED_SIZE /**< @see MPPA256_PORTAL_RESERVED_SIZE */
 	#define HAL_PORTAL_DATA_SIZE     MPPA256_PORTAL_DATA_SIZE     /**< @see MPPA256_PORTAL_DATA_SIZE     */
 	#define HAL_PORTAL_MAX_SIZE      MPPA256_PORTAL_MAX_SIZE      /**< @see MPPA256_PORTAL_MAX_SIZE      */
+	/**@}*/
+
+	/**
+	 * @name IO control requests.
+	 */
+	/**@{*/
+	#define HAL_PORTAL_IOCTL_SET_ASYNC_BEHAVIOR MPPA256_PORTAL_IOCTL_SET_ASYNC_BEHAVIOR /**< @see MPPA256_PORTAL_IOCTL_SET_ASYNC_BEHAVIOR */
 	/**@}*/
 
 #if !__NANVIX_IKC_USES_ONLY_MAILBOX
@@ -243,6 +270,12 @@
 	 */
 	#define __portal_wait(portalid) \
 		mppa256_portal_wait(portalid)
+
+	/**
+	 * @see mppa256_portal_ioctl()
+	 */
+	#define __portal_ioctl(portalid, request, args) \
+		mppa256_portal_ioctl(portalid, request, args)
 
 #endif /* !__NANVIX_IKC_USES_ONLY_MAILBOX */
 

@@ -121,6 +121,14 @@ PRIVATE struct portalpools
 };
 
 /**
+ * @name Comm locks. 
+ */
+/**{**/
+PRIVATE target_comm_wait_fn comm_wait     = NULL;
+PRIVATE target_comm_wakeup_fn comm_wakeup = NULL;
+/**}**/
+
+/**
  * @brief Global lock
  */
 PRIVATE k1b_spinlock_t portaltab_lock = K1B_SPINLOCK_UNLOCKED;
@@ -142,6 +150,36 @@ PRIVATE void mppa256_portal_lock(void)
 PRIVATE void mppa256_portal_unlock(void)
 {
 	k1b_spinlock_unlock(&portaltab_lock);
+}
+
+/*============================================================================*
+ * mppa256_portal_comm_wait()                                                 *
+ *============================================================================*/
+
+PRIVATE void mppa256_portal_comm_wait(int portalid)
+{
+	/* Is it a receiver? */
+	if (portalid < MPPA256_PORTAL_OPEN_OFFSET)
+		k1b_spinlock_lock(&portaltab.rxs[(portalid - MPPA256_PORTAL_CREATE_OFFSET)].lock);
+
+	/* it is a sender. */
+	else
+		k1b_spinlock_lock(&portaltab.txs[(portalid - MPPA256_PORTAL_OPEN_OFFSET)].lock);
+}
+
+/*============================================================================*
+ * mppa256_portal_comm_wakeup()                                               *
+ *============================================================================*/
+
+PRIVATE void mppa256_portal_comm_wakeup(int portalid)
+{
+	/* Is it a receiver? */
+	if (portalid < MPPA256_PORTAL_OPEN_OFFSET)
+		k1b_spinlock_unlock(&portaltab.rxs[(portalid - MPPA256_PORTAL_CREATE_OFFSET)].lock);
+
+	/* it is a sender. */
+	else
+		k1b_spinlock_unlock(&portaltab.txs[(portalid - MPPA256_PORTAL_OPEN_OFFSET)].lock);
 }
 
 /*============================================================================*
@@ -229,8 +267,7 @@ PRIVATE void mppa256_portal_receiver_handler(int interface, int tag)
 		portaltab.rxs[i].is_allowed = 0;
 		portaltab.rxs[i].ret        = 0;
 
-		/* Releases the wait condition. */
-		k1b_spinlock_unlock(&portaltab.rxs[i].lock);
+		comm_wakeup(i + MPPA256_PORTAL_CREATE_OFFSET);
 
 		break;
 	}
@@ -748,7 +785,7 @@ error1:
 	portaltab.txs[portalid].size   = 0;
 	portaltab.txs[portalid].ret    = (ret < 0) ? (-EAGAIN) : 0;
 
-	k1b_spinlock_unlock(&portaltab.txs[portalid].lock);
+	comm_wakeup(portalid + MPPA256_PORTAL_OPEN_OFFSET);
 
 	return (ret);
 }
@@ -974,73 +1011,50 @@ PUBLIC ssize_t mppa256_portal_aread(int portalid, void * buffer, uint64_t size)
  */
 PUBLIC int mppa256_portal_wait(int portalid)
 {
-	int ret; /* Return value. */
+	int ret;               /* Return value.          */
+	int * hw_ret;          /* Hardware Return value. */
+	struct resource * rsc; /* Resource pointer.      */
 
 	/* Is it a rx operation? */
 	if (portalid < MPPA256_PORTAL_OPEN_OFFSET)
 	{
-		portalid -= MPPA256_PORTAL_CREATE_OFFSET;
-
-		mppa256_portal_lock();
-
-			/* Bad sync. */
-			if (!resource_is_used(&portaltab.rxs[portalid].resource))
-				goto error;
-
-			/* Bad sync. */
-			if (!resource_is_busy(&portaltab.rxs[portalid].resource))
-				goto error;
-
-		mppa256_portal_unlock();
-
-		/* Waits for the handler release the lock. */
-		k1b_spinlock_lock(&portaltab.rxs[portalid].lock);
-
-		/**
-		 * The attribution of the return value is allowed on the slave
-		 * side because it will be protected by the busy flag release
-		 * by the own slave core.
-		 **/
-		ret = portaltab.rxs[portalid].ret;
-		portaltab.rxs[portalid].ret = (-EAGAIN);
-
-		mppa256_portal_lock();
-			resource_set_notbusy(&portaltab.rxs[portalid].resource);
-		mppa256_portal_unlock();
+		rsc    = &portaltab.rxs[(portalid - MPPA256_PORTAL_CREATE_OFFSET)].resource;
+		hw_ret = &portaltab.rxs[(portalid - MPPA256_PORTAL_CREATE_OFFSET)].ret;
 	}
 
 	/* Is it a tx operation? */
 	else
 	{
-		portalid -= MPPA256_PORTAL_OPEN_OFFSET;
-
-		mppa256_portal_lock();
-
-			/* Bad sync. */
-			if (!resource_is_used(&portaltab.txs[portalid].resource))
-				goto error;
-
-			/* Bad sync. */
-			if (!resource_is_busy(&portaltab.txs[portalid].resource))
-				goto error;
-
-		mppa256_portal_unlock();
-
-		/* Waits for the handler release the lock. */
-		k1b_spinlock_lock(&portaltab.txs[portalid].lock);
-
-		/**
-		 * The attribution of the return value is allowed on the slave
-		 * side because it will be protected by the busy flag release
-		 * by the own slave core.
-		 **/
-		ret = portaltab.txs[portalid].ret;
-		portaltab.txs[portalid].ret = (-EAGAIN);
-
-		mppa256_portal_lock();
-			resource_set_notbusy(&portaltab.txs[portalid].resource);
-		mppa256_portal_unlock();
+		rsc    = &portaltab.txs[(portalid - MPPA256_PORTAL_OPEN_OFFSET)].resource;
+		hw_ret = &portaltab.txs[(portalid - MPPA256_PORTAL_OPEN_OFFSET)].ret;
 	}
+
+	mppa256_portal_lock();
+
+		/* Bad portal. */
+		if (!resource_is_used(rsc))
+			goto error;
+
+		/* Bad portal. */
+		if (!resource_is_busy(rsc))
+			goto error;
+
+	mppa256_portal_unlock();
+
+	/* Waits for the handler release the lock. */
+	comm_wait(portalid);
+
+	/**
+	 * The attribution of the return value is allowed on the slave
+	 * side because it will be protected by the busy flag release
+	 * by the own slave core.
+	 **/
+	ret     = *hw_ret;
+	*hw_ret = (-EAGAIN);
+
+	mppa256_portal_lock();
+		resource_set_notbusy(rsc);
+	mppa256_portal_unlock();
 
 	return (ret);
 
@@ -1048,6 +1062,90 @@ error:
 	mppa256_portal_unlock();
 
 	return (-EBADF);
+}
+
+/*============================================================================*
+ * mppa256_portal_ioctl()                                                     *
+ *============================================================================*/
+
+/**
+ * @brief Request an I/O operation on a portal.
+ *
+ * @param syncid  Sync resource.
+ * @param request Type of request.
+ * @param args    Arguments of the request.
+ *
+ * @returns Upon successful completion, zero is returned.
+ * Upon failure, a negative error code is returned instead.
+ */
+PUBLIC int mppa256_portal_ioctl(int portalid, unsigned request, va_list args)
+{
+	int ret = (-EINVAL); /* Return value. */
+
+	UNUSED(portalid);
+
+again:
+	mppa256_portal_lock();
+
+		switch (request)
+		{
+			case MPPA256_PORTAL_IOCTL_SET_ASYNC_BEHAVIOR:
+			{
+				for (int i = 0; i < MPPA256_PORTAL_CREATE_MAX; ++i)
+				{
+					if (!resource_is_used(&portaltab.rxs[i].resource))
+						continue;
+
+					/* Busy portals. */
+					if (resource_is_busy(&portaltab.rxs[i].resource))
+					{
+						mppa256_portal_unlock();
+						goto again;
+					}
+				}
+
+				for (int i = 0; i < MPPA256_PORTAL_OPEN_MAX; ++i)
+				{
+					if (!resource_is_used(&portaltab.txs[i].resource))
+						continue;
+
+					/* Busy portals. */
+					if (resource_is_busy(&portaltab.txs[i].resource))
+					{
+						mppa256_portal_unlock();
+						goto again;
+					}
+				}
+
+				target_comm_wait_fn   wait_fn   = va_arg(args, target_comm_wait_fn);
+				target_comm_wakeup_fn wakeup_fn = va_arg(args, target_comm_wakeup_fn);
+
+				/* Invalid functions? */
+				if (!wait_fn || !wakeup_fn)
+				{
+					/* Sets default lock functions. */
+					comm_wait   = mppa256_portal_comm_wait;
+					comm_wakeup = mppa256_portal_comm_wakeup;
+				}
+				else
+				{
+					comm_wait   = wait_fn;
+					comm_wakeup = wakeup_fn;
+				}
+
+				ret = (0);
+			} break;
+
+			default:
+				break;
+		}
+
+	/*
+	 * Release lock, since we may sleep below.
+	 */
+	mppa256_portal_unlock();
+
+	return (ret);
 }
 
 /*============================================================================*
@@ -1063,6 +1161,11 @@ PUBLIC void mppa256_portal_setup(void)
 
 	kprintf("[hal][portal] Portal Initialization.");
 
+	/* Sets default lock functions. */
+	comm_wait   = mppa256_portal_comm_wait;
+	comm_wakeup = mppa256_portal_comm_wakeup;
+
+	/* Open TX channels. */
 	for (unsigned i = 0; i < BOSTAN_DNOC_TXS_PER_COMM_SERVICE; i++)
 	{
 		bostan_portal_tx_channels[i] = RESOURCE_INITIALIZER;
@@ -1074,6 +1177,7 @@ PUBLIC void mppa256_portal_setup(void)
 			kpanic("[hal][portal] Cannot open data channel.");
 	}
 
+	/* Sets default receiver configurations. */
 	for (unsigned i = 0; i < MPPA256_PORTAL_CREATE_MAX; i++)
 	{
 		portaltab.rxs[i].resource   = RESOURCE_INITIALIZER;
@@ -1084,6 +1188,7 @@ PUBLIC void mppa256_portal_setup(void)
 		k1b_spinlock_lock(&portaltab.rxs[i].lock);
 	}
 
+	/* Sets default sender configurations. */
 	for (unsigned i = 0; i < MPPA256_PORTAL_OPEN_MAX; i++)
 	{
 		portaltab.txs[i].resource   = RESOURCE_INITIALIZER;

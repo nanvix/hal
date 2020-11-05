@@ -319,6 +319,47 @@ PUBLIC int sync_wait(int syncid)
 }
 
 /*============================================================================*
+ * sync_ioctl()                                                               *
+ *============================================================================*/
+
+/**
+ * @todo TODO: provide a detailed description for this function.
+ */
+PUBLIC int sync_ioctl(int syncid, unsigned request, ...)
+{
+#if (__TARGET_HAS_SYNC && !__NANVIX_IKC_USES_ONLY_MAILBOX)
+	int ret;
+	va_list args;
+
+	/* Invalid mailbox. */
+	if (!sync_rx_is_valid(syncid) && !sync_tx_is_valid(syncid))
+		return (-EBADF);
+
+	va_start(args, request);
+
+		dcache_invalidate();
+
+		ret = __sync_ioctl(
+			syncid,
+			request,
+			args
+		);
+
+		dcache_invalidate();
+
+	va_end(args);
+
+	return (ret);
+
+#else /* __TARGET_HAS_SYNC */
+	UNUSED(syncid);
+	UNUSED(request);
+
+	return (-ENOSYS);
+#endif /* __TARGET_HAS_SYNC */
+}
+
+/*============================================================================*
  * sync_setup()                                                               *
  *============================================================================*/
 

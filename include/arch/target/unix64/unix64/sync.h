@@ -67,6 +67,25 @@
 	 */
 	#define UNIX64_SYNC_MAX (UNIX64_SYNC_CREATE_MAX + UNIX64_SYNC_OPEN_MAX)
 
+	/**
+	 * @name IO control requests.
+	 */
+	/**@{*/
+	#define UNIX64_SYNC_IOCTL_SET_ASYNC_BEHAVIOR 0 /**< Sets the wait/wakeup functions on a resource. */
+	/**@}*/
+
+	/**
+	 * @brief Request an I/O operation on a synchronization point.
+	 *
+	 * @param syncid  Sync resource.
+	 * @param request Type of request.
+	 * @param args    Arguments of the request.
+	 *
+	 * @returns Upon successful completion, zero is returned.
+	 * Upon failure, a negative error code is returned instead.
+	 */
+	EXTERN int unix64_sync_ioctl(int syncid, unsigned request, va_list args);
+
 #if !__NANVIX_IKC_USES_ONLY_MAILBOX
 
 #ifdef __NANVIX_HAL
@@ -165,7 +184,7 @@
  */
 
 	/**
-	 * @name Provided Functions
+	 * @name Provided Functions.
 	 */
 	/**@{*/
 	#define __sync_setup_fn  /**< sync_setup()  */
@@ -175,8 +194,12 @@
 	#define __sync_close_fn  /**< sync_close()  */
 	#define __sync_wait_fn   /**< sync_wait()   */
 	#define __sync_signal_fn /**< sync_signal() */
+	#define __sync_ioctl_fn  /**< sync_ioctl()  */
 	/**@}*/
 
+	/**
+	 * @name Provided Constants. 
+	 */
 	/**@{*/
 	#define SYNC_ONE_TO_ALL    UNIX64_SYNC_ONE_TO_ALL    /**< UNIX64_SYNC_ONE_TO_ALL    */
 	#define SYNC_ALL_TO_ONE    UNIX64_SYNC_ALL_TO_ONE    /**< UNIX64_SYNC_ALL_TO_ONE    */
@@ -184,6 +207,13 @@
 	#define SYNC_CREATE_OFFSET UNIX64_SYNC_CREATE_OFFSET /**< UNIX64_SYNC_CREATE_OFFSET */
 	#define SYNC_OPEN_MAX      UNIX64_SYNC_OPEN_MAX      /**< UNIX64_SYNC_OPEN_MAX      */
 	#define SYNC_OPEN_OFFSET   UNIX64_SYNC_OPEN_OFFSET   /**< UNIX64_SYNC_OPEN_OFFSET   */
+	/**@}*/
+
+	/**
+	 * @name IO control requests.
+	 */
+	/**@{*/
+	#define SYNC_IOCTL_SET_ASYNC_BEHAVIOR UNIX64_SYNC_IOCTL_SET_ASYNC_BEHAVIOR /**< @see UNIX64_SYNC_IOCTL_SET_ASYNC_BEHAVIOR */
 	/**@}*/
 
 #if !__NANVIX_IKC_USES_ONLY_MAILBOX
@@ -229,6 +259,12 @@
 	 */
 	#define __sync_signal(syncid) \
 		unix64_sync_signal(syncid)
+
+	/**
+	 * @see unix64_sync_ioctl()
+	 */
+	#define __sync_ioctl(syncid, request, args) \
+		unix64_sync_ioctl(syncid, request, args)
 
 #endif /* !__NANVIX_IKC_USES_ONLY_MAILBOX */
 

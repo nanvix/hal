@@ -190,6 +190,14 @@ PRIVATE struct pool
 };
 
 /**
+ * @name Comm locks. 
+ */
+/**{**/
+PRIVATE target_comm_wait_fn comm_wait     = NULL;
+PRIVATE target_comm_wakeup_fn comm_wakeup = NULL;
+/**}**/
+
+/**
  * @brief Global lock
  */
 PRIVATE spinlock_t synctab_lock = K1B_SPINLOCK_UNLOCKED;
@@ -207,10 +215,32 @@ PRIVATE void mppa256_sync_lock(void)
  * mppa256_sync_unlock()                                                      *
  *============================================================================*/
 
-
 PRIVATE void mppa256_sync_unlock(void)
 {
 	spinlock_unlock(&synctab_lock);
+}
+
+/*============================================================================*
+ * mppa256_sync_comm_wait()                                                   *
+ *============================================================================*/
+
+PRIVATE void mppa256_sync_comm_wait(int syncid)
+{
+	syncid -= MPPA256_SYNC_CREATE_OFFSET;
+
+	/* Waits for the handler release the lock. */
+	semaphore_down(&synctab.rxs[syncid].sem);
+}
+
+/*============================================================================*
+ * mppa256_sync_comm_wakeup()                                                 *
+ *============================================================================*/
+
+PRIVATE void mppa256_sync_comm_wakeup(int syncid)
+{
+	syncid -= MPPA256_SYNC_CREATE_OFFSET;
+
+	semaphore_up(&synctab.rxs[syncid].sem);
 }
 
 /*============================================================================*
@@ -499,38 +529,37 @@ error:
  */
 PUBLIC int mppa256_sync_wait(int syncid)
 {
-	syncid -= MPPA256_SYNC_CREATE_OFFSET;
+	int _syncid = (syncid - MPPA256_SYNC_CREATE_OFFSET);
 
 again:
 	mppa256_sync_lock();
 
 		/* Bad sync. */
-		if (!resource_is_used(&synctab.rxs[syncid].resource))
+		if (!resource_is_used(&synctab.rxs[_syncid].resource))
 		{
 			mppa256_sync_unlock();
 			return (-EBADF);
 		}
 
 		/* Busy sync. */
-		if (resource_is_busy(&synctab.rxs[syncid].resource))
+		if (resource_is_busy(&synctab.rxs[_syncid].resource))
 		{
 			mppa256_sync_unlock();
 			goto again;
 		}
 
 		/* Set sync as busy. */
-		resource_set_busy(&synctab.rxs[syncid].resource);
+		resource_set_busy(&synctab.rxs[_syncid].resource);
 
 	/*
 	 * Release lock, since we may sleep below.
 	 */
 	mppa256_sync_unlock();
 
-	/* Waits for the handler release the lock. */
-	semaphore_down(&synctab.rxs[syncid].sem);
+	comm_wait(syncid);
 
 	mppa256_sync_lock();
-		resource_set_notbusy(&synctab.rxs[syncid].resource);
+		resource_set_notbusy(&synctab.rxs[_syncid].resource);
 	mppa256_sync_unlock();
 
 	return (0);
@@ -820,7 +849,7 @@ PRIVATE void mppa256_sync_hash_handler(int interface, int tag)
 	if (mppa256_sync_barrier_is_complete(&synctab.rxs[syncid]))
 	{
 		mppa256_sync_barrier_reset(&synctab.rxs[syncid]);
-		semaphore_up(&synctab.rxs[syncid].sem);
+		comm_wakeup(syncid + MPPA256_SYNC_CREATE_OFFSET);
 	}
 
 	/* Reconfigure sync point. */
@@ -874,6 +903,77 @@ PRIVATE void mppa256_sync_ack_handler(int interface, int tag)
 }
 
 /*============================================================================*
+ * mppa256_sync_ioctl()                                                       *
+ *============================================================================*/
+
+/**
+ * @brief Request an I/O operation on a synchronization point.
+ *
+ * @param syncid  Sync resource.
+ * @param request Type of request.
+ * @param args    Arguments of the request.
+ *
+ * @returns Upon successful completion, zero is returned.
+ * Upon failure, a negative error code is returned instead.
+ */
+PUBLIC int mppa256_sync_ioctl(int syncid, unsigned request, va_list args)
+{
+	int ret = (-EINVAL); /* Return value. */
+
+	UNUSED(syncid);
+
+again:
+	mppa256_sync_lock();
+
+		switch (request)
+		{
+			case MPPA256_SYNC_IOCTL_SET_ASYNC_BEHAVIOR:
+			{
+				for (int i = 0; i < MPPA256_SYNC_CREATE_MAX; ++i)
+				{
+					if (!resource_is_used(&synctab.rxs[i].resource))
+						continue;
+
+					/* Busy syncs. */
+					if (resource_is_busy(&synctab.rxs[i].resource))
+					{
+						mppa256_sync_unlock();
+						goto again;
+					}
+				}
+
+				target_comm_wait_fn   wait_fn   = va_arg(args, target_comm_wait_fn);
+				target_comm_wakeup_fn wakeup_fn = va_arg(args, target_comm_wakeup_fn);
+
+				/* Invalid functions? */
+				if (!wait_fn || !wakeup_fn)
+				{
+					/* Sets default lock functions. */
+					comm_wait   = mppa256_sync_comm_wait;
+					comm_wakeup = mppa256_sync_comm_wakeup;
+				}
+				else
+				{
+					comm_wait   = wait_fn;
+					comm_wakeup = wakeup_fn;
+				}
+
+				ret = (0);
+			} break;
+
+			default:
+				break;
+		}
+
+	/*
+	 * Release lock, since we may sleep below.
+	 */
+	mppa256_sync_unlock();
+
+	return (ret);
+}
+
+/*============================================================================*
  * mppa256_sync_setup()                                                       *
  *============================================================================*/
 
@@ -888,6 +988,11 @@ PUBLIC void mppa256_sync_setup(void)
 
 	local = processor_node_get_num();
 
+	/* Sets default lock functions. */
+	comm_wait   = mppa256_sync_comm_wait;
+	comm_wakeup = mppa256_sync_comm_wakeup;
+
+	/* Sets default receiver configurations. */
 	for (unsigned i = 0; i < MPPA256_SYNC_CREATE_MAX; ++i)
 	{
 		synctab.rxs[i].resource  = RESOURCE_INITIALIZER;
@@ -899,6 +1004,7 @@ PUBLIC void mppa256_sync_setup(void)
 			synctab.rxs[i].nreceived[j] = 0;
 	}
 
+	/* Sets default sender configurations. */
 	for (unsigned i = 0; i < MPPA256_SYNC_OPEN_MAX; ++i)
 	{
 		synctab.txs[i].resource  = RESOURCE_INITIALIZER;
@@ -909,8 +1015,10 @@ PUBLIC void mppa256_sync_setup(void)
 			synctab.txs[i].sended[j] = 0;
 	}
 
+	/* Open sync TX channel. */
 	KASSERT(bostan_dma_control_open(0, UNDERLYING_TX_TAG) >= 0);
 
+	/* Open sync RX slots. */
 	for (unsigned node = 0; node < PROCESSOR_NOC_NODES_NUM; ++node)
 	{
 		if (local == node)

@@ -61,6 +61,13 @@
 	/**@}*/
 
 	/**
+	 * @name IO control requests.
+	 */
+	/**@{*/
+	#define MPPA256_MAILBOX_IOCTL_SET_ASYNC_BEHAVIOR 0 /**< Sets the wait/wakeup functions on a resource. */
+	/**@}*/
+
+	/**
 	 * @brief Setup mailbox module.
 	 */
 	EXTERN void mppa256_mailbox_setup(void);
@@ -140,6 +147,18 @@
 	 */
 	EXTERN int mppa256_mailbox_wait(int mbxid);
 
+	/**
+	 * @brief Request an I/O operation on a mailbox.
+	 *
+	 * @param mbxid   Mailbox resource.
+	 * @param request Type of request.
+	 * @param args    Arguments of the request.
+	 *
+	 * @returns Upon successful completion, zero is returned.
+	 * Upon failure, a negative error code is returned instead.
+	 */
+	EXTERN int mppa256_mailbox_ioctl(int mbxid, unsigned request, va_list args);
+
 /*============================================================================*
  *                              Exported Interface                            *
  *============================================================================*/
@@ -156,6 +175,7 @@
 	#define __mailbox_awrite_fn /**< mailbox_awrite() */
 	#define __mailbox_aread_fn  /**< mailbox_aread()  */
 	#define __mailbox_wait_fn   /**< mailbox_wait()   */
+	#define __mailbox_ioctl_fn  /**< mailbox_ioctl()  */
 	/**@}*/
 
 	/**
@@ -169,6 +189,13 @@
 	#define HAL_MAILBOX_RESERVED_SIZE MPPA256_MAILBOX_RESERVED_SIZE /**< @see MPPA256_MAILBOX_RESERVED_SIZE */
 	#define HAL_MAILBOX_DATA_SIZE     MPPA256_MAILBOX_DATA_SIZE     /**< @see MPPA256_MAILBOX_DATA_SIZE     */
 	#define HAL_MAILBOX_MSG_SIZE      MPPA256_MAILBOX_MSG_SIZE      /**< @see MPPA256_MAILBOX_MSG_SIZE      */
+	/**@}*/
+
+	/**
+	 * @name IO control requests.
+	 */
+	/**@{*/
+	#define HAL_MAILBOX_IOCTL_SET_ASYNC_BEHAVIOR MPPA256_MAILBOX_IOCTL_SET_ASYNC_BEHAVIOR /**< @see MPPA256_MAILBOX_IOCTL_SET_ASYNC_BEHAVIOR */
 	/**@}*/
 
 	/**
@@ -218,5 +245,11 @@
 	 */
 	#define __mailbox_wait(mbxid) \
 		mppa256_mailbox_wait(mbxid)
+
+	/**
+	 * @see mppa256_mailbox_ioctl()
+	 */
+	#define __mailbox_ioctl(mbxid, request, args) \
+		mppa256_mailbox_ioctl(mbxid, request, args)
 
 #endif /* TARGET_KALRAY_MPPA256_MAILBOX_H_ */

@@ -157,6 +157,17 @@ PRIVATE struct mbxpools
 	.tx_pool = {mbxtab.txs, MPPA256_MAILBOX_OPEN_MAX,   sizeof(struct tx)},
 };
 
+PRIVATE void mppa256_mailbox_comm_wait(int mbxid);
+PRIVATE void mppa256_mailbox_comm_wakeup(int mbxid);
+
+/**
+ * @name Comm locks.
+ */
+/**{**/
+PRIVATE target_comm_wait_fn comm_wait     = mppa256_mailbox_comm_wait;
+PRIVATE target_comm_wakeup_fn comm_wakeup = mppa256_mailbox_comm_wakeup;
+/**}**/
+
 /**
  * @brief Global lock
  */
@@ -179,6 +190,36 @@ PRIVATE void mppa256_mailbox_lock(void)
 PRIVATE void mppa256_mailbox_unlock(void)
 {
 	k1b_spinlock_unlock(&mbxtab_lock);
+}
+
+/*============================================================================*
+ * mppa256_mailbox_comm_wait()                                                *
+ *============================================================================*/
+
+PRIVATE void mppa256_mailbox_comm_wait(int mbxid)
+{
+	/* Is it a receiver? */
+	if (mbxid < MPPA256_MAILBOX_OPEN_OFFSET)
+		k1b_spinlock_lock(&mbxtab.rxs[(mbxid - MPPA256_MAILBOX_CREATE_OFFSET)].lock);
+
+	/* it is a sender. */
+	else
+		k1b_spinlock_lock(&mbxtab.txs[(mbxid - MPPA256_MAILBOX_OPEN_OFFSET)].lock);
+}
+
+/*============================================================================*
+ * mppa256_mailbox_comm_wakeup()                                              *
+ *============================================================================*/
+
+PRIVATE void mppa256_mailbox_comm_wakeup(int mbxid)
+{
+	/* Is it a receiver? */
+	if (mbxid < MPPA256_MAILBOX_OPEN_OFFSET)
+		k1b_spinlock_unlock(&mbxtab.rxs[(mbxid - MPPA256_MAILBOX_CREATE_OFFSET)].lock);
+
+	/* it is a sender. */
+	else
+		k1b_spinlock_unlock(&mbxtab.txs[(mbxid - MPPA256_MAILBOX_OPEN_OFFSET)].lock);
 }
 
 /*============================================================================*
@@ -695,7 +736,7 @@ PRIVATE int mppa256_mailbox_send_msg(int mbxid)
 error:
 	mbxtab.txs[mbxid].ret = (ret < 0) ? (-EAGAIN) : 0;
 
-	k1b_spinlock_unlock(&mbxtab.txs[mbxid].lock);
+	comm_wakeup(mbxid + MPPA256_MAILBOX_OPEN_OFFSET);
 
 	return (ret);
 }
@@ -891,7 +932,7 @@ error:
 	/* Releases to be read again. */
 	mbxtab.rxs[mbxid].ret = ret;
 
-	k1b_spinlock_unlock(&mbxtab.rxs[mbxid].lock);
+	comm_wakeup(mbxid + MPPA256_MAILBOX_CREATE_OFFSET);
 
 	return (ret);
 }
@@ -990,73 +1031,50 @@ PUBLIC ssize_t mppa256_mailbox_aread(int mbxid, void * buffer, uint64_t size)
  */
 PUBLIC int mppa256_mailbox_wait(int mbxid)
 {
-	int ret; /* Return value. */
+	int ret;               /* Return value.          */
+	int * hw_ret;          /* Hardware Return value. */
+	struct resource * rsc; /* Resource pointer.      */
 
 	/* Is it a rx operation? */
 	if (mbxid < MPPA256_MAILBOX_OPEN_OFFSET)
 	{
-		mbxid -= MPPA256_MAILBOX_CREATE_OFFSET;
-
-		mppa256_mailbox_lock();
-
-			/* Bad sync. */
-			if (!resource_is_used(&mbxtab.rxs[mbxid].resource))
-				goto error;
-
-			/* Bad sync. */
-			if (!resource_is_busy(&mbxtab.rxs[mbxid].resource))
-				goto error;
-
-		mppa256_mailbox_unlock();
-
-		/* Waits for the handler release the lock. */
-		k1b_spinlock_lock(&mbxtab.rxs[mbxid].lock);
-
-		/**
-		 * The attribution of the return value is allowed on the slave
-		 * side because it will be protected by the busy flag release
-		 * by the own slave core.
-		 **/
-		ret = mbxtab.rxs[mbxid].ret;
-		mbxtab.rxs[mbxid].ret = (-EAGAIN);
-
-		mppa256_mailbox_lock();
-			resource_set_notbusy(&mbxtab.rxs[mbxid].resource);
-		mppa256_mailbox_unlock();
+		rsc    = &mbxtab.rxs[(mbxid - MPPA256_MAILBOX_CREATE_OFFSET)].resource;
+		hw_ret = &mbxtab.rxs[(mbxid - MPPA256_MAILBOX_CREATE_OFFSET)].ret;
 	}
 
 	/* Is it a tx operation? */
 	else
 	{
-		mbxid -= MPPA256_MAILBOX_OPEN_OFFSET;
-
-		mppa256_mailbox_lock();
-
-			/* Bad sync. */
-			if (!resource_is_used(&mbxtab.txs[mbxid].resource))
-				goto error;
-
-			/* Bad sync. */
-			if (!resource_is_busy(&mbxtab.txs[mbxid].resource))
-				goto error;
-
-		mppa256_mailbox_unlock();
-
-		/* Waits for the handler release the lock. */
-		k1b_spinlock_lock(&mbxtab.txs[mbxid].lock);
-
-		/**
-		 * The attribution of the return value is allowed on the slave
-		 * side because it will be protected by the busy flag release
-		 * by the own slave core.
-		 **/
-		ret = mbxtab.txs[mbxid].ret;
-		mbxtab.txs[mbxid].ret = (-EAGAIN);
-
-		mppa256_mailbox_lock();
-			resource_set_notbusy(&mbxtab.txs[mbxid].resource);
-		mppa256_mailbox_unlock();
+		rsc    = &mbxtab.txs[(mbxid - MPPA256_MAILBOX_OPEN_OFFSET)].resource;
+		hw_ret = &mbxtab.txs[(mbxid - MPPA256_MAILBOX_OPEN_OFFSET)].ret;
 	}
+
+	mppa256_mailbox_lock();
+
+		/* Bad mailbox. */
+		if (!resource_is_used(rsc))
+			goto error;
+
+		/* Bad mailbox. */
+		if (!resource_is_busy(rsc))
+			goto error;
+
+	mppa256_mailbox_unlock();
+
+	/* Waits for the handler release the lock. */
+	comm_wait(mbxid);
+
+	/**
+	 * The attribution of the return value is allowed on the slave
+	 * side because it will be protected by the busy flag release
+	 * by the own slave core.
+	 **/
+	ret     = *hw_ret;
+	*hw_ret = (-EAGAIN);
+
+	mppa256_mailbox_lock();
+		resource_set_notbusy(rsc);
+	mppa256_mailbox_unlock();
 
 	return (ret);
 
@@ -1064,6 +1082,90 @@ error:
 	mppa256_mailbox_unlock();
 
 	return (-EBADF);
+}
+
+/*============================================================================*
+ * mppa256_mailbox_ioctl()                                                     *
+ *============================================================================*/
+
+/**
+ * @brief Request an I/O operation on a mailbox.
+ *
+ * @param syncid  Sync resource.
+ * @param request Type of request.
+ * @param args    Arguments of the request.
+ *
+ * @returns Upon successful completion, zero is returned.
+ * Upon failure, a negative error code is returned instead.
+ */
+PUBLIC int mppa256_mailbox_ioctl(int mbxid, unsigned request, va_list args)
+{
+	int ret = (-EINVAL); /* Return value. */
+
+	UNUSED(mbxid);
+
+again:
+	mppa256_mailbox_lock();
+
+		switch (request)
+		{
+			case MPPA256_MAILBOX_IOCTL_SET_ASYNC_BEHAVIOR:
+			{
+				for (int i = 0; i < MPPA256_MAILBOX_CREATE_MAX; ++i)
+				{
+					if (!resource_is_used(&mbxtab.rxs[i].resource))
+						continue;
+
+					/* Busy mailboxs. */
+					if (resource_is_busy(&mbxtab.rxs[i].resource))
+					{
+						mppa256_mailbox_unlock();
+						goto again;
+					}
+				}
+
+				for (int i = 0; i < MPPA256_MAILBOX_OPEN_MAX; ++i)
+				{
+					if (!resource_is_used(&mbxtab.txs[i].resource))
+						continue;
+
+					/* Busy mailboxs. */
+					if (resource_is_busy(&mbxtab.txs[i].resource))
+					{
+						mppa256_mailbox_unlock();
+						goto again;
+					}
+				}
+
+				target_comm_wait_fn   wait_fn   = va_arg(args, target_comm_wait_fn);
+				target_comm_wakeup_fn wakeup_fn = va_arg(args, target_comm_wakeup_fn);
+
+				/* Invalid functions? */
+				if (!wait_fn || !wakeup_fn)
+				{
+					/* Sets default lock functions. */
+					comm_wait   = mppa256_mailbox_comm_wait;
+					comm_wakeup = mppa256_mailbox_comm_wakeup;
+				}
+				else
+				{
+					comm_wait   = wait_fn;
+					comm_wakeup = wakeup_fn;
+				}
+
+				ret = (0);
+			} break;
+
+			default:
+				break;
+		}
+
+	/*
+	 * Release lock, since we may sleep below.
+	 */
+	mppa256_mailbox_unlock();
+
+	return (ret);
 }
 
 /*============================================================================*
@@ -1076,6 +1178,10 @@ error:
 PUBLIC void mppa256_mailbox_setup(void)
 {
 	kprintf("[hal][mailbox] Mailbox Initialization.");
+
+	/* Sets default lock functions. */
+	comm_wait   = mppa256_mailbox_comm_wait;
+	comm_wakeup = mppa256_mailbox_comm_wakeup;
 
 	for (unsigned i = BOSTAN_MAILBOX_DNOC_TX_BASE; i < BOSTAN_DNOC_TXS_PER_COMM_SERVICE; i++)
 		if (bostan_dma_data_open(0, i) != 0)

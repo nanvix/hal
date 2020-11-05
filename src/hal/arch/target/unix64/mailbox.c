@@ -623,6 +623,52 @@ PUBLIC ssize_t unix64_mailbox_aread(int mbxid, void *buf, size_t n)
 }
 
 /*============================================================================*
+ * unix64_mailbox_ioctl()                                                     *
+ *============================================================================*/
+
+/**
+ * @brief Request an I/O operation on a mailbox.
+ *
+ * @param mbxid   Sync resource.
+ * @param request Type of request.
+ * @param args    Arguments of the request.
+ *
+ * @returns Upon successful completion, zero is returned.
+ * Upon failure, a negative error code is returned instead.
+ */
+PUBLIC int unix64_mailbox_ioctl(int mbxid, unsigned request, va_list args)
+{
+	int ret = (-EINVAL); /* Return value. */
+
+	UNUSED(mbxid);
+	UNUSED(args);
+
+	unix64_mailbox_lock();
+
+		switch (request)
+		{
+			case UNIX64_MAILBOX_IOCTL_SET_ASYNC_BEHAVIOR:
+			{
+				/**
+				 * The Unix64 does not have asynchronous operations, so the
+				 * definition of lock functions does not have any sense.
+				 */
+				ret = (0);
+			} break;
+
+			default:
+				break;
+		}
+
+	/*
+	 * Release lock, since we may sleep below.
+	 */
+	unix64_mailbox_unlock();
+
+	return (ret);
+}
+
+/*============================================================================*
  * unix64_mailbox_setup()                                                     *
  *============================================================================*/
 

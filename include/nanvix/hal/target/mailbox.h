@@ -62,7 +62,10 @@
 		#error "HAL_MAILBOX_RESERVED_SIZE not defined"
 		#endif
 		#ifndef HAL_MAILBOX_DATA_SIZE
-		#error "HAL_PORTAL_DATA_SIZE not defined"
+		#error "HAL_MAILBOX_DATA_SIZE not defined"
+		#endif
+		#ifndef HAL_MAILBOX_IOCTL_SET_ASYNC_BEHAVIOR
+		#error "HAL_MAILBOX_IOCTL_SET_ASYNC_BEHAVIOR not defined"
 		#endif
 
 		/* Functions */
@@ -90,6 +93,9 @@
 		#ifndef __mailbox_wait_fn
 		#error "mailbox_wait() not defined?"
 		#endif
+		#ifndef __mailbox_ioctl_fn
+		#error "mailbox_ioctl() not defined?"
+		#endif
 
 	#endif
 
@@ -98,11 +104,12 @@
 /* Dummy Constants */
 #if (!__TARGET_HAS_MAILBOX)
 
-	#define HAL_MAILBOX_CREATE_MAX    1
-	#define HAL_MAILBOX_CREATE_OFFSET 0
-	#define HAL_MAILBOX_OPEN_MAX      1
-	#define HAL_MAILBOX_OPEN_OFFSET   0
-	#define HAL_MAILBOX_MSG_SIZE      1
+	#define HAL_MAILBOX_CREATE_MAX               1
+	#define HAL_MAILBOX_CREATE_OFFSET            0
+	#define HAL_MAILBOX_OPEN_MAX                 1
+	#define HAL_MAILBOX_OPEN_OFFSET              0
+	#define HAL_MAILBOX_MSG_SIZE                 1
+	#define HAL_MAILBOX_IOCTL_SET_ASYNC_BEHAVIOR 0
 
 #endif /* !__TARGET_HAS_MAILBOX */
 
@@ -196,6 +203,18 @@
 	 * @return Zero if wait read correctly and non zero otherwise.
 	 */
 	EXTERN int mailbox_wait(int mbxid);
+
+	/**
+	 * @brief Performs control operations in a mailbox.
+	 *
+	 * @param mbxid   Target mailbox.
+	 * @param request Request.
+	 * @param ...     Additional arguments.
+	 *
+	 * @param Upon successful completion, zero is returned. Upon failure,
+	 * a negative error code is returned instead.
+	 */
+	EXTERN int mailbox_ioctl(int mbxid, unsigned request, ...);
 
 	/**
 	 * @brief Initializes the mailbox interface.
