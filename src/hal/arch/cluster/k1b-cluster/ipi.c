@@ -28,11 +28,6 @@
 #include <nanvix/hal/cluster.h>
 
 /**
- * @brief Event line used for events.
- */
-#define K1B_EVENT_LINE 0
-
-/**
  * @brief Get correspond BSP line.
  */
 #define K1B_BSP_IPI_LINE (BSP_IT_PE_0)
@@ -50,12 +45,8 @@ PUBLIC void k1b_cluster_ipi_send(int coreid)
 {
 	KASSERT(WITHIN(coreid, 0, CORES_NUM));
 
-	mOS_pe_notify(
-		(1 << coreid),  /* Target cores.                            */
-		K1B_EVENT_LINE, /* Event line.                              */
-		1,              /* Notify an event? (I/O clusters only)     */
-		0               /* Notify an interrupt? (I/O clusters only) */
-	);
+	/* Notify an event before IPI. */
+	__event_notify(coreid);
 
 	bsp_inter_pe_interrupt_raise((1 << coreid), K1B_BSP_IPI_LINE);
 }
@@ -68,6 +59,6 @@ PUBLIC void k1b_cluster_ipi_send(int coreid)
  */
 PUBLIC void k1b_cluster_ipi_wait(void)
 {
-	mOS_pe_event_waitclear(K1B_EVENT_LINE);
+	__event_wait();
 }
 

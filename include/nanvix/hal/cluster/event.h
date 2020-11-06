@@ -42,11 +42,10 @@
 	#ifndef __event_wait_fn
 	#error "event_wait() not defined?"
 	#endif
-	#if (CLUSTER_HAS_IPI)
-		#ifndef __event_reset_fn
-		#error "event_reset() not defined?"
-		#endif
+	#ifndef __event_reset_fn
+	#error "event_reset() not defined?"
 	#endif
+
 #endif
 #endif
 
@@ -63,11 +62,16 @@
 /**@{*/
 
 	/**
+	 * @brief Hardware interrupt handler.
+	 */
+	typedef void (*event_handler_t)(void);
+
+	/**
 	 * @brief Notifies a local core about an event.
 	 *
 	 * @param coreid ID of target core.
 	 */
-	EXTERN void event_notify(int coreid);
+	EXTERN int event_notify(int coreid);
 
 	/**
 	 * @brief Waits for an event.
@@ -77,14 +81,7 @@
 	/**
 	 * @brief Drops any pending events in the local core.
 	 */
-#if (!CLUSTER_HAS_EVENTS)
 	EXTERN void event_drop(void);
-#else
-	static inline void event_drop(void)
-	{
-		/* noop. */
-	}
-#endif
 
 	/**
 	 * @brief Resets the pending IPI interrupt.
@@ -93,21 +90,31 @@
 	 * interrupt number for the IPI handler, exports the function,
 	 * otherwise, defines a dummy reset function.
 	 */
-#if (CLUSTER_HAS_EVENTS && CLUSTER_HAS_IPI)
-	EXTERN void event_reset(void);
-#else
 	static inline void event_reset(void)
 	{
-		/* noop. */
-	}
+#if (CLUSTER_HAS_EVENTS)
+		__event_reset();
 #endif
+	}
+
+	/**
+	 * @brief Register a event handler.
+	 *
+	 * @param handler Handler function.
+	 *
+	 * @return Zero if successfully register, non-zero otherwize.
+	 */
+	EXTERN int event_register_handler(event_handler_t handler);
+
+	/**
+	 * @brief Resets event handler.
+	 */
+	EXTERN int event_unregister_handler(void);
 
 	/**
 	 * @brief Initializes the events table.
 	 */
-#if (!CLUSTER_HAS_EVENTS)
 	EXTERN void event_setup(void);
-#endif
 
 /**@}*/
 

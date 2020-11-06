@@ -24,12 +24,12 @@
 
 /* Must come first. */
 #define __NEED_HAL_CLUSTER
+#define __NEED_SECTION_GUARD
 
 #include <nanvix/hal/cluster.h>
+#include <nanvix/hal/section_guard.h>
 #include <nanvix/const.h>
 #include <nanvix/hlib.h>
-
-#if (!CLUSTER_HAS_EVENTS)
 
 /**
  * @brief Table of events.
@@ -37,8 +37,97 @@
 PUBLIC struct events_table
 {
 	unsigned pending; /**< Pending Events  */
+	unsigned handled; /**< Handled Events  */
 	spinlock_t lock;  /**< Event Line Lock */
 } events[CORES_NUM];
+
+/**
+ * @brief Handler to IPI events.
+ */
+PRIVATE event_handler_t _event_handler = NULL;
+
+/*============================================================================*
+ * event_handler()                                                            *
+ *============================================================================*/
+
+/**
+ * @brief IPI handler.
+ */
+PRIVATE void event_handler(int ev_src)
+{
+	int coreid = core_get_id();
+
+	UNUSED(ev_src);
+
+#if (CLUSTER_HAS_IPI)
+	cluster_ipi_ack();
+#endif
+
+#if (CLUSTER_HAS_IPI)
+	if (LIKELY(ev_src > 0))
+		spinlock_lock(&events[coreid].lock);
+#else
+	KASSERT(ev_src < 0);
+#endif
+
+	/* Handle event. */
+	for (int i = 0; i < CORES_NUM; i++)
+	{
+		if (events[coreid].pending & (1 << i))
+		{
+			events[coreid].pending &= ~(1 << i);
+			events[coreid].handled |=  (1 << i);
+
+			spinlock_unlock(&events[coreid].lock);
+				_event_handler();
+			spinlock_lock(&events[coreid].lock);
+		}
+	}
+
+#if (CLUSTER_HAS_IPI)
+	if (LIKELY(ev_src > 0))
+		spinlock_unlock(&events[coreid].lock);
+#endif
+}
+
+/**
+ * @brief IPI handler.
+ */
+PRIVATE void default_handler(void)
+{
+	/* noop. */
+}
+
+/**
+ * @brief Register a event handler.
+ *
+ * @param handler Handler function.
+ *
+ * @return Zero if successfully register, non-zero otherwize.
+ */
+PUBLIC int event_register_handler(event_handler_t handler)
+{
+	if (_event_handler != default_handler || handler == NULL)
+		return (-EINVAL);
+
+	_event_handler = handler;
+
+	dcache_invalidate();
+
+	return (0);
+}
+
+/**
+ * @brief Resets event handler.
+ */
+PUBLIC int event_unregister_handler(void)
+{
+	_event_handler = default_handler;
+
+	dcache_invalidate();
+
+	return (0);
+}
 
 /*============================================================================*
  * event_setup()                                                              *
@@ -51,13 +140,18 @@ PUBLIC struct events_table
  */
 PUBLIC void event_setup(void)
 {
-	int i; /* Loop index. */
-
-	for (i = 0; i < CORES_NUM; i++)
+	for (int i = 0; i < CORES_NUM; i++)
 	{
 		events[i].pending = 0;
+		events[i].handled = 0;
 		spinlock_init(&events[i].lock);
 	}
+
+	_event_handler = default_handler;
+
+#if (CLUSTER_HAS_IPI)
+	KASSERT(interrupt_register(INTERRUPT_IPI, event_handler) == 0);
+#endif
 }
 
 /*============================================================================*
@@ -69,15 +163,38 @@ PUBLIC void event_setup(void)
  *
  * @author Davidson Francis
  */
-PUBLIC void event_notify(int coreid)
+PUBLIC int event_notify(int coreid)
 {
-	int mycoreid = core_get_id();
+	int mycoreid;
+	struct section_guard guard;
 
-	spinlock_lock(&events[coreid].lock);
+	/* Invalid core. */
+	if (UNLIKELY(!WITHIN(coreid, 0, CORES_NUM)))
+		return (-EINVAL);
 
+	mycoreid = core_get_id();
+
+	/* Bad core. */
+	if (UNLIKELY(coreid == mycoreid))
+		return (-EINVAL);
+
+	/* Prevent this call be preempted by any maskable interrupt. */
+	section_guard_init(&guard, &events[coreid].lock, INTERRUPT_LEVEL_NONE);
+
+	section_guard_entry(&guard);
+
+		/* Set the pending event flag. */
 		events[coreid].pending |= (1 << mycoreid);
 
-	spinlock_unlock(&events[coreid].lock);
+#if (CLUSTER_HAS_IPI)
+		cluster_ipi_send(coreid);
+#elif (CLUSTER_HAS_EVENTS)
+		__event_notify(coreid);
+#endif
+
+	section_guard_exit(&guard);
+
+	return (0);
 }
 
 /*============================================================================*
@@ -92,8 +209,12 @@ PUBLIC void event_notify(int coreid)
 PUBLIC void event_drop(void)
 {
 	int mycoreid = core_get_id();
+	struct section_guard guard;
 
-	spinlock_lock(&events[mycoreid].lock);
+	/* Prevent this call be preempted by any maskable interrupt. */
+	section_guard_init(&guard, &events[mycoreid].lock, INTERRUPT_LEVEL_NONE);
+
+	section_guard_entry(&guard);
 
 		if (events[mycoreid].pending)
 		{
@@ -105,7 +226,7 @@ PUBLIC void event_drop(void)
 
 		events[mycoreid].pending = 0;
 
-	spinlock_unlock(&events[mycoreid].lock);
+	section_guard_exit(&guard);
 }
 
 /*============================================================================*
@@ -119,29 +240,44 @@ PUBLIC void event_drop(void)
  */
 PUBLIC void event_wait(void)
 {
-	int mycoreid = core_get_id();
+	int mycoreid;
+	struct section_guard guard;
+
+	mycoreid = core_get_id();
+
+	/* Prevent this call be preempted by any maskable interrupt. */
+	section_guard_init(&guard, &events[mycoreid].lock, INTERRUPT_LEVEL_NONE);
 
 	while (true)
 	{
-		spinlock_lock(&events[mycoreid].lock);
+		section_guard_entry(&guard);
 
-			if (events[mycoreid].pending)
+			if (events[mycoreid].pending || events[mycoreid].handled)
 				break;
 
-		spinlock_unlock(&events[mycoreid].lock);
+		section_guard_exit(&guard);
+
+#if (CLUSTER_HAS_IPI)
+		cluster_ipi_wait();
+#elif (CLUSTER_HAS_EVENTS)
+		__event_wait();
+#endif
 	}
+
+		/* Handles pending events. */
+		if (events[mycoreid].pending)
+			event_handler(-1);
 
 		/* Clear event. */
 		for (int i = 0; i < CORES_NUM; i++)
 		{
-			if (events[mycoreid].pending & (1 << i))
+			if (events[mycoreid].handled & (1 << i))
 			{
-				events[mycoreid].pending &= ~(1 << i);
+				events[mycoreid].handled &= ~(1 << i);
 				break;
 			}
 		}
 
-	spinlock_unlock(&events[mycoreid].lock);
+	section_guard_exit(&guard);
 }
 
-#endif /* !CLUSTER_HAS_EVENTS */

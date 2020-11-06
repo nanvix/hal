@@ -249,10 +249,7 @@ PUBLIC void interrupt_setup(void)
 	}
 
 	timer_handler = default_handler;
-
-#if (CLUSTER_HAS_EVENTS)
 	event_handler = default_handler;
-#endif
 
 	dcache_invalidate();
 }

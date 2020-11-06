@@ -70,15 +70,14 @@ PUBLIC void or1k_cluster_setup(void)
 	/* Setup MMU. */
 	core_setup(NULL);
 
-	/* Setup events. */
-	#if (!CLUSTER_HAS_EVENTS)
-	if (coreid == OR1K_CLUSTER_COREID_MASTER)
-		event_setup();
-	#else
+	/* Setup IPI. */
+	/*
+	#if (CLUSTER_HAS_IPI)
 		or1k_cluster_ompic_init();
 		or1k_pic_unmask(OR1K_INT_OMPIC);
 		or1k_mtspr(OR1K_SPR_SR, or1k_mfspr(OR1K_SPR_SR) | OR1K_SPR_SR_IEE);
 	#endif
+	*/
 }
 
 /*============================================================================*
