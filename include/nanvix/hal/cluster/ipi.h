@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 
-#ifndef NANVIX_HAL_CLUSTER_EVENT_H_
-#define NANVIX_HAL_CLUSTER_EVENT_H_
+#ifndef NANVIX_HAL_CLUSTER_IPI_H_
+#define NANVIX_HAL_CLUSTER_IPI_H_
 
 	/* Cluster Interface Implementation */
 	#include <nanvix/hal/cluster/_cluster.h>
@@ -32,84 +32,74 @@
  * Interface Implementation Checking                                          *
  *============================================================================*/
 
-#if (CLUSTER_HAS_EVENTS)
-#if defined(__INTERFACE_CHECK) || defined(__INTERFACE_CHECK_CLUSTER_AL) || defined(__INTERFACE_CHECK_EVENT)
+#if (CLUSTER_HAS_IPI)
+#if defined(__INTERFACE_CHECK) || defined(__INTERFACE_CHECK_CLUSTER_AL) || defined(__INTERFACE_CHECK_IPI)
 
 	/* Functions */
-	#ifndef __event_notify_fn
-	#error "event_notify() not defined?"
+	#ifndef __cluster_ipi_send_fn
+	#error "cluster_ipi_send() not defined?"
 	#endif
-	#ifndef __event_wait_fn
-	#error "event_wait() not defined?"
+	#ifndef __cluster_ipi_ack_fn
+	#error "cluster_ipi_ack() not defined?"
 	#endif
-	#if (CLUSTER_HAS_IPI)
-		#ifndef __event_reset_fn
-		#error "event_reset() not defined?"
-		#endif
+	#ifndef __cluster_ipi_wait_fn
+	#error "cluster_ipi_wait() not defined?"
 	#endif
+
 #endif
 #endif
 
 /*============================================================================*
- * Event Interface                                                            *
+ * IPI Interface                                                              *
  *============================================================================*/
 
 /**
- * @defgroup kernel-hal-cluster-event Event
+ * @defgroup kernel-hal-cluster-event IPI
  * @ingroup kernel-hal-cluster
  *
- * @brief Event Interface
+ * @brief IPI Interface
  */
 /**@{*/
 
 	/**
-	 * @brief Notifies a local core about an event.
+	 * @brief Sends an interrupt to another core.
 	 *
 	 * @param coreid ID of target core.
 	 */
-	EXTERN void event_notify(int coreid);
-
-	/**
-	 * @brief Waits for an event.
-	 */
-	EXTERN void event_wait(void);
-
-	/**
-	 * @brief Drops any pending events in the local core.
-	 */
-#if (!CLUSTER_HAS_EVENTS)
-	EXTERN void event_drop(void);
+#if (CLUSTER_HAS_IPI)
+	EXTERN void cluster_ipi_send(int coreid);
 #else
-	static inline void event_drop(void)
+	static inline void cluster_ipi_send(int coreid)
+	{
+		UNUSED(coreid);
+	}
+#endif
+
+	/**
+	 * @brief Complete the interrupt that came from another core.
+	 */
+#if (CLUSTER_HAS_IPI)
+	EXTERN void cluster_ipi_ack(void);
+#else
+	static inline void cluster_ipi_ack(void)
 	{
 		/* noop. */
 	}
 #endif
 
 	/**
-	 * @brief Resets the pending IPI interrupt.
-	 *
-	 * If the current architecture have events and have a valid
-	 * interrupt number for the IPI handler, exports the function,
-	 * otherwise, defines a dummy reset function.
+	 * @brief Waits for an IPI interrupt.
 	 */
-#if (CLUSTER_HAS_EVENTS && CLUSTER_HAS_IPI)
-	EXTERN void event_reset(void);
+#if (CLUSTER_HAS_IPI)
+	EXTERN void cluster_ipi_wait(void);
 #else
-	static inline void event_reset(void)
+	static inline void cluster_ipi_wait(void)
 	{
 		/* noop. */
 	}
-#endif
-
-	/**
-	 * @brief Initializes the events table.
-	 */
-#if (!CLUSTER_HAS_EVENTS)
-	EXTERN void event_setup(void);
 #endif
 
 /**@}*/
 
-#endif /* NANVIX_HAL_CLUSTER_EVENT_H_ */
+#endif /* NANVIX_HAL_CLUSTER_IPI_H_ */
 

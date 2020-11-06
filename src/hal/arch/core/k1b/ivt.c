@@ -42,17 +42,31 @@ PRIVATE k1b_int_handler_fn _do_interrupt = NULL;
 /**
  * @brief Low-level interrupt dispatcher.
  *
- * @param hwint Interrupt number.
+ * @param irqnum IRQ number.
  * @param ctx   Saved interrupted context.
  *
  * @author Pedro Henrique Penna
  */
-PUBLIC void __k1b_do_int(int hwint, struct context * ctx)
+PUBLIC void __k1b_do_int(int irqnum, struct context * ctx)
 {
+	int intnum;
+
 	UNUSED(ctx);
 
+	KASSERT((intnum = k1b_irq_to_int(irqnum)) >= 0);
+
+	if (UNLIKELY(intnum == K1B_INT_IPI))
+	{
+		bsp_inter_pe_interrupt_clear(BSP_IT_PE_0);
+		mOS_it_clear_num(irqnum);
+		dcache_invalidate();
+	}
+
 	if (LIKELY(_do_interrupt != NULL))
-		_do_interrupt(hwint);
+		_do_interrupt(intnum);
+
+	if (UNLIKELY(intnum == K1B_INT_IPI))
+		dcache_invalidate();
 }
 
 /**

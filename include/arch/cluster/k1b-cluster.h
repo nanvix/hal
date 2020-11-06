@@ -46,6 +46,7 @@
 
 	#include <arch/cluster/k1b-cluster/cores.h>
 	#include <arch/cluster/k1b-cluster/timer.h>
+	#include <arch/cluster/k1b-cluster/ipi.h>
 	#include <arch/cluster/k1b-cluster/event.h>
 	#include <arch/cluster/k1b-cluster/memory.h>
 
@@ -63,6 +64,7 @@
 	#endif
 	#define CLUSTER_HAS_EVENTS     1 /**< Event Support?    */
 	#define CLUSTER_HAS_RTC        1 /**< RTC Support?      */
+	#define CLUSTER_HAS_IPI        1 /**< IPI Support?      */
 	/**@}*/
 
 /**@}*/

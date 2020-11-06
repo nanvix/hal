@@ -22,9 +22,19 @@
  * SOFTWARE.
  */
 
+/* Must come first. */
+#define __NEED_HAL_CLUSTER
+#define __NEED_CLUSTER_MEMMAP
+
 #if (defined(__or1k_cluster__))
+	#include <arch/cluster/or1k-cluster/cores.h>
+	#include <arch/cluster/or1k-cluster/ompic.h>
+	#include <arch/cluster/or1k-cluster/memmap.h>
 	#include <arch/cluster/or1k-cluster/memory.h>
 #elif (defined(__optimsoc_cluster__))
+	#include <arch/cluster/optimsoc-cluster/cores.h>
+	#include <arch/cluster/optimsoc-cluster/ompic.h>
+	#include <arch/cluster/optimsoc-cluster/memmap.h>
 	#include <arch/cluster/optimsoc-cluster/memory.h>
 #endif
 
@@ -53,6 +63,28 @@ PUBLIC void or1k_cluster_ompic_send_ipi(uint32_t dstcore, uint16_t data)
 	/* Send IPI. */
 	ompic[OR1K_OMPIC_CTRL(coreid) / OR1K_WORD_SIZE] = OR1K_OMPIC_CTRL_IRQ_GEN |
 		OR1K_OMPIC_CTRL_DST(dstcore)| OR1K_OMPIC_DATA(data);
+}
+
+/*============================================================================*
+ * or1k_cluster_event_reset()                                                 *
+ *============================================================================*/
+
+/**
+ * @brief Complete the interrupt that came from another core.
+ */
+PUBLIC void or1k_cluster_ompic_ack_ipi(void)
+{
+	int coreid;       /* Core ID.       */
+	uint32_t *ompic;  /* OMPIC address. */
+
+	/* Get address of uart. */
+	ompic = mmio_get(OR1K_CLUSTER_OMPIC_BASE_PHYS);
+
+	/* Current core. */
+	coreid = or1k_core_get_id();
+
+	/* ACK IPI. */
+	ompic[OR1K_OMPIC_CTRL(coreid) / OR1K_WORD_SIZE] = OR1K_OMPIC_CTRL_IRQ_ACK;
 }
 
 /*

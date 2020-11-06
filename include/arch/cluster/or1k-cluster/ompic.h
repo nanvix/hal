@@ -36,6 +36,7 @@
 	/* External functions. */
 	EXTERN void or1k_cluster_ompic_init(void);
 	EXTERN void or1k_cluster_ompic_send_ipi(uint32_t dstcore, uint16_t data);
+	EXTERN void or1k_cluster_ompic_ack_ipi(void);
 
 #endif /* _ASM_FILE_ */
 

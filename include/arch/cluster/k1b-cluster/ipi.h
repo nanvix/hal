@@ -22,17 +22,17 @@
  * SOFTWARE.
  */
 
-#ifndef ARCH_CLUSTER_OR1K_CLUSTER_EVENT_H_
-#define ARCH_CLUSTER_OR1K_CLUSTER_EVENT_H_
+#ifndef ARCH_CLUSTER_K1B_CLUSTER_IPI_H_
+#define ARCH_CLUSTER_K1B_CLUSTER_IPI_H_
 
 	/* Cluster Interface Implementation */
-	#include <arch/cluster/or1k-cluster/_or1k-cluster.h>
+	#include <arch/cluster/k1b-cluster/_k1b-cluster.h>
 
 /**
- * @addtogroup or1k-cluster-event Events
- * @ingroup or1k-cluster
+ * @addtogroup k1b-cluster-ipi IPI
+ * @ingroup k1b-cluster
  *
- * @brief Events Interface
+ * @brief IPI Interface
  */
 /**@{*/
 
@@ -41,21 +41,27 @@
 #ifndef _ASM_FILE_
 
 	/**
-	 * @brief Notifies a local core about an event.
+	 * @brief Sends an interrupt to another core.
 	 *
 	 * @param coreid ID of target core.
 	 */
-	EXTERN int or1k_cluster_event_notify(int coreid);
+	EXTERN void k1b_cluster_ipi_send(int coreid);
 
 	/**
-	 * @brief Waits for an event.
+	 * @brief Complete the interrupt that came from another core.
+	 *
+	 * @details The clear of the mOS interrupt line used
+	 * is automatically done by the interrupt dispatcher.
 	 */
-	EXTERN int or1k_cluster_event_wait(void);
+	static inline void k1b_cluster_ipi_ack(void)
+	{
+		/* noop. */
+	}
 
 	/**
-	 * @brief Waits for an event.
+	 * @brief Waits for an IPI interrupt.
 	 */
-	EXTERN void or1k_cluster_event_reset(void);
+	EXTERN void k1b_cluster_ipi_wait(void);
 
 #endif /* _ASM_FILE_ */
 
@@ -66,46 +72,47 @@
  *============================================================================*/
 
 /**
- * @cond or1k_cluster
+ * @cond k1b_cluster
  */
 
 	/**
 	 * @name Exported Functions
 	 */
 	/**@{*/
-	#define __event_notify_fn /**< event_notify() */
-	#define __event_wait_fn   /**< event_wait()   */
-	#define __event_reset_fn  /**< event_reset()  */
+	#define __cluster_ipi_send_fn /**< cluster_ipi_send() */
+	#define __cluster_ipi_ack_fn  /**< cluster_ipi_ack()  */
+	#define __cluster_ipi_wait_fn /**< cluster_ipi_wait() */
 	/**@}*/
 
 #ifndef _ASM_FILE_
 
 	/**
-	 * @see or1k_cluster_event_notify()
+	 * @see k1b_cluster_ipi_send().
 	 */
-	static inline void event_notify(int coreid)
+	static inline void cluster_ipi_send(int coreid)
 	{
-		or1k_cluster_event_notify(coreid);
+		k1b_cluster_ipi_send(coreid);
 	}
 
 	/**
-	 * @see or1k_cluster_event_wait().
+	 * @see k1b_cluster_ipi_ack().
 	 */
-	static inline void event_wait(void)
+	static inline void cluster_ipi_ack(void)
 	{
-		or1k_cluster_event_wait();
+		k1b_cluster_ipi_ack();
 	}
 
 	/**
-	 * @see or1k_cluster_event_reset().
+	 * @see k1b_cluster_ipi_wait().
 	 */
-	static inline void event_reset(void)
+	static inline void cluster_ipi_wait(void)
 	{
-		or1k_cluster_event_reset();
+		k1b_cluster_ipi_wait();
 	}
 
 #endif /* _ASM_FILE_ */
 
 /**@endcond*/
 
-#endif /* ARCH_CLUSTER_OR1K_EVENT_H_ */
+#endif /* ARCH_CLUSTER_K1B_CLUSTER_IPI_H_ */
+

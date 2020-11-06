@@ -42,6 +42,7 @@
 
 	#include <arch/cluster/or1k-cluster/timer.h>
 	#include <arch/cluster/or1k-cluster/cores.h>
+	#include <arch/cluster/or1k-cluster/ipi.h>
 	#include <arch/cluster/or1k-cluster/event.h>
 	#include <arch/cluster/or1k-cluster/memory.h>
 	#include <arch/cluster/or1k-cluster/ompic.h>
@@ -55,6 +56,7 @@
 	#define CLUSTER_IS_COMPUTE    0 /**< Compute Cluster   */
 	#define CLUSTER_HAS_EVENTS    1 /**< Event Support?    */
 	#define CLUSTER_HAS_RTC       0 /**< RTC Support?      */
+	#define CLUSTER_HAS_IPI       1 /**< IPI Support?      */
 	/**@}*/
 
 /**@}*/
