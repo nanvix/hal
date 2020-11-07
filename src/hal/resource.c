@@ -190,6 +190,86 @@ PRIVATE struct resource * resource_dumb_dequeue(struct resource_queue * queue)
 }
 
 /*============================================================================*
+ * resource_dumb_push_back()                                                  *
+ *============================================================================*/
+
+/**
+ * @brief Dumb resource pushing back.
+ *
+ * @param list     Target generic resource list.
+ * @param resource Target generic resource.
+ *
+ * @returns Upon successful completion, the @p resource has been inserted.
+ *
+ * @note This function is non-blocking.
+ * @note This function is @b NOT thread safe.
+ */
+PRIVATE void resource_dumb_push_back(struct resource_list * list, struct resource * resource)
+{
+	resource_dumb_enqueue((struct resource_queue *) list, resource);
+}
+
+/*============================================================================*
+ * resource_dumb_pop()                                                        *
+ *============================================================================*/
+
+/**
+ * @brief Dumb resource poping.
+ *
+ * @param list     Target generic resource list.
+ * @param resource Target generic resource.
+ *
+ * @returns Upon successful completion, the @p resource has been removed.
+ *
+ * @note This function is non-blocking.
+ * @note This function is @b NOT thread safe.
+ */
+PRIVATE int resource_dumb_pop(struct resource_list * list, struct resource * resource)
+{
+	int index;
+	struct resource * curr;
+	struct resource * previous;
+
+	index    = 0;
+	curr     = list->head;
+	previous = NULL;
+
+	/* Find the target resource. */
+	while (UNLIKELY(curr != NULL && curr != resource))
+	{
+		previous = curr;
+		curr     = curr->next;
+		index++;
+	}
+
+	/* Found? */
+	if (curr)
+	{
+		/* Is it an intermediary thread? */
+		if (previous)
+			previous->next = curr->next;
+
+		/* First thread. */
+		else
+			list->head = curr->next;
+
+		/* Empty queue. */
+		if ((--list->size) == 0)
+		{
+			KASSERT(list->head == NULL);
+			list->tail = NULL;
+		}
+
+		curr->next = NULL;
+
+		return (index);
+	}
+
+	/* Not found. */
+	return (-1);
+}
+
+/*============================================================================*
  * Resource Allocator                                                         *
  *============================================================================*/
 
@@ -204,11 +284,21 @@ alloc_fn resource_alloc = resource_dumb_alloc;
 free_fn resource_free = resource_dumb_free;
 
 /**
- * @brief Default resource allocator.
+ * @brief Default resource enqueue.
  */
 enqueue_fn resource_enqueue = resource_dumb_enqueue;
 
 /**
- * @brief Default resource de-allocator.
+ * @brief Default resource dequeue.
  */
 dequeue_fn resource_dequeue = resource_dumb_dequeue;
+
+/**
+ * @brief Default resource pushing back.
+ */
+push_back_fn resource_push_back = resource_dumb_push_back;
+
+/**
+ * @brief Default resource pop.
+ */
+pop_fn resource_pop = resource_dumb_pop;
