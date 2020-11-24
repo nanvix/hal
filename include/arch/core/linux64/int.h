@@ -54,13 +54,21 @@
 	EXTERN void linux64_interrupts_enable(void);
 
 	/**
+	 * @brief Gets the interrupt level of the underlying core.
+	 *
+	 * @returns The current interrupt level.
+	 */
+	EXTERN int linux64_interrupts_get_level(void);
+
+
+	/**
 	 * @brief Sets the interrupt level of the underlying core.
 	 *
 	 * @param newlevel New interrupt level.
 	 *
 	 * @returns The old interrupt level.
 	 */
-	EXTERN int linux64_interrupts_level(int newlevel);
+	EXTERN int linux64_interrupts_set_level(int newlevel);
 
 	/**
 	 * @brief Unmask a interrupt.
@@ -120,13 +128,14 @@
 	 * @name Exported Functions
 	 */
 	/**@{*/
-	#define __interrupts_disable_fn /**< @ref interrupts_disable() */
-	#define __interrupts_enable_fn  /**< @ref interrupts_enable()  */
-	#define __interrupts_level_fn   /**< @ref interrupts_level()   */
-	#define __interrupt_next_fn     /**< @ref interrupt_next()     */
-	#define __interrupt_mask_fn     /**< @ref interrupt_mask()     */
-	#define __interrupt_unmask_fn   /**< @ref interrupt_unmask()   */
-	#define __interrupt_ack_fn      /**< @ref interrupt_ack()      */
+	#define __interrupts_disable_fn   /**< @ref interrupts_disable()   */
+	#define __interrupts_enable_fn    /**< @ref interrupts_enable()    */
+	#define __interrupts_get_level_fn /**< @ref interrupts_get_level() */
+	#define __interrupts_set_level_fn /**< @ref interrupts_set_level() */
+	#define __interrupt_next_fn       /**< @ref interrupt_next()       */
+	#define __interrupt_mask_fn       /**< @ref interrupt_mask()       */
+	#define __interrupt_unmask_fn     /**< @ref interrupt_unmask()     */
+	#define __interrupt_ack_fn        /**< @ref interrupt_ack()        */
 	/**@}*/
 
 	/**
@@ -146,11 +155,19 @@
 	}
 
 	/**
-	 * @see linux64_interrupts_level().
+	 * @see linux64_interrupts_get_level().
 	 */
-	static inline int interrupts_level(int newlevel)
+	static inline int interrupts_get_level(void)
 	{
-		return (linux64_interrupts_level(newlevel));
+		return (linux64_interrupts_get_level());
+	}
+
+	/**
+	 * @see linux64_interrupts_set_level().
+	 */
+	static inline int interrupts_set_level(int newlevel)
+	{
+		return (linux64_interrupts_set_level(newlevel));
 	}
 
 	/**
