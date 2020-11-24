@@ -38,10 +38,7 @@
 #ifndef NANVIX_HAL_SECTION_GUARD_H_
 #define NANVIX_HAL_SECTION_GUARD_H_
 
-	/* This must be first. */
-	#define __NEED_HAL_CORE
-
-	#include <nanvix/hal/core.h>
+	#include <nanvix/hal/core/interrupt.h>
 	#include <nanvix/const.h>
 
 	/**
@@ -65,8 +62,9 @@
 	 */
 	struct section_guard
 	{
-		int level;         /**< Interrupt level.      */
-		spinlock_t * lock; /**< Critical region lock. */
+		bool changed;      /**< Signals if we change the interrupt level. */
+		int level;         /**< Interrupt level.                          */
+		spinlock_t * lock; /**< Critical region lock.                     */
 	};
 
 	/**
@@ -82,8 +80,9 @@
 		int level
 	)
 	{
-		guard->level = level;
-		guard->lock  = lock;
+		guard->changed = false;
+		guard->level   = level;
+		guard->lock    = lock;
 	}
 
 	/**
@@ -93,8 +92,12 @@
 	 */
 	static inline void section_guard_entry(struct section_guard * guard)
 	{
+		/* Does the current level has a lower priority than the new one? */
+		guard->changed = (guard->level > interrupts_get_level());
+
 		/* Sets new interrupt level and keeps the old level. */
-		KASSERT((guard->level = interrupts_level(guard->level)) >= 0);
+		if (guard->changed)
+			KASSERT((guard->level = interrupts_set_level(guard->level)) >= 0);
 
 		/* Entry in the critical section. */
 		spinlock_lock(guard->lock);
@@ -111,7 +114,11 @@
 		spinlock_unlock(guard->lock);
 
 		/* Restore interrupt level. */
-		KASSERT((guard->level = interrupts_level(guard->level)) >= 0);
+		if (guard->changed)
+			KASSERT((guard->level = interrupts_set_level(guard->level)) >= 0);
+
+		/* Restore signal. */
+		guard->changed = false;
 	}
 
 /**@}*/
