@@ -122,6 +122,13 @@
 #ifndef _ASM_FILE_
 
 	/**
+	 * @brief Gets the interrupt level of the underlying core.
+	 *
+	 * @returns The current interrupt level.
+	 */
+	EXTERN int k1b_pic_lvl_get(void);
+
+	/**
 	 * @brief Sets the interrupt level of the underlying core.
 	 *
 	 * @param newlevel New interrupt level.

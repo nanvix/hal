@@ -29,8 +29,19 @@
 #include <arch/core/k1b/lpic.h>
 #include <arch/core/k1b/mOS.h>
 #include <nanvix/const.h>
+#include <nanvix/hlib.h>
 #include <posix/errno.h>
 #include <posix/stdint.h>
+
+/**
+ * @brief Gets the interrupt level of the underlying core.
+ *
+ * @returns The curent interrupt level.
+ */
+PUBLIC int k1b_pic_lvl_get(void)
+{
+	return (_scoreboard_start.SCB_VCORE.PER_CPU[core_get_id()].SFR_PS.il);
+}
 
 /**
  * @brief Sets the interrupt level of the underlying core.
@@ -48,14 +59,13 @@ PUBLIC int k1b_pic_lvl_set(int newlevel)
 		return (-EINVAL);
 
 	/* Gets old interrupt level. */
-	oldlevel = _scoreboard_start.SCB_VCORE.PER_CPU[core_get_id()].SFR_PS.il;
+	oldlevel = k1b_pic_lvl_get();
 
 	/* Sets new interrupt level. */
 	mOS_set_it_level(newlevel);
 
 	return (oldlevel);
 }
-
 /**
  * The k1b_pic_mask() function masks the interrupt line in which
  * the interrupt @p irq is hooked up in the underlying k1b
