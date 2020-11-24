@@ -57,6 +57,16 @@ PRIVATE int currlevel = OR1K_IRQLVL_0;
  *
  * @author Davidson Francis
  */
+PUBLIC int or1k_pic_lvl_get(void)
+{
+	return (currlevel);
+}
+
+/**
+ * @todo TODO provide a detailed description for this function.
+ *
+ * @author Davidson Francis
+ */
 PUBLIC int or1k_pic_lvl_set(int newlevel)
 {
 	uint32_t mask;
