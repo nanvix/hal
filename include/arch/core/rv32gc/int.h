@@ -151,13 +151,14 @@
 	 * @name Exported Functions
 	 */
 	/**@{*/
-	#define __interrupts_disable_fn /**< @ref interrupts_disable() */
-	#define __interrupts_enable_fn  /**< @ref interrupts_enable()  */
-	#define __interrupts_level_fn   /**< @ref interrupts_level()   */
-	#define __interrupt_next_fn     /**< @ref interrupt_next()     */
-	#define __interrupt_mask_fn     /**< @ref interrupt_mask()     */
-	#define __interrupt_unmask_fn   /**< @ref interrupt_unmask()   */
-	#define __interrupt_ack_fn      /**< @ref interrupt_ack()      */
+	#define __interrupts_disable_fn   /**< @ref interrupts_disable()   */
+	#define __interrupts_enable_fn    /**< @ref interrupts_enable()    */
+	#define __interrupts_get_level_fn /**< @ref interrupts_get_level() */
+	#define __interrupts_set_level_fn /**< @ref interrupts_set_level() */
+	#define __interrupt_next_fn       /**< @ref interrupt_next()       */
+	#define __interrupt_mask_fn       /**< @ref interrupt_mask()       */
+	#define __interrupt_unmask_fn     /**< @ref interrupt_unmask()     */
+	#define __interrupt_ack_fn        /**< @ref interrupt_ack()        */
 	/**@}*/
 
 #ifndef _ASM_FILE_
@@ -181,7 +182,15 @@
 	/**
 	 * @brief TODO Implement this function. 
 	 */
-	static inline int interrupts_level(int newlevel)
+	static inline int interrupts_get_level(void)
+	{
+		return (0);
+	}
+
+	/**
+	 * @brief TODO Implement this function. 
+	 */
+	static inline int interrupts_set_level(int newlevel)
 	{
 		UNUSED(newlevel);
 
