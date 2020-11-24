@@ -139,6 +139,13 @@
 	EXTERN int i486_lpic_unmask(int irq);
 
 	/**
+	 * @brief Gets the interrupt level of the calling core.
+	 *
+	 * @returns The current interrupt level.
+	 */
+	EXTERN int i486_lpic_lvl_get(void);
+
+	/**
 	 * @brief Sets the interrupt level of the calling core.
 	 *
 	 * @param newlevel New interrupt level.

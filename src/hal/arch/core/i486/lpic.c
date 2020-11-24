@@ -135,8 +135,17 @@ PUBLIC int i486_lpic_unmask(int irq)
 }
 
 /*============================================================================*
- * i486_lpic_lvl_set()                                                        *
+ * i486_lpic_lvl_get()                                                        *
  *============================================================================*/
+
+/**
+ * The i486_lpic_get() function gets the interrupt level of the calling
+ * core to @p newlevel. The old interrupt level is returned.
+ */
+PUBLIC int i486_lpic_lvl_get(void)
+{
+	return (currlevel);
+}
 
 /**
  * The i486_lpic_set() function sets the interrupt level of the calling
