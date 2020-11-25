@@ -164,6 +164,11 @@
 	 */
 	EXTERN void test_stress_al(void);
 
+	/**
+	 * @brief Stress test driver for the Mailbox Interface
+	 */
+	EXTERN void test_abstract_resource(void);
+
 /*----------------------------------------------------------------------------*
  * Fence                                                                      *
  *----------------------------------------------------------------------------*/
