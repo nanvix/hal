@@ -58,9 +58,7 @@
 		{ 0, NULL }
 	#define RESOURCE_POOL_STATIC_INITIALIZER(base, amount, size) \
 		{ base, amount, size }
-	#define RESOURCE_QUEUE_STATIC_INITIALIZER                    \
-		{ NULL, NULL, 0 }
-	#define RESOURCE_LIST_STATIC_INITIALIZER                     \
+	#define RESOURCE_ARRANGEMENT_STATIC_INITIALIZER              \
 		{ NULL, NULL, 0 }
 	/**@}*/
 
@@ -72,10 +70,8 @@
 		(struct resource) RESOURCE_STATIC_INITIALIZER
 	#define RESOURCE_POOL_INITIALIZER(base, amount, size) \
 		(struct resource_pool) RESOURCE_POOL_STATIC_INITIALIZER(base, amount, size)
-	#define RESOURCE_QUEUE_INITIALIZER                    \
-		(struct resource_queue) RESOURCE_QUEUE_STATIC_INITIALIZER
-	#define RESOURCE_LIST_INITIALIZER                     \
-		(struct resource_list) RESOURCE_LIST_STATIC_INITIALIZER
+	#define RESOURCE_ARRANGEMENT_INITIALIZER              \
+		(struct resource_arrangement) RESOURCE_ARRANGEMENT_STATIC_INITIALIZER
 	/**@}*/
 
 
@@ -99,35 +95,50 @@
 	};
 
 	/**
-	 * @brief Resource queue (First In First Out).
+	 * @brief Linked data structure of resources.
 	 */
-	struct resource_queue
+	struct resource_arrangement
 	{
-		struct resource * head; /**< First resource queued.      */
-		struct resource * tail; /**< Last resource queued.       */
+		struct resource * head; /**< First resource.             */
+		struct resource * tail; /**< Last resource.              */
 		size_t size;            /**< Number of resources queued. */
 	};
 
 	/**
-	 * @brief Resource list (Linked list).
-	 */
-	struct resource_list
-	{
-		struct resource * head; /**< First resource queued.      */
-		struct resource * tail; /**< Last resource queued.       */
-		size_t size;            /**< Number of resources queued. */
-	};
-
-	/**
-	 * @brief Resource allocation interface.
+	 * @name Resource allocation interface for pools.
 	 */
 	/**@{*/
-	typedef int (*alloc_fn)(const struct resource_pool *);
-	typedef void (*free_fn)(const struct resource_pool *, int);
-	typedef void (*enqueue_fn)(struct resource_queue *, struct resource *);
-	typedef struct resource * (*dequeue_fn)(struct resource_queue *);
-	typedef void (*push_back_fn)(struct resource_list *, struct resource *);
-	typedef int (*pop_fn)(struct resource_list *, struct resource *);
+	typedef int (* alloc_fn)(const struct resource_pool *);
+	typedef void (* free_fn)(const struct resource_pool *, int);
+	/**@}*/
+
+	/**
+	 * @name Resource searching interface on arrangement.
+	 *
+	 * @details:
+	 * Compare(a, b):
+	 * - a < b  == -1
+	 * - a == b ==  0
+	 * - a > b  ==  1
+	 */
+	/**@{*/
+	typedef bool (* verify_fn)(struct resource *);
+	typedef int (* compare_fn)(struct resource *, struct resource *);
+	typedef int (* search_fn)(struct resource_arrangement *, struct resource *);
+	typedef int (* search_verify_fn)(struct resource_arrangement *, verify_fn);
+	/**@}*/
+
+	/**
+	 * @name Resource allocation interface for arrangement.
+	 */
+	/**@{*/
+	typedef int (* put_fn)(struct resource_arrangement *, struct resource *);
+	typedef struct resource * (* pop_fn)(struct resource_arrangement *);
+	typedef int (* insert_fn)(struct resource_arrangement *, struct resource *, int);
+	typedef int (* insert_ordered_fn)(struct resource_arrangement *, struct resource *, compare_fn);
+	typedef int (* remove_fn)(struct resource_arrangement *, struct resource *);
+	typedef struct resource * (* remove_spec_fn)(struct resource_arrangement *, int);
+	typedef struct resource * (* remove_verify_fn)(struct resource_arrangement *, verify_fn);
 	/**@}*/
 
 	/**
@@ -491,24 +502,70 @@
 	EXTERN free_fn resource_free;
 
 	/**
-	 * @brief Resource queuing.
+	 * @brief Enqueue a resource from an arrangement.
 	 */
-	EXTERN enqueue_fn resource_enqueue;
+	EXTERN put_fn resource_enqueue;
 
 	/**
-	 * @brief Resource dequeuing.
+	 * @brief Dequeue a resource from an arrangement.
 	 */
-	EXTERN dequeue_fn resource_dequeue;
+	EXTERN pop_fn resource_dequeue;
 
 	/**
-	 * @brief Resource push back on a list.
+	 * @brief Put a resource in the first position of an arrangement.
 	 */
-	EXTERN push_back_fn resource_push_back;
+	EXTERN put_fn resource_push_front;
 
 	/**
-	 * @brief Resource pop from on a list.
+	 * @brief Put a resource in the last position of an arrangement.
 	 */
-	EXTERN pop_fn resource_pop;
+	EXTERN put_fn resource_push_back;
+
+	/**
+	 * @brief Insert a resource in a specific position of an arrangement.
+	 */
+	EXTERN insert_fn resource_insert;
+
+	/**
+	 * @brief Insert a resource in a specific position of an arrangement by
+	 * a comparation function.
+	 */
+	EXTERN insert_ordered_fn resource_insert_ordered;
+
+	/**
+	 * @brief Pop the especific resource of an arrangement.
+	 */
+	EXTERN remove_fn resource_pop;
+
+	/**
+	 * @brief Pop the first resource of an arrangement.
+	 */
+	EXTERN pop_fn resource_pop_front;
+
+	/**
+	 * @brief Pop the last resource of an arrangement.
+	 */
+	EXTERN pop_fn resource_pop_back;
+
+	/**
+	 * @brief Remove a specific resource by it position.
+	 */
+	EXTERN remove_spec_fn resource_remove;
+
+	/**
+	 * @brief Remove a resource by verification.
+	 */
+	EXTERN remove_verify_fn resource_remove_verify;
+
+	/**
+	 * @brief Search for an specific resource on an arrangement.
+	 */
+	EXTERN search_fn resource_search;
+
+	/**
+	 * @brief Search using a verification function on an arrangement.
+	 */
+	EXTERN search_verify_fn resource_search_verify;
 
 #endif /** NANVIX_HAL_RESOURCE_H_ */
 #endif /* __NEED_RESOURCE */
