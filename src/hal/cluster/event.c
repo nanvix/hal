@@ -38,8 +38,12 @@ PUBLIC struct events_table
 {
 	unsigned pending; /**< Pending Events  */
 	unsigned handled; /**< Handled Events  */
-	spinlock_t lock;  /**< Event Line Lock */
 } events[CORES_NUM];
+
+/**
+ * @brief Event system lock.
+ */
+spinlock_t event_lock;
 
 /**
  * @brief Handler to IPI events.
@@ -65,7 +69,7 @@ PRIVATE void event_handler(int ev_src)
 
 #if (CLUSTER_HAS_IPI)
 	if (LIKELY(ev_src > 0))
-		spinlock_lock(&events[coreid].lock);
+		spinlock_lock(&event_lock);
 #else
 	KASSERT(ev_src < 0);
 #endif
@@ -78,15 +82,18 @@ PRIVATE void event_handler(int ev_src)
 			events[coreid].pending &= ~(1 << i);
 			events[coreid].handled |=  (1 << i);
 
-			spinlock_unlock(&events[coreid].lock);
+			spinlock_unlock(&event_lock);
 				_event_handler();
-			spinlock_lock(&events[coreid].lock);
+			spinlock_lock(&event_lock);
+
+			/* We maybe change the core. */
+			coreid = core_get_id();
 		}
 	}
 
 #if (CLUSTER_HAS_IPI)
 	if (LIKELY(ev_src > 0))
-		spinlock_unlock(&events[coreid].lock);
+		spinlock_unlock(&event_lock);
 #endif
 }
 
@@ -144,8 +151,9 @@ PUBLIC void event_setup(void)
 	{
 		events[i].pending = 0;
 		events[i].handled = 0;
-		spinlock_init(&events[i].lock);
 	}
+
+	spinlock_init(&event_lock);
 
 	_event_handler = default_handler;
 
@@ -179,7 +187,7 @@ PUBLIC int event_notify(int coreid)
 		return (-EINVAL);
 
 	/* Prevent this call be preempted by any maskable interrupt. */
-	section_guard_init(&guard, &events[coreid].lock, INTERRUPT_LEVEL_NONE);
+	section_guard_init(&guard, &event_lock, INTERRUPT_LEVEL_NONE);
 
 	section_guard_entry(&guard);
 
@@ -212,7 +220,7 @@ PUBLIC void event_drop(void)
 	struct section_guard guard;
 
 	/* Prevent this call be preempted by any maskable interrupt. */
-	section_guard_init(&guard, &events[mycoreid].lock, INTERRUPT_LEVEL_NONE);
+	section_guard_init(&guard, &event_lock, INTERRUPT_LEVEL_NONE);
 
 	section_guard_entry(&guard);
 
@@ -246,7 +254,7 @@ PUBLIC void event_wait(void)
 	mycoreid = core_get_id();
 
 	/* Prevent this call be preempted by any maskable interrupt. */
-	section_guard_init(&guard, &events[mycoreid].lock, INTERRUPT_LEVEL_NONE);
+	section_guard_init(&guard, &event_lock, INTERRUPT_LEVEL_NONE);
 
 	while (true)
 	{
