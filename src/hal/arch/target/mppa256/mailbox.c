@@ -280,7 +280,9 @@ PRIVATE void mppa256_mailbox_rx_handler(int interface, int tag)
 	UNUSED(tag);
 
 	mbxid = MAILBOXID_RX(interface, tag);
-
+	kprintf("[hal][mailbox][debug] mbxid =%d", mbxid);
+	if (processor_node_get_num() == 1)
+		kprintf("IO1 recebeu 1 mailbox");	
 	mppa256_mailbox_count_messages(&mbxtab.rxs[mbxid]);
 
 	if (mbxtab.rxs[mbxid].buffer != NULL)
@@ -330,7 +332,7 @@ PRIVATE void mppa256_mailbox_tx_handler(int interface, int tag)
 			continue;
 
 		mbxtab.txs[mbxid].ack = 1;
-
+		kprintf("[hal][mailbox][debug] mbxid = %d, source =%d", mbxid, mbxtab.txs[mbxid].message.source);	
 		/* Sends requested message. */
 		if (mbxtab.txs[mbxid].commit != 0)
 		{
@@ -416,7 +418,7 @@ PRIVATE int do_mppa256_mailbox_create(int nodenum)
 			target--;
 			goto release_dma_resources;
 		}
-
+		kprintf("[hal][debug] target = %d,\n interface = %d,\n, tag = %d", target, interface, tag);
 		ret = bostan_dma_data_aread(
 			interface,
 			tag,
@@ -707,9 +709,11 @@ PRIVATE int mppa256_mailbox_send_msg(int mbxid)
 	remotenum = mbxtab.txs[mbxid].remote;
 	ctag      = bostan_processor_node_mailbox_tag(remotenum);
 	localnum  = bostan_processor_noc_cluster_to_node_num(cluster_get_num()) + interface;
-
+	
 	/* Opens data sender point. */
 	dtag = UNDERLYING_OPEN_TAG(mbxid);
+
+	kprintf("[hal][debug] interface = %d,\n remotenum = %d,\n ctag = %d,\n localnum = %d,\n dtag = %d,\n bostan_processor_node_mailbox_tag = %d", interface, remotenum, ctag, localnum, dtag, bostan_processor_node_mailbox_tag(localnum));
 
 	ret = (bostan_dma_control_config(
 		interface,
