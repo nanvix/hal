@@ -163,6 +163,8 @@ PUBLIC NORETURN void kmain(int argc, const char *argv[])
 	/* Run local unit tests. */
 	if ((nodenum == NODENUM_MASTER) || (nodenum == NODENUM_SLAVE))
 	{
+		kprintf("[hal] nodenum = %d\n", nodenum);
+		//while(1);
 		test_core_al();
 		test_cluster_al();
 		test_processor_al();
