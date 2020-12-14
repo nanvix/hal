@@ -434,6 +434,8 @@ PRIVATE void bostan_dnoc_it_handler(int ev_src)
 	volatile dword_t * field_status;
 	bostan_processor_noc_handler_fn handler;
 
+	kprintf("[hal][debug][it handler] chegamos ********* ");
+
 	if (ev_src < 0)
 		interrupt_mask(K1B_INT_DNOC);
 
@@ -870,7 +872,7 @@ PUBLIC int bostan_dnoc_tx_config(
 	int dest;
 	mppa_dnoc_header_t header;
 	mppa_dnoc_channel_config_t config;
-
+	kprintf("[hal][debug][tx config] interface = %d,\n localid = %d,\n local_tag =  %d,\n remoteid =  %d,\n remote_tag =  %d,\n", interface, localid, local_tag, remoteid, remote_tag);
 	if (!bostan_dnoc_tx_is_valid(interface, local_tag))
 		return (-EINVAL);
 

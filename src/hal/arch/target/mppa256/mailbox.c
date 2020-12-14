@@ -157,7 +157,7 @@ PRIVATE struct mbxpools
 	.tx_pool = {mbxtab.txs, MPPA256_MAILBOX_OPEN_MAX,   sizeof(struct tx)},
 };
 
-PRIVATE void mppa256_mailbox_comm_wait(int mbxid);
+PRIVATE void _mailbox_comm_wait(int mbxid);
 PRIVATE void mppa256_mailbox_comm_wakeup(int mbxid);
 
 /**
@@ -275,8 +275,10 @@ PRIVATE void mppa256_mailbox_rx_handler(int interface, int tag)
 {
 	int mbxid;     /* Mailbox ID.  */
 	void * buffer; /* User buffer. */
-
-	UNUSED(interface);
+        
+        kprintf("[hal][mailbox][rx-handler] entrou !");
+	
+        UNUSED(interface);
 	UNUSED(tag);
 
 	mbxid = MAILBOXID_RX(interface, tag);
@@ -316,7 +318,7 @@ PRIVATE void mppa256_mailbox_tx_handler(int interface, int tag)
 {
 	UNUSED(interface);
 	UNUSED(tag);
-
+        kprintf("[hal][mailbox][tx-handler] entrou !");
 	for (k1b_byte_t mbxid = 0; mbxid < MPPA256_MAILBOX_OPEN_MAX; ++mbxid)
 	{
 		/**
