@@ -160,20 +160,31 @@ PUBLIC NORETURN void kmain(int argc, const char *argv[])
 
 	int nodenum = processor_node_get_num();
 
+#ifdef __unix64__
+	if (nodenum == NODENUM_MASTER)
+#else
 	/* Run local unit tests. */
 	if ((nodenum == NODENUM_MASTER) || (nodenum == NODENUM_SLAVE))
+#endif
 	{
 		test_core_al();
 		test_cluster_al();
 		test_processor_al();
 
+#ifndef __unix64__
 		/* Run comm. service unit tests. */
 		if (nodenum == NODENUM_MASTER)
+#endif
 			test_target_al();
-
+#ifndef __unix64__
 		/* Run Inter-Cluster tests. */
 		test_stress_al();
+#endif
 	}
+#ifdef __unix64__
+	if ((nodenum == NODENUM_MASTER) || (nodenum == NODENUM_SLAVE))
+		test_stress_al();
+#endif
 
 #endif
 
