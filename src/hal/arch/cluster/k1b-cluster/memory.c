@@ -347,31 +347,34 @@ PRIVATE int k1b_cluster_tlb_inval(vaddr_t vaddr, unsigned shift, unsigned way)
 }
 
 /*============================================================================*
- * k1b_cluster_tlb_shootdown()                                                *
+ * k1b_cluster_tlb_shootdown_local()                                          *
  *============================================================================*/
 
 /**
  * The k1b_cluster_tlb_shootdown() function invalidates the TLB entry
- * that encodes the virtual address @p vaddr in all cores.
+ * that encodes the virtual address @p vaddr in the local core.
  *
- * @author Pedro Henrique Penna
+ * @author João Vicente Souto
  */
-PUBLIC int k1b_cluster_tlb_shootdown(vaddr_t vaddr)
+PUBLIC int k1b_cluster_tlb_shootdown_local(vaddr_t vaddr)
 {
+	int coreid;
 	unsigned idx;
-	struct tlbe tlbe;
 
+	/* Gets TLB index. */
 	idx = k1b_tlbe_get_index(vaddr, K1B_PAGE_SHIFT, 0);
 
-	/* Shootdown hardware TLBs */
-	if (k1b_tlbe_shootdown(&tlbe, vaddr, K1B_PAGE_SHIFT))
-		return (-EAGAIN);
+	/* Gets underlying core ID. */
+	coreid = core_get_id();
 
-	/* Shootdown software TLBs. */
-	for (int i = 0; i < K1B_CLUSTER_NUM_CORES; i++)
-		kmemcpy(&k1b_tlb[i].jtlb[idx], &tlbe, K1B_TLBE_SIZE);
-
-	return (0);
+	/* Shootdown hardware and software TLB. */
+	return (
+		k1b_tlbe_shootdown(
+			&k1b_tlb[coreid].jtlb[idx],
+			vaddr,
+			K1B_PAGE_SHIFT
+		)
+	);
 }
 
 /*============================================================================*

@@ -237,13 +237,13 @@
 	EXTERN void k1b_cluster_tlb_init(void);
 
 	/**
-	 * @brief Shoots down a TLB entry.
+	 * @brief Shoots down a TLB entry locally.
 	 *
 	 * @param vaddr Target virtual address.
 	 *
 	 * @return Zero if successful, non zero otherwise.
 	 */
-	EXTERN int k1b_cluster_tlb_shootdown(vaddr_t vaddr);
+	EXTERN int k1b_cluster_tlb_shootdown_local(vaddr_t vaddr);
 
 	/**
 	 * @brief Dumps a TLB entry.
@@ -316,12 +316,12 @@
 	 * @brief Provided Interface
 	 */
 	/**@{*/
-	#define __tlb_flush_fn          /**< tlb_flush()          */
-	#define __tlb_init_fn           /**< tlb_init()           */
-	#define __tlb_get_vaddr_info_fn /**< tlb_get_vaddr_info() */
-	#define __tlb_get_utlb_fn       /**< tlb_get_utlb()       */
-	#define __tlb_shootdown_fn      /**< tlb_shootdown()      */
-	#define __tlbe_dump_fn          /**< tlbe_dump()          */
+	#define __tlb_flush_fn           /**< tlb_flush()           */
+	#define __tlb_init_fn            /**< tlb_init()            */
+	#define __tlb_get_vaddr_info_fn  /**< tlb_get_vaddr_info()  */
+	#define __tlb_get_utlb_fn        /**< tlb_get_utlb()        */
+	#define __tlb_shootdown_local_fn /**< tlb_shootdown_local() */
+	#define __tlbe_dump_fn           /**< tlbe_dump()           */
 	/**@}*/
 
 	/**
@@ -370,11 +370,11 @@
 	}
 
 	/**
-	 * @see k1b_cluster_tlb_shootdown().
+	 * @see k1b_cluster_tlb_shootdown_local().
 	 */
-	static inline int tlb_shootdown(vaddr_t vaddr)
+	static inline int tlb_shootdown_local(vaddr_t vaddr)
 	{
-		return (k1b_cluster_tlb_shootdown(vaddr));
+		return (k1b_cluster_tlb_shootdown_local(vaddr));
 	}
 
 	/**
