@@ -41,7 +41,7 @@
 	/**
 	 * @brief Number of cores in the cluster.
 	 */
-    #define LINUX64_CLUSTER_NUM_CORES 4
+    #define LINUX64_CLUSTER_NUM_CORES 5
 
 	/**
 	 * @brief ID of the master core.
