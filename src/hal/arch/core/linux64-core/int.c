@@ -88,9 +88,17 @@ PUBLIC void linux64_interrupts_disable(void)
 }
 
 /**
+ * @brief Gets interrupt level.
+ */
+PUBLIC int linux64_interrupts_get_level(void)
+{
+	return (current_it_level);
+}
+
+/**
  * @brief Change interrupt level.
  */
-PUBLIC int linux64_interrupts_level(int newlevel)
+PUBLIC int linux64_interrupts_set_level(int newlevel)
 {
 	int oldlevel;
 

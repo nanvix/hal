@@ -68,8 +68,11 @@
 	#ifndef __interrupts_enable_fn
 	#error "interrupts_enable() not defined?"
 	#endif
-	#ifndef __interrupts_level_fn
-	#error "interrupts_level() not defined?"
+	#ifndef __interrupts_get_level_fn
+	#error "interrupts_get_level() not defined?"
+	#endif
+	#ifndef __interrupts_set_level_fn
+	#error "interrupts_set_level() not defined?"
 	#endif
 	#ifndef __interrupt_mask_fn
 	#error "interrupt_mask() not defined?"
@@ -149,10 +152,15 @@
 	EXTERN void interrupts_enable(void);
 
 	/**
+	 * @brief Gets current interrupt level.
+	 */
+	EXTERN int interrupts_get_level(void);
+
+	/**
 	 * @brief Change interrupt level, i.e., change the minimum interrupt
 	 * priority that can be accepted.
 	 */
-	EXTERN int interrupts_level(int newlevel);
+	EXTERN int interrupts_set_level(int newlevel);
 
 	/**
 	 * @brief Registers an interrupt handler.

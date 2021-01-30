@@ -133,6 +133,13 @@
 	EXTERN int or1k_pic_next(void);
 
 	/**
+	 * @brief Gets the interrupt level of the calling core.
+	 *
+	 * @returns The current interrupt level.
+	 */
+	EXTERN int or1k_pic_lvl_get(void);
+
+	/**
 	 * @brief Sets the interrupt level of the calling core.
 	 *
 	 * @param newlevel New interrupt level.
