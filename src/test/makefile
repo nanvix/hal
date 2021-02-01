@@ -43,6 +43,7 @@ C_SRC = $(wildcard *.c)           \
         $(wildcard processor/*.c) \
         $(wildcard target/*.c)    \
         $(wildcard stress/*.c)    \
+        $(wildcard abstract/*.c)  \
         $(wildcard utils/*.c)
 
 # Sources (Target Specific)

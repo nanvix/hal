@@ -66,6 +66,7 @@ PRIVATE void test_core_al(void)
 #if (CORE_HAS_PERF) && (TEST_PERF)
 	test_perf();
 #endif
+	test_abstract_resource();
 }
 
 /**
