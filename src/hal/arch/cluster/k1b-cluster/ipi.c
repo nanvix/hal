@@ -45,10 +45,8 @@ PUBLIC void k1b_cluster_ipi_send(int coreid)
 {
 	KASSERT(WITHIN(coreid, 0, CORES_NUM));
 
-	/* Notify an event before IPI. */
-	__event_notify(coreid);
-
 	bsp_inter_pe_interrupt_raise((1 << coreid), K1B_BSP_IPI_LINE);
+	__event_notify(coreid);
 }
 
 /**

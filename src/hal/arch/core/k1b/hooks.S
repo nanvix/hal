@@ -199,7 +199,7 @@
 	;;
 
 	/* Restore program counter. */
-	lw $r4 = K1B_CONTEXT_SPC[\from]
+	lw \tmp = K1B_CONTEXT_SPC[\from]
 	;;
 	sw MOS_VC_REG_SPC[\to], \tmp
 	;;
@@ -220,15 +220,6 @@
 	lw \tmp = K1B_CONTEXT_SPS[\from]
 	;;
 	sw MOS_VC_REG_SPS[\to], \tmp
-	;;
-
-	/**
-	 * Restore Processing Status
-	 * @todo Is it Necessary? It is will be overwritten.
-	 **/
-	lw \tmp = K1B_CONTEXT_PS[\from]
-	;;
-	sw MOS_VC_REG_PS[\to], \tmp
 	;;
 
 .endm

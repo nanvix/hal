@@ -104,7 +104,7 @@ PUBLIC struct context * k1b_context_create(
 	ps.ext  = 0; /**< Exception not taken.               */
 	ps.isw  = 1; /**< Use kernel stack on interrupts.    */
 	ps.esw  = 1; /**< Use kernel stack on traps.         */
-	ps.ie   = 1; /**< Enable interrupt.                  */
+	ps.ie   = 0; /**< Enable interrupt.                  */
 	ps.hle  = 1; /**< Enable hardware loop.              */
 	ps.ice  = 1; /**< Enable instruction cache.          */
 	ps.use  = 1; /**< Enable uncached streaming.         */
