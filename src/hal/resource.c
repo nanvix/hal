@@ -25,10 +25,13 @@
 /* Must come fist. */
 #define __NEED_RESOURCE
 
+#include <nanvix/hal/core/spinlock.h>
 #include <nanvix/hal/resource.h>
 #include <nanvix/hlib.h>
 #include <nanvix/const.h>
 #include <posix/errno.h>
+
+PRIVATE spinlock_t _lock = SPINLOCK_UNLOCKED;
 
 /*============================================================================*
  * Pool functions                                                             *
@@ -58,21 +61,26 @@ PRIVATE int resource_dumb_alloc(const struct resource_pool *pool)
 	int n = pool->nresources;
 	size_t size = pool->resource_size;
 
-	/* Search for a free synchronization point. */
-	for (int i = 0; i < n; i++)
-	{
-		struct resource *resource;
+	spinlock_lock(&_lock);
 
-		resource = (struct resource *)(&base[mult(i, size)]);
-
-		/* Found. */
-		if (!resource_is_used(resource))
+		/* Search for a free synchronization point. */
+		for (int i = 0; i < n; i++)
 		{
-			*resource = RESOURCE_INITIALIZER;
-			resource_set_used(resource);
-			return (i);
+			struct resource *resource;
+
+			resource = (struct resource *)(&base[mult(i, size)]);
+
+			/* Found. */
+			if (!resource_is_used(resource))
+			{
+				*resource = RESOURCE_INITIALIZER;
+				resource_set_used(resource);
+				spinlock_unlock(&_lock);
+				return (i);
+			}
 		}
-	}
+
+	spinlock_unlock(&_lock);
 
 	return (-1);
 }
@@ -101,7 +109,11 @@ PRIVATE void resource_dumb_free(const struct resource_pool *pool, int id)
 
 	resource = (struct resource *)(&base[mult(id, size)]);
 
-	resource_set_unused(resource);
+	spinlock_lock(&_lock);
+
+		resource_set_unused(resource);
+
+	spinlock_unlock(&_lock);
 }
 
 /*============================================================================*
