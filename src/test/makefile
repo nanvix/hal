@@ -80,6 +80,10 @@ C_SRC += core/exception.c
 C_SRC += core/interrupt.c
 C_SRC += core/perf.c
 
+else ifeq ($(TARGET), qemu-arm64)
+
+C_SRC = 
+
 endif
 
 # Object Files
