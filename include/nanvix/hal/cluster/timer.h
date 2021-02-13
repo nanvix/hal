@@ -80,6 +80,11 @@
 	 */
 	EXTERN void timer_init(unsigned freq);
 
+	/*
+	 * @brief Returns the clock error
+	 */
+	EXTERN uint64_t clock_get_error(void);
+
 #ifdef __NANVIX_HAL
 
 	/**

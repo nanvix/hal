@@ -73,18 +73,14 @@
 	/**
 	 * @see or1k_timer_init().
 	 */
-	static inline void timer_init(unsigned freq)
-	{
-		or1k_timer_init(freq);
-	}
+	#define __timer_init(freq) \
+		or1k_timer_init(freq)
 
 	/**
 	 * @see or1k_timer_reset().
 	 */
-	static inline void timer_reset(void)
-	{
-		or1k_timer_reset();
-	}
+	#define timer_reset(void) \
+		or1k_timer_reset(void)
 
 #endif /* !_ASM_FILE_ */
 

@@ -76,23 +76,14 @@
 	/**
 	 * @see timer_init().
 	 */
-	static inline void timer_init(unsigned freq)
-	{
-		rv32gc_timer_init(
-			freq,
-			RISCV32_CLUSTER_TIMEBASE,
-			(uint64_t *) RISCV32_CLUSTER_CLINT_MTIME_BASE,
-			(uint64_t *) RISCV32_CLUSTER_CLINT_MTIMECMP_BASE
-		);
-	}
+	#define __timer_init(freq) \
+		rv32gc_timer_init(freq, RISCV32_CLUSTER_TIMEBASE, (uint64_t *) RISCV32_CLUSTER_CLINT_MTIME_BASE,	(uint64_t *) RISCV32_CLUSTER_CLINT_MTIMECMP_BASE)
 
 	/**
 	 * @see rv32gc_timer_reset().
 	 */
-	static inline void timer_reset(void)
-	{
-		rv32gc_timer_reset();
-	}
+	#define timer_reset(void) \
+		rv32gc_timer_reset(void)
 
 #endif /* !_ASM_FILE_ */
 
