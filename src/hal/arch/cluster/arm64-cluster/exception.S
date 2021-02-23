@@ -27,60 +27,53 @@
 
 #include <arch/core/arm64-core/asm.h>
 
-.section ".text"
+.section ".exceptions"
 
 /* Exported symbols. */
-.globl _do_start
+.globl _exception_vector_table
 
 /*----------------------------------------------------------------------------*
- * _do_start()                                                                *
+ * Exception Call Macro                                                       *
  *----------------------------------------------------------------------------*/
 
-/*
- * Entry point.
- */
-_do_start:
-    arm64core_clear_gprs
-    /* Branch slave cores to halt */
-    mrs	x0, mpidr_el1
-	and	x0, x0, #3 
-	cmp	x0, #0
-	bne	halt
+.macro EXCEPTION_CALL exception
 
-/*
- * Configure the Exception Level.
- * Commonly starts at EL3 and this will change to EL1
- */
-_config_exceptions:
-    /* Get the value of the current exception level */
-    mrs     x0, CurrentEL
-    and     x0, x0, #12      // Mask
-    cmp     x0, #12          // Exception Level 3?
-    bne     el1
+/* TODO: Context save */
+.align 7
+b exp_handler
+eret
+/* TODO: Context Restaure */
 
+.endm
 
-    mov     x1, #0x5b1       // Set EL0 and EL1 to non-secure state
-    msr     scr_el3, x1
+/*----------------------------------------------------------------------------*
+ * _exception_vector_table()                                                 *
+ *----------------------------------------------------------------------------*/
 
-    mov     x1, #0x3c9       // Mask interruptions
-    msr     SPSR_EL3, x1
+.align 11
+_exception_vector_table:
 
-    adr     x1, el1
-    msr     elr_el3, x1
-    eret
+EXCEPTION_CALL teste
+EXCEPTION_CALL teste
+EXCEPTION_CALL teste
+EXCEPTION_CALL teste
 
-el1: 
+EXCEPTION_CALL teste
+EXCEPTION_CALL teste
+EXCEPTION_CALL teste
+EXCEPTION_CALL teste
 
-    ldr     x0, =_exception_vector_table
-    msr     vbar_el1, x0
-    isb
+EXCEPTION_CALL teste
+EXCEPTION_CALL teste
+EXCEPTION_CALL teste
+EXCEPTION_CALL teste
 
-    /* Set stack adress */
-    adrp	x0, stack_top
-    mov	sp, x0
-    /* Branch the master core to _main function */
-	bl _main
+EXCEPTION_CALL teste
+EXCEPTION_CALL teste
+EXCEPTION_CALL teste
+EXCEPTION_CALL teste
 
-/* Infinite loop */
-halt: wfe
-      b halt
+exp_handler:
+arm64core_save_context 0
+bl teste
+arm64core_restore_context

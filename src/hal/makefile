@@ -75,7 +75,7 @@ C_SRC += stdout/tty-virt.c
 
 else ifeq ($(TARGET), qemu-arm64)
 
-C_SRC = $(wildcard main.c)
+C_SRC = $(wildcard arch/cluster/$(CLUSTER)/*.c)
 C_SRC += $(wildcard stdout/pl011.c)
 
 endif
