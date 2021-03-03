@@ -38,42 +38,78 @@
 
 .macro EXCEPTION_CALL exception
 
-/* TODO: Context save */
-.align 7
-b exp_handler
-eret
-/* TODO: Context Restaure */
+b \exception
+.balign 0x80
 
+.endm
+
+/*----------------------------------------------------------------------------*
+ * Save Context Macro                                                       *
+ *----------------------------------------------------------------------------*/
+
+.macro HANDLE_EXCEPTION function
+arm64core_save_context
+bl \function
+arm64core_restore_context
+eret
 .endm
 
 /*----------------------------------------------------------------------------*
  * _exception_vector_table()                                                 *
  *----------------------------------------------------------------------------*/
 
-.align 11
+.balign 0x800
 _exception_vector_table:
 
-EXCEPTION_CALL teste
-EXCEPTION_CALL teste
-EXCEPTION_CALL teste
-EXCEPTION_CALL teste
+EXCEPTION_CALL synchronous_curr_sp0
+EXCEPTION_CALL irq_el2_sp0
+EXCEPTION_CALL fiq_curr_sp0
+EXCEPTION_CALL serror_curr_sp0
 
-EXCEPTION_CALL teste
-EXCEPTION_CALL teste
-EXCEPTION_CALL teste
-EXCEPTION_CALL teste
+EXCEPTION_CALL synchronous_curr_spcurr
+EXCEPTION_CALL irq_curr_spcurr
+EXCEPTION_CALL fiq_curr_spcurr
+EXCEPTION_CALL serror_curr_spcurr
 
-EXCEPTION_CALL teste
-EXCEPTION_CALL teste
-EXCEPTION_CALL teste
-EXCEPTION_CALL teste
+EXCEPTION_CALL synchronous_lower_64
+EXCEPTION_CALL irq_lower_64
+EXCEPTION_CALL fiq_lower_64
+EXCEPTION_CALL serror_lower_64
 
-EXCEPTION_CALL teste
-EXCEPTION_CALL teste
-EXCEPTION_CALL teste
-EXCEPTION_CALL teste
+EXCEPTION_CALL synchronous_lower_32
+EXCEPTION_CALL irq_lower_32
+EXCEPTION_CALL fiq_lower_32
+EXCEPTION_CALL serror_lower_32
 
-exp_handler:
-arm64core_save_context 0
-bl teste
-arm64core_restore_context
+synchronous_curr_sp0:
+	HANDLE_EXCEPTION exception_handler
+irq_el2_sp0:
+	HANDLE_EXCEPTION exception_handler
+fiq_curr_sp0:
+	HANDLE_EXCEPTION exception_handler
+serror_curr_sp0:
+	HANDLE_EXCEPTION exception_handler
+synchronous_curr_spcurr:
+	HANDLE_EXCEPTION exception_handler_return
+irq_curr_spcurr:
+	HANDLE_EXCEPTION exception_handler_return
+fiq_curr_spcurr:
+	HANDLE_EXCEPTION exception_handler
+serror_curr_spcurr:
+	HANDLE_EXCEPTION exception_handler
+synchronous_lower_64:
+	HANDLE_EXCEPTION exception_handler_return
+irq_lower_64:
+	HANDLE_EXCEPTION exception_handler
+fiq_lower_64:
+	HANDLE_EXCEPTION exception_handler
+serror_lower_64:
+	HANDLE_EXCEPTION exception_handler
+synchronous_lower_32:
+	HANDLE_EXCEPTION exception_handler
+irq_lower_32:
+	HANDLE_EXCEPTION exception_handler
+fiq_lower_32:
+	HANDLE_EXCEPTION exception_handler
+serror_lower_32:
+	HANDLE_EXCEPTION exception_handler
