@@ -29,12 +29,6 @@
 		#error "do not include this header in C files"
 	#endif
 
-	/* Must come first. */
-	//#define __NEED_CORE_CONTEXT
-
-	//#include <arch/core/rv32gc/ctx.h>
-	//#include <arch/core/rv32gc/mmu.h>
-
 /*============================================================================*
  * Regiser Aliases                                                            *
  *============================================================================*/
@@ -46,7 +40,6 @@
 	#define fp x29 /**< Frame Pointer Register */
 	#define lr x30 /**< Link Register */
 	/**@}*/
-
 
 /*============================================================================*
  * Misc                                                                       *
@@ -72,7 +65,10 @@
     
 	.endm
 
-	.macro arm64core_save_context exc_type
+	/*
+	 *  Exception Save Context
+	 */
+	.macro arm64core_save_context
 
 		stp	x29, x30, [sp, #-16]!
 		stp	x27, x28, [sp, #-16]!
@@ -89,29 +85,12 @@
 		stp	x5, x6, [sp, #-16]!
 		stp	x3, x4, [sp, #-16]!
 		stp	x1, x2, [sp, #-16]!
-
-		mrs	x21, spsr_el1
-		stp	x21, x0, [sp, #-16]!
-
-		mrs	x21, elr_el1
-		stp	xzr, x21, [sp, #-16]!
-
-		mov	x21, #(\exc_type)
-		mrs	x22, esr_el1
-		stp	x21, x22, [sp, #-16]!
 	.endm
 
+	/*
+	 *  Exception Restore Context
+	 */
 	.macro arm64core_restore_context
-
-
-		add	sp, sp, #16
-
-		ldp	x21, x22, [sp], #16	
-		msr	elr_el1, x22
-
-		ldp	x21, x0, [sp], #16
-		msr	spsr_el1, x21
-
 		ldp	x1, x2, [sp], #16
 		ldp	x3, x4, [sp], #16
 		ldp	x5, x6, [sp], #16
@@ -127,6 +106,20 @@
 		ldp	x25, x26, [sp], #16
 		ldp	x27, x28, [sp], #16
 		ldp	x29, x30, [sp], #16
+	.endm
+
+	/*
+	 * Resets the stack.
+	 * - coreid ID of the calling core
+	 */
+	.macro arm64_core_stack_reset coreid
+		mov x0, \coreid
+		mov x1, #0x1000
+		add x0, x0, #1
+		mul x0, x0, x1
+		adrp x0, stack_base
+		mov	sp, x0
+
 	.endm
 
 #endif /* ARCH_CORE_ARM64_ASM_H_ */

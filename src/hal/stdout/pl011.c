@@ -47,7 +47,7 @@ PUBLIC void uart_pl011_write(const char *buf, size_t n)
 	 */
 	if (!initialized)
 		return;
-
+	
 	while (n)
 	{
 		/* Wait until FIFO is empty. */

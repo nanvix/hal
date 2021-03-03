@@ -86,7 +86,7 @@
 	 * @param n   Number of bytes to write.
 	 */
     extern void uart_pl011_write(const char *buf, size_t n);
-
+    
 /**@}*/
 
 #endif  /* DRIVER_PL011_H_ */
