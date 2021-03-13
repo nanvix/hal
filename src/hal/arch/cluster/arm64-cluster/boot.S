@@ -47,7 +47,6 @@ _do_start:
 
 /*
  * Configure the Exception Level.
- * Commonly starts at EL3 and this will change to EL1
  */
 _config_exceptions:
     /* Get the value of the current exception level */

@@ -22,26 +22,41 @@
  * SOFTWARE.
  */
 
-#ifndef ARCH_CORE_ARM64_REGS_H_
-#define ARCH_CORE_ARM64_REGS_H_
+#ifndef CLUSTER_ARM64_CLUSTER_H_
+#define CLUSTER_ARM64_CLUSTER_H_
 
-	#ifndef __NEED_CORE_REGS
-		#error "do not include this file"
+	#ifndef __NEED_CLUSTER_ARM64
+		#error "bad cluster configuration?"
 	#endif
 
+	/* Cluster Interface Implementation */
+	#include <arch/cluster/arm64-cluster/_arm64-cluster.h>
+
 /**
- * @addtogroup arm64-core-regs CSRs
- * @ingroup arm64-core
+ * @addtogroup arm64-cluster ARM8 64-bits Cluster
+ * @ingroup clusters
  *
- * @brief Control and Status Registers (CSRs)
+ * @brief ARM8 64-bits Cluster
  */
 /**@{*/
 
-	/* Must come first. */
-	#define __NEED_CORE_MREGS
+	#include <arch/cluster/arm64-cluster/timer.h>
+	#include <arch/cluster/arm64-cluster/cores.h>
+	//#include <arch/cluster/arm64-cluster/event.h>
+	//#include <arch/cluster/arm64-cluster/memory.h>
 
-	#include <arch/core/arm64-core/mregs.h>
+	/**
+	 * @name Provided Features
+	 */
+	/**@{*/
+	#define CLUSTER_IS_MULTICORE  1 /**< Multicore Cluster */
+	#define CLUSTER_IS_IO         1 /**< I/O Cluster       */
+	#define CLUSTER_IS_COMPUTE    0 /**< Compute Cluster   */
+	#define CLUSTER_HAS_EVENTS    0 /**< Event Support?    */
+	#define CLUSTER_HAS_RTC       0 /**< RTC Support?      */
+	#define CLUSTER_HAS_IPI       0 /**< IPI Support?      */
+	/**@}*/
 
 /**@}*/
 
-#endif /* ARCH_CORE_ARM64_REGS_H_ */
+#endif /* CLUSTER_ARM64_CLUSTER_H_ */

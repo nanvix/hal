@@ -65,6 +65,12 @@
 		#define __NEED_TARGET_UNIX64
 		#include <arch/target/unix64/unix64.h>
 
+	#elif (defined(__qemu_arm64__))
+
+		#undef  __NEED_TARGET_QEMU_ARM64
+		#define __NEED_TARGET_QEMU_ARM64
+		#include <arch/target/qemu/arm64.h>
+
 	#else
 
 		#error "unknown target"

@@ -22,59 +22,26 @@
  * SOFTWARE.
  */
 
-#ifndef _NANVIX_HAL_CORE_CORE_H_
-#define _NANVIX_HAL_CORE_CORE_H_
+/* Must come first. */
+#define __NEED_HAL_CORE
 
-	/**
-	 * @defgroup cores Cores
-	 */
+#include <nanvix/hal/core.h>
+#include <nanvix/const.h>
+#include <nanvix/hlib.h>
 
-	#if (defined(__k1b__))
+/*============================================================================*
+ * arm64_core_poweroff()                                                      *
+ *============================================================================*/
 
-		#undef  __NEED_CORE_K1B
-		#define __NEED_CORE_K1B
-		#include <arch/core/k1b.h>
-
-	#elif (defined(__x86__))
-
-		#undef  __NEED_CORE_I486
-		#define __NEED_CORE_I486
-		#include <arch/core/i486.h>
-
-	#elif (defined(__or1200__))
-
-		#undef  __NEED_CORE_OR1K
-		#define __NEED_CORE_OR1K
-		#include <arch/core/or1k.h>
-
-	#elif (defined(__mor1kx__))
-
-		#undef  __NEED_CORE_MOR1KX
-		#define __NEED_CORE_MOR1KX
-		#include <arch/core/mor1kx.h>
-
-	#elif (defined(__rv32gc__))
-
-		#undef  __NEED_CORE_RV32GC
-		#define __NEED_CORE_RV32GC
-		#include <arch/core/rv32gc.h>
-
-	#elif (defined(__linux64_core__))
-
-		#undef  __NEED_CORE_LINUX64
-		#define __NEED_CORE_LINUX64
-		#include <arch/core/linux64.h>
-
-	#elif (defined(__arm64_core__))
-
-		#undef  __NEED_CORE_ARM64
-		#define __NEED_CORE_ARM64
-		#include <arch/core/arm64.h>
-
-	#else
-
-		#error "unkonwn core"
-
-	#endif
-
-#endif /* _NANVIX_HAL_CORE_CORE_H_ */
+/**
+ * The arm64_core_poweroff() function powers off the underlying core.
+ * After powering off a core, instruction execution cannot be
+ * resumed on it.
+ *
+ * @author Pedro Henrique Penna
+ * @author João Vicente Souto
+ */
+PUBLIC NORETURN void arm64_core_poweroff(void)
+{
+	core_halt();
+}

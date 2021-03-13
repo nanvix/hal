@@ -65,6 +65,12 @@
 		#define __NEED_PROCESSOR_LINUX64
 		#include <arch/processor/linux64.h>
 
+	#elif (defined(__arm64__))
+
+		#undef  __NEED_PROCESSOR_ARM64
+		#define __NEED_PROCESSOR_ARM64
+		#include <arch/processor/arm64.h>
+
 	#else
 
 		#error "unkonwn processor"

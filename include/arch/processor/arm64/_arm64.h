@@ -22,29 +22,13 @@
  * SOFTWARE.
  */
 
-#ifndef ARCH_CORE_ARM64_MREGS_H_
-#define ARCH_CORE_ARM64_MREGS_H_
+#ifndef _PROCESSOR_ARM64_H_
+#define _PROCESSOR_ARM64_H_
 
-	#ifndef __NEED_CORE_MREGS
-		#error "do not include this file"
-	#endif
+	#undef  __NEED_CLUSTER_ARM64
+	#define __NEED_CLUSTER_ARM64
+	#include <arch/cluster/arm64-cluster.h>
 
-/**
- * @addtogroup arm64-core-sregs Machine Registers
- * @ingroup arm64-core-regs
- *
- * @brief Machine Registers
- */
-/**@{*/
+#endif /* _PROCESSOR_ARM64_H_ */
 
-	#define __NEED_CORE_TYPES
-	#include <arch/core/arm64-core/types.h>
 
-	/**
-	 * @name Core Information Registers
-	 */
-	/**@{*/
-	#define ARM64_CSR_MAFFINITY_EL1 mpidr_el1 /**< Multiprocessor Affinity Register EL1   */
-	/**@}*/
-
-#endif /* ARCH_CORE_ARM64_MREGS_H_ */

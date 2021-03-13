@@ -34,12 +34,16 @@
  */
 /**@{*/
 
-	#include <arch/core/arm64-core/regs.h>
 	#include <arch/core/arm64-core/types.h>
 	#include <arch/core/arm64-core/mcall.h>
 	#include <nanvix/const.h>
 
 #ifndef _ASM_FILE_
+
+	/**
+	 * @brief Powers off the underlying core.
+	 */
+	EXTERN NORETURN void arm64_core_poweroff(void);
 
 	/**
 	 * @see Gets the ID of the underlying core.
@@ -50,5 +54,79 @@
 	}
 
 #endif /* _ASM_FILE_ */
+
+/**@}*/
+
+/*============================================================================*
+ * Exported Interface                                                         *
+ *============================================================================*/
+
+/**
+ * @cond arm64
+ */
+
+	/**
+	 * @brief Exported Constants
+	 */
+	/**@{*/
+	#define BYTE_BIT   ARM64_BYTE_BIT   /**< @see BYTE_BIT   */
+	#define HWORD_BIT  ARM64_HWORD_BIT  /**< @see HWORD_BIT  */
+	#define WORD_BIT   ARM64_WORD_BIT   /**< @see WORD_BIT   */
+	#define DWORD_BIT  ARM64_DWORD_BIT  /**< @see DWORD_BIT  */
+	#define BYTE_SIZE  ARM64_SIZE_SIZE  /**< @see BYTE_SIZE  */
+	#define HWORD_SIZE ARM64_HWORD_SIZE /**< @see HWORD_SIZE */
+	#define WORD_SIZE  ARM64_WORD_SIZE  /**< @see WORD_SIZE  */
+	#define DWORD_SIZE ARM64_DWORD_SIZE /**< @see DWORD_SIZE */
+	/**@}*/
+
+	/**
+	 * @brief Exported Types
+	 */
+	/**@{*/
+	#define __byte_t  /**< @see byte_t  */
+	#define __hword_t /**< @see hword_t */
+	#define __word_t  /**< @see word_t  */
+	#define __dword_t /**< @see dword_t */
+	/**@}*/
+
+	/**
+	 * @name Exported Functions
+	 */
+	/**@{*/
+	#define __core_get_id_fn    /**< core_get_id()    */
+	#define __core_poweroff_fn  /**< core_poweroff()  */
+	/**@}*/
+
+#ifndef _ASM_FILE_
+
+	/**
+	 * @name Core Types
+	 */
+	/**@{*/
+	typedef arm64_byte_t  byte_t;  /**< Byte        */
+	typedef arm64_hword_t hword_t; /**< Half Word   */
+	typedef arm64_word_t  word_t;  /**< Word        */
+	typedef arm64_dword_t dword_t; /**< Double Word */
+	/**@}*/
+
+	/**
+	 * @see arm64_get_core_id
+	 */
+	static inline int core_get_id(void)
+	{
+		return (arm64_core_get_id());
+	}
+
+	/**
+	 * @see arm64_core_poweroff().
+	 */
+	static inline NORETURN void core_poweroff(void)
+	{
+		arm64_core_poweroff();
+	}
+
+#endif /* _ASM_FILE_ */
+
+/**@endcond*/
 
 #endif /* ARCH_CORE_ARM64_CORE_H_ */

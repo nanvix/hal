@@ -22,71 +22,58 @@
  * SOFTWARE.
  */
 
-#ifndef ARCH_CORE_ARM64_MCALL_H_
-#define ARCH_CORE_ARM64_MCALL_H_
+#ifndef TARGET_QEMU_ARM64_H_
+#define TARGET_QEMU_ARM64_H_
+
+	#ifndef __NEED_TARGET_QEMU_ARM64
+		#error "bad target configuration?"
+	#endif
+
+	/* Target Interface Implementation */
+	#include <arch/target/qemu/arm64/_arm64.h>
 
 /**
- * @addtogroup arm64-core-mcall Machine Call
- * @ingroup arm64-core
+ * @defgroup target-qemu-arm64 QEMU ARM8 64-bits
+ * @ingroup targets
  *
- * @brief Machine Call Interface
+ * @brief QEMU ARM8 64-bits
  */
 /**@{*/
 
-	/* Must come first. */
-	#define __NEED_CORE_TYPES
-
-	#include <arch/core/arm64-core/types.h>
+	#include <arch/target/qemu/arm64/stdout.h>
 
 	/**
-	 * @name Machine Calls
+	 * @brief Frequency (in MHz).
 	 */
-	/**@{*/
-	#define ARM64_MCALL_CSR_READ       1 /**< arm64_mcall_csr_read()    */
-	/**@}*/
-
-#ifndef _ASM_FILE_
-
-	/**
-	 * @brief Issues a machine call with one argument.
-	 *
-	 * @param arg0     Argument 0.
-	 *
-	 * @returns The machine call return value.
-	 */
-	static inline arm64_word_t arm64_mcall_cpu_id(void)
-	{
-		
-		register arm64_word_t ret __asm__ ("x0");
-
-		__asm__ __volatile__ (
-			"mrs x0, mpidr_el1\n;"
-			"and x0, x0, #3\n;"
-		);
-		return (ret);
-	}
-
-	/**
-	 * @brief Issues a machine call with one argument.
-	 *
-	 * @param arg0     Argument 0.
-	 *
-	 * @returns The machine call return value.
-	 */
-	static inline arm64_word_t arm64_mcall_exception_level(void)
-	{
-		register arm64_word_t ret __asm__ ("x0");
-
-		__asm__ __volatile__ (
-			"mrs x0, CurrentEL\n;"
-			"and x0, x0, #12\n;"
-		);
-		return (ret);
-	}
-
-
-#endif /* _ASM_FILE_ */
+	#define QEMU_ARM64_FREQUENCY 10
 
 /**@}*/
 
-#endif /* ARCH_CORE_ARM64_MCALL_H_  */
+/*============================================================================*
+ * Exported Interface                                                         *
+ *============================================================================*/
+
+/**
+ * @cond qemu_arm64
+ */
+
+	/**
+	 * @name Exported Constants
+	 */
+	/**@{*/
+	#define TARGET_FREQUENCY QEMU_ARM64_FREQUENCY
+	/**@}*/
+
+	/**
+	 * @name Provided Features
+	 */
+	/**@{*/
+	#define __TARGET_HAS_STDOUT  1 /**< Standard Output feature */
+	#define __TARGET_HAS_SYNC    0 /**< Synchronization feature */
+	#define __TARGET_HAS_MAILBOX 0 /**< Mailbox feature         */
+	#define __TARGET_HAS_PORTAL  0 /**< Portal feature          */
+	/**@}*/
+
+/**@endcond*/
+
+#endif /* TARGET_QEMU_ARM64_H_ */
