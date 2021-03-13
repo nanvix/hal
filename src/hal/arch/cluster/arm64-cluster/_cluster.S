@@ -22,59 +22,41 @@
  * SOFTWARE.
  */
 
-#ifndef _NANVIX_HAL_CORE_CORE_H_
-#define _NANVIX_HAL_CORE_CORE_H_
+/* Must come first. */
+#define _ASM_FILE_
+#define __NEED_CORE_TYPES
 
-	/**
-	 * @defgroup cores Cores
-	 */
+#include <arch/core/arm64-core/types.h>
+#include <arch/core/arm64-core/asm.h>
 
-	#if (defined(__k1b__))
+/* Exported symbols. */
+.global _arm64_cluster_core_reset
 
-		#undef  __NEED_CORE_K1B
-		#define __NEED_CORE_K1B
-		#include <arch/core/k1b.h>
+.section .text
 
-	#elif (defined(__x86__))
+/*===========================================================================*
+ * _arm64_cluster_core_reset()                                             *
+ *===========================================================================*/
 
-		#undef  __NEED_CORE_I486
-		#define __NEED_CORE_I486
-		#include <arch/core/i486.h>
+/*
+ * Resets the underlying core
+ */
+.align ARM64_WORD_SIZE
+_arm64_cluster_core_reset:
 
-	#elif (defined(__or1200__))
+	arm64core_clear_gprs
 
-		#undef  __NEED_CORE_OR1K
-		#define __NEED_CORE_OR1K
-		#include <arch/core/or1k.h>
+	/* Get the core ID*/
+    mrs	x0, mpidr_el1
+	and	x0, x0, #3
 
-	#elif (defined(__mor1kx__))
+	/* Reset stack. */
+	arm64_core_stack_reset x0
 
-		#undef  __NEED_CORE_MOR1KX
-		#define __NEED_CORE_MOR1KX
-		#include <arch/core/mor1kx.h>
+	/* Restart core. */
+	bl arm64_cluster_slave_setup
+	b halt
 
-	#elif (defined(__rv32gc__))
-
-		#undef  __NEED_CORE_RV32GC
-		#define __NEED_CORE_RV32GC
-		#include <arch/core/rv32gc.h>
-
-	#elif (defined(__linux64_core__))
-
-		#undef  __NEED_CORE_LINUX64
-		#define __NEED_CORE_LINUX64
-		#include <arch/core/linux64.h>
-
-	#elif (defined(__arm64_core__))
-
-		#undef  __NEED_CORE_ARM64
-		#define __NEED_CORE_ARM64
-		#include <arch/core/arm64.h>
-
-	#else
-
-		#error "unkonwn core"
-
-	#endif
-
-#endif /* _NANVIX_HAL_CORE_CORE_H_ */
+/* Infinite loop */
+halt: wfe
+      b halt

@@ -65,6 +65,12 @@
 		#define __NEED_CLUSTER_LINUX64
 		#include <arch/cluster/linux64-cluster.h>
 
+	#elif (defined(__arm64_cluster__))
+
+		#undef  __NEED_CLUSTER_ARM64
+		#define __NEED_CLUSTER_ARM64
+		#include <arch/cluster/arm64-cluster.h>
+
 	#else
 
 		#error "unkonwn cluster"

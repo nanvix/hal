@@ -22,71 +22,44 @@
  * SOFTWARE.
  */
 
-#ifndef ARCH_CORE_ARM64_MCALL_H_
-#define ARCH_CORE_ARM64_MCALL_H_
+#ifndef ARCH_CORE_ARM64_TIMER_H_
+#define ARCH_CORE_ARM64_TIMER_H_
 
 /**
- * @addtogroup arm64-core-mcall Machine Call
- * @ingroup arm64-core
+ * @addtogroup arm64-timer Timer
+ * @ingroup arm64
  *
- * @brief Machine Call Interface
+ * @brief Programmable Timer Interface
  */
 /**@{*/
 
-	/* Must come first. */
-	#define __NEED_CORE_TYPES
-
-	#include <arch/core/arm64-core/types.h>
-
-	/**
-	 * @name Machine Calls
-	 */
-	/**@{*/
-	#define ARM64_MCALL_CSR_READ       1 /**< arm64_mcall_csr_read()    */
-	/**@}*/
+	#include <nanvix/const.h>
+	#include <posix/stdint.h>
 
 #ifndef _ASM_FILE_
 
 	/**
-	 * @brief Issues a machine call with one argument.
+	 * @brief Initializes the timer device.
 	 *
-	 * @param arg0     Argument 0.
-	 *
-	 * @returns The machine call return value.
+	 * @param freq     Timer frequency (in Hz).
+	 * @param timebase Timer time base.
+	 * @param mtime    Location of mtime register.
+	 * @param mtime    Location of mtimecmp register.
 	 */
-	static inline arm64_word_t arm64_mcall_cpu_id(void)
-	{
-		
-		register arm64_word_t ret __asm__ ("x0");
-
-		__asm__ __volatile__ (
-			"mrs x0, mpidr_el1\n;"
-			"and x0, x0, #3\n;"
-		);
-		return (ret);
-	}
+	EXTERN void arm64_timer_init(
+		uint64_t freq,
+		uint64_t timebase,
+		uint64_t *mtime,
+		uint64_t *mtimecmp
+	);
 
 	/**
-	 * @brief Issues a machine call with one argument.
-	 *
-	 * @param arg0     Argument 0.
-	 *
-	 * @returns The machine call return value.
+	 * @brief Resets the timer device.
 	 */
-	static inline arm64_word_t arm64_mcall_exception_level(void)
-	{
-		register arm64_word_t ret __asm__ ("x0");
+	EXTERN void arm64_timer_reset(void);
 
-		__asm__ __volatile__ (
-			"mrs x0, CurrentEL\n;"
-			"and x0, x0, #12\n;"
-		);
-		return (ret);
-	}
-
-
-#endif /* _ASM_FILE_ */
+#endif
 
 /**@}*/
 
-#endif /* ARCH_CORE_ARM64_MCALL_H_  */
+#endif /* ARCH_CORE_ARM64_TIMER */

@@ -22,71 +22,41 @@
  * SOFTWARE.
  */
 
-#ifndef ARCH_CORE_ARM64_MCALL_H_
-#define ARCH_CORE_ARM64_MCALL_H_
+#ifndef PROCESSOR_ARM64_H_
+#define PROCESSOR_ARM64_H_
+
+	#ifndef __NEED_PROCESSOR_ARM64
+		#error "bad processor configuration?"
+	#endif
+
+	/* Processor Interface Implementation */
+	#include <arch/processor/arm64/_arm64.h>
 
 /**
- * @addtogroup arm64-core-mcall Machine Call
- * @ingroup arm64-core
+ * @addtogroup processor-arm64 ARM8 64-bits
+ * @ingroup processors
  *
- * @brief Machine Call Interface
+ * @brief ARM8 64-bits Processor
  */
-/**@{*/
-
-	/* Must come first. */
-	#define __NEED_CORE_TYPES
-
-	#include <arch/core/arm64-core/types.h>
-
-	/**
-	 * @name Machine Calls
-	 */
-	/**@{*/
-	#define ARM64_MCALL_CSR_READ       1 /**< arm64_mcall_csr_read()    */
-	/**@}*/
-
-#ifndef _ASM_FILE_
-
-	/**
-	 * @brief Issues a machine call with one argument.
-	 *
-	 * @param arg0     Argument 0.
-	 *
-	 * @returns The machine call return value.
-	 */
-	static inline arm64_word_t arm64_mcall_cpu_id(void)
-	{
-		
-		register arm64_word_t ret __asm__ ("x0");
-
-		__asm__ __volatile__ (
-			"mrs x0, mpidr_el1\n;"
-			"and x0, x0, #3\n;"
-		);
-		return (ret);
-	}
-
-	/**
-	 * @brief Issues a machine call with one argument.
-	 *
-	 * @param arg0     Argument 0.
-	 *
-	 * @returns The machine call return value.
-	 */
-	static inline arm64_word_t arm64_mcall_exception_level(void)
-	{
-		register arm64_word_t ret __asm__ ("x0");
-
-		__asm__ __volatile__ (
-			"mrs x0, CurrentEL\n;"
-			"and x0, x0, #12\n;"
-		);
-		return (ret);
-	}
-
-
-#endif /* _ASM_FILE_ */
+/**@*/
 
 /**@}*/
 
-#endif /* ARCH_CORE_ARM64_MCALL_H_  */
+/*============================================================================*
+ * Provided Interface                                                         *
+ *============================================================================*/
+/**
+ * @cond arm64qemu
+ */
+
+	/**
+	 * @name Provided Features
+	 */
+	/**@{*/
+	#define PROCESSOR_IS_MULTICLUSTER 0 /**< Multicluster feature */
+	#define PROCESSOR_HAS_NOC         0 /**< NoC feature          */
+	/**@}*/
+
+/**@endcond*/
+
+#endif /* PROCESSOR_ARM64_H_ */
