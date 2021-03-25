@@ -22,74 +22,103 @@
  * SOFTWARE.
  */
 
-#ifndef ARCH_CLUSTER_CLUSTER_ARM64_CLUSTER_TIMER_H_
-#define ARCH_CLUSTER_CLUSTER_ARM64_CLUSTER_TIMER_H_
-
-	/* Cluster Interface Implementation */
-	#include <arch/cluster/arm64-cluster/_arm64-cluster.h>
-
-	/* Must come first. */
-	#define __NEED_CLUSTER_CLINT
+#ifndef ARCH_CORE_ARM64_SPINLOCK_H_
+#define ARCH_CORE_ARM64_SPINLOCK_H_
 
 /**
- * @addtogroup rscv32-cluster-timer Timer
- * @ingroup arm64-cluster
+ * @addtogroup arm64-core-spinlock Spinlock
+ * @ingroup arm64-core
  *
- * @brief 64-bit Timer
+ * @brief arm64 Spinlocks
  */
 /**@{*/
 
+#ifndef _ASM_FILE_
+
+	#include <nanvix/const.h>
 	#include <posix/stdint.h>
 
+#endif /* _ASM_FILE_ */
+
+#ifndef _ASM_FILE_
+
 	/**
-	 * @brief Timer frequency (10 MHz)
+	 * @brief Spinlock.
 	 */
-	#define ARM64_CLUSTER_TIMEBASE 10000000
+	typedef uint64_t arm64_spinlock_t;
+
+#endif
+
+/**@}*/
 
 /*============================================================================*
  * Exported Interface                                                         *
  *============================================================================*/
 
 /**
- * @cond arm64_cluster
+ * @cond arm64
  */
 
 	/**
-	 * @name Exported Constants
+	 * @name Provided Interface
 	 */
 	/**@{*/
-	#define CLUSTER_FREQ ARM64_CLUSTER_TIMEBASE /**< @see ARM64_CLUSTER_TIMEBASE */
+	#define __spinlock_t          /**< @see spinlock_t    */
+	#define __spinlock_init_fn    /**< spinlock_init()    */
+	#define __spinlock_lock_fn    /**< spinlock_lock()    */
+	#define __spinlock_trylock_fn /**< spinlock_trylock() */
+	#define __spinlock_unlock_fn  /**< spinlock_unlock()  */
 	/**@}*/
 
 	/**
-	 * @name Exported Functions
+	 * @name Spinlock State
 	 */
 	/**@{*/
-	#define __timer_init_fn   /**< timer_init() */
-	#define __timer_reset_fn /**< timer_reset() */
-	#define __clock_read_fn  /**< clock_read()  */
+	#define SPINLOCK_UNLOCKED 0 /**< @see ARM64_SPINLOCK_UNLOCKED */
 	/**@}*/
 
 #ifndef _ASM_FILE_
 
 	/**
-	 * @see timer_init().
+	 * @see arm64_spinlock_t
 	 */
-	#define __timer_init(freq) \
-		arm64_timer_init(freq)
+	typedef arm64_spinlock_t spinlock_t;
 
 	/**
-	 * @see arm64_timer_reset().
+	 * @see arm64_spinlock_init().
 	 */
-	#define timer_reset(void) \
-		arm64_timer_reset(void)
+	static inline void spinlock_init(spinlock_t *lock)
+	{
+		UNUSED(lock);
+	}
 
-#endif /* !_ASM_FILE_ */
+	/**
+	 * @see arm64_spinlock_trylock().
+	 */
+	static inline int spinlock_trylock(spinlock_t *lock)
+	{
+		UNUSED(lock);
+		return 0;
+	}
+
+	/**
+	 * @see arm64_spinlock_lock().
+	 */
+	static inline void spinlock_lock(spinlock_t *lock)
+	{
+		UNUSED(lock);
+	}
+
+	/**
+	 * @see arm64_spinlock_unlock().
+	 */
+	static inline void spinlock_unlock(spinlock_t *lock)
+	{
+		UNUSED(lock);
+	}
+
+#endif /* _ASM_FILE_ */
 
 /**@endcond*/
 
-/*============================================================================*/
-
-/**@}*/
-
-#endif /* ARCH_CLUSTER_CLUSTER_ARM64_CLUSTER_TIMER */
+#endif /* ARCH_CORE_ARM64_SPINLOCK_H_ */

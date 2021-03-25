@@ -22,71 +22,65 @@
  * SOFTWARE.
  */
 
-#ifndef ARCH_CORE_ARM64_MCALL_H_
-#define ARCH_CORE_ARM64_MCALL_H_
+
+#ifndef ARCH_CORE_ARM64_MACHINE_H_
+#define ARCH_CORE_ARM64_MACHINE_H_
 
 /**
- * @addtogroup arm64-core-mcall Machine Call
+ * @addtogroup arm64-core-machine Machine
  * @ingroup arm64-core
  *
- * @brief Machine Call Interface
+ * @brief Machine Interface
  */
 /**@{*/
 
+	#ifndef __NEED_CORE_MACHINE
+		#error "do not include this file"
+	#endif
+
 	/* Must come first. */
+	#define __NEED_CORE_CONTEXT
 	#define __NEED_CORE_TYPES
 
-	#include <arch/core/arm64-core/types.h>
-
-	/**
-	 * @name Machine Calls
-	 */
-	/**@{*/
-	#define ARM64_MCALL_CSR_READ       1 /**< arm64_mcall_csr_read()    */
-	/**@}*/
+	#include <arch/core/arm64/ctx.h>
+	#include <arch/core/arm64/types.h>
+	#include <nanvix/const.h>
 
 #ifndef _ASM_FILE_
 
 	/**
-	 * @brief Issues a machine call with one argument.
-	 *
-	 * @param arg0     Argument 0.
-	 *
-	 * @returns The machine call return value.
+	 * @brief Dumps all CSRs.
 	 */
-	static inline arm64_word_t arm64_mcall_cpu_id(void)
-	{
-		
-		register arm64_word_t ret __asm__ ("x0");
-
-		__asm__ __volatile__ (
-			"mrs x0, mpidr_el1\n;"
-			"and x0, x0, #3\n;"
-		);
-		return (ret);
-	}
+	EXTERN void arm64_dump_all_csr(void);
 
 	/**
-	 * @brief Issues a machine call with one argument.
-	 *
-	 * @param arg0     Argument 0.
-	 *
-	 * @returns The machine call return value.
+	 * @brief Handles a bad machine exception.
 	 */
-	static inline arm64_word_t arm64_mcall_exception_level(void)
-	{
-		register arm64_word_t ret __asm__ ("x0");
+	EXTERN NORETURN void arm64_do_mbad(const struct context *ctx);
 
-		__asm__ __volatile__ (
-			"mrs x0, CurrentEL\n;"
-			"and x0, x0, #12\n;"
-		);
-		return (ret);
-	}
+	/**
+	 * @brief Handles machine calls.
+	 *
+	 * @param ctx Interrupted context
+	 */
+	EXTERN void arm64_do_mcall(struct context *ctx);
 
+	/**
+	 * @brief Handles machine exceptions.
+	 *
+	 * @param ctx Interrupted context
+	 */
+	EXTERN NORETURN void arm64_do_mexcp(const struct context *ctx);
+
+	/**
+	 * @brief Handles machine interrupts.
+	 *
+	 * @param ctx Interrupted context.
+	 */
+	EXTERN void arm64_do_mint(const struct context *ctx);
 
 #endif /* _ASM_FILE_ */
 
 /**@}*/
 
-#endif /* ARCH_CORE_ARM64_MCALL_H_  */
+#endif /* ARCH_CORE_ARM64_MACHINE_H_ */

@@ -22,41 +22,18 @@
  * SOFTWARE.
  */
 
-/* Must come first. */
-#define _ASM_FILE_
-#define __NEED_CORE_TYPES
+#include <arch/core/arm64/timer.h>
+#include <nanvix/const.h>
+#include <nanvix/hlib.h>
+#include <posix/stdint.h>
 
-#include <arch/core/arm64/types.h>
-#include <arch/core/arm64/asm.h>
+PUBLIC void arm64_timer_reset(void)
+{
+}
 
-/* Exported symbols. */
-.global _arm64_cluster_core_reset
-
-.section .text
-
-/*===========================================================================*
- * _arm64_cluster_core_reset()                                             *
- *===========================================================================*/
-
-/*
- * Resets the underlying core
- */
-.align ARM64_WORD_SIZE
-_arm64_cluster_core_reset:
-
-	arm64core_clear_gprs
-
-	/* Get the core ID*/
-    mrs	x0, mpidr_el1
-	and	x0, x0, #3
-
-	/* Reset stack. */
-	arm64_core_stack_reset x0
-
-	/* Restart core. */
-	bl arm64_cluster_slave_setup
-	b halt
-
-/* Infinite loop */
-halt: wfe
-      b halt
+PUBLIC void arm64_timer_init(
+	uint64_t freq
+)
+{
+	UNUSED(freq);
+}

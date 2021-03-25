@@ -22,44 +22,24 @@
  * SOFTWARE.
  */
 
-#ifndef ARCH_CORE_ARM64_TIMER_H_
-#define ARCH_CORE_ARM64_TIMER_H_
+#include <nanvix/hal/cluster/memory.h>
+#include <arch/cluster/arm64-cluster/cores.h>
+#include <arch/cluster/arm64-cluster/memory.h>
+#include <nanvix/const.h>
 
 /**
- * @addtogroup arm64-timer Timer
- * @ingroup arm64
- *
- * @brief Programmable Timer Interface
+ * @brief Memory layout.
  */
-/**@{*/
-
-	#include <nanvix/const.h>
-	#include <posix/stdint.h>
-
-#ifndef _ASM_FILE_
-
-	/**
-	 * @brief Initializes the timer device.
-	 *
-	 * @param freq     Timer frequency (in Hz).
-	 * @param timebase Timer time base.
-	 * @param mtime    Location of mtime register.
-	 * @param mtime    Location of mtimecmp register.
-	 */
-	EXTERN void arm64_timer_init(
-		uint64_t freq,
-		uint64_t timebase,
-		uint64_t *mtime,
-		uint64_t *mtimecmp
-	);
-
-	/**
-	 * @brief Resets the timer device.
-	 */
-	EXTERN void arm64_timer_reset(void);
-
-#endif
-
-/**@}*/
-
-#endif /* ARCH_CORE_ARM64_TIMER */
+PUBLIC struct memory_region mem_layout[MEM_REGIONS] = {
+	{
+		.pbase = 0,
+		.vbase = 0,
+		.pend  = 0,
+		.vend  = 0,
+		.size  = 0,
+		.writable = true,
+		.executable = true,
+		.root_pgtab_num = 0,
+		.desc = "kernel"
+	}
+};

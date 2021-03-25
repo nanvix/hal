@@ -22,41 +22,33 @@
  * SOFTWARE.
  */
 
-/* Must come first. */
-#define _ASM_FILE_
-#define __NEED_CORE_TYPES
+#ifndef ARCH_CORE_ARM64_TIMER_H_
+#define ARCH_CORE_ARM64_TIMER_H_
 
-#include <arch/core/arm64/types.h>
-#include <arch/core/arm64/asm.h>
-
-/* Exported symbols. */
-.global _arm64_cluster_core_reset
-
-.section .text
-
-/*===========================================================================*
- * _arm64_cluster_core_reset()                                             *
- *===========================================================================*/
-
-/*
- * Resets the underlying core
+/**
+ * @addtogroup arm64-timer Timer
+ * @ingroup arm64
+ *
+ * @brief Programmable Timer Interface
  */
-.align ARM64_WORD_SIZE
-_arm64_cluster_core_reset:
+/**@{*/
 
-	arm64core_clear_gprs
+	#include <nanvix/const.h>
+	#include <posix/stdint.h>
 
-	/* Get the core ID*/
-    mrs	x0, mpidr_el1
-	and	x0, x0, #3
+#ifndef _ASM_FILE_
 
-	/* Reset stack. */
-	arm64_core_stack_reset x0
+	EXTERN void arm64_timer_init(
+		uint64_t freq
+	);
 
-	/* Restart core. */
-	bl arm64_cluster_slave_setup
-	b halt
+	/**
+	 * @brief Resets the timer device.
+	 */
+	EXTERN void arm64_timer_reset(void);
 
-/* Infinite loop */
-halt: wfe
-      b halt
+#endif
+
+/**@}*/
+
+#endif /* ARCH_CORE_ARM64_TIMER */

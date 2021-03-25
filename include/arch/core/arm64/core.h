@@ -34,8 +34,8 @@
  */
 /**@{*/
 
-	#include <arch/core/arm64-core/types.h>
-	#include <arch/core/arm64-core/mcall.h>
+	#include <arch/core/arm64/types.h>
+	#include <arch/core/arm64/mcall.h>
 	#include <nanvix/const.h>
 
 #ifndef _ASM_FILE_

@@ -62,7 +62,7 @@
 		raise(TEST_TRIGGERED_EXCEPTION_NUM);
 	}
 
-#elif defined(__rv32gc__) || defined(__or1k__)
+#elif defined(__rv32gc__) || defined(__or1k__) || defined(__arm64__)
 
 	/**
 	 * @brief Non-destrutive test not supported on RiscV 32
@@ -247,7 +247,7 @@ PRIVATE void test_exception_set_unset_handler(void)
  */
 PRIVATE void test_trigger_exception(void)
 {
-#if defined(__rv32gc__) || defined(__unix64__)
+#if defined(__rv32gc__) || defined(__unix64__) || (__arm64__)
 	/* Don't run destructive tests. */
 	if (!TEST_EXCEPTION_DESTRUCTIVE)
 		return;

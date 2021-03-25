@@ -23,20 +23,21 @@
  */
 
 #define __NEED_HAL_CLUSTER
-#include <nanvix/hal/clus ter.h>
+#include <nanvix/hal/cluster.h>
 #include <nanvix/const.h>
+#include <nanvix/hlib.h>
 
-EXTERN NORETURN void _main(int, const char *[]);
+EXTERN NORETURN void kmain(int, const char *[]);
 
-// /**
-//  * @brief Cores table.
-//  */
-// PUBLIC struct coreinfo cores[ARM64_CLUSTER_NUM_CORES] = {
-// 	{ true,  CORE_RUNNING,   0, NULL, RV32GC_SPINLOCK_UNLOCKED }, /* Master Core   */
-// 	{ false, CORE_RESETTING, 0, NULL, RV32GC_SPINLOCK_LOCKED   }, /* Slave Core 1  */
-// 	{ false, CORE_RESETTING, 0, NULL, RV32GC_SPINLOCK_LOCKED   }, /* Slave Core 2  */
-// 	{ false, CORE_RESETTING, 0, NULL, RV32GC_SPINLOCK_LOCKED   }, /* Slave Core 3  */
-// };
+/**
+ * @brief Cores table.
+ */
+PUBLIC struct coreinfo cores[ARM64_CLUSTER_NUM_CORES] = {
+	{ true,  CORE_RUNNING,   0, NULL, 0 }, /* Master Core   */
+	{ false, CORE_RESETTING, 0, NULL, 1   }, /* Slave Core 1  */
+	{ false, CORE_RESETTING, 0, NULL, 1   }, /* Slave Core 2  */
+	{ false, CORE_RESETTING, 0, NULL, 1   }, /* Slave Core 3  */
+};
 
 
 /*============================================================================*
@@ -48,12 +49,13 @@ PUBLIC void arm64_cluster_setup(void)
 	int coreid;
 
 	coreid = arm64_core_get_id();
+	UNUSED(coreid);
 
 	if (coreid == ARM64_CLUSTER_COREID_MASTER)
 		kprintf("[hal] booting up cluster...");
 
-	//mem_setup();
-	//core_setup(NULL);
+	mem_setup();
+	core_setup(NULL);
 }
 
 /*============================================================================*
@@ -75,6 +77,5 @@ PUBLIC NORETURN void arm64_cluster_slave_setup(void)
 PUBLIC NORETURN void arm64_cluster_master_setup(void)
 {	
 	arm64_cluster_setup();
-	_main(0, NULL);
-	while (true) {};
+	kmain(0, NULL);
 }

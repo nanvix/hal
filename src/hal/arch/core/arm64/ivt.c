@@ -23,40 +23,18 @@
  */
 
 /* Must come first. */
-#define _ASM_FILE_
+#define __NEED_CORE_IVT
+#define __NEED_CORE_REGS
 #define __NEED_CORE_TYPES
 
+#include <arch/core/arm64/ivt.h>
 #include <arch/core/arm64/types.h>
-#include <arch/core/arm64/asm.h>
+#include <nanvix/const.h>
 
-/* Exported symbols. */
-.global _arm64_cluster_core_reset
-
-.section .text
-
-/*===========================================================================*
- * _arm64_cluster_core_reset()                                             *
- *===========================================================================*/
-
-/*
- * Resets the underlying core
+/**
+ * @see arm64_ivt_setup().
  */
-.align ARM64_WORD_SIZE
-_arm64_cluster_core_reset:
-
-	arm64core_clear_gprs
-
-	/* Get the core ID*/
-    mrs	x0, mpidr_el1
-	and	x0, x0, #3
-
-	/* Reset stack. */
-	arm64_core_stack_reset x0
-
-	/* Restart core. */
-	bl arm64_cluster_slave_setup
-	b halt
-
-/* Infinite loop */
-halt: wfe
-      b halt
+PUBLIC void ivt_setup(void *stack)
+{
+	UNUSED(stack);
+}

@@ -26,37 +26,21 @@
 #define _ASM_FILE_
 #define __NEED_CORE_TYPES
 
-#include <arch/core/arm64/types.h>
 #include <arch/core/arm64/asm.h>
+#include <arch/core/arm64/upcall.h>
+#include <arch/core/arm64/types.h>
 
-/* Exported symbols. */
-.global _arm64_cluster_core_reset
+.global arm64_upcall_ret
 
 .section .text
 
 /*===========================================================================*
- * _arm64_cluster_core_reset()                                             *
+ * arm64_upcall_ret()                                                       *
  *===========================================================================*/
 
-/*
- * Resets the underlying core
- */
+//
+// Returns from an upcal
+//
 .align ARM64_WORD_SIZE
-_arm64_cluster_core_reset:
-
-	arm64core_clear_gprs
-
-	/* Get the core ID*/
-    mrs	x0, mpidr_el1
-	and	x0, x0, #3
-
-	/* Reset stack. */
-	arm64_core_stack_reset x0
-
-	/* Restart core. */
-	bl arm64_cluster_slave_setup
-	b halt
-
-/* Infinite loop */
-halt: wfe
-      b halt
+arm64_upcall_ret:
+	ret
