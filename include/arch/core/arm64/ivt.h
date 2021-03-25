@@ -22,41 +22,48 @@
  * SOFTWARE.
  */
 
-/* Must come first. */
-#define _ASM_FILE_
-#define __NEED_CORE_TYPES
+#ifndef ARCH_CORE_ARM64_IVT_H_
+#define ARCH_CORE_ARM64_IVT_H_
 
-#include <arch/core/arm64/types.h>
-#include <arch/core/arm64/asm.h>
+	#ifndef __NEED_CORE_IVT
+		#error "do not include this file"
+	#endif
 
-/* Exported symbols. */
-.global _arm64_cluster_core_reset
+	/* Must come first. */
+	#define __NEED_CORE_TYPES
 
-.section .text
-
-/*===========================================================================*
- * _arm64_cluster_core_reset()                                             *
- *===========================================================================*/
-
-/*
- * Resets the underlying core
+/**
+ * @addtogroup arm64-core-ivt IVT
+ * @ingroup arm64-core
+ *
+ * @brief Interrupt Vector Table
  */
-.align ARM64_WORD_SIZE
-_arm64_cluster_core_reset:
+/**@{*/
 
-	arm64core_clear_gprs
+	#include <arch/core/arm64/types.h>
+	#include <nanvix/const.h>
 
-	/* Get the core ID*/
-    mrs	x0, mpidr_el1
-	and	x0, x0, #3
+/**@}*/
 
-	/* Reset stack. */
-	arm64_core_stack_reset x0
+/*============================================================================*
+ * Exported Interface                                                         *
+ *============================================================================*/
 
-	/* Restart core. */
-	bl arm64_cluster_slave_setup
-	b halt
+/**
+ * @cond arm64
+ */
 
-/* Infinite loop */
-halt: wfe
-      b halt
+#ifndef _ASM_FILE_
+
+#ifdef __NANVIX_HAL
+
+	/**
+	 * @brief Initializes the interrupt vector table.
+	 */
+	EXTERN void ivt_setup(void *stack);
+
+#endif /* __NANVIX_HAL */
+
+#endif /* !_ASM_FILE_ */
+
+#endif /* ARCH_CORE_ARM64_IVT_H_ */

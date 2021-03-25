@@ -22,41 +22,65 @@
  * SOFTWARE.
  */
 
-/* Must come first. */
-#define _ASM_FILE_
-#define __NEED_CORE_TYPES
+#ifndef ARCH_CORE_ARM64_UPCALL_H_
+#define ARCH_CORE_ARM64_UPCALL_H_
 
-#include <arch/core/arm64/types.h>
-#include <arch/core/arm64/asm.h>
-
-/* Exported symbols. */
-.global _arm64_cluster_core_reset
-
-.section .text
-
-/*===========================================================================*
- * _arm64_cluster_core_reset()                                             *
- *===========================================================================*/
-
-/*
- * Resets the underlying core
+/**
+ * @addtogroup arm64-core-upcall Upcall
+ * @ingroup arm64-core
+ *
+ * @brief Upcall Interface
  */
-.align ARM64_WORD_SIZE
-_arm64_cluster_core_reset:
+/**@{*/
 
-	arm64core_clear_gprs
+#ifndef _ASM_FILE_
 
-	/* Get the core ID*/
-    mrs	x0, mpidr_el1
-	and	x0, x0, #3
+	/**
+	 * @brief Returns from an upcall.
+	 */
+	extern void arm64_upcall_ret(void);
 
-	/* Reset stack. */
-	arm64_core_stack_reset x0
+#endif
 
-	/* Restart core. */
-	bl arm64_cluster_slave_setup
-	b halt
+/**@}*/
 
-/* Infinite loop */
-halt: wfe
-      b halt
+/*============================================================================*
+ * Exported Interface                                                         *
+ *============================================================================*/
+
+/**
+ * @cond arm64
+ */
+
+	/**
+	 * @name Exported Constants
+	 */
+	/**@{*/
+	#define NR_upcall_ret 0 /**< @see NR_upcall_ret */
+	/**@}*/
+
+	/**
+	 * @name Exported Functions
+	 */
+	/**@{*/
+	#define __upcall_ret_fn /**< upcall_ret() */
+	/**@}*/
+
+#ifndef _ASM_FILE_
+
+	/**
+	 * @brief Alias for arm64_upcall_ret()
+	 *
+	 * @see arm64_upcall_ret().
+	 *
+	 * @note This should be an alias, otherwise the compiler may mess
+	 * up with the stack that we have crafted carefully.
+	 */
+	#define upcall_ret arm64_upcall_ret
+
+#endif
+
+/**@endcond*/
+
+#endif /* ARCH_CORE_ARM64_UPCALL_H_ */
+

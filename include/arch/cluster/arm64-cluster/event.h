@@ -22,29 +22,23 @@
  * SOFTWARE.
  */
 
-#ifndef ARCH_CLUSTER_CLUSTER_ARM64_CLUSTER_TIMER_H_
-#define ARCH_CLUSTER_CLUSTER_ARM64_CLUSTER_TIMER_H_
+#ifndef ARCH_CLUSTER_ARM64_CLUSTER_EVENT_H_
+#define ARCH_CLUSTER_ARM64_CLUSTER_EVENT_H_
 
 	/* Cluster Interface Implementation */
 	#include <arch/cluster/arm64-cluster/_arm64-cluster.h>
 
-	/* Must come first. */
-	#define __NEED_CLUSTER_CLINT
-
 /**
- * @addtogroup rscv32-cluster-timer Timer
+ * @addtogroup arm64-cluster-event Events
  * @ingroup arm64-cluster
  *
- * @brief 64-bit Timer
+ * @brief Events Interface
  */
 /**@{*/
 
-	#include <posix/stdint.h>
+	#include <nanvix/const.h>
 
-	/**
-	 * @brief Timer frequency (10 MHz)
-	 */
-	#define ARM64_CLUSTER_TIMEBASE 10000000
+/**@}*/
 
 /*============================================================================*
  * Exported Interface                                                         *
@@ -55,41 +49,44 @@
  */
 
 	/**
-	 * @name Exported Constants
-	 */
-	/**@{*/
-	#define CLUSTER_FREQ ARM64_CLUSTER_TIMEBASE /**< @see ARM64_CLUSTER_TIMEBASE */
-	/**@}*/
-
-	/**
 	 * @name Exported Functions
 	 */
 	/**@{*/
-	#define __timer_init_fn   /**< timer_init() */
-	#define __timer_reset_fn /**< timer_reset() */
-	#define __clock_read_fn  /**< clock_read()  */
+	#define __event_notify_fn /**< event_notify() */
+	#define __event_wait_fn   /**< event_wait()   */
+	#define __event_reset_fn  /**< event_reset()  */
 	/**@}*/
 
 #ifndef _ASM_FILE_
 
 	/**
-	 * @see timer_init().
+	 * @see arm64_cluster_event_notify()
 	 */
-	#define __timer_init(freq) \
-		arm64_timer_init(freq)
+	static inline int __event_notify(int coreid)
+	{
+		UNUSED(coreid);
+		return 0;
+	}
 
 	/**
-	 * @see arm64_timer_reset().
+	 * @see arm64_cluster_event_wait().
 	 */
-	#define timer_reset(void) \
-		arm64_timer_reset(void)
+	static inline void __event_wait(void)
+	{
+		
+	}
 
-#endif /* !_ASM_FILE_ */
+	/**
+	 * @brief Dummy function
+	 */
+	static inline void __event_reset(void)
+	{
+		/* noop. */
+	}
+
+#endif /* _ASM_FILE_ */
 
 /**@endcond*/
 
-/*============================================================================*/
+#endif /* ARCH_CLUSTER_ARM64_CLUSTER_EVENT_H_ */
 
-/**@}*/
-
-#endif /* ARCH_CLUSTER_CLUSTER_ARM64_CLUSTER_TIMER */

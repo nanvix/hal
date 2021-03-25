@@ -25,7 +25,7 @@
 /* Must come first. */
 #define _ASM_FILE_
 
-#include <arch/core/arm64-core/asm.h>
+#include <arch/core/arm64/asm.h>
 #include <arch/cluster/arm64-cluster/cores.h>
 #include <arch/cluster/arm64-cluster/psci.h>
 

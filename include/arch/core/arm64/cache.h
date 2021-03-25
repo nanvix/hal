@@ -22,41 +22,58 @@
  * SOFTWARE.
  */
 
-/* Must come first. */
-#define _ASM_FILE_
-#define __NEED_CORE_TYPES
+#ifndef ARCH_CORE_ARM64_CACHE_H_
+#define ARCH_CORE_ARM64_CACHE_H_
 
-#include <arch/core/arm64/types.h>
-#include <arch/core/arm64/asm.h>
-
-/* Exported symbols. */
-.global _arm64_cluster_core_reset
-
-.section .text
-
-/*===========================================================================*
- * _arm64_cluster_core_reset()                                             *
- *===========================================================================*/
-
-/*
- * Resets the underlying core
+/**
+ * @addtogroup arm64-core-cache Cache
+ * @ingroup arm64-core
+ *
+ * @brief Memory Cache
  */
-.align ARM64_WORD_SIZE
-_arm64_cluster_core_reset:
+/**@{*/
 
-	arm64core_clear_gprs
+/*============================================================================*
+ * Exported Interface                                                         *
+ *============================================================================*/
 
-	/* Get the core ID*/
-    mrs	x0, mpidr_el1
-	and	x0, x0, #3
+/**
+ * @cond arm64
+ */
 
-	/* Reset stack. */
-	arm64_core_stack_reset x0
+	/**
+	 * @name Provided Interface
+	 */
+	/**@{*/
+	#define __dcache_invalidate_fn /**< dcache_invalidate() */
+	#define __icache_invalidate_fn /**< icache_invalidate() */
+	/**@}*/
 
-	/* Restart core. */
-	bl arm64_cluster_slave_setup
-	b halt
+	/**
+	 * @see RV32GC_CACHE_LINE_SIZE.
+	 */
+	#define CACHE_LINE_SIZE 1
 
-/* Infinite loop */
-halt: wfe
-      b halt
+#ifndef _ASM_FILE_
+
+	/**
+	 * @see arm64_dcache_inval().
+	 */
+	static inline void dcache_invalidate(void)
+	{
+		
+	}
+
+	/**
+	 * @see arm64_icache_inval().
+	 */
+	static inline void icache_invalidate(void)
+	{
+		
+	}
+
+#endif
+
+/**@endcond*/
+
+#endif /* ARCH_CORE_ARM64_CACHE_H_ */

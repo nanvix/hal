@@ -48,8 +48,8 @@
 	 */
 	/**@{*/
 	#define ARM64_BYTE_BIT    8 /**< Byte        */
-	#define ARM64_HWORD_BIT  16 /**< Half Word   */
-	#define ARM64_WORD_BIT   32 /**< Word        */
+	#define ARM64_HWORD_BIT  32 /**< Half Word   */
+	#define ARM64_WORD_BIT   64 /**< Word        */
 	#define ARM64_DWORD_BIT  64 /**< Double Word */
 	/**@}*/
 
@@ -58,8 +58,8 @@
 	 */
 	/**@{*/
 	#define ARM64_BYTE_SIZE   1 /**< Byte        */
-	#define ARM64_HWORD_SIZE  2 /**< Half Word   */
-	#define ARM64_WORD_SIZE   4 /**< Word        */
+	#define ARM64_HWORD_SIZE  4 /**< Half Word   */
+	#define ARM64_WORD_SIZE   8 /**< Word        */
 	#define ARM64_DWORD_SIZE  8 /**< Double Word */
 	/**@}*/
 
@@ -89,6 +89,31 @@
 	 */
 	/**@{*/
 
+	#ifdef __NEED_MEMORY_TYPES
+	#ifndef __ARM64_MEMORY_TYPES
+	#define __ARM64_MEMORY_TYPES
+
+		/**
+		 * @name Casters for Memory Types
+		 */
+		/**@{*/
+		#define ARM64_PADDR(x) ((arm64_paddr_t)(x)) /**< To Physical Address */
+		#define ARM64_VADDR(x) ((arm64_vaddr_t)(x)) /**< To Virtual Address  */
+		#define ARM64_FRAME(x) ((arm64_frame_t)(x)) /**< To Frame Number     */
+		/**@}*/
+
+		/**
+		 * @name Memory Types
+		 */
+		/**@{*/
+		typedef uint64_t arm64_paddr_t; /**< Physical Address */
+		typedef uint64_t arm64_frame_t; /**< Frame Number     */
+		typedef uint64_t arm64_vaddr_t; /**< Virtual Address  */
+		/**@}*/
+
+	#endif /* __ARM64_MEMORY_TYPES */
+	#endif
+
 	#ifdef __NEED_CORE_TYPES
 	#ifndef __ARM64_CORE_TYPES
 	#define __ARM64_CORE_TYPES
@@ -98,8 +123,8 @@
 		 */
 		/**@{*/
 		typedef uint8_t arm64_byte_t;   /**< Byte        */
-		typedef uint16_t arm64_hword_t; /**< Half Word   */
-		typedef uint32_t arm64_word_t;  /**< Word        */
+		typedef uint32_t arm64_hword_t; /**< Half Word   */
+		typedef uint64_t arm64_word_t;  /**< Word        */
 		typedef uint64_t arm64_dword_t; /**< Double Word */
 		/**@}*/
 

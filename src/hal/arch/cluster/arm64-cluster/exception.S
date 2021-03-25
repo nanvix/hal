@@ -25,9 +25,9 @@
 /* Must come first. */
 #define _ASM_FILE_
 
-#include <arch/core/arm64-core/asm.h>
+#include <arch/core/arm64/asm.h>
 
-.section ".exceptions"
+.section ".text"
 
 /* Exported symbols. */
 .globl _exception_vector_table

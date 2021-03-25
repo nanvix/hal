@@ -46,7 +46,7 @@ PUBLIC void uart_pl011_write(const char *buf, size_t n)
 	 * was already initialized.
 	 */
 	if (!initialized)
-		return;
+		uart_pl011_init();
 	
 	while (n)
 	{

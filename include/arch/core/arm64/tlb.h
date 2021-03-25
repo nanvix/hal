@@ -22,41 +22,57 @@
  * SOFTWARE.
  */
 
-/* Must come first. */
-#define _ASM_FILE_
-#define __NEED_CORE_TYPES
+#ifndef ARCH_CORE_ARM64_TLB_H_
+#define ARCH_CORE_ARM64_TLB_H_
 
-#include <arch/core/arm64/types.h>
-#include <arch/core/arm64/asm.h>
+	/* Must come first. */
+	#define __NEED_CORE_TYPES
 
-/* Exported symbols. */
-.global _arm64_cluster_core_reset
-
-.section .text
-
-/*===========================================================================*
- * _arm64_cluster_core_reset()                                             *
- *===========================================================================*/
-
-/*
- * Resets the underlying core
+/**
+ * @addtogroup arm64-core-tlb TLB
+ * @ingroup arm64-core
+ *
+ * @brief Translation Lookaside Buffer
  */
-.align ARM64_WORD_SIZE
-_arm64_cluster_core_reset:
+/**@{*/
 
-	arm64core_clear_gprs
+	#include <arch/core/arm64/types.h>
+	#include <nanvix/const.h>
+	
 
-	/* Get the core ID*/
-    mrs	x0, mpidr_el1
-	and	x0, x0, #3
+/*============================================================================*
+ * Exported Interface                                                         *
+ *============================================================================*/
 
-	/* Reset stack. */
-	arm64_core_stack_reset x0
+	/**
+	 * @name Exported Functions
+	 */
+	/**@{*/
+	#define __tlb_flush_fn /**< tlb_flush() */
+	#define __tlb_load_fn  /**< tlb_load()  */
+	/**@}*/
 
-	/* Restart core. */
-	bl arm64_cluster_slave_setup
-	b halt
+#ifndef _ASM_FILE_
 
-/* Infinite loop */
-halt: wfe
-      b halt
+	/**
+	 * @see arm64_tlb_flush().
+	 */
+	static inline int tlb_flush(void)
+	{
+		return 0;
+	}
+
+	/**
+	 * @see arm64_tlb_load().
+	 */
+	static inline int tlb_load(paddr_t pgdir)
+	{
+		UNUSED(pgdir);
+		return 0;
+	}
+
+#endif /* _ASM_FILE_ */
+
+/**@}*/
+
+#endif /* ARCH_CORE_ARM64_TLB_H_ */

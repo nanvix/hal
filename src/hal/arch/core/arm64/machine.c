@@ -23,40 +23,71 @@
  */
 
 /* Must come first. */
-#define _ASM_FILE_
+#define __NEED_CORE_CONTEXT
 #define __NEED_CORE_TYPES
+#define __NEED_CORE_REGS
 
+#include <arch/core/arm64/ctx.h>
+#include <arch/core/arm64/excp.h>
+#include <arch/core/arm64/mcall.h>
 #include <arch/core/arm64/types.h>
-#include <arch/core/arm64/asm.h>
+#include <nanvix/const.h>
+#include <nanvix/hlib.h>
+#include <posix/errno.h>
 
-/* Exported symbols. */
-.global _arm64_cluster_core_reset
-
-.section .text
-
-/*===========================================================================*
- * _arm64_cluster_core_reset()                                             *
- *===========================================================================*/
-
-/*
- * Resets the underlying core
+/**
+ * @todo TODO provide a detailed description for this function.
+ *
  */
-.align ARM64_WORD_SIZE
-_arm64_cluster_core_reset:
+PUBLIC void arm64_dump_all_csr(void)
+{
+	//TODO
+}
 
-	arm64core_clear_gprs
+/**
+ * @todo TODO provide a detailed description for this function.
+ *
+ */
+PUBLIC NORETURN void arm64_do_mbad(const struct context *ctx)
+{
+	arm64_context_dump(ctx);
+	arm64_dump_all_csr();
 
-	/* Get the core ID*/
-    mrs	x0, mpidr_el1
-	and	x0, x0, #3
+	kprintf("[arm64] bad exception");
+	UNREACHABLE();
+}
 
-	/* Reset stack. */
-	arm64_core_stack_reset x0
+/**
+ * @todo TODO provide a detailed description for this function.
+ *
+ */
+PUBLIC NORETURN void arm64_do_mexcp(const struct context *ctx)
+{
+	arm64_context_dump(ctx);
+	arm64_dump_all_csr();
 
-	/* Restart core. */
-	bl arm64_cluster_slave_setup
-	b halt
+	kprintf("[arm64] unhandled exception");
+	UNREACHABLE();
+}
 
-/* Infinite loop */
-halt: wfe
-      b halt
+/**
+ * @todo TODO provide a detailed description for this function.
+ *
+ */
+PUBLIC void arm64_do_mcall(struct context *ctx)
+{
+	UNUSED(ctx);
+}
+
+/**
+ * @todo TODO provide a detailed description for this function.
+ *
+ */
+PUBLIC void arm64_do_mint(const struct context *ctx)
+{
+	arm64_context_dump(ctx);
+	arm64_dump_all_csr();
+
+	kprintf("[arm64] unhandled interrupt");
+	UNREACHABLE();
+}

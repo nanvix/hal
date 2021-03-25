@@ -23,40 +23,20 @@
  */
 
 /* Must come first. */
-#define _ASM_FILE_
-#define __NEED_CORE_TYPES
+#define __NEED_CORE_CONTEXT
+#define __NEED_CORE_REGS
 
-#include <arch/core/arm64/types.h>
-#include <arch/core/arm64/asm.h>
+#include <arch/core/arm64/ctx.h>
+#include <nanvix/const.h>
+#include <nanvix/hlib.h>
 
-/* Exported symbols. */
-.global _arm64_cluster_core_reset
-
-.section .text
-
-/*===========================================================================*
- * _arm64_cluster_core_reset()                                             *
- *===========================================================================*/
-
-/*
- * Resets the underlying core
+/**
+ * @todo TODO provide a detailed description for this function.
+ *
  */
-.align ARM64_WORD_SIZE
-_arm64_cluster_core_reset:
-
-	arm64core_clear_gprs
-
-	/* Get the core ID*/
-    mrs	x0, mpidr_el1
-	and	x0, x0, #3
-
-	/* Reset stack. */
-	arm64_core_stack_reset x0
-
-	/* Restart core. */
-	bl arm64_cluster_slave_setup
-	b halt
-
-/* Infinite loop */
-halt: wfe
-      b halt
+PUBLIC void arm64_context_dump(const struct context *ctx)
+{
+	UNUSED(ctx);
+	/* Dump general purpose registers. */
+	kprintf("teste context dump");
+}

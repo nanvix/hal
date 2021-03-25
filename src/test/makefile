@@ -82,7 +82,7 @@ C_SRC += core/perf.c
 
 else ifeq ($(TARGET), qemu-arm64)
 
-C_SRC = 
+ASM_SRC = $(wildcard core/arch/arm64.S)
 
 endif
 

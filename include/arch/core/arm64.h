@@ -34,24 +34,22 @@
 		#error "arm64 core not required"
 	#endif
 
-	// #include <arch/core/rv32gc/cache.h>
-	#include <arch/core/arm64-core/timer.h>
-	#include <arch/core/arm64-core/core.h>
-	// #include <arch/core/rv32gc/excp.h>
-	// #include <arch/core/rv32gc/int.h>
-	// #include <arch/core/rv32gc/ivt.h>
-	// #include <arch/core/rv32gc/mmu.h>
-	// #include <arch/core/rv32gc/spinlock.h>
-	// #include <arch/core/rv32gc/tlb.h>
-	// #include <arch/core/rv32gc/trap.h>
-	// #include <arch/core/rv32gc/upcall.h>
+	#define __NEED_CORE_IVT
 
-	// #ifdef __NEED_CORE_MACHINE
-	// 	#include <arch/core/rv32gc/machine.h>
-	// #endif
+	#include <arch/core/arm64/cache.h>
+	#include <arch/core/arm64/timer.h>
+	#include <arch/core/arm64/core.h>
+	#include <arch/core/arm64/excp.h>
+	#include <arch/core/arm64/int.h>
+	#include <arch/core/arm64/ivt.h>
+	#include <arch/core/arm64/mmu.h>
+	#include <arch/core/arm64/spinlock.h>
+	#include <arch/core/arm64/tlb.h>
+	#include <arch/core/arm64/trap.h>
+	#include <arch/core/arm64/upcall.h>
 
 	#ifdef _ASM_FILE_
-		#include <arch/core/arm64-core/asm.h>
+		#include <arch/core/arm64/asm.h>
 	#endif
 
 /**
@@ -63,9 +61,9 @@
 	 */
 	/**@{*/
 	#define CORE_HAS_PERF                0 /**< Has Performance Monitors?          */
-	#define CORE_HAS_ATOMICS             0 /**< Has Atomic Instructions?           */
+	#define CORE_HAS_ATOMICS             1 /**< Has Atomic Instructions?           */
 	#define CORE_HAS_PMIO                0 /**< Has Programmed I/O?                */
-	#define CORE_HAS_TLB_HW              0 /**< Has Hardware-Managed TLB?          */
+	#define CORE_HAS_TLB_HW              1 /**< Has Hardware-Managed TLB?          */
 	#define CORE_HAS_CACHE_HW            0 /**< Has Hardware-Managed Cache?        */
 	#define CORE_HAS_HUGE_PAGES          0 /**< Are Huge Pages Supported?          */
 	#define CORE_IS_LITTLE_ENDIAN        1 /**< Is Little Endian?                  */

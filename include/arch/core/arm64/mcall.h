@@ -22,41 +22,71 @@
  * SOFTWARE.
  */
 
-#ifndef CLUSTER_ARM64_CLUSTER_H_
-#define CLUSTER_ARM64_CLUSTER_H_
-
-	#ifndef __NEED_CLUSTER_ARM64
-		#error "bad cluster configuration?"
-	#endif
-
-	/* Cluster Interface Implementation */
-	#include <arch/cluster/arm64-cluster/_arm64-cluster.h>
+#ifndef ARCH_CORE_ARM64_MCALL_H_
+#define ARCH_CORE_ARM64_MCALL_H_
 
 /**
- * @addtogroup arm64-cluster ARM8 64-bits Cluster
- * @ingroup clusters
+ * @addtogroup arm64-core-mcall Machine Call
+ * @ingroup arm64-core
  *
- * @brief ARM8 64-bits Cluster
+ * @brief Machine Call Interface
  */
 /**@{*/
 
-	#include <arch/cluster/arm64-cluster/timer.h>
-	#include <arch/cluster/arm64-cluster/cores.h>
-	#include <arch/cluster/arm64-cluster/event.h>
-	#include <arch/cluster/arm64-cluster/memory.h>
+	/* Must come first. */
+	#define __NEED_CORE_TYPES
+
+	#include <arch/core/arm64/types.h>
 
 	/**
-	 * @name Provided Features
+	 * @name Machine Calls
 	 */
 	/**@{*/
-	#define CLUSTER_IS_MULTICORE  1 /**< Multicore Cluster */
-	#define CLUSTER_IS_IO         1 /**< I/O Cluster       */
-	#define CLUSTER_IS_COMPUTE    0 /**< Compute Cluster   */
-	#define CLUSTER_HAS_EVENTS    0 /**< Event Support?    */
-	#define CLUSTER_HAS_RTC       0 /**< RTC Support?      */
-	#define CLUSTER_HAS_IPI       0 /**< IPI Support?      */
+	#define ARM64_MCALL_CSR_READ       1 /**< arm64_mcall_csr_read()    */
 	/**@}*/
+
+#ifndef _ASM_FILE_
+
+	/**
+	 * @brief Issues a machine call with one argument.
+	 *
+	 * @param arg0     Argument 0.
+	 *
+	 * @returns The machine call return value.
+	 */
+	static inline arm64_word_t arm64_mcall_cpu_id(void)
+	{
+		
+		register arm64_word_t ret __asm__ ("x0");
+
+		__asm__ __volatile__ (
+			"mrs x0, mpidr_el1\n;"
+			"and x0, x0, #3\n;"
+		);
+		return (ret);
+	}
+
+	/**
+	 * @brief Issues a machine call with one argument.
+	 *
+	 * @param arg0     Argument 0.
+	 *
+	 * @returns The machine call return value.
+	 */
+	static inline arm64_word_t arm64_mcall_exception_level(void)
+	{
+		register arm64_word_t ret __asm__ ("x0");
+
+		__asm__ __volatile__ (
+			"mrs x0, CurrentEL\n;"
+			"and x0, x0, #12\n;"
+		);
+		return (ret);
+	}
+
+
+#endif /* _ASM_FILE_ */
 
 /**@}*/
 
-#endif /* CLUSTER_ARM64_CLUSTER_H_ */
+#endif /* ARCH_CORE_ARM64_MCALL_H_  */
