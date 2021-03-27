@@ -165,6 +165,7 @@ PUBLIC NORETURN void rv32gc_supervisor_enter(rv32gc_word_t pc)
 	mstatus = rv32gc_mstatus_read();
 	mstatus = BITS_SET(mstatus, RV32GC_MSTATUS_MPP, RV32GC_PRV_S);
 	mstatus = BITS_SET(mstatus, RV32GC_MSTATUS_MPIE, 0);
+	mstatus = BITS_SET(mstatus, RV32GC_MSTATUS_SUM, 0);
 	rv32gc_mstatus_write(mstatus);
 
 	/* Set target program counter. */
