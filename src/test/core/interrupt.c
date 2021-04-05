@@ -79,6 +79,7 @@ PRIVATE void test_interrupt_register_unregister(void)
  */
 PRIVATE void test_interrupt_enable_disable(void)
 {
+#ifndef __arm64__
 #ifndef __unix64__
 #ifdef __optimsoc__
 	const int ntrials = 1000;
@@ -112,6 +113,7 @@ PRIVATE void test_interrupt_enable_disable(void)
 		noop();
 		KASSERT(ncalls == 0);
 	}
+#endif
 #endif
 }
 

@@ -43,38 +43,58 @@
 #ifndef _ASM_FILE_
 
 	/**
+	 * @name Page Shifts and Masks
+	 */
+	/**@{*/
+	#define ARM64_PAGE_SHIFT  16                          /**< Page Shift        */
+	#define ARM64_PGTAB_SHIFT 24                          /**< Page Table Shift  */
+	#define ARM64_PAGE_MASK   (~(ARM64_PAGE_SIZE - 1))  /**< Page Mask         */
+	#define ARM64_PGTAB_MASK  (~(ARM64_PGTAB_SIZE - 1)) /**< Page Table Mask   */
+	/**@}*/
+
+	/**
+	 * @name Size of Pages and Page Tables
+	 */
+	/**@{*/
+	#define ARM64_HUGE_PAGE_SIZE (0x1UL << ARM64_PAGE_SHIFT)  /**< Huge Page Size                       */
+	#define ARM64_PAGE_SIZE      (0x1UL << ARM64_PAGE_SHIFT)  /**< Page Size                            */
+	#define ARM64_PGTAB_SIZE     (0x1UL << ARM64_PGTAB_SHIFT) /**< Page Table Size                      */
+	#define ARM64_PTE_SIZE        6                             /**< Page Table Entry Size (in bytes)     */
+	#define ARM64_PDE_SIZE        6                             /**< Page Directory Entry Size (in bytes) */
+	/**@}*/
+
+	#define ARM64_VADDR_LENGTH 48
+
+	#define ARM64_PGDIR_LENGTH (1 << (ARM64_VADDR_LENGTH - ARM64_PGTAB_SHIFT))
+
+	#define ARM64_PGTAB_LENGTH (1 << (ARM64_PGTAB_SHIFT - ARM64_PAGE_SHIFT))
+
+
+	/**
 	 * @brief Page directory entry.
 	 */
 	struct pde
 	{
-		unsigned valid      :  1; /**< Valid?       */
-		unsigned readable   :  1; /**< Readable?    */
-		unsigned writable   :  1; /**< Writable?    */
-		unsigned executable :  1; /**< Executable?  */
-		unsigned user       :  1; /**< User page?   */
-		unsigned global     :  1; /**< Global Page? */
-		unsigned            :  1; /**< Reserved     */
-		unsigned            :  1; /**< Reserved     */
-		unsigned            :  2; /**< Reserved     */
-		unsigned frame      : 22; /**< Frame Number */
-	};
+		unsigned present  :  1; /**< Present in memory? */
+		unsigned writable :  1; /**< Writable page?     */
+		unsigned user     :  1; /**< User page?         */
+		unsigned accessed :  1; /**< Accessed?          */
+		unsigned          : 12; /**< Unused.            */
+		unsigned frame    : 32; /**< Frame number.      */
+	} PACK;
 
 	/**
 	 * @brief Page table entry.
 	 */
 	struct pte
 	{
-		unsigned valid      :  1; /**< Valid?       */
-		unsigned readable   :  1; /**< Readable?    */
-		unsigned writable   :  1; /**< Writable?    */
-		unsigned executable :  1; /**< Executable?  */
-		unsigned user       :  1; /**< User page?   */
-		unsigned global     :  1; /**< Global Page? */
-		unsigned accessed   :  1; /**< Accessed?    */
-		unsigned dirty      :  1; /**< Dirty?       */
-		unsigned            :  2; /**< Reserved     */
-		unsigned frame      : 22; /**< Frame Number */
-	};
+		unsigned present  :  1; /**< Present in memory? */
+		unsigned writable :  1; /**< Writable page?     */
+		unsigned user     :  1; /**< User page?         */
+		unsigned accessed :  1; /**< Accessed?          */
+		unsigned          : 12; /**< Unused.            */
+		unsigned frame    : 32; /**< Frame number.      */
+	} PACK;
 
 #endif
 
@@ -92,21 +112,21 @@
 	 * @name Exported Constants
 	 */
 	/**@{*/
-	#define KPAGE_SIZE   8    /**< @ref ARM64_PAGE_SIZE    */
-	#define PAGE_SIZE    8    /**< @ref ARM64_PAGE_SIZE    */
-	#define PGTAB_SIZE   8   /**< @ref ARM64_PGTAB_SIZE   */
-	#define PGTAB_LENGTH 8 /**< @ref ARM64_PGTAB_LENGTH */
-	#define PGDIR_LENGTH 8 /**< @ref ARM64_PGDIR_LENGTH */
-	#define PTE_SIZE     4     /**< @ref ARM64_PTE_SIZE     */
-	#define PDE_SIZE     4     /**< @ref ARM64_PDE_SIZE     */
-	#define PAGE_SHIFT   12   /**< @ref ARM64_PAGE_SHIFT   */
-	#define PGTAB_SHIFT  22  /**< @ref ARM64_PGTAB_SHIFT  */
-	#define PAGE_MASK    0    /**< @ref ARM64_PAGE_MASK    */
-	#define PGTAB_MASK   0   /**< @ref ARM64_PGTAB_MASK   */
-	#define PADDR_BIT    64    /**< @ref ARM64_PADDR_BIT    */
-	#define VADDR_BIT    64    /**< @ref ARM64_VADDR_BIT    */
-	#define PADDR_BYTE   8   /**< @ref ARM64_PADDR_BYTE   */
-	#define VADDR_BYTE   8   /**< @ref ARM64_VADDR_BYTE   */
+	#define KPAGE_SIZE   ARM64_HUGE_PAGE_SIZE /**< @ref ARM64_HUGE_PAGE_SIZE */
+	#define PAGE_SIZE    ARM64_PAGE_SIZE      /**< @ref ARM64_PAGE_SIZE      */
+	#define PGTAB_SIZE   ARM64_PGTAB_SIZE     /**< @ref ARM64_PGTAB_SIZE     */
+	#define PGTAB_LENGTH ARM64_PGTAB_LENGTH   /**< @ref ARM64_PGTAB_LENGTH   */
+	#define PGDIR_LENGTH ARM64_PGDIR_LENGTH   /**< @ref ARM64_PGDIR_LENGTH   */
+	#define PTE_SIZE     ARM64_PTE_SIZE       /**< @ref ARM64_PTE_SIZE       */
+	#define PDE_SIZE     ARM64_PDE_SIZE       /**< @ref ARM64_PDE_SIZE       */
+	#define PAGE_SHIFT   ARM64_PAGE_SHIFT     /**< @ref ARM64_PAGE_SHIFT     */
+	#define PGTAB_SHIFT  ARM64_PGTAB_SHIFT    /**< @ref ARM64_PGTAB_SHIFT    */
+	#define PAGE_MASK    ARM64_PAGE_MASK      /**< @ref ARM64_PAGE_MASK      */
+	#define PGTAB_MASK   ARM64_PGTAB_MASK     /**< @ref ARM64_PGTAB_MASK     */
+	#define PADDR_BIT    ARM64_PADDR_BIT      /**< @ref ARM64_PADDR_BIT      */
+	#define VADDR_BIT    ARM64_VADDR_BIT      /**< @ref ARM64_VADDR_BIT      */
+	#define PADDR_BYTE   ARM64_PADDR_BYTE     /**< @ref ARM64_PADDR_BYTE     */
+	#define VADDR_BYTE   ARM64_VADDR_BYTE     /**< @ref ARM64_VADDR_BYTE     */
 	/**@}*/
 
 	/**
@@ -185,8 +205,13 @@
 	 */
 	static inline int pde_clear(struct pde *pde)
 	{
-		UNUSED(pde);
-		return 0;
+		/* Invalid PDE. */
+		if (pde == NULL)
+			return (-EINVAL);
+
+		kmemset(pde, 0, PTE_SIZE);
+
+		return (0);
 	}
 
 	/**
@@ -199,9 +224,17 @@
 	 */
 	static inline int pde_frame_set(struct pde *pde, frame_t frame)
 	{
-		UNUSED(pde);
-		UNUSED(frame);
-		return 0;
+		/* Invalid PDE. */
+		if (pde == NULL)
+			return (-EINVAL);
+
+		/* Invalid frame. */
+		if (frame > ~(frame_t)((0X1UL << (VADDR_BIT - PAGE_SHIFT)) - 1))
+			return (-EINVAL);
+
+		pde->frame = frame;
+
+		return (0);
 	}
 
 	/**
@@ -214,9 +247,13 @@
 	 */
 	static inline int pde_present_set(struct pde *pde, int set)
 	{
-		UNUSED(pde);
-		UNUSED(set);
-		return 0;
+		/* Invalid PDE. */
+		if (pde == NULL)
+			return (-EINVAL);
+
+		pde->present = (set) ? 1 : 0;
+
+		return (0);
 	}
 
 	/**
@@ -231,8 +268,11 @@
 	 */
 	static inline int pde_is_present(struct pde *pde)
 	{
-		UNUSED(pde);
-		return 0;
+		/* Invalid PDE. */
+		if (pde == NULL)
+			return (-EINVAL);
+
+		return (pde->present);
 	}
 
 	/**
@@ -246,8 +286,7 @@
 	 */
 	static inline frame_t pde_frame_get(struct pde *pde)
 	{
-		UNUSED(pde);
-		return 0;
+		return (pde->frame);
 	}
 
 	/**
@@ -291,9 +330,13 @@
 	 */
 	static inline int pde_write_set(struct pde *pde, int set)
 	{
-		UNUSED(pde);
-		UNUSED(set);
-		return 0;
+		/* Invalid PDE. */
+		if (pde == NULL)
+			return (-EINVAL);
+
+		pde->writable = (set) ? 1 : 0;
+
+		return (0);
 	}
 
 	/**
@@ -308,8 +351,11 @@
 	 */
 	static inline int pde_is_write(struct pde *pde)
 	{
-		UNUSED(pde);
-		return 0;
+		/* Invalid PDE. */
+		if (pde == NULL)
+			return (-EINVAL);
+
+		return (pde->writable);
 	}
 
 	/**
@@ -353,9 +399,13 @@
 	 */
 	static inline int pde_user_set(struct pde *pde, int set)
 	{
-		UNUSED(pde);
-		UNUSED(set);
-		return 0;
+		/* Invalid PDE. */
+		if (pde == NULL)
+			return (-EINVAL);
+
+		pde->user = (set) ? 1 : 0;
+
+		return (0);
 	}
 
 	/**
@@ -370,8 +420,11 @@
 	 */
 	static inline int pde_is_user(struct pde *pde)
 	{
-		UNUSED(pde);
-		return 0;
+		/* Invalid PDE. */
+		if (pde == NULL)
+			return (-EINVAL);
+
+		return (pde->user);
 	}
 
 	/**
@@ -383,8 +436,13 @@
 	 */
 	static inline int pte_clear(struct pte *pte)
 	{
-		UNUSED(pte);
-		return 0;
+		/* Invalid PTE. */
+		if (pte == NULL)
+			return (-EINVAL);
+
+		kmemset(pte, 0, PTE_SIZE);
+
+		return (0);
 
 	}
 
@@ -398,9 +456,13 @@
 	 */
 	static inline int pte_present_set(struct pte *pte, int set)
 	{
-		UNUSED(pte);
-		UNUSED(set);
-		return 0;
+		/* Invalid PTE. */
+		if (pte == NULL)
+			return (-EINVAL);
+
+		pte->present = (set) ? 1 : 0;
+
+		return (0);
 	}
 
 	/**
@@ -415,8 +477,11 @@
 	 */
 	static inline int pte_is_present(struct pte *pte)
 	{
-		UNUSED(pte);
-		return 0;
+		/* Invalid PTE. */
+		if (pte == NULL)
+			return (-EINVAL);
+
+		return (pte->present);
 	}
 
 	/**
@@ -429,10 +494,16 @@
 	 */
 	static inline int pte_frame_set(struct pte *pte, frame_t frame)
 	{
-		UNUSED(pte);
-		UNUSED(frame);
+		/* Invalid PTE. */
+		if (pte == NULL)
+			return (-EINVAL);
 
-		return (0);
+		/* Invalid frame. */
+		if (frame > ~(frame_t)((0X1UL << (VADDR_BIT - PAGE_SHIFT)) - 1))
+			return (-EINVAL);
+
+		pte->frame = frame;
+		return 0;
 	}
 
 	/**
@@ -446,8 +517,7 @@
 	 */
 	static inline frame_t pte_frame_get(struct pte *pte)
 	{
-		UNUSED(pte);
-		return 0;
+		return (pte->frame);
 	}
 
 	/**
@@ -492,8 +562,11 @@
 	 */
 	static inline int pte_write_set(struct pte *pte, int set)
 	{
-		UNUSED(pte);
-		UNUSED(set);
+		/* Invalid PTE. */
+		if (pte == NULL)
+			return (-EINVAL);
+
+		pte->writable = (set) ? 1 : 0;
 
 		return (0);
 	}
@@ -510,8 +583,11 @@
 	 */
 	static inline int pte_is_write(struct pte *pte)
 	{
-		UNUSED(pte);
-		return 0;
+		/* Invalid PTE. */
+		if (pte == NULL)
+			return (-EINVAL);
+
+		return (pte->writable);
 	}
 
 	/**
@@ -555,8 +631,12 @@
 	 */
 	static inline int pte_user_set(struct pte *pte, int set)
 	{
-		UNUSED(pte);
-		UNUSED(set);
+		/* Invalid PTE. */
+		if (pte == NULL)
+			return (-EINVAL);
+
+		pte->user = (set) ? 1 : 0;
+
 		return (0);
 	}
 
@@ -572,8 +652,11 @@
 	 */
 	static inline int pte_is_user(struct pte *pte)
 	{
-		UNUSED(pte);
-		return 0;
+		/* Invalid PTE. */
+		if (pte == NULL)
+			return (-EINVAL);
+
+		return (pte->user);
 	}
 
 	/**
@@ -588,8 +671,7 @@
 	 */
 	static inline unsigned pte_idx_get(arm64_vaddr_t vaddr)
 	{
-		UNUSED(vaddr);
-		return 0;
+		return (((unsigned)(vaddr) & (ARM64_PGTAB_MASK^ARM64_PAGE_MASK)) >> ARM64_PAGE_SHIFT);
 	}
 
 	/**
@@ -604,8 +686,7 @@
 	 */
 	static inline unsigned pde_idx_get(arm64_vaddr_t vaddr)
 	{
-		UNUSED(vaddr);
-		return 0;
+		return ((vaddr) >> ARM64_PGTAB_SHIFT);
 	}
 
 	/**
@@ -620,9 +701,11 @@
 	 */
 	static inline struct pde *pde_get(struct pde *pgdir, arm64_vaddr_t vaddr)
 	{
-		UNUSED(pgdir);
-		UNUSED(vaddr);
-		return 0;
+		/* Invalid page directory. */
+		if (pgdir == NULL)
+			return (NULL);
+
+		return (&pgdir[pde_idx_get(vaddr)]);
 	}
 
 	/**
@@ -637,9 +720,11 @@
 	 */
 	static inline struct pte *pte_get(struct pte *pgtab, arm64_vaddr_t vaddr)
 	{
-		UNUSED(pgtab);
-		UNUSED(vaddr);
-		return 0;
+		/* Invalid page table. */
+		if (pgtab == NULL)
+			return (NULL);
+
+		return (&pgtab[pte_idx_get(vaddr)]);
 	}
 
 	/**

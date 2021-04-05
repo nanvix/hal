@@ -48,11 +48,9 @@
 #ifndef _ASM_FILE_
 
 	/**
-	 * @brief Issues a machine call with one argument.
+	 * @brief Issues a machine call to get the core id
 	 *
-	 * @param arg0     Argument 0.
-	 *
-	 * @returns The machine call return value.
+	 * @returns Core ID
 	 */
 	static inline arm64_word_t arm64_mcall_cpu_id(void)
 	{
@@ -67,11 +65,9 @@
 	}
 
 	/**
-	 * @brief Issues a machine call with one argument.
+	 * @brief Issues a machine call to get the exception level.
 	 *
-	 * @param arg0     Argument 0.
-	 *
-	 * @returns The machine call return value.
+	 * @returns The exception level.
 	 */
 	static inline arm64_word_t arm64_mcall_exception_level(void)
 	{

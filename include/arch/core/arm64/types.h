@@ -44,6 +44,22 @@
 #define __ARM64_CORE_CONSTANTS
 
 	/**
+	 * @name Bit-Length of Memory Types
+	 */
+	/**@{*/
+	#define ARM64_PADDR_BIT  48 /**< Physical Address */
+	#define ARM64_VADDR_BIT  48 /**< Virtual Address  */
+	/**@}*/
+
+	/**
+	 * @name Byte-Length of Memory Types
+	 */
+	/**@{*/
+	#define ARM64_PADDR_BYTE 6 /**< Physical Address */
+	#define ARM64_VADDR_BYTE 6 /**< Virtual Address  */
+	/**@}*/
+
+	/**
 	 * @name Bit-Length of Core Types
 	 */
 	/**@{*/

@@ -39,6 +39,134 @@
 	#include <arch/core/arm64/types.h>
 	#include <nanvix/const.h>
 
+#ifndef _ASM_FILE_
+/**
+	 * @brief Low-level kernel call dispatcher.
+	 *
+	 * @param arg0     First kernel call argument.
+	 * @param arg1     Second kernel call argument.
+	 * @param arg2     Third kernel call argument.
+	 * @param arg3     Fourth kernel call argument.
+	 * @param arg4     Fifth kernel call argument.
+	 * @param kcall_nr Kernel call number.
+	 */
+	EXTERN arm64_word_t arm64_core_do_kcall(
+		arm64_word_t arg0,
+		arm64_word_t arg1,
+		arm64_word_t arg2,
+		arm64_word_t arg3,
+		arm64_word_t arg4,
+		arm64_word_t kcall_nr);
+
+	/**
+	 * @brief Issues a system call with no arguments.
+	 *
+	 * @param kcall_nr System call number.
+	 *
+	 * @returns The system call return value.
+	 */
+	static inline arm64_word_t arm64_kcall0(arm64_word_t kcall_nr)
+	{
+		return (arm64_core_do_kcall(0, 0, 0, 0, 0, kcall_nr));
+	}
+
+	/**
+	 * @brief Issues a system call with one argument.
+	 *
+	 * @param kcall_nr System call number.
+	 * @param arg0 System call number.
+	 *
+	 * @returns The system call return value.
+	 */
+	static inline arm64_word_t arm64_kcall1(
+		arm64_word_t kcall_nr,
+		arm64_word_t arg0)
+	{
+		return (arm64_core_do_kcall(arg0, 0, 0, 0, 0, kcall_nr));
+	}
+
+	/**
+	 * @brief Issues a system call with two arguments.
+	 *
+	 * @param kcall_nr System call number.
+	 * @param arg0 System call number.
+	 * @param arg1 System call number.
+	 *
+	 * @returns The system call return value.
+	 */
+	static inline arm64_word_t arm64_kcall2(
+		arm64_word_t kcall_nr,
+		arm64_word_t arg0,
+		arm64_word_t arg1)
+	{
+		return (arm64_core_do_kcall(arg0, arg1, 0, 0, 0, kcall_nr));
+	}
+
+	/**
+	 * @brief Issues a system call with three arguments.
+	 *
+	 * @param kcall_nr System call number.
+	 * @param arg0 System call number.
+	 * @param arg1 System call number.
+	 * @param arg2 System call number.
+	 *
+	 * @returns The system call return value.
+	 */
+	static inline arm64_word_t arm64_kcall3(
+		arm64_word_t kcall_nr,
+		arm64_word_t arg0,
+		arm64_word_t arg1,
+		arm64_word_t arg2)
+	{
+		return (arm64_core_do_kcall(arg0, arg1, arg2, 0, 0, kcall_nr));
+	}
+
+	/**
+	 * @brief Issues a system call with four arguments.
+	 *
+	 * @param kcall_nr System call number.
+	 * @param arg0 System call number.
+	 * @param arg1 System call number.
+	 * @param arg2 System call number.
+	 * @param arg3 System call number.
+	 *
+	 * @returns The system call return value.
+	 */
+	static inline arm64_word_t arm64_kcall4(
+		arm64_word_t kcall_nr,
+		arm64_word_t arg0,
+		arm64_word_t arg1,
+		arm64_word_t arg2,
+		arm64_word_t arg3)
+	{
+		return (arm64_core_do_kcall(arg0, arg1, arg2, arg3, 0, kcall_nr));
+	}
+
+	/**
+	 * @brief Issues a system call with five arguments.
+	 *
+	 * @param kcall_nr System call number.
+	 * @param arg0 System call number.
+	 * @param arg1 System call number.
+	 * @param arg2 System call number.
+	 * @param arg3 System call number.
+	 * @param arg4 System call number.
+	 *
+	 * @returns The system call return value.
+	 */
+	static inline arm64_word_t arm64_kcall5(
+		arm64_word_t kcall_nr,
+		arm64_word_t arg0,
+		arm64_word_t arg1,
+		arm64_word_t arg2,
+		arm64_word_t arg3,
+		arm64_word_t arg4)
+	{
+		return (arm64_core_do_kcall(arg0, arg1, arg2, arg3, arg4, kcall_nr));
+	}
+
+#endif
+
 /**@}*/
 
 /*============================================================================*
@@ -68,8 +196,9 @@
 	 */
 	static inline arm64_word_t kcall0(arm64_word_t kcall_nr)
 	{
-		UNUSED(kcall_nr);
-		return 0;
+		return (
+			arm64_kcall0(kcall_nr)
+		);
 	}
 
 	/**
@@ -79,9 +208,12 @@
 		arm64_word_t kcall_nr,
 		arm64_word_t arg0)
 	{
-		UNUSED(kcall_nr);
-		UNUSED(arg0);
-		return 0;
+		return (
+			arm64_kcall1(
+				kcall_nr,
+				arg0
+			)
+		);
 	}
 
 	/**
@@ -92,10 +224,13 @@
 		arm64_word_t arg0,
 		arm64_word_t arg1)
 	{
-		UNUSED(kcall_nr);
-		UNUSED(arg0);
-		UNUSED(arg1);
-		return 0;
+		return (
+			arm64_kcall2(
+				kcall_nr,
+				arg0,
+				arg1
+			)
+		);
 	}
 
 	/**
@@ -107,11 +242,14 @@
 		arm64_word_t arg1,
 		arm64_word_t arg2)
 	{
-		UNUSED(kcall_nr);
-		UNUSED(arg0);
-		UNUSED(arg1);
-		UNUSED(arg2);
-		return 0;
+		return (
+			arm64_kcall3(
+				kcall_nr,
+				arg0,
+				arg1,
+				arg2
+			)
+		);
 	}
 
 	/**
@@ -124,12 +262,15 @@
 		arm64_word_t arg2,
 		arm64_word_t arg3)
 	{
-		UNUSED(kcall_nr);
-		UNUSED(arg0);
-		UNUSED(arg1);
-		UNUSED(arg2);
-		UNUSED(arg3);
-		return 0;
+		return (
+			arm64_kcall4(
+				kcall_nr,
+				arg0,
+				arg1,
+				arg2,
+				arg3
+			)
+		);
 	}
 
 	/**
@@ -143,13 +284,16 @@
 		arm64_word_t arg3,
 		arm64_word_t arg4)
 	{
-		UNUSED(kcall_nr);
-		UNUSED(arg0);
-		UNUSED(arg1);
-		UNUSED(arg2);
-		UNUSED(arg3);
-		UNUSED(arg4);
-		return 0;
+		return (
+			arm64_kcall5(
+				kcall_nr,
+				arg0,
+				arg1,
+				arg2,
+				arg3,
+				arg4
+			)
+		);
 	}
 
 #endif

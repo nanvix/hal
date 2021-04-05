@@ -49,6 +49,7 @@ b \exception
 
 .macro HANDLE_EXCEPTION function
 arm64core_save_context
+mov x0, sp
 bl \function
 arm64core_restore_context
 eret
@@ -82,34 +83,34 @@ EXCEPTION_CALL fiq_lower_32
 EXCEPTION_CALL serror_lower_32
 
 synchronous_curr_sp0:
-	HANDLE_EXCEPTION exception_handler
+	HANDLE_EXCEPTION arm64_do_mexcp
 irq_el2_sp0:
-	HANDLE_EXCEPTION exception_handler
+	HANDLE_EXCEPTION arm64_do_mexcp
 fiq_curr_sp0:
-	HANDLE_EXCEPTION exception_handler
+	HANDLE_EXCEPTION arm64_do_mexcp
 serror_curr_sp0:
-	HANDLE_EXCEPTION exception_handler
+	HANDLE_EXCEPTION arm64_do_mexcp
 synchronous_curr_spcurr:
-	HANDLE_EXCEPTION exception_handler_return
+	HANDLE_EXCEPTION arm64_do_mexcp
 irq_curr_spcurr:
-	HANDLE_EXCEPTION exception_handler_return
+	HANDLE_EXCEPTION arm64_do_mexcp
 fiq_curr_spcurr:
-	HANDLE_EXCEPTION exception_handler
+	HANDLE_EXCEPTION arm64_do_mexcp
 serror_curr_spcurr:
-	HANDLE_EXCEPTION exception_handler
+	HANDLE_EXCEPTION arm64_do_mexcp
 synchronous_lower_64:
-	HANDLE_EXCEPTION exception_handler_return
+	HANDLE_EXCEPTION arm64_do_mexcp
 irq_lower_64:
-	HANDLE_EXCEPTION exception_handler
+	HANDLE_EXCEPTION arm64_do_mexcp
 fiq_lower_64:
-	HANDLE_EXCEPTION exception_handler
+	HANDLE_EXCEPTION arm64_do_mexcp
 serror_lower_64:
-	HANDLE_EXCEPTION exception_handler
+	HANDLE_EXCEPTION arm64_do_mexcp
 synchronous_lower_32:
-	HANDLE_EXCEPTION exception_handler
+	HANDLE_EXCEPTION arm64_do_mexcp
 irq_lower_32:
-	HANDLE_EXCEPTION exception_handler
+	HANDLE_EXCEPTION arm64_do_mexcp
 fiq_lower_32:
-	HANDLE_EXCEPTION exception_handler
+	HANDLE_EXCEPTION arm64_do_mexcp
 serror_lower_32:
-	HANDLE_EXCEPTION exception_handler
+	HANDLE_EXCEPTION arm64_do_mexcp

@@ -22,14 +22,28 @@
  * SOFTWARE.
  */
 
-#include <arch/core/arm64/int.h>
-#include <nanvix/const.h>
-#include <nanvix/hlib.h>
-#include <posix/errno.h>
+#ifndef ARCH_CORE_ARM64_LPIC_H_
+#define ARCH_CORE_ARM64_LPIC_H_
+
+	#ifndef __NEED_CORE_LPIC
+		#error "do not include this file"
+	#endif
 
 /**
- * @brief Interrupt handlers.
+ * @addtogroup arm64-core-pic LPIC Chip
+ * @ingroup arm64-core
+ *
+ * @brief Programmable Interrupt Controller
  */
-PUBLIC void (*interrupt_handlers[ARM64_INT_NUM])(int) = {
-	NULL
-};
+/**@{*/
+
+	#include <nanvix/const.h>
+	#include <posix/errno.h>
+	#include <posix/stdint.h>
+
+	/**
+	 * @brief Number of Interrupt Request (IRQ) lines.
+	 */
+	#define ARM64_IRQ_NUM 1
+
+#endif /* ARCH_CORE_ARM64_LPIC_H_ */

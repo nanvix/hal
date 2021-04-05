@@ -22,14 +22,26 @@
  * SOFTWARE.
  */
 
-#include <arch/core/arm64/int.h>
-#include <nanvix/const.h>
-#include <nanvix/hlib.h>
-#include <posix/errno.h>
+#include <nanvix/hal/core/trap.h>
 
 /**
- * @brief Interrupt handlers.
+ * @todo TODO: provide a defailed description for this function.
  */
-PUBLIC void (*interrupt_handlers[ARM64_INT_NUM])(int) = {
-	NULL
-};
+PUBLIC arm64_word_t arm64_core_do_kcall(
+	word_t arg0,
+	word_t arg1,
+	word_t arg2,
+	word_t arg3,
+	word_t arg4,
+	word_t kcall_nr)
+{
+	return (do_kcall(
+			arg0,
+			arg1,
+			arg2,
+			arg3,
+			arg4,
+			kcall_nr
+		)
+	);
+}
