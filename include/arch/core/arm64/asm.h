@@ -69,7 +69,6 @@
 	 *  Exception Save Context
 	 */
 	.macro arm64core_save_context
-
 		stp	x29, x30, [sp, #-16]!
 		stp	x27, x28, [sp, #-16]!
 		stp	x25, x26, [sp, #-16]!
@@ -85,12 +84,14 @@
 		stp	x5, x6, [sp, #-16]!
 		stp	x3, x4, [sp, #-16]!
 		stp	x1, x2, [sp, #-16]!
+		str x0, [sp, #-8]!
 	.endm
 
 	/*
 	 *  Exception Restore Context
 	 */
 	.macro arm64core_restore_context
+		ldr  x0, [sp], #8
 		ldp	x1, x2, [sp], #16
 		ldp	x3, x4, [sp], #16
 		ldp	x5, x6, [sp], #16

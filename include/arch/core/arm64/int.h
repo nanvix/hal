@@ -37,6 +37,12 @@
 /**@{*/
 
 	#include <nanvix/const.h>
+	#include <arch/core/arm64/lpic.h>
+
+	/**
+	 * @brief Number of interrupts.
+	 */
+	#define ARM64_INT_NUM ARM64_IRQ_NUM
 
 /**@}*/
 
@@ -52,9 +58,9 @@
 	 * @name Exported Constants
 	 */
 	/**@{*/
-	#define INTERRUPTS_NUM         1   /**< @ref ARM64_INT_NUM   */
-	#define INTERRUPT_TIMER        2 /**< @ref ARM64_INT_TIMER */
-	#define INTERRUPT_IPI          3 /**< @ref ARM64_INT_TIMER */
+	#define INTERRUPTS_NUM         ARM64_INT_NUM   /**< @ref ARM64_INT_NUM   */
+	#define INTERRUPT_TIMER        0 /**< @ref ARM64_INT_TIMER */
+	#define INTERRUPT_IPI          1 /**< @ref ARM64_INT_TIMER */
 	#define INTERRUPT_LEVEL_LOW    0  /**< @ref ARM64_IRQLVL_5  */
 	#define INTERRUPT_LEVEL_MEDIUM 0  /**< @ref ARM64_IRQLVL_3  */
 	#define INTERRUPT_LEVEL_HIGH   0  /**< @ref ARM64_IRQLVL_1  */

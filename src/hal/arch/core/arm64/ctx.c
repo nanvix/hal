@@ -36,7 +36,17 @@
  */
 PUBLIC void arm64_context_dump(const struct context *ctx)
 {
-	UNUSED(ctx);
 	/* Dump general purpose registers. */
-	kprintf("teste context dump");
+	kprintf("[hal]  x0=%x   x1=%x   x2=%x",       ctx->x0, ctx->x1, ctx->x2);
+	kprintf("[hal]  x3=%x   x4=%x   x5=%x",       ctx->x3, ctx->x4, ctx->x5);
+	kprintf("[hal]  x6=%x   x7=%x   x8=%x",       ctx->x6, ctx->x7, ctx->x8);
+	kprintf("[hal]  x9=%x   x10=%x   x11=%x",       ctx->x9, ctx->x10, ctx->x11);
+	kprintf("[hal]  x12=%x   x13=%x   x14=%x",       ctx->x12, ctx->x13, ctx->x14);
+	kprintf("[hal]  x15=%x   x16=%x   x17=%x",       ctx->x15, ctx->x16, ctx->x17);
+	kprintf("[hal]  x18=%x   x19=%x   x20=%x",       ctx->x18, ctx->x19, ctx->x20);
+	kprintf("[hal]  x21=%x   x22=%x   x23=%x",       ctx->x21, ctx->x22, ctx->x23);
+	kprintf("[hal]  x24=%x   x23=%x   x26=%x",       ctx->x24, ctx->x25, ctx->x26);
+	kprintf("[hal]  x27=%x   x28=%x   x29=%x",       ctx->x27, ctx->x28, ctx->x29);
+	kprintf("[hal]  x30=%x                  ",       ctx->x30);
+	kprintf("[hal]  codeID=%x               ",       core_get_id());
 }

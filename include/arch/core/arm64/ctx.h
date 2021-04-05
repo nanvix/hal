@@ -56,8 +56,7 @@
 			arm64_word_t x16, x17, x18, x19, x20, x21, x22;          /**< Saved Registers                            */
 			arm64_word_t x23, x24, x25, x26, x27, x28;               /**< Saved Registers                            */
 			arm64_word_t x29;                                        /**< Frame Pointer Register                  */
-			arm64_word_t x30;                                        /**< Return Address Register               */
-			//arm64_word_t sp;                     /**< stack Pointer Register                   */
+			arm64_word_t x30;                                        /**< Return Address Register               */ 
 		} PACK ALIGN(ARM64_DWORD_SIZE);
 
 	/**

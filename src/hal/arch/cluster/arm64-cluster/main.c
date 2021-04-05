@@ -10,8 +10,8 @@ void exception_svc(void)
 PUBLIC void _main(int argc, const char *argv[]) {
         argc = argc;
         argv = argv;
-        //uart_pl011_init();
-        //exception_svc();
+        uart_pl011_init();
+        exception_svc();
         uart_pl011_write("Hello World\n", 12);
         while(true) {};
 }
