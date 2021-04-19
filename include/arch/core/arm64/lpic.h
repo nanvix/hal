@@ -44,6 +44,6 @@
 	/**
 	 * @brief Number of Interrupt Request (IRQ) lines.
 	 */
-	#define ARM64_IRQ_NUM 1
+	#define ARM64_IRQ_NUM 28
 
 #endif /* ARCH_CORE_ARM64_LPIC_H_ */

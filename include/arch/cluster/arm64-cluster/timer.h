@@ -41,11 +41,6 @@
 
 	#include <posix/stdint.h>
 
-	/**
-	 * @brief Timer frequency (10 MHz)
-	 */
-	#define ARM64_CLUSTER_TIMEBASE 10000000
-
 /*============================================================================*
  * Exported Interface                                                         *
  *============================================================================*/
@@ -53,13 +48,6 @@
 /**
  * @cond arm64_cluster
  */
-
-	/**
-	 * @name Exported Constants
-	 */
-	/**@{*/
-	#define CLUSTER_FREQ ARM64_CLUSTER_TIMEBASE /**< @see ARM64_CLUSTER_TIMEBASE */
-	/**@}*/
 
 	/**
 	 * @name Exported Functions
@@ -73,18 +61,23 @@
 #ifndef _ASM_FILE_
 
 	/**
-	 * @see timer_init().
+	 * @see arm64_timer_init().
 	 */
-	#define __timer_init(freq) \
-		arm64_timer_init(freq)
+	static inline void __timer_init(unsigned freq)
+	{
+		arm64_timer_init(freq);
+	}
 
 	/**
-	 * @see arm64_timer_reset().
+	 * @brief arm64_timer_reset().
 	 */
-	#define timer_reset(void) \
-		arm64_timer_reset(void)
+	static inline void timer_reset(void)
+	{
+		arm64_timer_reset();
+	}
 
 #endif /* !_ASM_FILE_ */
+
 
 /**@endcond*/
 

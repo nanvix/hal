@@ -93,9 +93,9 @@ serror_curr_sp0:
 synchronous_curr_spcurr:
 	HANDLE_EXCEPTION arm64_do_mexcp
 irq_curr_spcurr:
-	HANDLE_EXCEPTION arm64_do_mexcp
+	HANDLE_EXCEPTION arm64_do_mint
 fiq_curr_spcurr:
-	HANDLE_EXCEPTION arm64_do_mexcp
+	HANDLE_EXCEPTION arm64_do_mint
 serror_curr_spcurr:
 	HANDLE_EXCEPTION arm64_do_mexcp
 synchronous_lower_64:

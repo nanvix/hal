@@ -22,14 +22,31 @@
  * SOFTWARE.
  */
 
+#include <nanvix/hal/core/interrupt.h>
 #include <arch/core/arm64/int.h>
+#include <arch/core/arm64/timer.h>
 #include <nanvix/const.h>
 #include <nanvix/hlib.h>
 #include <posix/errno.h>
 
 /**
+ * @brief Generic handler of an interrupt
+ */
+PUBLIC void arm64_do_interrupt(int intnum)
+{
+	do_interrupt(intnum);
+	if (intnum == TIMER_IRQ)
+		arm64_timer_reset();
+}
+
+/**
  * @brief Interrupt handlers.
  */
 PUBLIC void (*interrupt_handlers[ARM64_INT_NUM])(int) = {
-	NULL
+	NULL, NULL, NULL, NULL, NULL,
+	NULL, NULL, NULL, NULL, NULL,
+	NULL, NULL, NULL, NULL, NULL,
+	NULL, NULL, NULL, NULL, NULL,
+	NULL, NULL, NULL, NULL, NULL,
+	NULL, arm64_do_interrupt
 };

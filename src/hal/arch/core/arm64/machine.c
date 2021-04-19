@@ -29,8 +29,11 @@
 
 #include <arch/core/arm64/ctx.h>
 #include <arch/core/arm64/excp.h>
+#include <arch/core/arm64/int.h>
 #include <arch/core/arm64/mcall.h>
 #include <arch/core/arm64/types.h>
+#include <arch/core/arm64/timer.h>
+#include <arch/cluster/arm64-cluster/gic.h>
 #include <nanvix/const.h>
 #include <nanvix/hlib.h>
 #include <posix/errno.h>
@@ -85,9 +88,15 @@ PUBLIC void arm64_do_mcall(struct context *ctx)
  */
 PUBLIC void arm64_do_mint(const struct context *ctx)
 {
-	arm64_context_dump(ctx);
-	arm64_dump_all_csr();
-
-	kprintf("[arm64] unhandled interrupt");
-	UNREACHABLE();
+	ctx = ctx;
+	//arm64_context_dump(ctx);
+	//arm64_dump_all_csr();
+	irq_no a = arm64_gic_find_pending_irq();
+	if (a < 0 || a > ARM64_INT_NUM) {
+		kprintf("[arm64] unhandled interruption %x", a);
+		UNREACHABLE();
+	}
+	kprintf("[arm64] interruption %d", a);
+	arm64_do_interrupt(a);
+	//UNREACHABLE();
 }

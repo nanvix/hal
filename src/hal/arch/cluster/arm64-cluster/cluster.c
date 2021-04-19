@@ -28,6 +28,7 @@
 #include <nanvix/hlib.h>
 
 EXTERN NORETURN void kmain(int, const char *[]);
+EXTERN NORETURN void _main(int, const char *[]);
 
 /**
  * @brief Cores table.
@@ -46,6 +47,7 @@ PUBLIC struct coreinfo cores[ARM64_CLUSTER_NUM_CORES] = {
 
 PUBLIC void arm64_cluster_setup(void)
 {
+	
 	int coreid;
 
 	coreid = arm64_core_get_id();
@@ -77,5 +79,6 @@ PUBLIC NORETURN void arm64_cluster_slave_setup(void)
 PUBLIC NORETURN void arm64_cluster_master_setup(void)
 {	
 	arm64_cluster_setup();
+	arm64_gic_initialize();
 	kmain(0, NULL);
 }
