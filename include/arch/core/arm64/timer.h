@@ -36,6 +36,8 @@
 	#include <nanvix/const.h>
 	#include <posix/stdint.h>
 
+	#define ARM64_TIMER_CNTV_CTL_ENABLE		(1 << 0)
+
 #ifndef _ASM_FILE_
 
 	EXTERN void arm64_timer_init(

@@ -33,9 +33,42 @@
  *
  * @endcond
  */
-PUBLIC struct exception_info exceptions[ARM64_EXCP_NUM] = {
-	{ NULL, "" },
-	{ NULL, "" },
-	{ NULL, "" },
-	{ NULL, "" }
+PUBLIC struct exception_info exceptions[ARM64_EXCP_NUM_EXT] = {
+	{ NULL, "Unknown reason." 													},
+	{ NULL, "Trapped WFI or WFE instruction execution."       					},
+	{ NULL, "Trapped LDC or STC access."            							},
+	{ NULL, "Access to SVE, Advanced SIMD, or floating-point functionality."    },
+	{ NULL, "Trapped VMRS access."        										},
+	{ NULL, "Illegal Execution state."              							},
+	{ NULL, "SVC instruction execution in AArch64 state."   					},
+	{ NULL, "HVC instruction execution in AArch64 state."         				},
+	{ NULL, "SMC instruction execution in AArch64 state."   					},
+	{ NULL, "Trapped MSR, MRS or System instruction execution in AArch64."   	},
+	{ NULL, "Access to SVE functionality."                       				},
+	{ NULL, "Instruction Abort from a lower Exception level."   				},
+	{ NULL, "Instruction Abort taken without a change in Exception level."      },
+	{ NULL, "PC alignment fault exception."                						},
+	{ NULL, "Data Abort from a lower Exception level."                       	},
+	{ NULL, "Data Abort taken without a change in Exception level."             },
+	{ NULL, "SP alignment fault exception."                						},
+	{ NULL, "Trapped floating-point exception taken from AArch64."             	},
+	{ NULL, "SError interrupt."                									},
+	{ NULL, "Breakpoint exception from a lower Exception level."             	},
+	{ NULL, "Breakpoint exception taken without a change in Exception level."   },
+	{ NULL, "Software Step exception from a lower Exception level."             },
+	{ NULL, "Software Step exception taken without a change in Exception level."},
+	{ NULL, "Watchpoint exception from a lower Exception level."             	},
+	{ NULL, "Watchpoint exception taken without a change in Exception level."   },
+	{ NULL, "BRK instruction execution in AArch64 state."             			},
+	{ NULL, "Page Fault"             											},
+	{ NULL, "Page Protection"             										},
+	{ NULL, "General Protection"             									}
 };
+
+/**
+ * @todo TODO provide a detailed description for this function.
+ */
+PUBLIC void arm64_excp_dump(const struct exception *excp)
+{
+	kprintf("%s", exceptions[excp->num].name);
+}

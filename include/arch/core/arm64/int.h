@@ -38,11 +38,17 @@
 
 	#include <nanvix/const.h>
 	#include <arch/core/arm64/lpic.h>
+	#include <arch/cluster/arm64-cluster/gic.h>
 
 	/**
 	 * @brief Number of interrupts.
 	 */
 	#define ARM64_INT_NUM ARM64_IRQ_NUM
+
+
+	#ifndef _ASM_FILE_
+		EXTERN void arm64_do_interrupt(int intnum);
+	#endif
 
 /**@}*/
 
@@ -59,8 +65,8 @@
 	 */
 	/**@{*/
 	#define INTERRUPTS_NUM         ARM64_INT_NUM   /**< @ref ARM64_INT_NUM   */
-	#define INTERRUPT_TIMER        0 /**< @ref ARM64_INT_TIMER */
-	#define INTERRUPT_IPI          1 /**< @ref ARM64_INT_TIMER */
+	#define INTERRUPT_TIMER        27 /**< @ref ARM64_INT_TIMER */
+	#define INTERRUPT_IPI          250 /**< @ref ARM64_INT_TIMER */
 	#define INTERRUPT_LEVEL_LOW    0  /**< @ref ARM64_IRQLVL_5  */
 	#define INTERRUPT_LEVEL_MEDIUM 0  /**< @ref ARM64_IRQLVL_3  */
 	#define INTERRUPT_LEVEL_HIGH   0  /**< @ref ARM64_IRQLVL_1  */
@@ -91,23 +97,23 @@
 #ifndef _ASM_FILE_
 
 	/**
-	 * @see arm64_int_enable().
+	 * @see arm64_enable_irq().
 	 */
 	static inline void interrupts_enable(void)
 	{
-		
+		arm64_enable_irq();
 	}
 
 	/**
-	 * @see arm64_int_disable().
+	 * @see arm64_disable_irq().
 	 */
 	static inline void interrupts_disable(void)
 	{
-		
+		arm64_disable_irq();
 	}
 
 	/**
-	 * @see arm64_pic_lvl_get().
+	 * 
 	 */
 	static inline int interrupts_get_level(void)
 	{
@@ -115,7 +121,7 @@
 	}
 
 	/**
-	 * @see arm64_pic_lvl_set().
+	 * 
 	 */
 	static inline int interrupts_set_level(int newlevel)
 	{
@@ -124,20 +130,21 @@
 	}
 
 	/**
-	 * @see arm64_pic_mask()
+	 * @see arm64_gicd_enable_int()
 	 */
 	static inline int interrupt_mask(int intnum)
 	{
-		UNUSED(intnum);
+		arm64_gicd_disable_int(intnum);
 		return 0;
 	}
 
 	/**
-	 * @see arm64_pic_unmask()
+	 * @see arm64_gicd_disable_int()
 	 */
 	static inline int interrupt_unmask(int intnum)
 	{
-		UNUSED(intnum);
+		arm64_gicd_enable_int(intnum);
+		
 		return 0;
 	}
 
@@ -146,7 +153,7 @@
 	 */
 	static inline void interrupt_ack(int intnum)
 	{
-		UNUSED(intnum);
+		arm64_gic_eoi(intnum);
 	}
 
 	/**
@@ -154,7 +161,7 @@
 	 */
 	static inline int interrupt_next(void)
 	{
-		return 0;
+		return arm64_gic_find_pending_irq();
 	}
 
 #endif /* _ASM_FILE_ */
