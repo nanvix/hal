@@ -79,6 +79,5 @@ PUBLIC NORETURN void arm64_cluster_slave_setup(void)
 PUBLIC NORETURN void arm64_cluster_master_setup(void)
 {	
 	arm64_cluster_setup();
-	arm64_gic_initialize();
 	kmain(0, NULL);
 }

@@ -1,6 +1,6 @@
 
 #include <arch/stdout/pl011.h>
-#include <arch/cluster/arm64-cluster/gic.h>
+#include <arch/core/arm64/gic.h>
 #include <arch/core/arm64/timer.h>
 #include <nanvix/const.h>
 
