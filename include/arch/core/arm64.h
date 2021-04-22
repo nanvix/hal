@@ -36,6 +36,7 @@
 
 	#define __NEED_CORE_IVT
 
+	#include <arch/core/arm64/gic.h>
 	#include <arch/core/arm64/cache.h>
 	#include <arch/core/arm64/timer.h>
 	#include <arch/core/arm64/core.h>

@@ -33,7 +33,7 @@
 #include <arch/core/arm64/mcall.h>
 #include <arch/core/arm64/types.h>
 #include <arch/core/arm64/timer.h>
-#include <arch/cluster/arm64-cluster/gic.h>
+#include <arch/core/arm64/gic.h>
 #include <nanvix/const.h>
 #include <nanvix/hlib.h>
 #include <posix/errno.h>

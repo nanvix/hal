@@ -26,6 +26,7 @@
 #define _ASM_FILE_
 
 #include <arch/core/arm64/asm.h>
+#include <arch/core/arm64/gic.h>
 #include <arch/cluster/arm64-cluster/cores.h>
 #include <arch/cluster/arm64-cluster/psci.h>
 
@@ -89,6 +90,7 @@ _do_start.master:
     /* Set stack adress */
     arm64_core_stack_reset x0
     /* Branch the master core to _main function */
+    bl arm64_gic_initialize
     bl arm64_cluster_master_setup
     b halt
 

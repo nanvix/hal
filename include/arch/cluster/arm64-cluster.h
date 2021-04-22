@@ -39,7 +39,6 @@
  * @brief ARM8 64-bits Cluster
  */
 /**@{*/
-	#include <arch/cluster/arm64-cluster/gic.h>
 	#include <arch/cluster/arm64-cluster/timer.h>
 	#include <arch/cluster/arm64-cluster/cores.h>
 	#include <arch/cluster/arm64-cluster/event.h>
