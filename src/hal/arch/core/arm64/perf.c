@@ -86,13 +86,16 @@ PUBLIC int arm64_perf_start(int perf, int event)
  */
 PUBLIC int arm64_perf_stop(int perf)
 {
+	arm64_hword_t r = 0;
+
 	/* Invalid performance monitor. */
 	if (UNLIKELY(!arm64_perf_monitor_is_valid(perf)))
 		return (-EINVAL);
 
-	arm64_hword_t r = 0;
+
+
 	asm volatile("mrs %0, pmcntenset_el0" : "=r" (r));
-	asm volatile("msr pmcntenset_el0, %0" : : "r" (r&0xfffffffe));
+	asm volatile("msr pmcntenset_el0, %0" : : "r" (r & (~0x1)));
 
 	return (0);
 }
@@ -134,6 +137,7 @@ PUBLIC uint64_t arm64_perf_read(int perf)
 		return ((arm64_word_t) - 1);
 
 	asm volatile("mrs %0, pmevcntr0_el0" : "=r" (pccr));
+
 	return ((arm64_word_t) pccr);
 }
 
@@ -143,20 +147,23 @@ PUBLIC uint64_t arm64_perf_read(int perf)
  */
 PUBLIC void arm64_perf_setup(void)
 {
-	/*
-	*	Enable user-mode access to counters. 
-	*	configure the cyclecounter module
-	*/
-	asm volatile("msr pmuserenr_el0, %0" : : "r"((arm64_word_t)ARM64_PMUSERENR_EN_EL0|ARM64_PMUSERENR_ER|ARM64_PMUSERENR_CR));
+	arm64_word_t val = 0;
 
-	/*  
-	*	Performance Monitors Count Enable Set register bit 30:0 disable, 31 enable. 
-	* 	Can also enable other event counters here. 
-	*/ 
+	/*
+	 *	Enable user-mode access to counters.
+	 *	configure the cyclecounter module
+	 */
+	asm volatile("msr pmuserenr_el0, %0" : : "r"
+		((arm64_word_t) ARM64_PMUSERENR_EN_EL0 | ARM64_PMUSERENR_ER | ARM64_PMUSERENR_CR)
+	);
+
+	/*
+	 *	Performance Monitors Count Enable Set register bit 30:0 disable, 31 enable.
+	 * 	Can also enable other event counters here.
+	 */
 	asm volatile("msr pmcntenset_el0, %0" : : "r" (ARM64_PMCNTENSET_EL0_ENABLE));
 
 	/* Enable counters */
-	arm64_word_t val=0;
 	asm volatile("mrs %0, pmcr_el0" : "=r" (val));
-	asm volatile("msr pmcr_el0, %0" : : "r" (val|ARM64_PMCR_E));
+	asm volatile("msr pmcr_el0, %0" : : "r" (val | ARM64_PMCR_E));
 }

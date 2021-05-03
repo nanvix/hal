@@ -56,19 +56,17 @@
 	 *
 	 * @note We have tweaked these for Bluedragon cluster.
 	 * Ref: see https://blog.printk.io/2015/10/using-the-perf-utility-on-arm/ and
-	 * 
 	 */
 	/**@{*/
-	#define ARM64_PERF_ICACHE_REFILL		0x00 /**< Instruction cache misses */
-	#define ARM64_PERF_ITLB_STALLS        	0x01 /**< Instruction TLB Stalls */
-	#define ARM64_PERF_DCACHE_REFILL		0x02 /**< Data cache misses */
-	#define ARM64_PERF_DCACHE_HITS	 		0x03 /**< Data cache access */
-	#define ARM64_PERF_DTLB_STALL			0x04 /**< Data TLB Stalls */
+	#define ARM64_PERF_ICACHE_REFILL		0x00 /**< Instruction cache misses                                    */
+	#define ARM64_PERF_ITLB_STALLS        	0x01 /**< Instruction TLB Stalls                                      */
+	#define ARM64_PERF_DCACHE_REFILL		0x02 /**< Data cache misses                                           */
+	#define ARM64_PERF_DCACHE_HITS	 		0x03 /**< Data cache access                                           */
+	#define ARM64_PERF_DTLB_STALL			0x04 /**< Data TLB Stalls                                             */
 	#define ARM64_PERF_BR_MIS_PRED 			0x05 /**< Mispredicted or not predicted branch speculatively executed */
-	#define ARM64_PERF_CPU_CYCLES			0x06 /**< Counts processor clock cycles */
-	#define ARM64_PERF_BR_PRED				0x07 /**< Predictable branch speculatively executed */
-	#define ARM64_PERF_ICACHE_HITS			0x08 /**< Instruction cache access */
-	
+	#define ARM64_PERF_CPU_CYCLES			0x11 /**< Counts processor clock cycles                               */
+	#define ARM64_PERF_BR_PRED				0x07 /**< Predictable branch speculatively executed                   */
+	#define ARM64_PERF_ICACHE_HITS			0x08 /**< Instruction cache access                                    */
 	/**@}*/
 
 	/**
@@ -76,15 +74,14 @@
 	 */
 	/**@{*/
 	#define ARM64_PMEVTYPER_EVTCOUNT_MASK 	0x3ff
-	#define ARM64_PMCR_E            		(1 << 0) /*  Enable all counters */
-	#define ARM64_PMCR_P            		(1 << 1) /*  Reset all counters */
-	#define ARM64_PMCR_C            		(1 << 2) /*  Cycle counter reset */
-	#define ARM64_PMUSERENR_EN_EL0  		(1 << 0) /*  EL0 access enable */
-	#define ARM64_PMUSERENR_CR      		(1 << 2) /*  Cycle counter read enable */
-	#define ARM64_PMUSERENR_ER      		(1 << 3) /*  Event counter read enable */
-	#define ARM64_PMCNTENSET_EL0_ENABLE 	(1<<31) /* *< Enable Perf count reg */
+	#define ARM64_PMCR_E            		(1 << 0)  /**< Enable all counters       */
+	#define ARM64_PMCR_P            		(1 << 1)  /**< Reset all counters        */
+	#define ARM64_PMCR_C            		(1 << 2)  /**< Cycle counter reset       */
+	#define ARM64_PMUSERENR_EN_EL0  		(1 << 0)  /**< EL0 access enable         */
+	#define ARM64_PMUSERENR_CR      		(1 << 2)  /**< Cycle counter read enable */
+	#define ARM64_PMUSERENR_ER      		(1 << 3)  /**< Event counter read enable */
+	#define ARM64_PMCNTENSET_EL0_ENABLE 	(1 << 31) /**< Enable Perf count reg     */
 	/**@}*/
-
 
 #ifndef _ASM_FILE_
 
@@ -159,13 +156,13 @@
 	#define PERF_EVENTS_NUM    	ARM64_PERF_EVENTS_NUM    	/**< @ref ARM64_PERF_EVENTS_NUM    */
 	#define PERF_CYCLES        	ARM64_PERF_CPU_CYCLES    	/**< @ref ARM64_PERF_CPU_CYCLES    */
 	#define PERF_ICACHE_MISSES 	ARM64_PERF_ICACHE_REFILL   	/**< @ref ARM64_PERF_ICACHE_REFILL */
-	#define PERF_DCACHE_MISSES 	ARM64_PERF_DCACHE_REFILL   	/**< @ref ARM64_PERF_DCACHE_REFILL                    */
+	#define PERF_DCACHE_MISSES 	ARM64_PERF_DCACHE_REFILL   	/**< @ref ARM64_PERF_DCACHE_REFILL */
 	#define PERF_ICACHE_HITS 	ARM64_PERF_ICACHE_HITS
 	#define PERF_DCACHE_HITS 	ARM64_PERF_DCACHE_HITS
 	#define PERF_BRANCH_STALLS 	ARM64_PERF_BR_MIS_PRED 		/**< @ref ARM64_PERF_BR_MIS_PRED */
 	#define PERF_ICACHE_STALLS 	ARM64_PERF_ITLB_STALLS 		/**< @ref ARM64_PERF_ITLB_STALLS */
-	#define PERF_DCACHE_STALLS 	ARM64_PERF_DTLB_STALL    	/**< @ref ARM64_PERF_DTLB_STALL    */
-	#define PERF_REG_STALLS    	-1    						/**< Not Implemented    */
+	#define PERF_DCACHE_STALLS 	ARM64_PERF_DTLB_STALL    	/**< @ref ARM64_PERF_DTLB_STALL  */
+	#define PERF_REG_STALLS    	-1    						/**< Not Implemented             */
 	/**@}*/
 
 	/**
