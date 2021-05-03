@@ -44,7 +44,7 @@
 	/**
 	 * @brief Number of performance events.
 	 */
-	#define ARM64_PERF_EVENTS_NUM 9
+	#define ARM64_PERF_EVENTS_NUM 6
 
 	/**
 	 * @brief Number of performance monitors.
@@ -58,15 +58,15 @@
 	 * Ref: see https://blog.printk.io/2015/10/using-the-perf-utility-on-arm/ and
 	 */
 	/**@{*/
-	#define ARM64_PERF_ICACHE_REFILL		0x00 /**< Instruction cache misses                                    */
-	#define ARM64_PERF_ITLB_STALLS        	0x01 /**< Instruction TLB Stalls                                      */
-	#define ARM64_PERF_DCACHE_REFILL		0x02 /**< Data cache misses                                           */
-	#define ARM64_PERF_DCACHE_HITS	 		0x03 /**< Data cache access                                           */
-	#define ARM64_PERF_DTLB_STALL			0x04 /**< Data TLB Stalls                                             */
-	#define ARM64_PERF_BR_MIS_PRED 			0x05 /**< Mispredicted or not predicted branch speculatively executed */
+	#define ARM64_PERF_ICACHE_LOAD_MISSES	0x01 /**< Instruction cache refill                                    */
+	#define ARM64_PERF_ITLB_LOAD_MISSES		0x02 /**< Instruction TLB refill                                      */
+	#define ARM64_PERF_DCACHE_LOAD_MISSES	0x03 /**< Data cache refill                                           */
+	#define ARM64_PERF_DCACHE_HITS	 		0x04 /**< Data cache access                                           */
+	#define ARM64_PERF_DTLB_LOAD_MISSES		0x05 /**< Data TLB refill                                             */
+	#define ARM64_PERF_BR_MIS_PRED 			0x10 /**< Mispredicted or not predicted branch speculatively executed */
 	#define ARM64_PERF_CPU_CYCLES			0x11 /**< Counts processor clock cycles                               */
-	#define ARM64_PERF_BR_PRED				0x07 /**< Predictable branch speculatively executed                   */
-	#define ARM64_PERF_ICACHE_HITS			0x08 /**< Instruction cache access                                    */
+	#define ARM64_PERF_BR_PRED				0x12 /**< Predictable branch speculatively executed                   */
+	#define ARM64_PERF_ICACHE_HITS			0x14 /**< Instruction cache access                                    */
 	/**@}*/
 
 	/**
@@ -152,17 +152,17 @@
 	 * @name Exported Constants
 	 */
 	/**@{*/
-	#define PERF_MONITORS_NUM  	ARM64_PERF_MONITORS_NUM  	/**< @ref ARM64_PERF_MONITORS_NUM  */
-	#define PERF_EVENTS_NUM    	ARM64_PERF_EVENTS_NUM    	/**< @ref ARM64_PERF_EVENTS_NUM    */
-	#define PERF_CYCLES        	ARM64_PERF_CPU_CYCLES    	/**< @ref ARM64_PERF_CPU_CYCLES    */
-	#define PERF_ICACHE_MISSES 	ARM64_PERF_ICACHE_REFILL   	/**< @ref ARM64_PERF_ICACHE_REFILL */
-	#define PERF_DCACHE_MISSES 	ARM64_PERF_DCACHE_REFILL   	/**< @ref ARM64_PERF_DCACHE_REFILL */
-	#define PERF_ICACHE_HITS 	ARM64_PERF_ICACHE_HITS
-	#define PERF_DCACHE_HITS 	ARM64_PERF_DCACHE_HITS
-	#define PERF_BRANCH_STALLS 	ARM64_PERF_BR_MIS_PRED 		/**< @ref ARM64_PERF_BR_MIS_PRED */
-	#define PERF_ICACHE_STALLS 	ARM64_PERF_ITLB_STALLS 		/**< @ref ARM64_PERF_ITLB_STALLS */
-	#define PERF_DCACHE_STALLS 	ARM64_PERF_DTLB_STALL    	/**< @ref ARM64_PERF_DTLB_STALL  */
-	#define PERF_REG_STALLS    	-1    						/**< Not Implemented             */
+	#define PERF_MONITORS_NUM  	ARM64_PERF_MONITORS_NUM  		/**< @ref ARM64_PERF_MONITORS_NUM  */
+	#define PERF_EVENTS_NUM    	ARM64_PERF_EVENTS_NUM    		/**< @ref ARM64_PERF_EVENTS_NUM    */
+	#define PERF_CYCLES        	ARM64_PERF_CPU_CYCLES    		/**< @ref ARM64_PERF_CPU_CYCLES    */
+	#define PERF_ICACHE_MISSES 	ARM64_PERF_ICACHE_LOAD_MISSES   /**< @ref ARM64_PERF_ICACHE_LOAD_MISSES */
+	#define PERF_DCACHE_MISSES 	ARM64_PERF_DCACHE_LOAD_MISSES   /**< @ref ARM64_PERF_DCACHE_LOAD_MISSES */
+	#define PERF_ICACHE_HITS 	ARM64_PERF_ICACHE_HITS			/**< @ref ARM64_PERF_ICACHE_HITS */
+	#define PERF_DCACHE_HITS 	ARM64_PERF_DCACHE_HITS			/**< @ref ARM64_PERF_DCACHE_HITS */
+	#define PERF_BRANCH_STALLS 	ARM64_PERF_BR_MIS_PRED 			/**< @ref ARM64_PERF_BR_MIS_PRED */
+	#define PERF_ICACHE_STALLS 	-1 								/**< Not Implemented             */
+	#define PERF_DCACHE_STALLS 	-1    							/**< Not Implemented             */
+	#define PERF_REG_STALLS    	-1    							/**< Not Implemented             */
 	/**@}*/
 
 	/**
