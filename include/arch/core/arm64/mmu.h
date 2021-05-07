@@ -46,21 +46,24 @@
 	 * @name Page Shifts and Masks
 	 */
 	/**@{*/
-	#define ARM64_PAGE_SHIFT  16                          /**< Page Shift        */
-	#define ARM64_PGTAB_SHIFT 24                          /**< Page Table Shift  */
-	#define ARM64_PAGE_MASK   (~(ARM64_PAGE_SIZE - 1))  /**< Page Mask         */
-	#define ARM64_PGTAB_MASK  (~(ARM64_PGTAB_SIZE - 1)) /**< Page Table Mask   */
+	#define ARM64_PAGE_SHIFT  	12                          /**< Page Shift        */
+	#define ARM64_PMD_SHIFT		21							/**< Page Middle Shift */
+	#define ARM64_PGTAB_SHIFT 	30                          /**< Page Table Shift  */
+	#define ARM64_PAGE_MASK   (~(ARM64_PAGE_SIZE - 1))  	/**< Page Mask         */
+	#define ARM64_PAGE_MASK   (~(ARM64_PMD_SIZE - 1))  	/**< Page Mask         */
+	#define ARM64_PGTAB_MASK  (~(ARM64_PGTAB_SIZE - 1)) 	/**< Page Table Mask   */
 	/**@}*/
 
 	/**
 	 * @name Size of Pages and Page Tables
 	 */
 	/**@{*/
-	#define ARM64_HUGE_PAGE_SIZE (0x1UL << ARM64_PAGE_SHIFT)  /**< Huge Page Size                       */
-	#define ARM64_PAGE_SIZE      (0x1UL << ARM64_PAGE_SHIFT)  /**< Page Size                            */
-	#define ARM64_PGTAB_SIZE     (0x1UL << ARM64_PGTAB_SHIFT) /**< Page Table Size                      */
-	#define ARM64_PTE_SIZE        6                             /**< Page Table Entry Size (in bytes)     */
-	#define ARM64_PDE_SIZE        6                             /**< Page Directory Entry Size (in bytes) */
+	#define ARM64_HUGE_PAGE_SIZE 	(0x1UL << ARM64_PAGE_SHIFT)  /**< Huge Page Size                       */
+	#define ARM64_PAGE_SIZE      	(0x1UL << ARM64_PAGE_SHIFT)  /**< Page Size                            */
+	#define ARM64_PMD_SIZE      	(0x1UL << ARM64_PMD_SHIFT)  /**< Page Midle Size                            */
+	#define ARM64_PGTAB_SIZE     	(0x1UL << ARM64_PGTAB_SHIFT) /**< Page Table Size                      */
+	#define ARM64_PTE_SIZE        	6                             /**< Page Table Entry Size (in bytes)     */
+	#define ARM64_PDE_SIZE        	6                             /**< Page Directory Entry Size (in bytes) */
 	/**@}*/
 
 	#define ARM64_VADDR_LENGTH 48
@@ -70,31 +73,114 @@
 	#define ARM64_PGTAB_LENGTH (1 << (ARM64_PGTAB_SHIFT - ARM64_PAGE_SHIFT))
 
 
-	/**
-	 * @brief Page directory entry.
-	 */
-	struct pde
-	{
-		unsigned present  :  1; /**< Present in memory? */
-		unsigned writable :  1; /**< Writable page?     */
-		unsigned user     :  1; /**< User page?         */
-		unsigned accessed :  1; /**< Accessed?          */
-		unsigned          : 12; /**< Unused.            */
-		unsigned frame    : 32; /**< Frame number.      */
-	} PACK;
+	#define PTRS_PER_PTE		(1 << (ARM64_PAGE_SHIFT - 3))
+	#define PTRS_PER_PMD		(1 << (ARM64_PAGE_SHIFT - 3))
+	#define PTRS_PER_PDE		(1 << (ARM64_PAGE_SHIFT - 3))
 
-	/**
-	 * @brief Page table entry.
-	 */
-	struct pte
-	{
-		unsigned present  :  1; /**< Present in memory? */
-		unsigned writable :  1; /**< Writable page?     */
-		unsigned user     :  1; /**< User page?         */
-		unsigned accessed :  1; /**< Accessed?          */
-		unsigned          : 12; /**< Unused.            */
-		unsigned frame    : 32; /**< Frame number.      */
-	} PACK;
+	// /**
+	//  * @brief Page directory entry.
+	//  *
+	// * Hardware page table definitions.
+	// *
+	// * Level 1 descriptor (PGD).
+	//  */
+	// struct pde
+	// {
+	// 	unsigned present  :  1; /**< Present in memory? */
+	// 	unsigned writable :  2; /**< Writable page?     */
+	// 	unsigned user     :  1; /**< User page?         */
+	// 	unsigned accessed :  1; /**< Accessed?          */
+	// 	unsigned          : 12; /**< Unused.            */
+	// 	unsigned frame    : 32; /**< Frame number.      */
+	// } PACK;
+
+	// /**
+	//  * @brief Page Middle Entry
+	//  * 
+	// * Level 2 descriptor (PMD).
+	// */
+	// struct pme
+	// {
+	// 	unsigned present  :  1; /**< Present in memory? */
+	// 	unsigned writable :  1; /**< Writable page?     */
+	// 	unsigned user     :  1; /**< User page?         */
+	// 	unsigned accessed :  1; /**< Accessed?          */
+	// 	unsigned          : 12; /**< Unused.            */
+	// 	unsigned frame    : 32; /**< Frame number.      */
+	// } PACK;
+	// /**
+	//  * @brief Page table entry.
+	//  * Level 3 descriptor (PTE).
+	// */
+	// struct pte
+	// {
+	// 	unsigned present  :  1; /**< Present in memory? */
+	// 	unsigned writable :  1; /**< Writable page?     */
+	// 	unsigned user     :  1; /**< User page?         */
+	// 	unsigned accessed :  1; /**< Accessed?          */
+	// 	unsigned          : 12; /**< Unused.            */
+	// 	unsigned frame    : 32; /**< Frame number.      */
+	// } PACK;
+
+	/*
+	* Hardware page table definitions.
+	*
+	* Level 1 descriptor (PDE).
+	*/
+	#define PDE_TYPE_TABLE		(3 << 0)
+	#define PDE_TABLE_BIT		(1 << 1)
+	#define PDE_TYPE_MASK		(3 << 0)
+	#define PDE_TYPE_SECT		(1 << 0)
+	#define PDE_SECT_RDONLY		(1 << 7)		/* AP[2] */
+
+
+	/*
+	* Level 2 descriptor (PMD).
+	*/
+	#define PMD_TYPE_MASK		(3 << 0)
+	#define PMD_TYPE_TABLE		(3 << 0)
+	#define PMD_TYPE_SECT		(1 << 0)
+	#define PMD_TABLE_BIT		(1 << 1)
+
+	/*
+	* Section
+	*/
+	#define PMD_SECT_VALID		(1 << 0)
+	#define PMD_SECT_USER		(1 << 6)		/* AP[1] */
+	#define PMD_SECT_RDONLY		(1 << 7)		/* AP[2] */
+	#define PMD_SECT_S			(3 << 8)
+	#define PMD_SECT_AF			(1 << 10)
+	#define PMD_SECT_NG			(1 << 11)
+	#define PMD_SECT_CONT		(1 << 52)
+	#define PMD_SECT_PXN		(1 << 53)
+	#define PMD_SECT_UXN		(1 << 54)
+
+
+	/*
+	* Level 3 descriptor (PTE).
+	*/
+	#define PTE_VALID		(1 << 0)
+	#define PTE_TYPE_MASK	(3 << 0)
+	#define PTE_TYPE_PAGE	(3 << 0)
+	#define PTE_TABLE_BIT	(1 << 1)
+	#define PTE_USER		(1 << 6)		/* AP[1] */
+	#define PTE_RDONLY		(1 << 7)		/* AP[2] */
+	#define PTE_SHARED		(3 << 8)		/* SH[1:0], inner shareable */
+	#define PTE_AF			(1 << 10)	/* Access Flag */
+	#define PTE_NG			(1 << 11)	/* nG */
+	#define PTE_GP			(1 << 50)	/* BTI guarded */
+	#define PTE_DBM			(1 << 51)	/* Dirty Bit Management */
+	#define PTE_CONT		(1 << 52)	/* Contiguous range */
+	#define PTE_PXN			(1 << 53)	/* Privileged XN */
+	#define PTE_UXN			(1 << 54)	/* User XN */
+	/*
+    * Software defined PTE bits definition.
+    */
+    #define PTE_WRITE		(PTE_DBM)		 /* same as DBM (51) */
+    #define PTE_DIRTY		(1 << 55)
+    #define PTE_SPECIAL		(1 << 56)
+    #define PTE_DEVMAP		(1 << 57)
+    #define PTE_PROT_NONE	(1 << 58)       /* only when !PTE_VALID */
 
 #endif
 
@@ -187,6 +273,8 @@
 
 #ifndef _ASM_FILE_
 
+	#include <arch/core/arm64/pgtable-type.h>
+
 	/**
 	 * @name Memory Types
 	 */
@@ -203,7 +291,7 @@
 	 *
 	 * @author Pedro Henrique Penna
 	 */
-	static inline int pde_clear(struct pde *pde)
+	static inline int pde_clear(pde_t *pde)
 	{
 		/* Invalid PDE. */
 		if (pde == NULL)
@@ -272,7 +360,7 @@
 		if (pde == NULL)
 			return (-EINVAL);
 
-		return (pde->present);
+		return ((pde_val(pde) & PTE_VALID));
 	}
 
 	/**
@@ -425,7 +513,7 @@
 			return (-EINVAL);
 
 		return (pde->user);
-	}
+	}asm/mmu.h
 
 	/**
 	 * @brief Clears a page table entry.
@@ -475,12 +563,12 @@
 	 *
 	 * @author Pedro Henrique Penna
 	 */
-	static inline int pte_is_present(struct pte *pte)
+	static inline int pte_is_present(pte_t pte)
 	{
 		/* Invalid PTE. */
 		if (pte == NULL)
 			return (-EINVAL);
-
+		pte_present(pte);
 		return (pte->present);
 	}
 
