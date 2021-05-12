@@ -49,7 +49,7 @@ PUBLIC int arm64_page_map(struct pte *pgtab, paddr_t paddr, vaddr_t vaddr, int w
 
 	pte_present_set(&pgtab[idx], 1);
 	pte_frame_set(&pgtab[idx], ARM64_FRAME(paddr >> ARM64_PAGE_SHIFT));
-	pgtab[idx].type = 1;
+	pgtab[idx].table = 1;
 
 	/* Permissions. */
 	pte_write_set(&pgtab[idx],w);

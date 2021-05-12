@@ -99,16 +99,21 @@
 	 */
 	struct pde
 	{
-		unsigned present  	:  	1; 	/**< Present in memory? 	*/
-		unsigned type		:	1;	/**< Should be 1			*/
-		unsigned 			:	10;	/**< Unused.				*/
-		unsigned long frame : 	36; /**< Frame number.      	*/
-		unsigned res0		:	4;	/**< Res0					*/
-		unsigned 			:	7; 	/**< Unused.				*/
-		unsigned pxn		:	1;	/**< PXN limit 				*/
-		unsigned uxn		:	1;	/**< UXN limit				*/
-		unsigned ap			:	2;	/**< Access Permissions		*/
-		unsigned         	: 	1; 	/**< Unused.            	*/
+		unsigned present  	:  	1; 	/**< Present in memory? 		*/
+		unsigned table		:	1;	/**< Descriptor ?				*/
+		unsigned 			:	4;	/**< Unused						*/
+		unsigned user		:  	1; 	/**< Data Access Permissions Ap[1] 	*/
+		unsigned rdonly		:	1; 	/**< Data Access Permissions AP[2]	*/
+		unsigned shared	 	:  	2; 	/**< SH[1:0], inner shareable	*/
+		unsigned accessed 	:  	1; 	/**< AF, Accessed?          	*/
+		unsigned ng			:	1;	/**< Global Bit					*/
+		unsigned long frame : 	36; /**< Frame number.      		*/
+		unsigned 			:	3;	/**< Res0						*/
+		unsigned write		:	1; 	/**< Dirty Bit Managament		*/
+		unsigned cont		:	1; 	/**< Contiguous ?				*/
+		unsigned pxn		:	1;	/**< Privileged execute-never 	*/
+		unsigned uxn		:	1;	/**< User execute-never			*/
+		unsigned			: 	9;	/**< Unused.					*/
 	} PACK;
 
 	/**
@@ -118,16 +123,20 @@
 	*/
 	struct pme
 	{
-		unsigned present  	:  	1; 	/**< Present in memory? 	*/
-		unsigned type		:	1;	/**< Should be 1			*/
-		unsigned 			:	10;	/**< Unused.				*/
-		unsigned long frame : 	36; /**< Frame number.      	*/
-		unsigned res0		:	4;	/**< Res0					*/
-		unsigned 			:	7; 	/**< Unused.				*/
-		unsigned pxn		:	1;	/**< PXN limit 				*/
-		unsigned uxn		:	1;	/**< UXN limit				*/
-		unsigned ap			:	2;	/**< Access Permissions		*/
-		unsigned         	: 	1; 	/**< Unused.            	*/
+		unsigned present  	:  	1; 	/**< Present in memory? 		*/
+		unsigned table		:	1;	/**< Descriptor ?				*/
+		unsigned 			:	4;	/**< Unused						*/
+		unsigned user		:  	1; 	/**< Data Access Permissions Ap[1] 	*/
+		unsigned rdonly		:	1; 	/**< Data Access Permissions AP[2]	*/
+		unsigned shared	 	:  	2; 	/**< SH[1:0], inner shareable	*/
+		unsigned accessed 	:  	1; 	/**< AF, Accessed?          	*/
+		unsigned ng			:	1;	/**< Global Bit					*/
+		unsigned long frame : 	36; /**< Frame number.      		*/
+		unsigned 			:	4;	/**< Res0						*/
+		unsigned cont		:	1; 	/**< Contiguous ?				*/
+		unsigned pxn		:	1;	/**< Privileged execute-never 	*/
+		unsigned uxn		:	1;	/**< User execute-never			*/
+		unsigned			: 	9;	/**< Unused.					*/
 	} PACK;
 
 	/**
@@ -137,19 +146,24 @@
 	struct pte
 	{
 		unsigned present  	:  	1; 	/**< Present in memory? 		*/
-		unsigned type		:	1;	/**< Descriptor ?				*/
-		unsigned mair		:	3;	/**< Mair Attribute				*/
-		unsigned secure		:	1;	/**< Non Secure Bit				*/
-		unsigned ap		 	:  	2; 	/**< Data Access Permissions   	*/
-		unsigned sh		 	:  	2; 	/**< 				     		*/
+		unsigned table		:	1;	/**< Descriptor ?				*/
+		unsigned 			:	4;	/**< Unused						*/
+		unsigned user		:  	1; 	/**< Data Access Permissions Ap[1] 	*/
+		unsigned rdonly		:	1; 	/**< Data Access Permissions AP[2]	*/
+		unsigned shared	 	:  	2; 	/**< SH[1:0], inner shareable	*/
 		unsigned accessed 	:  	1; 	/**< AF, Accessed?          	*/
 		unsigned ng			:	1;	/**< Global Bit					*/
 		unsigned long frame : 	36; /**< Frame number.      		*/
-		unsigned res0		:	4;	/**< Res0						*/
+		unsigned 			:	3;	/**< Res0						*/
+		unsigned write		:	1; 	/**< Dirty Bit Managament		*/
 		unsigned cont		:	1; 	/**< Contiguous ?				*/
 		unsigned pxn		:	1;	/**< Privileged execute-never 	*/
 		unsigned uxn		:	1;	/**< User execute-never			*/
-		unsigned          	: 	9; 	/**< Unused.            		*/
+		unsigned dirty      : 	1; 	/**< Unused.            		*/
+		unsigned special	:	1;
+		unsigned devmap		:	1;
+		unsigned prot_none	:	1;
+		unsigned			: 	5;	/**< Unused.					*/
 	} PACK;
 
 	/*
@@ -171,37 +185,6 @@
 	#define PMD_TYPE_TABLE		(3 << 0)
 	#define PMD_TYPE_SECT		(1 << 0)
 	#define PMD_TABLE_BIT		(1 << 1)
-
-	/*
-	* Section
-	*/
-	#define PMD_SECT_VALID		(1 << 0)
-	#define PMD_SECT_USER		(1 << 6)		/* AP[1] */
-	#define PMD_SECT_RDONLY		(1 << 7)		/* AP[2] */
-	#define PMD_SECT_S			(3 << 8)
-	#define PMD_SECT_AF			(1 << 10)
-	#define PMD_SECT_NG			(1 << 11)
-	#define PMD_SECT_CONT		(1 << 52)
-	#define PMD_SECT_PXN		(1 << 53)
-	#define PMD_SECT_UXN		(1 << 54)
-
-	/*
-	* Level 3 descriptor (PTE).
-	*/
-	#define PTE_VALID		(1 << 0)
-	#define PTE_TYPE_MASK	(3 << 0)
-	#define PTE_TYPE_PAGE	(3 << 0)
-	#define PTE_TABLE_BIT	(1 << 1)
-	#define PTE_USER		(1 << 6)		/* AP[1] */
-	#define PTE_RDONLY		(1 << 7)		/* AP[2] */
-	#define PTE_SHARED		(3 << 8)		/* SH[1:0], inner shareable */
-	#define PTE_AF			(1 << 10)	/* Access Flag */
-	#define PTE_NG			(1 << 11)	/* nG */
-	#define PTE_GP			(1 << 50)	/* BTI guarded */
-	#define PTE_DBM			(1 << 51)	/* Dirty Bit Management */
-	#define PTE_CONT		(1 << 52)	/* Contiguous range */
-	#define PTE_PXN			(1 << 53)	/* Privileged XN */
-	#define PTE_UXN			(1 << 54)	/* User XN */
 
 #endif
 
@@ -488,8 +471,7 @@
 		if (pde == NULL)
 			return (-EINVAL);
 
-		UNUSED(pde);
-		UNUSED(set);
+		pde->write = (set) ? 1 : 0;
 
 		return (0);
 	}
@@ -510,44 +492,7 @@
 		if (pde == NULL)
 			return (-EINVAL);
 
-		UNUSED(pde);
-		return (0);
-	}
-
-	/**
-	 * @brief Sets/clears the exec bit of a page table.
-	 *
-	 * @param pde Page directory entry of target page table.
-	 * @param set Set bit?
-	 *
-	 * @author Pedro Henrique Penna
-	 */
-	static inline int pde_exec_set(struct pde *pde, int set)
-	{
-		UNUSED(pde);
-		UNUSED(set);
-		return 0;
-	}
-
-	/**
-	 * @brief Asserts if the exec bit of a page table is set.
-	 *
-	 * @param pde Page directory entry of target page table.
-	 *
-	 * @returns If the exec bit of the target page table is set, non
-	 * zero is returned. Otherwise, zero is returned instead.
-	 *
-	 * @author Pedro Henrique Penna
-	 */
-	static inline int pde_is_exec(struct pde *pde)
-	{
-		/* Invalid PDE. */
-		if (pde == NULL)
-			return (-EINVAL);
-
-		UNUSED(pde);
-
-		return 0;
+		return (pde->write);
 	}
 
 	/**
@@ -564,8 +509,7 @@
 		if (pde == NULL)
 			return (-EINVAL);
 
-		UNUSED(pde);
-		UNUSED(set);
+		pde->user = (set) ? 1 : 0;
 
 		return (0);
 	}
@@ -586,9 +530,47 @@
 		if (pde == NULL)
 			return (-EINVAL);
 
-		UNUSED(pde);
+		return (pde->user);
+	}
 
-		return (0);
+	/**
+	 * @brief Sets/clears the exec bit of a page table.
+	 *
+	 * @param pde Page directory entry of target page table.
+	 * @param set Set bit?
+	 *
+	 * @author Pedro Henrique Penna
+	 */
+	static inline int pde_exec_set(struct pde *pde, int set)
+	{
+		if (pde_is_user(pde))
+		{
+			/* If the uxn field is set to 0, then the instruction execution is granted.	*/
+			pde->uxn = ~set;
+		}
+
+		pde->pxn = 1;
+
+		return 0;
+	}
+
+	/**
+	 * @brief Asserts if the exec bit of a page table is set.
+	 *
+	 * @param pde Page directory entry of target page table.
+	 *
+	 * @returns If the exec bit of the target page table is set, non
+	 * zero is returned. Otherwise, zero is returned instead.
+	 *
+	 * @author Pedro Henrique Penna
+	 */
+	static inline int pde_is_exec(struct pde *pde)
+	{
+		/* Invalid PDE. */
+		if (pde == NULL)
+			return (-EINVAL);
+
+		return pde->uxn;
 	}
 
 	/**
@@ -697,8 +679,7 @@
 		if (pte == NULL)
 			return (-EINVAL);
 
-		pte->ap = (pte->ap | (set << 0));
-
+		pte->user = (set) ? 1: 0;
 
 		return (0);
 	}
@@ -719,7 +700,7 @@
 		if (pte == NULL)
 			return (-EINVAL);
 
-		return (pte->ap & (1 << 0));
+		return (pte->user);
 	}
 
 	/**
@@ -736,8 +717,8 @@
 		if (pte == NULL)
 			return (-EINVAL);
 
-		UNUSED(pte);
-		UNUSED(set);
+		pte->rdonly = (set) ? 1 : 0;
+
 		return (0);
 	}
 
@@ -753,8 +734,7 @@
 	 */
 	static inline int pte_is_read(struct pte *pte)
 	{
-		UNUSED(pte);
-		return 0;
+		return (pte->rdonly);
 	}
 
 	/**
@@ -771,8 +751,8 @@
 		if (pte == NULL)
 			return (-EINVAL);
 
-		UNUSED(pte);
-		UNUSED(set);
+		pte->write = (set) ? 1 : 0;
+		pte->rdonly = ~(pte->write);
 
 		return (0);
 	}
@@ -793,9 +773,7 @@
 		if (pte == NULL)
 			return (-EINVAL);
 
-		UNUSED(pte);
-
-		return (0);
+		return (pte->write);
 	}
 
 	/**
@@ -813,6 +791,9 @@
 			/* If the uxn field is set to 0, then the instruction execution is granted.	*/
 			pte->uxn = ~set;
 		}
+
+		pte->pxn = 1;
+
 		return (0);
 	}
 
@@ -828,12 +809,8 @@
 	 */
 	static inline int pte_is_exec(struct pte *pte)
 	{
-		if (pte_is_user(pte))
-		{
-			/* If the uxn field is set to 0, then the instruction execution is granted. */
-			return ~pte->uxn;
-		}
-		return 0;
+		/* If the uxn field is set to 0, then the instruction execution is granted. */
+		return ~pte->uxn;
 	}
 
 	/**

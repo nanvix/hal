@@ -38,7 +38,7 @@
 
 	#include <arch/core/arm64/types.h>
 	#include <nanvix/const.h>
-	
+
 
 /*============================================================================*
  * Exported Interface                                                         *
