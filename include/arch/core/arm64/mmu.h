@@ -35,6 +35,7 @@
 
 	/* Must comme first. */
 	#define __NEED_MEMORY_TYPES
+	#define __NEED_CORE_TYPES
 
 	#include <arch/core/arm64/types.h>
 	#include <nanvix/hlib.h>
@@ -50,7 +51,7 @@
 	#define ARM64_PMD_SHIFT		21							/**< Page Middle Shift */
 	#define ARM64_PGTAB_SHIFT 	30                          /**< Page Table Shift  */
 	#define ARM64_PAGE_MASK   (~(ARM64_PAGE_SIZE - 1))  	/**< Page Mask         */
-	#define ARM64_PAGE_MASK   (~(ARM64_PMD_SIZE - 1))  	/**< Page Mask         */
+	#define ARM64_PMD_MASK   (~(ARM64_PMD_SIZE - 1))  		/**< Page Mask         */
 	#define ARM64_PGTAB_MASK  (~(ARM64_PGTAB_SIZE - 1)) 	/**< Page Table Mask   */
 	/**@}*/
 
@@ -58,69 +59,98 @@
 	 * @name Size of Pages and Page Tables
 	 */
 	/**@{*/
-	#define ARM64_HUGE_PAGE_SIZE 	(0x1UL << ARM64_PAGE_SHIFT)  /**< Huge Page Size                       */
-	#define ARM64_PAGE_SIZE      	(0x1UL << ARM64_PAGE_SHIFT)  /**< Page Size                            */
-	#define ARM64_PMD_SIZE      	(0x1UL << ARM64_PMD_SHIFT)  /**< Page Midle Size                            */
-	#define ARM64_PGTAB_SIZE     	(0x1UL << ARM64_PGTAB_SHIFT) /**< Page Table Size                      */
-	#define ARM64_PTE_SIZE        	6                             /**< Page Table Entry Size (in bytes)     */
-	#define ARM64_PDE_SIZE        	6                             /**< Page Directory Entry Size (in bytes) */
+	#define ARM64_HUGE_PAGE_SIZE 	(0x1UL << ARM64_PAGE_SHIFT)  	/**< Huge Page Size                       */
+	#define ARM64_PAGE_SIZE      	(0x1UL << ARM64_PAGE_SHIFT)  	/**< Page Size                            */
+	#define ARM64_PMD_SIZE      	(0x1UL << ARM64_PMD_SHIFT)  	/**< Page Midle Size                            */
+	#define ARM64_PGTAB_SIZE     	(0x1UL << ARM64_PGTAB_SHIFT) 	/**< Page Table Size                      */
+	#define ARM64_PTE_SIZE        	8                             	/**< Page Table Entry Size (in bytes)     */
+	#define ARM64_PDE_SIZE        	8                             	/**< Page Directory Entry Size (in bytes) */
 	/**@}*/
 
-	#define ARM64_VADDR_LENGTH 48
+	#define ARM64_VADDR_LENGTH 39
 
+	/**
+	 * @brief Page Directory length.
+	 *
+	 * Number of Page Directory Entries (PDEs) per Page Directory.
+	 */
 	#define ARM64_PGDIR_LENGTH (1 << (ARM64_VADDR_LENGTH - ARM64_PGTAB_SHIFT))
 
-	#define ARM64_PGTAB_LENGTH (1 << (ARM64_PGTAB_SHIFT - ARM64_PAGE_SHIFT))
+	/**
+	 * @brief Page Middle length.
+	 *
+	 * Number of Page Midle Entries (PMEs) per Page Midle	.
+	 */
+	#define ARM64_PGMDIR_LENGTH (1 << (ARM64_PGTAB_SHIFT - ARM64_PMD_SHIFT))
 
+	/**
+	 * @brief Page Table length.
+	 *
+	 * Number of Page Table Entries (PTEs) per Page Table.
+	 */
+	#define ARM64_PGTAB_LENGTH (1 << (ARM64_PMD_SHIFT - ARM64_PAGE_SHIFT))
 
-	#define PTRS_PER_PTE		(1 << (ARM64_PAGE_SHIFT - 3))
-	#define PTRS_PER_PMD		(1 << (ARM64_PAGE_SHIFT - 3))
-	#define PTRS_PER_PDE		(1 << (ARM64_PAGE_SHIFT - 3))
+	/**
+	 * @brief Page directory entry.
+	 *
+	* Hardware page table definitions.
+	*
+	* Level 1 descriptor (PDE).
+	 */
+	struct pde
+	{
+		unsigned present  	:  	1; 	/**< Present in memory? 	*/
+		unsigned type		:	1;	/**< Should be 1			*/
+		unsigned 			:	10;	/**< Unused.				*/
+		unsigned long frame : 	36; /**< Frame number.      	*/
+		unsigned res0		:	4;	/**< Res0					*/
+		unsigned 			:	7; 	/**< Unused.				*/
+		unsigned pxn		:	1;	/**< PXN limit 				*/
+		unsigned uxn		:	1;	/**< UXN limit				*/
+		unsigned ap			:	2;	/**< Access Permissions		*/
+		unsigned         	: 	1; 	/**< Unused.            	*/
+	} PACK;
 
-	// /**
-	//  * @brief Page directory entry.
-	//  *
-	// * Hardware page table definitions.
-	// *
-	// * Level 1 descriptor (PGD).
-	//  */
-	// struct pde
-	// {
-	// 	unsigned present  :  1; /**< Present in memory? */
-	// 	unsigned writable :  2; /**< Writable page?     */
-	// 	unsigned user     :  1; /**< User page?         */
-	// 	unsigned accessed :  1; /**< Accessed?          */
-	// 	unsigned          : 12; /**< Unused.            */
-	// 	unsigned frame    : 32; /**< Frame number.      */
-	// } PACK;
+	/**
+	 * @brief Page Middle Entry
+	 *
+	* Level 2 descriptor (PMD).
+	*/
+	struct pme
+	{
+		unsigned present  	:  	1; 	/**< Present in memory? 	*/
+		unsigned type		:	1;	/**< Should be 1			*/
+		unsigned 			:	10;	/**< Unused.				*/
+		unsigned long frame : 	36; /**< Frame number.      	*/
+		unsigned res0		:	4;	/**< Res0					*/
+		unsigned 			:	7; 	/**< Unused.				*/
+		unsigned pxn		:	1;	/**< PXN limit 				*/
+		unsigned uxn		:	1;	/**< UXN limit				*/
+		unsigned ap			:	2;	/**< Access Permissions		*/
+		unsigned         	: 	1; 	/**< Unused.            	*/
+	} PACK;
 
-	// /**
-	//  * @brief Page Middle Entry
-	//  * 
-	// * Level 2 descriptor (PMD).
-	// */
-	// struct pme
-	// {
-	// 	unsigned present  :  1; /**< Present in memory? */
-	// 	unsigned writable :  1; /**< Writable page?     */
-	// 	unsigned user     :  1; /**< User page?         */
-	// 	unsigned accessed :  1; /**< Accessed?          */
-	// 	unsigned          : 12; /**< Unused.            */
-	// 	unsigned frame    : 32; /**< Frame number.      */
-	// } PACK;
-	// /**
-	//  * @brief Page table entry.
-	//  * Level 3 descriptor (PTE).
-	// */
-	// struct pte
-	// {
-	// 	unsigned present  :  1; /**< Present in memory? */
-	// 	unsigned writable :  1; /**< Writable page?     */
-	// 	unsigned user     :  1; /**< User page?         */
-	// 	unsigned accessed :  1; /**< Accessed?          */
-	// 	unsigned          : 12; /**< Unused.            */
-	// 	unsigned frame    : 32; /**< Frame number.      */
-	// } PACK;
+	/**
+	 * @brief Page table entry.
+	 * Level 3 descriptor (PTE).
+	*/
+	struct pte
+	{
+		unsigned present  	:  	1; 	/**< Present in memory? 		*/
+		unsigned type		:	1;	/**< Descriptor ?				*/
+		unsigned mair		:	3;	/**< Mair Attribute				*/
+		unsigned secure		:	1;	/**< Non Secure Bit				*/
+		unsigned ap		 	:  	2; 	/**< Data Access Permissions   	*/
+		unsigned sh		 	:  	2; 	/**< 				     		*/
+		unsigned accessed 	:  	1; 	/**< AF, Accessed?          	*/
+		unsigned ng			:	1;	/**< Global Bit					*/
+		unsigned long frame : 	36; /**< Frame number.      		*/
+		unsigned res0		:	4;	/**< Res0						*/
+		unsigned cont		:	1; 	/**< Contiguous ?				*/
+		unsigned pxn		:	1;	/**< Privileged execute-never 	*/
+		unsigned uxn		:	1;	/**< User execute-never			*/
+		unsigned          	: 	9; 	/**< Unused.            		*/
+	} PACK;
 
 	/*
 	* Hardware page table definitions.
@@ -155,7 +185,6 @@
 	#define PMD_SECT_PXN		(1 << 53)
 	#define PMD_SECT_UXN		(1 << 54)
 
-
 	/*
 	* Level 3 descriptor (PTE).
 	*/
@@ -173,14 +202,6 @@
 	#define PTE_CONT		(1 << 52)	/* Contiguous range */
 	#define PTE_PXN			(1 << 53)	/* Privileged XN */
 	#define PTE_UXN			(1 << 54)	/* User XN */
-	/*
-    * Software defined PTE bits definition.
-    */
-    #define PTE_WRITE		(PTE_DBM)		 /* same as DBM (51) */
-    #define PTE_DIRTY		(1 << 55)
-    #define PTE_SPECIAL		(1 << 56)
-    #define PTE_DEVMAP		(1 << 57)
-    #define PTE_PROT_NONE	(1 << 58)       /* only when !PTE_VALID */
 
 #endif
 
@@ -273,8 +294,6 @@
 
 #ifndef _ASM_FILE_
 
-	#include <arch/core/arm64/pgtable-type.h>
-
 	/**
 	 * @name Memory Types
 	 */
@@ -285,13 +304,53 @@
 	/**@}*/
 
 	/**
+	 * @brief Maps a page.
+	 *
+	 * @param pgtab Target page table.
+	 * @param paddr Physical address of the target page frame.
+	 * @param vaddr Virtual address of the target page.
+	 * @param w     Writable page?
+	 * @param x     Executable page?
+	 *
+	 * @returns Upon successful completion, zero is returned. Upon
+	 * failure, a negative error code is returned instead.
+	 */
+	EXTERN int arm64_page_map(struct pte *pgtab, paddr_t paddr, vaddr_t vaddr, int w, int x);
+
+	/**
+	 * @brief Maps a page.
+	 *
+	 * @param pgtab Target page table.
+	 * @param paddr Physical address of the target page frame.
+	 * @param vaddr Virtual address of the target page.
+	 * @param w     Writable page?
+	 * @param x     Executable page?
+	 *
+	 * @returns Upon successful completion, zero is returned. Upon
+	 * failure, a negative error code is returned instead.
+	 */
+	EXTERN int arm64_huge_page_map(struct pte *pgtab, paddr_t paddr, vaddr_t vaddr, int w, int x);
+
+	/**
+	 * @brief Maps a page table.
+	 *
+	 * @param pgdir Target page directory.
+	 * @param paddr Physical address of the target page table frame.
+	 * @param vaddr Virtual address of the target page table.
+	 *
+	 * @returns Upon successful completion, zero is returned. Upon
+	 * failure, a negative error code is returned instead.
+	 */
+	EXTERN int arm64_pgtab_map(struct pde *pgdir, paddr_t paddr, vaddr_t vaddr);
+
+	/**
 	 * @brief Clears a page directory entry.
 	 *
 	 * @param pde Target page directory entry.
 	 *
 	 * @author Pedro Henrique Penna
 	 */
-	static inline int pde_clear(pde_t *pde)
+	static inline int pde_clear(struct pde *pde)
 	{
 		/* Invalid PDE. */
 		if (pde == NULL)
@@ -360,7 +419,7 @@
 		if (pde == NULL)
 			return (-EINVAL);
 
-		return ((pde_val(pde) & PTE_VALID));
+		return (pde->present);
 	}
 
 	/**
@@ -387,6 +446,10 @@
 	 */
 	static inline int pde_read_set(struct pde *pde, int set)
 	{
+		/* Invalid PDE. */
+		if (pde == NULL)
+			return (-EINVAL);
+
 		UNUSED(pde);
 		UNUSED(set);
 		return 0;
@@ -404,8 +467,11 @@
 	 */
 	static inline int pde_is_read(struct pde *pde)
 	{
-		UNUSED(pde);
-		return 0;
+		/* Invalid PDE. */
+		if (pde == NULL)
+			return (-EINVAL);
+
+		return 1;
 	}
 
 	/**
@@ -422,7 +488,8 @@
 		if (pde == NULL)
 			return (-EINVAL);
 
-		pde->writable = (set) ? 1 : 0;
+		UNUSED(pde);
+		UNUSED(set);
 
 		return (0);
 	}
@@ -443,7 +510,8 @@
 		if (pde == NULL)
 			return (-EINVAL);
 
-		return (pde->writable);
+		UNUSED(pde);
+		return (0);
 	}
 
 	/**
@@ -473,7 +541,12 @@
 	 */
 	static inline int pde_is_exec(struct pde *pde)
 	{
+		/* Invalid PDE. */
+		if (pde == NULL)
+			return (-EINVAL);
+
 		UNUSED(pde);
+
 		return 0;
 	}
 
@@ -491,7 +564,8 @@
 		if (pde == NULL)
 			return (-EINVAL);
 
-		pde->user = (set) ? 1 : 0;
+		UNUSED(pde);
+		UNUSED(set);
 
 		return (0);
 	}
@@ -512,8 +586,10 @@
 		if (pde == NULL)
 			return (-EINVAL);
 
-		return (pde->user);
-	}asm/mmu.h
+		UNUSED(pde);
+
+		return (0);
+	}
 
 	/**
 	 * @brief Clears a page table entry.
@@ -531,7 +607,6 @@
 		kmemset(pte, 0, PTE_SIZE);
 
 		return (0);
-
 	}
 
 	/**
@@ -563,12 +638,12 @@
 	 *
 	 * @author Pedro Henrique Penna
 	 */
-	static inline int pte_is_present(pte_t pte)
+	static inline int pte_is_present(struct pte *pte)
 	{
 		/* Invalid PTE. */
 		if (pte == NULL)
 			return (-EINVAL);
-		pte_present(pte);
+
 		return (pte->present);
 	}
 
@@ -609,6 +684,45 @@
 	}
 
 	/**
+	 * @brief Sets/clears the user bit of a page.
+	 *
+	 * @param pte Page table entry of target page.
+	 * @param set Set bit?
+	 *
+	 * @author Pedro Henrique Penna
+	 */
+	static inline int pte_user_set(struct pte *pte, int set)
+	{
+		/* Invalid PTE. */
+		if (pte == NULL)
+			return (-EINVAL);
+
+		pte->ap = (pte->ap | (set << 0));
+
+
+		return (0);
+	}
+
+	/**
+	 * @brief Asserts if the user bit of a page.
+	 *
+	 * @param pte Page table entry of target page.
+	 *
+	 * @returns If the user bit of the target page, non zero is
+	 * returned. Otherwise, zero is returned instead.
+	 *
+	 * @author Pedro Henrique Penna
+	 */
+	static inline int pte_is_user(struct pte *pte)
+	{
+		/* Invalid PTE. */
+		if (pte == NULL)
+			return (-EINVAL);
+
+		return (pte->ap & (1 << 0));
+	}
+
+	/**
 	 * @brief Sets/clears the read bit of a page.
 	 *
 	 * @param pte Page table entry of target page.
@@ -618,9 +732,12 @@
 	 */
 	static inline int pte_read_set(struct pte *pte, int set)
 	{
+		/* Invalid PTE. */
+		if (pte == NULL)
+			return (-EINVAL);
+
 		UNUSED(pte);
 		UNUSED(set);
-
 		return (0);
 	}
 
@@ -654,7 +771,8 @@
 		if (pte == NULL)
 			return (-EINVAL);
 
-		pte->writable = (set) ? 1 : 0;
+		UNUSED(pte);
+		UNUSED(set);
 
 		return (0);
 	}
@@ -675,7 +793,9 @@
 		if (pte == NULL)
 			return (-EINVAL);
 
-		return (pte->writable);
+		UNUSED(pte);
+
+		return (0);
 	}
 
 	/**
@@ -688,8 +808,11 @@
 	 */
 	static inline int pte_exec_set(struct pte *pte, int set)
 	{
-		UNUSED(pte);
-		UNUSED(set);
+		if (pte_is_user(pte))
+		{
+			/* If the uxn field is set to 0, then the instruction execution is granted.	*/
+			pte->uxn = ~set;
+		}
 		return (0);
 	}
 
@@ -705,46 +828,12 @@
 	 */
 	static inline int pte_is_exec(struct pte *pte)
 	{
-		UNUSED(pte);
+		if (pte_is_user(pte))
+		{
+			/* If the uxn field is set to 0, then the instruction execution is granted. */
+			return ~pte->uxn;
+		}
 		return 0;
-	}
-
-	/**
-	 * @brief Sets/clears the user bit of a page.
-	 *
-	 * @param pte Page table entry of target page.
-	 * @param set Set bit?
-	 *
-	 * @author Pedro Henrique Penna
-	 */
-	static inline int pte_user_set(struct pte *pte, int set)
-	{
-		/* Invalid PTE. */
-		if (pte == NULL)
-			return (-EINVAL);
-
-		pte->user = (set) ? 1 : 0;
-
-		return (0);
-	}
-
-	/**
-	 * @brief Asserts if the user bit of a page.
-	 *
-	 * @param pte Page table entry of target page.
-	 *
-	 * @returns If the user bit of the target page, non zero is
-	 * returned. Otherwise, zero is returned instead.
-	 *
-	 * @author Pedro Henrique Penna
-	 */
-	static inline int pte_is_user(struct pte *pte)
-	{
-		/* Invalid PTE. */
-		if (pte == NULL)
-			return (-EINVAL);
-
-		return (pte->user);
 	}
 
 	/**
@@ -820,12 +909,7 @@
 	 */
 	static inline int mmu_page_map(struct pte *pgtab, paddr_t paddr, vaddr_t vaddr, int w, int x)
 	{
-		UNUSED(pgtab);
-		UNUSED(paddr);
-		UNUSED(vaddr);
-		UNUSED(w);
-		UNUSED(x);
-		return 0;
+		return (arm64_page_map(pgtab, paddr, vaddr, w, x));
 	}
 
 	/**
@@ -833,12 +917,7 @@
 	 */
 	static inline int mmu_huge_page_map(struct pte *pgdir, paddr_t paddr, vaddr_t vaddr, int w, int x)
 	{
-		UNUSED(pgdir);
-		UNUSED(paddr);
-		UNUSED(vaddr);
-		UNUSED(w);
-		UNUSED(x);
-		return 0;
+		return (arm64_huge_page_map(pgdir, paddr, vaddr, w, x));
 	}
 
 	/**
@@ -846,10 +925,7 @@
 	 */
 	static inline int mmu_pgtab_map(struct pde *pgdir, paddr_t paddr, vaddr_t vaddr)
 	{
-		UNUSED(pgdir);
-		UNUSED(paddr);
-		UNUSED(vaddr);
-		return 0;
+		return (arm64_pgtab_map(pgdir, paddr, vaddr));
 	}
 
 	/**
@@ -872,7 +948,7 @@
 	 */
 	static inline void mmu_setup(void)
 	{
-		/* noop */
+		//arm64_mmu_setup();
 	}
 
 #endif /* __NANVIX_HAL */
