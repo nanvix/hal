@@ -47,7 +47,6 @@ PUBLIC struct coreinfo cores[ARM64_CLUSTER_NUM_CORES] = {
 
 PUBLIC void arm64_cluster_setup(void)
 {
-	
 	int coreid;
 
 	coreid = arm64_core_get_id();
@@ -77,7 +76,7 @@ PUBLIC NORETURN void arm64_cluster_slave_setup(void)
  *============================================================================*/
 
 PUBLIC NORETURN void arm64_cluster_master_setup(void)
-{	
+{
 	arm64_cluster_setup();
 	kmain(0, NULL);
 }

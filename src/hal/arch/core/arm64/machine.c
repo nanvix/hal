@@ -27,6 +27,7 @@
 #define __NEED_CORE_TYPES
 #define __NEED_CORE_REGS
 
+#include <nanvix/hal/core/exception.h>
 #include <arch/core/arm64/ctx.h>
 #include <arch/core/arm64/excp.h>
 #include <arch/core/arm64/int.h>
@@ -53,10 +54,7 @@ PUBLIC void arm64_dump_all_csr(void)
  */
 PUBLIC NORETURN void arm64_do_mbad(const struct context *ctx)
 {
-	arm64_context_dump(ctx);
-	arm64_dump_all_csr();
-
-	kprintf("[arm64] bad exception");
+	UNUSED(ctx);
 	UNREACHABLE();
 }
 
@@ -66,10 +64,7 @@ PUBLIC NORETURN void arm64_do_mbad(const struct context *ctx)
  */
 PUBLIC NORETURN void arm64_do_mexcp(const struct context *ctx)
 {
-	arm64_context_dump(ctx);
-	arm64_dump_all_csr();
-
-	kprintf("[arm64] unhandled exception");
+	UNUSED(ctx);
 	UNREACHABLE();
 }
 
@@ -88,15 +83,5 @@ PUBLIC void arm64_do_mcall(struct context *ctx)
  */
 PUBLIC void arm64_do_mint(const struct context *ctx)
 {
-	ctx = ctx;
-	//arm64_context_dump(ctx);
-	//arm64_dump_all_csr();
-	irq_no a = arm64_gic_find_pending_irq();
-	if (a < 0 || a > ARM64_INT_NUM) {
-		kprintf("[arm64] unhandled interruption %x", a);
-		UNREACHABLE();
-	}
-	kprintf("[arm64] interruption %d", a);
-	arm64_do_interrupt(a);
-	//UNREACHABLE();
+	UNUSED(ctx);
 }

@@ -51,7 +51,7 @@
 	/**
 	 * @brief Number of exceptions.
 	 */
-	#define ARM64_EXCP_NUM 26
+	#define ARM64_EXCP_NUM 61
 
 	/**
 	 * @brief Number of virtual exceptions.
@@ -64,54 +64,49 @@
 	#define ARM64_EXCP_NUM_EXT (ARM64_EXCP_NUM + ARM64_EXCP_NUM_VIRT)
 
 	/**
+	 * @brief Shift to get the exception cause.
+	 */
+	#define ARM64_EXCP_CAUSE_SHIFT (26)
+
+	/**
 	 * @name Hardware Exceptions
 	 */
 	/**@{*/
-	//#define ARM64_EXCP_TRAPPED_MCR_OR_MRC_COPROC_1111         3 /**<  */
-	//#define ARM64_EXCP_TRAPPED_MCRR_OR_MRRC_COPROC_1111       4 /**<  */	
-	//#define ARM64_EXCP_TRAPPED_MCR_OR_MRC_COPROC_1110         5 /**<  */	
-	//#define ARM64_EXCP_TRAPPED_MRRC_COPROC_1110           	12 /**<  */
-	//#define ARM64_EXCP_SVC_AARCH32           					17 /**<  */
-	//#define ARM64_EXCP_HVC_AARCH32           					18 /**<  */
-	//#define ARM64_EXCP_SMC_AARCH32           					19 /**<  */
-	//#define ARM64_EXCP_TRAPPED_FP_AARCH32  					40 /**<  */
-	//#define ARM64_EXCP_BKPT_AARCH32  							56 /**<  */
-	//#define ARM64_EXCP_VECTOR_CATCH_AARCH32  					58 /**<  */
 	#define ARM64_EXCP_UNKNOWN_REASON                           0 /**<  */
-	#define ARM64_EXCP_TRAPPED_WFI_OR_WFE           			1 /**<  */
-	#define ARM64_EXCP_TRAPPED_LDC_STC_ACESS           			2 /**<  */
-	#define ARM64_EXCP_SVE_SIMD_FP           					3 /**<  */
-	#define ARM64_EXCP_TRAPPED_VMRS           					4 /**<  */
-	#define ARM64_EXCP_ILLEGAL_EXECUTION                		5 /**<  */
-	#define ARM64_EXCP_SVC_AARCH64           					6 /**<  */
-	#define ARM64_EXCP_HVC_AARCH64           					7 /**<  */
-	#define ARM64_EXCP_SMC_AARCH64           					8 /**<  */
-	#define ARM64_EXCP_TRAPPED_MSR_MRS_SYSTEM_AARCH64           9 /**<  */
-	#define ARM64_EXCP_ACESS_SVE           						10 /**<  */
-	#define ARM64_EXCP_ABORT_FROM_LOWER_EXCP_LEVEL  			11 /**<  */
-	#define ARM64_EXCP_ABORT_WITHOUT_CHANGE_EXCP_LEVEL  		12 /**<  */
-	#define ARM64_EXCP_PC_ALIGNMENT_FAULT  						13 /**<  */
-	#define ARM64_EXCP_DATA_ABORT_FROM_LOWER_EXCP_LEVEL  		14 /**<  */
-	#define ARM64_EXCP_DATA_ABORT_WITHOUT_CHANGE_EXCP_LEVEL  	15 /**<  */
-	#define ARM64_EXCP_SP_ALIGNMENT_FAULT  						16 /**<  */
-	#define ARM64_EXCP_TRAPPED_FP_AARCH64  						17 /**<  */
-	#define ARM64_EXCP_SError  									18 /**<  */
-	#define ARM64_EXCP_BREAKPOINT_FROM_LOWER_EXCP_LEVEL  		19 /**<  */
-	#define ARM64_EXCP_BREAKPOINT_WITHOUT_CHANGE_EXCP_LEVEL  	20 /**<  */
-	#define ARM64_EXCP_STEP_FROM_LOWER_EXCP_LEVEL  				21 /**<  */
-	#define ARM64_EXCP_STEP_WITHOUT_CHANGE_EXCP_LEVEL  			22 /**<  */
-	#define ARM64_EXCP_WATCHPOINT_FROM_LOWER_EXCP_LEVEL  		23 /**<  */
-	#define ARM64_EXCP_WATCHPOINT_WITHOUT_CHANGE_EXCP_LEVEL  	24 /**<  */
-	#define ARM64_EXCP_BRK_AARCH64  							25 /**<  */
+	#define ARM64_EXCP_TRAPPED_WFI           			        1 /**<  */
+	#define ARM64_EXCP_TRAPPED_LDC_STC_ACESS           			6 /**<  */
+	#define ARM64_EXCP_SVE_SIMD_FP           					7 /**<  */
+	#define ARM64_EXCP_BRANCH_TARGET           					13 /**<  */
+	#define ARM64_EXCP_ILLEGAL_EXECUTION                		14 /**<  */
+	#define ARM64_EXCP_SVC_AARCH64           					21 /**<  */
+	#define ARM64_EXCP_HVC_AARCH64           					22 /**<  */
+	#define ARM64_EXCP_SMC_AARCH64           					23 /**<  */
+	#define ARM64_EXCP_TRAPPED_MSR_MRS_SYSTEM_AARCH64           24 /**<  */
+	#define ARM64_EXCP_ACESS_SVE           						25 /**<  */
+	#define ARM64_EXCP_ABORT_FROM_LOWER_EXCP_LEVEL  			32 /**<  */
+	#define ARM64_EXCP_ABORT_WITHOUT_CHANGE_EXCP_LEVEL  		33 /**<  */
+	#define ARM64_EXCP_PC_ALIGNMENT_FAULT  						34 /**<  */
+	#define ARM64_EXCP_DATA_ABORT_FROM_LOWER_EXCP_LEVEL  		36 /**<  */
+	#define ARM64_EXCP_DATA_ABORT_WITHOUT_CHANGE_EXCP_LEVEL  	37 /**<  */
+	#define ARM64_EXCP_SP_ALIGNMENT_FAULT  						38 /**<  */
+	#define ARM64_EXCP_TRAPPED_FP_AARCH64  						44 /**<  */
+	#define ARM64_EXCP_SError  									47 /**<  */
+	#define ARM64_EXCP_BREAKPOINT_FROM_LOWER_EXCP_LEVEL  		48 /**<  */
+	#define ARM64_EXCP_BREAKPOINT_WITHOUT_CHANGE_EXCP_LEVEL  	49 /**<  */
+	#define ARM64_EXCP_STEP_FROM_LOWER_EXCP_LEVEL  				50 /**<  */
+	#define ARM64_EXCP_STEP_WITHOUT_CHANGE_EXCP_LEVEL  			51 /**<  */
+	#define ARM64_EXCP_WATCHPOINT_FROM_LOWER_EXCP_LEVEL  		52 /**<  */
+	#define ARM64_EXCP_WATCHPOINT_WITHOUT_CHANGE_EXCP_LEVEL  	53 /**<  */
+	#define ARM64_EXCP_BRK_AARCH64  							60 /**<  */
 	/**@}*/
 
 	/**
 	 * @name Virtual Exceptions
 	 */
 	/**@{*/
-	#define ARM64_VIRT_PAGE_FAULT         26 /**< Page Fault         */
-	#define ARM64_VIRT_PAGE_PROTECTION    27 /**< Page Protection    */
-	#define ARM64_VIRT_GENERAL_PROTECTION 28 /**< General Protection */
+	#define ARM64_VIRT_PAGE_FAULT         61 /**< Page Fault         */
+	#define ARM64_VIRT_PAGE_PROTECTION    62 /**< Page Protection    */
+	#define ARM64_VIRT_GENERAL_PROTECTION 63 /**< General Protection */
 	/**@}*/
 
 #ifndef _ASM_FILE_
@@ -136,6 +131,11 @@
 	EXTERN void arm64_excp_dump(const struct exception *excp);
 
 	/**
+	 * @brief Handle and map the hardware excp to a valid number.
+	 */
+	EXTERN void arm64_handle_exception(const struct context *ctx, arm64_word_t excp_cause, arm64_word_t fault_addr);
+
+	/**
 	 * @brief Gets the number of an exception.
 	 *
 	 * The arm64_excp_get_cause() function gets the exception number
@@ -154,7 +154,7 @@
 	 * The arm64_excp_get_addr() function gets the exception address
 	 * stored in the exception information structure pointed to by @p
 	 * excp.
-	 * 
+	 *
 	 */
 	static inline arm64_vaddr_t arm64_excp_get_addr(const struct exception *excp)
 	{

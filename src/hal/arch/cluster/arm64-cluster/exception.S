@@ -26,6 +26,7 @@
 #define _ASM_FILE_
 
 #include <arch/core/arm64/asm.h>
+#include <arch/core/arm64/int.h>
 
 .section ".text"
 
@@ -49,7 +50,16 @@ b \exception
 
 .macro HANDLE_EXCEPTION function
 arm64core_save_context
-mov x0, sp
+arm64core_get_exception_info
+mov x0, sp     /* Set the sp in x0 to pass the ctx struct */
+bl \function
+arm64core_restore_context
+eret
+.endm
+
+.macro HANDLE_INTERRUPTION function
+arm64core_save_context
+mov x0, sp     /* Set the sp in x0 to pass the ctx struct */
 bl \function
 arm64core_restore_context
 eret
@@ -83,34 +93,34 @@ EXCEPTION_CALL fiq_lower_32
 EXCEPTION_CALL serror_lower_32
 
 synchronous_curr_sp0:
-	HANDLE_EXCEPTION arm64_do_mexcp
+	HANDLE_EXCEPTION arm64_handle_exception
 irq_el2_sp0:
-	HANDLE_EXCEPTION arm64_do_mexcp
+	HANDLE_INTERRUPTION arm64_do_interrupt
 fiq_curr_sp0:
-	HANDLE_EXCEPTION arm64_do_mexcp
+	HANDLE_INTERRUPTION arm64_do_interrupt
 serror_curr_sp0:
-	HANDLE_EXCEPTION arm64_do_mexcp
+	HANDLE_EXCEPTION arm64_handle_exception
 synchronous_curr_spcurr:
-	HANDLE_EXCEPTION arm64_do_mexcp
+	HANDLE_EXCEPTION arm64_handle_exception
 irq_curr_spcurr:
-	HANDLE_EXCEPTION arm64_do_mint
+	HANDLE_INTERRUPTION arm64_do_interrupt
 fiq_curr_spcurr:
-	HANDLE_EXCEPTION arm64_do_mint
+	HANDLE_INTERRUPTION arm64_do_interrupt
 serror_curr_spcurr:
-	HANDLE_EXCEPTION arm64_do_mexcp
+	HANDLE_EXCEPTION arm64_handle_exception
 synchronous_lower_64:
-	HANDLE_EXCEPTION arm64_do_mexcp
+	HANDLE_EXCEPTION arm64_handle_exception
 irq_lower_64:
-	HANDLE_EXCEPTION arm64_do_mexcp
+	HANDLE_EXCEPTION arm64_handle_exception
 fiq_lower_64:
-	HANDLE_EXCEPTION arm64_do_mexcp
+	HANDLE_EXCEPTION arm64_handle_exception
 serror_lower_64:
-	HANDLE_EXCEPTION arm64_do_mexcp
+	HANDLE_EXCEPTION arm64_handle_exception
 synchronous_lower_32:
-	HANDLE_EXCEPTION arm64_do_mexcp
+	HANDLE_EXCEPTION arm64_handle_exception
 irq_lower_32:
-	HANDLE_EXCEPTION arm64_do_mexcp
+	HANDLE_EXCEPTION arm64_handle_exception
 fiq_lower_32:
-	HANDLE_EXCEPTION arm64_do_mexcp
+	HANDLE_EXCEPTION arm64_handle_exception
 serror_lower_32:
-	HANDLE_EXCEPTION arm64_do_mexcp
+	HANDLE_EXCEPTION arm64_handle_exception

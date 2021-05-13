@@ -47,7 +47,7 @@
 
 
 	#ifndef _ASM_FILE_
-		EXTERN void arm64_do_interrupt(int intnum);
+		EXTERN void arm64_do_interrupt(const struct context *ctx);
 	#endif
 
 /**@}*/

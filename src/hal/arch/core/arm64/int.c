@@ -32,11 +32,20 @@
 /**
  * @brief Generic handler of an interrupt
  */
-PUBLIC void arm64_do_interrupt(int intnum)
+PUBLIC void arm64_do_interrupt(const struct context *ctx)
 {
-	do_interrupt(intnum);
-	if (intnum == TIMER_IRQ)
-		arm64_timer_reset();
+	irq_no int_number;
+
+	int_number = arm64_gic_find_pending_irq();
+
+	if (int_number < 0 || int_number > ARM64_INT_NUM) {
+		kprintf("[arm64] unhandled interruption %x", int_number);
+		UNREACHABLE();
+	}
+
+	kprintf("[arm64] interruption %d", int_number);
+	do_interrupt(int_number);
+	UNUSED(ctx);
 }
 
 /**
@@ -48,5 +57,5 @@ PUBLIC void (*interrupt_handlers[ARM64_INT_NUM])(int) = {
 	NULL, NULL, NULL, NULL, NULL,
 	NULL, NULL, NULL, NULL, NULL,
 	NULL, NULL, NULL, NULL, NULL,
-	NULL, arm64_do_interrupt
+	NULL, NULL
 };

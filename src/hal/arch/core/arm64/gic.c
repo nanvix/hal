@@ -228,9 +228,9 @@ PUBLIC void arm64_gic_eoi(irq_no irq) {
 
 /**
  * @brief Get the next pending interruption
- * 
+ *
  * @param irqp Interruption ID pointer.
- * 
+ *
  * @return Return the next pending interruption. 0 if there isn't pending interruption.
  */
 PUBLIC irq_no arm64_gic_find_pending_irq(void) {

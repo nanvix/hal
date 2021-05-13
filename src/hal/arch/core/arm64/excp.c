@@ -23,6 +23,7 @@
  */
 
 #include <nanvix/hal/core/exception.h>
+#include <arch/core/arm64/excp.h>
 #include <nanvix/const.h>
 #include <nanvix/hlib.h>
 
@@ -34,36 +35,90 @@
  * @endcond
  */
 PUBLIC struct exception_info exceptions[ARM64_EXCP_NUM_EXT] = {
-	{ NULL, "Unknown reason." 													},
-	{ NULL, "Trapped WFI or WFE instruction execution."       					},
-	{ NULL, "Trapped LDC or STC access."            							},
-	{ NULL, "Access to SVE, Advanced SIMD, or floating-point functionality."    },
-	{ NULL, "Trapped VMRS access."        										},
-	{ NULL, "Illegal Execution state."              							},
-	{ NULL, "SVC instruction execution in AArch64 state."   					},
-	{ NULL, "HVC instruction execution in AArch64 state."         				},
-	{ NULL, "SMC instruction execution in AArch64 state."   					},
-	{ NULL, "Trapped MSR, MRS or System instruction execution in AArch64."   	},
-	{ NULL, "Access to SVE functionality."                       				},
-	{ NULL, "Instruction Abort from a lower Exception level."   				},
-	{ NULL, "Instruction Abort taken without a change in Exception level."      },
-	{ NULL, "PC alignment fault exception."                						},
-	{ NULL, "Data Abort from a lower Exception level."                       	},
-	{ NULL, "Data Abort taken without a change in Exception level."             },
-	{ NULL, "SP alignment fault exception."                						},
-	{ NULL, "Trapped floating-point exception taken from AArch64."             	},
-	{ NULL, "SError interrupt."                									},
-	{ NULL, "Breakpoint exception from a lower Exception level."             	},
-	{ NULL, "Breakpoint exception taken without a change in Exception level."   },
-	{ NULL, "Software Step exception from a lower Exception level."             },
-	{ NULL, "Software Step exception taken without a change in Exception level."},
-	{ NULL, "Watchpoint exception from a lower Exception level."             	},
-	{ NULL, "Watchpoint exception taken without a change in Exception level."   },
-	{ NULL, "BRK instruction execution in AArch64 state."             			},
-	{ NULL, "Page Fault"             											},
-	{ NULL, "Page Protection"             										},
-	{ NULL, "General Protection"             									}
+	{ NULL, "Unknown reason." 													}, //< 0
+	{ NULL, "Trapped WFI."       												}, //< 1
+	{ NULL, ""                               									}, //< 2
+	{ NULL, ""                               									}, //< 3
+	{ NULL, ""                               									}, //< 4
+	{ NULL, ""                               									}, //< 5
+	{ NULL, "Trapped LDC or STC access."            							}, //< 6
+	{ NULL, "Access to SVE, Advanced SIMD, or floating-point functionality."    }, //< 7
+	{ NULL, ""                               									}, //< 8
+	{ NULL, ""                               									}, //< 9
+	{ NULL, ""                               									}, //< 10
+	{ NULL, ""                               									}, //< 11
+	{ NULL, ""                               									}, //< 12
+	{ NULL, "Branch Target Exception."        									}, //< 13
+	{ NULL, "Illegal Execution state."              							}, //< 14
+	{ NULL, ""                               									}, //< 15
+	{ NULL, ""                               									}, //< 16
+	{ NULL, ""                               									}, //< 17
+	{ NULL, ""                               									}, //< 18
+	{ NULL, ""                               									}, //< 19
+	{ NULL, ""                               									}, //< 20
+	{ NULL, "SVC instruction execution in AArch64 state."   					}, //< 21
+	{ NULL, "HVC instruction execution in AArch64 state."         				}, //< 22
+	{ NULL, "SMC instruction execution in AArch64 state."   					}, //< 23
+	{ NULL, "Trapped MSR, MRS or System instruction execution in AArch64."   	}, //< 24
+	{ NULL, "Access to SVE functionality."                       				}, //< 25
+	{ NULL, ""                               									}, //< 26
+	{ NULL, ""                               									}, //< 27
+	{ NULL, ""                               									}, //< 28
+	{ NULL, ""                               									}, //< 29
+	{ NULL, ""                               									}, //< 30
+	{ NULL, ""                               									}, //< 31
+	{ NULL, "Instruction Abort from a lower Exception level."   				}, //< 32
+	{ NULL, "Instruction Abort taken without a change in Exception level."      }, //< 33
+	{ NULL, "PC alignment fault exception."                						}, //< 34
+	{ NULL, ""                               									}, //< 35
+	{ NULL, "Data Abort from a lower Exception level."                       	}, //< 36
+	{ NULL, "Data Abort taken without a change in Exception level."             }, //< 37
+	{ NULL, "SP alignment fault exception."                						}, //< 38
+	{ NULL, ""                               									}, //< 39
+	{ NULL, ""                               									}, //< 40
+	{ NULL, ""                               									}, //< 41
+	{ NULL, ""                               									}, //< 42
+	{ NULL, ""                               									}, //< 43
+	{ NULL, "Trapped floating-point exception taken from AArch64."             	}, //< 44
+	{ NULL, ""                               									}, //< 45
+	{ NULL, ""                               									}, //< 46
+	{ NULL, "SError interrupt."                									}, //< 47
+	{ NULL, "Breakpoint exception from a lower Exception level."             	}, //< 48
+	{ NULL, "Breakpoint exception taken without a change in Exception level."   }, //< 49
+	{ NULL, "Software Step exception from a lower Exception level."             }, //< 50
+	{ NULL, "Software Step exception taken without a change in Exception level."}, //< 51
+	{ NULL, "Watchpoint exception from a lower Exception level."             	}, //< 52
+	{ NULL, "Watchpoint exception taken without a change in Exception level."   }, //< 53
+	{ NULL, ""                               									}, //< 54
+	{ NULL, ""                               									}, //< 55
+	{ NULL, ""                               									}, //< 56
+	{ NULL, ""                               									}, //< 57
+	{ NULL, ""                               									}, //< 58
+	{ NULL, ""                               									}, //< 59
+	{ NULL, "BRK instruction execution in AArch64 state."             			}, //< 60
+	{ NULL, "Page Fault"             											}, //< 61
+	{ NULL, "Page Protection"             										}, //< 62
+	{ NULL, "General Protection"             									}  //< 63
 };
+
+/**
+ * @todo TODO provide a detailed description for this function.
+ */
+PUBLIC void arm64_handle_exception(const struct context *ctx, arm64_word_t excp_cause, arm64_word_t fault_addr){
+	struct exception excp;
+
+	arm64_context_dump(ctx);
+
+	excp.num = excp_cause >> ARM64_EXCP_CAUSE_SHIFT;
+	excp.code = excp_cause;
+	excp.addr = fault_addr;
+	kprintf("[arm64][excp] exception cause %x", excp.num);
+	kprintf("[arm64][excp] exception code %x", excp.code);
+	kprintf("[arm64][excp] fault adrr %x", excp.addr);
+	kprintf("[arm64] unhandled exception");
+	do_exception(&excp, ctx);
+	UNREACHABLE();
+}
 
 /**
  * @todo TODO provide a detailed description for this function.

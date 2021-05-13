@@ -62,7 +62,15 @@
 		orr x24,  xzr, x0; orr x23,  xzr, x0; orr x26,  xzr, x0;
 		orr x27,  xzr, x0; orr x26,  xzr, x0; orr x29,  xzr, x0;
         orr x30,  xzr, x0;
-    
+	.endm
+	
+	/*
+	 *  Exception Save Info
+	 */
+	.macro arm64core_get_exception_info
+		/* Don't use the x0 'cause this register is used to hold the context addr */
+		mrs     x1, esr_el1 //Code Error
+		mrs     x2, elr_el1 //Faulting address.
 	.endm
 
 	/*
