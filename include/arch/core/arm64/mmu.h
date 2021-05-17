@@ -166,25 +166,8 @@
 		unsigned			: 	5;	/**< Unused.					*/
 	} PACK;
 
-	/*
-	* Hardware page table definitions.
-	*
-	* Level 1 descriptor (PDE).
-	*/
-	#define PDE_TYPE_TABLE		(3 << 0)
-	#define PDE_TABLE_BIT		(1 << 1)
-	#define PDE_TYPE_MASK		(3 << 0)
-	#define PDE_TYPE_SECT		(1 << 0)
-	#define PDE_SECT_RDONLY		(1 << 7)		/* AP[2] */
-
-
-	/*
-	* Level 2 descriptor (PMD).
-	*/
-	#define PMD_TYPE_MASK		(3 << 0)
-	#define PMD_TYPE_TABLE		(3 << 0)
-	#define PMD_TYPE_SECT		(1 << 0)
-	#define PMD_TABLE_BIT		(1 << 1)
+	#define dsb(opt)	asm volatile("dsb " #opt : : : "memory")	/**< Data Synchronization Barrier */
+	#define isb()		asm volatile("isb" : : : "memory") 			/**< Instruction Synchronization Barrier. */
 
 #endif
 
@@ -326,6 +309,7 @@
 	 */
 	EXTERN int arm64_pgtab_map(struct pde *pgdir, paddr_t paddr, vaddr_t vaddr);
 
+	EXTERN int arm64_mmu_setup();
 	/**
 	 * @brief Clears a page directory entry.
 	 *
@@ -925,7 +909,7 @@
 	 */
 	static inline void mmu_setup(void)
 	{
-		//arm64_mmu_setup();
+		arm64_mmu_setup();
 	}
 
 #endif /* __NANVIX_HAL */

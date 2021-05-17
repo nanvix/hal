@@ -23,6 +23,7 @@
  */
 
 #include <arch/core/arm64/mmu.h>
+#include <arch/core/arm64/tlb.h>
 #include <nanvix/const.h>
 #include <posix/errno.h>
 

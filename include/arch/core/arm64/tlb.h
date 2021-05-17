@@ -37,6 +37,7 @@
 /**@{*/
 
 	#include <arch/core/arm64/types.h>
+	#include <arch/core/arm64/mmu.h>
 	#include <nanvix/const.h>
 
 
@@ -59,6 +60,10 @@
 	 */
 	static inline int tlb_flush(void)
 	{
+		dsb(ishst);						// ensure write has completed
+		asm ("tlbi vmalle1" : : ); 		// invalidate all TLB entries
+		dsb(ish); 						// ensure completion of TLB invalidation
+		isb();							// synchronize context and ensure that no instructions are
 		return 0;
 	}
 
