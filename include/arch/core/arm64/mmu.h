@@ -167,7 +167,72 @@
 	} PACK;
 
 	#define dsb(opt)	asm volatile("dsb " #opt : : : "memory")	/**< Data Synchronization Barrier */
+
+	// The ISB forces these changes to be seen before the MMU is enabled.
 	#define isb()		asm volatile("isb" : : : "memory") 			/**< Instruction Synchronization Barrier. */
+
+	// // granularity
+	// #define PT_PAGE     (3 << 0)        // 4k granule
+	// #define PT_BLOCK    (1 << 0)        // 2M granule
+	// // accessibility
+	// #define PT_KERNEL   (0<<6)      // privileged, supervisor EL1 access only
+	// #define PT_USER     (1<<6)      // unprivileged, EL0 access allowed
+	// #define PT_RW       (0<<7)      // read-write
+	// #define PT_RO       (1<<7)      // read-only
+	// #define PT_AF       (1<<10)     // accessed flag
+	// #define PT_NX       (1UL<<54)   // no execute
+	// // shareability
+	// #define PT_OSH      (2<<8)      // outter shareable
+	// #define PT_ISH      (3<<8)      // inner shareable
+	// // defined in MAIR register
+	// #define PT_MEM      (0<<2)      // normal memory
+	// #define PT_DEV      (1<<2)      // device MMIO
+	// #define PT_NC       (2<<2)      // non-cachable
+
+	/**
+	 * @name MAIR attributes
+	 */
+	/**@{*/
+	#define BLOCK_INDEX_MEM_DEV_NGNRNE 0
+	#define BLOCK_INDEX_MEM_DEV_NGNRE  1
+	#define BLOCK_INDEX_MEM_DEV_GRE    2
+	#define BLOCK_INDEX_MEM_NORMAL_NC  3
+	#define BLOCK_INDEX_MEM_NORMAL     4
+	#define BLOCK_INDEX_SHIFT          2
+
+	#define MAIR_ATTRIBUTES            ((0x00 << (BLOCK_INDEX_MEM_DEV_NGNRNE*8)) | \
+						(0x04 << (BLOCK_INDEX_MEM_DEV_NGNRE*8))  | \
+						(0x0c << (BLOCK_INDEX_MEM_DEV_GRE*8))    | \
+						(0x44 << (BLOCK_INDEX_MEM_NORMAL_NC*8))  | \
+						(0xffUL << (BLOCK_INDEX_MEM_NORMAL*8)))
+	/**@}*/
+
+	/**
+	 * @brief TCR attributes
+	*/
+	/**@{*/
+	#define TCR_TOSZ                   (64 - ARM64_VADDR_BIT)
+	#define TCR_IRGN0_NM_WBWAC         (0x01 << 8)
+	#define TCR_ORGN0_NM_WBWAC         (0x01 << 10)
+	#define TCR_SH0_IS                 (0x3 << 12)
+	#define TCR_TG0_4KB                (0x0 << 14)
+	#define TCR_PS_4TB                 (0x3 << 16)
+	#define TCR_PS_256TB               (0x5 << 16)
+	#define TCR_TBI_USED               (0x0 << 20)
+
+	#define TCR_MMU_ENABLE				(TCR_TOSZ | TCR_IRGN0_NM_WBWAC | TCR_ORGN0_NM_WBWAC | \
+				     					TCR_SH0_IS | TCR_TG0_4KB | TCR_PS_256TB | \
+										TCR_TBI_USED)
+	/**@}*/
+
+	/**
+	 * @brief SCTLR Masks
+	*/
+	/**@{*/
+	#define SCTLR_I		(1 << 12)	/* Instruction cache enable		*/
+	#define SCTLR_M		(1 << 0)	/* MMU enable					*/
+	#define SCTLR_C		(1 << 2)	/* Data/unified cache enable	*/
+	/**@}*/
 
 #endif
 
@@ -899,7 +964,11 @@
 	 */
 	static inline int mmu_is_enabled(void)
 	{
-		return (0);
+		uint32_t sctlr;
+
+		__asm__ __volatile__("mrs %0, SCTLR_EL2\n\t" : "=r" (sctlr) :  : "memory");
+
+		return (sctlr & SCTLR_M);
 	}
 
 #ifdef __NANVIX_HAL

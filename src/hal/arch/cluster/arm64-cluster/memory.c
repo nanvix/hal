@@ -44,23 +44,3 @@ PUBLIC struct memory_region mem_layout[MEM_REGIONS] = {
 	}
 };
 
-
-/*============================================================================*
- * arm64_mmu_setup()                                                           *
- *============================================================================*/
-
-/**
- * The arm_mmu_setup() function initializes the Memory Management Unit
- * (MMU) of the underlying arm64 core.
- */
-PUBLIC int arm64_mmu_setup(void) {
-	asm ("msr TTBR0_EL1, X0" ::);	// Set TTBR0
-	asm ("msr TTBR1_EL1, X1" ::);	// Set TTBR1
-  	asm ("msr TCR_EL1, X2" ::);		// Set TCR
-  	isb();							// The ISB forces these changes to be seen before the MMU is enabled.
-  	asm("msr X0, SCTLR_EL1" ::);	// Read System Control Register configuration data
-  	asm("orr X0, X0, #1" ::);		// Set [M] bit and enable the MMU.
-  	asm("msr SCTLR_EL1, X0" ::);	// Write System Control Register configuration data
-  	isb();							// The ISB forces these changes to be seen by the next instruction
-	return 0;
-}

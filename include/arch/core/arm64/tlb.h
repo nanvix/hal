@@ -56,6 +56,33 @@
 #ifndef _ASM_FILE_
 
 	/**
+	 * @brief TLB entry.
+	 */
+	struct tlbe
+	{
+		unsigned valid		: 1; 	/**< Valid entry ?			*/
+		unsigned vasign		: 1; 	/**< VA[48] sign bit		*/
+		unsigned va			: 29;	/**< Virtual Adress			*/
+		unsigned ns			: 1;	/**< Security state that the entry was fetched in */
+		unsigned vmid		: 8;	/**< Virtual Machine Id		*/
+		unsigned asid		: 16;	/**< Adress Space Id		*/
+		unsigned size		: 3;	/**< Encoding for page size	*/
+		unsigned ng			: 1;	/**< Global ?				*/
+		unsigned ap			: 3;	/**< Acess Permissions 		*/
+		unsigned hap		: 2;	/**< Hypervisor access permissions	*/
+		unsigned nsd		: 1;	/**< Security state allocated to memory region */
+		unsigned pa			: 28;	/**< Physical Adress		*/
+		unsigned xs1nu		: 1;	/**< Non user executable permissions */
+		unsigned 			: 1;	/**< Unused, Stage 2 exec persmissions */
+		unsigned sh			: 8;	/**< Memory Type and shareability */
+		unsigned 			: 4;	/**< Unused					*/
+		unsigned s1size		: 3;	/**< Stage 1 size			*/
+		unsigned 			: 3;	/**< Stage 2 level			*/
+		unsigned			: 3;	/**< Parity, unused			*/
+	} __attribute__((packed));
+
+
+	/**
 	 * @see arm64_tlb_flush().
 	 */
 	static inline int tlb_flush(void)
