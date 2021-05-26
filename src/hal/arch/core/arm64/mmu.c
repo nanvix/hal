@@ -207,15 +207,12 @@ PUBLIC int arm64_mmu_setup(void) {
 
 	/* Initialize MAIR indices */
 	__asm__ __volatile__("msr MAIR_EL1, %0\n\t" : : "r" (MAIR_ATTRIBUTES) : "memory");
-	kprintf("[MMU] MAIR init");
 
 	/* Invalidate TLBs */
 	tlb_flush();
-	kprintf("[MMU] tlb flush");
 
 	/* Initialize TCR flags */
 	__asm__ __volatile__("msr TCR_EL1, %0\n\t" : : "r" (TCR_MMU_ENABLE) : "memory");
-	kprintf("[MMU] TCR init");
 
 	/* Initialize TTBR */
 	//__asm__ __volatile__("msr TTBR0_EL1, %0\n\t" : : "r" ((uintptr_t)xlat_addr) : "memory");
@@ -225,22 +222,18 @@ PUBLIC int arm64_mmu_setup(void) {
     asm volatile ("msr ttbr0_el1, %0" : : "r" ((unsigned long)&KERNEL_DATA_END + TTBR_CNP));
     // upper half, kernel space
     asm volatile ("msr ttbr1_el1, %0" : : "r" ((unsigned long)&KERNEL_DATA_END + TTBR_CNP + ARM64_PAGE_SIZE));
-	kprintf("[MMU] TTBR init");
 
 	/* Ensure system register writes are committed before enabling MMU */
 	isb();
-	kprintf("[MMU] ISB");
 
 	/* Enable MMU */
 	__asm__ __volatile__("mrs %0, SCTLR_EL1\n\t" : "=r" (sctlr) :  : "memory");
-	kprintf("[MMU] SCTLR_EL1 read");
 	sctlr |= SCTLR_C | SCTLR_M | SCTLR_I;
-	kprintf("[MMU] SCTLR_EL1 update");
-	__asm__ __volatile__("msr SCTLR_EL1, %0\n\t" : : "r" (sctlr) : "memory");
-	kprintf("[MMU] MMU enable");
+	__asm__ __volatile__("msr SCTLR_EL1, %0" : : "r" (sctlr) : "memory");
 
 	isb();
-	kprintf("[MMU] ISB");
+
+    kprintf("[MMU] MMU enable");
 
 	return 0;
 }
