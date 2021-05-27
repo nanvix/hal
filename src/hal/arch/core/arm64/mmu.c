@@ -90,9 +90,12 @@ PUBLIC int arm64_huge_page_map(struct pte *pgtab, paddr_t paddr, vaddr_t vaddr, 
 
 	pgtab[idx].present = 1;
 	pgtab[idx].frame = ARM64_FRAME(paddr >> ARM64_PAGE_SHIFT);
+    pgtab[idx].dirty = 0;
+    pgtab[idx].accessed = 0;
+    pgtab[idx].table = 1;
 
 	/* Permissions. */
-	pte_write_set(&pgtab[idx],w);
+	pte_write_set(&pgtab[idx], w);
 	pte_exec_set(&pgtab[idx], x);
 
 	return (0);
@@ -120,8 +123,8 @@ PUBLIC int arm64_pgtab_map(struct pde *pgdir, paddr_t paddr, vaddr_t vaddr)
 
 	pgdir[idx].present = 1;
 	pgdir[idx].frame = ARM64_FRAME(paddr >> ARM64_PAGE_SHIFT);
-	// pgdir[idx].dirty = 0;
-	// pgdir[idx].accessed = 0;
+	pgdir[idx].accessed = 0;
+    pgdir[idx].table = 1;
 
 	return (0);
 }
@@ -138,11 +141,8 @@ PUBLIC int arm64_mmu_setup(void) {
 
 	unsigned long data_page = (unsigned long)&KERNEL_DATA_START/ARM64_PAGE_SIZE;
     unsigned long r, b, *paging=(unsigned long*)&KERNEL_DATA_END;
-    uint32_t sctlr;
 
-    kprintf("Pagging %ld", paging);
-
-    /* create MMU translation tables at _end */
+    /* create MMU translation tables at KERNEL_DATA_END */
 
     // TTBR0, identity L1
     paging[0]=(unsigned long)((unsigned char*)&KERNEL_DATA_END+2*ARM64_PAGE_SIZE) |    // physical address
@@ -205,17 +205,6 @@ PUBLIC int arm64_mmu_setup(void) {
         PT_OSH |      // outter shareable
         PT_DEV;       // device memory
 
-	/* Initialize MAIR indices */
-	__asm__ __volatile__("msr MAIR_EL1, %0\n\t" : : "r" (MAIR_ATTRIBUTES) : "memory");
-
-	/* Invalidate TLBs */
-	tlb_flush();
-
-	/* Initialize TCR flags */
-	__asm__ __volatile__("msr TCR_EL1, %0\n\t" : : "r" (TCR_MMU_ENABLE) : "memory");
-
-	/* Initialize TTBR */
-	//__asm__ __volatile__("msr TTBR0_EL1, %0\n\t" : : "r" ((uintptr_t)xlat_addr) : "memory");
 
 	// tell the MMU where our translation tables are. TTBR_CNP bit not documented, but required
     // lower half, user space
@@ -223,17 +212,13 @@ PUBLIC int arm64_mmu_setup(void) {
     // upper half, kernel space
     asm volatile ("msr ttbr1_el1, %0" : : "r" ((unsigned long)&KERNEL_DATA_END + TTBR_CNP + ARM64_PAGE_SIZE));
 
-	/* Ensure system register writes are committed before enabling MMU */
-	isb();
+	arm64_enable_mmu();
 
-	/* Enable MMU */
-	__asm__ __volatile__("mrs %0, SCTLR_EL1\n\t" : "=r" (sctlr) :  : "memory");
-	sctlr |= SCTLR_C | SCTLR_M | SCTLR_I;
-	__asm__ __volatile__("msr SCTLR_EL1, %0" : : "r" (sctlr) : "memory");
-
-	isb();
-
-    kprintf("[MMU] MMU enable");
+    if (mmu_is_enabled()) {
+        kprintf("[MMU] MMU enable");
+    } else {
+        kprintf("[MMU] MMU enable failed");
+    }
 
 	return 0;
 }
