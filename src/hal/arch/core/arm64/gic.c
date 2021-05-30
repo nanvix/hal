@@ -262,5 +262,5 @@ PUBLIC void arm64_gic_configure_timer(void)
 	arm64_gicd_set_priority(TIMER_IRQ, 0 << GIC_PRI_SHIFT );  /* Set priority */
 	arm64_gicd_set_target(TIMER_IRQ, 0x1);  /* processor 0 */
 	arm64_gicd_clear_pending(TIMER_IRQ);
-	//arm64_gicd_enable_int(TIMER_IRQ);
+	arm64_gicd_enable_int(TIMER_IRQ);
 }

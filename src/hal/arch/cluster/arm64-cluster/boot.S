@@ -44,7 +44,7 @@
  * Entry point.
  */
 _do_start:
-    arm64core_clear_gprs
+    //arm64core_clear_gprs
 
 /*
  * Configure the Exception Level.
@@ -57,20 +57,35 @@ _config_exceptions:
     bne     _set_vector_table
 
 
-    mov     x1, #0x5b1       // Set EL0 and EL1 to non-secure state
+    mov     x1, #0x5b1      // Set EL0 and EL1 to non-secure state
     msr     scr_el3, x1
 
     mov     x1, #0x3c9       // Mask interruptions
     msr     SPSR_EL3, x1
 
-    adr     x1, _set_vector_table
+    adr     x1, _teste
     msr     elr_el3, x1
+    eret
+
+_teste:
+    mrs     x0, CurrentEL
+    and     x0, x0, #12      // Mask
+    mov    x1, #(1 << 31)
+    msr    hcr_el2, x1
+
+    mov     x2, #0x3c4
+    msr     spsr_el2, x2
+
+    adr     x2, _set_vector_table
+    msr     elr_el2, x2
     eret
 
 /*
  * Set the vector table register.
  */
-_set_vector_table: 
+_set_vector_table:
+    mov     x0, #0x3C5
+    msr     spsr_el1, x0
     ldr     x0, =_exception_vector_table
     msr     vbar_el1, x0
     isb

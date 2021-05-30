@@ -120,7 +120,7 @@ PUBLIC void arm64_timer_reset(void)
 {
 	if (!initialized)
 		return;
-	//arm64_gic_eoi(TIMER_IRQ);
+	arm64_gic_eoi(TIMER_IRQ);
 	arm64_timer_disable_cntv();
 	arm64_gicd_clear_pending(TIMER_IRQ);
 	uint32_t cntfrq = arm64_timer_read_cntfrq_el0();

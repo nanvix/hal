@@ -71,6 +71,7 @@
 		/* Don't use the x0 'cause this register is used to hold the context addr */
 		mrs     x1, esr_el1 //Code Error
 		mrs     x2, elr_el1 //Faulting address.
+    
 	.endm
 
 	/*

@@ -37,7 +37,7 @@ PUBLIC void _main(int argc, const char *argv[]) {
         arm64_timer_init(10);
         //teste_();
         uart_pl011_write("Hello World\n", 12);
-        exception_svc();
+        //exception_svc();
         while(true) {
                 uart_pl011_write("To na main\n", 12);
                 for (int i = 0; i < 1000000; i++);

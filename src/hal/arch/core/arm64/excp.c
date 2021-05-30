@@ -107,16 +107,16 @@ PUBLIC struct exception_info exceptions[ARM64_EXCP_NUM_EXT] = {
 PUBLIC void arm64_handle_exception(const struct context *ctx, arm64_word_t excp_cause, arm64_word_t fault_addr){
 	struct exception excp;
 
-	arm64_context_dump(ctx);
 
 	excp.num = excp_cause >> ARM64_EXCP_CAUSE_SHIFT;
 	excp.code = excp_cause;
 	excp.addr = fault_addr;
+	arm64_context_dump(ctx);
 	kprintf("[arm64][excp] exception cause %x", excp.num);
 	kprintf("[arm64][excp] exception code %x", excp.code);
 	kprintf("[arm64][excp] fault adrr %x", excp.addr);
 	kprintf("[arm64] unhandled exception");
-	do_exception(&excp, ctx);
+	//do_exception(&excp, ctx);
 	UNREACHABLE();
 }
 
