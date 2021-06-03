@@ -90,9 +90,12 @@ PUBLIC int arm64_huge_page_map(struct pte *pgtab, paddr_t paddr, vaddr_t vaddr, 
 
 	pgtab[idx].present = 1;
 	pgtab[idx].frame = ARM64_FRAME(paddr >> ARM64_PAGE_SHIFT);
+    pgtab[idx].dirty = 0;
+    pgtab[idx].accessed = 0;
+    pgtab[idx].table = 1;
 
 	/* Permissions. */
-	pte_write_set(&pgtab[idx],w);
+	pte_write_set(&pgtab[idx], w);
 	pte_exec_set(&pgtab[idx], x);
 
 	return (0);
@@ -120,8 +123,8 @@ PUBLIC int arm64_pgtab_map(struct pde *pgdir, paddr_t paddr, vaddr_t vaddr)
 
 	pgdir[idx].present = 1;
 	pgdir[idx].frame = ARM64_FRAME(paddr >> ARM64_PAGE_SHIFT);
-	// pgdir[idx].dirty = 0;
-	// pgdir[idx].accessed = 0;
+	pgdir[idx].accessed = 0;
+    pgdir[idx].table = 1;
 
 	return (0);
 }
@@ -136,13 +139,22 @@ PUBLIC int arm64_pgtab_map(struct pde *pgdir, paddr_t paddr, vaddr_t vaddr)
  */
 PUBLIC int arm64_mmu_setup(void) {
 
-	unsigned long data_page = (unsigned long)&KERNEL_DATA_START/ARM64_PAGE_SIZE;
+	unsigned long data_page = (unsigned long)&KERNEL_DATA_START/4096;
     unsigned long r, b, *paging=(unsigned long*)&KERNEL_DATA_END;
-    uint32_t sctlr;
 
-    kprintf("Pagging %ld", paging);
+    asm volatile ("mrs %0, id_aa64mmfr0_el1" : "=r" (r));
+    b=r&0xF;
+    if(r&(0xF<<28)/*4k*/ || b<1/*36 bits*/) {
+        kprintf("ERROR: 4k granule or 36 bit address space not supported\n");
+        return 0;
+    }
 
-    /* create MMU translation tables at _end */
+    r=  (0xFF << 0) |    // AttrIdx=0: normal, IWBWA, OWBWA, NTR
+        (0x04 << 8) |    // AttrIdx=1: device, nGnRE (must be OSH too)
+        (0x44 <<16);     // AttrIdx=2: non cacheable
+    asm volatile ("msr mair_el1, %0" : : "r" (r));
+
+    // /* create MMU translation tables at KERNEL_DATA_END */
 
     // TTBR0, identity L1
     paging[0]=(unsigned long)((unsigned char*)&KERNEL_DATA_END+2*ARM64_PAGE_SIZE) |    // physical address
@@ -152,7 +164,7 @@ PUBLIC int arm64_mmu_setup(void) {
         PT_ISH |      // inner shareable
         PT_MEM;       // normal memory
 
-    // identity L2, first 2M block
+    // // identity L2, first 2M block
     paging[2*512]=(unsigned long)((unsigned char*)&KERNEL_DATA_END+3*ARM64_PAGE_SIZE) | // physical address
         PT_PAGE |     // we have area in it mapped by pages
         PT_AF |       // accessed flag
@@ -205,35 +217,19 @@ PUBLIC int arm64_mmu_setup(void) {
         PT_OSH |      // outter shareable
         PT_DEV;       // device memory
 
-	/* Initialize MAIR indices */
-	__asm__ __volatile__("msr MAIR_EL1, %0\n\t" : : "r" (MAIR_ATTRIBUTES) : "memory");
-
-	/* Invalidate TLBs */
-	tlb_flush();
-
-	/* Initialize TCR flags */
-	__asm__ __volatile__("msr TCR_EL1, %0\n\t" : : "r" (TCR_MMU_ENABLE) : "memory");
-
-	/* Initialize TTBR */
-	//__asm__ __volatile__("msr TTBR0_EL1, %0\n\t" : : "r" ((uintptr_t)xlat_addr) : "memory");
-
 	// tell the MMU where our translation tables are. TTBR_CNP bit not documented, but required
     // lower half, user space
-    asm volatile ("msr ttbr0_el1, %0" : : "r" ((unsigned long)&KERNEL_DATA_END + TTBR_CNP));
+    asm volatile ("msr ttbr0_el1, %0" : : "r" ((unsigned long)&KERNEL_DATA_END + 1));
     // upper half, kernel space
-    asm volatile ("msr ttbr1_el1, %0" : : "r" ((unsigned long)&KERNEL_DATA_END + TTBR_CNP + ARM64_PAGE_SIZE));
+    asm volatile ("msr ttbr1_el1, %0" : : "r" ((unsigned long)&KERNEL_DATA_END + 1+ ARM64_PAGE_SIZE));
 
-	/* Ensure system register writes are committed before enabling MMU */
-	isb();
+	arm64_enable_mmu();
 
-	/* Enable MMU */
-	__asm__ __volatile__("mrs %0, SCTLR_EL1\n\t" : "=r" (sctlr) :  : "memory");
-	sctlr |= SCTLR_C | SCTLR_M | SCTLR_I;
-	__asm__ __volatile__("msr SCTLR_EL1, %0" : : "r" (sctlr) : "memory");
-
-	isb();
-
-    kprintf("[MMU] MMU enable");
+    if (mmu_is_enabled()) {
+        kprintf("[MMU] MMU enable");
+    } else {
+        kprintf("[MMU] MMU enable failed");
+    }
 
 	return 0;
 }

@@ -100,10 +100,13 @@
 	struct pde
 	{
 		unsigned present  	:  	1; 	/**< Present in memory? 		*/
-		unsigned table		:	1;	/**< Descriptor ?				*/
-		unsigned 			:	4;	/**< Unused						*/
+		unsigned table		:	1;	/**< 1 -> table, 0 -> block		*/
+		unsigned attrindex	:	3;	/**< mem attr index field, D4-1798					*/
+		unsigned ns         :	1;  /**< non-secure bit				*/
+		// access permissions bits
 		unsigned user		:  	1; 	/**< Data Access Permissions Ap[1] 	*/
 		unsigned rdonly		:	1; 	/**< Data Access Permissions AP[2]	*/
+		// shareability field
 		unsigned shared	 	:  	2; 	/**< SH[1:0], inner shareable	*/
 		unsigned accessed 	:  	1; 	/**< AF, Accessed?          	*/
 		unsigned ng			:	1;	/**< Global Bit					*/
@@ -113,7 +116,8 @@
 		unsigned cont		:	1; 	/**< Contiguous ?				*/
 		unsigned pxn		:	1;	/**< Privileged execute-never 	*/
 		unsigned uxn		:	1;	/**< User execute-never			*/
-		unsigned			: 	9;	/**< Unused.					*/
+		unsigned avail1     :	4;  /**< available for SW use		*/
+		unsigned			: 	5;	/**< Unused.					*/
 	} PACK;
 
 	/**
@@ -124,19 +128,24 @@
 	struct pme
 	{
 		unsigned present  	:  	1; 	/**< Present in memory? 		*/
-		unsigned table		:	1;	/**< Descriptor ?				*/
-		unsigned 			:	4;	/**< Unused						*/
+		unsigned table		:	1;	/**< 1 -> table, 0 -> block		*/
+		unsigned attrindex	:	3;	/**< mem attr index field, D4-1798					*/
+		unsigned ns         :	1;  /**< non-secure bit				*/
+		// access permissions bits
 		unsigned user		:  	1; 	/**< Data Access Permissions Ap[1] 	*/
 		unsigned rdonly		:	1; 	/**< Data Access Permissions AP[2]	*/
+		// shareability field
 		unsigned shared	 	:  	2; 	/**< SH[1:0], inner shareable	*/
 		unsigned accessed 	:  	1; 	/**< AF, Accessed?          	*/
 		unsigned ng			:	1;	/**< Global Bit					*/
 		unsigned long frame : 	36; /**< Frame number.      		*/
-		unsigned 			:	4;	/**< Res0						*/
+		unsigned 			:	3;	/**< Res0						*/
+		unsigned write		:	1; 	/**< Dirty Bit Managament		*/
 		unsigned cont		:	1; 	/**< Contiguous ?				*/
 		unsigned pxn		:	1;	/**< Privileged execute-never 	*/
 		unsigned uxn		:	1;	/**< User execute-never			*/
-		unsigned			: 	9;	/**< Unused.					*/
+		unsigned avail1     :	4;  /**< available for SW use		*/
+		unsigned			: 	5;	/**< Unused.					*/
 	} PACK;
 
 	/**
@@ -146,10 +155,12 @@
 	struct pte
 	{
 		unsigned present  	:  	1; 	/**< Present in memory? 		*/
-		unsigned table		:	1;	/**< Descriptor ?				*/
+		unsigned table		:	1;	/**< // 0 -> makes entry invalid*/
 		unsigned 			:	4;	/**< Unused						*/
+		// access permissions bits
 		unsigned user		:  	1; 	/**< Data Access Permissions Ap[1] 	*/
 		unsigned rdonly		:	1; 	/**< Data Access Permissions AP[2]	*/
+		// shareability field
 		unsigned shared	 	:  	2; 	/**< SH[1:0], inner shareable	*/
 		unsigned accessed 	:  	1; 	/**< AF, Accessed?          	*/
 		unsigned ng			:	1;	/**< Global Bit					*/
@@ -160,16 +171,8 @@
 		unsigned pxn		:	1;	/**< Privileged execute-never 	*/
 		unsigned uxn		:	1;	/**< User execute-never			*/
 		unsigned dirty      : 	1; 	/**< Unused.            		*/
-		unsigned special	:	1;
-		unsigned devmap		:	1;
-		unsigned prot_none	:	1;
-		unsigned			: 	5;	/**< Unused.					*/
+		unsigned			: 	8;	/**< Unused.					*/
 	} PACK;
-
-	#define dsb(opt)	asm volatile("dsb " #opt : : : "memory")	/**< Data Synchronization Barrier */
-
-	// The ISB forces these changes to be seen before the MMU is enabled.
-	#define isb()		asm volatile("isb" : : : "memory") 			/**< Instruction Synchronization Barrier. */
 
 	// granularity
 	#define PT_PAGE     (3 << 0)        // 4k granule
@@ -189,50 +192,6 @@
 	#define PT_DEV      (1<<2)      // device MMIO
 	#define PT_NC       (2<<2)      // non-cachable
 
-	/**
-	 * @name MAIR attributes
-	 */
-	/**@{*/
-	#define BLOCK_INDEX_MEM_DEV_NGNRNE 0
-	#define BLOCK_INDEX_MEM_DEV_NGNRE  1
-	#define BLOCK_INDEX_MEM_DEV_GRE    2
-	#define BLOCK_INDEX_MEM_NORMAL_NC  3
-	#define BLOCK_INDEX_MEM_NORMAL     4
-	#define BLOCK_INDEX_SHIFT          2
-
-	#define MAIR_ATTRIBUTES            ((0x00 << (BLOCK_INDEX_MEM_DEV_NGNRNE*8)) | \
-						(0x04 << (BLOCK_INDEX_MEM_DEV_NGNRE*8))  | \
-						(0x0c << (BLOCK_INDEX_MEM_DEV_GRE*8))    | \
-						(0x44 << (BLOCK_INDEX_MEM_NORMAL_NC*8))  | \
-						(0xffUL << (BLOCK_INDEX_MEM_NORMAL*8)))
-	/**@}*/
-
-	/**
-	 * @brief TCR attributes
-	*/
-	/**@{*/
-	#define TCR_TOSZ                   (64 - ARM64_VADDR_BIT)
-	#define TCR_IRGN0_NM_WBWAC         (0x01 << 8)
-	#define TCR_ORGN0_NM_WBWAC         (0x01 << 10)
-	#define TCR_SH0_IS                 (0x3 << 12)
-	#define TCR_TG0_4KB                (0x0 << 14)
-	#define TCR_PS_4TB                 (0x3 << 16)
-	#define TCR_PS_256TB               (0x5 << 16)
-	#define TCR_TBI_USED               (0x0 << 20)
-
-	#define TCR_MMU_ENABLE				(TCR_TOSZ | TCR_IRGN0_NM_WBWAC | TCR_ORGN0_NM_WBWAC | \
-				     					TCR_SH0_IS | TCR_TG0_4KB | TCR_PS_256TB | \
-										TCR_TBI_USED)
-	/**@}*/
-
-	/**
-	 * @brief SCTLR Masks
-	*/
-	/**@{*/
-	#define SCTLR_I		(1 << 12)	/* Instruction cache enable		*/
-	#define SCTLR_M		(1 << 0)	/* MMU enable					*/
-	#define SCTLR_C		(1 << 2)	/* Data/unified cache enable	*/
-	/**@}*/
 
 #endif
 
@@ -375,6 +334,12 @@
 	EXTERN int arm64_pgtab_map(struct pde *pgdir, paddr_t paddr, vaddr_t vaddr);
 
 	EXTERN int arm64_mmu_setup();
+
+	EXTERN int arm64_enable_mmu();
+	EXTERN int arm64_invalidate_d_cache_fast();
+	EXTERN int arm64_invalidate_i_cache_fast();
+	EXTERN int arm64_invalidate_tlb();
+
 	/**
 	 * @brief Clears a page directory entry.
 	 *
@@ -968,7 +933,7 @@
 
 		__asm__ __volatile__("mrs %0, SCTLR_EL1\n\t" : "=r" (sctlr) :  : "memory");
 
-		return (sctlr & SCTLR_M);
+		return (sctlr & (1 << 0));
 	}
 
 #ifdef __NANVIX_HAL

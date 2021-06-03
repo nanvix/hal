@@ -35,29 +35,6 @@
 
 #include "arch/core/arm64/mmu.h"
 
-#ifndef _ASM_FILE_
-
-	/**
-	 * @brief Invalide the data cache.
-	 */
-	static inline void arm64_dcache_inval(void)
-	{
-		//__asm__ __volatile__("tlbi alle1is\n\t" : : : "memory");
-		dsb(ish);
-		isb();
-	}
-
-	/**
-	 * @brief Flushes the instruction cache.
-	 *
-	 */
-	static inline void arm64_icache_inval(void)
-	{
-
-	}
-
-#endif /* !_ASM_FILE_ */
-
 /*============================================================================*
  * Exported Interface                                                         *
  *============================================================================*/
@@ -86,7 +63,7 @@
 	 */
 	static inline void dcache_invalidate(void)
 	{
-		arm64_dcache_inval();
+		arm64_invalidate_d_cache_fast();
 	}
 
 	/**
@@ -94,7 +71,7 @@
 	 */
 	static inline void icache_invalidate(void)
 	{
-		arm64_icache_inval();
+		arm64_invalidate_i_cache_fast();
 	}
 
 #endif

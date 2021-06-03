@@ -56,14 +56,14 @@ PRIVATE void test_core_al(void)
 	test_arithmetic();
 	test_core();
 	test_exception();
-	test_interrupt();
+	//test_interrupt();
 	test_mmu();
 	test_tlb();
 	test_trap();
 #ifndef __unix64__
 	test_upcall();
 #endif
-#if (CORE_HAS_PERF) && (TEST_PERF)
+#if (CORE_HAS_PERF) && (TEST_PERF) && (!__arm64__)
 	test_perf();
 #endif
 	test_abstract_resource();
