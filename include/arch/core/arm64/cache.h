@@ -63,7 +63,7 @@
 	 */
 	static inline void dcache_invalidate(void)
 	{
-		arm64_invalidate_d_cache_fast();
+		arm64_invalidate_d_cache();
 	}
 
 	/**
@@ -71,7 +71,12 @@
 	 */
 	static inline void icache_invalidate(void)
 	{
-		arm64_invalidate_i_cache_fast();
+		__asm__ __volatile__(
+			"dsb	sy\n\t"
+			"ic	iallu\n\t"
+			"dsb	sy\n\t"
+			"isb\n\t"
+		: : : "memory");
 	}
 
 #endif

@@ -34,14 +34,12 @@
 /**@{*/
 
 	/* Must comme first. */
-	#define __NEED_MEMORY_TYPES
 	#define __NEED_CORE_TYPES
+	#define __NEED_MEMORY_TYPES
 
 	#include <arch/core/arm64/types.h>
 	#include <nanvix/hlib.h>
 	#include <posix/errno.h>
-
-#ifndef _ASM_FILE_
 
 	/**
 	 * @name Page Shifts and Masks
@@ -90,6 +88,39 @@
 	 */
 	#define ARM64_PGTAB_LENGTH (1 << (ARM64_PMD_SHIFT - ARM64_PAGE_SHIFT))
 
+
+	#define SCTLR_RESERVED                  (3 << 28) | (3 << 22) | (1 << 20) | (1 << 11)
+	#define SCTLR_EE_LITTLE_ENDIAN          (0 << 25)
+	#define SCTLR_I_CACHE_DISABLED          (0 << 12)
+	#define SCTLR_D_CACHE_DISABLED          (0 << 2)
+	#define SCTLR_MMU_DISABLED              (0 << 0)
+	#define SCTLR_MMU_ENABLED               (1 << 0)
+
+	#define SCTLR_VALUE_MMU_DISABLED    (SCTLR_RESERVED | SCTLR_EE_LITTLE_ENDIAN | SCTLR_I_CACHE_DISABLED | SCTLR_D_CACHE_DISABLED | SCTLR_MMU_DISABLED)
+
+	#define TCR_T0SZ                    (64 - 48)           //2^16 B
+	#define TCR_T1SZ                    ((64 - 48) << 16)   //2^16 B
+	#define TCR_TG0_4K                  (0 << 14)
+	#define TCR_TG1_4K                  (2 << 30)
+	#define TCR_VALUE                   (TCR_T0SZ | TCR_T1SZ | TCR_TG0_4K | TCR_TG1_4K)
+
+	#define MT_DEVICE_nGnRnE            0x0
+	#define MT_NORMAL_NC                0x1
+	#define MT_DEVICE_nGnRnE_FLAGS      0x00
+	#define MT_NORMAL_NC_FLAGS          0x44
+	#define MAIR_VALUE                  (MT_DEVICE_nGnRnE_FLAGS << (8 * MT_DEVICE_nGnRnE)) | (MT_NORMAL_NC_FLAGS << (8 * MT_NORMAL_NC))
+
+	#define MM_TYPE_PAGE_TABLE          0x3
+	#define MM_TYPE_PAGE                0x3
+	#define MM_TYPE_BLOCK               0x1
+	#define MM_ACCESS                   (0x1 << 10)
+	#define MM_ACCESS_PERMISSION        (0x01 << 6) 
+
+	#define MMU_FLAGS                   (MM_ACCESS | (MT_NORMAL_NC << 2) | MM_TYPE_BLOCK)   
+	#define MMU_DEVICE_FLAGS            (MM_ACCESS | (MT_DEVICE_nGnRnE << 2) | MM_TYPE_BLOCK)   
+	#define MMU_PTE_FLAGS               (MM_ACCESS | MM_ACCESS_PERMISSION | (MT_NORMAL_NC << 2) | MM_TYPE_PAGE) 
+
+#ifndef _ASM_FILE_
 	/**
 	 * @brief Page directory entry.
 	 *
@@ -173,25 +204,6 @@
 		unsigned dirty      : 	1; 	/**< Unused.            		*/
 		unsigned			: 	8;	/**< Unused.					*/
 	} PACK;
-
-	// granularity
-	#define PT_PAGE     (3 << 0)        // 4k granule
-	#define PT_BLOCK    (1 << 0)        // 2M granule
-	// accessibility
-	#define PT_KERNEL   (0<<6)      // privileged, supervisor EL1 access only
-	#define PT_USER     (1<<6)      // unprivileged, EL0 access allowed
-	#define PT_RW       (0<<7)      // read-write
-	#define PT_RO       (1<<7)      // read-only
-	#define PT_AF       (1<<10)     // accessed flag
-	#define PT_NX       (1UL<<54)   // no execute
-	// shareability
-	#define PT_OSH      (2<<8)      // outter shareable
-	#define PT_ISH      (3<<8)      // inner shareable
-	// defined in MAIR register
-	#define PT_MEM      (0<<2)      // normal memory
-	#define PT_DEV      (1<<2)      // device MMIO
-	#define PT_NC       (2<<2)      // non-cachable
-
 
 #endif
 
@@ -336,8 +348,7 @@
 	EXTERN int arm64_mmu_setup();
 
 	EXTERN int arm64_enable_mmu();
-	EXTERN int arm64_invalidate_d_cache_fast();
-	EXTERN int arm64_invalidate_i_cache_fast();
+	EXTERN int arm64_invalidate_d_cache();
 	EXTERN int arm64_invalidate_tlb();
 
 	/**
@@ -936,6 +947,14 @@
 		return (sctlr & (1 << 0));
 	}
 
+	static inline int arm64_disable_mmu(void)
+	{
+
+		__asm__ __volatile__("msr SCTLR_EL1, %0\n\t" : : "r" (SCTLR_VALUE_MMU_DISABLED) : "memory");
+
+		return (0);
+	}
+
 #ifdef __NANVIX_HAL
 
 	/**
@@ -948,7 +967,7 @@
 
 #endif /* __NANVIX_HAL */
 
-#endif
+#endif /* _ASM_FILE_*/
 
 /**@endcond*/
 
