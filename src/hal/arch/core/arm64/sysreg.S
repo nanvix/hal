@@ -13,14 +13,9 @@
  */
 
 #define _ASM_FILE_
-#define __NEED_CLUSTER_MEMMAP
-
-#include <arch/cluster/arm64-cluster/memmap.h>
-#include <arch/core/arm64/mmu.h>
 
 .global arm64_invalidate_d_cache,\
-        arm64_invalidate_tlb, \
-        arm64_enable_mmu
+        arm64_invalidate_tlb
 .section .text
 
 /* Based on algorithm from ARM Architecture Reference Manual */
@@ -111,113 +106,4 @@ arm64_invalidate_tlb:
     ldp x8, x9,  [sp], #16
     ldp x10, x11,  [sp], #16
     ret
-
-arm64_enable_mmu:
-    mov x12, x30 //lr
-    mov x1, #0xff
-/* 
-    MMU kernel map	(DRAM + DEVICE regs)
-	map 0x4000 0000 				to 	0xffff 0000 0000 0000 			(1020MB)
-	map 0xUART_PA_BASE 				to 	0xffff 0000 0000 0000 + 1020MB 	(2MB)
-	map 0xQEMU_VIRT_GIC_PA_BASE 	to 	0xffff 0000 0000 0000 + 1022MB 	(2MB)
-*/
-    // 在内存中创建页表， PGD一项， PUD一项，PMD 512项（每项2MB），各级各占用一页
-    mov  x0, #KERNEL_VA_START   // x0  VA
-    adrp x1, pg_tbl_start       // x1  PA for PGD base
-    add  x2, x1, #PAGE_SIZE     // x2  PA for PUD base
-    add  x3, x2, #PAGE_SIZE     // x3  PA for PMD base
-
-    add  x4, x1, #0             // x4  PA for PGD entry
-    add  x5, x2, #0             // x5  PA for PUD entry
-    //populate first PGD
-    orr  x6, x2, #MM_TYPE_PAGE_TABLE
-    str  x6, [x4]               // populate PGD entry
-    //populate first PUD
-    orr  x6, x3, #MM_TYPE_PAGE_TABLE
-    str  x6, [x5]               // populate PUD entry
-    //populate 512 PMD
-    mov  x6, #MEM_BASE          // x6  PA base
-    mov  x7, #0                 // offset of VA/PA
-    mov  x8, #0                 // index of PMD
-1:
-    lsl  x9, x8, #3             // offset of PMD
-    add  x10, x6, x7            // PA
-    mov  x11, #MMU_FLAGS
-    orr  x10, x10, x11          // PME
-    add  x12, x3, x9
-    str  x10, [x12]
-
-    add  x7, x7, #ARM64_PMD_SIZE  // offset of PA
-    add  x8, x8, #1
-    cmp  x8, #509               // 510>509则跳转，511、512table 给 中断控制器和串口控制器
-    b.ls    1b                  // <=
-
-//UART REG，511号entry，对应VA = VA_START + (511-1) * 2 * 1024 * 1024
-    lsl  x9, x8, #3
-    mov  x10, #UART_PA_BASE
-    mov  x11, #MMU_DEVICE_FLAGS
-    orr  x10, x10, x11
-    add  x12, x3,  x9
-    str  x10, [x12]
-
-//GIC REG, 512号entry，对应VA = VA_START + (512-1)*2*1024*1024
-    add  x8, x8, #1
-    lsl  x9, x8, #3
-    mov  x10, #QEMU_VIRT_GIC_PA_BASE
-    mov  x11, #MMU_DEVICE_FLAGS
-    orr  x10, x10, x11
-    add  x12, x3,  x9
-    str  x10, [x12]
-
-/*
-    MMU DRAM temporary map
-    map 0x4000 0000 - 0x4020 0000(DRAM) to 0x4000 0000 - 0x4020 0000(VA)
-*/
-    mov  x0, #MEM_BASE
-    adrp x1, ram_tbl_start      // x1  PA for PGD base
-    add  x2, x1, #ARM64_PAGE_SIZE     // x2  PA for PUD base
-    add  x3, x2, #ARM64_PAGE_SIZE     // x3  PA for PMD base
-
-    add  x4, x1, #0             // x4  PA for PGD entry
-    add  x5, x2, #8             // x5  PA for PUD entry, second entry
-    //populate second PGD, 1G-2G
-    orr  x6, x2, #MM_TYPE_PAGE_TABLE
-    str  x6, [x4]               // populate PGD entry
-    //populate first PUD
-    orr  x6, x3, #MM_TYPE_PAGE_TABLE
-    str  x6, [x5]               // populate PUD entry
-    //populate 1 PMD, map 0x4000 0000 - 0x4020 0000(DRAM) to 0x4000 0000 - 0x4020 0000(VA)
-    mov  x6, #MEM_BASE          // x6  PA base
-    mov  x7, #0                 // offset of VA/PA
-    mov  x8, #0                 // index of PMD
-    lsl  x9, x8, #3             // offset of PMD
-    add  x10, x6, x7            // PA
-    mov  x11, #MMU_FLAGS
-    orr  x10, x10, x11          // PME
-    add  x12, x3, x9
-    str  x10, [x12]
-
-    add  x7, x7, #ARM64_PMD_SIZE  // offset of PA
-    add  x8, x8, #1
-
-
-    /* Invalidate TLBs */
-    ic      iallu                           // I+BTB cache invalidate
-    tlbi    vmalle1                         // invalidate I + D TLBs
-    dsb     sy
-
-    adrp    x0,  pg_tbl_start
-    msr ttbr1_el1, x0
-    adrp    x0,  ram_tbl_start
-    msr ttbr0_el1, x0
-
-    mrs x0, sctlr_el1
-    orr x0, x0, #(0x1 << 2)       // D bit, dcache
-    orr x0, x0, #(0x1 << 12)      // I bit, icache
-    orr x0, x0, #1              // M bit, mmu
-    msr sctlr_el1, x0
-    dsb sy
-    isb
-
-    ret x12
 

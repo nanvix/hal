@@ -92,11 +92,14 @@
 	#define SCTLR_RESERVED                  (3 << 28) | (3 << 22) | (1 << 20) | (1 << 11)
 	#define SCTLR_EE_LITTLE_ENDIAN          (0 << 25)
 	#define SCTLR_I_CACHE_DISABLED          (0 << 12)
+	#define SCTLR_I_CACHE_ENABLE          	(1 << 12)
 	#define SCTLR_D_CACHE_DISABLED          (0 << 2)
+	#define SCTLR_D_CACHE_ENABLE          	(1 << 2)
 	#define SCTLR_MMU_DISABLED              (0 << 0)
 	#define SCTLR_MMU_ENABLED               (1 << 0)
 
 	#define SCTLR_VALUE_MMU_DISABLED    (SCTLR_RESERVED | SCTLR_EE_LITTLE_ENDIAN | SCTLR_I_CACHE_DISABLED | SCTLR_D_CACHE_DISABLED | SCTLR_MMU_DISABLED)
+	#define SCTLR_VALUE_MMU_ENABLE		(SCTLR_MMU_ENABLED | SCTLR_D_CACHE_ENABLE | SCTLR_I_CACHE_ENABLE)
 
 	#define TCR_T0SZ                    (64 - 48)           //2^16 B
 	#define TCR_T1SZ                    ((64 - 48) << 16)   //2^16 B
@@ -346,8 +349,6 @@
 	EXTERN int arm64_pgtab_map(struct pde *pgdir, paddr_t paddr, vaddr_t vaddr);
 
 	EXTERN int arm64_mmu_setup();
-
-	EXTERN int arm64_enable_mmu();
 	EXTERN int arm64_invalidate_d_cache();
 	EXTERN int arm64_invalidate_tlb();
 
@@ -944,13 +945,30 @@
 
 		__asm__ __volatile__("mrs %0, SCTLR_EL1\n\t" : "=r" (sctlr) :  : "memory");
 
-		return (sctlr & (1 << 0));
+		return (sctlr & SCTLR_VALUE_MMU_ENABLE);
 	}
 
 	static inline int arm64_disable_mmu(void)
 	{
 
 		__asm__ __volatile__("msr SCTLR_EL1, %0\n\t" : : "r" (SCTLR_VALUE_MMU_DISABLED) : "memory");
+
+		return (0);
+	}
+
+	static inline int arm64_enable_mmu(void)
+	{
+		uint32_t sctlr;
+
+		__asm__ __volatile__("mrs %0, SCTLR_EL1\n\t" : "=r" (sctlr) :  : "memory");
+
+		sctlr |= SCTLR_MMU_ENABLED;
+		sctlr |= SCTLR_I_CACHE_ENABLE;
+		sctlr |= SCTLR_D_CACHE_ENABLE;
+
+		__asm__ __volatile__("msr SCTLR_EL1, %0\n\t" : : "r" (sctlr) : "memory");
+		__asm__ __volatile__("dsb sy" : : : "memory");
+		__asm__ __volatile__("isb" : : : "memory");
 
 		return (0);
 	}

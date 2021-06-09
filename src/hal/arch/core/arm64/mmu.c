@@ -142,16 +142,13 @@ PUBLIC int arm64_mmu_setup(void) {
         return 0;
     }
 
-	arm64_disable_mmu();
-
 	asm volatile ("msr tcr_el1, %0\n\t" : : "r"(TCR_VALUE): "memory");
 	asm volatile ("msr mair_el1, %0\n\t" : : "r"(MAIR_VALUE): "memory");
-
-	arm64_enable_mmu();
 
     if (mmu_is_enabled()) {
         kprintf("[MMU] MMU enable");
     } else {
+		arm64_enable_mmu();
         kprintf("[MMU] MMU enable failed");
     }
 
