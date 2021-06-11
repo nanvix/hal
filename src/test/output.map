@@ -879,9 +879,9 @@ Discarded input sections
  .data          0x0000000000000000        0x0 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(gic.qemu-arm64.o)
  .bss           0x0000000000000000        0x0 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(gic.qemu-arm64.o)
  .text.arm64_init_gicc
-                0x0000000000000000       0x90 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(gic.qemu-arm64.o)
+                0x0000000000000000       0xb0 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(gic.qemu-arm64.o)
  .text.arm64_init_gicd
-                0x0000000000000000      0x198 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(gic.qemu-arm64.o)
+                0x0000000000000000      0x1b8 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(gic.qemu-arm64.o)
  .text.arm64_gicd_disable_int
                 0x0000000000000000       0x64 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(gic.qemu-arm64.o)
  .text.arm64_gic_initialize
@@ -1352,7 +1352,7 @@ LOAD /home/alexis/Documents/nanvix/hal/utils/toolchain/arm64/lib/gcc/aarch64-elf
                 0xffff000000080250                __BOOTSTRAP_END = .
                 0xffff000000081000                . = ALIGN (PAGE_SIZE)
 
-.text           0xffff000000081000     0xca6c
+.text           0xffff000000081000     0xca74
                 0xffff000000081000                __TEXT_START = .
  *(.text)
  .text          0xffff000000081000        0x8 core/arch/arm64.qemu-arm64.o
@@ -1738,239 +1738,239 @@ LOAD /home/alexis/Documents/nanvix/hal/utils/toolchain/arm64/lib/gcc/aarch64-elf
  .text.arm64_gicd_probe_pending
                 0xffff00000008b12c       0x74 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(gic.qemu-arm64.o)
  .text.arm64_gicd_set_target
-                0xffff00000008b1a0       0xcc /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(gic.qemu-arm64.o)
+                0xffff00000008b1a0       0xd4 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(gic.qemu-arm64.o)
  .text.arm64_gicd_set_priority
-                0xffff00000008b26c       0xd4 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(gic.qemu-arm64.o)
+                0xffff00000008b274       0xd4 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(gic.qemu-arm64.o)
  .text.arm64_gicd_config
-                0xffff00000008b340       0xd4 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(gic.qemu-arm64.o)
+                0xffff00000008b348       0xd4 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(gic.qemu-arm64.o)
  .text.arm64_gic_eoi
-                0xffff00000008b414       0x20 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(gic.qemu-arm64.o)
-                0xffff00000008b414                arm64_gic_eoi
+                0xffff00000008b41c       0x20 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(gic.qemu-arm64.o)
+                0xffff00000008b41c                arm64_gic_eoi
  .text.arm64_gic_find_pending_irq
-                0xffff00000008b434       0x4c /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(gic.qemu-arm64.o)
-                0xffff00000008b434                arm64_gic_find_pending_irq
+                0xffff00000008b43c       0x4c /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(gic.qemu-arm64.o)
+                0xffff00000008b43c                arm64_gic_find_pending_irq
  .text.arm64_gic_configure_timer
-                0xffff00000008b480       0x48 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(gic.qemu-arm64.o)
-                0xffff00000008b480                arm64_gic_configure_timer
+                0xffff00000008b488       0x48 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(gic.qemu-arm64.o)
+                0xffff00000008b488                arm64_gic_configure_timer
  .text.arm64_timer_read_cntfrq_el0
-                0xffff00000008b4c8       0x18 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(timer.qemu-arm64.o)
+                0xffff00000008b4d0       0x18 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(timer.qemu-arm64.o)
  .text.arm64_timer_read_cntvct_el0
-                0xffff00000008b4e0       0x18 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(timer.qemu-arm64.o)
+                0xffff00000008b4e8       0x18 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(timer.qemu-arm64.o)
  .text.arm64_timer_write_cntv_cval_el0
-                0xffff00000008b4f8       0x1c /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(timer.qemu-arm64.o)
+                0xffff00000008b500       0x1c /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(timer.qemu-arm64.o)
  .text.arm64_timer_read_cntv_ctl
-                0xffff00000008b514       0x18 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(timer.qemu-arm64.o)
+                0xffff00000008b51c       0x18 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(timer.qemu-arm64.o)
  .text.arm64_timer_disable_cntv
-                0xffff00000008b52c       0x30 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(timer.qemu-arm64.o)
+                0xffff00000008b534       0x30 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(timer.qemu-arm64.o)
  .text.arm64_timer_enable_cntv
-                0xffff00000008b55c       0x30 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(timer.qemu-arm64.o)
+                0xffff00000008b564       0x30 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(timer.qemu-arm64.o)
  .text.arm64_timer_reset
-                0xffff00000008b58c       0x8c /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(timer.qemu-arm64.o)
-                0xffff00000008b58c                arm64_timer_reset
+                0xffff00000008b594       0x8c /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(timer.qemu-arm64.o)
+                0xffff00000008b594                arm64_timer_reset
  .text.arm64_timer_init
-                0xffff00000008b618       0x80 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(timer.qemu-arm64.o)
-                0xffff00000008b618                arm64_timer_init
+                0xffff00000008b620       0x80 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(timer.qemu-arm64.o)
+                0xffff00000008b620                arm64_timer_init
  .text.arm64_mcall_cpu_id
-                0xffff00000008b698        0xc /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(ctx.qemu-arm64.o)
+                0xffff00000008b6a0        0xc /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(ctx.qemu-arm64.o)
  .text.arm64_core_get_id
-                0xffff00000008b6a4       0x14 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(ctx.qemu-arm64.o)
+                0xffff00000008b6ac       0x14 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(ctx.qemu-arm64.o)
  .text.core_get_id
-                0xffff00000008b6b8       0x14 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(ctx.qemu-arm64.o)
+                0xffff00000008b6c0       0x14 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(ctx.qemu-arm64.o)
  .text.arm64_context_dump
-                0xffff00000008b6cc      0x1d4 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(ctx.qemu-arm64.o)
-                0xffff00000008b6cc                arm64_context_dump
+                0xffff00000008b6d4      0x1d4 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(ctx.qemu-arm64.o)
+                0xffff00000008b6d4                arm64_context_dump
  .text.arm64_mcall_cpu_id
-                0xffff00000008b8a0        0xc /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(cluster.qemu-arm64.o)
+                0xffff00000008b8a8        0xc /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(cluster.qemu-arm64.o)
  .text.arm64_core_get_id
-                0xffff00000008b8ac       0x14 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(cluster.qemu-arm64.o)
+                0xffff00000008b8b4       0x14 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(cluster.qemu-arm64.o)
  .text.arm64_cluster_setup
-                0xffff00000008b8c0       0x40 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(cluster.qemu-arm64.o)
-                0xffff00000008b8c0                arm64_cluster_setup
+                0xffff00000008b8c8       0x40 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(cluster.qemu-arm64.o)
+                0xffff00000008b8c8                arm64_cluster_setup
  .text.arm64_cluster_slave_setup
-                0xffff00000008b900       0x10 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(cluster.qemu-arm64.o)
-                0xffff00000008b900                arm64_cluster_slave_setup
+                0xffff00000008b908       0x10 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(cluster.qemu-arm64.o)
+                0xffff00000008b908                arm64_cluster_slave_setup
  .text.arm64_cluster_master_setup
-                0xffff00000008b910       0x18 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(cluster.qemu-arm64.o)
-                0xffff00000008b910                arm64_cluster_master_setup
+                0xffff00000008b918       0x18 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(cluster.qemu-arm64.o)
+                0xffff00000008b918                arm64_cluster_master_setup
  .text.dcache_invalidate
-                0xffff00000008b928       0x18 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(exception.qemu-arm64.o)
+                0xffff00000008b930       0x18 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(exception.qemu-arm64.o)
  .text.context_dump
-                0xffff00000008b940       0x20 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(exception.qemu-arm64.o)
+                0xffff00000008b948       0x20 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(exception.qemu-arm64.o)
  .text.exception_dump
-                0xffff00000008b960       0x20 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(exception.qemu-arm64.o)
+                0xffff00000008b968       0x20 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(exception.qemu-arm64.o)
  .text.default_handler
-                0xffff00000008b980       0x2c /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(exception.qemu-arm64.o)
+                0xffff00000008b988       0x2c /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(exception.qemu-arm64.o)
  .text.exception_register
-                0xffff00000008b9ac      0x158 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(exception.qemu-arm64.o)
-                0xffff00000008b9ac                exception_register
+                0xffff00000008b9b4      0x158 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(exception.qemu-arm64.o)
+                0xffff00000008b9b4                exception_register
  .text.exception_unregister
-                0xffff00000008bb04       0x98 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(exception.qemu-arm64.o)
-                0xffff00000008bb04                exception_unregister
+                0xffff00000008bb0c       0x98 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(exception.qemu-arm64.o)
+                0xffff00000008bb0c                exception_unregister
  .text.exception_setup
-                0xffff00000008bb9c       0x80 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(exception.qemu-arm64.o)
-                0xffff00000008bb9c                exception_setup
+                0xffff00000008bba4       0x80 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(exception.qemu-arm64.o)
+                0xffff00000008bba4                exception_setup
  .text.mmu_setup
-                0xffff00000008bc1c       0x18 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(core.qemu-arm64.o)
+                0xffff00000008bc24       0x18 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(core.qemu-arm64.o)
  .text.interrupts_disable
-                0xffff00000008bc34       0x18 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(core.qemu-arm64.o)
+                0xffff00000008bc3c       0x18 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(core.qemu-arm64.o)
  .text.perf_setup
-                0xffff00000008bc4c       0x18 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(core.qemu-arm64.o)
+                0xffff00000008bc54       0x18 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(core.qemu-arm64.o)
  .text.core_halt
-                0xffff00000008bc64       0x1c /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(core.qemu-arm64.o)
-                0xffff00000008bc64                core_halt
+                0xffff00000008bc6c       0x1c /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(core.qemu-arm64.o)
+                0xffff00000008bc6c                core_halt
  .text.core_setup
-                0xffff00000008bc80       0x34 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(core.qemu-arm64.o)
-                0xffff00000008bc80                core_setup
+                0xffff00000008bc88       0x34 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(core.qemu-arm64.o)
+                0xffff00000008bc88                core_setup
  .text.dcache_invalidate
-                0xffff00000008bcb4       0x18 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(interrupt.qemu-arm64.o)
+                0xffff00000008bcbc       0x18 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(interrupt.qemu-arm64.o)
  .text.interrupt_ack
-                0xffff00000008bccc       0x20 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(interrupt.qemu-arm64.o)
+                0xffff00000008bcd4       0x20 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(interrupt.qemu-arm64.o)
  .text.interrupt_next
-                0xffff00000008bcec       0x14 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(interrupt.qemu-arm64.o)
+                0xffff00000008bcf4       0x14 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(interrupt.qemu-arm64.o)
  .text.timer_reset
-                0xffff00000008bd00       0x18 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(interrupt.qemu-arm64.o)
+                0xffff00000008bd08       0x18 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(interrupt.qemu-arm64.o)
  .text.event_reset
-                0xffff00000008bd18        0x8 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(interrupt.qemu-arm64.o)
+                0xffff00000008bd20        0x8 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(interrupt.qemu-arm64.o)
  .text.default_handler
-                0xffff00000008bd20       0x58 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(interrupt.qemu-arm64.o)
+                0xffff00000008bd28       0x58 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(interrupt.qemu-arm64.o)
  .text.do_timer
-                0xffff00000008bd78       0x60 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(interrupt.qemu-arm64.o)
+                0xffff00000008bd80       0x60 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(interrupt.qemu-arm64.o)
  .text.do_event
-                0xffff00000008bdd8       0x4c /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(interrupt.qemu-arm64.o)
+                0xffff00000008bde0       0x4c /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(interrupt.qemu-arm64.o)
  .text.do_interrupt
-                0xffff00000008be24       0xac /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(interrupt.qemu-arm64.o)
-                0xffff00000008be24                do_interrupt
+                0xffff00000008be2c       0xac /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(interrupt.qemu-arm64.o)
+                0xffff00000008be2c                do_interrupt
  .text.interrupt_setup
-                0xffff00000008bed0       0xc4 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(interrupt.qemu-arm64.o)
-                0xffff00000008bed0                interrupt_setup
+                0xffff00000008bed8       0xc4 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(interrupt.qemu-arm64.o)
+                0xffff00000008bed8                interrupt_setup
  .text._kassert
-                0xffff00000008bf94       0x64 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(upcall.qemu-arm64.o)
+                0xffff00000008bf9c       0x64 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(upcall.qemu-arm64.o)
  .text.context_get_sp
-                0xffff00000008bff8       0x14 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(upcall.qemu-arm64.o)
+                0xffff00000008c000       0x14 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(upcall.qemu-arm64.o)
  .text.context_set_sp
-                0xffff00000008c00c       0x18 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(upcall.qemu-arm64.o)
+                0xffff00000008c014       0x18 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(upcall.qemu-arm64.o)
  .text.context_set_pc
-                0xffff00000008c024       0x18 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(upcall.qemu-arm64.o)
+                0xffff00000008c02c       0x18 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(upcall.qemu-arm64.o)
  .text.upcall_forge
-                0xffff00000008c03c      0x144 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(upcall.qemu-arm64.o)
-                0xffff00000008c03c                upcall_forge
+                0xffff00000008c044      0x144 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(upcall.qemu-arm64.o)
+                0xffff00000008c044                upcall_forge
  .text.dcache_invalidate
-                0xffff00000008c180       0x18 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(cluster.qemu-arm64.o)
+                0xffff00000008c188       0x18 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(cluster.qemu-arm64.o)
  .text.arm64_mcall_cpu_id
-                0xffff00000008c198        0xc /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(cluster.qemu-arm64.o)
+                0xffff00000008c1a0        0xc /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(cluster.qemu-arm64.o)
  .text.arm64_core_get_id
-                0xffff00000008c1a4       0x14 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(cluster.qemu-arm64.o)
+                0xffff00000008c1ac       0x14 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(cluster.qemu-arm64.o)
  .text.core_get_id
-                0xffff00000008c1b8       0x14 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(cluster.qemu-arm64.o)
+                0xffff00000008c1c0       0x14 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(cluster.qemu-arm64.o)
  .text.core_poweroff
-                0xffff00000008c1cc        0xc /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(cluster.qemu-arm64.o)
+                0xffff00000008c1d4        0xc /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(cluster.qemu-arm64.o)
  .text.spinlock_lock
-                0xffff00000008c1d8       0x14 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(cluster.qemu-arm64.o)
+                0xffff00000008c1e0       0x14 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(cluster.qemu-arm64.o)
  .text.spinlock_unlock
-                0xffff00000008c1ec       0x14 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(cluster.qemu-arm64.o)
+                0xffff00000008c1f4       0x14 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(cluster.qemu-arm64.o)
  .text.core_shutdown
-                0xffff00000008c200       0x74 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(cluster.qemu-arm64.o)
-                0xffff00000008c200                core_shutdown
+                0xffff00000008c208       0x74 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(cluster.qemu-arm64.o)
+                0xffff00000008c208                core_shutdown
  .text.spinlock_init
-                0xffff00000008c274       0x14 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(event.qemu-arm64.o)
+                0xffff00000008c27c       0x14 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(event.qemu-arm64.o)
  .text.default_handler
-                0xffff00000008c288        0x8 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(event.qemu-arm64.o)
+                0xffff00000008c290        0x8 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(event.qemu-arm64.o)
  .text.event_setup
-                0xffff00000008c290       0x84 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(event.qemu-arm64.o)
-                0xffff00000008c290                event_setup
+                0xffff00000008c298       0x84 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(event.qemu-arm64.o)
+                0xffff00000008c298                event_setup
  .text.pde_clear
-                0xffff00000008c314       0x3c /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(memory.qemu-arm64.o)
+                0xffff00000008c31c       0x3c /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(memory.qemu-arm64.o)
  .text.mmu_page_map
-                0xffff00000008c350       0x3c /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(memory.qemu-arm64.o)
+                0xffff00000008c358       0x3c /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(memory.qemu-arm64.o)
  .text.mmu_pgtab_map
-                0xffff00000008c38c       0x2c /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(memory.qemu-arm64.o)
+                0xffff00000008c394       0x2c /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(memory.qemu-arm64.o)
  .text.arm64_mcall_cpu_id
-                0xffff00000008c3b8        0xc /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(memory.qemu-arm64.o)
+                0xffff00000008c3c0        0xc /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(memory.qemu-arm64.o)
  .text.arm64_core_get_id
-                0xffff00000008c3c4       0x14 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(memory.qemu-arm64.o)
+                0xffff00000008c3cc       0x14 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(memory.qemu-arm64.o)
  .text.core_get_id
-                0xffff00000008c3d8       0x14 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(memory.qemu-arm64.o)
+                0xffff00000008c3e0       0x14 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(memory.qemu-arm64.o)
  .text.tlb_init
-                0xffff00000008c3ec        0x8 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(memory.qemu-arm64.o)
+                0xffff00000008c3f4        0x8 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(memory.qemu-arm64.o)
  .text.tlb_load
-                0xffff00000008c3f4       0x14 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(memory.qemu-arm64.o)
+                0xffff00000008c3fc       0x14 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(memory.qemu-arm64.o)
  .text.mem_warmup
-                0xffff00000008c408        0x8 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(memory.qemu-arm64.o)
+                0xffff00000008c410        0x8 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(memory.qemu-arm64.o)
  .text.mem_info
-                0xffff00000008c410      0x168 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(memory.qemu-arm64.o)
-                0xffff00000008c410                mem_info
+                0xffff00000008c418      0x168 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(memory.qemu-arm64.o)
+                0xffff00000008c418                mem_info
  .text.mem_check_align
-                0xffff00000008c578      0x1a8 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(memory.qemu-arm64.o)
-                0xffff00000008c578                mem_check_align
+                0xffff00000008c580      0x1a8 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(memory.qemu-arm64.o)
+                0xffff00000008c580                mem_check_align
  .text.mem_check_layout
-                0xffff00000008c720      0x110 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(memory.qemu-arm64.o)
-                0xffff00000008c720                mem_check_layout
- .text.mem_map  0xffff00000008c830      0x1f8 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(memory.qemu-arm64.o)
-                0xffff00000008c830                mem_map
+                0xffff00000008c728      0x110 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(memory.qemu-arm64.o)
+                0xffff00000008c728                mem_check_layout
+ .text.mem_map  0xffff00000008c838      0x1f8 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(memory.qemu-arm64.o)
+                0xffff00000008c838                mem_map
  .text.mem_setup
-                0xffff00000008ca28       0x4c /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(memory.qemu-arm64.o)
-                0xffff00000008ca28                mem_setup
+                0xffff00000008ca30       0x4c /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(memory.qemu-arm64.o)
+                0xffff00000008ca30                mem_setup
  .text.__timer_init
-                0xffff00000008ca74       0x20 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(timer.qemu-arm64.o)
+                0xffff00000008ca7c       0x20 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(timer.qemu-arm64.o)
  .text.clock_read
-                0xffff00000008ca94       0x10 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(timer.qemu-arm64.o)
+                0xffff00000008ca9c       0x10 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(timer.qemu-arm64.o)
  .text.timer_init
-                0xffff00000008caa4       0x48 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(timer.qemu-arm64.o)
-                0xffff00000008caa4                timer_init
+                0xffff00000008caac       0x48 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(timer.qemu-arm64.o)
+                0xffff00000008caac                timer_init
  .text.interrupts_disable
-                0xffff00000008caec       0x18 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(kpanic.qemu-arm64.o)
- .text.kpanic   0xffff00000008cb04       0xe4 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(kpanic.qemu-arm64.o)
-                0xffff00000008cb04                kpanic
- .text.kprintf  0xffff00000008cbe8       0xc8 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(kprintf.qemu-arm64.o)
-                0xffff00000008cbe8                kprintf
- .text.kputs    0xffff00000008ccb0       0x2c /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(kputs.qemu-arm64.o)
-                0xffff00000008ccb0                kputs
+                0xffff00000008caf4       0x18 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(kpanic.qemu-arm64.o)
+ .text.kpanic   0xffff00000008cb0c       0xe4 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(kpanic.qemu-arm64.o)
+                0xffff00000008cb0c                kpanic
+ .text.kprintf  0xffff00000008cbf0       0xc8 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(kprintf.qemu-arm64.o)
+                0xffff00000008cbf0                kprintf
+ .text.kputs    0xffff00000008ccb8       0x2c /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(kputs.qemu-arm64.o)
+                0xffff00000008ccb8                kputs
  .text.uart_pl011_write
-                0xffff00000008ccdc       0xa0 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(pl011.qemu-arm64.o)
-                0xffff00000008ccdc                uart_pl011_write
+                0xffff00000008cce4       0xa0 /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(pl011.qemu-arm64.o)
+                0xffff00000008cce4                uart_pl011_write
  .text.uart_pl011_init
-                0xffff00000008cd7c      0x16c /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(pl011.qemu-arm64.o)
-                0xffff00000008cd7c                uart_pl011_init
+                0xffff00000008cd84      0x16c /home/alexis/Documents/nanvix/hal/lib/libhal-qemu-arm64.a(pl011.qemu-arm64.o)
+                0xffff00000008cd84                uart_pl011_init
  .text.__strncpy
-                0xffff00000008cee8       0xac /home/alexis/Documents/nanvix/hal/lib/barelib-qemu-arm64.a(strncpy.qemu-arm64.o)
-                0xffff00000008cee8                __strncpy
- .text.itoa     0xffff00000008cf94      0x188 /home/alexis/Documents/nanvix/hal/lib/barelib-qemu-arm64.a(vsprintf.qemu-arm64.o)
- .text.itoa64   0xffff00000008d11c      0x184 /home/alexis/Documents/nanvix/hal/lib/barelib-qemu-arm64.a(vsprintf.qemu-arm64.o)
+                0xffff00000008cef0       0xac /home/alexis/Documents/nanvix/hal/lib/barelib-qemu-arm64.a(strncpy.qemu-arm64.o)
+                0xffff00000008cef0                __strncpy
+ .text.itoa     0xffff00000008cf9c      0x188 /home/alexis/Documents/nanvix/hal/lib/barelib-qemu-arm64.a(vsprintf.qemu-arm64.o)
+ .text.itoa64   0xffff00000008d124      0x184 /home/alexis/Documents/nanvix/hal/lib/barelib-qemu-arm64.a(vsprintf.qemu-arm64.o)
  .text.count_digits
-                0xffff00000008d2a0       0x4c /home/alexis/Documents/nanvix/hal/lib/barelib-qemu-arm64.a(vsprintf.qemu-arm64.o)
+                0xffff00000008d2a8       0x4c /home/alexis/Documents/nanvix/hal/lib/barelib-qemu-arm64.a(vsprintf.qemu-arm64.o)
  .text.__vsnprintf
-                0xffff00000008d2ec      0x51c /home/alexis/Documents/nanvix/hal/lib/barelib-qemu-arm64.a(vsprintf.qemu-arm64.o)
-                0xffff00000008d2ec                __vsnprintf
+                0xffff00000008d2f4      0x51c /home/alexis/Documents/nanvix/hal/lib/barelib-qemu-arm64.a(vsprintf.qemu-arm64.o)
+                0xffff00000008d2f4                __vsnprintf
  .text.__memset
-                0xffff00000008d808       0x54 /home/alexis/Documents/nanvix/hal/lib/barelib-qemu-arm64.a(memset.qemu-arm64.o)
-                0xffff00000008d808                __memset
+                0xffff00000008d810       0x54 /home/alexis/Documents/nanvix/hal/lib/barelib-qemu-arm64.a(memset.qemu-arm64.o)
+                0xffff00000008d810                __memset
  .text.__strlen
-                0xffff00000008d85c       0x44 /home/alexis/Documents/nanvix/hal/lib/barelib-qemu-arm64.a(strlen.qemu-arm64.o)
-                0xffff00000008d85c                __strlen
+                0xffff00000008d864       0x44 /home/alexis/Documents/nanvix/hal/lib/barelib-qemu-arm64.a(strlen.qemu-arm64.o)
+                0xffff00000008d864                __strlen
  .text.__memcpy
-                0xffff00000008d8a0      0x180 /home/alexis/Documents/nanvix/hal/lib/barelib-qemu-arm64.a(memcpy.qemu-arm64.o)
-                0xffff00000008d8a0                __memcpy
- .text.__div    0xffff00000008da20       0x4c /home/alexis/Documents/nanvix/hal/lib/barelib-qemu-arm64.a(div.qemu-arm64.o)
-                0xffff00000008da20                __div
-                0xffff00000008da6c                __TEXT_END = .
-                0xffff00000008da6c                KERNEL_CODE_END = .
+                0xffff00000008d8a8      0x180 /home/alexis/Documents/nanvix/hal/lib/barelib-qemu-arm64.a(memcpy.qemu-arm64.o)
+                0xffff00000008d8a8                __memcpy
+ .text.__div    0xffff00000008da28       0x4c /home/alexis/Documents/nanvix/hal/lib/barelib-qemu-arm64.a(div.qemu-arm64.o)
+                0xffff00000008da28                __div
+                0xffff00000008da74                __TEXT_END = .
+                0xffff00000008da74                KERNEL_CODE_END = .
 
-.iplt           0xffff00000008da6c        0x0
- .iplt          0xffff00000008da6c        0x0 main.qemu-arm64.o
+.iplt           0xffff00000008da74        0x0
+ .iplt          0xffff00000008da74        0x0 main.qemu-arm64.o
 
-.rela.dyn       0xffff00000008da70        0x0
- .rela.iplt     0xffff00000008da70        0x0 main.qemu-arm64.o
+.rela.dyn       0xffff00000008da78        0x0
+ .rela.iplt     0xffff00000008da78        0x0 main.qemu-arm64.o
  .rela.text.test_resource_queue
-                0xffff00000008da70        0x0 main.qemu-arm64.o
+                0xffff00000008da78        0x0 main.qemu-arm64.o
  .rela.text.test_resource_list
-                0xffff00000008da70        0x0 main.qemu-arm64.o
+                0xffff00000008da78        0x0 main.qemu-arm64.o
  .rela.text.test_resource_cmp_vrf
-                0xffff00000008da70        0x0 main.qemu-arm64.o
- .rela.text     0xffff00000008da70        0x0 main.qemu-arm64.o
+                0xffff00000008da78        0x0 main.qemu-arm64.o
+ .rela.text     0xffff00000008da78        0x0 main.qemu-arm64.o
  .rela.text.event_setup
-                0xffff00000008da70        0x0 main.qemu-arm64.o
+                0xffff00000008da78        0x0 main.qemu-arm64.o
  .rela.text.mem_info
-                0xffff00000008da70        0x0 main.qemu-arm64.o
+                0xffff00000008da78        0x0 main.qemu-arm64.o
                 0xffff00000008e000                . = ALIGN (PAGE_SIZE)
                 0xffff00000008e000                KERNEL_DATA_START = .
 

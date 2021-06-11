@@ -28,6 +28,7 @@
 
 #include <arch/cluster/arm64-cluster/memmap.h>
 #include <arch/core/arm64/mmu.h>
+#include <arch/core/arm64/gic.h>
 #include <arch/cluster/arm64-cluster/cores.h>
 #include <arch/cluster/arm64-cluster/psci.h>
 
@@ -211,6 +212,7 @@ _do_start.master:
     /* Set stack adress */
     arm64_core_stack_reset x0
     /* Branch the master core to _main function */
+    //bl arm64_gic_initialize
     mrs x0, s3_1_c15_c2_1
     orr x0, x0, #(0x1<<6)       //cpuectlr.smpen = 1
     msr s3_1_c15_c2_1, x0

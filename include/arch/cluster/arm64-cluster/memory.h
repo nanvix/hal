@@ -38,6 +38,35 @@
 
 	#include <nanvix/const.h>
 
+	/**
+	 * @name Physical Memory Layout
+	 */
+	/**@{*/
+	
+	/**@}*/
+	/**
+	 * @name Virtual Memory Layout
+	 */
+	/**@{*/
+	#define ARM64_CLUSTER_KERNEL_END_VIRT		(0xffffffffffffffff)
+	#define ARM64_CLUSTER_KERNEL_BASE_VIRT 		(ARM64_CLUSTER_KERNEL_END_VIRT << (ARM64_VADDR_BIT - 1))
+	#define ARM64_CLUSTER_USER_BASE_VIRT		(0x0000000000000000)
+	#define ARM64_CLUSTER_USER_END_VIRT			(0xffffffffffffffff >> 25)
+	/**@}*/
+
+
+	/**
+	 * @name Memory Regions Constants
+	 */
+	/**@{*/
+	#define ARM64_CLUSTER_MEM_REGIONS            1                            /**< Memory Regions number.            */
+	#define ARM64_CLUSTER_ROOT_PGTAB_NUM         ARM64_CLUSTER_MEM_REGIONS  /**< Root page table size.             */
+	#define ARM64_CLUSTER_MREGION_PT_ALIGN_START 0                            /**< MRegion start page table aligned. */
+	#define ARM64_CLUSTER_MREGION_PT_ALIGN_END   0                            /**< MRegion end page table aligned.   */
+	#define ARM64_CLUSTER_MREGION_PG_ALIGN_START 0                            /**< MRegion start page aligned.       */
+	#define ARM64_CLUSTER_MREGION_PG_ALIGN_END   ARM64_CLUSTER_MEM_REGIONS  /**< MRegion end page aligned.         */
+	/**@}*/
+
 #ifndef _ASM_FILE
 
 	/**
@@ -89,12 +118,12 @@
 	 * @name Exported Memory Region Constants
 	 */
 	/**@{*/
-	#define MEM_REGIONS            1            /**< @see ARM64_CLUSTER_MEM_REGIONS            */
-	#define ROOT_PGTAB_NUM         1         /**< @see ARM64_CLUSTER_ROOT_PGTAB_NUM         */
-	#define MREGION_PT_ALIGN_START 0 /**< @see ARM64_CLUSTER_MREGION_PT_ALIGN_START */
-	#define MREGION_PT_ALIGN_END   0   /**< @see ARM64_CLUSTER_MREGION_PT_ALIGN_END   */
-	#define MREGION_PG_ALIGN_START 0 /**< @see ARM64_CLUSTER_MREGION_PG_ALIGN_START */
-	#define MREGION_PG_ALIGN_END   0   /**< @see ARM64_CLUSTER_MREGION_PG_ALIGN_END   */
+	#define MEM_REGIONS            ARM64_CLUSTER_MEM_REGIONS            /**< @see ARM64_CLUSTER_MEM_REGIONS            */
+	#define ROOT_PGTAB_NUM         ARM64_CLUSTER_ROOT_PGTAB_NUM         /**< @see ARM64_CLUSTER_ROOT_PGTAB_NUM         */
+	#define MREGION_PT_ALIGN_START ARM64_CLUSTER_MREGION_PT_ALIGN_START /**< @see ARM64_CLUSTER_MREGION_PT_ALIGN_START */
+	#define MREGION_PT_ALIGN_END   ARM64_CLUSTER_MREGION_PT_ALIGN_END   /**< @see ARM64_CLUSTER_MREGION_PT_ALIGN_END   */
+	#define MREGION_PG_ALIGN_START ARM64_CLUSTER_MREGION_PG_ALIGN_START /**< @see ARM64_CLUSTER_MREGION_PG_ALIGN_START */
+	#define MREGION_PG_ALIGN_END   ARM64_CLUSTER_MREGION_PG_ALIGN_END   /**< @see ARM64_CLUSTER_MREGION_PG_ALIGN_END   */
 	/**@}*/
 
 /**@endcond*/
