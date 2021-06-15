@@ -29,6 +29,14 @@
 #include <nanvix/const.h>
 #include <nanvix/hlib.h>
 
+/**
+ * @brief Setup a core.
+ */
+PUBLIC void arm64_core_setup(void)
+{
+	arm64_gic_initialize();
+}
+
 /*============================================================================*
  * arm64_core_poweroff()                                                      *
  *============================================================================*/

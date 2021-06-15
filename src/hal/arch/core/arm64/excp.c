@@ -116,7 +116,7 @@ PUBLIC void arm64_handle_exception(const struct context *ctx, arm64_word_t excp_
 	kprintf("[arm64][excp] exception code %x", excp.code);
 	kprintf("[arm64][excp] fault adrr %x", excp.addr);
 	kprintf("[arm64] unhandled exception");
-	//do_exception(&excp, ctx);
+	do_exception(&excp, ctx);
 	UNREACHABLE();
 }
 

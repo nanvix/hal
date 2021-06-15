@@ -56,7 +56,7 @@ PRIVATE void test_core_al(void)
 	test_arithmetic();
 	test_core();
 	test_exception();
-	//test_interrupt();
+	test_interrupt();
 	test_mmu();
 	test_tlb();
 	test_trap();

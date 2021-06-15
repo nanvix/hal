@@ -144,7 +144,6 @@
 	static inline int interrupt_unmask(int intnum)
 	{
 		arm64_gicd_enable_int(intnum);
-		
 		return 0;
 	}
 
