@@ -122,7 +122,7 @@ make-dirs:
 	@mkdir -p $(LIBDIR)
 
 # Builds image.
-image: all-target
+image: all-target binary
 	@bash $(TOOLSDIR)/nanvix-build-image.sh $(IMAGE) $(BINDIR) $(IMGSRC)
 
 # Cleans build.
