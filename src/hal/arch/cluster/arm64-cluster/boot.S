@@ -71,7 +71,7 @@ _do_start:
     orr  x6, x3, #MM_TYPE_PAGE_TABLE
     str  x6, [x5]               // populate PUD entry
     //populate 512 PMD
-    mov  x6, #MEM_BASE          // x6  PA base
+    mov  x6, #ARM64_CLUSTER_DRAM_BASE_PHY          // x6  PA base
     mov  x7, #0                 // offset of VA/PA
     mov  x8, #0                 // index of PMD
 1:
@@ -108,7 +108,7 @@ _do_start:
     MMU DRAM temporary map
     map 0x4000 0000 - 0x4020 0000(DRAM) to 0x4000 0000 - 0x4020 0000(VA)
 */
-    mov  x0, #MEM_BASE
+    mov  x0, #ARM64_CLUSTER_DRAM_BASE_PHY
     adrp x1, ram_tbl_start      // x1  PA for PGD base
     add  x2, x1, #ARM64_PAGE_SIZE     // x2  PA for PUD base
     add  x3, x2, #ARM64_PAGE_SIZE     // x3  PA for PMD base
@@ -122,7 +122,7 @@ _do_start:
     orr  x6, x3, #MM_TYPE_PAGE_TABLE
     str  x6, [x5]               // populate PUD entry
     //populate 1 PMD, map 0x4000 0000 - 0x4020 0000(DRAM) to 0x4000 0000 - 0x4020 0000(VA)
-    mov  x6, #MEM_BASE          // x6  PA base
+    mov  x6, #ARM64_CLUSTER_DRAM_BASE_PHY          // x6  PA base
     mov  x7, #0                 // offset of VA/PA
     mov  x8, #0                 // index of PMD
     lsl  x9, x8, #3             // offset of PMD

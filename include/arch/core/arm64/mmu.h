@@ -65,7 +65,7 @@
 	#define ARM64_PDE_SIZE        	8                             	/**< Page Directory Entry Size (in bytes) */
 	/**@}*/
 
-	#define ARM64_VADDR_LENGTH 39
+	#define ARM64_VADDR_LENGTH 		ARM64_VADDR_BIT
 
 	/**
 	 * @brief Page Directory length.

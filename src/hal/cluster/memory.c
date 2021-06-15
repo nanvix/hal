@@ -314,7 +314,7 @@ PUBLIC void mem_check_align(void)
 	if (UBASE_VIRT & (PGTAB_SIZE - 1))
 		kpanic("user base address misaligned");
 	if (UEND_VIRT & (PGTAB_SIZE - 1))
-		kpanic("user end address misaligned");
+		kpanic("here user end address misaligned");
 }
 
 #endif /* !__mem_check_align_fn */

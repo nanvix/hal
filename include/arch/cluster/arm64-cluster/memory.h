@@ -44,7 +44,9 @@
 	 * @name Physical Memory Layout
 	 */
 	/**@{*/
-
+	#define ARM64_CLUSTER_KERNEL_BASE_PHYS		ARM64_CLUSTER_DRAM_BASE_PHY
+	#define ARM64_CLUSTER_KERNEL_END_PHYS 		ARM64_CLUSTER_DRAM_END_PHY
+	#define ARM64_CLUSTER_MEM_SIZE 				ARM64_CLUSTER_DRAM_SIZE
 	/**@}*/
 
 	/**
@@ -54,10 +56,17 @@
 	#define ARM64_CLUSTER_KERNEL_END_VIRT		(0xffffffffffffffff)
 	#define ARM64_CLUSTER_KERNEL_BASE_VIRT 		(ARM64_CLUSTER_KERNEL_END_VIRT << (ARM64_VADDR_BIT - 1))
 	#define ARM64_CLUSTER_USER_BASE_VIRT		(0x0000000000000000)
-	#define ARM64_CLUSTER_USER_END_VIRT			(0xffffffffffffffff >> 25)
+	#define ARM64_CLUSTER_USER_END_VIRT			((0xffffffffffffffff >> 25) + 1)
 	#define ARM64_CLUSTER_MODULE_END			ARM64_CLUSTER_KERNEL_BASE_VIRT
 	#define ARM64_CLUSTER_MODULE_START			(ARM64_CLUSTER_MODULE_END - 0x04000000)
 	/**@}*/
+
+
+	#define ARM64_CLUSTER_KMEM_SIZE \
+		ARM64_CLUSTER_KERNEL_END_VIRT - ARM64_CLUSTER_KERNEL_BASE_VIRT
+
+	#define ARM64_CLUSTER_UMEM_SIZE \
+		ARM64_CLUSTER_USER_END_VIRT - ARM64_CLUSTER_USER_BASE_VIRT
 
 	/**
 	 * @name Memory Regions Constants
@@ -103,20 +112,20 @@
 	/**
 	 * @name Exported Constants
 	 */
-	#define MEMORY_SIZE 0         /**< @see ARM64_CLUSTER_MEM_SIZE         */
-	#define KMEM_SIZE   0        /**< @see ARM64_CLUSTER_KMEM_SIZE        */
-	#define UMEM_SIZE   0        /**< @see ARM64_CLUSTER_UMEM_SIZE        */
+	#define MEMORY_SIZE ARM64_CLUSTER_MEM_SIZE         /**< @see ARM64_CLUSTER_MEM_SIZE         */
+	#define KMEM_SIZE   ARM64_CLUSTER_KMEM_SIZE        /**< @see ARM64_CLUSTER_KMEM_SIZE        */
+	#define UMEM_SIZE   ARM64_CLUSTER_UMEM_SIZE        /**< @see ARM64_CLUSTER_UMEM_SIZE        */
 	#define KSTACK_SIZE 0      /**< @see ARM64_CLUSTER_KSTACK_SIZE      */
 	#define KPOOL_SIZE  0       /**< @see ARM64_CLUSTER_KPOOL_SIZE       */
-	#define KBASE_PHYS  0 /**< @see ARM64_CLUSTER_KERNEL_BASE_PHYS */
+	#define KBASE_PHYS  ARM64_CLUSTER_KERNEL_BASE_PHYS /**< @see ARM64_CLUSTER_KERNEL_BASE_PHYS */
 	#define KPOOL_PHYS  0  /**< @see ARM64_CLUSTER_KPOOL_BASE_PHYS  */
 	#define UBASE_PHYS  0   /**< @see ARM64_CLUSTER_USER_BASE_PHYS   */
 	#define USTACK_VIRT 0 /**< @see ARM64_CLUSTER_USTACK_BASE_VIRT */
-	#define UBASE_VIRT  0   /**< @see ARM64_CLUSTER_USER_BASE_VIRT   */
-	#define UEND_VIRT   0    /**< @see ARM64_CLUSTER_USER_END_VIRT    */
-	#define KBASE_VIRT  0 /**< @see ARM64_CLUSTER_KERNEL_BASE_VIRT */
+	#define UBASE_VIRT  ARM64_CLUSTER_USER_BASE_VIRT   /**< @see ARM64_CLUSTER_USER_BASE_VIRT   */
+	#define UEND_VIRT   ARM64_CLUSTER_USER_END_VIRT    /**< @see ARM64_CLUSTER_USER_END_VIRT    */
+	#define KBASE_VIRT  ARM64_CLUSTER_KERNEL_BASE_VIRT /**< @see ARM64_CLUSTER_KERNEL_BASE_VIRT */
 	#define KPOOL_VIRT  0  /**< @see ARM64_CLUSTER_KPOOL_BASE_VIRT  */
-	#define _UART_ADDR  0        /**< @see UART Device                      */
+	#define _UART_ADDR  UART_PA_BASE        /**< @see UART Device                      */
 	/**@}*/
 
 	/**
