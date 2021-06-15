@@ -107,11 +107,20 @@
 	#define TCR_TG1_4K                  (2 << 30)
 	#define TCR_VALUE                   (TCR_T0SZ | TCR_T1SZ | TCR_TG0_4K | TCR_TG1_4K)
 
-	#define MT_DEVICE_nGnRnE            0x0
-	#define MT_NORMAL_NC                0x1
-	#define MT_DEVICE_nGnRnE_FLAGS      0x00
-	#define MT_NORMAL_NC_FLAGS          0x44
-	#define MAIR_VALUE                  (MT_DEVICE_nGnRnE_FLAGS << (8 * MT_DEVICE_nGnRnE)) | (MT_NORMAL_NC_FLAGS << (8 * MT_NORMAL_NC))
+	/*
+	* Memory types
+	*/
+	#define MT_DEVICE_NGNRNE	0
+	#define MT_DEVICE_NGNRE		1
+	#define MT_DEVICE_GRE		2
+	#define MT_NORMAL_NC		3
+	#define MT_NORMAL			4
+
+	#define MAIR_VALUE	((0x00 << (MT_DEVICE_NGNRNE * 8)) |	\
+					(0x04 << (MT_DEVICE_NGNRE * 8))   |	\
+					(0x0c << (MT_DEVICE_GRE * 8))     |	\
+					(0x44 << (MT_NORMAL_NC * 8))      |	\
+					(0xffLL << (MT_NORMAL * 8)))
 
 	#define MM_TYPE_PAGE_TABLE          0x3
 	#define MM_TYPE_PAGE                0x3
@@ -120,7 +129,7 @@
 	#define MM_ACCESS_PERMISSION        (0x01 << 6) 
 
 	#define MMU_FLAGS                   (MM_ACCESS | (MT_NORMAL_NC << 2) | MM_TYPE_BLOCK)   
-	#define MMU_DEVICE_FLAGS            (MM_ACCESS | (MT_DEVICE_nGnRnE << 2) | MM_TYPE_BLOCK)   
+	#define MMU_DEVICE_FLAGS            (MM_ACCESS | (MT_DEVICE_NGNRNE << 2) | MM_TYPE_BLOCK)   
 	#define MMU_PTE_FLAGS               (MM_ACCESS | MM_ACCESS_PERMISSION | (MT_NORMAL_NC << 2) | MM_TYPE_PAGE) 
 
 #ifndef _ASM_FILE_

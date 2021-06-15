@@ -24,9 +24,11 @@
 
 #ifndef CLUSTER_ARM64_CLUSTER_MEMORY_H_
 #define CLUSTER_ARM64_CLUSTER_MEMORY_H_
+#define __NEED_CLUSTER_MEMMAP
 
 	/* Cluster Interface Implementation */
 	#include <arch/cluster/arm64-cluster/_arm64-cluster.h>
+	#include <arch/cluster/arm64-cluster/memmap.h>
 
 /**
  * @addtogroup arm64_cluster-cluster-mem Memory
@@ -42,8 +44,9 @@
 	 * @name Physical Memory Layout
 	 */
 	/**@{*/
-	
+
 	/**@}*/
+
 	/**
 	 * @name Virtual Memory Layout
 	 */
@@ -52,8 +55,9 @@
 	#define ARM64_CLUSTER_KERNEL_BASE_VIRT 		(ARM64_CLUSTER_KERNEL_END_VIRT << (ARM64_VADDR_BIT - 1))
 	#define ARM64_CLUSTER_USER_BASE_VIRT		(0x0000000000000000)
 	#define ARM64_CLUSTER_USER_END_VIRT			(0xffffffffffffffff >> 25)
+	#define ARM64_CLUSTER_MODULE_END			ARM64_CLUSTER_KERNEL_BASE_VIRT
+	#define ARM64_CLUSTER_MODULE_START			(ARM64_CLUSTER_MODULE_END - 0x04000000)
 	/**@}*/
-
 
 	/**
 	 * @name Memory Regions Constants
@@ -65,6 +69,7 @@
 	#define ARM64_CLUSTER_MREGION_PT_ALIGN_END   0                            /**< MRegion end page table aligned.   */
 	#define ARM64_CLUSTER_MREGION_PG_ALIGN_START 0                            /**< MRegion start page aligned.       */
 	#define ARM64_CLUSTER_MREGION_PG_ALIGN_END   ARM64_CLUSTER_MEM_REGIONS  /**< MRegion end page aligned.         */
+	#define TASK_SIZE							(1 << ARM64_VADDR_BIT)
 	/**@}*/
 
 #ifndef _ASM_FILE

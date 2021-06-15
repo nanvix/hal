@@ -40,9 +40,9 @@
 	 * @brief UART definitions
 	 */
 	/**@{*/
-    #define UART_ADDR   0xffff00003FC00000
-    #define UART_BAUD      921600
-    #define UART_TIMER   20000000
+    #define UART_ADDR           0xffff00003FC00000
+    #define UART_BAUD           921600
+    #define UART_TIMER          20000000
 
     /**
 	 * @brief Register Interface
