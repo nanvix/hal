@@ -42,12 +42,17 @@
 	#include <posix/errno.h>
 
 	/**
+	 * Support 4K granule and 39 VA_BITS, and 3 translation level
+	 */
+	#define CONFIG_PGTABLE_LEVELS	3
+
+	/**
 	 * @name Page Shifts and Masks
 	 */
 	/**@{*/
-	#define ARM64_PAGE_SHIFT  	12                          /**< Page Shift        */
-	#define ARM64_PMD_SHIFT		21							/**< Page Middle Shift */
-	#define ARM64_PGTAB_SHIFT 	30                          /**< Page Table Shift  */
+	#define ARM64_PAGE_SHIFT  		12                          /**< Page Shift        */
+	#define ARM64_PMD_SHIFT			21							/**< Page Middle Shift */
+	#define ARM64_PGTAB_SHIFT 		30                          /**< Page Table Shift  */
 	#define ARM64_PAGE_MASK   (~(ARM64_PAGE_SIZE - 1))  	/**< Page Mask         */
 	#define ARM64_PMD_MASK   (~(ARM64_PMD_SIZE - 1))  		/**< Page Mask         */
 	#define ARM64_PGTAB_MASK  (~(ARM64_PGTAB_SIZE - 1)) 	/**< Page Table Mask   */
@@ -57,10 +62,10 @@
 	 * @name Size of Pages and Page Tables
 	 */
 	/**@{*/
-	#define ARM64_HUGE_PAGE_SIZE 	(0x1UL << ARM64_PAGE_SHIFT)  	/**< Huge Page Size                       */
-	#define ARM64_PAGE_SIZE      	(0x1UL << ARM64_PAGE_SHIFT)  	/**< Page Size                            */
-	#define ARM64_PMD_SIZE      	(0x1UL << ARM64_PMD_SHIFT)  	/**< Page Midle Size                            */
-	#define ARM64_PGTAB_SIZE     	(0x1UL << ARM64_PGTAB_SHIFT) 	/**< Page Table Size                      */
+	#define ARM64_HUGE_PAGE_SIZE 	(1 << ARM64_PAGE_SHIFT)  	/**< Huge Page Size                       */
+	#define ARM64_PAGE_SIZE      	(1 << ARM64_PAGE_SHIFT)  	/**< Page Size                            */
+	#define ARM64_PMD_SIZE      	(1 << ARM64_PMD_SHIFT)  	/**< Page Midle Size                            */
+	#define ARM64_PGTAB_SIZE     	(1 << ARM64_PGTAB_SHIFT) 	/**< Page Table Size                      */
 	#define ARM64_PTE_SIZE        	8                             	/**< Page Table Entry Size (in bytes)     */
 	#define ARM64_PDE_SIZE        	8                             	/**< Page Directory Entry Size (in bytes) */
 	/**@}*/
@@ -233,7 +238,7 @@
 	 * @name Exported Constants
 	 */
 	/**@{*/
-	#define KPAGE_SIZE   ARM64_HUGE_PAGE_SIZE /**< @ref ARM64_HUGE_PAGE_SIZE */
+	#define KPAGE_SIZE   ARM64_PAGE_SIZE 	/**< @ref ARM64_HUGE_PAGE_SIZE */
 	#define PAGE_SIZE    ARM64_PAGE_SIZE      /**< @ref ARM64_PAGE_SIZE      */
 	#define PGTAB_SIZE   ARM64_PGTAB_SIZE     /**< @ref ARM64_PGTAB_SIZE     */
 	#define PGTAB_LENGTH ARM64_PGTAB_LENGTH   /**< @ref ARM64_PGTAB_LENGTH   */

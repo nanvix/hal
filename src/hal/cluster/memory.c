@@ -299,7 +299,7 @@ PUBLIC void mem_check_align(void)
 		if (mem_layout[i].vbase & (KPAGE_SIZE - 1))
 			kpanic("%s base address misaligned", mem_layout[i].desc);
 		if (mem_layout[i].vend  & (KPAGE_SIZE - 1))
-			kpanic("%s end address misaligned", mem_layout[i].desc);
+			kpanic("Page %s end address misaligned", mem_layout[i].desc);
 	}
 
 	/* These should be aligned at page table boundaries. */
@@ -308,13 +308,13 @@ PUBLIC void mem_check_align(void)
 		if (mem_layout[i].vbase & (PGTAB_SIZE - 1))
 			kpanic("%s base address misaligned", mem_layout[i].desc);
 		if (mem_layout[i].vend  & (PGTAB_SIZE - 1))
-			kpanic("%s end address misaligned", mem_layout[i].desc);
+			kpanic("Table %s end address misaligned", mem_layout[i].desc);
 	}
 
 	if (UBASE_VIRT & (PGTAB_SIZE - 1))
 		kpanic("user base address misaligned");
 	if (UEND_VIRT & (PGTAB_SIZE - 1))
-		kpanic("here user end address misaligned");
+		kpanic("user end address misaligned");
 }
 
 #endif /* !__mem_check_align_fn */
@@ -397,6 +397,8 @@ PUBLIC void mem_map(void)
 			mmu_page_map(
 				cluster_root_pgtabs[mem_layout[i].root_pgtab_num], j, k, w, x
 			);
+			if ((k-pbase)/PAGE_SIZE == 474)
+				kprintf("Now");
 		}
 
 		/*
@@ -426,7 +428,7 @@ PUBLIC void mem_map(void)
  *
  * @author Davidson Francis
  */
-PUBLIC void mem_setup(void)
+PUBLIC void  mem_setup(void)
 {
 	int coreid;
 
