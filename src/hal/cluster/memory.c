@@ -255,14 +255,14 @@ PUBLIC void mem_info(void)
 	);
 	for (i = 0; i < MEM_REGIONS; i++)
 	{
-		kprintf("[hal][cluster] %s_base=%x %s_end=%x",
+		kprintf("[hal][cluster] %s_base=%lx %s_end=%lx",
 			mem_layout[i].desc,
 			mem_layout[i].vbase,
 			mem_layout[i].desc,
 			mem_layout[i].vend
 		);
 	}
-	kprintf("[hal][cluster] user_base=%x   user_end=%x",
+	kprintf("[hal][cluster] user_base=%lx   user_end=%lx",
 		UBASE_VIRT,
 		UEND_VIRT
 	);
@@ -397,8 +397,6 @@ PUBLIC void mem_map(void)
 			mmu_page_map(
 				cluster_root_pgtabs[mem_layout[i].root_pgtab_num], j, k, w, x
 			);
-			if ((k-pbase)/PAGE_SIZE == 474)
-				kprintf("Now");
 		}
 
 		/*

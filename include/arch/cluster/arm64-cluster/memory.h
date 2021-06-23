@@ -59,11 +59,11 @@
 	 */
 	/**@{*/
 	//#define ARM64_CLUSTER_KERNEL_BASE_VIRT 		(ARM64_CLUSTER_KERNEL_END_VIRT << (ARM64_VADDR_BIT - 1))
-	#define ARM64_CLUSTER_KERNEL_BASE_VIRT 		(0xffffffc000000000)
+	#define ARM64_CLUSTER_KERNEL_BASE_VIRT 		(KERNEL_VA_START)
 	#define ARM64_CLUSTER_KERNEL_END_VIRT		(ARM64_CLUSTER_KERNEL_BASE_VIRT + 4 * ARM64_PAGE_SIZE)
 	//#define ARM64_CLUSTER_KERNEL_END_VIRT		(0xffffffffffe00000)
 	#define ARM64_CLUSTER_USER_BASE_VIRT		(0x0000000000000000)
-	#define ARM64_CLUSTER_USER_END_VIRT			((0xffffffffffffffffULL >> 25) + 1)
+	#define ARM64_CLUSTER_USER_END_VIRT			(ARM64_CLUSTER_USER_BASE_VIRT + ARM64_PGTAB_SIZE)
 	#define ARM64_CLUSTER_MODULE_END_VIRT		ARM64_CLUSTER_KERNEL_BASE_VIRT
 	#define ARM64_CLUSTER_MODULE_START_VIRT		(ARM64_CLUSTER_MODULE_END_VIRT - 0x04000000)
 
@@ -90,7 +90,7 @@
 	 * @name Memory Regions Constants
 	 */
 	/**@{*/
-	#define ARM64_CLUSTER_MEM_REGIONS            1                            /**< Memory Regions number.            */
+	#define ARM64_CLUSTER_MEM_REGIONS            2                            /**< Memory Regions number.            */
 	#define ARM64_CLUSTER_ROOT_PGTAB_NUM         ARM64_CLUSTER_MEM_REGIONS  /**< Root page table size.             */
 	#define ARM64_CLUSTER_MREGION_PT_ALIGN_START 0                            /**< MRegion start page table aligned. */
 	#define ARM64_CLUSTER_MREGION_PT_ALIGN_END   0                            /**< MRegion end page table aligned.   */

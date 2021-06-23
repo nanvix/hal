@@ -52,7 +52,7 @@ PUBLIC struct memory_region mem_layout[MEM_REGIONS] = {
 		.executable = true,
 		.root_pgtab_num = 0,
 		.desc = "kernel"
-	}
+	},
 	// {
 	// 	.pbase = ARM64_CLUSTER_USER_BASE_PHYS,
 	// 	.vbase = ARM64_CLUSTER_USER_BASE_VIRT,
@@ -64,15 +64,15 @@ PUBLIC struct memory_region mem_layout[MEM_REGIONS] = {
 	// 	.root_pgtab_num = 1,
 	// 	.desc = "user"
 	// },
-	// {
-	// 	.pbase = ARM64_CLUSTER_MODULE_START_PHYS,
-	// 	.vbase = ARM64_CLUSTER_MODULE_START_VIRT,
-	// 	.pend  = ARM64_CLUSTER_MODULE_END_PHYS,
-	// 	.vend  = ARM64_CLUSTER_MODULE_END_VIRT,
-	// 	.size  = ARM64_CLUSTER_MODULE_SIZE,
-	// 	.writable = true,
-	// 	.executable = true,
-	// 	.root_pgtab_num = 2,
-	// 	.desc = "module"
-	// }
+	{
+		.pbase = ARM64_CLUSTER_MODULE_START_PHYS,
+		.vbase = ARM64_CLUSTER_MODULE_START_VIRT,
+		.pend  = ARM64_CLUSTER_MODULE_END_PHYS,
+		.vend  = ARM64_CLUSTER_MODULE_END_VIRT,
+		.size  = ARM64_CLUSTER_MODULE_SIZE,
+		.writable = true,
+		.executable = true,
+		.root_pgtab_num = 2,
+		.desc = "module"
+	}
 };

@@ -59,7 +59,6 @@ PUBLIC int arm64_page_map(struct pte *pgtab, paddr_t paddr, vaddr_t vaddr, int w
 	/* Permissions. */
 	pte_exec_set(&pgtab[idx], x);
 	pte_write_set(&pgtab[idx],w);
-	
 
 	return (0);
 }
