@@ -43,7 +43,7 @@
 	 * @name Physical Memory Layout
 	 */
 	/**@{*/
-	#define ARM64_CLUSTER_DRAM_BASE_PHY			(0x40000000LL)                    // DRAM BASE
+	#define ARM64_CLUSTER_DRAM_BASE_PHY			(0x40000000)                    // DRAM BASE
 	#define ARM64_CLUSTER_DRAM_SIZE				(1 << 30)                       // DRAM SIZE
 	#define ARM64_CLUSTER_DRAM_END_PHY			(ARM64_CLUSTER_DRAM_BASE_PHY + ARM64_CLUSTER_DRAM_SIZE)
 	/**@}*/
@@ -53,7 +53,6 @@
 	#define LOW_MEM                 (IMAGE_START + (1<<20) )        // 内存低端(1MB)，该部分用于内核镜像
 	#define HIGH_MEM                (IMAGE_START + PAGING_MEMORY - 1)           // 内存高端(16MB)，超过该地址就越界了
 	#define UART_PA_BASE        	(0x09000000)
-
 
 /**@}*/
 

@@ -37,9 +37,11 @@
 	#define __NEED_CORE_TYPES
 	#define __NEED_MEMORY_TYPES
 
+
 	#include <arch/core/arm64/types.h>
 	#include <nanvix/hlib.h>
 	#include <posix/errno.h>
+
 
 	/**
 	 * Support 4K granule and 39 VA_BITS, and 3 translation level
@@ -115,6 +117,12 @@
 	/*
 	* Memory types
 	*/
+
+	// #define MT_DEVICE_nGnRnE         0x0
+	// #define MT_NORMAL_NC            0x3
+	// #define MT_DEVICE_nGnRnE_FLAGS        0x00
+	// #define MT_NORMAL_NC_FLAGS          0x44
+	// #define MAIR_VALUE            (MT_DEVICE_nGnRnE_FLAGS << (8 * MT_DEVICE_nGnRnE)) | (MT_NORMAL_NC_FLAGS << (8 * MT_NORMAL_NC))
 	#define MT_DEVICE_NGNRNE	0
 	#define MT_DEVICE_NGNRE		1
 	#define MT_DEVICE_GRE		2
@@ -168,7 +176,7 @@
 		unsigned			: 	5;	/**< Unused.					*/
 	} PACK;
 
-	/**
+	/**__NEED_CORE_CONTEXT
 	 * @brief Page Middle Entry
 	 *
 	* Level 2 descriptor (PMD).
@@ -221,6 +229,7 @@
 		unsigned dirty      : 	1; 	/**< Unused.            		*/
 		unsigned			: 	8;	/**< Unused.					*/
 	} PACK;
+
 
 #endif
 
@@ -313,6 +322,32 @@
 
 #ifndef _ASM_FILE_
 
+	EXTERN unsigned long pg_tbl_start;
+	EXTERN unsigned long ram_tbl_start;
+
+	#define pa_pgd_base  ((long) &pg_tbl_start ) //x1
+	#define pa_pud_base  (pa_pgd_base + ARM64_PAGE_SIZE)  //x2
+	#define pa_pmd_base  (pa_pud_base + ARM64_PAGE_SIZE)  //x3
+
+	#define pa_pgd_entry  	pa_pgd_base	//x4
+	#define pa_pud_entry 	pa_pud_base //x5
+
+	#define pa_pgd_base_ram  ((long) &ram_tbl_start ) //x1
+	#define pa_pud_base_ram  (pa_pgd_base_ram + ARM64_PAGE_SIZE)  //x2
+	#define pa_pmd_base_ram  (pa_pud_base_ram + ARM64_PAGE_SIZE)  //x3
+
+	#define pa_pgd_entry_ram  	pa_pgd_base_ram	//x4
+	#define pa_pud_entry_ram 	(pa_pud_base_ram + 8)//x5
+
+
+	#define populate(val, adr)	\
+			asm volatile("str %0, [%1]" 	\
+				:  							\
+				: 	"r"(val),				\
+					"r"(adr)				\
+				: "memory"					\
+			);
+	
 	/**
 	 * @name Memory Types
 	 */
@@ -362,7 +397,8 @@
 	 */
 	EXTERN int arm64_pgtab_map(struct pde *pgdir, paddr_t paddr, vaddr_t vaddr);
 
-	EXTERN int arm64_mmu_setup();
+	EXTERN int arm64_enable_mmu();
+	EXTERN int arm64_config_mmu();
 	EXTERN int arm64_invalidate_d_cache();
 	EXTERN int arm64_invalidate_tlb();
 
@@ -970,23 +1006,6 @@
 		return (0);
 	}
 
-	static inline int arm64_enable_mmu(void)
-	{
-		uint32_t sctlr;
-
-		__asm__ __volatile__("mrs %0, SCTLR_EL1\n\t" : "=r" (sctlr) :  : "memory");
-
-		sctlr |= SCTLR_MMU_ENABLED;
-		sctlr |= SCTLR_I_CACHE_ENABLE;
-		sctlr |= SCTLR_D_CACHE_ENABLE;
-
-		__asm__ __volatile__("msr SCTLR_EL1, %0\n\t" : : "r" (sctlr) : "memory");
-		__asm__ __volatile__("dsb sy" : : : "memory");
-		__asm__ __volatile__("isb" : : : "memory");
-
-		return (0);
-	}
-
 #ifdef __NANVIX_HAL
 
 	/**
@@ -994,7 +1013,7 @@
 	 */
 	static inline void mmu_setup(void)
 	{
-		arm64_mmu_setup();
+
 	}
 
 #endif /* __NANVIX_HAL */

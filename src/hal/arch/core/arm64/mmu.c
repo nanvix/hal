@@ -22,12 +22,14 @@
  * SOFTWARE.
  */
 
+#define __NEED_CLUSTER_MEMMAP
+
+#include <arch/cluster/arm64-cluster/memmap.h>
 #include <arch/core/arm64/mmu.h>
 #include <arch/core/arm64/tlb.h>
 #include <nanvix/const.h>
 #include <posix/errno.h>
 #include <nanvix/hlib.h>
-
 
 /**
  * @todo TODO provide a detailed description for this function.
@@ -124,15 +126,12 @@ PUBLIC int arm64_pgtab_map(struct pde *pgdir, paddr_t paddr, vaddr_t vaddr)
 	return (0);
 }
 
-/*============================================================================*
- * arm64_mmu_setup()                                                           *
- *============================================================================*/
 
-/**
- * The arm_mmu_setup() function initializes the Memory Management Unit
- * (MMU) of the underlying arm64 core.
- */
-PUBLIC int arm64_mmu_setup(void) {
+
+PUBLIC int arm64_enable_mmu(void)
+{
+	uint32_t sctlr;
+
 
 	unsigned long r, b;
 
@@ -143,16 +142,82 @@ PUBLIC int arm64_mmu_setup(void) {
         return 0;
     }
 
-	asm volatile ("msr tcr_el1, %0\n\t" : : "r"(TCR_VALUE): "memory");
-	asm volatile ("msr mair_el1, %0\n\t" : : "r"(MAIR_VALUE): "memory");
+	asm volatile (
+		"msr tcr_el1, %0	\n\t"
+		"msr mair_el1, %1	\n\t"
+		:
+		: 	"r"(TCR_VALUE),
+			"r"(MAIR_VALUE)
+		: "memory"
+	);
 
-    if (mmu_is_enabled()) {
+	__asm__ __volatile__("mrs %0, SCTLR_EL1\n\t" : "=r" (sctlr) :  : "memory");
+
+	sctlr |= SCTLR_MMU_ENABLED;
+	sctlr |= SCTLR_I_CACHE_ENABLE;
+	sctlr |= SCTLR_D_CACHE_ENABLE;
+
+	asm volatile(
+		"msr SCTLR_EL1, %0	\n\t"
+		"dsb sy				\n\t"
+		"isb"
+		:
+		: "r" (sctlr) 
+		: "memory"
+	);
+	if (mmu_is_enabled()) {
         kprintf("[MMU] MMU enable");
     } else {
-		arm64_enable_mmu();
         kprintf("[MMU] MMU enable failed");
     }
-
-	return 0;
+	return (0);
 }
 
+
+PUBLIC int arm64_config_mmu(void)
+{
+	/*	MMU kernel map	(DRAM + DEVICE regs)
+		map 0x4000 0000 				to 	0xffff 0000 0000 0000 			(1020MB)
+		map 0xUART_PA_BASE 				to 	0xffff 0000 0000 0000 + 1020MB 	(2MB)
+		map 0xQEMU_VIRT_GIC_PA_BASE 	to 	0xffff 0000 0000 0000 + 1022MB 	(2MB)
+	*/
+	asm volatile("mov x0, %[kvs]" :: [kvs]"r"(KERNEL_VA_START): "x0");
+
+	//populate first PGD
+	populate((pa_pud_base | MM_TYPE_PAGE_TABLE), (pa_pgd_entry));
+	//populate first PUD
+	populate((pa_pmd_base | MM_TYPE_PAGE_TABLE), (pa_pud_entry));
+	//populate 512 PMD
+	for (int i = 0; i < ARM64_PGMDIR_LENGTH - 2 ; i ++)
+	{
+		populate(((ARM64_CLUSTER_DRAM_BASE_PHY + i * ARM64_PMD_SIZE) | MMU_FLAGS), (pa_pmd_base + (i << 3)));
+	}
+
+	//UART REG，511号entry，对应VA = VA_START + (511-1) * 2 * 1024 * 1024
+	populate((UART_PA_BASE | MMU_DEVICE_FLAGS), (pa_pmd_base + ((ARM64_PGMDIR_LENGTH - 2) << 3)));
+
+	//GIC REG, 512号entry，对应VA = VA_START + (512-1)*2*1024*1024
+	populate((QEMU_VIRT_GIC_PA_BASE | MMU_DEVICE_FLAGS), (pa_pmd_base + ((ARM64_PGMDIR_LENGTH - 1) << 3)));
+
+	/*
+    	MMU DRAM temporary map
+    	map 0x4000 0000 - 0x4020 0000(DRAM) to 0x4000 0000 - 0x4020 0000(VA)
+	*/
+	asm volatile("mov x0, %[kvs]" :: [kvs]"r"(ARM64_CLUSTER_DRAM_BASE_PHY): "x0");
+	//populate second PGD, 1G-2G
+	populate((pa_pud_base_ram | MM_TYPE_PAGE_TABLE),(pa_pgd_entry_ram));
+	//populate first PUD
+	populate((pa_pmd_base_ram | MM_TYPE_PAGE_TABLE),(pa_pud_entry_ram));
+
+	//populate 1 PMD, map 0x4000 0000 - 0x4020 0000(DRAM) to 0x4000 0000 - 0x4020 0000(VA)
+    populate((ARM64_CLUSTER_DRAM_BASE_PHY | MMU_FLAGS), (pa_pmd_base_ram));
+
+	/* Invalidate TLBs */
+	asm volatile(
+		"ic iallu 		\n"                           // I+BTB cache invalidate
+    	"tlbi vmalle1   \n"                      // invalidate I + D TLBs
+    	"dsb sy"
+		: : :
+	);
+	return 0;
+}

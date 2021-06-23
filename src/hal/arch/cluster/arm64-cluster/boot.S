@@ -46,101 +46,18 @@
  * Entry point.
  */
 _do_start:
+
     mov x1, #0xff
     ldr x0, =SCTLR_VALUE_MMU_DISABLED
     msr sctlr_el1, x0
 
-/* 
-    MMU kernel map	(DRAM + DEVICE regs)
-	map 0x4000 0000 				to 	0xffff 0000 0000 0000 			(1020MB)
-	map 0xUART_PA_BASE 				to 	0xffff 0000 0000 0000 + 1020MB 	(2MB)
-	map 0xQEMU_VIRT_GIC_PA_BASE 	to 	0xffff 0000 0000 0000 + 1022MB 	(2MB)
-*/
-    // 在内存中创建页表， PGD一项， PUD一项，PMD 512项（每项2MB），各级各占用一页
-    mov  x0, #KERNEL_VA_START   // x0  VA
-    adrp x1, pg_tbl_start       // x1  PA for PGD base
-    add  x3, x1, #PAGE_SIZE     // x3  PA for PMD base
-
-    add  x4, x1, #0             // x4  PA for PGD entry
-    //populate first PGD
-    orr  x6, x3, #MM_TYPE_PAGE_TABLE
-    str  x6, [x4]               // populate PGD entry
-    //populate 512 PMD
-    mov  x6, #ARM64_CLUSTER_DRAM_BASE_PHY          // x6  PA base
-    mov  x7, #0                 // offset of VA/PA
-    mov  x8, #0                 // index of PMD
-1:
-    lsl  x9, x8, #3             // offset of PMD
-    add  x10, x6, x7            // PA
-    mov  x11, #MMU_FLAGS
-    orr  x10, x10, x11          // PME
-    add  x12, x3, x9
-    str  x10, [x12]
-
-    add  x7, x7, #ARM64_PMD_SIZE  // offset of PA
-    add  x8, x8, #1
-    cmp  x8, #509               // 510>509则跳转，511、512table 给 中断控制器和串口控制器
-    b.ls    1b                  // <=
-
-//UART REG，511号entry，对应VA = VA_START + (511-1) * 2 * 1024 * 1024
-    lsl  x9, x8, #3
-    mov  x10, #UART_PA_BASE
-    mov  x11, #MMU_DEVICE_FLAGS
-    orr  x10, x10, x11
-    add  x12, x3,  x9
-    str  x10, [x12]
-
-//GIC REG, 512号entry，对应VA = VA_START + (512-1)*2*1024*1024
-    add  x8, x8, #1
-    lsl  x9, x8, #3
-    mov  x10, #QEMU_VIRT_GIC_PA_BASE
-    mov  x11, #MMU_DEVICE_FLAGS
-    orr  x10, x10, x11
-    add  x12, x3,  x9
-    str  x10, [x12]
-
-/*
-    MMU DRAM temporary map
-    map 0x4000 0000 - 0x4020 0000(DRAM) to 0x4000 0000 - 0x4020 0000(VA)
-*/
-    mov  x0, #ARM64_CLUSTER_DRAM_BASE_PHY
-    adrp x1, ram_tbl_start      // x1  PA for PGD base
-    add  x3, x2, #ARM64_PAGE_SIZE     // x3  PA for PMD base
-
-    add  x4, x1, #0             // x4  PA for PGD entry
-    //populate second PGD, 1G-2G
-    orr  x6, x3, #MM_TYPE_PAGE_TABLE
-    str  x6, [x4]               // populate PGD entry
-    //populate 1 PMD, map 0x4000 0000 - 0x4020 0000(DRAM) to 0x4000 0000 - 0x4020 0000(VA)
-    mov  x6, #ARM64_CLUSTER_DRAM_BASE_PHY          // x6  PA base
-    mov  x7, #0                 // offset of VA/PA
-    mov  x8, #0                 // index of PMD
-    lsl  x9, x8, #3             // offset of PMD
-    add  x10, x6, x7            // PA
-    mov  x11, #MMU_FLAGS
-    orr  x10, x10, x11          // PME
-    add  x12, x3, x9
-    str  x10, [x12]
-
-    add  x7, x7, #ARM64_PMD_SIZE  // offset of PA
-    add  x8, x8, #1
-
-
-    /* Invalidate TLBs */
-    ic      iallu                           // I+BTB cache invalidate
-    tlbi    vmalle1                         // invalidate I + D TLBs
-    dsb     sy
+    arm64_core_stack_reset x0
+    bl arm64_config_mmu
 
     adrp    x0,  pg_tbl_start
     msr ttbr1_el1, x0
     adrp    x0,  ram_tbl_start
     msr ttbr0_el1, x0
-
-    ldr x0, =(TCR_VALUE)    
-    msr tcr_el1, x0
-
-    ldr x0, =(MAIR_VALUE)
-    msr mair_el1, x0
 
 /*
  * Configure the Exception Level.
@@ -198,22 +115,17 @@ _do_start.slave:
     b halt
 
 _do_start.master:
-
     /* Set stack adress */
     arm64_core_stack_reset x0
-    /* Branch the master core to _main function */
-    //bl arm64_gic_initialize
+
     mrs x0, s3_1_c15_c2_1
     orr x0, x0, #(0x1<<6)       //cpuectlr.smpen = 1
     msr s3_1_c15_c2_1, x0
-    mrs x0, sctlr_el1
-    orr x0, x0, #(0x1 << 2)       // D bit, dcache
-    orr x0, x0, #(0x1 << 12)      // I bit, icache
-    orr x0, x0, #1              // M bit, mmu
-    msr sctlr_el1, x0
-    dsb sy
-    isb
 
+    /* Set register to enable the mmu */
+    bl arm64_enable_mmu
+
+    /* Branch the master core to _main function */
     ldr x2, =arm64_cluster_master_setup
     br x2
     b halt
