@@ -54,6 +54,10 @@ _do_start:
     arm64_core_stack_reset x0
     bl arm64_config_mmu
 
+    /*Update ttbr0 and ttbr1 register.
+    * ttbr0 : point to a pgd in user space (starting with 0x000)
+    * ttbr1 : point to a pgd in kernel space (starting with 0xffff)
+    */
     adrp    x0,  pg_tbl_start
     msr ttbr1_el1, x0
     adrp    x0,  ram_tbl_start

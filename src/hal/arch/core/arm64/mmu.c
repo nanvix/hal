@@ -141,6 +141,16 @@ PUBLIC int arm64_enable_mmu(void)
         return 0;
     }
 
+	/**
+	*	MAIR Register
+	*	We are using only 2 out of 8 available slots in the mair registers.
+	*	The first one corresponds to device memory and second to normal non-cachable memory
+	*
+	*	TCR Register
+	*	tcr_el1 of Translation Control Register is responsible for configuring some general
+	*	parameters of the MMU. (For example, here we configure that both 
+	*	kernel and user page tables should use 4 KB pages.)
+	*/
 	asm volatile (
 		"msr tcr_el1, %0	\n\t"
 		"msr mair_el1, %1	\n\t"
@@ -150,8 +160,16 @@ PUBLIC int arm64_enable_mmu(void)
 		: "memory"
 	);
 
+	/**
+	 * SCTLR Register
+	 * This register is responsible for configuring the mmu, especially if the mmu is enabled,
+	 * and if caches are enabled
+	*/
+
+	// Read actual value of sctlr register
 	__asm__ __volatile__("mrs %0, SCTLR_EL1\n\t" : "=r" (sctlr) :  : "memory");
 
+	//enable mmu
 	sctlr |= SCTLR_MMU_ENABLED;
 	sctlr |= SCTLR_I_CACHE_ENABLE;
 	sctlr |= SCTLR_D_CACHE_ENABLE;
@@ -164,14 +182,46 @@ PUBLIC int arm64_enable_mmu(void)
 		: "r" (sctlr) 
 		: "memory"
 	);
+
 	if (mmu_is_enabled()) {
-        kprintf("[MMU] MMU enable");
+        kprintf("[hal][mmu] MMU enable");
     } else {
-        kprintf("[MMU] MMU enable failed");
+        kprintf("[hal][mmu] MMU enable failed");
     }
 	return (0);
 }
 
+/**
+ * @brief This function initialize kernel page
+ * This function have been copied from an other os and
+ * adapted from assembly to C inline assembly. However,
+ * this function actually configure the mmu to use 4 translation
+ * level (PGD-PUD-PMD-PTE) and allow block mapping.
+ *                            Virtual address                                                                 Physical Memory
+	+-----------------------------------------------------------------------+                                +------------------+
+	|         | PGD Index | PUD Index | PMD Index | PTE Index | Page offset |                                |                  |
+	+-----------------------------------------------------------------------+                                |                  |
+	63        47     |    38      |   29     |    20    |     11      |     0                                |     Page N       |
+					|            |          |          |             +--------------------+           +---->+------------------+
+					|            |          |          +---------------------+            |           |     |                  |
+			+------+            |          |                                |            |           |     |                  |
+			|                   |          +----------+                     |            |           |     |------------------|
+	+------+  |        PGD        |                     |                     |            +---------------->| Physical address |
+	| ttbr |---->+-------------+  |           PUD       |                     |                        |     |------------------|
+	+------+  |  |             |  | +->+-------------+  |          PMD        |                        |     |                  |
+			|  +-------------+  | |  |             |  | +->+-------------+  |          PTE           |     +------------------+
+			+->| PUD address |----+  +-------------+  | |  |             |  | +->+--------------+    |     |                  |
+				+-------------+  +--->| PMD address |----+  +-------------+  | |  |              |    |     |                  |
+				|             |       +-------------+  +--->| PTE address |----+  +-------------_+    |     |                  |
+				+-------------+       |             |       +-------------+  +--->| Page address |----+     |                  |
+									+-------------+       |             |       +--------------+          |                  |
+															+-------------+       |              |          |                  |
+																				+--------------+          +------------------+
+ *
+ * @todo Adapt it for nanvix, using only 2 (or 3) translation level
+ * (remove the PUD level), and don't use block mapping, which is not support
+ * in Nanvix.
+ */
 
 PUBLIC int arm64_config_mmu(void)
 {
@@ -182,34 +232,38 @@ PUBLIC int arm64_config_mmu(void)
 	*/
 	asm volatile("mov x0, %[kvs]" :: [kvs]"r"(KERNEL_VA_START): "x0");
 
-	//populate first PGD
+	/* Populate first PGD 	*/
 	populate((pa_pud_base | MM_TYPE_PAGE_TABLE), (pa_pgd_entry));
-	//populate first PUD
+	/* Populate first PUD	*/
 	populate((pa_pmd_base | MM_TYPE_PAGE_TABLE), (pa_pud_entry));
-	//populate 512 PMD
+	/*
+		Populate 512 PMD
+		The last 2 entry are the Device block entry (UART and GIC)
+	*/
 	for (int i = 0; i < ARM64_PGMDIR_LENGTH - 2 ; i ++)
 	{
-		populate(((ARM64_CLUSTER_DRAM_BASE_PHY + i * ARM64_PMD_SIZE) | MMU_FLAGS), (pa_pmd_base + (i << 3)));
+		/* We map 510 entries, VA = KERNEL_VA_START + i * ARM64_PMD_SIZE	*/
+		populate(((ARM64_CLUSTER_DRAM_BASE_PHYS + i * ARM64_PMD_SIZE) | MMU_FLAGS), (pa_pmd_base + (i << 3)));
 	}
 
-	//UART REG，511号entry，对应VA = VA_START + (511-1) * 2 * 1024 * 1024
-	populate((UART_PA_BASE | MMU_DEVICE_FLAGS), (pa_pmd_base + ((ARM64_PGMDIR_LENGTH - 2) << 3)));
+	/* UART REG，511 entry，VA = KERNEL_VA_START + (511-1) * ARM64_PMD_SIZE */
+	populate((ARM64_CLUSTER_UART_BASE_PHYS | MMU_DEVICE_FLAGS), (pa_pmd_base + ((ARM64_PGMDIR_LENGTH - 2) << 3)));
 
-	//GIC REG, 512号entry，对应VA = VA_START + (512-1)*2*1024*1024
+	/* GIC REG, 512 entry，VA = KERNEL_VA_START + (512-1)* ARM64_PMD_SIZE 	*/
 	populate((QEMU_VIRT_GIC_PA_BASE | MMU_DEVICE_FLAGS), (pa_pmd_base + ((ARM64_PGMDIR_LENGTH - 1) << 3)));
 
 	/*
     	MMU DRAM temporary map
     	map 0x4000 0000 - 0x4020 0000(DRAM) to 0x4000 0000 - 0x4020 0000(VA)
 	*/
-	asm volatile("mov x0, %[kvs]" :: [kvs]"r"(ARM64_CLUSTER_DRAM_BASE_PHY): "x0");
+	asm volatile("mov x0, %[kvs]" :: [kvs]"r"(ARM64_CLUSTER_DRAM_BASE_PHYS): "x0");
 	//populate second PGD, 1G-2G
 	populate((pa_pud_base_ram | MM_TYPE_PAGE_TABLE),(pa_pgd_entry_ram));
 	//populate first PUD
 	populate((pa_pmd_base_ram | MM_TYPE_PAGE_TABLE),(pa_pud_entry_ram));
 
 	//populate 1 PMD, map 0x4000 0000 - 0x4020 0000(DRAM) to 0x4000 0000 - 0x4020 0000(VA)
-    populate((ARM64_CLUSTER_DRAM_BASE_PHY | MMU_FLAGS), (pa_pmd_base_ram));
+    populate((ARM64_CLUSTER_DRAM_BASE_PHYS | MMU_FLAGS), (pa_pmd_base_ram));
 
 	/* Invalidate TLBs */
 	asm volatile(
@@ -218,5 +272,6 @@ PUBLIC int arm64_config_mmu(void)
     	"dsb sy"
 		: : :
 	);
+
 	return 0;
 }

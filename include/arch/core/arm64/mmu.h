@@ -322,24 +322,29 @@
 
 #ifndef _ASM_FILE_
 
+	/**
+	 * @brief Adresses to enable the mmu
+	 */
+	/**@{*/
 	EXTERN unsigned long pg_tbl_start;
 	EXTERN unsigned long ram_tbl_start;
+	// Kernel Map
+	#define pa_pgd_base  ((long) &pg_tbl_start ) 			//PA for PGD base
+	#define pa_pud_base  (pa_pgd_base + ARM64_PAGE_SIZE)  	//PA for PUD base
+	#define pa_pmd_base  (pa_pud_base + ARM64_PAGE_SIZE)  	//PA for PMD base
+	#define pa_pgd_entry  	pa_pgd_base						//PA for PGD entry
+	#define pa_pud_entry 	pa_pud_base 					//PA for PUD entry
+	// DRAM Map
+	#define pa_pgd_base_ram  ((long) &ram_tbl_start ) 				//PA for PGD base
+	#define pa_pud_base_ram  (pa_pgd_base_ram + ARM64_PAGE_SIZE)  	//PA for PUD base
+	#define pa_pmd_base_ram  (pa_pud_base_ram + ARM64_PAGE_SIZE)  	//PA for PMD base
+	#define pa_pgd_entry_ram  	pa_pgd_base_ram						//PA for PGD entry
+	#define pa_pud_entry_ram 	(pa_pud_base_ram + 8)				//PA for PUD entry, second entry
+	/**@}*/
 
-	#define pa_pgd_base  ((long) &pg_tbl_start ) //x1
-	#define pa_pud_base  (pa_pgd_base + ARM64_PAGE_SIZE)  //x2
-	#define pa_pmd_base  (pa_pud_base + ARM64_PAGE_SIZE)  //x3
-
-	#define pa_pgd_entry  	pa_pgd_base	//x4
-	#define pa_pud_entry 	pa_pud_base //x5
-
-	#define pa_pgd_base_ram  ((long) &ram_tbl_start ) //x1
-	#define pa_pud_base_ram  (pa_pgd_base_ram + ARM64_PAGE_SIZE)  //x2
-	#define pa_pmd_base_ram  (pa_pud_base_ram + ARM64_PAGE_SIZE)  //x3
-
-	#define pa_pgd_entry_ram  	pa_pgd_base_ram	//x4
-	#define pa_pud_entry_ram 	(pa_pud_base_ram + 8)//x5
-
-
+	/**
+	 * Populate is responsible for allocating a new page table
+	 */
 	#define populate(val, adr)	\
 			asm volatile("str %0, [%1]" 	\
 				:  							\
@@ -347,7 +352,7 @@
 					"r"(adr)				\
 				: "memory"					\
 			);
-	
+
 	/**
 	 * @name Memory Types
 	 */

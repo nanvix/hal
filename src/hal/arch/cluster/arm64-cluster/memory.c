@@ -31,17 +31,6 @@
  * @brief Memory layout.
  */
 PUBLIC struct memory_region mem_layout[MEM_REGIONS] = {
-	// {
-	// 	.pbase = 0,
-	// 	.vbase = 0,
-	// 	.pend  = 0,
-	// 	.vend  = 0,
-	// 	.size  = 0,
-	// 	.writable = true,
-	// 	.executable = true,
-	// 	.root_pgtab_num = 0,
-	// 	.desc = "kernel"
-	// }
 	{
 		.pbase = ARM64_CLUSTER_KERNEL_BASE_PHYS,
 		.vbase = ARM64_CLUSTER_KERNEL_BASE_VIRT,
@@ -53,26 +42,26 @@ PUBLIC struct memory_region mem_layout[MEM_REGIONS] = {
 		.root_pgtab_num = 0,
 		.desc = "kernel"
 	},
-	// {
-	// 	.pbase = ARM64_CLUSTER_USER_BASE_PHYS,
-	// 	.vbase = ARM64_CLUSTER_USER_BASE_VIRT,
-	// 	.pend  = ARM64_CLUSTER_USER_END_PHYS,
-	// 	.vend  = ARM64_CLUSTER_USER_END_VIRT,
-	// 	.size  = ARM64_CLUSTER_UMEM_SIZE,
-	// 	.writable = true,
-	// 	.executable = true,
-	// 	.root_pgtab_num = 1,
-	// 	.desc = "user"
-	// },
 	{
-		.pbase = ARM64_CLUSTER_MODULE_START_PHYS,
-		.vbase = ARM64_CLUSTER_MODULE_START_VIRT,
-		.pend  = ARM64_CLUSTER_MODULE_END_PHYS,
-		.vend  = ARM64_CLUSTER_MODULE_END_VIRT,
-		.size  = ARM64_CLUSTER_MODULE_SIZE,
+		.pbase = ARM64_CLUSTER_KPOOL_BASE_PHYS,
+		.vbase = ARM64_CLUSTER_KPOOL_BASE_VIRT,
+		.pend  = ARM64_CLUSTER_KPOOL_END_PHYS,
+		.vend  = ARM64_CLUSTER_KPOOL_END_VIRT,
+		.size  = ARM64_CLUSTER_KPOOL_SIZE,
 		.writable = true,
-		.executable = true,
+		.executable = false,
+		.root_pgtab_num = 1,
+		.desc = "kpool"
+	},
+	{
+		.pbase = ARM64_CLUSTER_UART_BASE_PHYS,
+		.vbase = ARM64_CLUSTER_UART_BASE_VIRT,
+		.pend  = ARM64_CLUSTER_UART_END_PHYS,
+		.vend  = ARM64_CLUSTER_UART_END_VIRT,
+		.size  = ARM64_CLUSTER_UART_MEM_SIZE,
+		.writable = true,
+		.executable = false,
 		.root_pgtab_num = 2,
-		.desc = "module"
-	}
+		.desc = "uart"
+	},
 };

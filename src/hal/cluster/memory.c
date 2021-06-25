@@ -253,6 +253,7 @@ PUBLIC void mem_info(void)
 		__div((&__DATA_END - &__DATA_START), KB),
 		__div((&__BSS_END  - &__BSS_START), KB)
 	);
+
 	for (i = 0; i < MEM_REGIONS; i++)
 	{
 		kprintf("[hal][cluster] %s_base=%lx %s_end=%lx",
@@ -397,8 +398,8 @@ PUBLIC void mem_map(void)
 			mmu_page_map(
 				cluster_root_pgtabs[mem_layout[i].root_pgtab_num], j, k, w, x
 			);
+			kprintf("[%s] Pages = %d, @ virt = %lx", mem_layout[i].desc, (k - pbase)/PAGE_SIZE, k);
 		}
-
 		/*
 		 * Map underlying page table.
 		 *

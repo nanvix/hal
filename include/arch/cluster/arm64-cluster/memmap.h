@@ -43,16 +43,26 @@
 	 * @name Physical Memory Layout
 	 */
 	/**@{*/
-	#define ARM64_CLUSTER_DRAM_BASE_PHY			(0x40000000)                    // DRAM BASE
-	#define ARM64_CLUSTER_DRAM_SIZE				(1 << 30)                       // DRAM SIZE
-	#define ARM64_CLUSTER_DRAM_END_PHY			(ARM64_CLUSTER_DRAM_BASE_PHY + ARM64_CLUSTER_DRAM_SIZE)
+	#define ARM64_CLUSTER_DRAM_BASE_PHYS		(0x40000000UL)	/**< DRAM Base */
+	#define ARM64_CLUSTER_DRAM_END_PHYS			(0x48000000UL)	/**< DRAM End  */
+	#define ARM64_CLUSTER_UART_BASE_PHYS        (0x09000000UL)	/**< UART Base */
+	#define ARM64_CLUSTER_UART_END_PHYS  		(0x09010000UL) 	/**< UART End  */
 	/**@}*/
 
-	#define KERNEL_VA_START         (0xffffffc000000000)
-	#define IMAGE_START             (ARM64_CLUSTER_DRAM_BASE_PHY + 0x80000)            // QEMU自动将内核镜像搬到该位置，前面的空就不要了
-	#define LOW_MEM                 (IMAGE_START + (1<<20) )        // 内存低端(1MB)，该部分用于内核镜像
-	#define HIGH_MEM                (IMAGE_START + PAGING_MEMORY - 1)           // 内存高端(16MB)，超过该地址就越界了
-	#define UART_PA_BASE        	(0x09000000)
+	/**
+	 * @brief DRAM brief (in bytes).
+	 */
+	#define ARM64_CLUSTER_DRAM_SIZE \
+		(ARM64_CLUSTER_DRAM_END_PHYS - ARM64_CLUSTER_DRAM_BASE_PHYS)
+
+	/**
+	 * @brief UART brief (in bytes).
+	 */
+	#define ARM64_CLUSTER_UART_MEM_SIZE \
+		(ARM64_CLUSTER_UART_END_PHYS - ARM64_CLUSTER_UART_BASE_PHYS)
+
+	#define KERNEL_VA_START         (0xffffff8000080000)
+
 
 /**@}*/
 
