@@ -47,6 +47,7 @@
 	#include <arch/core/rv32gc/tlb.h>
 	#include <arch/core/rv32gc/trap.h>
 	#include <arch/core/rv32gc/upcall.h>
+	#include <arch/core/rv32gc/perf.h>
 
 	#ifdef __NEED_CORE_MACHINE
 		#include <arch/core/rv32gc/machine.h>
@@ -64,7 +65,7 @@
 	 * @name Core Features
 	 */
 	/**@{*/
-	#define CORE_HAS_PERF                0 /**< Has Performance Monitors?          */
+	#define CORE_HAS_PERF                1 /**< Has Performance Monitors?          */
 	#define CORE_HAS_ATOMICS             1 /**< Has Atomic Instructions?           */
 	#define CORE_HAS_PMIO                0 /**< Has Programmed I/O?                */
 	#define CORE_HAS_TLB_HW              1 /**< Has Hardware-Managed TLB?          */
