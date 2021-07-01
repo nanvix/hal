@@ -47,8 +47,8 @@
 	 * @name Bit-Length of Memory Types
 	 */
 	/**@{*/
-	#define ARM64_PADDR_BIT  39 /**< Physical Address */
-	#define ARM64_VADDR_BIT  39 /**< Virtual Address  */
+	#define ARM64_PADDR_BIT  42 /**< Physical Address */
+	#define ARM64_VADDR_BIT  42 /**< Virtual Address  */
 	/**@}*/
 
 	/**

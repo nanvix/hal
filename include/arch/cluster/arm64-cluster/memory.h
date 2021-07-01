@@ -45,25 +45,28 @@
 	 */
 	/**@{*/
 	#define ARM64_CLUSTER_KERNEL_BASE_PHYS		ARM64_CLUSTER_DRAM_BASE_PHYS						/**< Kernel Code and Data */
-	#define ARM64_CLUSTER_KERNEL_END_PHYS 		(ARM64_CLUSTER_DRAM_BASE_PHYS + ARM64_PGTAB_SIZE)	/**< Kernel End           */
+	#define ARM64_CLUSTER_KERNEL_END_PHYS 		(ARM64_CLUSTER_KERNEL_BASE_PHYS + ARM64_PGTAB_SIZE)	/**< Kernel End           */
 	#define ARM64_CLUSTER_KPOOL_BASE_PHYS  		(ARM64_CLUSTER_KERNEL_END_PHYS + ARM64_PGTAB_SIZE)  /**< Kernel Page Pool     */
 	#define ARM64_CLUSTER_KPOOL_END_PHYS   		(ARM64_CLUSTER_KPOOL_BASE_PHYS + ARM64_PGTAB_SIZE)  /**< Kernel Pool End      */
-	#define ARM64_CLUSTER_USER_BASE_PHYS		ARM64_CLUSTER_KPOOL_END_PHYS						/**< User Base            */
-	#define ARM64_CLUSTER_USER_END_PHYS			ARM64_CLUSTER_DRAM_END_PHYS							/**< User End             */
+	#define ARM64_CLUSTER_USER_BASE_PHYS		0						/**< User Base            */
+	#define ARM64_CLUSTER_USER_END_PHYS			0							/**< User End             */
 	/**@}*/
 
 	/**
 	 * @name Virtual Memory Layout
 	 */
 	/**@{*/
-	#define ARM64_CLUSTER_UART_BASE_VIRT   	ARM64_CLUSTER_UART_BASE_PHYS   	/**< UART Base            */
-	#define ARM64_CLUSTER_UART_END_VIRT    	ARM64_CLUSTER_UART_END_PHYS    	/**< UART End             */
-	#define ARM64_CLUSTER_KERNEL_BASE_VIRT 	ARM64_CLUSTER_KERNEL_BASE_PHYS	/**< Kernel Code and Data */
-	#define ARM64_CLUSTER_KERNEL_END_VIRT	ARM64_CLUSTER_KERNEL_END_PHYS	/**< Kernel End           */
-	#define ARM64_CLUSTER_KPOOL_BASE_VIRT  	ARM64_CLUSTER_KPOOL_BASE_PHYS  	/**< Kernel Page Pool     */
-	#define ARM64_CLUSTER_KPOOL_END_VIRT   	ARM64_CLUSTER_KPOOL_END_PHYS   	/**< Kernel Pool End      */
-	#define ARM64_CLUSTER_USER_BASE_VIRT	(0x0000000000000000)
-	#define ARM64_CLUSTER_USER_END_VIRT		(ARM64_CLUSTER_USER_BASE_VIRT + ARM64_PGTAB_SIZE)
+	#define ARM64_CLUSTER_UART_BASE_VIRT   	ARM64_CLUSTER_UART_BASE_PHYS   	/**< UART Base            	*/
+	#define ARM64_CLUSTER_UART_END_VIRT    	ARM64_CLUSTER_UART_END_PHYS    	/**< UART End             	*/
+	#define ARM64_CLUSTER_KERNEL_BASE_VIRT 	ARM64_CLUSTER_KERNEL_BASE_PHYS	/**< Kernel Code and Data 	*/
+	#define ARM64_CLUSTER_KERNEL_END_VIRT	ARM64_CLUSTER_KERNEL_END_PHYS	/**< Kernel End           	*/
+	#define ARM64_CLUSTER_KPOOL_BASE_VIRT  	ARM64_CLUSTER_KPOOL_BASE_PHYS  	/**< Kernel Page Pool     	*/
+	#define ARM64_CLUSTER_KPOOL_END_VIRT   	ARM64_CLUSTER_KPOOL_END_PHYS   	/**< Kernel Pool End      	*/
+	#define ARM64_CLUSTER_GIC_BASE_VIRT		ARM64_CLUSTER_GIC_BASE_PHYS		/**< GIC Base				*/
+	#define ARM64_CLUSTER_GIC_END_VIRT		ARM64_CLUSTER_GIC_END_PHYS		/**< GIC End				*/
+	#define ARM64_CLUSTER_USER_BASE_VIRT	ARM64_CLUSTER_USER_BASE_PHYS	/**< User Base				*/
+	#define ARM64_CLUSTER_USER_END_VIRT		ARM64_CLUSTER_USER_END_PHYS		/**< User End				*/
+
 	/**@}*/
 
 	/**
@@ -84,22 +87,24 @@
 	#define ARM64_CLUSTER_UMEM_SIZE \
 		ARM64_CLUSTER_USER_END_VIRT - ARM64_CLUSTER_USER_BASE_VIRT
 
-	#define ARM64_CLUSTER_KSTACK_SIZE 0
+	#define ARM64_CLUSTER_KSTACK_SIZE ARM64_PAGE_SIZE
+
 	/**
 	 * @brief Kernel page pool size (in bytes).
 	 */
-	#define ARM64_CLUSTER_KPOOL_SIZE 0
+	#define ARM64_CLUSTER_KPOOL_SIZE \
+		ARM64_CLUSTER_KPOOL_END_PHYS - ARM64_CLUSTER_KPOOL_BASE_PHYS
 
 
 	/**
 	 * @name Memory Regions Constants
 	 */
 	/**@{*/
-	#define ARM64_CLUSTER_MEM_REGIONS            	3							/**< Memory Regions number.            */
+	#define ARM64_CLUSTER_MEM_REGIONS            	4							/**< Memory Regions number.            */
 	#define ARM64_CLUSTER_ROOT_PGTAB_NUM         	ARM64_CLUSTER_MEM_REGIONS  	/**< Root page table size.             */
 	#define ARM64_CLUSTER_MREGION_PT_ALIGN_START 	0							/**< MRegion start page table aligned. */
-	#define ARM64_CLUSTER_MREGION_PT_ALIGN_END   	0							/**< MRegion end page table aligned.   */
-	#define ARM64_CLUSTER_MREGION_PG_ALIGN_START 	0							/**< MRegion start page aligned.       */
+	#define ARM64_CLUSTER_MREGION_PT_ALIGN_END   	2							/**< MRegion end page table aligned.   */
+	#define ARM64_CLUSTER_MREGION_PG_ALIGN_START 	2							/**< MRegion start page aligned.       */
 	#define ARM64_CLUSTER_MREGION_PG_ALIGN_END   	ARM64_CLUSTER_MEM_REGIONS	/**< MRegion end page aligned.         */
 	/**@}*/
 
@@ -147,7 +152,7 @@
 	#define UEND_VIRT   ARM64_CLUSTER_USER_END_VIRT    	/**< @see ARM64_CLUSTER_USER_END_VIRT    */
 	#define KBASE_VIRT  ARM64_CLUSTER_KERNEL_BASE_VIRT 	/**< @see ARM64_CLUSTER_KERNEL_BASE_VIRT */
 	#define KPOOL_VIRT  ARM64_CLUSTER_KPOOL_BASE_VIRT  	/**< @see ARM64_CLUSTER_KPOOL_BASE_VIRT  */
-	#define _UART_ADDR  UART_PA_BASE        			/**< @see UART Device                      */
+	#define _UART_ADDR  ARM64_CLUSTER_UART_BASE_PHYS	/**< @see ARM64_CLUSTER_UART_BASE_PHYS	 */
 	/**@}*/
 
 	/**

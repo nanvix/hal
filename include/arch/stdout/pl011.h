@@ -40,7 +40,7 @@
 	 * @brief UART definitions
 	 */
 	/**@{*/
-    #define UART_ADDR           0xffff00003FC00000
+    #define UART_ADDR           0x09000000
     #define UART_BAUD           921600
     #define UART_TIMER          20000000
 
@@ -57,7 +57,7 @@
     #define UART_LCRH   0x0B  /* 0x0B Line control register */
     #define UART_CR     0x0C  /* 0x0C Control register */
 
-    
+
     /**
 	 * PL011 Shift Macros
 	 */

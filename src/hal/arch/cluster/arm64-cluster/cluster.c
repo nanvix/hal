@@ -56,7 +56,6 @@ PUBLIC void arm64_cluster_setup(void)
 
 	mem_setup();
 	core_setup(NULL);
-	arm64_core_setup();
 }
 
 /*============================================================================*

@@ -63,11 +63,6 @@
 	EXTERN void arm64_cluster_setup(void);
 
 	/**
-	 * @brief Initializes the underlying core.
-	 */
-	EXTERN void arm64_core_setup(void);
-
-	/**
 	 * @brief Gets the number of cores.
 	 *
 	 * The arm64_cluster_cluster_get_num_cores() gets the number of

@@ -42,9 +42,10 @@
 /**
 	 * @name Physical Memory Layout
 	 */
-	/**@{*/
 	#define ARM64_CLUSTER_DRAM_BASE_PHYS		(0x40000000UL)	/**< DRAM Base */
 	#define ARM64_CLUSTER_DRAM_END_PHYS			(0x48000000UL)	/**< DRAM End  */
+	#define ARM64_CLUSTER_GIC_BASE_PHYS			(0x08000000UL)	/**< GIC Base */
+	#define ARM64_CLUSTER_GIC_END_PHYS			(0x09000000UL)	/**< GIC Base */
 	#define ARM64_CLUSTER_UART_BASE_PHYS        (0x09000000UL)	/**< UART Base */
 	#define ARM64_CLUSTER_UART_END_PHYS  		(0x09010000UL) 	/**< UART End  */
 	/**@}*/
@@ -61,8 +62,11 @@
 	#define ARM64_CLUSTER_UART_MEM_SIZE \
 		(ARM64_CLUSTER_UART_END_PHYS - ARM64_CLUSTER_UART_BASE_PHYS)
 
-	#define KERNEL_VA_START         (0xffffff8000080000)
-
+	/**
+	 * @brief GIC brief (in bytes).
+	 */
+	#define ARM64_CLUSTER_GIC_MEM_SIZE \
+		(ARM64_CLUSTER_GIC_END_PHYS - ARM64_CLUSTER_GIC_BASE_PHYS)
 
 /**@}*/
 

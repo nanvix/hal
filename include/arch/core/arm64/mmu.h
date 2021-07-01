@@ -44,20 +44,23 @@
 
 
 	/**
-	 * Support 4K granule and 39 VA_BITS, and 3 translation level
-	 */
-	#define CONFIG_PGTABLE_LEVELS	3
+	 * Support 64K granule and 39 VA_BITS, and 2 translation level
+	 * With 64KB pages, there are 2 levels of page tables. Each level has
+	 * 8192 entries of 8 bytes each, occupying a 64KB page. Levels 0 and 1 are not
+	 * used. The 2nd level table (PGD for Linux) can cover a range of 4TB, each
+	 * entry representing 512MB. The user and kernel address spaces are limited to
+	 * 4TB in the 64KB page configuration.
+ 	*/
+	#define CONFIG_PGTABLE_LEVELS	2
 
 	/**
 	 * @name Page Shifts and Masks
 	 */
 	/**@{*/
-	#define ARM64_PAGE_SHIFT  		12                          /**< Page Shift        */
-	#define ARM64_PMD_SHIFT			21							/**< Page Middle Shift */
-	#define ARM64_PGTAB_SHIFT 		30                          /**< Page Table Shift  */
-	#define ARM64_PAGE_MASK   (~(ARM64_PAGE_SIZE - 1))  	/**< Page Mask         */
-	#define ARM64_PMD_MASK   (~(ARM64_PMD_SIZE - 1))  		/**< Page Mask         */
-	#define ARM64_PGTAB_MASK  (~(ARM64_PGTAB_SIZE - 1)) 	/**< Page Table Mask   */
+	#define ARM64_PAGE_SHIFT  		16                          /**< Page Shift        */
+	#define ARM64_PGTAB_SHIFT 		29                          /**< Page Table Shift  */
+	#define ARM64_PAGE_MASK   		(~(ARM64_PAGE_SIZE - 1))  	/**< Page Mask         */
+	#define ARM64_PGTAB_MASK  		(~(ARM64_PGTAB_SIZE - 1)) 	/**< Page Table Mask   */
 	/**@}*/
 
 	/**
@@ -66,10 +69,9 @@
 	/**@{*/
 	#define ARM64_HUGE_PAGE_SIZE 	(1 << ARM64_PAGE_SHIFT)  	/**< Huge Page Size                       */
 	#define ARM64_PAGE_SIZE      	(1 << ARM64_PAGE_SHIFT)  	/**< Page Size                            */
-	#define ARM64_PMD_SIZE      	(1 << ARM64_PMD_SHIFT)  	/**< Page Midle Size                            */
 	#define ARM64_PGTAB_SIZE     	(1 << ARM64_PGTAB_SHIFT) 	/**< Page Table Size                      */
-	#define ARM64_PTE_SIZE        	8                             	/**< Page Table Entry Size (in bytes)     */
-	#define ARM64_PDE_SIZE        	8                             	/**< Page Directory Entry Size (in bytes) */
+	#define ARM64_PTE_SIZE        	8                           /**< Page Table Entry Size (in bytes)     */
+	#define ARM64_PDE_SIZE        	8                           /**< Page Directory Entry Size (in bytes) */
 	/**@}*/
 
 	#define ARM64_VADDR_LENGTH 		ARM64_VADDR_BIT
@@ -79,21 +81,14 @@
 	 *
 	 * Number of Page Directory Entries (PDEs) per Page Directory.
 	 */
-	#define ARM64_PGDIR_LENGTH (1 << (ARM64_VADDR_LENGTH - ARM64_PGTAB_SHIFT))
-
-	/**
-	 * @brief Page Middle length.
-	 *
-	 * Number of Page Midle Entries (PMEs) per Page Midle	.
-	 */
-	#define ARM64_PGMDIR_LENGTH (1 << (ARM64_PGTAB_SHIFT - ARM64_PMD_SHIFT))
+	#define ARM64_PGDIR_LENGTH 		8192
 
 	/**
 	 * @brief Page Table length.
 	 *
 	 * Number of Page Table Entries (PTEs) per Page Table.
 	 */
-	#define ARM64_PGTAB_LENGTH (1 << (ARM64_PMD_SHIFT - ARM64_PAGE_SHIFT))
+	#define ARM64_PGTAB_LENGTH 		8192
 
 
 	#define SCTLR_RESERVED                  (3 << 28) | (3 << 22) | (1 << 20) | (1 << 11)
@@ -108,11 +103,41 @@
 	#define SCTLR_VALUE_MMU_DISABLED    (SCTLR_RESERVED | SCTLR_EE_LITTLE_ENDIAN | SCTLR_I_CACHE_DISABLED | SCTLR_D_CACHE_DISABLED | SCTLR_MMU_DISABLED)
 	#define SCTLR_VALUE_MMU_ENABLE		(SCTLR_MMU_ENABLED | SCTLR_D_CACHE_ENABLE | SCTLR_I_CACHE_ENABLE)
 
-	#define TCR_T0SZ                    (64 - 48)           //2^16 B
-	#define TCR_T1SZ                    ((64 - 48) << 16)   //2^16 B
-	#define TCR_TG0_4K                  (0 << 14)
-	#define TCR_TG1_4K                  (2 << 30)
-	#define TCR_VALUE                   (TCR_T0SZ | TCR_T1SZ | TCR_TG0_4K | TCR_TG1_4K)
+
+	/*
+	* TCR flags.
+	*/
+	#define TCR_T0SZ			((64 - (ARM64_VADDR_BIT)) << 0)
+	#define TCR_T1SZ			((64 - (ARM64_VADDR_BIT)) << 16)
+	#define TCR_TxSZ			(TCR_T0SZ | TCR_T1SZ)
+
+	#define TCR_IRGN0_WBWA		(1UL << 8)
+	#define TCR_ORGN0_WBWA		(1UL << 10)
+
+	#define TCR_IRGN1_WBWA		(1UL << 24)
+	#define TCR_ORGN1_WBWA		(1UL << 26)
+
+	/* PTWs cacheable, inner/outer WBWA */
+	#define TCR_IRGN_WBWA		(TCR_IRGN0_WBWA | TCR_IRGN1_WBWA)
+	#define TCR_ORGN_WBWA		(TCR_ORGN0_WBWA | TCR_ORGN1_WBWA)
+	#define TCR_CACHE_FLAGS		TCR_IRGN_WBWA | TCR_ORGN_WBWA
+
+	#define TCR_SH0_INNER		(3UL << 12)
+	#define TCR_SH1_INNER		(3UL << 28)
+	#define TCR_SHARED			(TCR_SH0_INNER | TCR_SH1_INNER)
+
+	#define TCR_TG0_64K			(1UL << 14)
+	#define TCR_TG1_64K			(3UL << 30)
+	#define TCR_TG_FLAGS		TCR_TG0_64K | TCR_TG1_64K
+
+	#define TCR_ASID16			(1UL << 36)
+	#define TCR_TBI0			(1UL << 37)
+	#define TCR_HA				(1UL << 39)
+	#define TCR_HD				(1UL << 40)
+
+	#define TCR_VALUE           (TCR_TxSZ | TCR_CACHE_FLAGS | TCR_SHARED | \
+									TCR_TG_FLAGS | TCR_ASID16 | TCR_TBI0)
+
 
 	/*
 	* Memory types
@@ -176,37 +201,9 @@
 		unsigned			: 	5;	/**< Unused.					*/
 	} PACK;
 
-	/**__NEED_CORE_CONTEXT
-	 * @brief Page Middle Entry
-	 *
-	* Level 2 descriptor (PMD).
-	*/
-	struct pme
-	{
-		unsigned present  	:  	1; 	/**< Present in memory? 		*/
-		unsigned table		:	1;	/**< 1 -> table, 0 -> block		*/
-		unsigned attrindex	:	3;	/**< mem attr index field, D4-1798					*/
-		unsigned ns         :	1;  /**< non-secure bit				*/
-		// access permissions bits
-		unsigned user		:  	1; 	/**< Data Access Permissions Ap[1] 	*/
-		unsigned rdonly		:	1; 	/**< Data Access Permissions AP[2]	*/
-		// shareability field
-		unsigned shared	 	:  	2; 	/**< SH[1:0], inner shareable	*/
-		unsigned accessed 	:  	1; 	/**< AF, Accessed?          	*/
-		unsigned ng			:	1;	/**< Global Bit					*/
-		unsigned long frame : 	36; /**< Frame number.      		*/
-		unsigned 			:	3;	/**< Res0						*/
-		unsigned write		:	1; 	/**< Dirty Bit Managament		*/
-		unsigned cont		:	1; 	/**< Contiguous ?				*/
-		unsigned pxn		:	1;	/**< Privileged execute-never 	*/
-		unsigned uxn		:	1;	/**< User execute-never			*/
-		unsigned avail1     :	4;  /**< available for SW use		*/
-		unsigned			: 	5;	/**< Unused.					*/
-	} PACK;
-
 	/**
 	 * @brief Page table entry.
-	 * Level 3 descriptor (PTE).
+	 * Level 2 descriptor (PTE).
 	*/
 	struct pte
 	{
@@ -321,38 +318,6 @@
 	/**@}*/
 
 #ifndef _ASM_FILE_
-
-	/**
-	 * @brief Adresses to enable the mmu
-	 */
-	/**@{*/
-	EXTERN unsigned long pg_tbl_start;
-	EXTERN unsigned long ram_tbl_start;
-	// Kernel Map
-	#define pa_pgd_base  ((long) &pg_tbl_start ) 			//PA for PGD base
-	#define pa_pud_base  (pa_pgd_base + ARM64_PAGE_SIZE)  	//PA for PUD base
-	#define pa_pmd_base  (pa_pud_base + ARM64_PAGE_SIZE)  	//PA for PMD base
-	#define pa_pgd_entry  	pa_pgd_base						//PA for PGD entry
-	#define pa_pud_entry 	pa_pud_base 					//PA for PUD entry
-	// DRAM Map
-	#define pa_pgd_base_ram  ((long) &ram_tbl_start ) 				//PA for PGD base
-	#define pa_pud_base_ram  (pa_pgd_base_ram + ARM64_PAGE_SIZE)  	//PA for PUD base
-	#define pa_pmd_base_ram  (pa_pud_base_ram + ARM64_PAGE_SIZE)  	//PA for PMD base
-	#define pa_pgd_entry_ram  	pa_pgd_base_ram						//PA for PGD entry
-	#define pa_pud_entry_ram 	(pa_pud_base_ram + 8)				//PA for PUD entry, second entry
-	/**@}*/
-
-	/**
-	 * Populate is responsible for allocating a new page table
-	 */
-	#define populate(val, adr)	\
-			asm volatile("str %0, [%1]" 	\
-				:  							\
-				: 	"r"(val),				\
-					"r"(adr)				\
-				: "memory"					\
-			);
-
 	/**
 	 * @name Memory Types
 	 */
@@ -403,7 +368,7 @@
 	EXTERN int arm64_pgtab_map(struct pde *pgdir, paddr_t paddr, vaddr_t vaddr);
 
 	EXTERN int arm64_enable_mmu();
-	EXTERN int arm64_config_mmu();
+	EXTERN void arm64_mmu_setup();
 	EXTERN int arm64_invalidate_d_cache();
 	EXTERN int arm64_invalidate_tlb();
 
@@ -1018,7 +983,7 @@
 	 */
 	static inline void mmu_setup(void)
 	{
-
+		arm64_mmu_setup();
 	}
 
 #endif /* __NANVIX_HAL */

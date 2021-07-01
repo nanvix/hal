@@ -24,11 +24,9 @@
 
 /* Must come first. */
 #define _ASM_FILE_
-#define __NEED_CLUSTER_MEMMAP
 
-#include <arch/cluster/arm64-cluster/memmap.h>
-#include <arch/core/arm64/mmu.h>
 #include <arch/core/arm64/gic.h>
+#include <arch/core/arm64/asm.h>
 #include <arch/cluster/arm64-cluster/cores.h>
 #include <arch/cluster/arm64-cluster/psci.h>
 
@@ -46,22 +44,8 @@
  * Entry point.
  */
 _do_start:
-
-    mov x1, #0xff
     ldr x0, =SCTLR_VALUE_MMU_DISABLED
     msr sctlr_el1, x0
-
-    arm64_core_stack_reset x0
-    bl arm64_config_mmu
-
-    /*Update ttbr0 and ttbr1 register.
-    * ttbr0 : point to a pgd in user space (starting with 0x000)
-    * ttbr1 : point to a pgd in kernel space (starting with 0xffff)
-    */
-    adrp    x0,  pg_tbl_start
-    msr ttbr1_el1, x0
-    adrp    x0,  ram_tbl_start
-    msr ttbr0_el1, x0
 
 /*
  * Configure the Exception Level.
@@ -101,8 +85,6 @@ _teste:
  * Set the vector table register.
  */
 _set_vector_table:
-    mov     x0, #0x3C5
-    msr     spsr_el1, x0
     ldr     x0, =_exception_vector_table
     msr     vbar_el1, x0
     isb
@@ -122,16 +104,15 @@ _do_start.master:
     /* Set stack adress */
     arm64_core_stack_reset x0
 
+    // Enables data coherency with other cores in the cluster
     mrs x0, s3_1_c15_c2_1
     orr x0, x0, #(0x1<<6)       //cpuectlr.smpen = 1
     msr s3_1_c15_c2_1, x0
 
-    /* Set register to enable the mmu */
-    bl arm64_enable_mmu
 
     /* Branch the master core to _main function */
-    ldr x2, =arm64_cluster_master_setup
-    br x2
+    bl arm64_gic_initialize
+    bl arm64_cluster_master_setup
     b halt
 
 /* Infinite loop */
