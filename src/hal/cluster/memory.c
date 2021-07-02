@@ -398,7 +398,6 @@ PUBLIC void mem_map(void)
 			mmu_page_map(
 				cluster_root_pgtabs[mem_layout[i].root_pgtab_num], j, k, w, x
 			);
-			//kprintf("[%s] Pages = %d, @ virt = %lx", mem_layout[i].desc, (k - pbase)/PAGE_SIZE, k);
 		}
 		/*
 		 * Map underlying page table.

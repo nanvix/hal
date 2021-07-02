@@ -39,7 +39,8 @@
  * @brief Physical memory map.
  */
 /**@{*/
-/**
+
+	/**
 	 * @name Physical Memory Layout
 	 */
 	#define ARM64_CLUSTER_DRAM_BASE_PHYS		(0x40000000UL)	/**< DRAM Base */

@@ -85,6 +85,17 @@ PUBLIC int arm64_enable_mmu(void)
 	/* Ensure that the mmu is disabled before doing any change */
 	arm64_disable_mmu();
 
+	/*
+	* Set up ttbr0 and ttbr 1.
+	* TTBRn holds the base address of translation table n, and information about the memory it occupies
+	*/
+	__asm__ __volatile__(
+		"msr ttbr0_el1, %0 \n\t"
+		:
+		: "r" (root_pgdir)
+		: "memory"
+	);
+
 	/**
 	 * SCTLR Register
 	 * This register is responsible for configuring the mmu, especially if the mmu is enabled,
@@ -109,16 +120,15 @@ PUBLIC int arm64_enable_mmu(void)
 		"dsb sy				\n\t"
 		"isb"
 		:
-		: "r" (sctlr) 
+		: "r" (sctlr)
 		: "memory"
 	);
+
 	return (0);
 }
 
 /*
  *	arm64_cpu_setup
- *
- *	Initialise the processor for turning the MMU on.
  */
 void arm64_cpu_setup(void)
 {
@@ -170,6 +180,7 @@ void arm64_cpu_setup(void)
 			val |=TCR_HD;		// hardware Dirty flag update
 		val |= TCR_HA;		// hardware Access flag update
 	}
+
 	/**
 	*	MAIR Register
 	*	We are using only 2 out of 8 available slots in the mair registers.
@@ -182,12 +193,13 @@ void arm64_cpu_setup(void)
 	*/
 	asm volatile (
 		"msr tcr_el1, %0	\n\t"
-		"msr mair_el1, %1	\n\t"
+		"msr mair_el1, %1"
 		:
 		: 	"r"(val),
 			"r"(MAIR_VALUE)
 		: "memory"
 	);
+
 }
 /*============================================================================*
  * arm64_mmu_setup()                                                           *
@@ -200,18 +212,10 @@ void arm64_cpu_setup(void)
 
 PUBLIC void arm64_mmu_setup(void)
 {
-
-	__asm__ __volatile__(
-		"msr ttbr0_el1, %0 \n\t"
-		"msr ttbr1_el1, %0 \n\t"
-		:
-		: "r" (root_pgdir)
-		: "memory"
-	);
-
+	/* Initialise the processor for turning the MMU on. */
 	arm64_cpu_setup();
 
-	/* Enable MMU. */
+	/* Turn on the MMU. */
 	arm64_enable_mmu();
 
 	if (mmu_is_enabled()) {

@@ -44,8 +44,7 @@
  * Entry point.
  */
 _do_start:
-    ldr x0, =SCTLR_VALUE_MMU_DISABLED
-    msr sctlr_el1, x0
+    arm64core_clear_gprs
 
 /*
  * Configure the Exception Level.
@@ -64,21 +63,8 @@ _config_exceptions:
     mov     x1, #0x3c9       // Mask interruptions
     msr     SPSR_EL3, x1
 
-    adr     x1, _teste
+    adr     x1, _set_vector_table
     msr     elr_el3, x1
-    eret
-
-_teste:
-    mrs     x0, CurrentEL
-    and     x0, x0, #12      // Mask
-    mov    x1, #(1 << 31)
-    msr    hcr_el2, x1
-
-    mov     x2, #0x3c4
-    msr     spsr_el2, x2
-
-    adr     x2, _set_vector_table
-    msr     elr_el2, x2
     eret
 
 /*
@@ -105,6 +91,7 @@ _do_start.master:
     arm64_core_stack_reset x0
 
     // Enables data coherency with other cores in the cluster
+
     mrs x0, s3_1_c15_c2_1
     orr x0, x0, #(0x1<<6)       //cpuectlr.smpen = 1
     msr s3_1_c15_c2_1, x0

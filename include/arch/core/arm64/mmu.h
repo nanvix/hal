@@ -160,6 +160,10 @@
 					(0x44 << (MT_NORMAL_NC * 8))      |	\
 					(0xffLL << (MT_NORMAL * 8)))
 
+
+	#define MAIR_ATTR_SET(attr, index)	(attr << (index << 3))
+
+	
 	#define MM_TYPE_PAGE_TABLE          0x3
 	#define MM_TYPE_PAGE                0x3
 	#define MM_TYPE_BLOCK               0x1
@@ -193,7 +197,7 @@
 		unsigned ng			:	1;	/**< Global Bit					*/
 		unsigned long frame : 	36; /**< Frame number.      		*/
 		unsigned 			:	3;	/**< Res0						*/
-		unsigned write		:	1; 	/**< Dirty Bit Managament		*/
+		unsigned dbm		:	1; 	/**< Dirty Bit Managament		*/
 		unsigned cont		:	1; 	/**< Contiguous ?				*/
 		unsigned pxn		:	1;	/**< Privileged execute-never 	*/
 		unsigned uxn		:	1;	/**< User execute-never			*/
@@ -209,7 +213,7 @@
 	{
 		unsigned present  	:  	1; 	/**< Present in memory? 		*/
 		unsigned table		:	1;	/**< // 0 -> makes entry invalid*/
-		unsigned 			:	4;	/**< Unused						*/
+		unsigned type		:	4;	/**< Memory Type					*/
 		// access permissions bits
 		unsigned user		:  	1; 	/**< Data Access Permissions Ap[1] 	*/
 		unsigned rdonly		:	1; 	/**< Data Access Permissions AP[2]	*/
@@ -218,8 +222,7 @@
 		unsigned accessed 	:  	1; 	/**< AF, Accessed?          	*/
 		unsigned ng			:	1;	/**< Global Bit					*/
 		unsigned long frame : 	36; /**< Frame number.      		*/
-		unsigned 			:	3;	/**< Res0						*/
-		unsigned write		:	1; 	/**< Dirty Bit Managament		*/
+		unsigned 			:	4;	/**< Res0						*/
 		unsigned cont		:	1; 	/**< Contiguous ?				*/
 		unsigned pxn		:	1;	/**< Privileged execute-never 	*/
 		unsigned uxn		:	1;	/**< User execute-never			*/
@@ -517,7 +520,7 @@
 		if (pde == NULL)
 			return (-EINVAL);
 
-		pde->write = (set) ? 1 : 0;
+		pde->rdonly = (set) ? 0 : 1;
 
 		return (0);
 	}
@@ -538,7 +541,7 @@
 		if (pde == NULL)
 			return (-EINVAL);
 
-		return (pde->write);
+		return (!pde->rdonly);
 	}
 
 	/**
@@ -589,13 +592,9 @@
 	 */
 	static inline int pde_exec_set(struct pde *pde, int set)
 	{
-		if (pde_is_user(pde))
-		{
-			/* If the uxn field is set to 0, then the instruction execution is granted.	*/
-			pde->uxn = ~set;
-		}
-
-		pde->pxn = 1;
+		/* If the uxn field is set to 0, then the instruction execution is granted.	*/
+		pde->uxn = ~set;
+		pde->pxn = ~set;
 
 		return 0;
 	}
@@ -763,7 +762,7 @@
 		if (pte == NULL)
 			return (-EINVAL);
 
-		pte->rdonly = (set) ? 1 : 0;
+		pte->rdonly = set;
 
 		return (0);
 	}
@@ -797,8 +796,7 @@
 		if (pte == NULL)
 			return (-EINVAL);
 
-		pte->write = (set) ? 1 : 0;
-		pte->rdonly = ~(pte->write);
+		pte->rdonly = ~set;
 
 		return (0);
 	}
@@ -819,7 +817,7 @@
 		if (pte == NULL)
 			return (-EINVAL);
 
-		return (pte->write);
+		return (!pte->rdonly);
 	}
 
 	/**
@@ -832,13 +830,10 @@
 	 */
 	static inline int pte_exec_set(struct pte *pte, int set)
 	{
-		if (pte_is_user(pte))
-		{
-			/* If the uxn field is set to 0, then the instruction execution is granted.	*/
-			pte->uxn = ~set;
-		}
 
-		pte->pxn = 1;
+		/* If the uxn field is set to 0, then the instruction execution is granted.	*/
+		pte->uxn = ~set;
+		pte->pxn = ~set;
 
 		return (0);
 	}
@@ -965,7 +960,7 @@
 
 		__asm__ __volatile__("mrs %0, SCTLR_EL1\n\t" : "=r" (sctlr) :  : "memory");
 
-		return (sctlr & SCTLR_VALUE_MMU_ENABLE);
+		return (sctlr & SCTLR_MMU_ENABLED);
 	}
 
 	static inline int arm64_disable_mmu(void)

@@ -51,14 +51,15 @@ PUBLIC int arm64_page_map(struct pte *pgtab, paddr_t paddr, vaddr_t vaddr, int w
 		return (-EINVAL);
 
 	idx = pte_idx_get(vaddr);
-
-	pte_present_set(&pgtab[idx], 1);
-	pte_frame_set(&pgtab[idx], ARM64_FRAME(paddr >> ARM64_PAGE_SHIFT));
+	pgtab[idx].present = 1;
 	pgtab[idx].table = 1;
-
-	/* Permissions. */
+	pgtab[idx].accessed = 0;
+	pgtab[idx].type = 3;
+	pgtab[idx].user = 1;
+	pte_write_set(&pgtab[idx], w);
 	pte_exec_set(&pgtab[idx], x);
-	pte_write_set(&pgtab[idx],w);
+	pgtab[idx].dirty = 0;
+	pgtab[idx].frame = ARM64_FRAME(paddr >> ARM64_PAGE_SHIFT);
 
 	return (0);
 }
@@ -76,23 +77,7 @@ PUBLIC int arm64_page_map(struct pte *pgtab, paddr_t paddr, vaddr_t vaddr, int w
  */
 PUBLIC int arm64_huge_page_map(struct pte *pgtab, paddr_t paddr, vaddr_t vaddr, int w, int x)
 {
-	int idx;
-
-	/* Invalid page table. */
-	if (UNLIKELY(pgtab == NULL))
-		return (-EINVAL);
-
-	idx = pte_idx_get(vaddr);
-
-	pgtab[idx].present = 1;
-	pgtab[idx].frame = ARM64_FRAME(paddr >> ARM64_PAGE_SHIFT);
-    pgtab[idx].dirty = 0;
-    pgtab[idx].accessed = 0;
-    pgtab[idx].table = 1;
-
-	/* Permissions. */
-	pte_write_set(&pgtab[idx], w);
-	pte_exec_set(&pgtab[idx], x);
+	arm64_page_map(pgtab, paddr, vaddr, w, x);
 
 	return (0);
 }
@@ -118,9 +103,13 @@ PUBLIC int arm64_pgtab_map(struct pde *pgdir, paddr_t paddr, vaddr_t vaddr)
 	idx = pde_idx_get(vaddr);
 
 	pgdir[idx].present = 1;
-	pgdir[idx].frame = ARM64_FRAME(paddr >> ARM64_PAGE_SHIFT);
+	pgdir[idx].table = 1;
+	pgdir[idx].ns = 1;
 	pgdir[idx].accessed = 0;
-    pgdir[idx].table = 1;
+	pgdir[idx].user = 1;
+	pgdir[idx].rdonly = 0;
+	pgdir[idx].frame = ARM64_FRAME(paddr >> ARM64_PAGE_SHIFT);
+	pgdir[idx].cont = 0;
 
 	return (0);
 }
