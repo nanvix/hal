@@ -103,8 +103,8 @@
 	#define ARM64_CLUSTER_MEM_REGIONS            	4							/**< Memory Regions number.            */
 	#define ARM64_CLUSTER_ROOT_PGTAB_NUM         	ARM64_CLUSTER_MEM_REGIONS  	/**< Root page table size.             */
 	#define ARM64_CLUSTER_MREGION_PT_ALIGN_START 	0							/**< MRegion start page table aligned. */
-	#define ARM64_CLUSTER_MREGION_PT_ALIGN_END   	2							/**< MRegion end page table aligned.   */
-	#define ARM64_CLUSTER_MREGION_PG_ALIGN_START 	2							/**< MRegion start page aligned.       */
+	#define ARM64_CLUSTER_MREGION_PT_ALIGN_END   	0							/**< MRegion end page table aligned.   */
+	#define ARM64_CLUSTER_MREGION_PG_ALIGN_START 	0							/**< MRegion start page aligned.       */
 	#define ARM64_CLUSTER_MREGION_PG_ALIGN_END   	ARM64_CLUSTER_MEM_REGIONS	/**< MRegion end page aligned.         */
 	/**@}*/
 

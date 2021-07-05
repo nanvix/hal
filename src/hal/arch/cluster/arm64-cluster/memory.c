@@ -74,7 +74,7 @@ PUBLIC struct memory_region mem_layout[MEM_REGIONS] = {
 		.executable = false,
 		.root_pgtab_num = 3,
 		.desc = "gic"
-	},
+	}
 };
 
 
@@ -91,6 +91,7 @@ PUBLIC int arm64_enable_mmu(void)
 	*/
 	__asm__ __volatile__(
 		"msr ttbr0_el1, %0 \n\t"
+		"msr ttbr1_el1, %0"
 		:
 		: "r" (root_pgdir)
 		: "memory"
@@ -111,7 +112,7 @@ PUBLIC int arm64_enable_mmu(void)
 	);
 
 	//enable mmu
-	//sctlr |= SCTLR_MMU_ENABLED;
+	sctlr |= SCTLR_MMU_ENABLED;
 	sctlr |= SCTLR_I_CACHE_ENABLE;
 	sctlr |= SCTLR_D_CACHE_ENABLE;
 

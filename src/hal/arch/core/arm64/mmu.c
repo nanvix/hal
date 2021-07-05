@@ -101,7 +101,7 @@ PUBLIC int arm64_pgtab_map(struct pde *pgdir, paddr_t paddr, vaddr_t vaddr)
 		return (-EINVAL);
 
 	idx = pde_idx_get(vaddr);
-
+	kprintf("Idx : %d", idx);
 	pgdir[idx].present = 1;
 	pgdir[idx].table = 1;
 	pgdir[idx].ns = 1;

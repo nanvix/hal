@@ -81,14 +81,14 @@
 	 *
 	 * Number of Page Directory Entries (PDEs) per Page Directory.
 	 */
-	#define ARM64_PGDIR_LENGTH 		8192
+	#define ARM64_PGDIR_LENGTH 		(1 << (ARM64_VADDR_LENGTH - ARM64_PGTAB_SHIFT))
 
 	/**
 	 * @brief Page Table length.
 	 *
 	 * Number of Page Table Entries (PTEs) per Page Table.
 	 */
-	#define ARM64_PGTAB_LENGTH 		8192
+	#define ARM64_PGTAB_LENGTH 		(1 << (ARM64_PGTAB_SHIFT - ARM64_PAGE_SHIFT))
 
 
 	#define SCTLR_RESERVED                  (3 << 28) | (3 << 22) | (1 << 20) | (1 << 11)
@@ -388,7 +388,7 @@
 		if (pde == NULL)
 			return (-EINVAL);
 
-		kmemset(pde, 0, PTE_SIZE);
+		kmemset(pde, 0, PDE_SIZE);
 
 		return (0);
 	}
