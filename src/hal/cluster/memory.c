@@ -411,7 +411,7 @@ PUBLIC void mem_map(void)
 				TRUNCATE(vbase, PGTAB_SIZE)
 		);
 		kprintf(
-			"PGTAB_map args for %s:\npgdir = %lx\npadr = %lx\nvadr = %lx",
+			"PGTAB_map args for %s:\npgdir = %lx\npadr = %lx\nvadr trunc = %lx",
 			mem_layout[i].desc,
 			cluster_root_pgdir,
 			PADDR(cluster_root_pgtabs[mem_layout[i].root_pgtab_num]),

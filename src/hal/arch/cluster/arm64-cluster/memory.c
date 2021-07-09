@@ -112,9 +112,9 @@ PUBLIC int arm64_enable_mmu(void)
 	);
 
 	//enable mmu
-	sctlr |= SCTLR_MMU_ENABLED;
+	/*sctlr |= SCTLR_MMU_ENABLED;
 	sctlr |= SCTLR_I_CACHE_ENABLE;
-	sctlr |= SCTLR_D_CACHE_ENABLE;
+	sctlr |= SCTLR_D_CACHE_ENABLE;*/
 
 	asm volatile(
 		"msr sctlr_el1, %0	\n\t"

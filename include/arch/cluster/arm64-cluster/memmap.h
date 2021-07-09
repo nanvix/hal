@@ -43,8 +43,8 @@
 	/**
 	 * @name Physical Memory Layout
 	 */ 
-	#define ARM64_CLUSTER_DRAM_BASE_PHYS		(0x00000000UL)	/**< DRAM Base */
-	#define ARM64_CLUSTER_DRAM_END_PHYS			(0x08000000UL)	/**< DRAM End  */
+	#define ARM64_CLUSTER_DRAM_BASE_PHYS		(0x40000000UL)	/**< DRAM Base */
+	#define ARM64_CLUSTER_DRAM_END_PHYS			(0x48000000UL)	/**< DRAM End  */
 	#define ARM64_CLUSTER_GIC_BASE_PHYS			(0x08000000UL)	/**< GIC Base */
 	#define ARM64_CLUSTER_GIC_END_PHYS			(0x08010000UL)	/**< GIC Base */
 	#define ARM64_CLUSTER_UART_BASE_PHYS        (0x09000000UL)	/**< UART Base */
