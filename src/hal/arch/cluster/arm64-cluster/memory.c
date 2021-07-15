@@ -39,7 +39,7 @@ PUBLIC struct memory_region mem_layout[MEM_REGIONS] = {
 		.size  = ARM64_CLUSTER_KMEM_SIZE,
 		.writable = true,
 		.executable = true,
-		.root_pgtab_num = 0,
+		.root_pgtab_num = (ARM64_CLUSTER_KERNEL_BASE_VIRT >> ARM64_PGTAB_SHIFT),
 		.desc = "kernel"
 	},
 	{
@@ -50,7 +50,7 @@ PUBLIC struct memory_region mem_layout[MEM_REGIONS] = {
 		.size  = ARM64_CLUSTER_KPOOL_SIZE,
 		.writable = true,
 		.executable = false,
-		.root_pgtab_num = 1,
+		.root_pgtab_num = (ARM64_CLUSTER_KPOOL_BASE_VIRT >> ARM64_PGTAB_SHIFT),
 		.desc = "kpool"
 	},
 	{
@@ -61,7 +61,7 @@ PUBLIC struct memory_region mem_layout[MEM_REGIONS] = {
 		.size  = ARM64_CLUSTER_UART_MEM_SIZE,
 		.writable = true,
 		.executable = false,
-		.root_pgtab_num = 2,
+		.root_pgtab_num = (ARM64_CLUSTER_UART_BASE_VIRT >> ARM64_PGTAB_SHIFT),
 		.desc = "uart"
 	},
 	{
@@ -72,7 +72,7 @@ PUBLIC struct memory_region mem_layout[MEM_REGIONS] = {
 		.size  = ARM64_CLUSTER_GIC_MEM_SIZE,
 		.writable = true,
 		.executable = false,
-		.root_pgtab_num = 3,
+		.root_pgtab_num = (ARM64_CLUSTER_GIC_BASE_VIRT >> ARM64_PGTAB_SHIFT),
 		.desc = "gic"
 	}
 };
