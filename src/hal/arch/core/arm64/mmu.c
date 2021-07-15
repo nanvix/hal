@@ -51,15 +51,16 @@ PUBLIC int arm64_page_map(struct pte *pgtab, paddr_t paddr, vaddr_t vaddr, int w
 		return (-EINVAL);
 
 	idx = pte_idx_get(vaddr);
-	pgtab[idx].present = 1;
-	pgtab[idx].table = 1;
-	pgtab[idx].accessed = 0;
-	pgtab[idx].type = 3;
+	pgtab[idx].present = 1;			//Valid
+	pgtab[idx].table = 1;			//Page Tbale type
+	pgtab[idx].type = MT_NORMAL_NC;
 	pgtab[idx].user = 1;
 	pte_write_set(&pgtab[idx], w);
+	pgtab[idx].shared = 3; //Inner shareable
+	pgtab[idx].accessed = 1;
+	pgtab[idx].frame = ARM64_FRAME(paddr >> ARM64_PAGE_SHIFT);
 	pte_exec_set(&pgtab[idx], x);
 	pgtab[idx].dirty = 0;
-	pgtab[idx].frame = ARM64_FRAME(paddr >> ARM64_PAGE_SHIFT);
 
 	return (0);
 }
@@ -104,12 +105,10 @@ PUBLIC int arm64_pgtab_map(struct pde *pgdir, paddr_t paddr, vaddr_t vaddr)
 	kprintf("Idx : %d", idx);
 	pgdir[idx].present = 1;
 	pgdir[idx].table = 1;
-	pgdir[idx].ns = 1;
-	pgdir[idx].accessed = 0;
+	pgdir[idx].ns = 0;
 	pgdir[idx].user = 1;
 	pgdir[idx].rdonly = 0;
 	pgdir[idx].frame = ARM64_FRAME(paddr >> ARM64_PAGE_SHIFT);
-	pgdir[idx].cont = 0;
 
 	return (0);
 }

@@ -105,25 +105,34 @@
 
 
 	/*
+	Cachabilty for Outer/Inner memory
+	*/
+
+	#define c0 0UL //Normal memory, Non-cacheable
+	#define c1 1UL //Normal memory, Write-Back Read-Allocate Write-Allocate Cacheable
+	#define c2 2UL //Normal memory, Write-Through Read-Allocate NoWrite-Allocate Cacheable.
+	#define c3 3UL //Normal memory, Write-Back Read-Allocate No Write-Allocate Cacheable
+
+	/*
 	* TCR flags.
 	*/
 	#define TCR_T0SZ			((64 - (ARM64_VADDR_BIT)) << 0)
 	#define TCR_T1SZ			((64 - (ARM64_VADDR_BIT)) << 16)
 	#define TCR_TxSZ			(TCR_T0SZ | TCR_T1SZ)
 
-	#define TCR_IRGN0_WBWA		(1UL << 8)
-	#define TCR_ORGN0_WBWA		(1UL << 10)
+	#define TCR_IRGN0_WBWA		(c1 << 8)
+	#define TCR_ORGN0_WBWA		(c1 << 10)
 
-	#define TCR_IRGN1_WBWA		(1UL << 24)
-	#define TCR_ORGN1_WBWA		(1UL << 26)
+	#define TCR_IRGN1_WBWA		(c1 << 24)
+	#define TCR_ORGN1_WBWA		(c1 << 26)
 
 	/* PTWs cacheable, inner/outer WBWA */
 	#define TCR_IRGN_WBWA		(TCR_IRGN0_WBWA | TCR_IRGN1_WBWA)
 	#define TCR_ORGN_WBWA		(TCR_ORGN0_WBWA | TCR_ORGN1_WBWA)
 	#define TCR_CACHE_FLAGS		TCR_IRGN_WBWA | TCR_ORGN_WBWA
 
-	#define TCR_SH0_INNER		(3UL << 12)
-	#define TCR_SH1_INNER		(3UL << 28)
+	#define TCR_SH0_INNER		(c3 << 12)
+	#define TCR_SH1_INNER		(c3 << 28)
 	#define TCR_SHARED			(TCR_SH0_INNER | TCR_SH1_INNER)
 
 	#define TCR_TG0_64K			(1UL << 14)
@@ -143,11 +152,6 @@
 	* Memory types
 	*/
 
-	// #define MT_DEVICE_nGnRnE         0x0
-	// #define MT_NORMAL_NC            0x3
-	// #define MT_DEVICE_nGnRnE_FLAGS        0x00
-	// #define MT_NORMAL_NC_FLAGS          0x44
-	// #define MAIR_VALUE            (MT_DEVICE_nGnRnE_FLAGS << (8 * MT_DEVICE_nGnRnE)) | (MT_NORMAL_NC_FLAGS << (8 * MT_NORMAL_NC))
 	#define MT_DEVICE_NGNRNE	0
 	#define MT_DEVICE_NGNRE		1
 	#define MT_DEVICE_GRE		2
@@ -163,7 +167,7 @@
 
 	#define MAIR_ATTR_SET(attr, index)	(attr << (index << 3))
 
-	
+
 	#define MM_TYPE_PAGE_TABLE          0x3
 	#define MM_TYPE_PAGE                0x3
 	#define MM_TYPE_BLOCK               0x1
@@ -184,25 +188,19 @@
 	 */
 	struct pde
 	{
-		unsigned present  	:  	1; 	/**< Present in memory? 		*/
-		unsigned table		:	1;	/**< 1 -> table, 0 -> block		*/
-		unsigned attrindex	:	3;	/**< mem attr index field, D4-1798					*/
-		unsigned ns         :	1;  /**< non-secure bit				*/
-		// access permissions bits
-		unsigned user		:  	1; 	/**< Data Access Permissions Ap[1] 	*/
-		unsigned rdonly		:	1; 	/**< Data Access Permissions AP[2]	*/
-		// shareability field
-		unsigned shared	 	:  	2; 	/**< SH[1:0], inner shareable	*/
-		unsigned accessed 	:  	1; 	/**< AF, Accessed?          	*/
-		unsigned ng			:	1;	/**< Global Bit					*/
-		unsigned long frame : 	36; /**< Frame number.      		*/
-		unsigned 			:	3;	/**< Res0						*/
-		unsigned dbm		:	1; 	/**< Dirty Bit Managament		*/
-		unsigned cont		:	1; 	/**< Contiguous ?				*/
-		unsigned pxn		:	1;	/**< Privileged execute-never 	*/
-		unsigned uxn		:	1;	/**< User execute-never			*/
-		unsigned avail1     :	4;  /**< available for SW use		*/
-		unsigned			: 	5;	/**< Unused.					*/
+		unsigned present  	:  	1; 	/**< Present in memory? 			*/
+		unsigned table		:	1;	/**< 1 -> table, 0 -> block			*/
+		unsigned			:	14;	/**< Unused							*/
+		unsigned frame 		: 	32; /**< Frame number.      			*/
+		unsigned res0		:	4;	/**< Res0							*/
+		unsigned			:	7;	/**< Unused							*/
+		unsigned pxn		:	1;	/**< Privileged execute-never 		*/
+		unsigned uxn		:	1;	/**< User execute-never				*/
+		//The data access permission controls
+		unsigned user		:	1;	/**< EL0 and EL1 control			*/
+		unsigned rdonly		:	1;	/**< read-only and read/write acces */
+		//Security state for subsequent levels of lookup
+		unsigned ns			:	1;	/**< NSTable						*/
 	} PACK;
 
 	/**

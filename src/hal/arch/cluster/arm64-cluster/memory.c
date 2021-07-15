@@ -112,9 +112,9 @@ PUBLIC int arm64_enable_mmu(void)
 	);
 
 	//enable mmu
-	/*sctlr |= SCTLR_MMU_ENABLED;
+	sctlr |= SCTLR_MMU_ENABLED;
 	sctlr |= SCTLR_I_CACHE_ENABLE;
-	sctlr |= SCTLR_D_CACHE_ENABLE;*/
+	sctlr |= SCTLR_D_CACHE_ENABLE;
 
 	asm volatile(
 		"msr sctlr_el1, %0	\n\t"
@@ -134,7 +134,6 @@ PUBLIC int arm64_enable_mmu(void)
 void arm64_cpu_setup(void)
 {
 	uint64_t tmp;
-	uint64_t val = TCR_VALUE;
 
 	__asm__ __volatile__(
 		"tlbi	vmalle1 	\n\t"		// Invalidate local TLB
@@ -175,13 +174,6 @@ void arm64_cpu_setup(void)
 		: "memory"
 	);
 
-	if (tmp != 0xf)
-	{
-		if (tmp >= 2)
-			val |=TCR_HD;		// hardware Dirty flag update
-		val |= TCR_HA;		// hardware Access flag update
-	}
-
 	/**
 	*	MAIR Register
 	*	We are using only 2 out of 8 available slots in the mair registers.
@@ -196,7 +188,7 @@ void arm64_cpu_setup(void)
 		"msr tcr_el1, %0	\n\t"
 		"msr mair_el1, %1"
 		:
-		: 	"r"(val),
+		: 	"r"(TCR_VALUE),
 			"r"(MAIR_VALUE)
 		: "memory"
 	);
