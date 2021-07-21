@@ -139,13 +139,15 @@
 	#define TCR_TG1_64K			(3UL << 30)
 	#define TCR_TG_FLAGS		TCR_TG0_64K | TCR_TG1_64K
 
-	#define TCR_ASID16			(1UL << 36)
+	#define TCR_ASID16			(0UL << 36)
 	#define TCR_TBI0			(1UL << 37)
 	#define TCR_HA				(1UL << 39)
 	#define TCR_HD				(1UL << 40)
+	#define EPD1				(1 << 23)
+	#define IPS					(3UL << 32)
 
 	#define TCR_VALUE           (TCR_TxSZ | TCR_CACHE_FLAGS | TCR_SHARED | \
-									TCR_TG_FLAGS | TCR_ASID16 | TCR_TBI0)
+									TCR_TG_FLAGS | TCR_ASID16 | TCR_TBI0 | EPD1 | IPS)
 
 
 	/*
@@ -158,28 +160,21 @@
 	#define MT_NORMAL_NC		3
 	#define MT_NORMAL			4
 
+/*
 	#define MAIR_VALUE	((0x0 << (MT_DEVICE_NGNRNE * 8)) |	\
 					(0x04 << (MT_DEVICE_NGNRE * 8))   |	\
 					(0x0c << (MT_DEVICE_GRE * 8))     |	\
 					(0x44 << (MT_NORMAL_NC * 8))      |	\
 					(0xffLL << (MT_NORMAL * 8)))
 
-
+*/
+	#define MAIR_VALUE 	0x000000000000FF44
 	#define MAIR_ATTR_SET(attr, index)	(attr << (index << 3))
 
 	/*
 	* ID_AA64MMFR0_EL1
 	*/
-	#define TG4 	(0xF << 28) // Not Supported
-	#define TG16 	(0 << 20) 	// Not Supported
 	#define TG64	(0 << 24)	// Supported
-	#define SNSM	(1 << 12)	//Disctinction between Secure and non Secure
-	#define BE		(1 << 8)	//Mixed Endian Support
-	#define ASIDb	(2 << 4)	// 16 Bits
-	#define PAr		(3 << 0)	// 42 bits
-
-	#define ID_AA64MMFR0_EL1_VALUE \
-		(TG4 | TG16 | TG64 | ASIDb | PAr | BE | SNSM)
 
 
 
