@@ -81,6 +81,7 @@ PUBLIC struct memory_region mem_layout[MEM_REGIONS] = {
 PUBLIC int arm64_enable_mmu(void)
 {
 	uint64_t sctlr;
+	int *check;
 
 	/* Ensure that the mmu is disabled before doing any change */
 	arm64_disable_mmu();
@@ -90,12 +91,22 @@ PUBLIC int arm64_enable_mmu(void)
 	* TTBRn holds the base address of translation table n, and information about the memory it occupies
 	*/
 	__asm__ __volatile__(
-		"msr ttbr0_el1, %0 \n\t"
-		"msr ttbr1_el1, %0"
+		"msr ttbr0_el1, %0 	\n\t"
+		"msr ttbr1_el1, %0	\n\t"
+		"isb"
 		:
 		: "r" (root_pgdir)
 		: "memory"
 	);
+
+	__asm__ __volatile__(
+		"mrs %0, ttbr1_el1	\n\t"
+		: "=r"(check)
+		:
+		:
+	);
+
+	KASSERT((check == ((int* )root_pgdir)));
 
 	/**
 	 * SCTLR Register
@@ -106,6 +117,7 @@ PUBLIC int arm64_enable_mmu(void)
 	// Read actual value of sctlr register
 	__asm__ __volatile__(
 		"mrs %0, sctlr_el1	\n\t"
+		"isb"
 		: "=r" (sctlr)
 		:
 		: "memory"
@@ -141,36 +153,44 @@ void arm64_cpu_setup(void)
 		: :	: "memory"
 	);
 
+	/*
+     * Setup the processor to run in EL1 exception level if the processor was entered in EL2.
+	 *
+	 If we're fortunate enough to boot at EL2, ensure that the world is
+     * sane before dropping to EL1.
+     *
+     * Returns either BOOT_CPU_MODE_EL1 or BOOT_CPU_MODE_EL2 in x20 if
+     * booted in EL1 or EL2 respectively.
+     */
+	__asm__ __volatile__(
+		"mrs %0, CurrentEL	\n\t"
+		: "=r" (tmp)
+		:
+		: "memory"
+	);
+
+	if (tmp != (2<<2)) {
+		// It's EL1, all good
+		__asm__ __volatile__(
+			"mrs %0, CurrentEL			\n\t"
+			"orr %0, %0, #(3 << 24)		\n\t" 	// Set the EE and E0E bits for EL1
+			"bic %0, %0, #(3 << 24)		\n\t"	// Clear the EE and E0E bits for EL1
+			"msr sctlr_el1, %0			\n\t"
+			"isb						\n\t"
+			: "=r" (tmp)
+			:
+			: "memory"
+		);
+	} else {
+		// TODO
+	}
+
 	__asm__ __volatile__(
 		"msr 	cpacr_el1, %0 	\n\t"		// Enable FP/ASIMD
 		"msr	mdscr_el1, %1	\n\t"		// Reset mdscr_el1 and disable access to the DCC from EL0
 		"isb"
 		:
 		: "r" (3<<20), "r" (1 << 12)
-		: "memory"
-	);
-
-
-	/*
-	 * Read the PARange bits from ID_AA64MMFR0_EL1 and set the IPS bits in
-	 * TCR_EL1.
-	 */
-	__asm__ __volatile__(
-		"mrs	%0, ID_AA64MMFR0_EL1 	\n\t"
-		"bfi	%1, %0, #32, #3\n\t"
-		"isb"
-		: "=r" (tmp)
-		: "r" (TCR_VALUE)
-		: "memory"
-	);
-	/*
-	 * Hardware update of the Access and Dirty bits.
-	 */
-	__asm__ __volatile__(
-		"mrs	%0, ID_AA64MMFR1_EL1 	\n\t"
-		"and	%0, %0, #0xf		\n\t"
-		: "=r" (tmp)
-		:
 		: "memory"
 	);
 
@@ -183,10 +203,22 @@ void arm64_cpu_setup(void)
 	*	tcr_el1 of Translation Control Register is responsible for configuring some general
 	*	parameters of the MMU. (For example, here we configure that both 
 	*	kernel and user page tables should use 4 KB pages.)
+	*
+	*	ID_AA64MMFR0_EL1 Register
+	*	Provides information about the implemented memory model and 
+	*	memory management support in AArch64 state
 	*/
 	asm volatile (
-		"msr tcr_el1, %0	\n\t"
-		"msr mair_el1, %1"
+		"mrs %0, ID_AA64MMFR0_EL1"
+		: "=r"(tmp)
+		:
+		:
+	);
+
+	asm volatile (
+		"msr tcr_el1, %0			\n\t"
+		"msr mair_el1, %1			\n\t"
+		"isb"
 		:
 		: 	"r"(TCR_VALUE),
 			"r"(MAIR_VALUE)

@@ -158,7 +158,7 @@
 	#define MT_NORMAL_NC		3
 	#define MT_NORMAL			4
 
-	#define MAIR_VALUE	((0x00 << (MT_DEVICE_NGNRNE * 8)) |	\
+	#define MAIR_VALUE	((0x0 << (MT_DEVICE_NGNRNE * 8)) |	\
 					(0x04 << (MT_DEVICE_NGNRE * 8))   |	\
 					(0x0c << (MT_DEVICE_GRE * 8))     |	\
 					(0x44 << (MT_NORMAL_NC * 8))      |	\
@@ -167,16 +167,22 @@
 
 	#define MAIR_ATTR_SET(attr, index)	(attr << (index << 3))
 
+	/*
+	* ID_AA64MMFR0_EL1
+	*/
+	#define TG4 	(0xF << 28) // Not Supported
+	#define TG16 	(0 << 20) 	// Not Supported
+	#define TG64	(0 << 24)	// Supported
+	#define SNSM	(1 << 12)	//Disctinction between Secure and non Secure
+	#define BE		(1 << 8)	//Mixed Endian Support
+	#define ASIDb	(2 << 4)	// 16 Bits
+	#define PAr		(3 << 0)	// 42 bits
 
-	#define MM_TYPE_PAGE_TABLE          0x3
-	#define MM_TYPE_PAGE                0x3
-	#define MM_TYPE_BLOCK               0x1
-	#define MM_ACCESS                   (0x1 << 10)
-	#define MM_ACCESS_PERMISSION        (0x01 << 6) 
+	#define ID_AA64MMFR0_EL1_VALUE \
+		(TG4 | TG16 | TG64 | ASIDb | PAr | BE | SNSM)
 
-	#define MMU_FLAGS                   (MM_ACCESS | (MT_NORMAL_NC << 2) | MM_TYPE_BLOCK)   
-	#define MMU_DEVICE_FLAGS            (MM_ACCESS | (MT_DEVICE_NGNRNE << 2) | MM_TYPE_BLOCK)   
-	#define MMU_PTE_FLAGS               (MM_ACCESS | MM_ACCESS_PERMISSION | (MT_NORMAL_NC << 2) | MM_TYPE_PAGE) 
+
+
 
 #ifndef _ASM_FILE_
 	/**
@@ -209,23 +215,24 @@
 	*/
 	struct pte
 	{
-		unsigned present  	:  	1; 	/**< Present in memory? 		*/
-		unsigned table		:	1;	/**< // 0 -> makes entry invalid*/
-		unsigned type		:	4;	/**< Memory Type					*/
+		unsigned present  	:  	1; 	/**< @0 Present in memory? 				*/
+		unsigned table		:	1;	/**< @1 0 -> makes entry invalid		*/
+		unsigned type		:	4;	/**< @2-5 Memory Type					*/
 		// access permissions bits
-		unsigned user		:  	1; 	/**< Data Access Permissions Ap[1] 	*/
-		unsigned rdonly		:	1; 	/**< Data Access Permissions AP[2]	*/
+		unsigned user		:  	1; 	/**< @6 Data Access Permissions Ap[1] 	*/
+		unsigned rdonly		:	1; 	/**< @7 Data Access Permissions AP[2]	*/
 		// shareability field
-		unsigned shared	 	:  	2; 	/**< SH[1:0], inner shareable	*/
-		unsigned accessed 	:  	1; 	/**< AF, Accessed?          	*/
-		unsigned ng			:	1;	/**< Global Bit					*/
-		unsigned long frame : 	36; /**< Frame number.      		*/
-		unsigned 			:	4;	/**< Res0						*/
-		unsigned cont		:	1; 	/**< Contiguous ?				*/
-		unsigned pxn		:	1;	/**< Privileged execute-never 	*/
-		unsigned uxn		:	1;	/**< User execute-never			*/
-		unsigned dirty      : 	1; 	/**< Unused.            		*/
-		unsigned			: 	8;	/**< Unused.					*/
+		unsigned shared	 	:  	2; 	/**< @8-9 SH[1:0], inner shareable		*/
+		unsigned accessed 	:  	1; 	/**< @10 AF, Accessed?          		*/
+		unsigned ng			:	1;	/**< @11 Global Bit						*/
+		unsigned			:	4;	/**< @12-15	Res0						*/
+		unsigned frame 		: 	32; /**< @16-47	Frame number.      			*/
+		unsigned 			:	4;	/**< @48-51	Res0						*/
+		unsigned cont		:	1; 	/**< @52 Contiguous ?					*/
+		unsigned pxn		:	1;	/**< @53 Privileged execute-never 		*/
+		unsigned uxn		:	1;	/**< @54 User execute-never				*/
+		unsigned dirty      : 	1; 	/**< @55 Dirty.            				*/
+		unsigned			: 	8;	/**< @56-63	Unused.						*/
 	} PACK;
 
 
