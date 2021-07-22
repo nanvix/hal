@@ -80,7 +80,7 @@ PUBLIC struct memory_region mem_layout[MEM_REGIONS] = {
 
 PUBLIC int arm64_enable_mmu(void)
 {
-	uint64_t sctlr;
+	uint64_t sctlr, tmp;
 	int *check;
 
 	/* Ensure that the mmu is disabled before doing any change */
@@ -92,7 +92,6 @@ PUBLIC int arm64_enable_mmu(void)
 	*/
 	__asm__ __volatile__(
 		"msr ttbr0_el1, %0 	\n\t"
-		"msr ttbr1_el1, %0	\n\t"
 		"isb"
 		:
 		: "r" (root_pgdir)
@@ -100,13 +99,23 @@ PUBLIC int arm64_enable_mmu(void)
 	);
 
 	__asm__ __volatile__(
-		"mrs %0, ttbr1_el1	\n\t"
+		"mrs %0, ttbr0_el1	\n\t"
 		: "=r"(check)
 		:
 		:
 	);
 
 	KASSERT((check == ((int* )root_pgdir)));
+
+
+	asm volatile (
+		"mrs %0, ID_AA64MMFR0_EL1"
+		: "=r"(tmp)
+		:
+		:
+	);
+
+	KASSERT((tmp & TG64) == 0);
 
 	/**
 	 * SCTLR Register
@@ -129,6 +138,8 @@ PUBLIC int arm64_enable_mmu(void)
 	sctlr |= SCTLR_D_CACHE_ENABLE;
 
 	asm volatile(
+		"dsb sy				\n\t"
+		"isb				\n\t"
 		"msr sctlr_el1, %0	\n\t"
 		"dsb sy				\n\t"
 		"isb"
@@ -182,17 +193,9 @@ void arm64_cpu_setup(void)
 			: "memory"
 		);
 	} else {
-		// TODO
+		kprintf("EL not correct");
+		KASSERT(0==1);
 	}
-
-	__asm__ __volatile__(
-		"msr 	cpacr_el1, %0 	\n\t"		// Enable FP/ASIMD
-		"msr	mdscr_el1, %1	\n\t"		// Reset mdscr_el1 and disable access to the DCC from EL0
-		"isb"
-		:
-		: "r" (3<<20), "r" (1 << 12)
-		: "memory"
-	);
 
 	/**
 	*	MAIR Register
@@ -202,18 +205,9 @@ void arm64_cpu_setup(void)
 	*	TCR Register
 	*	tcr_el1 of Translation Control Register is responsible for configuring some general
 	*	parameters of the MMU. (For example, here we configure that both 
-	*	kernel and user page tables should use 4 KB pages.)
-	*
-	*	ID_AA64MMFR0_EL1 Register
-	*	Provides information about the implemented memory model and 
-	*	memory management support in AArch64 state
+	*	kernel and user page tables should use 64 KB pages.)
 	*/
-	asm volatile (
-		"mrs %0, ID_AA64MMFR0_EL1"
-		: "=r"(tmp)
-		:
-		:
-	);
+
 
 	asm volatile (
 		"msr tcr_el1, %0			\n\t"

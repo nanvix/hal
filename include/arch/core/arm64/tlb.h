@@ -60,6 +60,11 @@
 	 */
 	static inline int tlb_flush(void)
 	{
+		asm volatile(
+			"tlbi alle1"
+			:
+			:
+		);
 		return arm64_invalidate_tlb();
 	}
 

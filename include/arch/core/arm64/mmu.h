@@ -160,16 +160,12 @@
 	#define MT_NORMAL_NC		3
 	#define MT_NORMAL			4
 
-/*
+
 	#define MAIR_VALUE	((0x0 << (MT_DEVICE_NGNRNE * 8)) |	\
 					(0x04 << (MT_DEVICE_NGNRE * 8))   |	\
 					(0x0c << (MT_DEVICE_GRE * 8))     |	\
 					(0x44 << (MT_NORMAL_NC * 8))      |	\
 					(0xffLL << (MT_NORMAL * 8)))
-
-*/
-	#define MAIR_VALUE 	0x000000000000FF44
-	#define MAIR_ATTR_SET(attr, index)	(attr << (index << 3))
 
 	/*
 	* ID_AA64MMFR0_EL1
@@ -965,9 +961,15 @@
 
 	static inline int arm64_disable_mmu(void)
 	{
-
-		__asm__ __volatile__("msr SCTLR_EL1, %0\n\t" : : "r" (SCTLR_VALUE_MMU_DISABLED) : "memory");
-
+		arm64_invalidate_tlb();
+		arm64_invalidate_d_cache();
+		__asm__ __volatile__(
+			"msr SCTLR_EL1, %0\n\t"
+			"isb"
+			:
+			: "r" (SCTLR_VALUE_MMU_DISABLED) 
+			: "memory"
+		);
 		return (0);
 	}
 
